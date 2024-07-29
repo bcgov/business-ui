@@ -2,7 +2,7 @@
 
 
 # Application Name
-Business AR API
+Business Registry Dashboard API
 
 
 ## Technology Stack Used
@@ -10,7 +10,7 @@ Business AR API
 * Postgres -  SQLAlchemy, psycopg2-binary & alembic
 
 # setup
-Fork the repo and submitted a PR with accompanning tests.
+Fork the repo and submit a PR with accompanying tests.
 
 Set to use the local repo for the virtual environment
 ```bash
