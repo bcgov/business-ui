@@ -1,15 +1,15 @@
-# Business AR UI
+# Business Registry Dashboard UI
 
 ## Development & Contributing
 
 Create a fork and local copy of this repo. Answer _Y_ to create a local clone.
 ```bash
-gh repo fork bcgov/business-ar
+gh repo fork bcgov/business-ui
 ```
 
 Change into the directory and install the packages.
 ```bash
-cd business-ar/web/site
+cd business-ar/web/bui-main
 pnpm install
 ```
 
