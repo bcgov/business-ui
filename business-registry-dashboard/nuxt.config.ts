@@ -19,10 +19,11 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/eslint-module',
-    '@nuxt/test-utils/module'
+    '@nuxt/test-utils/module',
+    '@nuxt/image'
   ],
 
-  extends: ['@daxiom/sbc-nuxt-assets-layer'],
+  extends: ['@daxiom/nuxt-core-layer-test'],
 
   imports: {
     dirs: ['stores', 'composables', 'enums', 'interfaces', 'types', 'utils']
