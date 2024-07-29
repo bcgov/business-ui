@@ -63,9 +63,6 @@ export default defineNuxtConfig({
     public: {
       // Keys within public, will be also exposed to the client-side
       payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
-      keycloakAuthUrl: process.env.NUXT_KEYCLOAK_AUTH_URL,
-      keycloakRealm: process.env.NUXT_KEYCLOAK_REALM,
-      keycloakClientId: process.env.NUXT_KEYCLOAK_CLIENTID,
       registryHomeURL: process.env.NUXT_APP_REGISTRY_HOME_URL,
       appURL: process.env.NUXT_APP_URL,
       barApiUrl: `${process.env.NUXT_BAR_API_URL || ''}${process.env.NUXT_BAR_API_VERSION || ''}`,

@@ -59,7 +59,6 @@ export default defineAppConfig({
         outline: 'ring-1 ring-inset ring-current text-{color}-500 dark:text-[#E0E7ED] hover:bg-{color}-50 disabled:bg-transparent dark:hover:bg-[#E0E7ED]/25 dark:disabled:bg-transparent focus-visible:ring-2 focus-visible:ring-{color}-500 dark:focus-visible:ring-white'
       },
       default: {
-        size: 'bcGov'
       }
     },
     card: {
