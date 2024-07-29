@@ -1,4 +1,4 @@
-# Business Registry Dashboard
+# Business UI
 
 <!-- TODO: Description -->
 

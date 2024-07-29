@@ -1,8 +1,0 @@
-override.tf
-project-firebase-adminsdk.json
-_tmp**
-terraform.tfvars
-.terraform.lock.hcl
-terraform.tfstate
-.terraform**
-terraform.tfstate.backup
