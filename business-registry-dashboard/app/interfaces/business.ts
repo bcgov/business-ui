@@ -1,108 +1,149 @@
-import type { AnnualReport, FilingHeader, FilingDocument } from './ar-filing'
+import { AmalgamationTypes, FilingTypes, NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-components/enums'
+import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
 
-export interface BusinessFull {
-  taxId: string
-  corpState: string
-  corpStateClass: string
-  email: string | null
-  foundingDate: string
-  goodStanding: boolean | null
-  identifier: string
-  jurisdiction: string
-  lastAgmDate: string | null
-  lastArDate: string | null
-  lastLedgerTimestamp: string
-  legalName: string
-  legalType: string
-  nextARYear: number
-  status: string
-  invitationEmail: string
-  hasFutureEffectiveFilings: boolean
-  homeCompanyName: null | string
-  homeJurisdictionNumber: null | string
-  homeRecognitionDate: any
+export interface LoginPayload {
+    businessIdentifier: string
+    passCode?: string
+    phone?: string
+    email?: string
+    certifiedByName?: string
 }
 
-export interface BusinessNano {
-  identifier: string
-  legalName: string
-  legalType: string
-  taxId: string | null
+export interface FolioNumberload {
+    businessIdentifier: string
+    folioNumber: string
 }
 
-export interface BusinessFilingTask {
-  filing: {
-    annualReport: AnnualReport
-    business: BusinessFull
-    header: FilingHeader
-    documents: FilingDocument[]
-  }
-}
-
-export interface BusinessTodoTask {
-  todo: {
-    business: BusinessFull
-    header: {
-      ARFilingYear: number
-      name: string
-      status: string
-    }
-  }
-}
-
-export interface BusinessTask {
-  tasks: Array<{ task: BusinessTodoTask | BusinessFilingTask }>
-}
-
-export interface BusinessAddress {
-  actions: any[]
-  addressCity: string
-  addressCountry: string
-  addressId: number
-  addressRegion: string
-  deliveryInstructions: string
-  postalCode: string
-  streetAddress: string
-  streetAddressAdditional: string
-}
-
-export interface Office {
-  deliveryAddress: BusinessAddress
-  mailingAddress: BusinessAddress
-}
-
-interface Officer {
-  firstName: string
-  lastName: string
-  middleInitial: string
-  orgName: string
-}
-
-interface Role {
-  appointmentDate: string
-  cessationDate: string | null
-  roleType: string
-}
-
-export interface Party {
-  actions: any[]
-  appointmentDate: string
-  cessationDate: string | null
-  deliveryAddress: BusinessAddress
-  endEventId: string
-  id: number
-  mailingAddress: BusinessAddress
-  officer: Officer
-  roles: Role[]
-  startEventId: string
-  title: string
+export interface CorpType {
+    code: CorpTypes // may be actual corp type or overloaded value
+    default?: boolean
+    desc?: string
 }
 
 export interface Business {
-  business: BusinessFull
-  offices: {
-    recordsOffice: Office
-    registeredOffice: Office
-  }
-  parties: Party[]
+    businessIdentifier: string
+    businessNumber?: string
+    name?: string
+    contacts?: Contact[]
+    corpType: CorpType
+    corpSubType?: CorpType
+    folioNumber?: string
+    lastModified?: string
+    modified?: string
+    modifiedBy?: string
+    nameRequest?: NameRequest
+    nrNumber?: string
+    status?: string
+    goodStanding?: boolean
+    adminFreeze?: boolean
+    inDissolution?: boolean
+    affiliationInvites?: AffiliationInviteInfo[]
+}
+
+export interface BusinessSearchResultDto {
+    businessIdentifier: string
+    businessNumber?: string
+    name?: string
+    accessType?: string
+    orgType?: string
+    statusCode?:string
+    account: string
+    entity?: string
+}
+
+export interface Businesses {
+    entities: Business[]
+}
+
+// see https://github.com/bcgov/business-schemas/blob/master/src/registry_schemas/schemas/name_request.json
+export interface NameRequest {
+    actions?: Array<Action>
+    consentFlag?: string
+    names?: Array<Names>
+    id?: number
+    legalType: CorpTypes
+    nrNumber?: string
+    state?: string
+    applicantEmail?: string
+    applicantPhone?: string
+    enableIncorporation?: boolean
+    folioNumber?: string
+    target?: NrTargetTypes
+    entityTypeCd?: string
+    requestTypeCd?: NrRequestTypeCodes
+    requestActionCd?: NrRequestActionCodes
+    natureOfBusiness?: string
+    expirationDate?: Date
+    nrNum?: string
+    stateCd?: string
+    natureBusinessInfo?: string
+    applicants?: Array<Applicant>
+    corpNum?: string
+}
+
+export interface Applicant {
+    emailAddress?: string
+    phoneNumber?: string
+}
+
+// Names interface to match external data provided from lear.
+export interface Names {
+
+    decision_text: string,
+    name_type_cd: string,
+    designation: string,
+    name: string,
+    state: string
+
+}
+
+// Actions interface to match external data provided from lear.
+export interface Action {
+    URL: string,
+    entitiesFilingName: string,
+    filingName: LearFilingTypes,
+}
+
+export interface BusinessRequest {
+    filing: {
+        header: {
+            name: FilingTypes
+            accountId: number
+        },
+        // business is only used in incorporationApplication filing
+        business?: {
+            legalType: CorpTypes,
+        },
+        amalgamationApplication?: {
+          type: AmalgamationTypes,
+          nameRequest: NameRequest
+        },
+        continuationIn?: {
+            nameRequest: NameRequest
+        },
+        incorporationApplication?: {
+            nameRequest: NameRequest
+        },
+        registration?: {
+            nameRequest: NameRequest
+            businessType?: string // SP or DBA
+            business: {
+                natureOfBusiness?: string
+            }
+        }
+    }
+}
+
+export interface PasscodeResetLoad {
+    businessIdentifier: string,
+    passcodeResetEmail: string,
+    resetPasscode: boolean
+}
+
+export interface LearBusiness {
+    identifier: string
+    legalName: string
+    legalType: string
+    alternateNames?: AlternateNameIF[]
+    taxId?: string
 }
