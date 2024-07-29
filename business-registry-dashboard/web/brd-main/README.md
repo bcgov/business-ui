@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-BSD%203%20Clause-blue.svg)](LICENSE)
+
 # Business Registry Dashboard UI
 
 ## Development & Contributing
@@ -9,7 +11,7 @@ gh repo fork bcgov/business-ui
 
 Change into the directory and install the packages.
 ```bash
-cd business-ar/web/bui-main
+cd business-ui/business-registry-dashboard/web/brd-main
 pnpm install
 ```
 
