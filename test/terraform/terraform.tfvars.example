@@ -1,0 +1,36 @@
+# firebase settings
+firebase_api_key = "myAPIkey"
+firebase_messaging_sender_id = "mySENDERid"
+firebase_app_id = "myAPPid"
+
+auth_api_url = "http://auth_api_url.ca"
+pay_api_url = "http://pay_api_url.ca"
+
+oidc_issuer = "http://oidc_issuer.ca"
+oidc_well_known_config = "http://oidc_well_known_url.ca"
+
+auth_svc_url = "http://auth_svc_url.ca"
+auth_client_id = "myOIDCclientID"
+auth_client_secret = "myOIDCclientSECRET"
+
+canada_post_api_key = ""
+pay_api_version = "/api/v1"
+auth_url = "https://keycloakurl/auth"
+auth_realm = "myRealm"
+registry_home_url = ""
+nuxt_client_id = "client"
+
+hostname = "http://127.0.0.1"
+
+colin_api_url = "http://colin_url/v1"
+colin_client_id = "client-id"
+colin_client_secret = "client-secret"
+
+dashboard_url = "http://dashboard_url"
+notify_api_url = "http://notify_url"
+notify_api_version = "/api/v1"
+
+report_api_url = "http://report_url"
+report_api_version = "/api/v1"
+
+paymentPortalUrl = "http://paymentportalurl"

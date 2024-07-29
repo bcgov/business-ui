@@ -1,0 +1,50 @@
+{
+    "$id": "https://business_ar.gov.bc.ca/.well_known/schemas/new-account.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "version": "0.3",
+    "title": "New Account",
+    "description": "Schema for creating a new account.",
+    "type": "object",
+    "properties": {
+        "name": {
+            "title": "Account Name",
+            "type": "string"
+        },
+        "accessType": {
+            "title": "Access Type",
+            "type": "string",
+            "enum": [
+                "REGULAR"
+            ]
+        },
+        "typeCode": {
+            "title": "Account Type Code",
+            "type": "string",
+            "enum": [
+                "BASIC"
+            ]
+        },
+        "mailingAddress": {
+            "$ref": "https://business_ar.gov.bc.ca/.well_known/schemas/components.json#/definitions/Address"
+        },
+        "productSubscriptions": {
+            "title": "Product Subscriptions",
+            "type": "array",
+            "items": {
+                "$ref": "https://business_ar.gov.bc.ca/.well_known/schemas/components.json#/definitions/ProductSubscription"
+            }
+        },
+        "paymentInfo": {
+            "title": "Payment Info",
+            "$ref": "https://business_ar.gov.bc.ca/.well_known/schemas/components.json#/definitions/PaymentMethod"
+        },
+        "contactPoint": {
+            "title": "Account Contact Point",
+            "$ref": "https://business_ar.gov.bc.ca/.well_known/schemas/components.json#/definitions/ContactPoint"
+        }
+    },
+    "required": [
+        "name",
+        "contactPoint"
+    ]
+}

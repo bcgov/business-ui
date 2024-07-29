@@ -1,0 +1,993 @@
+{
+	"info": {
+		"_postman_id": "d3aa91b1-6be1-41ed-a20f-8f1f5551896c",
+		"name": "business-ar-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31792407"
+	},
+	"item": [
+		{
+			"name": "Staff Only",
+			"item": [
+				{
+					"name": "Search invitations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/invitations?text=lks@test.com&status=expired&page=1&limit=25",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"invitations"
+							],
+							"query": [
+								{
+									"key": "text",
+									"value": "lks@test.com"
+								},
+								{
+									"key": "status",
+									"value": "expired"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "25"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Expire Invitation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/invitations/{{invitation_id}}",
+							"host": [
+								"{{api_url}}"
+							],
+							"path": [
+								"invitations",
+								"{{invitation_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{auth_account_name}}\",\n    \"accessType\": \"REGULAR\",\n    \"typeCode\": \"BASIC\",\n    \"productSubscriptions\": [\n        {\n            \"productCode\": \"BUSINESS\"\n        }\n    ],\n    \"mailingAddress\": {\n        \"city\": \"Victoria\",\n        \"country\": \"CA\",\n        \"region\": \"BC\",\n        \"deliveryInstructions\": \"test\",\n        \"postalCode\": \"V8W 2C3\",\n        \"street\": \"200-1012 Douglas St\",\n        \"streetAdditional\": \"\"\n    },\n    \"paymentInfo\": {\n        \"paymentMethod\": \"DIRECT_PAY\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/accounts?name=Test AR Account 58",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"accounts"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Test AR Account 58"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.environment.set(\"account_id\", jsonData.id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{auth_account_name}}\",\n    \"accessType\": \"REGULAR\",\n    \"typeCode\": \"BASIC\",\n    \"productSubscriptions\": [\n        {\n            \"productCode\": \"BUSINESS\"\n        }\n    ],\n    \"mailingAddress\": {\n        \"city\": \"Victoria\",\n        \"country\": \"CA\",\n        \"region\": \"BC\",\n        \"deliveryInstructions\": \"test\",\n        \"postalCode\": \"V8W 2C3\",\n        \"street\": \"200-1012 Douglas St\",\n        \"streetAdditional\": \"\"\n    },\n    \"paymentInfo\": {\n        \"paymentMethod\": \"DIRECT_PAY\"\n    },\n    \"contactPoint\": {\n        \"email\": \"test@abc.com\",\n        \"phone\": \"(123) 456-7895\",\n        \"extension\": 123\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/user/accounts",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"user",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Accounts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/user/accounts",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"user",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Business in Auth",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"businessIdentifier\": \"{{business_identifier}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/business/auth",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Business by nano id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/token/{{nano_id}}",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"token",
+						"{{nano_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Next AR Filing year",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Annual Report Filing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"",
+							"pm.test('should return JSON', function () {",
+							"    pm.response.to.have.header('Content-Type', 'application/json');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Returns draft annual report filing.\", () => {",
+							"    pm.expect(jsonData.filing).to.exist",
+							"    pm.expect(jsonData.filing.header).to.exist",
+							"    pm.expect(jsonData.filing.annualReport).to.exist",
+							"    pm.environment.set(\"filing_id\", jsonData.filing.header.id)",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Account-Id",
+						"value": "{{account_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"filing\": {\n        \"header\": {\n            \"filingYear\": 2022\n        },\n        \"annualReport\": {\n            \"annualGeneralMeetingDate\": \"2022-01-01\",\n            \"annualReportDate\": \"2022-12-31\",\n            \"votedForNoAGM\": false\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Annual Report Filing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Account-Id",
+						"value": "{{account_id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"filing\": {\n        \"header\": {\n            \"filingYear\": 2022\n        },\n        \"annualReport\": {\n            \"annualGeneralMeetingDate\": \"2022-01-01\",\n            \"annualReportDate\": \"2022-12-31\",\n            \"votedForNoAGM\": false\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings/{{filing_id}}",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings",
+						"{{filing_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All AR filings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Filing By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings/{{filing_id}}",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings",
+						"{{filing_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Filing Payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings/{{filing_id}}/payment",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings",
+						"{{filing_id}}",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Filing Payment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings/{{filing_id}}/payment",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings",
+						"{{filing_id}}",
+						"payment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Internal filings",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/internal/filings/pending",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"internal",
+						"filings",
+						"pending"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Complete Filing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"colinEventIds\": [1]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/internal/filings/{{filing_id}}",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"internal",
+						"filings",
+						"{{filing_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Notify",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/internal/filings/{{filing_id}}/notify",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"internal",
+						"filings",
+						"{{filing_id}}",
+						"notify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Terms of Service",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/users/tos",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"users",
+						"tos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User Terms of Service",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"istermsaccepted\": true,\n    \"termsversion\": \"5\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api_url}}/users/tos",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"users",
+						"tos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Filing Documents",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{api_url}}/business/{{business_identifier}}/filings/{{filing_id}}/documents",
+					"host": [
+						"{{api_url}}"
+					],
+					"path": [
+						"business",
+						"{{business_identifier}}",
+						"filings",
+						"{{filing_id}}",
+						"documents"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

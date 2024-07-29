@@ -1,0 +1,30 @@
+[[20px.html]]
+[[divider.html]]
+[[20px.html]]
+<!-- table and cell padding doesn't work consistently -- use cellspacing instead -->
+<table class="business-info-table" cellspacing="10" role="presentation">
+    <tr>
+        <td class="name">Company Name:</td>
+        <td class="value bold">{{ business.legalName }}</td>
+    </tr>
+
+    <tr>
+        <td class="name">Incorporation Number:</td>
+        <td class="value bold">{{ business.identifier }}</td>
+    </tr>
+
+    {% if business.taxId and business.taxId|length > 9 %}
+    <tr>
+        <td class="name">Business Number:</td>
+        <td class="value bold">{{ business.taxId }}</td>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <td class="name">Date and Time of Filing:</td>
+        <td class="value bold">{{ filing_date_time }}</td>
+    </tr>
+</table>
+[[20px.html]]
+[[divider.html]]
+[[20px.html]]

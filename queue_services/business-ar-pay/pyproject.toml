@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "business-ar-pay"
+version = "0.3.0"
+description = "BC Registries  - business-ar-payment-processor"
+authors = ["thor <thor@wolpert.ca>"]
+license = "BSD-3-Clause"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12.2"
+flask = "^3.0.3"
+flask-sqlalchemy = "^3.1.1"
+flask-migrate = "^4.0.4"
+launchdarkly-server-sdk = "^8.3.0"
+python-dotenv = "^1.0.1"
+sentry-sdk = "^1.44.1"
+flask-babel = "^3.1.0"
+psycopg2 = "^2.9.5"
+flask-jwt-oidc = "^0.7.0"
+gunicorn = "^21.2.0"
+flask-cors = "^4.0.0"
+pg8000 = "^1.31.2"
+protobuf = "3.19.5"
+gcp-queue = { git = "https://github.com/thorwolpert/sbc-connect-common.git", subdirectory = "python/gcp-queue", branch = "main" }
+structured-logging = { git = "https://github.com/thorwolpert/sbc-connect-common.git", subdirectory = "python/structured-logging", branch = "main" }
+business-ar-api = { git = "https://github.com/bcgov/business-ar.git", subdirectory = "api", branch = "main" }
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-mock = "^3.14.0"
+black = "^24.4.2"
+zimports = "^0.6.1"
+lovely-pytest-docker = "^0.3.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

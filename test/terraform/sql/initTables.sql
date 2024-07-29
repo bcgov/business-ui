@@ -1,0 +1,2 @@
+INSERT INTO business (id, legal_name, legal_type, identifier, tax_id, nano_id) VALUES (1, 'C3 HUB CCC LTD. - IMPORT_TEST', 'BC', 'BC0814603', 'BC0814603', 'TIG9kz_ykKVo0FMQAH76o');
+INSERT INTO invitations (recipients, message, token, business_id, status) VALUES ('test@ca.com', 'hi', 'TIG9kz_ykKVo0FMQAH76o', 1, 'SENT');

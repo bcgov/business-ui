@@ -1,0 +1,22 @@
+{
+    "$id": "https://business_ar.gov.bc.ca/.well_known/schemas/user-tos.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "version": "0.3",
+    "title": "Terms of Service",
+    "description": "Schema for terms of Service.",
+    "type": "object",
+    "properties": {
+        "termsversion": {
+            "title": "Terms Version",
+            "type": "string"
+        },
+        "istermsaccepted": {
+            "title": "Is terms accepted",
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "termsversion",
+        "istermsaccepted"
+    ]
+}
