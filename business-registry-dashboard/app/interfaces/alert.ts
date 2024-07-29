@@ -1,4 +1,4 @@
-import type { AlertCategory } from '~/enums/alert-category'
+import type { AlertCategory } from '~/app/enums/alert-category'
 
 export interface Alert {
   category: AlertCategory

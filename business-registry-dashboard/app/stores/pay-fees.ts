@@ -1,5 +1,5 @@
 import { v4 as UUIDv4 } from 'uuid'
-import payApi from '~/services/pay-api'
+import payApi from '~/app/services/pay-api'
 export const usePayFeesStore = defineStore('bar-sbc-pay-fees', () => {
   const fees: Ref<PayFeesWidgetItem[]> = ref([])
   const folioNumber = ref('')

@@ -3,16 +3,13 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: false,
 
+  future: {
+    compatibilityVersion: 4
+  },
+
   nitro: {
     prerender: {
-      routes: [
-        '/en-CA',
-        '/en-CA/help',
-        '/en-CA/submitted',
-        '/fr-CA',
-        '/fr-CA/help',
-        '/fr-CA/submitted'
-      ]
+      routes: []
     }
   },
 
@@ -22,8 +19,7 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/eslint-module',
-    '@nuxt/test-utils/module',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@nuxt/test-utils/module'
   ],
 
   extends: ['@daxiom/sbc-nuxt-assets-layer'],
@@ -57,21 +53,6 @@ export default defineNuxtConfig({
     vueI18n: './i18n.config.ts'
   },
 
-  content: {
-    locales: [
-      'en-CA',
-      'fr-CA'
-    ],
-    contentHead: false,
-    markdown: {
-      anchorLinks: false
-    },
-    documentDriven: true,
-    experimental: {
-      clientDB: true
-    }
-  },
-
   colorMode: {
     preference: 'light',
     fallback: 'light'
@@ -80,7 +61,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Keys within public, will be also exposed to the client-side
-      addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY,
       payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
       keycloakAuthUrl: process.env.NUXT_KEYCLOAK_AUTH_URL,
       keycloakRealm: process.env.NUXT_KEYCLOAK_REALM,

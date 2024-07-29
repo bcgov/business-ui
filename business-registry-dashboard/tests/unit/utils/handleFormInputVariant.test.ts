@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { handleFormInputVariant } from '~/utils/handleFormInputVariant'
+import { handleFormInputVariant } from '~/app/utils/handleFormInputVariant'
 
 describe('handleFormInputVariant', () => {
   it('returns the expected string', () => {

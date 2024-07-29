@@ -1,4 +1,4 @@
-import { type SbcCountrySubdivision } from '~/interfaces/sbc-address'
+import { type SbcCountrySubdivision } from '~/app/interfaces/sbc-address'
 
 export interface Iso3166_1Country {
   alpha_2: string
