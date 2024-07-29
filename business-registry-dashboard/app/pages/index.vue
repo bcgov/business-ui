@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const accountStore = useConnectAccountStore()
 
 useHead({
   title: t('page.home.title')
@@ -18,18 +19,18 @@ const columns = [
     // sortable: true
   },
   {
-    key: 'identifier',
-    label: 'Number'
+    key: 'state',
+    label: 'Status'
     // sortable: true
   },
   {
-    key: 'recipients',
+    key: 'legalType',
     label: 'Type'
     // sortable: true
   },
   {
-    key: 'sentDate',
-    label: 'Status'
+    key: 'identifier',
+    label: 'Number'
     // sortable: true
   },
   {
@@ -37,6 +38,21 @@ const columns = [
     label: 'Actions'
   }
 ]
+
+const config = useRuntimeConfig()
+const authApiUrl = config.public.authApiURL
+
+const { data: affiliations } = await useAsyncData('affiliations-table', () => {
+  const { $keycloak } = useNuxtApp()
+  return $fetch(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
+    headers: {
+      Authorization: `Bearer ${$keycloak.token}`
+    }
+  })
+}, { server: false, watch: [() => accountStore.currentAccount.id] })
+console.log(affiliations.value)
+
+const selectedColumns = ref([])
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-4 py-10">
@@ -87,12 +103,20 @@ const columns = [
     <SbcPageSectionCard heading="My List">
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
-        <UDropdown :items="columns">
-          <UButton color="white" label="Columns to Show" trailing-icon="i-heroicons-chevron-down-20-solid" />
-        </UDropdown>
+        <USelectMenu
+          v-model="selectedColumns"
+          :options="columns"
+          multiple
+        />
       </template>
 
-      <UTable :columns />
+      <!-- affiliations table -->
+      <UTable :columns :rows="affiliations.entities">
+        <!-- business name column -->
+        <template #name-data="{ row }">
+          <span class="text-bcGovColor-darkGray">{{ row.name }}</span>
+        </template>
+      </UTable>
     </SbcPageSectionCard>
   </div>
 </template>
