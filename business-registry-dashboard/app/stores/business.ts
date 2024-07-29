@@ -1,6 +1,4 @@
 export const useBusinessStore = defineStore('bar-sbc-business-store', () => {
-  const alertStore = useAlertStore()
-
   // store values
   const loading = ref<boolean>(true)
   const currentBusiness = ref<BusinessFull>({} as BusinessFull)
