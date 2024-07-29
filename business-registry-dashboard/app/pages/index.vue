@@ -85,6 +85,13 @@ const columns = [
     />
 
     <SbcPageSectionCard heading="My List">
+      <template #header-right>
+        <!-- TODO: map dropdown items to come from table columns -->
+        <UDropdown :items="columns">
+          <UButton color="white" label="Columns to Show" trailing-icon="i-heroicons-chevron-down-20-solid" />
+        </UDropdown>
+      </template>
+
       <UTable :columns />
     </SbcPageSectionCard>
   </div>
