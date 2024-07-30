@@ -13,7 +13,10 @@ defineProps<{
         base: 'rounded-t-lg',
         background: 'bg-bcGovColor-gray2',
         padding: 'px-4 py-5 sm:px-6',
-      }
+      },
+      body: {
+        padding: 'px-0 py-0 sm:p-0',
+      },
     }"
   >
     <template #header>

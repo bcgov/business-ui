@@ -12,8 +12,8 @@ defineEmits(['clear'])
 <template>
   <!-- eslint-disable vue/attribute-hyphenation required for ariaLabel -->
   <div class="flex flex-col gap-2 font-normal">
-    <span class="font-semibold">{{ label }}</span>
-    <div class="inline-flex -space-x-px ">
+    <span class="border-b border-gray-200 p-2 font-semibold">{{ label }}</span>
+    <div class="inline-flex -space-x-px px-2 pt-2">
       <div class="grow">
         <slot />
       </div>

@@ -181,7 +181,15 @@ const selectedStates = ref([])
       </template>
 
       <!-- affiliations table -->
-      <UTable :columns :rows="affiliations?.entities ?? []">
+      <UTable
+        :columns
+        :rows="affiliations?.entities ?? []"
+        :ui="{
+          th: {
+            padding: 'px-0 py-3.5'
+          },
+        }"
+      >
         <!-- start table header slots -->
         <!-- business name header -->
         <template #legalName-header>
