@@ -189,7 +189,8 @@ export default {
     status: 'Status',
     number: 'Number',
     type: 'Type',
-    actions: 'Actions'
+    actions: 'Actions',
+    myList: 'My List ({count})'
   },
   links: {
     busCorpAct: {

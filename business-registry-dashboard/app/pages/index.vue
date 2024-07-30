@@ -157,7 +157,7 @@ const selectedStates = ref([])
       />
     </div>
 
-    <SbcPageSectionCard heading="My List">
+    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations.entities.length })">
       <!-- columns to show dropdown -->
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
