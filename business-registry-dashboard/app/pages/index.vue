@@ -53,6 +53,15 @@ const { data: affiliations } = await useAsyncData('affiliations-table', () => {
 console.log(affiliations.value)
 
 const selectedColumns = ref([])
+
+// const {
+//   loadAffiliations,
+//   // affiliations,
+//   entityCount, clearAllFilters,
+//   getHeaders, headers, type, status, updateFilter, typeDescription,
+//   isNameRequest, nameRequestType, number, name, canUseNameRequest,
+//   isTemporaryBusiness
+// } = useAffiliations()
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-4 py-10">
@@ -111,10 +120,26 @@ const selectedColumns = ref([])
       </template>
 
       <!-- affiliations table -->
-      <UTable :columns :rows="affiliations.entities">
+      <UTable :columns :rows="affiliations?.entities ?? []">
         <!-- business name column -->
         <template #name-data="{ row }">
           <span class="text-bcGovColor-darkGray">{{ row.name }}</span>
+        </template>
+
+        <!-- business type column -->
+        <template #legalType-data="{ row }">
+          {{ row.legalType }}
+          <!-- <div class="gray-9 font-weight-bold d-inline-block">
+            {{ type(item) }}
+          </div> -->
+          <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
+          <!-- <div
+            v-if="isNameRequest(item)"
+            class="gray-9 font-weight-bold d-inline-block ml-1"
+          >
+            {{ nameRequestType(item) }}
+          </div>
+          <div>{{ typeDescription(item) }}</div> -->
         </template>
       </UTable>
     </SbcPageSectionCard>

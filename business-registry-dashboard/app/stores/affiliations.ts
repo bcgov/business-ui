@@ -3,7 +3,88 @@ import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   // store values
   const loading = ref<boolean>(true)
-  const affiliations = ref([])
+  const affiliations = ref({
+    entities: [
+      {
+        adminFreeze: false,
+        goodStanding: true,
+        identifier: 'BC0871227',
+        inDissolution: false,
+        legalName: 'SEVERIN LIMITED COMPANY CORP.',
+        legalType: 'BC',
+        state: 'HISTORICAL'
+      },
+      {
+        adminFreeze: false,
+        goodStanding: true,
+        identifier: 'BC0871274',
+        inDissolution: false,
+        legalName: 'AC BC 2022.DEC.6 18.24 TEST CORP.',
+        legalType: 'BC',
+        state: 'ACTIVE'
+      },
+      {
+        adminFreeze: false,
+        goodStanding: true,
+        identifier: 'BC0814603',
+        inDissolution: false,
+        legalName: 'CLIMATE LAW CORPORATION - IMPORT_TEST',
+        legalType: 'BC',
+        state: 'HISTORICAL',
+        taxId: '123'
+      },
+      {
+        adminFreeze: false,
+        goodStanding: true,
+        identifier: 'BC0871505',
+        inDissolution: false,
+        legalName: '0871505 B.C. LTD.',
+        legalType: 'BEN',
+        state: 'ACTIVE'
+      },
+      {
+        draftType: 'RTMP',
+        identifier: 'T1ktKZPcOG',
+        legalName: null,
+        legalType: 'SP',
+        nrNumber: 'NR 7114831',
+        nameRequest: {
+          actions: [
+            {
+              URL: null,
+              entitiesFilingName: null,
+              filingName: 'Registration',
+              learTemplate: null
+            }
+          ],
+          applicants: [
+            {
+              emailAddress: 'mihai.dinu@gov.bc.ca',
+              phoneNumber: '7789967591'
+            }
+          ],
+          consentFlag: null,
+          corpNum: '',
+          entityTypeCd: 'FR',
+          expirationDate: '2023-11-29T07:59:00+00:00',
+          id: 2267075,
+          legalType: 'SP',
+          names: [
+            {
+              name: 'TEST SP OCT 3',
+              state: 'APPROVED'
+            }
+          ],
+          natureBusinessInfo: 'Testing',
+          nrNum: 'NR 7114831',
+          requestTypeCd: 'FR',
+          requestActionCd: 'NEW',
+          stateCd: 'EXPIRED',
+          target: 'lear'
+        }
+      }
+    ]
+  })
 
   function determineDisplayName (
     legalName: string,
@@ -60,7 +141,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   return {
     $reset,
-    loading
+    loading,
+    affiliations
   }
 },
 { persist: true } // persist store values in session storage

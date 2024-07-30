@@ -3,7 +3,7 @@ export interface InvitationMembership {
   org: Organization
 }
 
-export interface CreateRequestBody {
+export interface CreateInvitationRequestBody {
   recipientEmail: string
   sentDate: Date
   membership: InvitationMembership[]

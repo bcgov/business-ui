@@ -1,7 +1,7 @@
 import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-components/enums'
 import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
 
-export interface CreateRequestBody {
+export interface CreateAffiliationRequestBody {
   businessIdentifier: string
   certifiedByName: string
   passCode: string

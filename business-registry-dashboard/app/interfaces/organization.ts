@@ -1,4 +1,4 @@
-export interface CreateRequestBody {
+export interface CreateOrgRequestBody {
   name?: string,
   branchName?: string
   typeCode?: string
