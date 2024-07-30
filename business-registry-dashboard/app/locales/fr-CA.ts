@@ -107,6 +107,15 @@ export default {
         tooltip: 'Effacer les Types',
         aria: 'Réinitialiser les types légaux'
       }
+    },
+    filterBusStates: {
+      aria: "Filtrer par statut d'entreprise, {count} sélectionnés",
+      placeholder: 'Statut',
+      selected: '{count} sélectionnés',
+      clear: {
+        tooltip: 'Effacer le statut',
+        aria: "Réinitialiser le statut de l'entreprise"
+      }
     }
   },
   currency: {

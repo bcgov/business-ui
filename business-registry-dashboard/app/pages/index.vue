@@ -65,6 +65,9 @@ const selectedColumns = ref([])
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
 const selectedTypes = ref([])
+
+const busStates = ['Active', 'Expired', 'Draft']
+const selectedStates = ref([])
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -167,6 +170,7 @@ const selectedTypes = ref([])
       <!-- affiliations table -->
       <UTable :columns :rows="affiliations?.entities ?? []">
         <!-- table header slots -->
+
         <!-- business name header -->
         <template #legalName-header>
           <TableColumnHeader
@@ -197,7 +201,7 @@ const selectedTypes = ref([])
         <template #identifier-header>
           <TableColumnHeader
             :label="$t('labels.number')"
-            :clear-button="false"
+            :clear-button="{ show: false }"
           >
             <UInput
               variant="bcGovSm"
@@ -252,25 +256,34 @@ const selectedTypes = ref([])
         <template #state-header>
           <TableColumnHeader
             :label="$t('labels.status')"
-            :clear-button="false"
+            :clear-button="{
+              show: selectedStates.length > 0,
+              tooltip: $t('btn.filterBusStates.clear.tooltip'),
+              aria: $t('btn.filterBusStates.clear.aria')
+            }"
+            @clear="selectedStates = []"
           >
-            <UInput
-              variant="bcGovSm"
-              :placeholder="$t('labels.name')"
+            <USelectMenu
+              v-slot="{ open }"
+              v-model="selectedStates"
+              :options="busStates"
+              multiple
+              :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
             >
-              <template #trailing>
-                <UButton
-                  v-show="q !== ''"
-                  color="gray"
-                  variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
-                  :padded="false"
-                  @click="q = ''"
-                />
-              </template>
-            </UInput>
+              <UButton
+                variant="select_menu_trigger"
+                class="flex-1 justify-between text-gray-700"
+                :aria-label="$t('btn.filterBusStates.aria', { count: selectedStates.length })"
+              >
+                {{ selectedStates.length > 0 ? $t('btn.filterBusStates.selected', { count: selectedStates.length }) : $t('btn.filterBusStates.placeholder') }}
+
+                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+              </UButton>
+            </USelectMenu>
           </TableColumnHeader>
         </template>
+
+        <!-- table cell slots -->
 
         <!-- business name column -->
         <template #name-data="{ row }">

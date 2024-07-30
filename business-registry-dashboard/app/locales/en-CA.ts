@@ -107,6 +107,15 @@ export default {
         tooltip: 'Clear Types',
         aria: 'Reset legal types'
       }
+    },
+    filterBusStates: {
+      aria: 'Filter by business status, {count} selected',
+      placeholder: 'Status',
+      selected: '{count} selected',
+      clear: {
+        tooltip: 'Clear status',
+        aria: 'Reset business status'
+      }
     }
   },
   currency: {
