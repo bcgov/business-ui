@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const accountStore = useConnectAccountStore()
 
 useHead({
@@ -11,6 +11,7 @@ definePageMeta({
 })
 
 const selected = ref('')
+const showHelpText = ref(false)
 
 const columns = [
   {
@@ -50,7 +51,11 @@ const { data: affiliations } = await useAsyncData('affiliations-table', () => {
     }
   })
 }, { server: false, watch: [() => accountStore.currentAccount.id] })
-console.log(affiliations.value)
+const { data: helpText } = await useAsyncData('start-manage-business-help-text', () => {
+  return queryContent()
+    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
+    .findOne()
+}, { watch: [locale] })
 
 const selectedColumns = ref([])
 
@@ -99,12 +104,22 @@ const selectedStates = ref([])
       </div>
       <!-- TODO: add help text dropdown, use content? -->
       <UButton
-        :label="$t('btn.busStartHelp')"
+        :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show')"
         variant="link"
         icon="i-mdi-help-circle-outline"
         class="max-w-fit"
         :ui="{ icon: { size: { sm: 'size-6' } } }"
+        @click="showHelpText = !showHelpText"
       />
+      <div
+        class="mx-auto min-w-[75vw] max-w-screen-lg overflow-hidden border-y border-dashed border-gray-700 transition-all duration-500 ease-in-out"
+        :class="{
+          '-mb-3 max-h-0 opacity-0': !showHelpText,
+          '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
+        }"
+      >
+        <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 min-w-full" />
+      </div>
     </div>
     <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
       <!-- TODO: link search with query -->
@@ -151,7 +166,7 @@ const selectedStates = ref([])
       />
     </div>
 
-    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations.entities.length })">
+    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations?.entities?.length })">
       <!-- columns to show dropdown -->
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
@@ -175,9 +190,10 @@ const selectedStates = ref([])
       </template>
 
       <!-- affiliations table -->
+      <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
-        :rows="affiliations?.entities ?? []"
+        :rows="[]"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'

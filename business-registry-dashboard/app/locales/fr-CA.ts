@@ -125,7 +125,10 @@ export default {
       label: 'Commencez avec un diplôme en CB Entreprise basée',
       tooltip: 'Accédez à Demande de nom pour démarrer avec une entreprise nommée ou numérotée.'
     },
-    busStartHelp: "Aide à la Création et à la Gestion d'une Entreprise"
+    busStartHelp: {
+      show: "Aide à la Création et à la Gestion d'une Entreprise",
+      hide: "Masquer l'Aide"
+    }
   },
   currency: {
     cad: 'CAD',

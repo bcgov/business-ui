@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: false,
+  ssr: true,
 
   future: {
     compatibilityVersion: 4
@@ -93,6 +93,17 @@ export default defineNuxtConfig({
 
   piniaPersistedstate: {
     storage: 'sessionStorage'
+  },
+
+  content: {
+    locales: [
+      'en-CA',
+      'fr-CA'
+    ],
+    contentHead: false,
+    markdown: {
+      anchorLinks: false
+    }
   }
   // compatibilityDate: '2024-07-03' add compatibility date?
 })

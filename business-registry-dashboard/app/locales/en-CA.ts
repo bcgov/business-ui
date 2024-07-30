@@ -125,7 +125,10 @@ export default {
       label: 'Get Started with a B.C. Based Business',
       tooltip: 'Go to Name Request to get started with a named or numbered business.'
     },
-    busStartHelp: 'Help with Starting and Managing a Business'
+    busStartHelp: {
+      show: 'Help with Starting and Managing a Business',
+      hide: 'Hide Help'
+    }
   },
   currency: {
     cad: 'CAD',
