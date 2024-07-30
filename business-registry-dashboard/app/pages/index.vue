@@ -117,7 +117,7 @@ const selectedColumns = ref([])
         }"
       >
         <UInput
-          variant="bcGov"
+          variant="bcGovLg"
           placeholder="My business name, incorporation number or registration number"
           :ui="{
             base: 'bg-white',
@@ -163,6 +163,28 @@ const selectedColumns = ref([])
 
       <!-- affiliations table -->
       <UTable :columns :rows="affiliations?.entities ?? []">
+        <template #legalName-header>
+          <TableColumnHeader
+            :label="$t('labels.busName')"
+            :clear-button="false"
+          >
+            <UInput
+              variant="bcGovSm"
+            >
+              <template #trailing>
+                <UButton
+                  v-show="q !== ''"
+                  color="gray"
+                  variant="link"
+                  icon="i-heroicons-x-mark-20-solid"
+                  :padded="false"
+                  @click="q = ''"
+                />
+              </template>
+            </UInput>
+          </TableColumnHeader>
+        </template>
+
         <!-- business name column -->
         <template #name-data="{ row }">
           <span class="text-bcGovColor-darkGray">{{ row.name }}</span>
