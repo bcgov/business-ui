@@ -120,7 +120,12 @@ export default {
     colsToShow: {
       label: 'Colonnes à Afficher',
       aria: 'Colonnes à Afficher, {count} sélectionnés'
-    }
+    },
+    busGetStarted: {
+      label: 'Commencez avec un diplôme en CB Entreprise basée',
+      tooltip: 'Accédez à Demande de nom pour démarrer avec une entreprise nommée ou numérotée.'
+    },
+    busStartHelp: "Aide à la Création et à la Gestion d'une Entreprise"
   },
   currency: {
     cad: 'CAD',
@@ -210,7 +215,18 @@ export default {
     },
     home: {
       title: 'Accueil - Mon Tableau de Bord des Entreprises',
-      h1: "Mon Registre d'Entreprise"
+      h1: "Mon Registre d'Entreprise",
+      intro: 'Commencer la CB entreprises basées et tenir à jour les dossiers commerciaux.',
+      busOrNRSearch: {
+        label: 'Rechercher une Entreprise Existante ou une Demande de Nom Active à Gérer:',
+        placeholder: "Mon nom commercial, mon numéro d'entreprise ou mon numéro d'enregistrement",
+        help: "Par exemple: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        opts: {
+          legend: 'Choisissez de Rechercher soit une Entreprise Existante, soit une Demande de Nom',
+          existingBus: 'Entreprise Existante',
+          nr: 'Demande de Nom'
+        }
+      }
     },
     tos: { // TODO: review tos page translations
       title: "Conditions d'Utilisation - Rapport Annuel de Service CB",

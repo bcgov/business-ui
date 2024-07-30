@@ -74,23 +74,21 @@ const selectedStates = ref([])
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-4 md:flex-row md:justify-between">
         <div class="flex flex-col gap-4 md:flex-1">
-          <!-- TODO: update i18n -->
           <SbcPageSectionH1 :heading="$t('page.home.h1')" />
 
-          <!-- TODO: add i18n -->
           <p class="text-gray-700">
-            Start B.C. based businesses and keep business records up to date.
+            {{ $t('page.home.intro') }}
           </p>
         </div>
 
-        <!-- TODO: add i18n -->
+        <!-- TODO: add link  -->
         <div class="flex-none">
           <UTooltip
-            text="Go to Name Request to get started with a named or numbered business."
+            :text="$t('btn.busGetStarted.tooltip')"
             :popper="{ arrow: true }"
           >
             <UButton
-              label="Get Started with a B.C. Based Business"
+              :label="$t('btn.busGetStarted.label')"
               variant="outline"
               icon="i-mdi-domain"
               size="bcGov"
@@ -100,9 +98,8 @@ const selectedStates = ref([])
         </div>
       </div>
       <!-- TODO: add help text dropdown, use content? -->
-      <!-- TODO: add i18n -->
       <UButton
-        label="Help with Starting and Managing a Business"
+        :label="$t('btn.busStartHelp')"
         variant="link"
         icon="i-mdi-help-circle-outline"
         class="max-w-fit"
@@ -111,10 +108,9 @@ const selectedStates = ref([])
     </div>
     <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
       <!-- TODO: link search with query -->
-      <!-- TODO: add i18n -->
       <UFormGroup
-        label="Retrieve an existing business or active Name Request to manage:"
-        help="For example: &quot;Joe&#39;s Plumbing Inc.&quot;, &quot;BC1234567&quot;, &quot;FM1234567&quot;"
+        :label="$t('page.home.busOrNRSearch.label')"
+        :help="$t('page.home.busOrNRSearch.help')"
         :ui="{
           label: {
             base: 'block font-normal text-gray-700 dark:text-gray-200'
@@ -124,7 +120,7 @@ const selectedStates = ref([])
       >
         <UInput
           variant="bcGovLg"
-          placeholder="My business name, incorporation number or registration number"
+          :placeholder="$t('page.home.busOrNRSearch.placeholder')"
           :ui="{
             base: 'bg-white',
             placeholder: 'placeholder-gray-400 placeholder:text-base',
@@ -139,12 +135,10 @@ const selectedStates = ref([])
       </UFormGroup>
 
       <!-- TODO: link with search query -->
-      <!-- TODO: update legend and make sr only -->
-      <!-- TODO: add i18n options -->
       <URadioGroup
         v-model="selected"
-        legend="Choose something"
-        :options="[{value: 'opt1', label: 'Existing business'}, {value: 'opt2', label: 'Name Request'}]"
+        :legend="$t('page.home.busOrNRSearch.opts.legend')"
+        :options="[{value: 'opt1', label: $t('page.home.busOrNRSearch.opts.existingBus')}, {value: 'opt2', label: $t('page.home.busOrNRSearch.opts.nr')}]"
         :ui="{
           fieldset: 'flex gap-4',
           legend: 'sr-only',

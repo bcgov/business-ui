@@ -120,7 +120,12 @@ export default {
     colsToShow: {
       label: 'Columns to Show',
       aria: 'Columns to Show, {count} selected'
-    }
+    },
+    busGetStarted: {
+      label: 'Get Started with a B.C. Based Business',
+      tooltip: 'Go to Name Request to get started with a named or numbered business.'
+    },
+    busStartHelp: 'Help with Starting and Managing a Business'
   },
   currency: {
     cad: 'CAD',
@@ -210,7 +215,18 @@ export default {
     },
     home: {
       title: 'Home - My Business Registry Dashboard',
-      h1: 'My Business Registry'
+      h1: 'My Business Registry',
+      intro: 'Start B.C. based businesses and keep business records up to date.',
+      busOrNRSearch: {
+        label: 'Retrieve an existing business or active Name Request to manage:',
+        placeholder: 'My business name, incorporation number or registration number',
+        help: "For example: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        opts: {
+          legend: 'Select to search either for an existing business or name request',
+          existingBus: 'Existing Business',
+          nr: 'Name Request'
+        }
+      }
     },
     tos: {
       title: 'Terms of Use - Service BC Annual Report',
