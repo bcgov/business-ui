@@ -226,7 +226,7 @@ export default defineAppConfig({
       }
     },
     tooltip: {
-      wrapper: 'relative inline-flex',
+      wrapper: 'relative inline-flex max-h-min',
       container: 'z-20 group min-h-fit',
       background: 'bg-gray-700',
       color: 'text-white',

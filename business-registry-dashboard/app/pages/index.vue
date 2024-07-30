@@ -65,49 +65,74 @@ const selectedColumns = ref([])
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-4 py-10">
-    <!-- TODO: update i18n -->
-    <SbcPageSectionH1 :heading="$t('page.home.h1')" />
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 md:flex-row md:justify-between">
+        <div class="flex flex-col gap-4 md:flex-1">
+          <!-- TODO: update i18n -->
+          <SbcPageSectionH1 :heading="$t('page.home.h1')" />
 
-    <!-- TODO: add i18n -->
-    <p class="text-bcGovColor-midGray">
-      Start B.C. based businesses and keep business records up to date.
-    </p>
+          <!-- TODO: add i18n -->
+          <p class="text-bcGovColor-midGray">
+            Start B.C. based businesses and keep business records up to date.
+          </p>
+        </div>
 
-    <!-- TODO: add help text dropdown, use content? -->
-    <!-- TODO: add i18n -->
-    <UButton
-      label="Help with Starting and Managing a Business"
-      variant="link"
-      icon="i-mdi-help-circle-outline"
-      :ui="{ icon: { size: { sm: 'size-6' } } }"
-    />
-
-    <!-- TODO: link search with query -->
-    <!-- TODO: add i18n -->
-    <UFormGroup label="Retrieve an existing business or active Name Request to manage:">
-      <UInput
-        variant="bcGov"
-        placeholder="My business name, incorporation number or registration number"
-        :ui="{ base: 'bg-white' }"
-        icon="i-mdi-magnify"
-        trailing
+        <div class="flex-none">
+          <UTooltip
+            text="Go to Name Request to get started with a named or numbered business."
+            :popper="{ arrow: true }"
+          >
+            <UButton
+              label="Get Started with a B.C. Based Business"
+              variant="outline"
+              icon="i-mdi-domain"
+              size="bcGov"
+            />
+          </UTooltip>
+        </div>
+      </div>
+      <!-- TODO: add help text dropdown, use content? -->
+      <!-- TODO: add i18n -->
+      <UButton
+        label="Help with Starting and Managing a Business"
+        variant="link"
+        icon="i-mdi-help-circle-outline"
+        class="max-w-fit"
+        :ui="{ icon: { size: { sm: 'size-6' } } }"
       />
-    </UFormGroup>
+    </div>
+    <div class="flex max-w-screen-sm flex-col gap-4">
+      <!-- TODO: link search with query -->
+      <!-- TODO: add i18n -->
+      <UFormGroup
+        label="Retrieve an existing business or active Name Request to manage:"
+        help="For example: &quot;Joe&#39;s Plumbing Inc.&quot;, &quot;BC1234567&quot;, &quot;FM1234567&quot;"
+        class="max-h-fit max-w-fit"
+      >
+        <UInput
+          variant="bcGov"
+          placeholder="My business name, incorporation number or registration number"
+          :ui="{ base: 'bg-white' }"
+          icon="i-mdi-magnify"
+          trailing
+        />
+      </UFormGroup>
 
-    <!-- TODO: link with search query -->
-    <!-- TODO: update legend and make sr only -->
-    <!-- TODO: add i18n options -->
-    <URadioGroup
-      v-model="selected"
-      legend="Choose something"
-      :options="[{value: 'opt1', label: 'Existing business'}, {value: 'opt2', label: 'Name Request'}]"
-      :ui="{ fieldset: 'flex gap-4' }"
-      :ui-radio="{
-        label: 'text-base font-medium text-bcGovColor-midGray dark:text-gray-200',
-        base: 'size-5',
-        container: 'flex items-center h-full',
-      }"
-    />
+      <!-- TODO: link with search query -->
+      <!-- TODO: update legend and make sr only -->
+      <!-- TODO: add i18n options -->
+      <URadioGroup
+        v-model="selected"
+        legend="Choose something"
+        :options="[{value: 'opt1', label: 'Existing business'}, {value: 'opt2', label: 'Name Request'}]"
+        :ui="{ fieldset: 'flex gap-4' }"
+        :ui-radio="{
+          label: 'text-base font-medium text-bcGovColor-midGray dark:text-gray-200',
+          base: 'size-5',
+          container: 'flex items-center h-full',
+        }"
+      />
+    </div>
 
     <SbcPageSectionCard heading="My List">
       <template #header-right>
@@ -129,11 +154,11 @@ const selectedColumns = ref([])
         <!-- business type column -->
         <template #legalType-data="{ row }">
           {{ row.legalType }}
-          <!-- <div class="gray-9 font-weight-bold d-inline-block">
+        <!-- <div class="gray-9 font-weight-bold d-inline-block">
             {{ type(item) }}
           </div> -->
-          <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
-          <!-- <div
+        <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
+        <!-- <div
             v-if="isNameRequest(item)"
             class="gray-9 font-weight-bold d-inline-block ml-1"
           >
