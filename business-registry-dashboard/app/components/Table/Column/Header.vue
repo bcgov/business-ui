@@ -1,7 +1,10 @@
 <script setup lang="ts">
+type ClearButtonProps =
+  | { show: true; tooltip: string; aria: string }
+  | { show: false }
 defineProps<{
   label: string
-  clearButton: boolean
+  clearButton: ClearButtonProps
 }>()
 
 defineEmits(['clear'])
@@ -14,13 +17,13 @@ defineEmits(['clear'])
       <div class="grow">
         <slot />
       </div>
-      <UTooltip v-if="clearButton" :text="$t('btn.clearFilter', { filter: label })" :popper="{ arrow: true }">
+      <UTooltip v-if="clearButton.show" :text="clearButton.tooltip">
         <UButton
           :ui="{ rounded: 'rounded-l-none rounded-r-md' }"
           class="-ml-1"
           icon="i-mdi-close"
-          color="gray"
-          :ariaLabel="$t('btn.clearFilter', { filter: label })"
+          variant="table_header_clear"
+          :aria-label="clearButton.aria"
           @click="$emit('clear')"
         />
       </UTooltip>

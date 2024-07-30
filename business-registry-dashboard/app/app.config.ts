@@ -53,10 +53,12 @@ export default defineAppConfig({
         }
       },
       variant: {
+        table_header_clear: 'text-bcGovColor-darkGray rounded-none rounded-tr-md bg-gray-100 hover:bg-gray-200 font-semibold dark:text-white dark:hover:bg-blue-100/10 disabled:bg-{color}-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white transition-colors duration-300 ease-in-out border-gray-700 focus:border-primary-500 bg-gray-100 hover:bg-gray-200 border-b-[1px] focus:border-b-2 focus:ring-0',
         accordian_trigger: 'text-bcGovColor-darkGray font-semibold dark:text-white dark:hover:bg-blue-100/10 hover:bg-blue-50 disabled:bg-{color}-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white transition-colors duration-300 ease-in-out',
         link: 'text-{color}-500 tracking-wide text-base hover:text-{color}-600 disabled:text-{color}-500 dark:text-white dark:hover:text-blue-300 dark:disabled:text-{color}-400 underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-{color}-500 dark:focus-visible:ring-white',
         solid: 'shadow-sm text-white dark:text-gray-900 bg-{color}-500 hover:bg-{color}-600 disabled:bg-{color}-500 dark:bg-[#E0E7ED] dark:hover:bg-bcGovGray-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white',
-        outline: 'ring-1 ring-inset ring-current text-{color}-500 dark:text-[#E0E7ED] hover:bg-{color}-50 disabled:bg-transparent dark:hover:bg-[#E0E7ED]/25 dark:disabled:bg-transparent focus-visible:ring-2 focus-visible:ring-{color}-500 dark:focus-visible:ring-white'
+        outline: 'ring-1 ring-inset ring-current text-{color}-500 dark:text-[#E0E7ED] hover:bg-{color}-50 disabled:bg-transparent dark:hover:bg-[#E0E7ED]/25 dark:disabled:bg-transparent focus-visible:ring-2 focus-visible:ring-{color}-500 dark:focus-visible:ring-white',
+        select_menu_trigger: 'border-gray-700 focus-visible:border-primary-500 bg-gray-100 hover:bg-gray-200 border-b-[1px] focus-visible:border-b-2 focus:ring-0 h-[42px] rounded-t-m rounded-b-none'
       },
       default: {
       }
@@ -155,6 +157,7 @@ export default defineAppConfig({
     selectMenu: {
       label: 'text-gray-700',
       rounded: 'rounded-none',
+      width: 'min-w-fit',
       option: {
         rounded: 'rounded-none',
         active: 'text-primary-500',

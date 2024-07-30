@@ -19,8 +19,8 @@ const columns = [
     // sortable: true
   },
   {
-    key: 'state',
-    label: 'Status'
+    key: 'identifier',
+    label: 'Number'
     // sortable: true
   },
   {
@@ -29,8 +29,8 @@ const columns = [
     // sortable: true
   },
   {
-    key: 'identifier',
-    label: 'Number'
+    key: 'state',
+    label: 'Status'
     // sortable: true
   },
   {
@@ -62,6 +62,9 @@ const selectedColumns = ref([])
 //   isNameRequest, nameRequestType, number, name, canUseNameRequest,
 //   isTemporaryBusiness
 // } = useAffiliations()
+
+const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
+const selectedTypes = ref([])
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -163,13 +166,97 @@ const selectedColumns = ref([])
 
       <!-- affiliations table -->
       <UTable :columns :rows="affiliations?.entities ?? []">
+        <!-- table header slots -->
+        <!-- business name header -->
         <template #legalName-header>
           <TableColumnHeader
             :label="$t('labels.busName')"
+            :clear-button="{
+              show: false
+            }"
+          >
+            <UInput
+              variant="bcGovSm"
+              :placeholder="$t('labels.name')"
+            >
+              <template #trailing>
+                <UButton
+                  v-show="q !== ''"
+                  color="gray"
+                  variant="link"
+                  icon="i-heroicons-x-mark-20-solid"
+                  :padded="false"
+                  @click="q = ''"
+                />
+              </template>
+            </UInput>
+          </TableColumnHeader>
+        </template>
+
+        <!-- business number header -->
+        <template #identifier-header>
+          <TableColumnHeader
+            :label="$t('labels.number')"
             :clear-button="false"
           >
             <UInput
               variant="bcGovSm"
+              :placeholder="$t('labels.number')"
+            >
+              <template #trailing>
+                <UButton
+                  v-show="q !== ''"
+                  color="gray"
+                  variant="link"
+                  icon="i-heroicons-x-mark-20-solid"
+                  :padded="false"
+                  @click="q = ''"
+                />
+              </template>
+            </UInput>
+          </TableColumnHeader>
+        </template>
+
+        <!-- business type header -->
+        <template #legalType-header>
+          <TableColumnHeader
+            :label="$t('labels.type')"
+            :clear-button="{
+              show: selectedTypes.length > 0,
+              tooltip: $t('btn.filterLegalType.clear.tooltip'),
+              aria: $t('btn.filterLegalType.clear.aria')
+            }"
+            @clear="selectedTypes = []"
+          >
+            <USelectMenu
+              v-slot="{ open }"
+              v-model="selectedTypes"
+              :options="busTypes"
+              multiple
+              :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+            >
+              <UButton
+                variant="select_menu_trigger"
+                class="flex-1 justify-between text-gray-700"
+                :aria-label="$t('btn.filterLegalType.aria', { count: selectedTypes.length })"
+              >
+                {{ selectedTypes.length > 0 ? $t('btn.filterLegalType.selected', { count: selectedTypes.length }) : $t('btn.filterLegalType.placeholder') }}
+
+                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+              </UButton>
+            </USelectMenu>
+          </TableColumnHeader>
+        </template>
+
+        <!-- business state header -->
+        <template #state-header>
+          <TableColumnHeader
+            :label="$t('labels.status')"
+            :clear-button="false"
+          >
+            <UInput
+              variant="bcGovSm"
+              :placeholder="$t('labels.name')"
             >
               <template #trailing>
                 <UButton

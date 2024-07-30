@@ -98,6 +98,15 @@ export default {
     info: {
       show: 'Show information',
       hide: 'Hide information'
+    },
+    filterLegalType: {
+      aria: 'Filter by legal type, {count} selected',
+      placeholder: 'Type',
+      selected: '{count} selected',
+      clear: {
+        tooltip: 'Clear Types',
+        aria: 'Reset legal types'
+      }
     }
   },
   currency: {
@@ -163,7 +172,10 @@ export default {
     sameAsMailAddress: 'Same as Mailing Address',
     registeredOffice: 'Registered Office',
     recordsOffice: 'Records Office',
-    office: 'Office'
+    office: 'Office',
+    status: 'Status',
+    number: 'Number',
+    type: 'Type'
   },
   links: {
     busCorpAct: {

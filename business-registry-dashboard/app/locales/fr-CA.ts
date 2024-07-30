@@ -98,6 +98,15 @@ export default {
     info: {
       show: 'Afficher les informations',
       hide: 'Masquer les informations'
+    },
+    filterLegalType: {
+      aria: 'Filtrer par type juridique, {count} sélectionnés',
+      placeholder: 'Taper',
+      selected: '{count} sélectionnés',
+      clear: {
+        tooltip: 'Effacer les Types',
+        aria: 'Réinitialiser les types légaux'
+      }
     }
   },
   currency: {
@@ -163,7 +172,10 @@ export default {
     sameAsMailAddress: "Identique à l'Adresse Postale",
     registeredOffice: 'Siège Social',
     recordsOffice: 'Bureau des Archives',
-    office: 'Bureau'
+    office: 'Bureau',
+    status: 'Statut',
+    number: 'Nombre',
+    type: 'Taper'
   },
   links: {
     busCorpAct: {
