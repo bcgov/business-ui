@@ -64,7 +64,7 @@ const selectedColumns = ref([])
 // } = useAffiliations()
 </script>
 <template>
-  <div class="mx-auto flex flex-col gap-4 px-4 py-10">
+  <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
     <div class="flex flex-col gap-4">
       <div class="flex flex-col gap-4 md:flex-row md:justify-between">
         <div class="flex flex-col gap-4 md:flex-1">
@@ -72,11 +72,12 @@ const selectedColumns = ref([])
           <SbcPageSectionH1 :heading="$t('page.home.h1')" />
 
           <!-- TODO: add i18n -->
-          <p class="text-bcGovColor-midGray">
+          <p class="text-gray-700">
             Start B.C. based businesses and keep business records up to date.
           </p>
         </div>
 
+        <!-- TODO: add i18n -->
         <div class="flex-none">
           <UTooltip
             text="Go to Name Request to get started with a named or numbered business."
@@ -87,6 +88,7 @@ const selectedColumns = ref([])
               variant="outline"
               icon="i-mdi-domain"
               size="bcGov"
+              class="w-full"
             />
           </UTooltip>
         </div>
@@ -101,18 +103,30 @@ const selectedColumns = ref([])
         :ui="{ icon: { size: { sm: 'size-6' } } }"
       />
     </div>
-    <div class="flex max-w-screen-sm flex-col gap-4">
+    <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
       <!-- TODO: link search with query -->
       <!-- TODO: add i18n -->
       <UFormGroup
         label="Retrieve an existing business or active Name Request to manage:"
         help="For example: &quot;Joe&#39;s Plumbing Inc.&quot;, &quot;BC1234567&quot;, &quot;FM1234567&quot;"
-        class="max-h-fit max-w-fit"
+        :ui="{
+          label: {
+            base: 'block font-normal text-gray-700 dark:text-gray-200'
+          },
+          help: 'mt-2 text-xs text-gray-600',
+        }"
       >
         <UInput
           variant="bcGov"
           placeholder="My business name, incorporation number or registration number"
-          :ui="{ base: 'bg-white' }"
+          :ui="{
+            base: 'bg-white',
+            placeholder: 'placeholder-gray-400 placeholder:text-base',
+            icon: {
+              base: 'text-gray-600',
+              size: { sm: 'size-6' }
+            }
+          }"
           icon="i-mdi-magnify"
           trailing
         />
@@ -125,7 +139,10 @@ const selectedColumns = ref([])
         v-model="selected"
         legend="Choose something"
         :options="[{value: 'opt1', label: 'Existing business'}, {value: 'opt2', label: 'Name Request'}]"
-        :ui="{ fieldset: 'flex gap-4' }"
+        :ui="{
+          fieldset: 'flex gap-4',
+          legend: 'sr-only',
+        }"
         :ui-radio="{
           label: 'text-base font-medium text-bcGovColor-midGray dark:text-gray-200',
           base: 'size-5',
