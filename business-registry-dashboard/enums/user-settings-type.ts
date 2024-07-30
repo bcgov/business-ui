@@ -1,0 +1,5 @@
+export enum UserSettingsType {
+  ACCOUNT = 'ACCOUNT',
+  CREATE_ACCOUNT = 'CREATE_ACCOUNT',
+  USER_PROFILE = 'USER_PROFILE'
+}
