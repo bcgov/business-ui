@@ -184,7 +184,8 @@ export default {
     office: 'Bureau',
     status: 'Statut',
     number: 'Nombre',
-    type: 'Taper'
+    type: 'Taper',
+    actions: 'Actions'
   },
   links: {
     busCorpAct: {

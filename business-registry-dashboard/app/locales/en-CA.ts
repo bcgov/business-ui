@@ -184,7 +184,8 @@ export default {
     office: 'Office',
     status: 'Status',
     number: 'Number',
-    type: 'Type'
+    type: 'Type',
+    actions: 'Actions'
   },
   links: {
     busCorpAct: {

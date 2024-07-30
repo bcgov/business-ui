@@ -169,8 +169,7 @@ const selectedStates = ref([])
 
       <!-- affiliations table -->
       <UTable :columns :rows="affiliations?.entities ?? []">
-        <!-- table header slots -->
-
+        <!-- start table header slots -->
         <!-- business name header -->
         <template #legalName-header>
           <TableColumnHeader
@@ -283,7 +282,18 @@ const selectedStates = ref([])
           </TableColumnHeader>
         </template>
 
-        <!-- table cell slots -->
+        <!-- actions header -->
+        <template #actions-header>
+          <TableColumnHeader
+            :label="$t('labels.actions')"
+            :clear-button="{ show: false }"
+          >
+            <div class="h-[42px]" />
+          </TableColumnHeader>
+        </template>
+        <!-- end table header slots -->
+
+        <!-- start table cell slots -->
 
         <!-- business name column -->
         <template #name-data="{ row }">
@@ -305,6 +315,7 @@ const selectedStates = ref([])
           </div>
           <div>{{ typeDescription(item) }}</div> -->
         </template>
+        <!-- end table cell slots -->
       </UTable>
     </SbcPageSectionCard>
   </div>
