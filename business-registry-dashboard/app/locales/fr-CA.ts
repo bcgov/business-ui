@@ -182,103 +182,8 @@ export default {
       h1: 'Page introuvable'
     },
     home: {
-      title: 'Accueil - Rapport Annuel de Service CB',
-      h1: 'Déposez votre rapport annuel de la Colombie-Britannique'
-    },
-    createAccount: {
-      title: 'Création de Compte - Rapport Annuel de Service CB',
-      h1: 'Création de Compte Service CB',
-      h2: 'Détails du Compte',
-      form: {
-        infoSection: {
-          fieldSet: 'Votre Nom',
-          info: "Ceci est votre nom légal qu'il apparaît sur votre carte Services CB."
-        },
-        accountNameSection: {
-          fieldSet: 'Nom du Compte',
-          accountNameInputLabel: 'Nom du Compte',
-          error: {
-            req: 'Veuillez entrer un nom de compte',
-            min: 'Le nom du compte doit comporter au moins 2 caractères',
-            unique: 'Le nom du compte doit être unique'
-          }
-        },
-        contactDetailsSection: {
-          fieldSet: 'Détails du Contact',
-          phoneInputLabel: 'Numéro de téléphone',
-          phoneExtInputLabel: {
-            main: 'Extension (Facultatif)',
-            aria: 'Extension du numéro de téléphone, Optionionnel'
-          },
-          emailInputLabel: 'Adresse e-mail',
-          error: {
-            phone: {
-              req: 'Veuillez entrer un numéro de téléphone',
-              invalid: 'Veuillez entrer un numéro de téléphone valide'
-            },
-            phoneExt: 'Veuillez entrer une extension valide', // TODO: review
-            email: {
-              req: "Veuillez entrer une adresse email s'il vous plaît",
-              invalid: 'Veuillez entrer une adresse email valide'
-            }
-          }
-        }
-      }
-    },
-    existingAccount: {
-      title: 'Choisissez un Compte Existant - Rapport Annuel de Service CB',
-      h1: 'Compte Existant Trouvé',
-      h2: 'Vos Comptes Existants',
-      existingAccountWarning: 'Il semble que vous ayez déjà un compte avec Service Connect CB. Vous pouvez utiliser un compte existant pour continuer ou en créer un nouveau.'
-    },
-    missingId: {
-      title: 'Autorisation Requise - Rapport Annuel de Service CB',
-      h1: 'Autorisation Nécessaire'
-    },
-    annualReport: {
-      title: 'Déposez votre rapport annuel - Rapport Annuel de Service CB',
-      h1: 'Rapport Annuel {year}',
-      h2: 'Rapport Annuel pour: {name}',
-      reviewAndConfirm: {
-        main: 'Veuillez consulter les adresses des bureaux et les administrateurs actuels ci-dessous. Ces informations doivent être correctes avant de continuer.',
-        help: "Pour mettre à jour les adresses de vos bureaux et vos administrateurs, visitez Corporate Online. Attendez jusqu'à un jour ouvrable pour que les changements prennent effet avant de revenir ici pour déposer votre rapport annuel."
-      },
-      form: { // TODO: review annual report form translations
-        agmStatus: {
-          question: "Le statut de l'Assemblée Générale Annuelle (AGA) {year} de cette entreprise",
-          tooltip: "Les informations sur les AGA sont utilisées pour calculer les dates des prolongations et les changements de lieu des AGA. Cela aide aussi à s'assurer que votre entreprise reste conforme et en règle.",
-          opt1: 'Notre AGA {year} a eu lieu',
-          opt2: 'Notre AGA {year} aura lieu',
-          opt3: "Le conseil d'administration a voté contre la tenue de notre AGA {year}",
-          error: "Veuillez sélectionner un statut d'AGA pour continuer"
-        },
-        agmDate: {
-          placeholder: "Date de l'AGA",
-          label: "Date de l'AGA",
-          format: 'Format: AAAA-MM-JJ',
-          error: 'Vous devez sélectionner une date si vous avez tenu une AGA'
-        },
-        voteDate: {
-          placeholder: 'Date de Résolution Unanime',
-          label: 'Date de Résolution Unanime',
-          format: 'Format: AAAA-MM-JJ',
-          error: "Vous devez sélectionner une date de résolution si le conseil d'administration a voté pour ne pas tenir d'AGA."
-        },
-        complianceWarning: {
-          main: '{boldStart}Important:{boldEnd} En général, les entreprises tiennent des AGA chaque année.',
-          link: 'Consultez la {link} pour vous assurer de respecter les exigences législatives.'
-        },
-        certify: {
-          question: 'Je {boldStart}{name}{boldEnd} certifie que toutes les informations concernant les adresses des bureaux et les directeurs actuels sont exactes.',
-          error: 'Vous devez confirmer pour continuer'
-        }
-      },
-      noAddresses: 'Aucune adresse trouvée',
-      noDirectors: 'Aucun réalisateur trouvé'
-    },
-    submitted: {
-      title: 'Rapport Annuel Terminé - Rapport Annuel de Service CB',
-      h1: 'Rapport Annuel Terminé'
+      title: 'Accueil - Mon Tableau de Bord des Entreprises',
+      h1: "Mon Registre d'Entreprise"
     },
     tos: { // TODO: review tos page translations
       title: "Conditions d'Utilisation - Rapport Annuel de Service CB",
@@ -312,25 +217,7 @@ export default {
       }
     }
   },
-  SbcHeader: {
-    title: 'Service Connect CB',
-    logoBtnLabel: 'Accueil', // <img> link aria-label
-    navLabel: 'Navigation principale' // <nav> aria-label
-  },
-  SbcFooter: {
-    navLabel: 'Liens utiles', // <nav> aria-label
-    home: 'Accueil',
-    disclaimer: 'Clause de non-responsabilité',
-    privacy: 'Confidentialité',
-    ally: 'Accessibilité',
-    copyright: "Droits d'auteur",
-    bcApp: 'Une application en ligne CB'
-  },
-  SbcLogo: {
-    alt: 'Logo du gouvernement de la Colombie-Britannique' // <img> alt
-  },
-  LocaleSelect: {
-    // aria-label
-    label: 'Sélectionnez une langue, langue courante: Français'
+  ConnectHeader: {
+    title: 'Registres et Services en Ligne de la CB'
   }
 }
