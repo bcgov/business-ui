@@ -12,6 +12,7 @@ definePageMeta({
 
 const selected = ref('')
 const showHelpText = ref(false)
+const showHelpTextBtnRef = ref(null)
 
 const columns = [
   {
@@ -104,6 +105,7 @@ const selectedStates = ref([])
       </div>
       <!-- TODO: add help text dropdown, use content? -->
       <UButton
+        ref="showHelpTextBtnRef"
         :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show')"
         variant="link"
         icon="i-mdi-help-circle-outline"
@@ -119,6 +121,14 @@ const selectedStates = ref([])
         }"
       >
         <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 min-w-full" />
+        <div class="flex">
+          <UButton
+            :label="$t('btn.busStartHelp.hide')"
+            variant="link"
+            class="ml-auto"
+            @click="showHelpText = false"
+          />
+        </div>
       </div>
     </div>
     <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
