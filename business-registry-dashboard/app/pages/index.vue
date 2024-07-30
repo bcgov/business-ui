@@ -158,13 +158,26 @@ const selectedStates = ref([])
     </div>
 
     <SbcPageSectionCard heading="My List">
+      <!-- columns to show dropdown -->
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
         <USelectMenu
+          v-slot="{ open }"
           v-model="selectedColumns"
           :options="columns"
           multiple
-        />
+          :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+        >
+          <UButton
+            color="white"
+            class="flex-1 justify-between text-gray-700"
+            :aria-label="$t('btn.colsToShow.aria', { count: selectedColumns.length })"
+          >
+            <span>{{ $t('btn.colsToShow.label') }}</span>
+
+            <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+          </UButton>
+        </USelectMenu>
       </template>
 
       <!-- affiliations table -->

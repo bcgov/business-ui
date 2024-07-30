@@ -116,6 +116,10 @@ export default {
         tooltip: 'Clear status',
         aria: 'Reset business status'
       }
+    },
+    colsToShow: {
+      label: 'Columns to Show',
+      aria: 'Columns to Show, {count} selected'
     }
   },
   currency: {

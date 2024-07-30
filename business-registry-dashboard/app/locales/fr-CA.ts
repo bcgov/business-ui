@@ -116,6 +116,10 @@ export default {
         tooltip: 'Effacer le statut',
         aria: "Réinitialiser le statut de l'entreprise"
       }
+    },
+    colsToShow: {
+      label: 'Colonnes à Afficher',
+      aria: 'Colonnes à Afficher, {count} sélectionnés'
     }
   },
   currency: {
