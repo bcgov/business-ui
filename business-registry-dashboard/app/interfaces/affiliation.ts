@@ -32,6 +32,7 @@ export interface AlternateNames {
   nameRegisteredDate?: string
   nameStartDate?: string
   operatingName?: string
+  name?: string
 }
 
 export interface AffiliationResponse {

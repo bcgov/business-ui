@@ -317,17 +317,16 @@ const selectedStates = ref([])
               >
                 <UIcon
                   v-if="isRejectedName(nrName)"
-                  color="red"
-                  class="table-cell pr-1 align-top"
+                  class="table-cell size-4 pr-1 align-top text-red-500"
                   name="i-mdi-close"
                 />
                 <UIcon
                   v-if="isApprovedName(nrName)"
                   color="green"
-                  class="table-cell pr-1 align-top"
+                  class="table-cell size-4 pr-1 align-top text-green-500"
                   name="i-mdi-check"
                 />
-                <div class="table-cell align-top font-semibold">{{ nrName.name }}</div>
+                <div class="table-cell pl-2 align-top font-semibold">{{ nrName.name }}</div>
               </b>
             </b>
             <b
@@ -338,27 +337,22 @@ const selectedStates = ref([])
             </b>
           </span>
 
-          <span
-            v-if="row.affiliationInvites"
+          <!-- TODO: add affiliation invitation status -->
+          <!-- <span
             id="affiliationInvitesStatus"
-            class="align-start"
+            class="align-top"
           >
-            <v-icon
+            <UIcon
               class="mt-1 pr-1"
-              small
-              :color="getAffiliationInvitationStatus(item.affiliationInvites) === AffiliationInvitationStatus.Expired
-                ? 'red' : 'primary'"
-            >
-              {{ getAffiliationInvitationStatus(item.affiliationInvites) === AffiliationInvitationStatus.Expired
-                ? 'mdi-alert' : 'mdi-account-cog' }}
-            </v-icon>
-            <p
-              style="font-size: 12px"
-              class="mb-0"
-            >
-              <span v-sanitize="getRequestForAuthorizationStatusText(item.affiliationInvites)" />
+              :class="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'text-red-500' : 'text-blue-500'"
+              :name="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'i-mdi-alert' : 'i-mdi-account-cog'"
+            />
+            <p class="mb-0 text-xs">
+              <span v-html="getRequestForAuthorizationStatusText(row.affiliationInvites)" />
             </p>
-          </span>
+          </span> -->
         </template>
 
         <!-- business type column -->

@@ -28,7 +28,7 @@ export function determineDisplayName (
       alternateNames &&
     [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP].includes(legalType)) {
     // Intentionally show blank, if the alternate name is not found. This is to avoid showing the legal name.
-    return alternateNames?.find(alt => alt.identifier === identifier)?.operatingName ?? ''
+    return alternateNames?.find(alt => alt.identifier === identifier)?.name ?? '' // TODO: verify .operatingName not in use
   } else {
     return legalName
   }

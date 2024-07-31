@@ -17,6 +17,7 @@ import {
 
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
+  // const { getAffiliationInvitations } = useAffiliationInvitations()
   // const affStore = useAffiliationsStore()
   // const businessStore = useBusinessStore()
   // const businesses = computed(() => affStore.affiliations)
@@ -34,12 +35,50 @@ export const useAffiliations = () => {
     totalResults: 0
   }) as unknown) as AffiliationState
 
+  // TODO: handle affiliation invitations
+  // async function handleAffiliationInvitations (affiliatedEntities: Business[]): Promise<void> {
+  //   // if (!LaunchDarklyService.getFlag(LDFlags.AffiliationInvitationRequestAccess)) {
+  //   //   return affiliatedEntities
+  //   // }
+
+  //   const pendingAffiliationInvitations = await getAffiliationInvitations(accountStore.currentAccount.id) || []
+  //   console.log(pendingAffiliationInvitations)
+  //   // const includeAffiliationInviteRequest = LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false
+
+  //   for (const affiliationInvite of pendingAffiliationInvitations) {
+  //     // Skip over affiliation requests for type REQUEST for now.
+  //     // if (affiliationInvite.type === AffiliationInvitationType.REQUEST && !includeAffiliationInviteRequest) {
+  //     //   continue
+  //     // }
+  //     const isFromOrg = affiliationInvite.fromOrg.id === Number(accountStore.currentAccount.id)
+  //     const isToOrgAndPending = affiliationInvite.toOrg?.id === Number(accountStore.currentAccount.id) &&
+  //       affiliationInvite.status === AffiliationInvitationStatus.Pending
+  //     const isAccepted = affiliationInvite.status === AffiliationInvitationStatus.Accepted
+  //     const business = affiliatedEntities.find(
+  //       business => business.businessIdentifier === affiliationInvite.entity.businessIdentifier)
+
+  //     if (business && (isToOrgAndPending || isFromOrg)) {
+  //       business.affiliationInvites = (business.affiliationInvites || []).concat([affiliationInvite])
+  //     } else if (!business && isFromOrg && !isAccepted) {
+  //       // This returns corpType: 'BEN' instead of corpType: { code: 'BEN' }.
+  //       const corpType = affiliationInvite.entity.corpType
+  //       const newBusiness = {
+  //         ...affiliationInvite.entity,
+  //         affiliationInvites: [affiliationInvite],
+  //         corpType: { code: corpType as unknown as string } as CorpType
+  //       }
+  //       affiliatedEntities.push(newBusiness)
+  //     }
+  //   }
+  // }
+
   async function getAffiliatedEntities (): Promise<void> {
     const { $keycloak } = useNuxtApp()
     const authApiUrl = useRuntimeConfig().public.authApiURL
-
+    // let affiliatedEntities: Business[] = []
     affiliations.results = []
     try {
+      if (!accountStore.currentAccount.id) { return }
       const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
         headers: {
           Authorization: `Bearer ${$keycloak.token}`
@@ -49,6 +88,7 @@ export const useAffiliations = () => {
       if (response.entities.length > 0) {
         response.entities.forEach((resp) => {
           const entity: Business = buildBusinessObject(resp)
+          console.log(entity)
           if (resp.nameRequest) {
             const nr = resp.nameRequest
             if (!entity.nrNumber && nr.nrNum) {
@@ -57,6 +97,11 @@ export const useAffiliations = () => {
             entity.nameRequest = buildNameRequestObject(nr)
           }
           affiliations.results.push(entity)
+
+          // TODO: add affilaition invites to business object
+          // affiliatedEntities = await handleAffiliationInvitations(affiliatedEntities)
+
+          // affiliations.results = affiliatedEntities
         })
       }
     } catch (error) { // TODO: error handling
