@@ -1,6 +1,6 @@
 import {
   CorpTypeCd,
-  // GetCorpFullDescription,
+  GetCorpFullDescription,
   GetCorpNumberedDescription
 } from '@bcrs-shared-components/corp-type-module'
 // import CommonUtils from '@/util/common-util'
@@ -141,30 +141,30 @@ export const useAffiliations = () => {
   // }
 
   // /** Returns the temp business description. */
-  // const tempDescription = (business: Business): string => {
-  //   switch ((business.corpType?.code || business.corpType) as CorpTypes) {
-  //     case CorpTypes.AMALGAMATION_APPLICATION:
-  //       return AffiliationTypes.AMALGAMATION_APPLICATION
-  //     case CorpTypes.INCORPORATION_APPLICATION:
-  //       return AffiliationTypes.INCORPORATION_APPLICATION
-  //     case CorpTypes.REGISTRATION:
-  //       return AffiliationTypes.REGISTRATION
-  //     default:
-  //       return '' // should never happen
-  //   }
-  // }
+  const tempDescription = (business: Business): string => {
+    switch ((business.corpType?.code || business.corpType) as CorpTypes) {
+      case CorpTypes.AMALGAMATION_APPLICATION:
+        return AffiliationTypes.AMALGAMATION_APPLICATION
+      case CorpTypes.INCORPORATION_APPLICATION:
+        return AffiliationTypes.INCORPORATION_APPLICATION
+      case CorpTypes.REGISTRATION:
+        return AffiliationTypes.REGISTRATION
+      default:
+        return '' // should never happen
+    }
+  }
 
   // /** Returns the type of the affiliation. */
-  // const type = (business: Business): string => {
-  //   if (isTemporaryBusiness(business)) {
-  //     return tempDescription(business)
-  //   }
-  //   if (isNameRequest(business)) {
-  //     return AffiliationTypes.NAME_REQUEST
-  //   }
-  //   const code: unknown = business.corpType.code
-  //   return GetCorpFullDescription(code as CorpTypeCd)
-  // }
+  const type = (business: Business): string => {
+    if (isTemporaryBusiness(business)) {
+      return tempDescription(business)
+    }
+    if (isNameRequest(business)) {
+      return AffiliationTypes.NAME_REQUEST
+    }
+    const code: unknown = business.corpType.code
+    return GetCorpFullDescription(code as CorpTypeCd)
+  }
 
   // /** Returns the status of the affiliation. */
   // const status = (business: Business): string => {
@@ -235,20 +235,20 @@ export const useAffiliations = () => {
   }
 
   // /** Returns the type description. */
-  // const typeDescription = (business: Business): string => {
-  //   // if this is a name request then show legal type
-  //   if (isNameRequest(business)) {
-  //     const legalType: unknown = business.nameRequest.legalType
-  //     return GetCorpFullDescription(legalType as CorpTypeCd)
-  //   }
-  //   // if this is an IA or registration then show legal type
-  //   if (isTemporaryBusiness(business)) {
-  //     const legalType: unknown = (business.corpSubType?.code || business.corpSubType)
-  //     return GetCorpFullDescription(legalType as CorpTypeCd) // may return ''
-  //   }
-  //   // else show nothing
-  //   return ''
-  // }
+  const typeDescription = (business: Business): string => {
+    // if this is a name request then show legal type
+    if (isNameRequest(business)) {
+      const legalType: unknown = business.nameRequest?.legalType
+      return GetCorpFullDescription(legalType as CorpTypeCd)
+    }
+    // if this is an IA or registration then show legal type
+    if (isTemporaryBusiness(business)) {
+      const legalType: unknown = (business.corpSubType?.code || business.corpSubType)
+      return GetCorpFullDescription(legalType as CorpTypeCd) // may return ''
+    }
+    // else show nothing
+    return ''
+  }
 
   // /** Returns true if the affiliation is approved to start an IA or Registration. */
   // const canUseNameRequest = (business: Business): boolean => {
@@ -262,19 +262,22 @@ export const useAffiliations = () => {
   //   )
   // }
 
-  // /** Returns the Name Request type using the NR action code or the NR type code */
-  // const nameRequestType = (business: Business): string => {
-  //   if (isNameRequest(business)) {
-  //     // Try action code first, and if not found in the enum then use type code
-  //     let nrType: string = mapRequestActionCdToNrType(business.nameRequest?.requestActionCd)
-  //     nrType = nrType || mapRequestTypeCdToNrType(business.nameRequest?.requestTypeCd)
-  //     if (nrType) {
-  //       const emDash = '—' // ALT + 0151
-  //       return `${emDash} ${nrType}`
-  //     }
-  //   }
-  //   return ''
-  // }
+  /** Returns the Name Request type using the NR action code or the NR type code */
+  const nameRequestType = (business: Business): string => {
+    let nrType: string = ''
+    if (isNameRequest(business) && business.nameRequest?.requestActionCd) {
+      // Try action code first, and if not found in the enum then use type code
+      nrType = mapRequestActionCdToNrType(business.nameRequest?.requestActionCd)
+      if (business.nameRequest?.requestTypeCd) {
+        nrType = nrType || mapRequestTypeCdToNrType(business.nameRequest?.requestTypeCd)
+      }
+      if (nrType) {
+        const emDash = '—' // ALT + 0151
+        return `${emDash} ${nrType}`
+      }
+    }
+    return nrType
+  }
 
   // /** Apply data table headers dynamically to account for computed properties. */
   // const getHeaders = (columns?: string[]) => {
@@ -367,13 +370,13 @@ export const useAffiliations = () => {
     affiliations,
     // clearAllFilters,
     // getHeaders,
-    // type,
+    type,
     // status,
     // headers,
     // updateFilter,
-    // typeDescription,
+    typeDescription,
     isNameRequest,
-    // nameRequestType,
+    nameRequestType,
     number,
     name
     // canUseNameRequest,

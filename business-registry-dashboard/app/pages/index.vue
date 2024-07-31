@@ -50,12 +50,12 @@ const {
   // entityCount,
   // clearAllFilters,
   // getHeaders, headers,
-  // type,
+  type,
   // status,
   // updateFilter,
-  // typeDescription,
+  typeDescription,
   isNameRequest,
-  // nameRequestType,
+  nameRequestType,
   number,
   name
 // canUseNameRequest,
@@ -303,7 +303,7 @@ const selectedStates = ref([])
         <!-- end table header slots -->
 
         <!-- start table cell slots -->
-        <!-- business name cell -->
+        <!-- business name table cell -->
         <template #legalName-data="{ row }">
           <span>
             <b
@@ -355,25 +355,24 @@ const selectedStates = ref([])
           </span> -->
         </template>
 
-        <!-- business identifier cell -->
+        <!-- business identifier table cell -->
         <template #identifier-data="{ row }">
           <span>{{ number(row) }}</span>
         </template>
 
-        <!-- business type column -->
+        <!-- business legal type table cell  -->
         <template #legalType-data="{ row }">
-          {{ row.legalType }}
-        <!-- <div class="gray-9 font-weight-bold d-inline-block">
-            {{ type(item) }}
-          </div> -->
-        <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
-        <!-- <div
-            v-if="isNameRequest(item)"
-            class="gray-9 font-weight-bold d-inline-block ml-1"
-          >
-            {{ nameRequestType(item) }}
+          <div class="inline-block font-semibold text-gray-900">
+            {{ type(row) }}
           </div>
-          <div>{{ typeDescription(item) }}</div> -->
+          <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
+          <div
+            v-if="isNameRequest(row)"
+            class="ml-1 inline-block font-semibold text-gray-900"
+          >
+            {{ nameRequestType(row) }}
+          </div>
+          <div>{{ typeDescription(row) }}</div>
         </template>
         <!-- end table cell slots -->
       </UTable>
