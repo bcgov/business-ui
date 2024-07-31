@@ -51,17 +51,45 @@ const { data: affiliations } = await useAsyncData('affiliations-table', () => {
     }
   })
 }, { server: false, watch: [() => accountStore.currentAccount.id] })
+watchEffect(() => console.log(affiliations.value))
 
 const selectedColumns = ref([])
 
 // const {
-//   loadAffiliations,
-//   // affiliations,
-//   entityCount, clearAllFilters,
-//   getHeaders, headers, type, status, updateFilter, typeDescription,
-//   isNameRequest, nameRequestType, number, name, canUseNameRequest,
-//   isTemporaryBusiness
+// loadAffiliations,
+// affiliations,
+// entityCount,
+// clearAllFilters,
+// getHeaders, headers,
+// type,
+// status,
+// updateFilter,
+// typeDescription,
+// isNameRequest,
+// nameRequestType,
+// number,
+// name
+// canUseNameRequest,
+// isTemporaryBusiness
 // } = useAffiliations()
+
+// const isNameRequest = (business: Business): boolean => {
+//   console.log('isNameRequest: ', business)
+//   return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
+// }
+
+const name = (item: Business): string => {
+  console.log('name: ', item)
+  // if (isNumberedIncorporationApplication(item)) {
+  //   const legalType: unknown = item.corpSubType?.code
+  //   // provide fallback for old numbered IAs without corpSubType
+  //   return GetCorpNumberedDescription(legalType as CorpTypeCd) || 'Numbered Company'
+  // }
+  // if (item.nameRequest) {
+  //   return getApprovedName(item)
+  // }
+  return item.name
+}
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
 const selectedTypes = ref([])
@@ -172,7 +200,7 @@ const selectedStates = ref([])
       <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
-        :rows="[]"
+        :rows="affiliations?.entities"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'
@@ -194,12 +222,12 @@ const selectedStates = ref([])
             >
               <template #trailing>
                 <UButton
-                  v-show="q !== ''"
+                  v-show="true"
                   color="gray"
                   variant="link"
                   icon="i-heroicons-x-mark-20-solid"
                   :padded="false"
-                  @click="q = ''"
+                  @click="() => console.log('clear name input clicked')"
                 />
               </template>
             </UInput>
@@ -218,12 +246,12 @@ const selectedStates = ref([])
             >
               <template #trailing>
                 <UButton
-                  v-show="q !== ''"
+                  v-show="true"
                   color="gray"
                   variant="link"
                   icon="i-heroicons-x-mark-20-solid"
                   :padded="false"
-                  @click="q = ''"
+                  @click="() => console.log('clear number input clicked')"
                 />
               </template>
             </UInput>
@@ -304,10 +332,39 @@ const selectedStates = ref([])
         <!-- end table header slots -->
 
         <!-- start table cell slots -->
-
         <!-- business name column -->
-        <template #name-data="{ row }">
-          <span class="text-bcGovColor-darkGray">{{ row.name }}</span>
+        <template #legalName-data="{ row }">
+          <!-- <span>
+            <b
+              v-if="isNameRequest(row)"
+              class="text-gray-900"
+            >
+              <b
+                v-for="(nrName, i) in row.nameRequest.names"
+                :key="`nrName: ${i}`"
+                class="table pb-1"
+              >
+                <UIcon
+                  v-if="isRejectedName(nrName)"
+                  color="red"
+                  class="table-cell pr-1 align-top"
+                  name="i-mdi-close"
+                />
+                <UIcon
+                  v-if="isApprovedName(nrName)"
+                  color="green"
+                  class="table-cell pr-1 align-top"
+                  name="i-mdi-check"
+                />
+                <div class="table-cell align-top font-semibold">{{ nrName.name }}</div>
+              </b>
+            </b> -->
+          <b
+            class="font-semibold text-gray-900"
+          >
+            {{ name(row) }}
+          </b>
+          <!-- </span> -->
         </template>
 
         <!-- business type column -->

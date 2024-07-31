@@ -24,6 +24,7 @@ export interface Business {
     businessIdentifier: string
     businessNumber?: string
     name?: string
+    legalName?: string
     contacts?: Contact[]
     corpType: CorpType
     corpSubType?: CorpType
