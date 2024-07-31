@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 
 useHead({
@@ -11,8 +11,6 @@ definePageMeta({
 })
 
 const selected = ref('')
-const showHelpText = ref(false)
-const showHelpTextBtnRef = ref(null)
 
 const columns = [
   {
@@ -43,6 +41,7 @@ const columns = [
 
 const config = useRuntimeConfig()
 const authApiUrl = config.public.authApiURL
+const nrWebUrl = config.public.nrURL
 
 const { data: affiliations } = await useAsyncData('affiliations-table', () => {
   const { $keycloak } = useNuxtApp()
@@ -52,11 +51,6 @@ const { data: affiliations } = await useAsyncData('affiliations-table', () => {
     }
   })
 }, { server: false, watch: [() => accountStore.currentAccount.id] })
-const { data: helpText } = await useAsyncData('start-manage-business-help-text', () => {
-  return queryContent()
-    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
-    .findOne()
-}, { watch: [locale] })
 
 const selectedColumns = ref([])
 
@@ -87,8 +81,7 @@ const selectedStates = ref([])
           </p>
         </div>
 
-        <!-- TODO: add link  -->
-        <div class="flex-none">
+        <div v-if="accountStore.currentAccount.id" class="flex-none">
           <UTooltip
             :text="$t('btn.busGetStarted.tooltip')"
             :popper="{ arrow: true }"
@@ -99,37 +92,13 @@ const selectedStates = ref([])
               icon="i-mdi-domain"
               size="bcGov"
               class="w-full"
+              :to="`${nrWebUrl}${accountStore.currentAccount.id.toString()}`"
             />
           </UTooltip>
         </div>
       </div>
-      <!-- TODO: add help text dropdown, use content? -->
-      <UButton
-        ref="showHelpTextBtnRef"
-        :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show')"
-        variant="link"
-        icon="i-mdi-help-circle-outline"
-        class="max-w-fit"
-        :ui="{ icon: { size: { sm: 'size-6' } } }"
-        @click="showHelpText = !showHelpText"
-      />
-      <div
-        class="mx-auto min-w-[75vw] max-w-screen-lg overflow-hidden border-y border-dashed border-gray-700 transition-all duration-500 ease-in-out"
-        :class="{
-          '-mb-3 max-h-0 opacity-0': !showHelpText,
-          '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
-        }"
-      >
-        <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 min-w-full" />
-        <div class="flex">
-          <UButton
-            :label="$t('btn.busStartHelp.hide')"
-            variant="link"
-            class="ml-auto"
-            @click="showHelpText = false"
-          />
-        </div>
-      </div>
+
+      <HelpTextSection />
     </div>
     <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
       <!-- TODO: link search with query -->
