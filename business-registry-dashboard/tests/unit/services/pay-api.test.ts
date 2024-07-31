@@ -3,7 +3,7 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockedKeycloak } from '~/tests/mocks/mockedKeycloak'
 import { mockNewAccount } from '~/tests/mocks/mockedData'
-import payApi from '~/services/pay-api'
+import payApi from '~/app/services/pay-api'
 
 // Mock data
 const mockFeeData: FeeData = {

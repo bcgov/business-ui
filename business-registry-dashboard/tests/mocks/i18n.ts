@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
-import en from '~/locales/en-CA'
-import fr from '~/locales/fr-CA'
+import en from '~/app/locales/en-CA'
+import fr from '~/app/locales/fr-CA'
 
 export const enI18n = createI18n({
   legacy: false,

@@ -1,4 +1,4 @@
-import type { FeeData, FeeInfo, FeeType, PayFeesApiQueryParams } from '~/interfaces/fees'
+import type { FeeData, FeeInfo, FeeType, PayFeesApiQueryParams } from '~/app/interfaces/fees'
 
 function constructFeeInfoURL (filingData: FeeData): string {
   const runtimeConfig = useRuntimeConfig()

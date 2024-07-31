@@ -3,7 +3,7 @@ import { renderSuspended } from '@nuxt/test-utils/runtime'
 import { screen } from '@testing-library/vue'
 import { createTestingPinia } from '@pinia/testing'
 import { SbcAlert } from '#components'
-import en from '~/locales/en-CA'
+import en from '~/app/locales/en-CA'
 
 const pinia = createTestingPinia()
 

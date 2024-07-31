@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { useRouteWithoutLocale } from '~/composables/useRouteWithoutLocale'
+import { useRouteWithoutLocale } from '~/app/composables/useRouteWithoutLocale'
 
 mockNuxtImport('useRoute', () => {
   return () => (

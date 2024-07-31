@@ -1,6 +1,6 @@
 import { vi, describe, expect, it } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { handlePaymentRedirect } from '~/utils/handlePaymentRedirect'
+import { handlePaymentRedirect } from '~/app/utils/handlePaymentRedirect'
 
 mockNuxtImport('useI18n', () => {
   return () => (
