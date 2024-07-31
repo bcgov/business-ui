@@ -60,7 +60,7 @@ export const useAffiliations = () => {
         })
       }
       console.log(affiliations.results)
-    } catch (error) {
+    } catch (error) { // TODO: error handling
       throw new Error('Error fetching data from API: ' + error.message)
     }
   }
@@ -78,7 +78,6 @@ export const useAffiliations = () => {
 
   /** Returns true if the affiliation is a Name Request. */
   const isNameRequest = (business: Business): boolean => {
-    console.log('isNameRequest: ', business)
     return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
   }
 

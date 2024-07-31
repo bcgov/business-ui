@@ -54,18 +54,13 @@ const {
   // status,
   // updateFilter,
   // typeDescription,
-  // isNameRequest,
+  isNameRequest,
   // nameRequestType,
   // number,
   name
 // canUseNameRequest,
 // isTemporaryBusiness
 } = useAffiliations()
-
-// const isNameRequest = (business: Business): boolean => {
-//   console.log('isNameRequest: ', business)
-//   return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
-// }
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
 const selectedTypes = ref([])
@@ -310,7 +305,7 @@ const selectedStates = ref([])
         <!-- start table cell slots -->
         <!-- business name column -->
         <template #legalName-data="{ row }">
-          <!-- <span>
+          <span>
             <b
               v-if="isNameRequest(row)"
               class="text-gray-900"
@@ -334,13 +329,14 @@ const selectedStates = ref([])
                 />
                 <div class="table-cell align-top font-semibold">{{ nrName.name }}</div>
               </b>
-            </b> -->
-          <b
-            class="font-semibold text-gray-900"
-          >
-            {{ name(row) }}
-          </b>
-          <!-- </span> -->
+            </b>
+            <b
+              v-else
+              class="font-semibold text-gray-900"
+            >
+              {{ name(row) }}
+            </b>
+          </span>
         </template>
 
         <!-- business type column -->
