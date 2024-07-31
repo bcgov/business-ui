@@ -49,13 +49,13 @@ export const useAffiliations = () => {
       if (response.entities.length > 0) {
         response.entities.forEach((resp) => {
           const entity: Business = buildBusinessObject(resp)
-          // if (resp.nameRequest) {
-          //   const nr = resp.nameRequest
-          //   if (!entity.nrNumber && nr.nrNum) {
-          //     entity.nrNumber = entity.nrNumber || nr.nrNum
-          //   }
-          //   entity.nameRequest = buildNameRequestObject(nr)
-          // }
+          if (resp.nameRequest) {
+            const nr = resp.nameRequest
+            if (!entity.nrNumber && nr.nrNum) {
+              entity.nrNumber = entity.nrNumber || nr.nrNum
+            }
+            entity.nameRequest = buildNameRequestObject(nr)
+          }
           affiliations.results.push(entity)
         })
       }

@@ -64,8 +64,8 @@ export interface NameRequestResponse {
   id?: number
   legalType: CorpTypes
   state?: string
-  applicantEmail?: string
-  applicantPhone?: string
+  applicantEmail?: string | null
+  applicantPhone?: string | null
   enableIncorporation?: boolean
   folioNumber?: string
   target?: NrTargetTypes
