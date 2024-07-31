@@ -16,12 +16,65 @@ import {
 // }) as unknown) as AffiliationState
 
 export const useAffiliations = () => {
+  const accountStore = useConnectAccountStore()
   // const affStore = useAffiliationsStore()
   // const businessStore = useBusinessStore()
   // const businesses = computed(() => affStore.affiliations)
 
   /** V-model for dropdown menus of affiliation actions. */
   // const actionDropdown: Ref<boolean[]> = ref([])
+
+  const affiliations = (reactive({
+    filters: {
+      isActive: false,
+      filterPayload: {}
+    } as AffiliationFilterParams,
+    loading: false,
+    results: [] as Business[],
+    totalResults: 0
+  }) as unknown) as AffiliationState
+
+  async function getAffiliatedEntities (): Promise<void> {
+    const { $keycloak } = useNuxtApp()
+    const authApiUrl = useRuntimeConfig().public.authApiURL
+
+    affiliations.results = []
+    try {
+      const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
+        headers: {
+          Authorization: `Bearer ${$keycloak.token}`
+        }
+      })
+
+      if (response.entities.length > 0) {
+        response.entities.forEach((resp) => {
+          const entity: Business = buildBusinessObject(resp)
+          // if (resp.nameRequest) {
+          //   const nr = resp.nameRequest
+          //   if (!entity.nrNumber && nr.nrNum) {
+          //     entity.nrNumber = entity.nrNumber || nr.nrNum
+          //   }
+          //   entity.nameRequest = buildNameRequestObject(nr)
+          // }
+          affiliations.results.push(entity)
+        })
+      }
+      console.log(affiliations.results)
+    } catch (error) {
+      throw new Error('Error fetching data from API: ' + error.message)
+    }
+  }
+
+  onMounted(async () => {
+    await getAffiliatedEntities()
+  })
+
+  watch(
+    [() => accountStore.currentAccount.id],
+    async () => {
+      await getAffiliatedEntities()
+    }
+  )
 
   /** Returns true if the affiliation is a Name Request. */
   const isNameRequest = (business: Business): boolean => {
@@ -266,9 +319,10 @@ export const useAffiliations = () => {
   // }
 
   return {
+    getAffiliatedEntities,
     // entityCount,
     // loadAffiliations,
-    // affiliations,
+    affiliations,
     // clearAllFilters,
     // getHeaders,
     // type,

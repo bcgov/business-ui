@@ -40,34 +40,23 @@ const columns = [
 ]
 
 const config = useRuntimeConfig()
-const authApiUrl = config.public.authApiURL
 const nrWebUrl = config.public.nrURL
-
-const { data: affiliations } = await useAsyncData('affiliations-table', () => {
-  const { $keycloak } = useNuxtApp()
-  return $fetch(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
-    headers: {
-      Authorization: `Bearer ${$keycloak.token}`
-    }
-  })
-}, { server: false, watch: [() => accountStore.currentAccount.id] })
-watchEffect(() => console.log(affiliations.value))
 
 const selectedColumns = ref([])
 
 const {
 // loadAffiliations,
-// affiliations,
-// entityCount,
-// clearAllFilters,
-// getHeaders, headers,
-// type,
-// status,
-// updateFilter,
-// typeDescription,
-// isNameRequest,
-// nameRequestType,
-// number,
+  affiliations,
+  // entityCount,
+  // clearAllFilters,
+  // getHeaders, headers,
+  // type,
+  // status,
+  // updateFilter,
+  // typeDescription,
+  // isNameRequest,
+  // nameRequestType,
+  // number,
   name
 // canUseNameRequest,
 // isTemporaryBusiness
@@ -187,7 +176,7 @@ const selectedStates = ref([])
       <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
-        :rows="affiliations?.entities"
+        :rows="affiliations.results"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'
