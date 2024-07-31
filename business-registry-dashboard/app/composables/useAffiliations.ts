@@ -95,6 +95,9 @@ export const useAffiliations = () => {
 
   // /** Returns true if the affiliation is a numbered IA. */
   const isNumberedIncorporationApplication = (item: Business): boolean => {
+    if (!item.corpSubType?.code) {
+      return false
+    }
     return (
       (item.corpType?.code) === CorpTypes.INCORPORATION_APPLICATION &&
       !item.nrNumber &&
@@ -118,14 +121,13 @@ export const useAffiliations = () => {
   // }
 
   const getApprovedName = (business: Business): string => {
-    const approvedNameObj = business.nameRequest.names?.find(each => each.state === NrState.APPROVED)
+    const approvedNameObj = business.nameRequest?.names?.find(each => each.state === NrState.APPROVED)
     const approvedName = approvedNameObj?.name
     return approvedName || ''
   }
 
-  // /** Returns the name of the affiliation. */
+  /** Returns the name of the affiliation. */
   const name = (item: Business): string => {
-    console.log('name: ', item)
     if (isNumberedIncorporationApplication(item)) {
       const legalType: unknown = item.corpSubType?.code
       // provide fallback for old numbered IAs without corpSubType
@@ -134,7 +136,7 @@ export const useAffiliations = () => {
     if (item.nameRequest) {
       return getApprovedName(item)
     }
-    return item.name
+    return item.name ?? ''
   }
 
   // /** Returns the type description. */

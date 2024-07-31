@@ -55,7 +55,7 @@ watchEffect(() => console.log(affiliations.value))
 
 const selectedColumns = ref([])
 
-// const {
+const {
 // loadAffiliations,
 // affiliations,
 // entityCount,
@@ -68,28 +68,15 @@ const selectedColumns = ref([])
 // isNameRequest,
 // nameRequestType,
 // number,
-// name
+  name
 // canUseNameRequest,
 // isTemporaryBusiness
-// } = useAffiliations()
+} = useAffiliations()
 
 // const isNameRequest = (business: Business): boolean => {
 //   console.log('isNameRequest: ', business)
 //   return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
 // }
-
-const name = (item: Business): string => {
-  console.log('name: ', item)
-  // if (isNumberedIncorporationApplication(item)) {
-  //   const legalType: unknown = item.corpSubType?.code
-  //   // provide fallback for old numbered IAs without corpSubType
-  //   return GetCorpNumberedDescription(legalType as CorpTypeCd) || 'Numbered Company'
-  // }
-  // if (item.nameRequest) {
-  //   return getApprovedName(item)
-  // }
-  return item.name
-}
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
 const selectedTypes = ref([])
