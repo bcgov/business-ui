@@ -56,7 +56,7 @@ const {
   // typeDescription,
   isNameRequest,
   // nameRequestType,
-  // number,
+  number,
   name
 // canUseNameRequest,
 // isTemporaryBusiness
@@ -303,7 +303,7 @@ const selectedStates = ref([])
         <!-- end table header slots -->
 
         <!-- start table cell slots -->
-        <!-- business name column -->
+        <!-- business name cell -->
         <template #legalName-data="{ row }">
           <span>
             <b
@@ -353,6 +353,11 @@ const selectedStates = ref([])
               <span v-html="getRequestForAuthorizationStatusText(row.affiliationInvites)" />
             </p>
           </span> -->
+        </template>
+
+        <!-- business identifier cell -->
+        <template #identifier-data="{ row }">
+          <span>{{ number(row) }}</span>
         </template>
 
         <!-- business type column -->

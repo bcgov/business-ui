@@ -88,7 +88,6 @@ export const useAffiliations = () => {
       if (response.entities.length > 0) {
         response.entities.forEach((resp) => {
           const entity: Business = buildBusinessObject(resp)
-          console.log(entity)
           if (resp.nameRequest) {
             const nr = resp.nameRequest
             if (!entity.nrNumber && nr.nrNum) {
@@ -126,13 +125,13 @@ export const useAffiliations = () => {
   }
 
   /** Returns true if the affiliation is a temporary business. */
-  // const isTemporaryBusiness = (business: Business): boolean => {
-  //   return (
-  //     (business.corpType?.code || business.corpType) === CorpTypes.AMALGAMATION_APPLICATION ||
-  //     (business.corpType?.code || business.corpType) === CorpTypes.INCORPORATION_APPLICATION ||
-  //     (business.corpType?.code || business.corpType) === CorpTypes.REGISTRATION
-  //   )
-  // }
+  const isTemporaryBusiness = (business: Business): boolean => {
+    return (
+      (business.corpType?.code || business.corpType) === CorpTypes.AMALGAMATION_APPLICATION ||
+      (business.corpType?.code || business.corpType) === CorpTypes.INCORPORATION_APPLICATION ||
+      (business.corpType?.code || business.corpType) === CorpTypes.REGISTRATION
+    )
+  }
 
   // const isBusinessAffiliated = (businessIdentifier: string): boolean => {
   //   if (!businessIdentifier) {
@@ -206,15 +205,15 @@ export const useAffiliations = () => {
   }
 
   // /** Returns the identifier of the affiliation. */
-  // const number = (business: Business): string => {
-  //   if (isNumberedIncorporationApplication(business)) {
-  //     return AffidavitNumberStatus.PENDING
-  //   }
-  //   if (isTemporaryBusiness(business) || isNameRequest(business)) {
-  //     return business.nameRequest?.nrNumber || business.nrNumber
-  //   }
-  //   return business.businessIdentifier
-  // }
+  const number = (business: Business): string => {
+    if (isNumberedIncorporationApplication(business)) {
+      return AffidavitNumberStatus.PENDING
+    }
+    if (isTemporaryBusiness(business) || isNameRequest(business)) {
+      return business.nameRequest?.nrNumber || business.nrNumber || ''
+    }
+    return business.businessIdentifier
+  }
 
   const getApprovedName = (business: Business): string => {
     const approvedNameObj = business.nameRequest?.names?.find(each => each.state === NrState.APPROVED)
@@ -375,7 +374,7 @@ export const useAffiliations = () => {
     // typeDescription,
     isNameRequest,
     // nameRequestType,
-    // number,
+    number,
     name
     // canUseNameRequest,
     // tempDescription,
