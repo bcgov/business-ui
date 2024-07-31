@@ -337,6 +337,28 @@ const selectedStates = ref([])
               {{ name(row) }}
             </b>
           </span>
+
+          <span
+            v-if="row.affiliationInvites"
+            id="affiliationInvitesStatus"
+            class="align-start"
+          >
+            <v-icon
+              class="mt-1 pr-1"
+              small
+              :color="getAffiliationInvitationStatus(item.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'red' : 'primary'"
+            >
+              {{ getAffiliationInvitationStatus(item.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'mdi-alert' : 'mdi-account-cog' }}
+            </v-icon>
+            <p
+              style="font-size: 12px"
+              class="mb-0"
+            >
+              <span v-sanitize="getRequestForAuthorizationStatusText(item.affiliationInvites)" />
+            </p>
+          </span>
         </template>
 
         <!-- business type column -->

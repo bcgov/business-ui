@@ -59,7 +59,6 @@ export const useAffiliations = () => {
           affiliations.results.push(entity)
         })
       }
-      console.log(affiliations.results)
     } catch (error) { // TODO: error handling
       throw new Error('Error fetching data from API: ' + error.message)
     }
