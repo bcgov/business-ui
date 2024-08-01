@@ -45,9 +45,7 @@ const nrWebUrl = config.public.nrURL
 const selectedColumns = ref([])
 
 const {
-// loadAffiliations,
   affiliations
-  // entityCount,
   // clearAllFilters,
   // getHeaders, headers,
   // updateFilter,
@@ -135,7 +133,7 @@ const selectedStates = ref([])
       />
     </div>
 
-    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations?.entities?.length })">
+    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations.count })">
       <!-- columns to show dropdown -->
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
@@ -385,6 +383,7 @@ const selectedStates = ref([])
         </template>
 
         <!-- actions table cell -->
+        <!-- TODO: add events to actions component -->
         <template #actions-data="{ row, index }">
           <TableAffiliatedEntityAction
             :item="row"

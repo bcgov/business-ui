@@ -101,7 +101,7 @@ export interface AffiliationState {
   }
   loading: boolean
   results: Business[]
-  totalResults: number
+  count: number
 }
 
 export interface AffiliationInviteInfo {
