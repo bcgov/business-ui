@@ -370,6 +370,7 @@ const selectedStates = ref([])
         <template #state-data="{ row }">
           <span class="inline-flex gap-1">
             {{ status(row) }}
+            <!-- TODO: add aria describedby to text with tooltip info -->
             <TableAffiliatedEntityStatusDetails
               v-if="getDetails(row).length > 0"
               icon="i-mdi-alert"
@@ -384,9 +385,13 @@ const selectedStates = ref([])
         </template>
 
         <!-- actions table cell -->
-        <!-- <template #item-slot-Actions="{ item, index }">
-          <AffiliationAction
-            :item="item"
+        <template #actions-data="{ row, index }">
+          <TableAffiliatedEntityAction
+            :item="row"
+            :index="index"
+          />
+          <!-- <AffiliationAction
+            :item="row"
             :index="index"
             @unknown-error="$emit('unknown-error', $event)"
             @remove-affiliation-invitation="$emit('remove-affiliation-invitation', $event)"
@@ -394,8 +399,8 @@ const selectedStates = ref([])
             @business-unavailable-error="$emit('business-unavailable-error', $event)"
             @resend-affiliation-invitation="$emit('resend-affiliation-invitation', $event)"
             @show-manage-business-dialog="$emit('show-manage-business-dialog', $event)"
-          />
-        </template> -->
+          /> -->
+        </template>
         <!-- end table cell slots -->
       </UTable>
     </SbcPageSectionCard>
