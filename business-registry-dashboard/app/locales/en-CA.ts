@@ -98,6 +98,36 @@ export default {
     info: {
       show: 'Show information',
       hide: 'Hide information'
+    },
+    filterLegalType: {
+      aria: 'Filter by legal type, {count} selected',
+      placeholder: 'Type',
+      selected: '{count} selected',
+      clear: {
+        tooltip: 'Clear Types',
+        aria: 'Reset legal types'
+      }
+    },
+    filterBusStates: {
+      aria: 'Filter by business status, {count} selected',
+      placeholder: 'Status',
+      selected: '{count} selected',
+      clear: {
+        tooltip: 'Clear status',
+        aria: 'Reset business status'
+      }
+    },
+    colsToShow: {
+      label: 'Columns to Show',
+      aria: 'Columns to Show, {count} selected'
+    },
+    busGetStarted: {
+      label: 'Get Started with a B.C. Based Business',
+      tooltip: 'Go to Name Request to get started with a named or numbered business.'
+    },
+    busStartHelp: {
+      show: 'Help with Starting and Managing a Business',
+      hide: 'Hide Help'
     }
   },
   currency: {
@@ -163,7 +193,12 @@ export default {
     sameAsMailAddress: 'Same as Mailing Address',
     registeredOffice: 'Registered Office',
     recordsOffice: 'Records Office',
-    office: 'Office'
+    office: 'Office',
+    status: 'Status',
+    number: 'Number',
+    type: 'Type',
+    actions: 'Actions',
+    myList: 'My List ({count})'
   },
   links: {
     busCorpAct: {
@@ -182,103 +217,19 @@ export default {
       h1: 'Page Not Found'
     },
     home: {
-      title: 'Home - Service BC Annual Report',
-      h1: 'File your BC Annual Report'
-    },
-    createAccount: {
-      title: 'Account Creation - Service BC Annual Report',
-      h1: 'Service BC Account Creation',
-      h2: 'Account Details',
-      form: {
-        infoSection: {
-          fieldSet: 'Your Name',
-          info: 'This is your legal name as it appears on your BC Services Card.'
-        },
-        accountNameSection: {
-          fieldSet: 'Account Name',
-          accountNameInputLabel: 'Account Name',
-          error: {
-            req: 'Please enter an Account Name',
-            min: 'Account Name must be at least 2 characters',
-            unique: 'Account Name must be unique'
-          }
-        },
-        contactDetailsSection: {
-          fieldSet: 'Contact Details',
-          phoneInputLabel: 'Phone Number',
-          phoneExtInputLabel: {
-            main: 'Extension (Optional)',
-            aria: 'Phone Number Extension, Optional'
-          },
-          emailInputLabel: 'Email Address',
-          error: {
-            phone: {
-              req: 'Please enter a Phone Number',
-              invalid: 'Please enter a valid phone number'
-            },
-            phoneExt: 'Please enter a valid extension',
-            email: {
-              req: 'Please enter an Email Address',
-              invalid: 'Please enter a valid email address'
-            }
-          }
+      title: 'Home - My Business Registry Dashboard',
+      h1: 'My Business Registry',
+      intro: 'Start B.C. based businesses and keep business records up to date.',
+      busOrNRSearch: {
+        label: 'Retrieve an existing business or active Name Request to manage:',
+        placeholder: 'My business name, incorporation number or registration number',
+        help: "For example: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        opts: {
+          legend: 'Select to search either for an existing business or name request',
+          existingBus: 'Existing Business',
+          nr: 'Name Request'
         }
       }
-    },
-    existingAccount: {
-      title: 'Choose Existing Account - Service BC Annual Report',
-      h1: 'Existing Account Found',
-      h2: 'Your Existing Accounts',
-      existingAccountWarning: 'It looks like you already have an account with Service BC Connect. You can use an existing account to proceed or create a new one.'
-    },
-    missingId: {
-      title: 'Authorization Required - Service BC Annual Report',
-      h1: 'Authorization Required'
-    },
-    annualReport: {
-      title: 'File Your BC Annual Report - Service BC Annual Report',
-      h1: '{year} Annual Report',
-      h2: 'Annual Report for: {name}',
-      reviewAndConfirm: {
-        main: 'Please review the office addresses and current directors below. This information needs to be correct before you proceed.',
-        help: 'To update your office addresses and directors, visit Corporate Online. Allow up to one business day for changes to take effect before returning here to file your annual report.'
-      },
-      form: {
-        agmStatus: {
-          question: 'The {year} Annual General Meeting (AGM) status of this business',
-          tooltip: 'AGM information is used to calculate dates for AGM extensions and location changes. It also helps ensure your business stays compliant and in good standing.',
-          opt1: 'Our {year} AGM was held',
-          opt2: 'Our {year} AGM is to be held',
-          opt3: 'The board voted to not hold our {year} AGM',
-          error: 'Please select an AGM status to continue'
-        },
-        agmDate: {
-          placeholder: 'AGM Date',
-          label: 'AGM Date',
-          format: 'Format: YYYY-MM-DD',
-          error: 'You must select a date if you held an AGM'
-        },
-        voteDate: {
-          placeholder: 'Unanimous Resolution Date',
-          label: 'Unanimous Resolution Date',
-          format: 'Format: YYYY-MM-DD',
-          error: 'You must select a resolution date if the board voted to not hold an AGM'
-        },
-        complianceWarning: {
-          main: '{boldStart}Important:{boldEnd} Generally, companies hold AGMs every year.',
-          link: 'Review the {link} to make sure you meet the legislative requirements.'
-        },
-        certify: {
-          question: 'I {boldStart}{name}{boldEnd} certify all information about the Office Addresses and Current Directors is correct.',
-          error: 'You must confirm to continue'
-        }
-      },
-      noAddresses: 'No addresses found',
-      noDirectors: 'No directors found'
-    },
-    submitted: {
-      title: 'Annual Report Complete - Service BC Annual Report',
-      h1: 'Annual Report Complete'
     },
     tos: {
       title: 'Terms of Use - Service BC Annual Report',
@@ -312,25 +263,7 @@ export default {
       }
     }
   },
-  SbcHeader: {
-    title: 'Service BC Connect',
-    logoBtnLabel: 'Home', // <img> link aria-label
-    navLabel: 'Main Navigation' // <nav> aria-label
-  },
-  SbcFooter: {
-    navLabel: 'Useful Links', // <nav> aria-label
-    home: 'Home',
-    disclaimer: 'Disclaimer',
-    privacy: 'Privacy',
-    ally: 'Accessibility',
-    copyright: 'Copyright',
-    bcApp: 'A BC Online Application'
-  },
-  SbcLogo: {
-    alt: 'Government of British Columbia Logo' // <img> alt
-  },
-  LocaleSelect: {
-    // aria-label
-    label: 'Select a Language, current language: English'
+  ConnectHeader: {
+    title: 'BC Registries and Online Services'
   }
 }

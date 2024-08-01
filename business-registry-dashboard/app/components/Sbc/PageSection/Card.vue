@@ -13,21 +13,27 @@ defineProps<{
         base: 'rounded-t-lg',
         background: 'bg-bcGovColor-gray2',
         padding: 'px-4 py-5 sm:px-6',
-      }
+      },
+      body: {
+        padding: 'px-0 py-0 sm:p-0',
+      },
     }"
   >
     <template #header>
-      <component
-        :is="headingLevel || 'h2'"
-        class="flex items-center gap-2 font-semibold text-bcGovColor-darkGray dark:text-white"
-      >
-        <UIcon
-          v-if="headingIcon"
-          :name="headingIcon"
-          class="size-6 shrink-0 text-bcGovColor-activeBlue"
-        />
-        <span>{{ heading }}</span>
-      </component>
+      <div class="flex justify-between">
+        <component
+          :is="headingLevel || 'h2'"
+          class="flex items-center gap-2 font-semibold text-bcGovColor-darkGray dark:text-white"
+        >
+          <UIcon
+            v-if="headingIcon"
+            :name="headingIcon"
+            class="size-6 shrink-0 text-bcGovColor-activeBlue"
+          />
+          <span>{{ heading }}</span>
+        </component>
+        <slot name="header-right" />
+      </div>
     </template>
     <slot />
   </UCard>

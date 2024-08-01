@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: false,
+  ssr: true,
 
   future: {
     compatibilityVersion: 4
@@ -70,7 +70,8 @@ export default defineNuxtConfig({
       baseUrl: process.env.NUXT_BASE_URL,
       environment: process.env.NUXT_ENVIRONMENT_HEADER || '',
       uiVersion: process.env.npm_package_version,
-      ldClientId: process.env.NUXT_LD_CLIENT_ID || ''
+      ldClientId: process.env.NUXT_LD_CLIENT_ID || '',
+      nrURL: process.env.NUXT_NAME_REQUEST_URL || ''
     }
   },
 
@@ -93,6 +94,17 @@ export default defineNuxtConfig({
 
   piniaPersistedstate: {
     storage: 'sessionStorage'
+  },
+
+  content: {
+    locales: [
+      'en-CA',
+      'fr-CA'
+    ],
+    contentHead: false,
+    markdown: {
+      anchorLinks: false
+    }
   }
   // compatibilityDate: '2024-07-03' add compatibility date?
 })

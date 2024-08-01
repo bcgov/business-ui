@@ -16,7 +16,8 @@
       "whitelist": [
         "prose-bcGov"
       ]
-    }]
+    }],
+    "no-use-before-define": "off"
   },
   "plugins": ["tailwindcss"],
   "ignorePatterns": ["**/*.md"]
