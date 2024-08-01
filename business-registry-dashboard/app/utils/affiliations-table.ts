@@ -45,7 +45,7 @@ export const type = (business: Business): string => {
 }
 
 /** Returns the status of the affiliation. */
-export const status = (business: Business): string => {
+export const businessStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     return BusinessState.DRAFT
   }
@@ -81,7 +81,7 @@ export const status = (business: Business): string => {
 /** Draft IA with Expired NR */
 export const isExpired = (item: Business): boolean => {
   if (item.nameRequest?.expirationDate) {
-    return isDraft(status(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
+    return isDraft(businessStatus(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
     (new Date(item.nameRequest.expirationDate) < new Date())) && isIA(type(item))
   } else {
     return false

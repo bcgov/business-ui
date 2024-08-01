@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import type { PropType } from 'vue'
+import type { DropdownItem } from '#ui/types'
 import {
   NrRequestActionCodes
   // FilingTypes
@@ -8,7 +9,7 @@ import {
 // import AffiliationInvitationService from '@/services/affiliation-invitation.services'
 // import launchdarklyServices from 'sbc-common-components/src/services/launchdarkly.services'
 
-defineProps({
+const props = defineProps({
   item: { type: Object as PropType<Business>, required: true },
   index: { type: Number, required: true }
 })
@@ -16,10 +17,7 @@ defineProps({
 const emit = defineEmits(['show-manage-business-dialog', 'unknown-error', 'remove-affiliation-invitation',
   'remove-business', 'business-unavailable-error', 'resend-affiliation-invitation'])
 
-const {
-  affiliations
-  // actionDropdown
-} = useAffiliations()
+const { affiliations } = useAffiliations()
 const webUrl = getWebUrl()
 const accountStore = useConnectAccountStore()
 const currentAccountId = computed(() => accountStore.currentAccount.id)
@@ -45,15 +43,13 @@ const goToDashboard = (businessIdentifier: string) => {
 }
 
 /** Navigation handler for Name Request application. */
-const goToNameRequest = (nameRequest: NameRequest) => {
-  setNrCredentials(nameRequest)
-  return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`))
-}
-
-/** Navigation handler for OneStop application */
-const goToOneStop = () => {
-  const redirectURL = `${webUrl.getBusinessURL()}?ACCOUNT_ID=${currentAccountId}`
-  return navigateTo(redirectURL)
+const goToNameRequest = (nameRequest: NameRequest | undefined) => {
+  if (nameRequest) {
+    setNrCredentials(nameRequest)
+    return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`))
+  } else {
+    console.log('handle no name request case')
+  }
 }
 
 /** Navigation handler for Corporate Online application */
@@ -87,7 +83,7 @@ const goToSocieties = () => {
   return navigateTo(redirectURL, { open: { target: '_blank' } })
 }
 
-/** Create a business record in LEAR. */
+/** Create a business record in LEAR. */ // TODO: implement
 // const createBusinessRecord = async (business: Business): Promise<string> => {
 //   // const amalgamationTypes = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
 //   // const continuationInTypes = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
@@ -126,15 +122,6 @@ const goToSocieties = () => {
 //   return filingResponse.data.filing.business.identifier
 // }
 
-/** Handler for open action */
-// const open = (item: Business): void => {
-//   if ((item.corpType?.code || item.corpType) === CorpTypes.NAME_REQUEST) {
-//     goToNameRequest(item.nameRequest)
-//   } else {
-//     goToDashboard(item.businessIdentifier)
-//   }
-// }
-
 const isOtherEntities = (item: Business): boolean => {
   return [CorpTypes.FINANCIAL, CorpTypes.PRIVATE_ACT, CorpTypes.PARISHES,
     CorpTypes.LL_PARTNERSHIP, CorpTypes.LIM_PARTNERSHIP, CorpTypes.XPRO_LIM_PARTNR].includes(getEntityType(item))
@@ -156,18 +143,21 @@ const isSocieties = (item: Business): boolean => {
 //   return supportedEntityFlags.includes(entityType)
 // }
 
+// TODO: add launch darkly
 // const isSupportedAmalgamationEntities = (item: Business): boolean => {
 //   const entityType = getEntityType(item)
 //   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
 //   return supportedEntityFlags.includes(entityType)
 // }
 
+// TODO: add launch darkly
 // const isSupportedContinuationInEntities = (item: Business): boolean => {
 //   const entityType = getEntityType(item)
 //   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
 //   return supportedEntityFlags.includes(entityType)
 // }
 
+// TODO: add launch darkly
 // const isSupportedRestorationEntities = (item: Business): boolean => {
 //   const entityType = getEntityType(item)
 //   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
@@ -190,26 +180,26 @@ const isOpenExternal = (item: Business): boolean => {
   }
 
   if (isNameRequest(item)) {
-    const nrState = status(item)
+    const nrState = businessStatus(item)
     if (nrState !== NrDisplayStates.APPROVED) {
       return false
     }
     // const nrRequestActionCd = item.nameRequest?.requestActionCd
     // if (nrRequestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
-    //   return !isModernizedEntity(item)
+    //   return !isModernizedEntity(item) // TODO: implement after adding affiliation invitations after adding launch darkly
     // }
     // // temporarily show external icon for continue in
     // if (nrRequestActionCd === NrRequestActionCodes.MOVE) {
-    //   return !isSupportedContinuationInEntities(item)
+    //   return !isSupportedContinuationInEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
     // }
     // // temporary show external icon for amalgamate for some entity types
     // if (nrRequestActionCd === NrRequestActionCodes.AMALGAMATE) {
-    //   return !isSupportedAmalgamationEntities(item)
+    //   return !isSupportedAmalgamationEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
     // }
     // // temporarily show external icon for restore/reinstate for some entity types
     // if (nrRequestActionCd === NrRequestActionCodes.RESTORE ||
     //       nrRequestActionCd === NrRequestActionCodes.RENEW) {
-    //   return !isSupportedRestorationEntities(item)
+    //   return !isSupportedRestorationEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
     // }
     return false
   }
@@ -221,7 +211,7 @@ const isOpenExternal = (item: Business): boolean => {
 }
 
 const goToRegister = (item: Business) => {
-  // if (isModernizedEntity(item)) {
+  // if (isModernizedEntity(item)) { // TODO: implement after adding affiliation invitations after adding launch darkly
   //   const businessIdentifier = await createBusinessRecord(item)
   //   goToDashboard(businessIdentifier)
   // } else if (isSocieties(item)) {
@@ -235,7 +225,7 @@ const goToRegister = (item: Business) => {
 }
 
 // const goToAmalgamate = async (item: Business) => {
-const goToAmalgamate = () => {
+const goToAmalgamate = () => { // TODO: implement after adding affiliation invitations after adding launch darkly
   // if (isSupportedAmalgamationEntities(item)) {
   //   const businessIdentifier = await createBusinessRecord(item)
   //   goToDashboard(businessIdentifier)
@@ -245,7 +235,7 @@ const goToAmalgamate = () => {
 }
 
 // const goToContinuationIn = async (item: Business): Promise<void> => {
-const goToContinuationIn = () => {
+const goToContinuationIn = () => { // TODO: implement after adding affiliation invitations after adding launch darkly
   // if (isSupportedContinuationInEntities(item)) {
   //   const businessIdentifier = await createBusinessRecord(item)
   //   goToDashboard(businessIdentifier)
@@ -258,34 +248,8 @@ const getTooltipTargetDescription = (item: Business): string => {
   return isSocieties(item) ? 'Societies Online' : 'Corporate Online'
 }
 
-/** Handler for draft entity creation and navigation */
-// const useNameRequest = async (item: Business) => {
-const useNameRequest = (item: Business) => {
-  switch (item.nameRequest?.target) {
-    case NrTargetTypes.LEAR: {
-      // Create new entity if the selected item is Name Request
-      // if (item.corpType.code === CorpTypes.NAME_REQUEST) {
-      //   // const businessIdentifier = await createBusinessRecord(item)
-      //   goToDashboard(businessIdentifier)
-      // } else {
-      goToDashboard(item.businessIdentifier)
-      // }
-      break
-    }
-    case NrTargetTypes.ONESTOP:
-      goToOneStop()
-      break
-    case NrTargetTypes.COLIN:
-      goToCorpOnline()
-      break
-  }
-}
-
-// Refactor this is duplicated.
-// const isCurrentOrganization = (accountId: number) => {
-//   return accountId === Number(accountStore.currentAccount.id)
-// }
-
+// TODO: implement after adding affiliation invitations affiliation invitations
+// const showAffiliationInvitationNewRequestButton = (business: Business): boolean =>
 // const showAffiliationInvitationNewRequestButton = (business: Business): boolean => {
 //   const affiliationInvitation = business.affiliationInvites?.[0]
 //   if (!affiliationInvitation) {
@@ -299,25 +263,25 @@ const useNameRequest = (item: Business) => {
 // }
 
 /** Remove business/nr affiliation or affiliation invitation. */
-// const removeAffiliationOrInvitation = async (business: Business): Promise<void> => {
-//   if (business.affiliationInvites?.length > 0) {
-//     const affiliationInviteInfo = business.affiliationInvites[0]
-//     const invitationStatus = affiliationInviteInfo.status
-//     if ([AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Failed,
-//       AffiliationInvitationStatus.Expired].includes(invitationStatus as AffiliationInvitationStatus)) {
-//       const success = await AffiliationInvitationService.removeAffiliationInvitation(affiliationInviteInfo.id)
-//       if (!success) {
-//         context.emit('unknown-error')
-//       }
-//       context.emit('remove-affiliation-invitation')
-//       return
-//     }
-//   }
-//   context.emit('remove-business', {
-//     orgIdentifier: orgStore.currentOrganization.id,
-//     business
-//   })
-// }
+const removeAffiliationOrInvitation = (business: Business) => {
+  // if (business.affiliationInvites?.length > 0) { // TODO: add affiliation invitation option
+  //   const affiliationInviteInfo = business.affiliationInvites[0]
+  //   const invitationStatus = affiliationInviteInfo.status
+  //   if ([AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Failed,
+  //     AffiliationInvitationStatus.Expired].includes(invitationStatus as AffiliationInvitationStatus)) {
+  //     const success = await AffiliationInvitationService.removeAffiliationInvitation(affiliationInviteInfo.id)
+  //     if (!success) {
+  //       context.emit('unknown-error')
+  //     }
+  //     context.emit('remove-affiliation-invitation')
+  //     return
+  //   }
+  // }
+  emit('remove-business', {
+    orgIdentifier: accountStore.currentAccount.id,
+    business
+  })
+}
 
 const disableTooltip = (item: Business): boolean => {
   if (isOpenExternal(item)) {
@@ -356,7 +320,7 @@ const getNrRequestDescription = (item: Business): string => {
 
 // Actions
 const getPrimaryAction = (item: Business): string => {
-  // const affiliationInviteInfo = item?.affiliationInvites?.[0]
+  // const affiliationInviteInfo = item?.affiliationInvites?.[0] // TODO: add invitation invite options
   // if ([AffiliationInvitationStatus.Pending,
   //   AffiliationInvitationStatus.Expired,
   //   AffiliationInvitationStatus.Failed].includes(affiliationInviteInfo?.status)) {
@@ -381,7 +345,7 @@ const getPrimaryAction = (item: Business): string => {
     return 'Resume Draft'
   }
   if (isNameRequest(item)) {
-    const nrStatus = status(item)
+    const nrStatus = businessStatus(item)
     switch (nrStatus) {
       case NrDisplayStates.APPROVED:
         return getNrRequestDescription(item)
@@ -400,12 +364,13 @@ const getPrimaryAction = (item: Business): string => {
 const isShowRemoveAsPrimaryAction = (item: Business): boolean => {
   return isNameRequest(item) &&
       [NrDisplayStates.REJECTED, NrDisplayStates.CONSUMED,
-        NrDisplayStates.CANCELLED, NrDisplayStates.REFUND_REQUESTED].includes(status(item) as NrDisplayStates)
+        NrDisplayStates.CANCELLED, NrDisplayStates.REFUND_REQUESTED].includes(businessStatus(item) as NrDisplayStates)
 }
 
-// const showRemoveButton = (item: Business): boolean => {
-//   return !isShowRemoveAsPrimaryAction(item) && !showAffiliationInvitationNewRequestButton(item)
-// }
+const showRemoveButton = (item: Business): boolean => {
+  // return !isShowRemoveAsPrimaryAction(item) && !showAffiliationInvitationNewRequestButton(item) // TODO: implement after adding affiliation invitations
+  return !isShowRemoveAsPrimaryAction(item)
+}
 
 const handleTemporaryBusinessRedirect = (item: Business): boolean => {
   if (isTemporaryBusiness(item)) {
@@ -423,7 +388,7 @@ const isBusinessAffiliated = (businessIdentifier: string): boolean => {
 }
 
 const handleApprovedNameRequestRenew = (item: Business): void => {
-  // if (!isSupportedRestorationEntities(item)) {
+  // if (!isSupportedRestorationEntities(item)) { // TODO: implement after adding launch darkly
   //   goToCorpOnline()
   // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
   if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
@@ -435,7 +400,7 @@ const handleApprovedNameRequestRenew = (item: Business): void => {
 }
 
 const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
-  // if (!isModernizedEntity(item)) {
+  // if (!isModernizedEntity(item)) { // TODO: implement after adding launch darkly
   //   goToCorpOnline()
   // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
   if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
@@ -486,7 +451,7 @@ const handleNameRequestRedirect = (item: Business): boolean => {
   if (!isNameRequest(item)) {
     return false
   }
-  if (status(item) === NrDisplayStates.APPROVED) {
+  if (businessStatus(item) === NrDisplayStates.APPROVED) {
     const nrRequestActionCd = item.nameRequest?.requestActionCd
     if (nrRequestActionCd) {
       handleApprovedNameRequest(item, nrRequestActionCd)
@@ -501,7 +466,7 @@ const handleNameRequestRedirect = (item: Business): boolean => {
 }
 
 /** Remove Accepted affiliation invitations from business. */
-// const removeAcceptedAffiliationInvitations = (business: Business) => {
+// const removeAcceptedAffiliationInvitations = (business: Business) => { // TODO: implement after adding affiliation invitations
 //   const invitations = business.affiliationInvites || []
 //   for (const affiliationInvitation of invitations) {
 //     if (affiliationInvitation.status === AffiliationInvitationStatus.Accepted) {
@@ -514,7 +479,7 @@ const handleBusinessRedirect = (item: Business): boolean => {
   if (isNameRequest(item)) {
     return false
   }
-  // if (isModernizedEntity(item)) {
+  // if (isModernizedEntity(item)) { // TODO: implement after adding launch darkly
   //   // removeAcceptedAffiliationInvitations(item)
   //   goToDashboard(item.businessIdentifier)
   //   return true
@@ -573,29 +538,77 @@ const action = (item: Business) => {
 }
 
 // const showAmalgamateShortForm = (item: Business): boolean => {
-//   // reserve for changes in the future
-//   return false
-// }
+const showAmalgamateShortForm = (): boolean => {
+  // reserve for changes in the future
+  return false
+}
 
 // This is called when an affiliation invitation request already exists.
-// const openNewAffiliationInvite = (business: Business) => {
+// const openNewAffiliationInvite = (business: Business) => { // TODO: implement after adding affiliation invitations
 //   businessStore.setRemoveExistingAffiliationInvitation(true)
 //   context.emit('show-manage-business-dialog', business)
 // }
 
-// const showOpenButton = (item: Business): boolean => {
-//   return isNameRequest(item) &&
-//       ![NrDisplayStates.HOLD,
-//         NrDisplayStates.EXPIRED,
-//         NrDisplayStates.PROCESSING,
-//         NrDisplayStates.DRAFT].includes(status(item) as NrDisplayStates)
-// }
+const showOpenButton = (item: Business): boolean => {
+  return isNameRequest(item) &&
+      ![NrDisplayStates.HOLD,
+        NrDisplayStates.EXPIRED,
+        NrDisplayStates.PROCESSING,
+        NrDisplayStates.DRAFT].includes(businessStatus(item) as NrDisplayStates)
+}
 
-// const showAffiliationInvitationCancelRequestButton = (item: Business): boolean => {
+// const showAffiliationInvitationCancelRequestButton = (item: Business): boolean => { // TODO: implement after adding affiliation invitations
 //   return item.affiliationInvites?.length > 0 &&
 //         item.affiliationInvites[0].status !== AffiliationInvitationStatus.Accepted &&
 //           item.affiliationInvites[0].type === AffiliationInvitationType.EMAIL
 // }
+
+const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
+  const options = []
+  // if (showAffiliationInvitationNewRequestButton(item)) { // TODO: add affiliation invitations
+  //   // do stuff click: () => openNewAffiliationInvite(props.item)
+  // }
+
+  if (showOpenButton(props.item)) {
+    options.push({
+      label: 'Open Name Request',
+      click: () => goToNameRequest(props.item.nameRequest),
+      icon: 'i-mdi-format-list-bulleted-square'
+    })
+  }
+
+  if (showRemoveButton(props.item)) {
+    if (isTemporaryBusiness(props.item)) {
+      options.push({
+        label: 'Delete ' + tempDescription(props.item),
+        click: () => removeAffiliationOrInvitation(props.item),
+        icon: 'i-mdi-delete-forever'
+      })
+    // } else if (showAffiliationInvitationCancelRequestButton(props.item)) { // TODO: add affiliation invitation option
+    //   options.push({
+    //     label: 'Cancel Request',
+    //     click: () => removeAffiliationOrInvitation(props.item),
+    //     icon: 'i-mdi-window-close'
+    //   })
+    } else {
+      options.push({
+        label: 'Remove From Table',
+        click: () => removeAffiliationOrInvitation(props.item),
+        icon: 'i-mdi-delete'
+      })
+    }
+  }
+
+  if (showAmalgamateShortForm()) { // TODO: implement after adding affiliation invitations showAmalgamation short form, add click funciton to option
+    options.push({
+      label: 'Amalgamate Now (Short Form)',
+      click: () => console.log('amalgamate now short form clicked'),
+      icon: 'i-mdi-checkbox-multiple-blank-outline'
+    })
+  }
+
+  return [options]
+})
 </script>
 <template>
   <div
@@ -613,7 +626,23 @@ const action = (item: Business) => {
           @click="action(item)"
         />
       </UTooltip>
-      <UDropdown v-slot="{ open }" :items="[{ label: 'test' }]">
+      <UDropdown
+        v-slot="{ open }"
+        :items="moreActionsDropdownOptions"
+        :ui="{
+          width: 'min-w-fit',
+          item: {
+            base: 'group flex items-center gap-2 w-full',
+            disabled: 'cursor-default opacity-100 font-semibold',
+            inactive: 'text-blue-500 dark:text-gray-200',
+            icon: {
+              base: 'flex-shrink-0 size-5',
+              active: 'text-blue-500 dark:text-gray-400',
+              inactive: 'text-blue-500'
+            },
+          }
+        }"
+      >
         <UButton class="border-l border-gray-300">
           <UIcon
             name="i-mdi-caret-down"
@@ -623,104 +652,5 @@ const action = (item: Business) => {
         </UButton>
       </UDropdown>
     </UButtonGroup>
-    <!-- <span> -->
-    <!-- <v-tooltip
-        top
-        content-class="top-tooltip"
-        :disabled="disableTooltip(item)"
-      >
-        <template #activator="{on}">
-          <v-btn
-            small
-            color="primary"
-            min-width="5rem"
-            min-height="2rem"
-            class="open-action-btn"
-            v-on="on"
-            @click="action(item)"
-          >
-            {{ getPrimaryAction(item) }}
-            <v-icon
-              v-if="isOpenExternal(item)"
-              class="external-icon pl-1"
-              small
-            >mdi-open-in-new</v-icon>
-          </v-btn>
-        </template>
-        <span>Go to {{ getTooltipTargetDescription(item) }} to access this business</span>
-      </v-tooltip> -->
-    <!-- More Actions Menu -->
-    <!-- <span class="more-actions">
-        <v-menu
-          v-model="actionDropdown[index]"
-          :attach="`#action-menu-${index}`"
-        >
-          <template #activator="{ on }">
-            <v-btn
-              small
-              color="primary"
-              min-height="2rem"
-              class="more-actions-btn"
-              v-on="on"
-            >
-              <v-icon>{{ actionDropdown[index] ? 'mdi-menu-up' : 'mdi-menu-down' }}</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-if="showAffiliationInvitationNewRequestButton(item)"
-              class="actions-dropdown_item my-1"
-              @click="openNewAffiliationInvite(item)"
-            >
-              <v-list-item-subtitle>
-                <v-icon small>mdi-refresh</v-icon>
-                <span class="pl-1">New Request</span>
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item
-              v-if="showOpenButton(item)"
-              class="actions-dropdown_item my-1"
-              data-test="use-name-request-button"
-              @click="goToNameRequest(item.nameRequest)"
-            >
-              <v-list-item-subtitle>
-                <v-icon small>mdi-format-list-bulleted-square</v-icon>
-                <span class="pl-1">Open Name Request</span>
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item
-              v-if="showRemoveButton(item)"
-              v-can:REMOVE_BUSINESS.disable
-              class="actions-dropdown_item my-1"
-              data-test="remove-button"
-              @click="removeAffiliationOrInvitation(item)"
-            >
-              <v-list-item-subtitle v-if="isTemporaryBusiness(item)">
-                <v-icon small>mdi-delete-forever</v-icon>
-                <span class="pl-1">Delete {{ tempDescription(item) }}</span>
-              </v-list-item-subtitle>
-              <v-list-item-subtitle v-else-if="showAffiliationInvitationCancelRequestButton(item)">
-                <v-icon small>mdi-window-close</v-icon>
-                <span class="pl-1">Cancel Request</span>
-              </v-list-item-subtitle>
-              <v-list-item-subtitle v-else>
-                <v-icon small>mdi-delete</v-icon>
-                <span class="pl-1">Remove From Table</span>
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item
-              v-if="showAmalgamateShortForm(item)"
-              class="actions-dropdown_item my-1"
-              data-test="use-name-request-button"
-            >
-              <v-list-item-subtitle>
-                <v-icon small>mdi-checkbox-multiple-blank-outline</v-icon>
-                <span class="pl-1">Amalgamate Now (Short Form)</span>
-              </v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </span> -->
-    <!-- </span> -->
   </div>
 </template>
