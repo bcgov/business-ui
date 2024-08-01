@@ -46,20 +46,11 @@ const selectedColumns = ref([])
 
 const {
 // loadAffiliations,
-  affiliations,
+  affiliations
   // entityCount,
   // clearAllFilters,
   // getHeaders, headers,
-  type,
-  // status,
   // updateFilter,
-  typeDescription,
-  isNameRequest,
-  nameRequestType,
-  number,
-  name
-// canUseNameRequest,
-// isTemporaryBusiness
 } = useAffiliations()
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
@@ -358,6 +349,25 @@ const selectedStates = ref([])
         <!-- business identifier table cell -->
         <template #identifier-data="{ row }">
           <span>{{ number(row) }}</span>
+        </template>
+
+        <!-- business status table cell -->
+        <template #state-data="{ row }">
+          <span>{{ status(row) }}</span>
+          <!-- <EntityDetails
+            v-if="isExpired(row) ||
+              isFrozed(row) ||
+              isBadstanding(row) ||
+              isDissolution(row) "
+            icon="mdi-alert"
+            :showAlertHeader="true"
+            :details="getDetails(row)"
+          />
+          <EntityDetails
+            v-if="isProcessing(status(row))"
+            icon="mdi-information-outline"
+            :details="[EntityAlertTypes.PROCESSING]"
+          /> -->
         </template>
 
         <!-- business legal type table cell  -->

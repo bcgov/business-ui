@@ -38,6 +38,7 @@ export interface Business {
     adminFreeze?: boolean
     inDissolution?: boolean
     affiliationInvites?: AffiliationInviteInfo[]
+    dissolved?: boolean
 }
 
 export interface BusinessSearchResultDto {
