@@ -351,25 +351,6 @@ const selectedStates = ref([])
           <span>{{ number(row) }}</span>
         </template>
 
-        <!-- business status table cell -->
-        <template #state-data="{ row }">
-          <span>{{ status(row) }}</span>
-          <!-- <EntityDetails
-            v-if="isExpired(row) ||
-              isFrozed(row) ||
-              isBadstanding(row) ||
-              isDissolution(row) "
-            icon="mdi-alert"
-            :showAlertHeader="true"
-            :details="getDetails(row)"
-          />
-          <EntityDetails
-            v-if="isProcessing(status(row))"
-            icon="mdi-information-outline"
-            :details="[EntityAlertTypes.PROCESSING]"
-          /> -->
-        </template>
-
         <!-- business legal type table cell  -->
         <template #legalType-data="{ row }">
           <div class="inline-block font-semibold text-gray-900">
@@ -384,6 +365,37 @@ const selectedStates = ref([])
           </div>
           <div>{{ typeDescription(row) }}</div>
         </template>
+
+        <!-- business status table cell -->
+        <template #state-data="{ row }">
+          <span class="inline-flex gap-1">
+            {{ status(row) }}
+            <TableAffiliatedEntityStatusDetails
+              v-if="getDetails(row).length > 0"
+              icon="i-mdi-alert"
+              :details="getDetails(row)"
+            />
+            <TableAffiliatedEntityStatusDetails
+              v-if="isProcessing(status(row))"
+              icon="i-mdi-information-outline"
+              :details="[EntityAlertTypes.PROCESSING]"
+            />
+          </span>
+        </template>
+
+        <!-- actions table cell -->
+        <!-- <template #item-slot-Actions="{ item, index }">
+          <AffiliationAction
+            :item="item"
+            :index="index"
+            @unknown-error="$emit('unknown-error', $event)"
+            @remove-affiliation-invitation="$emit('remove-affiliation-invitation', $event)"
+            @remove-business="$emit('remove-business', $event)"
+            @business-unavailable-error="$emit('business-unavailable-error', $event)"
+            @resend-affiliation-invitation="$emit('resend-affiliation-invitation', $event)"
+            @show-manage-business-dialog="$emit('show-manage-business-dialog', $event)"
+          />
+        </template> -->
         <!-- end table cell slots -->
       </UTable>
     </SbcPageSectionCard>
