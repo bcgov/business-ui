@@ -12,7 +12,7 @@ export const getAffiliationInvitationStatus = (affiliationInviteInfos: Affiliati
   }
 }
 
-function getElementWithSmallestId<Type extends {id:number}> (arrayToSearch: Type[]): Type | undefined {
+export function getElementWithSmallestId<Type extends {id:number}> (arrayToSearch: Type[]): Type | undefined {
   if (arrayToSearch.length === 0) {
     return undefined
   }
