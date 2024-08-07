@@ -64,3 +64,13 @@ export function buildNameRequestObject (nr: NameRequestResponse) {
     corpNum: nr.corpNum
   }
 }
+
+/* returns true if given name is approved */
+export const isApprovedName = (name: Names): boolean => {
+  return (name.state === NrState.APPROVED)
+}
+
+/* returns true if the given name request is rejected */
+export const isRejectedName = (name: Names): boolean => {
+  return (name.state === NrState.REJECTED)
+}

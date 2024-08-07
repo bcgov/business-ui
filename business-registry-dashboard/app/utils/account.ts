@@ -1,3 +1,5 @@
+// TODO: add this as store method in core layer
+
 /**
  * Checks if the given account ID matches the ID of the current account in the store.
  *

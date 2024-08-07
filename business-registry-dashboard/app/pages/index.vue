@@ -367,7 +367,7 @@ const selectedStates = ref([])
         <!-- business status table cell -->
         <template #state-data="{ row }">
           <span class="inline-flex gap-1">
-            {{ businessStatus(row) }}
+            {{ affiliationStatus(row) }}
             <!-- TODO: add aria describedby to text with tooltip info -->
             <TableAffiliatedEntityStatusDetails
               v-if="getDetails(row).length > 0"
@@ -375,7 +375,7 @@ const selectedStates = ref([])
               :details="getDetails(row)"
             />
             <TableAffiliatedEntityStatusDetails
-              v-if="isProcessing(businessStatus(row))"
+              v-if="isProcessing(affiliationStatus(row))"
               icon="i-mdi-information-outline"
               :details="[EntityAlertTypes.PROCESSING]"
             />

@@ -18,70 +18,8 @@ const emit = defineEmits(['show-manage-business-dialog', 'unknown-error', 'remov
   'remove-business', 'business-unavailable-error', 'resend-affiliation-invitation'])
 
 const { affiliations } = useAffiliations()
-const webUrl = getWebUrl()
+const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
-const currentAccountId = computed(() => accountStore.currentAccount.id)
-
-function addToSession (key:string, value:any) {
-  sessionStorage.setItem(key, value)
-}
-
-function setNrCredentials (nameRequest: NameRequest) {
-  // Set name request applicant info to retrieve on redirect
-  if (nameRequest.nrNumber && nameRequest.applicantEmail && nameRequest.applicantPhone) {
-    sessionStorage.setItem('BCREG-nrNum', nameRequest.nrNumber)
-    sessionStorage.setItem('BCREG-emailAddress', nameRequest.applicantEmail)
-    sessionStorage.setItem('BCREG-phoneNumber', nameRequest.applicantPhone)
-  }
-}
-
-/** Navigation handler for entities dashboard. */
-const goToDashboard = (businessIdentifier: string) => {
-  addToSession(SessionStorageKeys.BusinessIdentifierKey, businessIdentifier)
-  const redirectURL = `${webUrl.getBusinessURL()}${businessIdentifier}?accountid=${currentAccountId.value}`
-  return navigateTo(decodeURIComponent(redirectURL), { external: true })
-}
-
-/** Navigation handler for Name Request application. */
-const goToNameRequest = (nameRequest: NameRequest | undefined) => {
-  if (nameRequest) {
-    setNrCredentials(nameRequest)
-    return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`), { external: true })
-  } else {
-    console.log('handle no name request case')
-  }
-}
-
-/** Navigation handler for Corporate Online application */
-const goToCorpOnline = () => {
-  const redirectURL = `${webUrl.getCorporateOnlineUrl()}?accountid=${currentAccountId.value}`
-  return navigateTo(redirectURL, { open: { target: '_blank' } })
-}
-
-const goToFormPage = (entityType: CorpTypes) => {
-  let formUrl = ''
-  switch (entityType) {
-    case CorpTypes.LL_PARTNERSHIP:
-      formUrl = webUrl.getLLPFormsUrl()
-      break
-    case CorpTypes.LIM_PARTNERSHIP:
-      formUrl = webUrl.getLPFormsUrl()
-      break
-    case CorpTypes.XPRO_LIM_PARTNR:
-      formUrl = webUrl.getXLPFormsUrl()
-      break
-    default:
-      formUrl = webUrl.getCorpFormsUrl()
-      break
-  }
-  return navigateTo(formUrl, { open: { target: '_blank' } })
-}
-
-/** Navigation handler for Societies Online */
-const goToSocieties = () => {
-  const redirectURL = `${webUrl.getSocietiesUrl()}?accountid=${currentAccountId.value}`
-  return navigateTo(redirectURL, { open: { target: '_blank' } })
-}
 
 /** Create a business record in LEAR. */ // TODO: implement
 // const createBusinessRecord = async (business: Business): Promise<string> => {
@@ -121,20 +59,6 @@ const goToSocieties = () => {
 //   }
 //   return filingResponse.data.filing.business.identifier
 // }
-
-const isOtherEntities = (item: Business): boolean => {
-  return [CorpTypes.FINANCIAL, CorpTypes.PRIVATE_ACT, CorpTypes.PARISHES,
-    CorpTypes.LL_PARTNERSHIP, CorpTypes.LIM_PARTNERSHIP, CorpTypes.XPRO_LIM_PARTNR].includes(getEntityType(item))
-}
-
-const isForRestore = (item: Business): boolean => {
-  return [CorpTypes.BC_COMPANY, CorpTypes.BC_CCC, CorpTypes.BC_ULC_COMPANY,
-    CorpTypes.COOP, CorpTypes.BENEFIT_COMPANY].includes(getEntityType(item))
-}
-
-const isSocieties = (item: Business): boolean => {
-  return [CorpTypes.CONT_IN_SOCIETY, CorpTypes.SOCIETY, CorpTypes.XPRO_SOCIETY].includes(getEntityType(item))
-}
 
 // TODO: add launch darkly
 // const isModernizedEntity = (item: Business): boolean => {
@@ -180,7 +104,7 @@ const isOpenExternal = (item: Business): boolean => {
   }
 
   if (isNameRequest(item)) {
-    const nrState = businessStatus(item)
+    const nrState = affiliationStatus(item)
     if (nrState !== NrDisplayStates.APPROVED) {
       return false
     }
@@ -208,40 +132,6 @@ const isOpenExternal = (item: Business): boolean => {
 
   // check for business
   // return !isModernizedEntity(item) // TODO: add launch darkly
-}
-
-const goToRegister = (item: Business) => {
-  // if (isModernizedEntity(item)) { // TODO: implement after adding affiliation invitations after adding launch darkly
-  //   const businessIdentifier = await createBusinessRecord(item)
-  //   goToDashboard(businessIdentifier)
-  // } else if (isSocieties(item)) {
-  if (isSocieties(item)) {
-    goToSocieties()
-  } else if (isOtherEntities(item)) {
-    goToFormPage(getEntityType(item))
-  } else {
-    goToCorpOnline()
-  }
-}
-
-// const goToAmalgamate = async (item: Business) => {
-const goToAmalgamate = () => { // TODO: implement after adding affiliation invitations after adding launch darkly
-  // if (isSupportedAmalgamationEntities(item)) {
-  //   const businessIdentifier = await createBusinessRecord(item)
-  //   goToDashboard(businessIdentifier)
-  // } else {
-  goToCorpOnline()
-  // }
-}
-
-// const goToContinuationIn = async (item: Business): Promise<void> => {
-const goToContinuationIn = () => { // TODO: implement after adding affiliation invitations after adding launch darkly
-  // if (isSupportedContinuationInEntities(item)) {
-  //   const businessIdentifier = await createBusinessRecord(item)
-  //   goToDashboard(businessIdentifier)
-  // } else {
-  goToCorpOnline()
-  // }
 }
 
 const getTooltipTargetDescription = (item: Business): string => {
@@ -277,6 +167,7 @@ const removeAffiliationOrInvitation = (business: Business) => {
   //     return
   //   }
   // }
+  console.log('removeAffiliationOrInvitation')
   emit('remove-business', {
     orgIdentifier: accountStore.currentAccount.id,
     business
@@ -345,7 +236,7 @@ const getPrimaryActionLabel = (item: Business): string => {
     return 'Resume Draft'
   }
   if (isNameRequest(item)) {
-    const nrStatus = businessStatus(item)
+    const nrStatus = affiliationStatus(item)
     switch (nrStatus) {
       case NrDisplayStates.APPROVED:
         return getNrRequestDescription(item)
@@ -364,7 +255,7 @@ const getPrimaryActionLabel = (item: Business): string => {
 const isShowRemoveAsPrimaryAction = (item: Business): boolean => {
   return isNameRequest(item) &&
       [NrDisplayStates.REJECTED, NrDisplayStates.CONSUMED,
-        NrDisplayStates.CANCELLED, NrDisplayStates.REFUND_REQUESTED].includes(businessStatus(item) as NrDisplayStates)
+        NrDisplayStates.CANCELLED, NrDisplayStates.REFUND_REQUESTED].includes(affiliationStatus(item) as NrDisplayStates)
 }
 
 const showRemoveButton = (item: Business): boolean => {
@@ -374,7 +265,7 @@ const showRemoveButton = (item: Business): boolean => {
 
 const handleTemporaryBusinessRedirect = (item: Business): boolean => {
   if (isTemporaryBusiness(item)) {
-    goToDashboard(item.businessIdentifier)
+    affNav.goToDashboard(item.businessIdentifier)
     return true
   }
   return false
@@ -392,7 +283,7 @@ const handleApprovedNameRequestRenew = (item: Business): void => {
   //   goToCorpOnline()
   // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
   if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
-    goToDashboard(item.nameRequest?.corpNum)
+    affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     const action = isForRestore(item) ? 'restore' : 'reinstate'
     emit('business-unavailable-error', action)
@@ -404,7 +295,7 @@ const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: 
   //   goToCorpOnline()
   // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
   if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
-    goToDashboard(item.nameRequest?.corpNum)
+    affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     let action = ''
     if (nrRequestActionCd === NrRequestActionCodes.CONVERSION) {
@@ -420,11 +311,11 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd: NrRequestA
   switch (nrRequestActionCd) {
     case NrRequestActionCodes.AMALGAMATE:
       // goToAmalgamate(item)
-      goToAmalgamate()
+      affNav.goToAmalgamate()
       break
     case NrRequestActionCodes.MOVE: {
       // goToContinuationIn(item)
-      goToContinuationIn()
+      affNav.goToContinuationIn()
       break
     }
     case NrRequestActionCodes.CONVERSION:
@@ -436,12 +327,12 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd: NrRequestA
       handleApprovedNameRequestRenew(item)
       break
     case NrRequestActionCodes.NEW_BUSINESS: {
-      goToRegister(item)
+      affNav.goToRegister(item)
       break
     }
     default:
       if (item.nameRequest) {
-        goToNameRequest(item.nameRequest)
+        affNav.goToNameRequest(item.nameRequest)
       }
       break
   }
@@ -451,7 +342,7 @@ const handleNameRequestRedirect = (item: Business): boolean => {
   if (!isNameRequest(item)) {
     return false
   }
-  if (businessStatus(item) === NrDisplayStates.APPROVED) {
+  if (affiliationStatus(item) === NrDisplayStates.APPROVED) {
     const nrRequestActionCd = item.nameRequest?.requestActionCd
     if (nrRequestActionCd) {
       handleApprovedNameRequest(item, nrRequestActionCd)
@@ -459,7 +350,7 @@ const handleNameRequestRedirect = (item: Business): boolean => {
     return true
   } else {
     if (item.nameRequest) {
-      goToNameRequest(item.nameRequest)
+      affNav.goToNameRequest(item.nameRequest)
     }
     return true
   }
@@ -485,10 +376,10 @@ const handleBusinessRedirect = (item: Business): boolean => {
   //   return true
   // } else if (isSocieties(item)) {
   if (isSocieties(item)) {
-    goToSocieties()
+    affNav.goToSocieties()
     return true
   } else {
-    goToCorpOnline()
+    affNav.goToCorpOnline()
     return true
   }
 }
@@ -534,7 +425,7 @@ const action = (item: Business): void => {
 
   if (isShowRemoveAsPrimaryAction(item)) {
     console.log('action clicked, show remove as primary action')
-  //   removeAffiliationOrInvitation(item)
+    removeAffiliationOrInvitation(item)
   } else {
     console.log('action clicked: redirect')
     redirect(item)
@@ -558,7 +449,7 @@ const showOpenButton = (item: Business): boolean => {
       ![NrDisplayStates.HOLD,
         NrDisplayStates.EXPIRED,
         NrDisplayStates.PROCESSING,
-        NrDisplayStates.DRAFT].includes(businessStatus(item) as NrDisplayStates)
+        NrDisplayStates.DRAFT].includes(affiliationStatus(item) as NrDisplayStates)
 }
 
 // const showAffiliationInvitationCancelRequestButton = (item: Business): boolean => { // TODO: implement after adding affiliation invitations
@@ -576,7 +467,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   if (showOpenButton(props.item)) {
     options.push({
       label: 'Open Name Request',
-      click: () => goToNameRequest(props.item.nameRequest),
+      click: () => affNav.goToNameRequest(props.item.nameRequest),
       icon: 'i-mdi-format-list-bulleted-square'
     })
   }

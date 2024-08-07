@@ -1,8 +1,61 @@
+/* returns the affiliation invitation status */
 import {
   CorpTypeCd,
   GetCorpFullDescription,
   GetCorpNumberedDescription
 } from '@bcrs-shared-components/corp-type-module'
+
+export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
+  if (affiliationInviteInfos[0]?.status) {
+    return affiliationInviteInfos[0].status
+  } else {
+    return 'N/A'
+  }
+}
+
+function getElementWithSmallestId<Type extends {id:number}> (arrayToSearch: Type[]): Type | undefined {
+  if (arrayToSearch.length === 0) {
+    return undefined
+  }
+  return arrayToSearch.reduce((currentMin, curr) => (currentMin.id <= curr.id ? currentMin : curr))
+}
+
+export const getRequestForAuthorizationStatusText = (affiliationInviteInfos: AffiliationInviteInfo[]) => {
+  const affiliationWithSmallestId = getElementWithSmallestId<AffiliationInviteInfo>(affiliationInviteInfos) ?? false
+  if (affiliationWithSmallestId &&
+    affiliationWithSmallestId.toOrg &&
+    affiliationWithSmallestId.toOrg.id &&
+    isCurrentOrganization(affiliationWithSmallestId.toOrg?.id)) {
+    // incoming request for access
+    const andOtherAccounts = affiliationInviteInfos.length > 1 ? ` and ${affiliationInviteInfos.length - 1} other account(s)` : ''
+    return `Request for Authorization to manage from: <strong>${affiliationWithSmallestId.fromOrg.name}${andOtherAccounts}</strong>`
+  } else {
+    let statusText = ''
+    if (affiliationWithSmallestId && affiliationWithSmallestId.status) {
+      // outgoing request for access
+      switch (affiliationWithSmallestId.status) {
+        case AffiliationInvitationStatus.Pending:
+          statusText = affiliationWithSmallestId.type === AffiliationInvitationType.REQUEST
+            ? 'Request'
+            : 'Confirmation Email'
+          statusText += ' sent, pending authorization.'
+          break
+        case AffiliationInvitationStatus.Accepted:
+          statusText = '<strong>Authorized</strong> - you can now manage this business.'
+          break
+        case AffiliationInvitationStatus.Failed:
+          statusText = '<strong>Not Authorized</strong>. Your request to manage this business has been declined.'
+          break
+        case AffiliationInvitationStatus.Expired:
+          statusText = 'Not authorized. The <strong>confirmation email has expired.</strong>'
+          break
+        default:
+          break
+      }
+    }
+    return `Authorization to manage: ${statusText}`
+  }
+}
 
 /** Returns the temp business description. */
 export const tempDescription = (business: Business): string => {
@@ -45,7 +98,7 @@ export const type = (business: Business): string => {
 }
 
 /** Returns the status of the affiliation. */
-export const businessStatus = (business: Business): string => {
+export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     return BusinessState.DRAFT
   }
@@ -81,7 +134,7 @@ export const businessStatus = (business: Business): string => {
 /** Draft IA with Expired NR */
 export const isExpired = (item: Business): boolean => {
   if (item.nameRequest?.expirationDate) {
-    return isDraft(businessStatus(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
+    return isDraft(affiliationStatus(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
     (new Date(item.nameRequest.expirationDate) < new Date())) && isIA(type(item))
   } else {
     return false
@@ -116,14 +169,6 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
     details.push(EntityAlertTypes.DISSOLUTION)
   }
   return details
-}
-
-export const isRejectedName = (name: Names): boolean => {
-  return (name.state === NrState.REJECTED)
-}
-
-export const isApprovedName = (name: Names): boolean => {
-  return (name.state === NrState.APPROVED)
 }
 
 export const isDraft = (state: string): boolean => {
