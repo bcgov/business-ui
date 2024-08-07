@@ -38,15 +38,15 @@ function setNrCredentials (nameRequest: NameRequest) {
 /** Navigation handler for entities dashboard. */
 const goToDashboard = (businessIdentifier: string) => {
   addToSession(SessionStorageKeys.BusinessIdentifierKey, businessIdentifier)
-  const redirectURL = `${webUrl.getBusinessURL()}${businessIdentifier}?ACCOUNT_ID=${currentAccountId}`
-  return navigateTo(decodeURIComponent(redirectURL))
+  const redirectURL = `${webUrl.getBusinessURL()}${businessIdentifier}?accountid=${currentAccountId.value}`
+  return navigateTo(decodeURIComponent(redirectURL), { external: true })
 }
 
 /** Navigation handler for Name Request application. */
 const goToNameRequest = (nameRequest: NameRequest | undefined) => {
   if (nameRequest) {
     setNrCredentials(nameRequest)
-    return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`))
+    return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`), { external: true })
   } else {
     console.log('handle no name request case')
   }
@@ -54,7 +54,7 @@ const goToNameRequest = (nameRequest: NameRequest | undefined) => {
 
 /** Navigation handler for Corporate Online application */
 const goToCorpOnline = () => {
-  const redirectURL = `${webUrl.getCorporateOnlineUrl()}?ACCOUNT_ID=${currentAccountId}`
+  const redirectURL = `${webUrl.getCorporateOnlineUrl()}?accountid=${currentAccountId.value}`
   return navigateTo(redirectURL, { open: { target: '_blank' } })
 }
 
@@ -79,7 +79,7 @@ const goToFormPage = (entityType: CorpTypes) => {
 
 /** Navigation handler for Societies Online */
 const goToSocieties = () => {
-  const redirectURL = `${webUrl.getSocietiesUrl()}?ACCOUNT_ID=${currentAccountId}`
+  const redirectURL = `${webUrl.getSocietiesUrl()}?accountid=${currentAccountId.value}`
   return navigateTo(redirectURL, { open: { target: '_blank' } })
 }
 
@@ -319,7 +319,7 @@ const getNrRequestDescription = (item: Business): string => {
 }
 
 // Actions
-const getPrimaryAction = (item: Business): string => {
+const getPrimaryActionLabel = (item: Business): string => {
   // const affiliationInviteInfo = item?.affiliationInvites?.[0] // TODO: add invitation invite options
   // if ([AffiliationInvitationStatus.Pending,
   //   AffiliationInvitationStatus.Expired,
@@ -495,16 +495,19 @@ const handleBusinessRedirect = (item: Business): boolean => {
 
 const redirect = (item: Business) => {
   if (handleTemporaryBusinessRedirect(item)) {
+    console.log('handleTemporaryBusinessRedirect(')
     return
   }
   if (handleNameRequestRedirect(item)) {
+    console.log('handleNameRequestRedirect')
     return
   }
+  console.log('handleBusinessRedirect')
   handleBusinessRedirect(item)
 }
 
 // const action = (item: Business): Promise<void> => {
-const action = (item: Business) => {
+const action = (item: Business): void => {
   // const affiliationInviteInfo = item?.affiliationInvites?.[0]
   // if ([AffiliationInvitationStatus.Pending,
   //   AffiliationInvitationStatus.Expired,
@@ -530,11 +533,12 @@ const action = (item: Business) => {
   // }
 
   if (isShowRemoveAsPrimaryAction(item)) {
+    console.log('action clicked, show remove as primary action')
   //   removeAffiliationOrInvitation(item)
-  // } else {
+  } else {
+    console.log('action clicked: redirect')
     redirect(item)
   }
-  console.log('action clicked')
 }
 
 // const showAmalgamateShortForm = (item: Business): boolean => {
@@ -622,7 +626,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
         :popper="{ arrow: true }"
       >
         <UButton
-          :label="getPrimaryAction(item)"
+          :label="getPrimaryActionLabel(item)"
           @click="action(item)"
         />
       </UTooltip>

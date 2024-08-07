@@ -54,7 +54,7 @@ export const useAffiliations = () => {
     const authApiUrl = useRuntimeConfig().public.authApiURL
     resetAffiliations()
     try {
-      if (!accountStore.currentAccount.id) { return }
+      if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
       const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
         headers: {
           Authorization: `Bearer ${$keycloak.token}`
