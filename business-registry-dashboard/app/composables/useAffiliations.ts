@@ -127,7 +127,6 @@ export const useAffiliations = () => {
 
   return {
     getAffiliatedEntities,
-    // entityCount,
     affiliations,
     isBusinessAffiliated
     // clearAllFilters,
