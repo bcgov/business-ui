@@ -1,3 +1,19 @@
+import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-components/enums'
+
+/** use NR request action code to get NR type from enum */
+export function mapRequestActionCdToNrType (requestActionCd: NrRequestActionCodes): string {
+  // Can add other NrRequestActionCodes here to use the action code instead of the NrRequestTypeCd.
+  // Must ensure that the action code does not have several potential types
+  // Example: the NEW action code can be for Incorporation or Registration, so we cannot use it for the NR type
+  if (requestActionCd === NrRequestActionCodes.AMALGAMATE) { return 'Amalgamation' }
+  return ''
+}
+
+/** use NR request type code to get NR type from enum */
+export function mapRequestTypeCdToNrType (requestTypeCd: NrRequestTypeCodes): string {
+  return NrRequestTypeStrings[requestTypeCd] as string // TODO: fix ts error
+}
+
 // TODO: add launch darkly
 /* Internal function to build the namerequest object. */
 export function buildNameRequestObject (nr: NameRequestResponse) {
@@ -73,4 +89,9 @@ export const isApprovedName = (name: Names): boolean => {
 /* returns true if the given name request is rejected */
 export const isRejectedName = (name: Names): boolean => {
   return (name.state === NrState.REJECTED)
+}
+
+/** Returns true if the affiliation is a Name Request. */
+export const isNameRequest = (business: Business): boolean => {
+  return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
 }

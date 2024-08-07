@@ -352,7 +352,7 @@ const selectedStates = ref([])
         <!-- business legal type table cell  -->
         <template #legalType-data="{ row }">
           <div class="inline-block font-semibold text-gray-900">
-            {{ type(row) }}
+            {{ affiliationType(row) }}
           </div>
           <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
           <div

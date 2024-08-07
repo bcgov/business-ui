@@ -1,4 +1,3 @@
-/* returns the affiliation invitation status */
 import {
   CorpTypeCd,
   GetCorpFullDescription,
@@ -71,11 +70,6 @@ export const tempDescription = (business: Business): string => {
   }
 }
 
-/** Returns true if the affiliation is a Name Request. */
-export const isNameRequest = (business: Business): boolean => {
-  return (business.corpType?.code === CorpTypes.NAME_REQUEST && !!business.nameRequest)
-}
-
 /** Returns true if the affiliation is a temporary business. */
 export const isTemporaryBusiness = (business: Business): boolean => {
   return (
@@ -86,7 +80,7 @@ export const isTemporaryBusiness = (business: Business): boolean => {
 }
 
 /** Returns the type of the affiliation. */
-export const type = (business: Business): string => {
+export const affiliationType = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     return tempDescription(business)
   }
@@ -135,7 +129,7 @@ export const affiliationStatus = (business: Business): string => {
 export const isExpired = (item: Business): boolean => {
   if (item.nameRequest?.expirationDate) {
     return isDraft(affiliationStatus(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
-    (new Date(item.nameRequest.expirationDate) < new Date())) && isIA(type(item))
+    (new Date(item.nameRequest.expirationDate) < new Date())) && isIA(affiliationType(item))
   } else {
     return false
   }

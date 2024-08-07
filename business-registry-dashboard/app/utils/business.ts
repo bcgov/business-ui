@@ -72,3 +72,31 @@ export function isForRestore (item: Business): boolean {
 export function isSocieties (item: Business): boolean {
   return [CorpTypes.CONT_IN_SOCIETY, CorpTypes.SOCIETY, CorpTypes.XPRO_SOCIETY].includes(getEntityType(item))
 }
+
+// TODO: add launch darkly
+// const isModernizedEntity = (item: Business): boolean => {
+//   const entityType = getEntityType(item)
+//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
+//   return supportedEntityFlags.includes(entityType)
+// }
+
+// TODO: add launch darkly
+// const isSupportedAmalgamationEntities = (item: Business): boolean => {
+//   const entityType = getEntityType(item)
+//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
+//   return supportedEntityFlags.includes(entityType)
+// }
+
+// TODO: add launch darkly
+// const isSupportedContinuationInEntities = (item: Business): boolean => {
+//   const entityType = getEntityType(item)
+//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
+//   return supportedEntityFlags.includes(entityType)
+// }
+
+// TODO: add launch darkly
+// const isSupportedRestorationEntities = (item: Business): boolean => {
+//   const entityType = getEntityType(item)
+//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
+//   return supportedEntityFlags.includes(entityType)
+// }
