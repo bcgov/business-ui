@@ -73,14 +73,26 @@ const makeMessages = () => {
 const alertMessages = makeMessages()
 </script>
 <template>
-  <UTooltip :popper="{ arrow: true }">
-    <UIcon
-      :name="icon"
-      :class="alertMessages[0]?.colour"
-      class="size-5"
-    />
-    <template #text>
-      <ul class="flex flex-col gap-1">
+  <div>
+    <UTooltip :popper="{ arrow: true }">
+      <UIcon
+        :name="icon"
+        :class="alertMessages[0]?.colour"
+        class="size-5"
+      />
+      <template #text>
+        <ul class="flex flex-col gap-1">
+          <li
+            v-for="message, i in alertMessages"
+            :key="i"
+          >
+            {{ message.message }}
+          </li>
+        </ul>
+      </template>
+    </UTooltip>
+    <div class="sr-only">
+      <ul>
         <li
           v-for="message, i in alertMessages"
           :key="i"
@@ -88,6 +100,6 @@ const alertMessages = makeMessages()
           {{ message.message }}
         </li>
       </ul>
-    </template>
-  </UTooltip>
+    </div>
+  </div>
 </template>

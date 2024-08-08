@@ -305,7 +305,6 @@ const selectedStates = ref([])
                 />
                 <span v-if="isApprovedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.approved', { name: nrName.name }) }}</span>
                 <span v-if="isRejectedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.rejected', { name: nrName.name }) }}</span>
-                <!-- TODO: figure out why aria-hidden is not working here -->
                 <div
                   class="table-cell pl-2 align-top font-semibold"
                   aria-hidden="true"
