@@ -134,6 +134,14 @@ export default {
     cad: 'CAD',
     usd: 'USD'
   },
+  entityAlertTypes: {
+    FROZEN: 'Cette entreprise est gelée',
+    BAD_STANDING: "Cette entreprise n'est pas en règle",
+    LIQUIDATION: 'Cette entreprise est en liquidation',
+    DISSOLUTION: 'Cette entreprise est en cours de dissolution',
+    PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
+    EXPIRED: "Cette demande d'incorporation n'est plus valide; la demande de dénomination est expirée."
+  },
   labels: {
     note: 'Note',
     optional: 'Optionnel',

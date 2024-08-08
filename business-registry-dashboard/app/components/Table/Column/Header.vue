@@ -2,6 +2,7 @@
 type ClearButtonProps =
   | { show: true; tooltip: string; aria: string }
   | { show: false }
+
 defineProps<{
   label: string
   clearButton: ClearButtonProps

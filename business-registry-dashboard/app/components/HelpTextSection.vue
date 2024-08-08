@@ -8,7 +8,7 @@ const toggleHelpText = () => {
   showHelpText.value = !showHelpText.value
   if (!showHelpText.value) {
     showHelpTextBtnRef.value?.$el.focus()
-    showHelpTextBtnRef.value?.$el.scrollIntoView({ block: 'center' })
+    showHelpTextBtnRef.value?.$el.scrollIntoView({ block: 'center', behaviour: 'smooth' })
   }
 }
 

@@ -134,6 +134,14 @@ export default {
     cad: 'CAD',
     usd: 'USD'
   },
+  entityAlertTypes: {
+    FROZEN: 'This business is frozen',
+    BAD_STANDING: 'This business is not in good standing',
+    LIQUIDATION: 'This business is in liquidation',
+    DISSOLUTION: 'This business is in the process of being dissolved',
+    PROCESSING: 'This name request is still processing, it may take up to 10 minutes.',
+    EXPIRED: 'This incorporation application is no longer valid; the name request is expired.'
+  },
   labels: {
     note: 'Note',
     optional: 'Optional',

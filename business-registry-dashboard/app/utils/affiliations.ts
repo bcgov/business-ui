@@ -91,7 +91,7 @@ export const affiliationType = (business: Business): string => {
   return GetCorpFullDescription(code as CorpTypeCd)
 }
 
-/** Returns the status of the affiliation. */
+/** Returns the status of the affiliation. */ // TODO: add i18n for these states
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     return BusinessState.DRAFT
