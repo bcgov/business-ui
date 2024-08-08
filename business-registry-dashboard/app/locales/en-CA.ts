@@ -290,6 +290,12 @@ export default {
             aria: 'Reset business status'
           }
         }
+      },
+      cell: {
+        name: {
+          approved: 'Name request, {name}, approved',
+          rejected: 'Name request, {name}, rejected'
+        }
       }
     }
   },

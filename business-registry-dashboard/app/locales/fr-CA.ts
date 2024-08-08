@@ -290,6 +290,12 @@ export default {
             aria: "Réinitialiser le statut de l'entreprise"
           }
         }
+      },
+      cell: {
+        name: {
+          approved: 'Demande de nom, {name}, approuvée',
+          rejected: 'Demande de nom, {name}, rejetée'
+        }
       }
     }
   },
