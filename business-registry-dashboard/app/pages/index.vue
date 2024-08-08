@@ -68,22 +68,23 @@ const selectedStates = ref([])
             {{ $t('page.home.intro') }}
           </p>
         </div>
-
-        <div v-if="accountStore.currentAccount.id" class="flex-none">
-          <UTooltip
-            :text="$t('btn.busGetStarted.tooltip')"
-            :popper="{ arrow: true }"
-          >
-            <UButton
-              :label="$t('btn.busGetStarted.label')"
-              variant="outline"
-              icon="i-mdi-domain"
-              size="bcGov"
-              class="w-full"
-              :to="`${nrWebUrl}${accountStore.currentAccount.id.toString()}`"
-            />
-          </UTooltip>
-        </div>
+        <ClientOnly>
+          <div v-if="accountStore.currentAccount.id" class="flex-none">
+            <UTooltip
+              :text="$t('btn.busGetStarted.tooltip')"
+              :popper="{ arrow: true }"
+            >
+              <UButton
+                :label="$t('btn.busGetStarted.label')"
+                variant="outline"
+                icon="i-mdi-domain"
+                size="bcGov"
+                class="w-full"
+                :to="`${nrWebUrl}${accountStore.currentAccount.id.toString()}`"
+              />
+            </UTooltip>
+          </div>
+        </ClientOnly>
       </div>
 
       <HelpTextSection />
@@ -155,7 +156,6 @@ const selectedStates = ref([])
           </UButton>
         </USelectMenu>
       </template>
-
       <!-- affiliations table -->
       <UTable
         :columns
