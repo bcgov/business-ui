@@ -40,28 +40,16 @@ const columns = [
 ]
 
 const config = useRuntimeConfig()
-const authApiUrl = config.public.authApiURL
 const nrWebUrl = config.public.nrURL
-
-const { data: affiliations } = await useAsyncData('affiliations-table', () => {
-  const { $keycloak } = useNuxtApp()
-  return $fetch(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
-    headers: {
-      Authorization: `Bearer ${$keycloak.token}`
-    }
-  })
-}, { server: false, watch: [() => accountStore.currentAccount.id] })
 
 const selectedColumns = ref([])
 
-// const {
-//   loadAffiliations,
-//   // affiliations,
-//   entityCount, clearAllFilters,
-//   getHeaders, headers, type, status, updateFilter, typeDescription,
-//   isNameRequest, nameRequestType, number, name, canUseNameRequest,
-//   isTemporaryBusiness
-// } = useAffiliations()
+const {
+  affiliations
+  // clearAllFilters,
+  // getHeaders, headers,
+  // updateFilter,
+} = useAffiliations()
 
 const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
 const selectedTypes = ref([])
@@ -145,7 +133,7 @@ const selectedStates = ref([])
       />
     </div>
 
-    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations?.entities?.length })">
+    <SbcPageSectionCard :heading="$t('labels.myList', { count: affiliations.count })">
       <!-- columns to show dropdown -->
       <template #header-right>
         <!-- TODO: map dropdown items to come from table columns -->
@@ -172,7 +160,7 @@ const selectedStates = ref([])
       <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
-        :rows="[]"
+        :rows="affiliations.results"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'
@@ -194,12 +182,12 @@ const selectedStates = ref([])
             >
               <template #trailing>
                 <UButton
-                  v-show="q !== ''"
+                  v-show="true"
                   color="gray"
                   variant="link"
                   icon="i-heroicons-x-mark-20-solid"
                   :padded="false"
-                  @click="q = ''"
+                  @click="() => console.log('clear name input clicked')"
                 />
               </template>
             </UInput>
@@ -218,12 +206,12 @@ const selectedStates = ref([])
             >
               <template #trailing>
                 <UButton
-                  v-show="q !== ''"
+                  v-show="true"
                   color="gray"
                   variant="link"
                   icon="i-heroicons-x-mark-20-solid"
                   :padded="false"
-                  @click="q = ''"
+                  @click="() => console.log('clear number input clicked')"
                 />
               </template>
             </UInput>
@@ -304,26 +292,113 @@ const selectedStates = ref([])
         <!-- end table header slots -->
 
         <!-- start table cell slots -->
+        <!-- business name table cell -->
+        <template #legalName-data="{ row }">
+          <span>
+            <b
+              v-if="isNameRequest(row)"
+              class="text-gray-900"
+            >
+              <b
+                v-for="(nrName, i) in row.nameRequest.names"
+                :key="`nrName: ${i}`"
+                class="table pb-1"
+              >
+                <UIcon
+                  v-if="isRejectedName(nrName)"
+                  class="table-cell size-4 pr-1 align-top text-red-500"
+                  name="i-mdi-close"
+                />
+                <UIcon
+                  v-if="isApprovedName(nrName)"
+                  color="green"
+                  class="table-cell size-4 pr-1 align-top text-green-500"
+                  name="i-mdi-check"
+                />
+                <div class="table-cell pl-2 align-top font-semibold">{{ nrName.name }}</div>
+              </b>
+            </b>
+            <b
+              v-else
+              class="font-semibold text-gray-900"
+            >
+              {{ name(row) }}
+            </b>
+          </span>
 
-        <!-- business name column -->
-        <template #name-data="{ row }">
-          <span class="text-bcGovColor-darkGray">{{ row.name }}</span>
+          <!-- TODO: add affiliation invitation status -->
+          <!-- <span
+            id="affiliationInvitesStatus"
+            class="align-top"
+          >
+            <UIcon
+              class="mt-1 pr-1"
+              :class="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'text-red-500' : 'text-blue-500'"
+              :name="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
+                ? 'i-mdi-alert' : 'i-mdi-account-cog'"
+            />
+            <p class="mb-0 text-xs">
+              <span v-html="getRequestForAuthorizationStatusText(row.affiliationInvites)" />
+            </p>
+          </span> -->
         </template>
 
-        <!-- business type column -->
+        <!-- business identifier table cell -->
+        <template #identifier-data="{ row }">
+          <span>{{ number(row) }}</span>
+        </template>
+
+        <!-- business legal type table cell  -->
         <template #legalType-data="{ row }">
-          {{ row.legalType }}
-        <!-- <div class="gray-9 font-weight-bold d-inline-block">
-            {{ type(item) }}
-          </div> -->
-        <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
-        <!-- <div
-            v-if="isNameRequest(item)"
-            class="gray-9 font-weight-bold d-inline-block ml-1"
-          >
-            {{ nameRequestType(item) }}
+          <div class="inline-block font-semibold text-gray-900">
+            {{ affiliationType(row) }}
           </div>
-          <div>{{ typeDescription(item) }}</div> -->
+          <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
+          <div
+            v-if="isNameRequest(row)"
+            class="ml-1 inline-block font-semibold text-gray-900"
+          >
+            {{ nameRequestType(row) }}
+          </div>
+          <div>{{ typeDescription(row) }}</div>
+        </template>
+
+        <!-- business status table cell -->
+        <template #state-data="{ row }">
+          <span class="inline-flex gap-1">
+            {{ affiliationStatus(row) }}
+            <!-- TODO: add aria describedby to text with tooltip info -->
+            <TableAffiliatedEntityStatusDetails
+              v-if="getDetails(row).length > 0"
+              icon="i-mdi-alert"
+              :details="getDetails(row)"
+            />
+            <TableAffiliatedEntityStatusDetails
+              v-if="isProcessing(affiliationStatus(row))"
+              icon="i-mdi-information-outline"
+              :details="[EntityAlertTypes.PROCESSING]"
+            />
+          </span>
+        </template>
+
+        <!-- actions table cell -->
+        <!-- TODO: add events to actions component -->
+        <template #actions-data="{ row, index }">
+          <TableAffiliatedEntityAction
+            :item="row"
+            :index="index"
+          />
+          <!-- <AffiliationAction
+            :item="row"
+            :index="index"
+            @unknown-error="$emit('unknown-error', $event)"
+            @remove-affiliation-invitation="$emit('remove-affiliation-invitation', $event)"
+            @remove-business="$emit('remove-business', $event)"
+            @business-unavailable-error="$emit('business-unavailable-error', $event)"
+            @resend-affiliation-invitation="$emit('resend-affiliation-invitation', $event)"
+            @show-manage-business-dialog="$emit('show-manage-business-dialog', $event)"
+          /> -->
         </template>
         <!-- end table cell slots -->
       </UTable>

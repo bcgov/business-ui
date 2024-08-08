@@ -71,7 +71,15 @@ export default defineNuxtConfig({
       environment: process.env.NUXT_ENVIRONMENT_HEADER || '',
       uiVersion: process.env.npm_package_version,
       ldClientId: process.env.NUXT_LD_CLIENT_ID || '',
-      nrURL: process.env.NUXT_NAME_REQUEST_URL || ''
+      nrURL: process.env.NUXT_NAME_REQUEST_URL || '',
+      oneStopUrl: process.env.NUXT_ONE_STOP_URL,
+      societiesUrl: process.env.NUXT_APP_SOCIETIES_URL,
+      corpFormsUrl: process.env.NUXT_APP_CORP_FORMS_URL,
+      llpFormsUrl: process.env.NUXT_APP_LLP_FORMS_URL,
+      lpFormsUrl: process.env.NUXT_APP_LP_FORMS_URL,
+      xlpFormUrl: process.env.NUXT_APP_XLP_FORMS_URL,
+      businessUrl: process.env.NUXT_DASHBOARD_URL,
+      corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL
     }
   },
 

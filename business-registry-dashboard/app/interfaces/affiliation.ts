@@ -1,5 +1,5 @@
 import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-components/enums'
-import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
+// import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
 
 export interface CreateAffiliationRequestBody {
   businessIdentifier: string
@@ -26,6 +26,15 @@ export interface AffiliationFilter {
   actions?: string
 }
 
+export interface AlternateNames {
+  entityType?: string
+  identifier?: string
+  nameRegisteredDate?: string
+  nameStartDate?: string
+  operatingName?: string
+  name?: string
+}
+
 export interface AffiliationResponse {
   identifier?: string
   draftType?: CorpTypes
@@ -33,7 +42,7 @@ export interface AffiliationResponse {
   businessNumber?: string
   name?: string
   legalName?: string
-  alternateNames?: AlternateNameIF[]
+  alternateNames?: AlternateNames[]
   contacts?: Contact[]
   corpType?: CorpType
   corpSubType?: CorpType
@@ -56,8 +65,8 @@ export interface NameRequestResponse {
   id?: number
   legalType: CorpTypes
   state?: string
-  applicantEmail?: string
-  applicantPhone?: string
+  applicantEmail?: string | null
+  applicantPhone?: string | null
   enableIncorporation?: boolean
   folioNumber?: string
   target?: NrTargetTypes
@@ -92,7 +101,7 @@ export interface AffiliationState {
   }
   loading: boolean
   results: Business[]
-  totalResults: number
+  count: number
 }
 
 export interface AffiliationInviteInfo {
