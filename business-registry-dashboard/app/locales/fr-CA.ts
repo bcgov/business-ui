@@ -99,24 +99,6 @@ export default {
       show: 'Afficher les informations',
       hide: 'Masquer les informations'
     },
-    filterLegalType: {
-      aria: 'Filtrer par type juridique, {count} sélectionnés',
-      placeholder: 'Taper',
-      selected: '{count} sélectionnés',
-      clear: {
-        tooltip: 'Effacer les Types',
-        aria: 'Réinitialiser les types légaux'
-      }
-    },
-    filterBusStates: {
-      aria: "Filtrer par statut d'entreprise, {count} sélectionnés",
-      placeholder: 'Statut',
-      selected: '{count} sélectionnés',
-      clear: {
-        tooltip: 'Effacer le statut',
-        aria: "Réinitialiser le statut de l'entreprise"
-      }
-    },
     colsToShow: {
       label: 'Colonnes à Afficher',
       aria: 'Colonnes à Afficher, {count} sélectionnés'
@@ -128,7 +110,8 @@ export default {
     busStartHelp: {
       show: "Aide à la Création et à la Gestion d'une Entreprise",
       hide: "Masquer l'Aide"
-    }
+    },
+    moreOptions: "Plus d'options"
   },
   currency: {
     cad: 'CAD',
@@ -268,6 +251,46 @@ export default {
     },
     help: { // TODO: review help page translations
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
+    }
+  },
+  table: {
+    affiliation: {
+      filter: {
+        busName: {
+          aria: "Filtrer par nom d'entreprise",
+          placeholder: 'Nom',
+          clear: {
+            tooltip: 'Réinitialiser le Nom',
+            aria: "Réinitialiser le nom de l'entreprise"
+          }
+        },
+        busNumber: {
+          aria: "Filtrer par numéro d'entreprise",
+          placeholder: 'Nombre',
+          clear: {
+            tooltip: 'Réinitialiser le numéro',
+            aria: "Réinitialiser le numéro d'entreprise"
+          }
+        },
+        legalType: {
+          aria: 'Filtrer par type juridique, {count} sélectionnés',
+          placeholder: 'Taper',
+          selected: '{count} sélectionnés',
+          clear: {
+            tooltip: 'Types de réinitialisation',
+            aria: 'Réinitialiser les types légaux'
+          }
+        },
+        busStates: {
+          aria: "Filtrer par statut d'entreprise, {count} sélectionnés",
+          placeholder: 'Statut',
+          selected: '{count} sélectionnés',
+          clear: {
+            tooltip: 'Statut de réinitialisation',
+            aria: "Réinitialiser le statut de l'entreprise"
+          }
+        }
+      }
     }
   },
   tooltips: {

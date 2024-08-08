@@ -471,7 +471,10 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
           }
         }"
       >
-        <UButton class="border-l border-gray-300">
+        <UButton
+          class="border-l border-gray-300"
+          :aria-label="$t('btn.moreOptions')"
+        >
           <UIcon
             name="i-mdi-caret-down"
             class="scale-[1.75] transition-transform duration-200"

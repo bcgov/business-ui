@@ -99,24 +99,6 @@ export default {
       show: 'Show information',
       hide: 'Hide information'
     },
-    filterLegalType: {
-      aria: 'Filter by legal type, {count} selected',
-      placeholder: 'Type',
-      selected: '{count} selected',
-      clear: {
-        tooltip: 'Clear Types',
-        aria: 'Reset legal types'
-      }
-    },
-    filterBusStates: {
-      aria: 'Filter by business status, {count} selected',
-      placeholder: 'Status',
-      selected: '{count} selected',
-      clear: {
-        tooltip: 'Clear status',
-        aria: 'Reset business status'
-      }
-    },
     colsToShow: {
       label: 'Columns to Show',
       aria: 'Columns to Show, {count} selected'
@@ -128,7 +110,8 @@ export default {
     busStartHelp: {
       show: 'Help with Starting and Managing a Business',
       hide: 'Hide Help'
-    }
+    },
+    moreOptions: 'More Options'
   },
   currency: {
     cad: 'CAD',
@@ -268,6 +251,46 @@ export default {
     },
     help: {
       title: 'Annual Report Overview - Service BC Annual Report'
+    }
+  },
+  table: {
+    affiliation: {
+      filter: {
+        busName: {
+          aria: 'Filter by Business Name',
+          placeholder: 'Name',
+          clear: {
+            tooltip: 'Reset Name',
+            aria: 'Reset business name'
+          }
+        },
+        busNumber: {
+          aria: 'Filter by Business Number',
+          placeholder: 'Number',
+          clear: {
+            tooltip: 'Reset Number',
+            aria: 'Reset business number'
+          }
+        },
+        legalType: {
+          aria: 'Filter by legal type, {count} selected',
+          placeholder: 'Type',
+          selected: '{count} selected',
+          clear: {
+            tooltip: 'Reset Types',
+            aria: 'Reset legal types'
+          }
+        },
+        busStates: {
+          aria: 'Filter by business status, {count} selected',
+          placeholder: 'Status',
+          selected: '{count} selected',
+          clear: {
+            tooltip: 'Reset Status',
+            aria: 'Reset business status'
+          }
+        }
+      }
     }
   },
   tooltips: {

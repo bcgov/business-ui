@@ -172,24 +172,17 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.busName')"
             :clear-button="{
-              show: false
+              show: selectedTypes.length > 0,
+              tooltip: $t('table.affiliation.filter.busName.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busName.clear.aria')
             }"
+            @clear="selectedTypes = []"
           >
             <UInput
               variant="bcGovSm"
-              :placeholder="$t('labels.name')"
-            >
-              <template #trailing>
-                <UButton
-                  v-show="true"
-                  color="gray"
-                  variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
-                  :padded="false"
-                  @click="() => console.log('clear name input clicked')"
-                />
-              </template>
-            </UInput>
+              :placeholder="$t('table.affiliation.filter.busName.placeholder')"
+              :aria-label="$t('table.affiliation.filter.busName.aria')"
+            />
           </TableColumnHeader>
         </template>
 
@@ -197,23 +190,18 @@ const selectedStates = ref([])
         <template #identifier-header>
           <TableColumnHeader
             :label="$t('labels.number')"
-            :clear-button="{ show: false }"
+            :clear-button="{
+              show: selectedTypes.length > 0,
+              tooltip: $t('table.affiliation.filter.busNumber.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busNumber.clear.aria')
+            }"
+            @clear="selectedTypes = []"
           >
             <UInput
               variant="bcGovSm"
-              :placeholder="$t('labels.number')"
-            >
-              <template #trailing>
-                <UButton
-                  v-show="true"
-                  color="gray"
-                  variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
-                  :padded="false"
-                  @click="() => console.log('clear number input clicked')"
-                />
-              </template>
-            </UInput>
+              :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
+              :aria-label="$t('table.affiliation.filter.busNumber.aria')"
+            />
           </TableColumnHeader>
         </template>
 
@@ -223,8 +211,8 @@ const selectedStates = ref([])
             :label="$t('labels.type')"
             :clear-button="{
               show: selectedTypes.length > 0,
-              tooltip: $t('btn.filterLegalType.clear.tooltip'),
-              aria: $t('btn.filterLegalType.clear.aria')
+              tooltip: $t('table.affiliation.filter.legalType.clear.tooltip'),
+              aria: $t('table.affiliation.filter.legalType.clear.aria')
             }"
             @clear="selectedTypes = []"
           >
@@ -238,9 +226,9 @@ const selectedStates = ref([])
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('btn.filterLegalType.aria', { count: selectedTypes.length })"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', { count: selectedTypes.length })"
               >
-                {{ selectedTypes.length > 0 ? $t('btn.filterLegalType.selected', { count: selectedTypes.length }) : $t('btn.filterLegalType.placeholder') }}
+                {{ selectedTypes.length > 0 ? $t('table.affiliation.filter.legalType.selected', { count: selectedTypes.length }) : $t('table.affiliation.filter.legalType.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
@@ -254,8 +242,8 @@ const selectedStates = ref([])
             :label="$t('labels.status')"
             :clear-button="{
               show: selectedStates.length > 0,
-              tooltip: $t('btn.filterBusStates.clear.tooltip'),
-              aria: $t('btn.filterBusStates.clear.aria')
+              tooltip: $t('table.affiliation.filter.busStates.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busStates.clear.aria')
             }"
             @clear="selectedStates = []"
           >
@@ -269,9 +257,9 @@ const selectedStates = ref([])
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('btn.filterBusStates.aria', { count: selectedStates.length })"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', { count: selectedStates.length })"
               >
-                {{ selectedStates.length > 0 ? $t('btn.filterBusStates.selected', { count: selectedStates.length }) : $t('btn.filterBusStates.placeholder') }}
+                {{ selectedStates.length > 0 ? $t('table.affiliation.filter.busStates.selected', { count: selectedStates.length }) : $t('table.affiliation.filter.busStates.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
