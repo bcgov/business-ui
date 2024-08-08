@@ -198,7 +198,21 @@ export default {
     number: 'Nombre',
     type: 'Taper',
     actions: 'Actions',
-    myList: 'Ma liste ({count})'
+    myList: 'Ma liste ({count})',
+    amalgamateNow: 'Fusionner Maintenant',
+    alterNow: 'Modifier Maintenant',
+    changeNameNow: 'Changer de Nom Maintenant',
+    continueInNow: 'Continuer Maintenant',
+    downloadForm: 'Télécharger le Formulaire',
+    registerNow: 'Enregistrer Maintenant',
+    restoreNow: 'Restaurer Maintenant',
+    reinstateNow: 'Réintégrer Maintenant',
+    openNameRequest: 'Ouvrir la Demande de Nom',
+    resumeDraft: 'Reprendre le Brouillon',
+    removeFromTable: 'Supprimer du Tableau',
+    manageBusiness: 'Gérer les Affaires',
+    cancelRequest: 'Annuler la Demande',
+    amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)'
   },
   links: {
     busCorpAct: {
@@ -247,6 +261,9 @@ export default {
     help: { // TODO: review help page translations
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
     }
+  },
+  tooltips: {
+    affiliationActionBtn: 'Accédez à {option} pour accéder à cette entreprise'
   },
   widgets: {
     feeSummary: {

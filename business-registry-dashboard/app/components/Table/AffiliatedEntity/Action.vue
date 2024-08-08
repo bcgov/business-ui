@@ -19,6 +19,7 @@ const emit = defineEmits(['show-manage-business-dialog', 'unknown-error', 'remov
 const { isBusinessAffiliated } = useAffiliations()
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
+const { t } = useI18n()
 
 /** Create a business record in LEAR. */ // TODO: implement
 // const createBusinessRecord = async (business: Business): Promise<string> => {
@@ -98,10 +99,6 @@ const isOpenExternal = (item: Business): boolean => {
   return !isModernizedEntity(item)
 }
 
-const getTooltipTargetDescription = (item: Business): string => {
-  return isSocieties(item) ? 'Societies Online' : 'Corporate Online'
-}
-
 // TODO: implement after adding affiliation invitations affiliation invitations
 const showAffiliationInvitationNewRequestButton = (business: Business): boolean => {
   const affiliationInvitation = business.affiliationInvites?.[0]
@@ -154,21 +151,21 @@ const getNrRequestDescription = (item: Business): string => {
   const nrRequestActionCd = item.nameRequest?.requestActionCd
   switch (nrRequestActionCd) {
     case NrRequestActionCodes.AMALGAMATE:
-      return 'Amalgamate Now'
+      return t('labels.amalgamateNow')
     case NrRequestActionCodes.CONVERSION:
-      return 'Alter Now'
+      return t('labels.alterNow')
     case NrRequestActionCodes.CHANGE_NAME:
-      return 'Change Name Now'
+      return t('labels.changeNameNow')
     case NrRequestActionCodes.MOVE:
-      return 'Continue In Now'
+      return t('labels.continueInNow')
     case NrRequestActionCodes.NEW_BUSINESS:
-      return isOtherEntities(item) ? 'Download Form' : 'Register Now'
+      return isOtherEntities(item) ? t('labels.downloadForm') : t('labels.registerNow')
     case NrRequestActionCodes.RESTORE:
-      return isForRestore(item) ? 'Restore Now' : 'Reinstate Now'
+      return isForRestore(item) ? t('labels.restoreNow') : t('labels.reinstateNow')
     case NrRequestActionCodes.RENEW:
-      return 'Restore Now'
+      return t('labels.restoreNow')
     default:
-      return 'Open Name Request'
+      return t('labels.openNameRequest')
   }
 }
 
@@ -196,7 +193,7 @@ const getPrimaryActionLabel = (item: Business): string => {
   // }
 
   if (isTemporaryBusiness(item)) {
-    return 'Resume Draft'
+    return t('labels.resumeDraft')
   }
   if (isNameRequest(item)) {
     const nrStatus = affiliationStatus(item)
@@ -207,12 +204,12 @@ const getPrimaryActionLabel = (item: Business): string => {
       case NrDisplayStates.CONSUMED:
       case NrDisplayStates.CANCELLED:
       case NrDisplayStates.REFUND_REQUESTED:
-        return 'Remove From Table'
+        return t('labels.removeFromTable')
       default:
-        return 'Open Name Request'
+        return t('labels.openNameRequest')
     }
   }
-  return 'Manage Business'
+  return t('labels.manageBusiness')
 }
 
 const isShowRemoveAsPrimaryAction = (item: Business): boolean => {
@@ -401,7 +398,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
 
   if (showOpenButton(props.item)) {
     options.push({
-      label: 'Open Name Request',
+      label: t('labels.openNameRequest'),
       click: () => affNav.goToNameRequest(props.item.nameRequest),
       icon: 'i-mdi-format-list-bulleted-square'
     })
@@ -410,19 +407,19 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   if (showRemoveButton(props.item)) {
     if (isTemporaryBusiness(props.item)) {
       options.push({
-        label: 'Delete ' + tempDescription(props.item),
+        label: 'Delete ' + tempDescription(props.item), // TODO: do we want these to be translated?
         click: () => removeAffiliationOrInvitation(props.item),
         icon: 'i-mdi-delete-forever'
       })
     } else if (showAffiliationInvitationCancelRequestButton(props.item)) {
       options.push({
-        label: 'Cancel Request',
+        label: t('labels.cancelRequest'),
         click: () => removeAffiliationOrInvitation(props.item),
         icon: 'i-mdi-window-close'
       })
     } else {
       options.push({
-        label: 'Remove From Table',
+        label: t('labels.removeFromTable'),
         click: () => removeAffiliationOrInvitation(props.item),
         icon: 'i-mdi-delete'
       })
@@ -431,7 +428,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
 
   if (showAmalgamateShortForm(props.item)) { // TODO: implement after adding affiliation invitations showAmalgamation short form, add click funciton to option
     options.push({
-      label: 'Amalgamate Now (Short Form)',
+      label: t('labels.amalgamateNowShortForm'),
       click: () => showAmalgamateShortForm(props.item),
       icon: 'i-mdi-checkbox-multiple-blank-outline'
     })
@@ -447,7 +444,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   >
     <UButtonGroup>
       <UTooltip
-        :text="`Go to ${getTooltipTargetDescription(item)} to access this business`"
+        :text="$t('tooltips.affiliationActionBtn', { option: isSocieties(item) ? 'Societies Online' : 'Corporate Online' })"
         :prevent="disableTooltip(item)"
         :popper="{ arrow: true }"
       >

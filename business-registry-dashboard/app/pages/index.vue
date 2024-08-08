@@ -157,7 +157,6 @@ const selectedStates = ref([])
       </template>
 
       <!-- affiliations table -->
-      <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
         :rows="affiliations.results"

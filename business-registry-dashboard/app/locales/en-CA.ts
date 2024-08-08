@@ -198,7 +198,21 @@ export default {
     number: 'Number',
     type: 'Type',
     actions: 'Actions',
-    myList: 'My List ({count})'
+    myList: 'My List ({count})',
+    amalgamateNow: 'Amalgamate Now',
+    alterNow: 'Alter Now',
+    changeNameNow: 'Change Name Now',
+    continueInNow: 'Continue In Now',
+    downloadForm: 'Download Form',
+    registerNow: 'Register Now',
+    restoreNow: 'Restore Now',
+    reinstateNow: 'Reinstate Now',
+    openNameRequest: 'Open Name Request',
+    resumeDraft: 'Resume Draft',
+    removeFromTable: 'Remove From Table',
+    manageBusiness: 'Manage Business',
+    cancelRequest: 'Cancel Request',
+    amalgamateNowShortForm: 'Amalgamate Now (Short Form)'
   },
   links: {
     busCorpAct: {
@@ -247,6 +261,9 @@ export default {
     help: {
       title: 'Annual Report Overview - Service BC Annual Report'
     }
+  },
+  tooltips: {
+    affiliationActionBtn: 'Go to {option} to access this business'
   },
   widgets: {
     feeSummary: {
