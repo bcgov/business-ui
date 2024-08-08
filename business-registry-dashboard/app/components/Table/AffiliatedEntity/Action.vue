@@ -62,11 +62,7 @@ const accountStore = useConnectAccountStore()
 const isOpenExternal = (item: Business): boolean => {
   const invitationStatus = item?.affiliationInvites?.[0]?.status
 
-  const isValidStatus = (status: string): status is AffiliationInvitationStatus => {
-    return Object.values(AffiliationInvitationStatus).includes(status as AffiliationInvitationStatus)
-  }
-
-  if (invitationStatus && isValidStatus(invitationStatus) && [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired].includes(invitationStatus)) {
+  if (invitationStatus && [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired].includes(invitationStatus as AffiliationInvitationStatus)) {
     return false
   }
 
@@ -79,30 +75,27 @@ const isOpenExternal = (item: Business): boolean => {
     if (nrState !== NrDisplayStates.APPROVED) {
       return false
     }
-    // const nrRequestActionCd = item.nameRequest?.requestActionCd
-    // if (nrRequestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
-    //   return !isModernizedEntity(item) // TODO: implement after adding affiliation invitations after adding launch darkly
-    // }
-    // // temporarily show external icon for continue in
-    // if (nrRequestActionCd === NrRequestActionCodes.MOVE) {
-    //   return !isSupportedContinuationInEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
-    // }
-    // // temporary show external icon for amalgamate for some entity types
-    // if (nrRequestActionCd === NrRequestActionCodes.AMALGAMATE) {
-    //   return !isSupportedAmalgamationEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
-    // }
-    // // temporarily show external icon for restore/reinstate for some entity types
-    // if (nrRequestActionCd === NrRequestActionCodes.RESTORE ||
-    //       nrRequestActionCd === NrRequestActionCodes.RENEW) {
-    //   return !isSupportedRestorationEntities(item) // TODO: implement after adding affiliation invitations after adding launch darkly
-    // }
+    const nrRequestActionCd = item.nameRequest?.requestActionCd
+    if (nrRequestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
+      return !isModernizedEntity(item)
+    }
+    // temporarily show external icon for continue in
+    if (nrRequestActionCd === NrRequestActionCodes.MOVE) {
+      return !isSupportedContinuationInEntities(item)
+    }
+    // temporary show external icon for amalgamate for some entity types
+    if (nrRequestActionCd === NrRequestActionCodes.AMALGAMATE) {
+      return !isSupportedAmalgamationEntities(item)
+    }
+    // temporarily show external icon for restore/reinstate for some entity types
+    if (nrRequestActionCd === NrRequestActionCodes.RESTORE || nrRequestActionCd === NrRequestActionCodes.RENEW) {
+      return !isSupportedRestorationEntities(item)
+    }
     return false
   }
 
-  return false
-
   // check for business
-  // return !isModernizedEntity(item) // TODO: add launch darkly
+  return !isModernizedEntity(item)
 }
 
 const getTooltipTargetDescription = (item: Business): string => {
@@ -233,10 +226,9 @@ const showRemoveButton = (item: Business): boolean => {
 }
 
 const handleApprovedNameRequestRenew = (item: Business): void => {
-  // if (!isSupportedRestorationEntities(item)) { // TODO: implement after adding launch darkly
-  //   goToCorpOnline()
-  // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
-  if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
+  if (!isSupportedRestorationEntities(item)) {
+    affNav.goToCorpOnline()
+  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
     affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     const action = isForRestore(item) ? 'restore' : 'reinstate'
@@ -245,10 +237,9 @@ const handleApprovedNameRequestRenew = (item: Business): void => {
 }
 
 const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
-  // if (!isModernizedEntity(item)) { // TODO: implement after adding launch darkly
-  //   goToCorpOnline()
-  // } else if (isBusinessAffiliated(item.nameRequest?.corpNum)) {
-  if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
+  if (!isModernizedEntity(item)) {
+    affNav.goToCorpOnline()
+  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
     affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     let action = ''
@@ -264,11 +255,9 @@ const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: 
 const handleApprovedNameRequest = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
   switch (nrRequestActionCd) {
     case NrRequestActionCodes.AMALGAMATE:
-      // goToAmalgamate(item)
       affNav.goToAmalgamate()
       break
     case NrRequestActionCodes.MOVE: {
-      // goToContinuationIn(item)
       affNav.goToContinuationIn()
       break
     }
@@ -329,12 +318,11 @@ const redirect = (item: Business) => {
     console.log('handleNameRequestRedirect')
     return
   }
-  // if (isModernizedEntity(item)) { // TODO: implement after adding launch darkly
-  //   // removeAcceptedAffiliationInvitations(item)
-  //   goToDashboard(item.businessIdentifier)
-  //   return true
-  // } else if (isSocieties(item)) {
-  if (isSocieties(item)) {
+  if (isModernizedEntity(item)) {
+    // removeAcceptedAffiliationInvitations(item) // TODO: implement
+    affNav.goToDashboard(item.businessIdentifier)
+    return true
+  } else if (isSocieties(item)) {
     affNav.goToSocieties()
     return true
   } else {
@@ -344,30 +332,31 @@ const redirect = (item: Business) => {
 }
 
 // const action = (item: Business): Promise<void> => {
-const action = (item: Business): void => {
-  // const affiliationInviteInfo = item?.affiliationInvites?.[0]
-  // if ([AffiliationInvitationStatus.Pending,
-  //   AffiliationInvitationStatus.Expired,
-  //   AffiliationInvitationStatus.Failed].includes(affiliationInviteInfo?.status as AffiliationInvitationStatus)) {
-  //   switch (true) {
-  //     case affiliationInviteInfo?.type === AffiliationInvitationType.EMAIL &&
-  //         [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired]
-  //           .includes(affiliationInviteInfo?.status as AffiliationInvitationStatus):
-  //       emit('resend-affiliation-invitation', item)
-  //       return
+const action = async (item: Business): Promise<void> => {
+  const affiliationInviteInfo = item?.affiliationInvites?.[0]
+  if ([AffiliationInvitationStatus.Pending,
+    AffiliationInvitationStatus.Expired,
+    AffiliationInvitationStatus.Failed].includes(affiliationInviteInfo?.status as AffiliationInvitationStatus)) {
+    switch (true) {
+      case affiliationInviteInfo?.type === AffiliationInvitationType.EMAIL &&
+          [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired]
+            .includes(affiliationInviteInfo?.status as AffiliationInvitationStatus):
+        emit('resend-affiliation-invitation', item)
+        return
 
-  //     case affiliationInviteInfo?.type === AffiliationInvitationType.REQUEST &&
-  //         AffiliationInvitationStatus.Pending === affiliationInviteInfo?.status &&
-  //         isCurrentOrganization(item.affiliationInvites[0].fromOrg.id) :
-  //       await removeAffiliationOrInvitation(item)
-  //       return
+      case affiliationInviteInfo?.type === AffiliationInvitationType.REQUEST &&
+          AffiliationInvitationStatus.Pending === affiliationInviteInfo?.status:
+        // && // TODO: implement
+        // isCurrentOrganization(item.affiliationInvites[0].fromOrg.id):
+        await removeAffiliationOrInvitation(item)
+        return
 
-  //     case affiliationInviteInfo.type === AffiliationInvitationType.REQUEST &&
-  //         AffiliationInvitationStatus.Failed === affiliationInviteInfo?.status:
-  //       await removeAffiliationOrInvitation(item)
-  //       return
-  //   }
-  // }
+      case affiliationInviteInfo?.type === AffiliationInvitationType.REQUEST &&
+          AffiliationInvitationStatus.Failed === affiliationInviteInfo?.status:
+        await removeAffiliationOrInvitation(item)
+        return
+    }
+  }
 
   if (isShowRemoveAsPrimaryAction(item)) {
     console.log('action clicked, show remove as primary action')
@@ -464,6 +453,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
       >
         <UButton
           :label="getPrimaryActionLabel(item)"
+          :icon="isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
           @click="action(item)"
         />
       </UTooltip>
