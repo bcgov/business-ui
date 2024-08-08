@@ -32,6 +32,7 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text',
   />
   <div
     id="help-text-content"
+    :aria-hidden="!showHelpText"
     role="region"
     class="mx-auto min-w-[75vw] max-w-screen-lg overflow-hidden border-y border-dashed border-gray-700 transition-all duration-500 ease-in-out"
     :class="{
