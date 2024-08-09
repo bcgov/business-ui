@@ -63,11 +63,11 @@ async function createBusinessRecord (business: Business): Promise<string> {
     filingResponse = await createNamedBusiness(payload)
   }
 
-  if (filingResponse?.errorMsg) {
+  if (filingResponse?.errorMsg) { // TODO: fix ts error
     emit('unknown-error')
     return ''
   }
-  return filingResponse.filing.business.identifier
+  return filingResponse.filing.business.identifier // TODO: fix ts error
 }
 
 const isOpenExternal = (item: Business): boolean => {
@@ -137,7 +137,6 @@ const removeAffiliationOrInvitation = (business: Business) => {
   //     return
   //   }
   // }
-  console.log('removeAffiliationOrInvitation')
   emit('remove-business', {
     orgIdentifier: accountStore.currentAccount.id,
     business

@@ -384,12 +384,12 @@ const selectedStates = ref([])
             :item="row"
             :index="index"
             :affiliations="affiliations.results"
-            @unknown-error="() => console.log('unknown error')"
-            @business-unavailable-error="() => console.log('business unavailable error')"
-            @remove-affiliation-invitation="() => console.log('remove-affiliation-invitation')"
-            @remove-business="() => console.log('remove-business')"
-            @resend-affiliation-invitation="() => console.log('resend-affiliation-invitation')"
-            @show-manage-business-dialog="() => console.log('show-manage-business-dialog')"
+            @unknown-error="() => console.log('unknown error emitted')"
+            @business-unavailable-error="() => console.log('business unavailable error emitted')"
+            @remove-affiliation-invitation="() => console.log('remove-affiliation-invitation emitted')"
+            @remove-business="() => console.log('remove-business emitted')"
+            @resend-affiliation-invitation="() => console.log('resend-affiliation-invitation emitted')"
+            @show-manage-business-dialog="() => console.log('show-manage-business-dialog emitted')"
           />
         </template>
         <!-- end table cell slots -->
