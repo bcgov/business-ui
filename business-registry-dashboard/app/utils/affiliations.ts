@@ -274,9 +274,9 @@ export const getEntityType = (item: Business): CorpTypes => {
   return entityType
 }
 
-// export const isBusinessAffiliated = (businessIdentifier: string): boolean => {
-//     if (!businessIdentifier) {
-//       return false
-//     }
-//     return affiliations.results.some(business => businessIdentifier === business.businessIdentifier)
-//   }
+export function isBusinessAffiliated (affiliations: Business[], businessIdentifier: string): boolean {
+  if (!businessIdentifier) {
+    return false
+  }
+  return affiliations.some(business => businessIdentifier === business.businessIdentifier)
+}

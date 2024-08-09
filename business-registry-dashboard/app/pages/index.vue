@@ -383,6 +383,7 @@ const selectedStates = ref([])
           <TableAffiliatedEntityAction
             :item="row"
             :index="index"
+            :affiliations="affiliations.results"
           />
           <!-- <AffiliationAction
             :item="row"

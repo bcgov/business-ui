@@ -87,7 +87,6 @@ export const useAffiliations = () => {
   watch(
     [() => accountStore.currentAccount.id],
     async () => {
-      console.log('running watch')
       await getAffiliatedEntities()
     },
     { immediate: true }
@@ -101,9 +100,9 @@ export const useAffiliations = () => {
     affiliations.filters.isActive = false
   }
 
-  function isBusinessAffiliated (businessIdentifier: string): boolean {
-    return affiliations.results.some(business => businessIdentifier === business.businessIdentifier)
-  }
+  // function isBusinessAffiliated (businessIdentifier: string): boolean {
+  //   return affiliations.results.some(business => businessIdentifier === business.businessIdentifier)
+  // }
 
   // const updateFilter = (filterField?: string, value?: any) => {
   //   if (filterField) {
@@ -128,8 +127,7 @@ export const useAffiliations = () => {
 
   return {
     getAffiliatedEntities,
-    affiliations,
-    isBusinessAffiliated
+    affiliations
     // clearAllFilters,
     // updateFilter,
   }

@@ -9,6 +9,7 @@ import {
 // import launchdarklyServices from 'sbc-common-components/src/services/launchdarkly.services'
 
 const props = defineProps<{
+  affiliations: Business[],
   item: Business,
   index: number
 }>()
@@ -16,7 +17,6 @@ const props = defineProps<{
 const emit = defineEmits(['show-manage-business-dialog', 'unknown-error', 'remove-affiliation-invitation',
   'remove-business', 'business-unavailable-error', 'resend-affiliation-invitation'])
 
-const { isBusinessAffiliated } = useAffiliations()
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
 const { t } = useI18n()
@@ -229,7 +229,7 @@ const showRemoveButton = (item: Business): boolean => {
 const handleApprovedNameRequestRenew = (item: Business): void => {
   if (!isSupportedRestorationEntities(item)) {
     affNav.goToCorpOnline()
-  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
+  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(props.affiliations, item.nameRequest?.corpNum)) {
     affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     const action = isForRestore(item) ? 'restore' : 'reinstate'
@@ -240,7 +240,7 @@ const handleApprovedNameRequestRenew = (item: Business): void => {
 const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
   if (!isModernizedEntity(item)) {
     affNav.goToCorpOnline()
-  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(item.nameRequest?.corpNum)) {
+  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(props.affiliations, item.nameRequest?.corpNum)) {
     affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     let action = ''
