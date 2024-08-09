@@ -100,10 +100,6 @@ export const useAffiliations = () => {
     affiliations.filters.isActive = false
   }
 
-  // function isBusinessAffiliated (businessIdentifier: string): boolean {
-  //   return affiliations.results.some(business => businessIdentifier === business.businessIdentifier)
-  // }
-
   // const updateFilter = (filterField?: string, value?: any) => {
   //   if (filterField) {
   //     if (value) {

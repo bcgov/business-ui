@@ -14,8 +14,14 @@ const props = defineProps<{
   index: number
 }>()
 
-const emit = defineEmits(['show-manage-business-dialog', 'unknown-error', 'remove-affiliation-invitation',
-  'remove-business', 'business-unavailable-error', 'resend-affiliation-invitation'])
+const emit = defineEmits<{
+  'unknown-error': [void]
+  'remove-affiliation-invitation': [void]
+  'remove-business': [{ orgIdentifier: string, business: Business }]
+  'business-unavailable-error': [action: string]
+  'resend-affiliation-invitation': [item: Business]
+  'show-manage-business-dialog': [item: Business]
+}>()
 
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
