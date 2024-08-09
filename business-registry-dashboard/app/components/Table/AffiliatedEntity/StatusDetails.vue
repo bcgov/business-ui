@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
+const { t } = useI18n()
 
 interface Message {
   message: string
@@ -23,32 +24,32 @@ const props = defineProps({
 
 const entityAlertMessages: Record<string, Message> = {
   [EntityAlertTypes.PROCESSING]: {
-    message: 'This name request is still processing, it may take up to 10 minutes.',
+    message: t(`entityAlertTypes.${EntityAlertTypes.PROCESSING}`),
     colour: 'text-blue-500',
     priority: 5
   },
   [EntityAlertTypes.FROZEN]: {
-    message: 'This business is frozen',
+    message: t(`entityAlertTypes.${EntityAlertTypes.FROZEN}`),
     colour: 'text-bcGovColor-caution',
     priority: 4
   },
   [EntityAlertTypes.BADSTANDING]: {
-    message: 'This business is not in good standing',
+    message: t(`entityAlertTypes.${EntityAlertTypes.BADSTANDING}`),
     colour: 'text-bcGovColor-caution',
     priority: 3
   },
   [EntityAlertTypes.LIQUIDATION]: {
-    message: 'This business is in liquidation',
+    message: t(`entityAlertTypes.${EntityAlertTypes.LIQUIDATION}`),
     colour: 'text-red-600',
     priority: 2
   },
   [EntityAlertTypes.DISSOLUTION]: {
-    message: 'This business is in the process of being dissolved',
+    message: t(`entityAlertTypes.${EntityAlertTypes.DISSOLUTION}`),
     colour: 'text-red-600',
     priority: 1
   },
   [EntityAlertTypes.EXPIRED]: {
-    message: 'This incorporation application is no longer valid; the name request is expired.',
+    message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`),
     colour: 'text-red-600',
     priority: 5
   }
@@ -72,14 +73,26 @@ const makeMessages = () => {
 const alertMessages = makeMessages()
 </script>
 <template>
-  <UTooltip :popper="{ arrow: true }">
-    <UIcon
-      :name="icon"
-      :class="alertMessages[0]?.colour"
-      class="size-5"
-    />
-    <template #text>
-      <ul class="flex flex-col gap-1">
+  <div>
+    <UTooltip :popper="{ arrow: true }">
+      <UIcon
+        :name="icon"
+        :class="alertMessages[0]?.colour"
+        class="size-5"
+      />
+      <template #text>
+        <ul class="flex flex-col gap-1">
+          <li
+            v-for="message, i in alertMessages"
+            :key="i"
+          >
+            {{ message.message }}
+          </li>
+        </ul>
+      </template>
+    </UTooltip>
+    <div class="sr-only">
+      <ul>
         <li
           v-for="message, i in alertMessages"
           :key="i"
@@ -87,6 +100,6 @@ const alertMessages = makeMessages()
           {{ message.message }}
         </li>
       </ul>
-    </template>
-  </UTooltip>
+    </div>
+  </div>
 </template>

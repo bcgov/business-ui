@@ -2,6 +2,7 @@
 type ClearButtonProps =
   | { show: true; tooltip: string; aria: string }
   | { show: false }
+
 defineProps<{
   label: string
   clearButton: ClearButtonProps
@@ -10,7 +11,6 @@ defineProps<{
 defineEmits(['clear'])
 </script>
 <template>
-  <!-- eslint-disable vue/attribute-hyphenation required for ariaLabel -->
   <div class="flex flex-col gap-2 font-normal">
     <span class="border-b border-gray-200 p-2 font-semibold">{{ label }}</span>
     <div class="inline-flex -space-x-px px-2 pt-2">

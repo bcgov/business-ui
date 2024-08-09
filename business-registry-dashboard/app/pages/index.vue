@@ -68,22 +68,23 @@ const selectedStates = ref([])
             {{ $t('page.home.intro') }}
           </p>
         </div>
-
-        <div v-if="accountStore.currentAccount.id" class="flex-none">
-          <UTooltip
-            :text="$t('btn.busGetStarted.tooltip')"
-            :popper="{ arrow: true }"
-          >
-            <UButton
-              :label="$t('btn.busGetStarted.label')"
-              variant="outline"
-              icon="i-mdi-domain"
-              size="bcGov"
-              class="w-full"
-              :to="`${nrWebUrl}${accountStore.currentAccount.id.toString()}`"
-            />
-          </UTooltip>
-        </div>
+        <ClientOnly>
+          <div v-if="accountStore.currentAccount.id" class="flex-none">
+            <UTooltip
+              :text="$t('btn.busGetStarted.tooltip')"
+              :popper="{ arrow: true }"
+            >
+              <UButton
+                :label="$t('btn.busGetStarted.label')"
+                variant="outline"
+                icon="i-mdi-domain"
+                size="bcGov"
+                class="w-full"
+                :to="`${nrWebUrl}${accountStore.currentAccount.id.toString()}`"
+              />
+            </UTooltip>
+          </div>
+        </ClientOnly>
       </div>
 
       <HelpTextSection />
@@ -155,9 +156,7 @@ const selectedStates = ref([])
           </UButton>
         </USelectMenu>
       </template>
-
       <!-- affiliations table -->
-      <!-- TODO: add affiliations to rows -->
       <UTable
         :columns
         :rows="affiliations.results"
@@ -173,24 +172,17 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.busName')"
             :clear-button="{
-              show: false
+              show: selectedTypes.length > 0,
+              tooltip: $t('table.affiliation.filter.busName.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busName.clear.aria')
             }"
+            @clear="selectedTypes = []"
           >
             <UInput
               variant="bcGovSm"
-              :placeholder="$t('labels.name')"
-            >
-              <template #trailing>
-                <UButton
-                  v-show="true"
-                  color="gray"
-                  variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
-                  :padded="false"
-                  @click="() => console.log('clear name input clicked')"
-                />
-              </template>
-            </UInput>
+              :placeholder="$t('table.affiliation.filter.busName.placeholder')"
+              :aria-label="$t('table.affiliation.filter.busName.aria')"
+            />
           </TableColumnHeader>
         </template>
 
@@ -198,23 +190,18 @@ const selectedStates = ref([])
         <template #identifier-header>
           <TableColumnHeader
             :label="$t('labels.number')"
-            :clear-button="{ show: false }"
+            :clear-button="{
+              show: selectedTypes.length > 0,
+              tooltip: $t('table.affiliation.filter.busNumber.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busNumber.clear.aria')
+            }"
+            @clear="selectedTypes = []"
           >
             <UInput
               variant="bcGovSm"
-              :placeholder="$t('labels.number')"
-            >
-              <template #trailing>
-                <UButton
-                  v-show="true"
-                  color="gray"
-                  variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
-                  :padded="false"
-                  @click="() => console.log('clear number input clicked')"
-                />
-              </template>
-            </UInput>
+              :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
+              :aria-label="$t('table.affiliation.filter.busNumber.aria')"
+            />
           </TableColumnHeader>
         </template>
 
@@ -224,8 +211,8 @@ const selectedStates = ref([])
             :label="$t('labels.type')"
             :clear-button="{
               show: selectedTypes.length > 0,
-              tooltip: $t('btn.filterLegalType.clear.tooltip'),
-              aria: $t('btn.filterLegalType.clear.aria')
+              tooltip: $t('table.affiliation.filter.legalType.clear.tooltip'),
+              aria: $t('table.affiliation.filter.legalType.clear.aria')
             }"
             @clear="selectedTypes = []"
           >
@@ -239,9 +226,9 @@ const selectedStates = ref([])
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('btn.filterLegalType.aria', { count: selectedTypes.length })"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', { count: selectedTypes.length })"
               >
-                {{ selectedTypes.length > 0 ? $t('btn.filterLegalType.selected', { count: selectedTypes.length }) : $t('btn.filterLegalType.placeholder') }}
+                {{ selectedTypes.length > 0 ? $t('table.affiliation.filter.legalType.selected', { count: selectedTypes.length }) : $t('table.affiliation.filter.legalType.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
@@ -255,8 +242,8 @@ const selectedStates = ref([])
             :label="$t('labels.status')"
             :clear-button="{
               show: selectedStates.length > 0,
-              tooltip: $t('btn.filterBusStates.clear.tooltip'),
-              aria: $t('btn.filterBusStates.clear.aria')
+              tooltip: $t('table.affiliation.filter.busStates.clear.tooltip'),
+              aria: $t('table.affiliation.filter.busStates.clear.aria')
             }"
             @clear="selectedStates = []"
           >
@@ -270,9 +257,9 @@ const selectedStates = ref([])
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('btn.filterBusStates.aria', { count: selectedStates.length })"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', { count: selectedStates.length })"
               >
-                {{ selectedStates.length > 0 ? $t('btn.filterBusStates.selected', { count: selectedStates.length }) : $t('btn.filterBusStates.placeholder') }}
+                {{ selectedStates.length > 0 ? $t('table.affiliation.filter.busStates.selected', { count: selectedStates.length }) : $t('table.affiliation.filter.busStates.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
@@ -295,11 +282,11 @@ const selectedStates = ref([])
         <!-- business name table cell -->
         <template #legalName-data="{ row }">
           <span>
-            <b
+            <strong
               v-if="isNameRequest(row)"
               class="text-gray-900"
             >
-              <b
+              <div
                 v-for="(nrName, i) in row.nameRequest.names"
                 :key="`nrName: ${i}`"
                 class="table pb-1"
@@ -308,22 +295,30 @@ const selectedStates = ref([])
                   v-if="isRejectedName(nrName)"
                   class="table-cell size-4 pr-1 align-top text-red-500"
                   name="i-mdi-close"
+                  aria-hidden="true"
                 />
                 <UIcon
                   v-if="isApprovedName(nrName)"
-                  color="green"
                   class="table-cell size-4 pr-1 align-top text-green-500"
                   name="i-mdi-check"
+                  aria-hidden="true"
                 />
-                <div class="table-cell pl-2 align-top font-semibold">{{ nrName.name }}</div>
-              </b>
-            </b>
-            <b
+                <span v-if="isApprovedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.approved', { name: nrName.name }) }}</span>
+                <span v-if="isRejectedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.rejected', { name: nrName.name }) }}</span>
+                <div
+                  class="table-cell pl-2 align-top font-semibold"
+                  aria-hidden="true"
+                >
+                  {{ nrName.name }}
+                </div>
+              </div>
+            </strong>
+            <strong
               v-else
               class="font-semibold text-gray-900"
             >
               {{ name(row) }}
-            </b>
+            </strong>
           </span>
 
           <!-- TODO: add affiliation invitation status -->

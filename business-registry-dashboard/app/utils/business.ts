@@ -12,16 +12,15 @@
  *                   the legal name.
  */
 export function determineDisplayName (
-  legalName?: string,
+  legalName: string,
   legalType?: CorpTypes,
   identifier?: string,
   alternateNames?: AlternateNames[]
 ): string {
-  // if (!LaunchDarklyService.getFlag(LDFlags.AlternateNamesMbr, false)) {
-  //   return legalName
-  // }
-  if (!legalName) {
-    return ''
+  const enableAltNamesMbr = true // TODO: add launch darkly
+  // if (!LaunchDarklyService.getFlag(LDFlags.AlternateNamesMbr, false)) { enable-alternate-names-mbr: true
+  if (!enableAltNamesMbr) {
+    return legalName ?? ''
   }
   if (legalType &&
       identifier &&
@@ -74,29 +73,45 @@ export function isSocieties (item: Business): boolean {
 }
 
 // TODO: add launch darkly
-// const isModernizedEntity = (item: Business): boolean => {
-//   const entityType = getEntityType(item)
-//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
-//   return supportedEntityFlags.includes(entityType)
-// }
+export function isModernizedEntity (item: Business): boolean {
+  const entityType = getEntityType(item)
+  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
+  const ldFlag = 'BC BEN C CBEN CC CCC CP CR CS CUL EPR FI GP LLC PA PAR S SP UL ULC XL XS'
+  const supportedEntityFlags = ldFlag.split(' ') || []
+  return supportedEntityFlags.includes(entityType)
+}
+// is modernized entity uses:
+// ia-supported-entities: "BC BEN C CBEN CC CCC CP CR CS CUL EPR FI GP LLC PA PAR S SP UL ULC XL XS"
 
 // TODO: add launch darkly
-// const isSupportedAmalgamationEntities = (item: Business): boolean => {
-//   const entityType = getEntityType(item)
-//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
-//   return supportedEntityFlags.includes(entityType)
-// }
+export function isSupportedAmalgamationEntities (item: Business): boolean {
+  const entityType = getEntityType(item)
+  const ldFlag = 'BC BEN CC ULC'
+  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
+  const supportedEntityFlags = ldFlag.split(' ') || []
+  return supportedEntityFlags.includes(entityType)
+}
+// isSupportedAmalgamationEntities uses:
+// supported-amalgamation-entities: "BC BEN CC ULC"
 
 // TODO: add launch darkly
-// const isSupportedContinuationInEntities = (item: Business): boolean => {
-//   const entityType = getEntityType(item)
-//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-//   return supportedEntityFlags.includes(entityType)
-// }
+export function isSupportedContinuationInEntities (item: Business): boolean {
+  const entityType = getEntityType(item)
+  const ldFlag = 'C CBEN CCC CUL'
+  const supportedEntityFlags = ldFlag.split(' ') || []
+  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
+  return supportedEntityFlags.includes(entityType)
+}
+// isSupportedContinuationInEntities uses:
+// supported-continuation-in-entities: "C CBEN CCC CUL"
 
 // TODO: add launch darkly
-// const isSupportedRestorationEntities = (item: Business): boolean => {
-//   const entityType = getEntityType(item)
-//   const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
-//   return supportedEntityFlags.includes(entityType)
-// }
+export function isSupportedRestorationEntities (item: Business): boolean {
+  const entityType = getEntityType(item)
+  const ldFlag = ''
+  const supportedEntityFlags = ldFlag.split(' ') || []
+  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
+  return supportedEntityFlags.includes(entityType)
+}
+// isSupportedRestorationEntities uses:
+// supported-restoration-entities: ""

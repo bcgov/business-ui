@@ -99,24 +99,6 @@ export default {
       show: 'Show information',
       hide: 'Hide information'
     },
-    filterLegalType: {
-      aria: 'Filter by legal type, {count} selected',
-      placeholder: 'Type',
-      selected: '{count} selected',
-      clear: {
-        tooltip: 'Clear Types',
-        aria: 'Reset legal types'
-      }
-    },
-    filterBusStates: {
-      aria: 'Filter by business status, {count} selected',
-      placeholder: 'Status',
-      selected: '{count} selected',
-      clear: {
-        tooltip: 'Clear status',
-        aria: 'Reset business status'
-      }
-    },
     colsToShow: {
       label: 'Columns to Show',
       aria: 'Columns to Show, {count} selected'
@@ -128,11 +110,20 @@ export default {
     busStartHelp: {
       show: 'Help with Starting and Managing a Business',
       hide: 'Hide Help'
-    }
+    },
+    moreOptions: 'More Options'
   },
   currency: {
     cad: 'CAD',
     usd: 'USD'
+  },
+  entityAlertTypes: {
+    FROZEN: 'This business is frozen',
+    BAD_STANDING: 'This business is not in good standing',
+    LIQUIDATION: 'This business is in liquidation',
+    DISSOLUTION: 'This business is in the process of being dissolved',
+    PROCESSING: 'This name request is still processing, it may take up to 10 minutes.',
+    EXPIRED: 'This incorporation application is no longer valid; the name request is expired.'
   },
   labels: {
     note: 'Note',
@@ -198,7 +189,21 @@ export default {
     number: 'Number',
     type: 'Type',
     actions: 'Actions',
-    myList: 'My List ({count})'
+    myList: 'My List ({count})',
+    amalgamateNow: 'Amalgamate Now',
+    alterNow: 'Alter Now',
+    changeNameNow: 'Change Name Now',
+    continueInNow: 'Continue In Now',
+    downloadForm: 'Download Form',
+    registerNow: 'Register Now',
+    restoreNow: 'Restore Now',
+    reinstateNow: 'Reinstate Now',
+    openNameRequest: 'Open Name Request',
+    resumeDraft: 'Resume Draft',
+    removeFromTable: 'Remove From Table',
+    manageBusiness: 'Manage Business',
+    cancelRequest: 'Cancel Request',
+    amalgamateNowShortForm: 'Amalgamate Now (Short Form)'
   },
   links: {
     busCorpAct: {
@@ -247,6 +252,55 @@ export default {
     help: {
       title: 'Annual Report Overview - Service BC Annual Report'
     }
+  },
+  table: {
+    affiliation: {
+      filter: {
+        busName: {
+          aria: 'Filter by Business Name',
+          placeholder: 'Name',
+          clear: {
+            tooltip: 'Reset Name',
+            aria: 'Reset business name'
+          }
+        },
+        busNumber: {
+          aria: 'Filter by Business Number',
+          placeholder: 'Number',
+          clear: {
+            tooltip: 'Reset Number',
+            aria: 'Reset business number'
+          }
+        },
+        legalType: {
+          aria: 'Filter by legal type, {count} selected',
+          placeholder: 'Type',
+          selected: '{count} selected',
+          clear: {
+            tooltip: 'Reset Types',
+            aria: 'Reset legal types'
+          }
+        },
+        busStates: {
+          aria: 'Filter by business status, {count} selected',
+          placeholder: 'Status',
+          selected: '{count} selected',
+          clear: {
+            tooltip: 'Reset Status',
+            aria: 'Reset business status'
+          }
+        }
+      },
+      cell: {
+        name: {
+          approved: 'Name request, {name}, approved',
+          rejected: 'Name request, {name}, rejected'
+        }
+      }
+    }
+  },
+  tooltips: {
+    affiliationActionBtn: 'Go to {option} to access this business'
   },
   widgets: {
     feeSummary: {

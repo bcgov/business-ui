@@ -91,7 +91,7 @@ export const affiliationType = (business: Business): string => {
   return GetCorpFullDescription(code as CorpTypeCd)
 }
 
-/** Returns the status of the affiliation. */
+/** Returns the status of the affiliation. */ // TODO: add i18n for these states
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     return BusinessState.DRAFT
@@ -241,12 +241,10 @@ export const typeDescription = (business: Business): string => {
 
 // /** Returns true if the affiliation is approved to start an IA or Registration. */
 export const canUseNameRequest = (business: Business): boolean => {
-  // Split string tokens into an array to avoid false string matching
-  // const supportedEntityFlags = LaunchDarklyService.getFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
   return (
     isNameRequest(business) && // Is this a Name Request
     business.nameRequest?.enableIncorporation && // Is the Nr state approved (conditionally) or registration
-    // supportedEntityFlags.includes(business.nameRequest.legalType) && // Feature flagged Nr types
+    isModernizedEntity(business) && // Feature flagged Nr types
     !!business.nameRequest.expirationDate // Ensure NR isn't processing still
   ) ?? false
 }
