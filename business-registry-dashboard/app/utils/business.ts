@@ -1,3 +1,5 @@
+import { FilingTypes, AmalgamationTypes } from '@bcrs-shared-components/enums'
+
 // TODO: add launch darkly
 /**
  * Determines the display name of a given business object.
@@ -115,3 +117,158 @@ export function isSupportedRestorationEntities (item: Business): boolean {
 }
 // isSupportedRestorationEntities uses:
 // supported-restoration-entities: ""
+
+export async function createNamedBusiness ({ filingType, business }: { filingType: FilingTypes, business: Business}) {
+  if (!business.nameRequest) {
+    throw new Error('Name request is required to create a named business')
+  }
+
+  const currentAccountId = useConnectAccountStore().currentAccount.id
+  let filingBody: BusinessRequest = {} as BusinessRequest
+
+  // add in Business Type for SP
+  const addBusinessTypeforSP = (filingBody: BusinessRequest, business: Business): BusinessRequest => {
+    if (business.nameRequest) {
+      const registration = filingBody?.filing?.registration
+
+      if (registration) {
+        if (business.nameRequest.entityTypeCd === NrEntityType.FR) {
+          registration.businessType = CorpTypes.SOLE_PROP
+        } else if (business.nameRequest.entityTypeCd === NrEntityType.DBA) {
+          registration.businessType = NrEntityType.DBA
+        }
+      }
+    }
+    return filingBody
+  }
+
+  switch (filingType) {
+    case FilingTypes.AMALGAMATION_APPLICATION: {
+      filingBody = {
+        filing: {
+          business: {
+            legalType: business.nameRequest.legalType
+          },
+          header: {
+            accountId: Number(currentAccountId),
+            name: filingType
+          },
+          amalgamationApplication: {
+            type: AmalgamationTypes.REGULAR,
+            nameRequest: {
+              legalType: business.nameRequest.legalType,
+              nrNumber: business.businessIdentifier || business.nameRequest.nrNumber
+            }
+          }
+        }
+      }
+      break
+    }
+
+    case FilingTypes.INCORPORATION_APPLICATION: {
+      filingBody = {
+        filing: {
+          business: {
+            legalType: business.nameRequest.legalType
+          },
+          header: {
+            accountId: Number(currentAccountId),
+            name: filingType
+          },
+          incorporationApplication: {
+            nameRequest: {
+              legalType: business.nameRequest.legalType,
+              nrNumber: business.businessIdentifier || business.nameRequest.nrNumber
+            }
+          }
+        }
+      }
+
+      // add in Business Type for SP
+      if (business.nameRequest.legalType === CorpTypes.SOLE_PROP) {
+        addBusinessTypeforSP(filingBody, business)
+      }
+      break
+    }
+
+    case FilingTypes.REGISTRATION: {
+      filingBody = {
+        filing: {
+          business: {
+            legalType: business.nameRequest.legalType
+          },
+          header: {
+            accountId: Number(currentAccountId),
+            name: filingType
+          },
+          registration: {
+            business: {
+              natureOfBusiness: business.nameRequest.natureOfBusiness
+            },
+            nameRequest: {
+              legalType: business.nameRequest.legalType,
+              nrNumber: business.nameRequest.nrNumber
+            }
+          }
+        }
+      }
+
+      // add in Business Type for SP
+      addBusinessTypeforSP(filingBody, business)
+      break
+    }
+
+    case FilingTypes.CONTINUATION_IN: {
+      filingBody = {
+        filing: {
+          business: {
+            legalType: business.nameRequest.legalType
+          },
+          header: {
+            accountId: Number(currentAccountId),
+            name: filingType
+          },
+          continuationIn: {
+            nameRequest: {
+              legalType: business.nameRequest.legalType,
+              nrNumber: business.nameRequest.nrNumber
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const keycloak = useKeycloak()
+  const token = await keycloak.getToken()
+  const legalApiUrl = useRuntimeConfig().public.legalApiUrl
+  const authApiUrl = useRuntimeConfig().public.authApiURL
+
+  // create an affiliation between implicit org and requested business
+  // const response = await BusinessService.createDraftFiling(filingBody)
+  const response = await $fetch(`${legalApiUrl}/businesses?draft=true`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: filingBody
+  })
+  // if (response?.status >= 200 && response?.status < 300) {
+  if (response) {
+    return response
+  }
+
+  // delete the created affiliation if the update failed for avoiding orphan records
+  // unable to do this from backend, since it causes a circular dependency
+  const incorporationNumber = business.businessIdentifier
+  // await OrgService.removeAffiliation(Number(currentAccountId), incorporationNumber, undefined, false)
+  await $fetch(`${authApiUrl}/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: { data: { passcodeResetEmail: undefined, resetPasscode: false, logDeleteDraft: true } }
+  })
+
+  return { errorMsg: 'Cannot add business due to some technical reasons' }
+}

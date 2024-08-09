@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import type { DropdownItem } from '#ui/types'
 import {
-  NrRequestActionCodes
-  // FilingTypes
+  NrRequestActionCodes,
+  FilingTypes
   // NrRequestTypeCodes
 } from '@bcrs-shared-components/enums'
 // import AffiliationInvitationService from '@/services/affiliation-invitation.services'
@@ -22,43 +22,47 @@ const accountStore = useConnectAccountStore()
 const { t } = useI18n()
 
 /** Create a business record in LEAR. */ // TODO: implement
-// const createBusinessRecord = async (business: Business): Promise<string> => {
-//   // const amalgamationTypes = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
-//   // const continuationInTypes = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-//   const regTypes = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
-//   const iaTypes = [CorpTypes.BENEFIT_COMPANY, CorpTypes.COOP, CorpTypes.BC_CCC, CorpTypes.BC_COMPANY,
-//     CorpTypes.BC_ULC_COMPANY]
+async function createBusinessRecord (business: Business): Promise<string> {
+  // const amalgamationTypes = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
+  const ldAmalgTypes = 'BC BEN CC ULC' // use hardcoded for now
+  const amalgamationTypes = ldAmalgTypes.split(' ') || []
+  // const continuationInTypes = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
+  const ldContTypes = 'C CBEN CCC CUL' // use hardcoded for now
+  const continuationInTypes = ldContTypes.split(' ') || []
+  const regTypes = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
+  const iaTypes = [CorpTypes.BENEFIT_COMPANY, CorpTypes.COOP, CorpTypes.BC_CCC, CorpTypes.BC_COMPANY,
+    CorpTypes.BC_ULC_COMPANY]
 
-//   let filingResponse = null
-//   let payload = null
-//   // If Incorporation or Registration
-//   if (business.nameRequest?.requestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
-//     if (regTypes.includes(business.nameRequest?.legalType)) {
-//       payload = { filingType: FilingTypes.REGISTRATION, business }
-//     } else if (iaTypes.includes(business.nameRequest?.legalType)) {
-//       payload = { filingType: FilingTypes.INCORPORATION_APPLICATION, business }
-//     }
-//   }
-//   // else if (business.nameRequest?.requestActionCd === NrRequestActionCodes.AMALGAMATE) { // If Amalgmation
-//   //   if (amalgamationTypes.includes(business.nameRequest?.legalType)) {
-//   //     payload = { filingType: FilingTypes.AMALGAMATION_APPLICATION, business }
-//   //   }
-//   // } else if (business.nameRequest?.requestActionCd === NrRequestActionCodes.MOVE) {
-//   //   if (continuationInTypes.includes(business.nameRequest?.legalType)) {
-//   //     payload = { filingType: FilingTypes.CONTINUATION_IN, business }
-//   //   }
-//   // }
+  let filingResponse = null
+  let payload = null
+  // If Incorporation or Registration
+  if (business.nameRequest?.requestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
+    if (regTypes.includes(business.nameRequest?.legalType)) {
+      payload = { filingType: FilingTypes.REGISTRATION, business }
+    } else if (iaTypes.includes(business.nameRequest?.legalType)) {
+      payload = { filingType: FilingTypes.INCORPORATION_APPLICATION, business }
+    }
+  } else if (business.nameRequest?.requestActionCd === NrRequestActionCodes.AMALGAMATE) { // If Amalgmation
+    if (amalgamationTypes.includes(business.nameRequest?.legalType)) {
+      payload = { filingType: FilingTypes.AMALGAMATION_APPLICATION, business }
+    }
+  } else if (business.nameRequest?.requestActionCd === NrRequestActionCodes.MOVE) {
+    if (continuationInTypes.includes(business.nameRequest?.legalType)) {
+      payload = { filingType: FilingTypes.CONTINUATION_IN, business }
+    }
+  }
 
-//   if (payload) {
-//     filingResponse = await businessStore.createNamedBusiness(payload)
-//   }
+  if (payload) {
+    // filingResponse = await businessStore.createNamedBusiness(payload)
+    filingResponse = await createNamedBusiness(payload)
+  }
 
-//   if (filingResponse?.errorMsg) {
-//     emit('unknown-error')
-//     return ''
-//   }
-//   return filingResponse.data.filing.business.identifier
-// }
+  if (filingResponse?.errorMsg) {
+    emit('unknown-error')
+    return ''
+  }
+  return filingResponse.filing.business.identifier
+}
 
 const isOpenExternal = (item: Business): boolean => {
   const invitationStatus = item?.affiliationInvites?.[0]?.status
@@ -252,10 +256,10 @@ const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: 
 const handleApprovedNameRequest = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
   switch (nrRequestActionCd) {
     case NrRequestActionCodes.AMALGAMATE:
-      affNav.goToAmalgamate()
+      affNav.goToAmalgamate(item, createBusinessRecord)
       break
     case NrRequestActionCodes.MOVE: {
-      affNav.goToContinuationIn()
+      affNav.goToContinuationIn(item, createBusinessRecord)
       break
     }
     case NrRequestActionCodes.CONVERSION:
@@ -267,7 +271,7 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd: NrRequestA
       handleApprovedNameRequestRenew(item)
       break
     case NrRequestActionCodes.NEW_BUSINESS: {
-      affNav.goToRegister(item)
+      affNav.goToRegister(item, createBusinessRecord)
       break
     }
     default:

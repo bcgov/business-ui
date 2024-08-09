@@ -87,6 +87,7 @@ export const useAffiliations = () => {
   watch(
     [() => accountStore.currentAccount.id],
     async () => {
+      console.log('running watch')
       await getAffiliatedEntities()
     },
     { immediate: true }
