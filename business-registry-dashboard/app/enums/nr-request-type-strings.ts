@@ -16,10 +16,10 @@ export enum NrRequestTypeStrings {
   // AL = 'Assumed Name', // Extraprovincial Limited Liability Company
   // AS = 'Assumed Name', // (Future) Extraprovincial Cooperative
   // UA = 'Assumed Name', // (Future) Extraprovincial Unlimited Liability Company
-  // XASO = 'Assumed Name', // Extraprovincial Society
+  XASO = 'Assumed Name', // Extraprovincial Society
 
   // Change Assumed Name (not used to display NR type, kept for reference)
-  // XCASO = 'Change Assumed Name', // Extraprovincial Society
+  XCASO = 'Change Assumed Name', // Extraprovincial Society
 
   // Continuation in
   BECT = 'Continuation In', // BC Benefit Company Incorporation
