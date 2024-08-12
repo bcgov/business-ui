@@ -35,7 +35,6 @@ export function determineDisplayName (
   }
 }
 
-// TODO: fix ts error
 /* Internal function to build the business object. */
 export function buildBusinessObject (resp: AffiliationResponse): Business {
   return {
@@ -47,7 +46,7 @@ export function buildBusinessObject (resp: AffiliationResponse): Business {
             resp.legalName, resp.legalType, resp.identifier, resp.alternateNames)
         }),
     ...(resp.contacts && { contacts: resp.contacts }),
-    ...((resp.draftType || resp.legalType) && { corpType: { code: resp.draftType || resp.legalType } }),
+    corpType: { code: resp.draftType || resp.legalType! }, // TODO: confirm legalType is never undefined?
     ...(resp.legalType && { corpSubType: { code: resp.legalType } }),
     ...(resp.folioNumber && { folioNumber: resp.folioNumber }),
     ...(resp.lastModified && { lastModified: resp.lastModified }),
