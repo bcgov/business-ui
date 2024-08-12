@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { handleFormInputVariant } from '~/app/utils/handleFormInputVariant'
 
 describe('handleFormInputVariant', () => {
   it('returns the expected string', () => {
@@ -16,7 +15,7 @@ describe('handleFormInputVariant', () => {
     ]
 
     tests.forEach((test) => {
-      const result = handleFormInputVariant(test[0], formErrors)
+      const result = handleFormInputVariant(test[0]!, formErrors)
 
       expect(result).toBe(test[1])
     })
