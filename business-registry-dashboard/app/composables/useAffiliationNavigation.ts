@@ -56,12 +56,11 @@ export function useAffiliationNavigation () {
     return navigateTo(redirectURL, { open: { target: '_blank' } })
   }
 
-  function goToRegister (item: Business) {
-    // if (isModernizedEntity(item)) { // TODO: implement after adding affiliation invitations after adding launch darkly
-    //   const businessIdentifier = await createBusinessRecord(item)
-    // affNav.goToDashboard(businessIdentifier)
-    // } else if (isSocieties(item)) {
-    if (isSocieties(item)) {
+  async function goToRegister (item: Business, cb: (item: Business) => Promise<string>) {
+    if (isModernizedEntity(item)) {
+      const businessIdentifier = await cb(item)
+      goToDashboard(businessIdentifier)
+    } else if (isSocieties(item)) {
       goToSocieties()
     } else if (isOtherEntities(item)) {
       goToFormPage(getEntityType(item))
@@ -70,24 +69,22 @@ export function useAffiliationNavigation () {
     }
   }
 
-  // const goToAmalgamate = async (item: Business) => {
-  function goToAmalgamate () { // TODO: implement after adding affiliation invitations after adding launch darkly
-    // if (isSupportedAmalgamationEntities(item)) {
-    //   const businessIdentifier = await createBusinessRecord(item)
-    //   goToDashboard(businessIdentifier)
-    // } else {
-    goToCorpOnline()
-    // }
+  async function goToAmalgamate (item: Business, cb: (item: Business) => Promise<string>) {
+    if (isSupportedAmalgamationEntities(item)) {
+      const businessIdentifier = await cb(item)
+      goToDashboard(businessIdentifier)
+    } else {
+      goToCorpOnline()
+    }
   }
 
-  // const goToContinuationIn = async (item: Business): Promise<void> => {
-  function goToContinuationIn () { // TODO: implement after adding affiliation invitations after adding launch darkly
-    // if (isSupportedContinuationInEntities(item)) {
-    //   const businessIdentifier = await createBusinessRecord(item)
-    //   goToDashboard(businessIdentifier)
-    // } else {
-    goToCorpOnline()
-    // }
+  async function goToContinuationIn (item: Business, cb: (item: Business) => Promise<string>) {
+    if (isSupportedContinuationInEntities(item)) {
+      const businessIdentifier = await cb(item)
+      goToDashboard(businessIdentifier)
+    } else {
+      goToCorpOnline()
+    }
   }
 
   return {

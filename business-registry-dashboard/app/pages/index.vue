@@ -383,17 +383,14 @@ const selectedStates = ref([])
           <TableAffiliatedEntityAction
             :item="row"
             :index="index"
+            :affiliations="affiliations.results"
+            @unknown-error="() => console.log('unknown error emitted')"
+            @business-unavailable-error="() => console.log('business unavailable error emitted')"
+            @remove-affiliation-invitation="() => console.log('remove-affiliation-invitation emitted')"
+            @remove-business="() => console.log('remove-business emitted')"
+            @resend-affiliation-invitation="() => console.log('resend-affiliation-invitation emitted')"
+            @show-manage-business-dialog="() => console.log('show-manage-business-dialog emitted')"
           />
-          <!-- <AffiliationAction
-            :item="row"
-            :index="index"
-            @unknown-error="$emit('unknown-error', $event)"
-            @remove-affiliation-invitation="$emit('remove-affiliation-invitation', $event)"
-            @remove-business="$emit('remove-business', $event)"
-            @business-unavailable-error="$emit('business-unavailable-error', $event)"
-            @resend-affiliation-invitation="$emit('resend-affiliation-invitation', $event)"
-            @show-manage-business-dialog="$emit('show-manage-business-dialog', $event)"
-          /> -->
         </template>
         <!-- end table cell slots -->
       </UTable>

@@ -79,7 +79,8 @@ export default defineNuxtConfig({
       lpFormsUrl: process.env.NUXT_APP_LP_FORMS_URL,
       xlpFormUrl: process.env.NUXT_APP_XLP_FORMS_URL,
       businessUrl: process.env.NUXT_DASHBOARD_URL,
-      corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL
+      corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL,
+      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`
     }
   },
 
