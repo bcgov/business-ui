@@ -1,4 +1,4 @@
-import type { FeeData, FeeInfo, FeeType, PayFeesApiQueryParams } from '~/app/interfaces/fees'
+import type { FeeData, FeeInfo, FeeType, PayFeesApiQueryParams } from '~~/app/interfaces/fees'
 
 function constructFeeInfoURL (filingData: FeeData): string {
   const runtimeConfig = useRuntimeConfig()
@@ -17,7 +17,7 @@ function getPayFeesApiQueryParams (filingData: FeeData): PayFeesApiQueryParams {
 function fetchFee (filingData: FeeData): Promise<FeeInfo> | undefined {
   try {
     const { $keycloak } = useNuxtApp()
-    const accountStore = useAccountStore()
+    const accountStore = useConnectAccountStore()
     const url = constructFeeInfoURL(filingData)
     const queryParams = getPayFeesApiQueryParams(filingData)
     return $fetch<FeeInfo>(url, {
