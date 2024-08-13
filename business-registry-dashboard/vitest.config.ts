@@ -1,16 +1,6 @@
 import { fileURLToPath } from 'node:url'
+import path from 'path'
 import { defineVitestConfig } from '@nuxt/test-utils/config'
-// import Keycloak from 'keycloak-js'
-// import { vi } from 'vitest'
-// import keycloakClient from './plugins/keycloak.client'
-// import mockedKeycloak from './tests/mocks/mockedKeycloak'
-
-// const mockedKeycloak: Partial<Keycloak> = {
-//   init: vi.fn(),
-//   login: vi.fn(),
-//   logout: vi.fn(),
-//   authenticated: true
-// }
 
 export default defineVitestConfig({
   test: {
@@ -18,7 +8,7 @@ export default defineVitestConfig({
     dir: 'tests',
     coverage: {
       provider: 'v8',
-      reportsDirectory: './tests/coverage',
+      reportsDirectory: path.resolve(__dirname, 'tests/coverage'), // This ensures an absolute path,
       include: [
         'pages/**',
         'layouts/**',
