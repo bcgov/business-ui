@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { countrySubdivisions, isoCountriesList } from '~/app/utils/isoCountriesList'
 
 describe('isoCountriesList Util', () => {
   describe('isoCountriesList', () => {

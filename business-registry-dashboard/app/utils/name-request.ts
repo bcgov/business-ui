@@ -11,7 +11,7 @@ export function mapRequestActionCdToNrType (requestActionCd: NrRequestActionCode
 
 /** use NR request type code to get NR type from enum */
 export function mapRequestTypeCdToNrType (requestTypeCd: NrRequestTypeCodes): string {
-  return NrRequestTypeStrings[requestTypeCd] as string // TODO: fix ts error
+  return NrRequestTypeStrings[requestTypeCd] as string
 }
 
 // TODO: add launch darkly

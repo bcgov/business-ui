@@ -123,7 +123,8 @@ export const useAffiliations = () => {
 
   return {
     getAffiliatedEntities,
-    affiliations
+    affiliations,
+    resetAffiliations
     // clearAllFilters,
     // updateFilter,
   }

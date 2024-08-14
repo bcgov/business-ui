@@ -89,13 +89,11 @@ export interface Applicant {
 
 // Names interface to match external data provided from lear.
 export interface Names {
-
     decision_text: string,
     name_type_cd: string,
     designation: string,
     name: string,
     state: string
-
 }
 
 // Actions interface to match external data provided from lear.

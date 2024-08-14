@@ -178,7 +178,7 @@ export const isProcessing = (state: string): boolean => {
 }
 
 // /** Returns true if the affiliation is a numbered IA. */
-const isNumberedIncorporationApplication = (item: Business): boolean => {
+export const isNumberedIncorporationApplication = (item: Business): boolean => {
   if (!item.corpSubType?.code) {
     return false
   }
@@ -204,14 +204,14 @@ export const number = (business: Business): string => {
   return business.businessIdentifier
 }
 
-const getApprovedName = (business: Business): string => {
+export const getApprovedName = (business: Business): string => {
   const approvedNameObj = business.nameRequest?.names?.find(each => each.state === NrState.APPROVED)
   const approvedName = approvedNameObj?.name
   return approvedName || ''
 }
 
 /** Returns the name of the affiliation. */
-export const name = (item: Business): string => {
+export const affiliationName = (item: Business): string => {
   if (isNumberedIncorporationApplication(item)) {
     const legalType: unknown = item.corpSubType?.code
     // provide fallback for old numbered IAs without corpSubType
@@ -254,7 +254,7 @@ export const nameRequestType = (business: Business): string => {
   let nrType: string = ''
   if (isNameRequest(business) && business.nameRequest?.requestActionCd) {
     // Try action code first, and if not found in the enum then use type code
-    nrType = mapRequestActionCdToNrType(business.nameRequest?.requestActionCd)
+    nrType = mapRequestActionCdToNrType(business.nameRequest?.requestActionCd) // this only returns if its an almagation
     if (business.nameRequest?.requestTypeCd) {
       nrType = nrType || mapRequestTypeCdToNrType(business.nameRequest?.requestTypeCd)
     }

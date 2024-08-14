@@ -317,7 +317,7 @@ const selectedStates = ref([])
               v-else
               class="font-semibold text-gray-900"
             >
-              {{ name(row) }}
+              {{ affiliationName(row) }}
             </strong>
           </span>
 
