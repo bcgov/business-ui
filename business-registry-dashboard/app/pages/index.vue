@@ -101,20 +101,7 @@ const selectedStates = ref([])
           help: 'mt-2 text-xs text-gray-600',
         }"
       >
-        <UInput
-          variant="bcGovLg"
-          :placeholder="$t('page.home.busOrNRSearch.placeholder')"
-          :ui="{
-            base: 'bg-white',
-            placeholder: 'placeholder-gray-400 placeholder:text-base',
-            icon: {
-              base: 'text-gray-600',
-              size: { sm: 'size-6' }
-            }
-          }"
-          icon="i-mdi-magnify"
-          trailing
-        />
+        <BusinessLookup />
       </UFormGroup>
 
       <!-- TODO: link with search query -->

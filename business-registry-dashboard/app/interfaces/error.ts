@@ -1,6 +1,3 @@
-import { ErrorCategory } from '~/app/enums/error-category'
-import { ErrorCode } from '~/app/enums/error-code'
-
 export interface Error {
   category: ErrorCategory,
   detail?: string,

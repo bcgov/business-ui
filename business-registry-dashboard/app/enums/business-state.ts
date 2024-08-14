@@ -1,4 +1,5 @@
 export enum BusinessState {
   ACTIVE = 'Active',
-  DRAFT = 'Draft'
+  DRAFT = 'Draft',
+  HISTORICAL = 'Historical',
 }
