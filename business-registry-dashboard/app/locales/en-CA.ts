@@ -215,7 +215,8 @@ export default {
     i: 'I',
     addresses: 'Addresses',
     directors: 'Directors',
-    confirm: 'Confirm'
+    confirm: 'Confirm',
+    select: 'Select'
   },
   page: {
     notFound: {
@@ -251,6 +252,13 @@ export default {
     },
     help: {
       title: 'Annual Report Overview - Service BC Annual Report'
+    }
+  },
+  regSearch: {
+    error: 'Error retrieving search results, please try again later.',
+    empty: {
+      title: 'No active B.C. business found',
+      content: 'Ensure you have entered the correct business name or number.'
     }
   },
   table: {

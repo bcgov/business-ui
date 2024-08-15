@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { UInput } from '#components'
 
+const emit = defineEmits<{select: [item: RegSearchResult]}>()
+
 const inputRef = ref<InstanceType<typeof UInput> | null>(null)
 const resultListItems = ref<NodeListOf<HTMLLIElement> | null>(null)
 
-const { combo, keyupHandler, handleInput, emitSearchResult } = useComboBox(inputRef, resultListItems)
-
+const combo = reactive(useComboBox(inputRef, resultListItems, (item: RegSearchResult) => emit('select', item)))
 </script>
 <template>
   <div>
@@ -32,27 +33,20 @@ const { combo, keyupHandler, handleInput, emitSearchResult } = useComboBox(input
       }"
       icon="i-mdi-magnify"
       trailing
-      @keyup="keyupHandler"
+      @keyup="combo.keyupHandler"
       @focus="combo.hasFocus = true"
       @blur="combo.hasFocus = false"
-      @input="handleInput"
+      @input="combo.handleInput"
     />
     <div
-      v-show="combo.showDropdown && combo.hasFocus"
+      v-show="combo.showDropdown && combo.hasFocus && !combo.loading"
       class="absolute z-[999] max-h-72 w-full overflow-auto rounded-b-md bg-white shadow-md"
     >
-      <div
-        v-if="combo.error"
-        class="flex flex-col gap-2 px-4 py-2"
-      >
-        <span class="font-semibold">Error retrieving search results, please try again later.</span>
+      <div v-if="combo.error">
+        <slot name="error" />
       </div>
-      <div
-        v-else-if="combo.results.length === 0"
-        class="flex flex-col gap-2 px-4 py-2"
-      >
-        <span class="font-semibold">No active B.C. business found</span>
-        <span>Ensure you have entered the correct business name or number.</span>
+      <div v-else-if="combo.results.length === 0">
+        <slot name="empty" />
       </div>
       <ul
         v-else
@@ -68,7 +62,7 @@ const { combo, keyupHandler, handleInput, emitSearchResult } = useComboBox(input
           role="option"
           aria-selected="false"
           class="cursor-pointer p-4 transition-colors ease-linear hover:bg-[#e4edf7] aria-selected:bg-[#e4edf7]"
-          @mousedown="emitSearchResult(item)"
+          @mousedown="combo.emitSearchResult(item)"
         >
           <div class="flex items-center justify-between">
             <div class="flex-1">
@@ -78,13 +72,17 @@ const { combo, keyupHandler, handleInput, emitSearchResult } = useComboBox(input
               <span>{{ item.name }}</span>
             </div>
             <div class="flex-1 text-right">
-              <span class="text-sm text-blue-500">Select</span>
+              <span class="text-sm text-blue-500">{{ $t('words.select') }}</span>
             </div>
           </div>
         </li>
       </ul>
     </div>
-    <span role="status" class="sr-only">
+    <span
+      v-if="combo.query !== ''"
+      role="status"
+      class="sr-only"
+    >
       {{ combo.statusText }}
     </span>
   </div>

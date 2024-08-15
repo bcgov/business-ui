@@ -101,7 +101,17 @@ const selectedStates = ref([])
           help: 'mt-2 text-xs text-gray-600',
         }"
       >
-        <BusinessLookup />
+        <BusinessLookup @select="(e) => console.log('select: ', e)">
+          <template #error>
+            <span class="font-semibold">{{ $t('regSearch.error') }}</span>
+          </template>
+          <template #empty>
+            <div class="flex flex-col gap-2 px-4 py-2">
+              <span class="font-semibold">{{ $t('regSearch.empty.title') }}</span>
+              <span>{{ $t('regSearch.empty.content') }}</span>
+            </div>
+          </template>
+        </BusinessLookup>
       </UFormGroup>
 
       <!-- TODO: link with search query -->
