@@ -101,20 +101,17 @@ const selectedStates = ref([])
           help: 'mt-2 text-xs text-gray-600',
         }"
       >
-        <UInput
-          variant="bcGovLg"
-          :placeholder="$t('page.home.busOrNRSearch.placeholder')"
-          :ui="{
-            base: 'bg-white',
-            placeholder: 'placeholder-gray-400 placeholder:text-base',
-            icon: {
-              base: 'text-gray-600',
-              size: { sm: 'size-6' }
-            }
-          }"
-          icon="i-mdi-magnify"
-          trailing
-        />
+        <AsyncComboBox @select="(e) => console.log('select: ', e)">
+          <template #error>
+            <span class="font-semibold">{{ $t('regSearch.error') }}</span>
+          </template>
+          <template #empty>
+            <div class="flex flex-col gap-2 px-4 py-2">
+              <span class="font-semibold">{{ $t('regSearch.empty.title') }}</span>
+              <span>{{ $t('regSearch.empty.content') }}</span>
+            </div>
+          </template>
+        </AsyncComboBox>
       </UFormGroup>
 
       <!-- TODO: link with search query -->

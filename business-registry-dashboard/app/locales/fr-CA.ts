@@ -215,7 +215,8 @@ export default {
     i: 'Je',
     addresses: 'Adresses',
     directors: 'Directeurs',
-    confirm: 'Confirmer' // TODO: end review
+    confirm: 'Confirmer',
+    select: 'Sélectionner'
   },
   page: {
     notFound: {
@@ -251,6 +252,13 @@ export default {
     },
     help: { // TODO: review help page translations
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
+    }
+  },
+  regSearch: {
+    error: 'Erreur lors de la récupération des résultats de recherche, veuillez réessayer plus tard.',
+    empty: {
+      title: 'Aucun actif en CB. entreprise trouvée',
+      content: "Assurez-vous de saisir le nom ou le numéro correct de l'entreprise."
     }
   },
   table: {
