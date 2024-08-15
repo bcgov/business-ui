@@ -2,33 +2,116 @@ import { UInput } from '#components'
 
 export const useComboBox = (
   inputRef: Ref<InstanceType<typeof UInput> | null>,
-  resultListItems: Ref<NodeListOf<HTMLLIElement> | null>,
-  searchResults: Ref<any[]>
+  resultListItems: Ref<NodeListOf<HTMLLIElement> | null>
 ) => {
-  const comboValues = reactive({
+  const config = useRuntimeConfig().public
+  const accountStore = useConnectAccountStore()
+  const keycloak = useKeycloak()
+
+  const combo = reactive<{
+    query: string,
+    loading: boolean,
+    showDropdown: boolean,
+    hasFocus: boolean,
+    results: RegSearchResult[],
+    statusText: string,
+    error: boolean
+  }>({
     query: '',
+    loading: false,
     showDropdown: false,
-    hasFocus: false
+    hasFocus: false,
+    results: [],
+    statusText: '',
+    error: false
   })
 
-  // set combobox aria values
+  const fetchResults = async () => {
+    try {
+      if (combo.query.trim() === '') {
+        combo.results = []
+        return
+      }
+
+      combo.statusText = ''
+      combo.error = false
+
+      const token = await keycloak.getToken()
+      const response = await $fetch<RegSearchResponse>(`${config.regSearchApiUrl}/search/businesses`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'x-apikey': config.xApiKey,
+          'Account-Id': accountStore.currentAccount.id
+        },
+        body: {
+          query: {
+            value: combo.query
+          },
+          categories: {
+            status: ['ACTIVE'],
+            legalType: ['A', 'BC', 'BEN', 'C', 'CBEN', 'CC', 'CCC', 'CP', 'CUL', 'FI', 'GP', 'LL', 'LLC', 'LP', 'PA', 'S', 'SP', 'ULC', 'XCP', 'XL', 'XP', 'XS']
+          },
+          rows: 20,
+          start: 0
+        }
+      })
+
+      if (response.searchResults.results.length) {
+        combo.results = response.searchResults.results
+        setTimeout(() => {
+          combo.statusText = `${combo.results.length} results`
+        }, 300)
+      }
+    } catch (e) {
+      console.log('Error fetching search results:', e)
+      combo.error = true
+      setTimeout(() => {
+        combo.statusText = 'Error retrieving search results'
+      }, 300)
+    } finally {
+      combo.loading = false
+    }
+  }
+
+  const debouncedFetchResults = useDebounceFn(fetchResults, 500)
+
+  const getResults = () => {
+    combo.loading = true
+    debouncedFetchResults()
+  }
+
   function setActiveElement (element: HTMLElement) {
+    // reset all elements first
     resetActiveElement()
+    // set active <li> element
     element.setAttribute('aria-selected', 'true')
-    inputRef.value?.input.setAttribute('aria-activedescendant', element.id)
+    element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+
+    // set <input> active-descendant attr to correct <li> item
+    inputRef.value.input.setAttribute('aria-activedescendant', element.id)
   }
 
   function resetActiveElement () {
+    // remove aria-selected attr from all result <li>s
     resultListItems.value?.forEach((item) => {
       item.removeAttribute('aria-selected')
     })
-    inputRef.value?.input.removeAttribute('aria-activedescendant')
+
+    // remove aria-activedescendant attr from <input>
+    inputRef.value.input.removeAttribute('aria-activedescendant')
   }
 
-  function getActiveElementIndex (): number {
+  // find active <li> index in search results list
+  function getActiveElementIndex () {
     if (resultListItems.value) {
+      // convert nodelist into array
       const resultArray = Array.from(resultListItems.value)
-      return resultArray.findIndex(el => el.getAttribute('aria-selected') === 'true')
+
+      // return active index
+      return resultArray.findIndex(
+        el => el.getAttribute('aria-selected') === 'true'
+      )
     } else {
       return -1
     }
@@ -37,82 +120,127 @@ export const useComboBox = (
   function keyupHandler (e: KeyboardEvent) {
     const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', 'Tab']
     const key = e.code
-    const activeElIndex = getActiveElementIndex()
-    const resultMax = searchResults.value.length - 1
+    const activeElIndex = getActiveElementIndex() // get aria-activedescendant index or return -1
+    const resultMax = combo.results.length - 1 // last <li> element index
 
     if (key === 'Tab') {
-      comboValues.showDropdown = false
+      combo.showDropdown = false
       resetActiveElement()
-      comboValues.hasFocus = false
+      combo.hasFocus = false
     }
 
-    if (comboValues.hasFocus && comboValues.showDropdown) {
+    // // only continue if the <input> is focused and the dropdown is open
+    if (combo.hasFocus && combo.showDropdown) {
+      // remove aria-activedescendant and aria-active if user had an item selected but then keeps typing
       if (!allowedKeys.includes(key) && activeElIndex >= 0) {
         resetActiveElement()
         return
       }
       switch (key) {
-        case 'ArrowDown':
+        // handle arrowdown
+        case 'ArrowDown': {
           e.preventDefault()
-          if (resultListItems.value?.length === 0) { return }
-          if (activeElIndex === -1 || activeElIndex === resultMax) {
-            setActiveElement(resultListItems.value[0])
-          } else {
-            setActiveElement(resultListItems.value[activeElIndex + 1])
+          if (!resultListItems.value || resultListItems.value?.length === 0) { return } // return early if in error or no results state
+          // set focus to first <li> if no currently active <li> or if event fired from last <li>, else add 1
+          const nextIndex = activeElIndex === -1 || activeElIndex === resultMax ? 0 : activeElIndex + 1
+          const nextElement = resultListItems.value[nextIndex]
+          if (nextElement) {
+            setActiveElement(nextElement)
           }
           break
-        case 'ArrowUp':
+        }
+        // handle arrow up
+        case 'ArrowUp': {
           e.preventDefault()
-          if (resultListItems.value?.length === 0) { return }
-          if (activeElIndex <= 0) {
-            setActiveElement(resultListItems.value[resultMax])
-          } else {
-            setActiveElement(resultListItems.value[activeElIndex - 1])
+          if (!resultListItems.value || resultListItems.value.length === 0) {
+            return // return early if in error or no results state
+          }
+          const prevIndex = activeElIndex <= 0 ? resultMax : activeElIndex - 1
+          const prevElement = resultListItems.value[prevIndex]
+          if (prevElement) {
+            setActiveElement(prevElement)
           }
           break
+        }
+        // handle enter
         case 'Enter':
           e.preventDefault()
-          if (activeElIndex >= 0) {
-            console.log('enter key pressed, active element: ', searchResults.value[activeElIndex])
-            // Your callback logic here
+          // do nothing if no active element
+          if (activeElIndex >= 0 && combo.results[activeElIndex]) {
+            emitSearchResult(combo.results[activeElIndex] as RegSearchResult)
           }
           break
+        // handle escape, close dropdown, reset active element and search results
         case 'Escape':
           e.preventDefault()
-          comboValues.showDropdown = false
+          combo.showDropdown = false
           resetActiveElement()
-          searchResults.value = []
+          combo.results = []
           break
+
         default:
           break
       }
-    } else if (comboValues.hasFocus && !comboValues.showDropdown && comboValues.query !== '') {
+      // allow enter and escape keys if input is not empty, has focus and dropdown is closed
+    } else if (
+      combo.hasFocus &&
+      !combo.showDropdown &&
+      combo.query !== ''
+    ) {
       switch (key) {
+        // clear input field and reset search results
         case 'Escape':
           e.preventDefault()
-          comboValues.query = ''
+          combo.query = ''
           resetActiveElement()
-          searchResults.value = []
+          combo.results = []
           break
+
+        // rerun search and display results
         case 'Enter':
           e.preventDefault()
           resetActiveElement()
-          searchResults.value = []
-          comboValues.showDropdown = true
-          console.log('re run search results')
-          // Your search logic here
+          combo.results = []
+          combo.showDropdown = true
+          getResults()
           break
+
         default:
           break
       }
     }
   }
 
+  // select and dispatch event with selected item, cleanup ui
+  function emitSearchResult (result: RegSearchResult) {
+    console.log(inputRef.value.input)
+    console.log('Selected Result:', result)
+
+    combo.query = result.name
+    combo.showDropdown = false
+    resetActiveElement()
+    combo.results = []
+
+    setTimeout(() => {
+      inputRef.value.input.focus()
+    }, 0)
+  }
+
+  function handleInput (e: Event) {
+    combo.query = (e.target as HTMLInputElement).value
+    if (combo.query !== '') {
+      getResults()
+      combo.showDropdown = true
+    } else {
+      combo.showDropdown = false
+    }
+  }
+
   return {
-    setActiveElement,
-    resetActiveElement,
-    getActiveElementIndex,
+    combo,
+    getResults,
     keyupHandler,
-    comboValues
+    handleInput,
+    emitSearchResult
   }
 }
