@@ -125,7 +125,6 @@ export const useComboBox = (
 
     if (key === KeyCode.TAB) {
       resetDropdown()
-      hasFocus.value = false
     }
 
     // only continue if the <input> is focused and the dropdown is open
