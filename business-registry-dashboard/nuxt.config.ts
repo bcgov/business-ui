@@ -63,7 +63,7 @@ export default defineNuxtConfig({
     public: {
       // Keys within public, will be also exposed to the client-side
       payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
-      registryHomeURL: process.env.NUXT_APP_REGISTRY_HOME_URL,
+      registryHomeURL: process.env.NUXT_REGISTRY_HOME_URL,
       appURL: process.env.NUXT_APP_URL,
       barApiUrl: `${process.env.NUXT_BAR_API_URL || ''}${process.env.NUXT_BAR_API_VERSION || ''}`,
       paymentPortalUrl: process.env.NUXT_PAYMENT_PORTAL_URL,
