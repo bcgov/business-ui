@@ -101,7 +101,7 @@ const selectedStates = ref([])
           help: 'mt-2 text-xs text-gray-600',
         }"
       >
-        <BusinessLookup @select="(e) => console.log('select: ', e)">
+        <AsyncComboBox @select="(e) => console.log('select: ', e)">
           <template #error>
             <span class="font-semibold">{{ $t('regSearch.error') }}</span>
           </template>
@@ -111,7 +111,7 @@ const selectedStates = ref([])
               <span>{{ $t('regSearch.empty.content') }}</span>
             </div>
           </template>
-        </BusinessLookup>
+        </AsyncComboBox>
       </UFormGroup>
 
       <!-- TODO: link with search query -->

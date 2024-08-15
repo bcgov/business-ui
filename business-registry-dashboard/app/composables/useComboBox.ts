@@ -27,7 +27,7 @@ export const useComboBox = (
 
   const fetchResults = async () => {
     try {
-      if (query.value.trim() === '') {
+      if (query.value.trim() === '') { // return if query is empty
         resetDropdown()
         return
       }
@@ -56,18 +56,18 @@ export const useComboBox = (
         }
       })
 
-      if (response.searchResults.results.length) {
+      if (response.searchResults.results.length >= 0) {
         results.value = response.searchResults.results
         setTimeout(() => {
           statusText.value = `${results.value.length} results`
-        }, 300)
+        }, 300) // delay so screen reader is updated correctly
       }
     } catch (e) {
-      console.log('Error fetching search results:', e)
+      console.error('Error fetching search results:', e)
       error.value = true
       setTimeout(() => {
         statusText.value = 'Error retrieving search results'
-      }, 300)
+      }, 300) // delay so screen reader is updated correctly
     } finally {
       loading.value = false
     }
