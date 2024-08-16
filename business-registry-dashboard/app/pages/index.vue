@@ -10,7 +10,7 @@ definePageMeta({
   order: 0
 })
 
-const selected = ref('')
+const selected = ref('reg')
 
 const columns = [
   {
@@ -90,7 +90,6 @@ const selectedStates = ref([])
       <HelpTextSection />
     </div>
     <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
-      <!-- TODO: link search with query -->
       <UFormGroup
         :label="$t('page.home.busOrNRSearch.label')"
         :help="$t('page.home.busOrNRSearch.help')"
@@ -101,14 +100,34 @@ const selectedStates = ref([])
           help: 'mt-2 text-xs text-gray-600',
         }"
       >
-        <AsyncComboBox @select="(e) => console.log('select: ', e)">
-          <template #error>
-            <span class="font-semibold">{{ $t('regSearch.error') }}</span>
-          </template>
+        <AsyncComboBox
+          :key="selected"
+          :search-fn="selected === 'reg' ? regSearch : namexSearch"
+          :id-attr="selected === 'reg' ? 'identifier' : 'nrNum'"
+          :value-attr="selected === 'reg' ? 'name' : 'nrNum'"
+          :text="{ placeholder: $t(`search.${selected}.placeholder`), arialabel: $t(`search.${selected}.arialabel`)}"
+          @select="(e) => console.log('select: ', e)"
+        >
           <template #empty>
             <div class="flex flex-col gap-2 px-4 py-2">
-              <span class="font-semibold">{{ $t('regSearch.empty.title') }}</span>
-              <span>{{ $t('regSearch.empty.content') }}</span>
+              <span class="font-semibold">{{ $t(`search.${selected}.empty.title`) }}</span>
+              <span>{{ $t(`search.${selected}.empty.content`) }}</span>
+            </div>
+          </template>
+          <template #item="{ item }">
+            <div class="flex items-center justify-between gap-2">
+              <div class="max-w-36 flex-1">
+                <span>{{ selected === 'reg' ? item.identifier : item.nrNum }}</span>
+              </div>
+              <div v-if="selected === 'reg'" class="flex-1">
+                <span>{{ item.name }}</span>
+              </div>
+              <div v-else class="flex flex-1 flex-col gap-1">
+                <span v-for="name in item.names" :key="name">{{ name }}</span>
+              </div>
+              <div class="text-right">
+                <span class="text-sm text-blue-500">{{ $t('words.select') }}</span>
+              </div>
             </div>
           </template>
         </AsyncComboBox>
@@ -118,7 +137,7 @@ const selectedStates = ref([])
       <URadioGroup
         v-model="selected"
         :legend="$t('page.home.busOrNRSearch.opts.legend')"
-        :options="[{value: 'opt1', label: $t('page.home.busOrNRSearch.opts.existingBus')}, {value: 'opt2', label: $t('page.home.busOrNRSearch.opts.nr')}]"
+        :options="[{value: 'reg', label: $t('page.home.busOrNRSearch.opts.existingBus')}, {value: 'namex', label: $t('page.home.busOrNRSearch.opts.nr')}]"
         :ui="{
           fieldset: 'flex gap-4',
           legend: 'sr-only',
