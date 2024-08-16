@@ -266,4 +266,30 @@ describe('useComboBox', () => {
     expect(showDropdown.value).toBe(false)
     expect(onSelectMock).toHaveBeenCalledWith(result)
   })
+
+  it('does not search on empty query', async () => {
+    const mockSearchFn = vi.fn().mockResolvedValue([
+      { identifier: '1', name: 'Item 1' },
+      { identifier: '2', name: 'Item 2' }
+    ])
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
+      }
+    })
+
+    const { query, results, getResults } = wrapper.setupState
+
+    query.value = '' // Simulate empty query
+    getResults()
+
+    expect(results.value).toEqual([]) // Ensure results are reset
+    expect(mockSearchFn).not.toHaveBeenCalled() // Ensure search function is not called
+  })
+
+  // TODO: test keyboard events
 })
