@@ -33,10 +33,25 @@ export default defineNuxtConfig({
     clientBundle: {
       icons: [
         'mdi:bell-outline',
+        'mdi:help-circle-outline',
         'mdi:alert',
         'mdi:domain',
         'mdi:web',
-        'mdi:check'
+        'mdi:check',
+        'mdi:magnify',
+        'mdi:open-in-new',
+        'mdi:calendar',
+        'mdi:close',
+        'mdi:info-outline',
+        'mdi:info-delete',
+        'mdi:info-format-list-bulleted-square',
+        'mdi:delete-forever',
+        'mdi:window-close',
+        'mdi:checkbox-multiple-blank-outline',
+        'mdi:caret-down',
+        'mdi:account-cog',
+        'mdi:information-outline',
+        'heroicons:arrow-path-20-solid'
       ]
     }
   },
