@@ -29,6 +29,18 @@ export default defineNuxtConfig({
     dirs: ['stores', 'composables', 'enums', 'interfaces', 'types', 'utils']
   },
 
+  icon: {
+    clientBundle: {
+      icons: [
+        'mdi:bell-outline',
+        'mdi:alert',
+        'mdi:domain',
+        'mdi:web',
+        'mdi:check'
+      ]
+    }
+  },
+
   i18n: {
     locales: [
       {
