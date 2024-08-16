@@ -254,11 +254,22 @@ export default {
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
     }
   },
-  regSearch: {
-    error: 'Erreur lors de la récupération des résultats de recherche, veuillez réessayer plus tard.',
-    empty: {
-      title: 'Aucun actif en CB. entreprise trouvée',
-      content: "Assurez-vous de saisir le nom ou le numéro correct de l'entreprise."
+  search: {
+    reg: {
+      placeholder: "Mon nom commercial, mon numéro d'entreprise ou mon numéro d'enregistrement",
+      arialabel: "Commencez à taper pour effectuer une recherche par nom d'entreprise, numéro de société ou numéro d'enregistrement.",
+      empty: {
+        title: 'Aucune entreprise active en C.B. trouvée.',
+        content: "Assurez-vous d'avoir entré le bon nom ou numéro d'entreprise."
+      }
+    },
+    namex: {
+      placeholder: 'Nom de mon entreprise ou numéro de demande de nom',
+      arialabel: "Commencez à taper pour effectuer une recherche par nom d'entreprise ou numéro de demande de nom",
+      empty: {
+        title: 'Aucune demande de Nom Active trouvée',
+        content: "Assurez-vous d'avoir saisi une Demande de Nom qui n'a pas expiré ou qui n'a pas été annulée."
+      }
     }
   },
   table: {
@@ -325,7 +336,14 @@ export default {
       }
     }
   },
+  // components
   ConnectHeader: {
     title: 'Registres et Services en Ligne de la CB'
+  },
+  AsyncComboBox: {
+    resultsCount: '{count} résultats',
+    error: 'Erreur lors de la récupération des résultats, veuillez réessayer plus tard.',
+    resultListLabel: 'Résultats de la recherche',
+    noResults: 'Aucun résultat trouvé'
   }
 }
