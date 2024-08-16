@@ -43,15 +43,23 @@ export default defineNuxtConfig({
         'mdi:calendar',
         'mdi:close',
         'mdi:info-outline',
-        'mdi:info-delete',
-        'mdi:info-format-list-bulleted-square',
+        'mdi:delete',
+        'mdi:format-list-bulleted-square',
         'mdi:delete-forever',
         'mdi:window-close',
         'mdi:checkbox-multiple-blank-outline',
         'mdi:caret-down',
         'mdi:account-cog',
         'mdi:information-outline',
-        'heroicons:arrow-path-20-solid'
+        'mdi:account-group-outline',
+        'mdi:account-outline',
+        'mdi:logout-variant',
+        'mdi:plus',
+        'mdi:menu',
+        'mdi:two-factor-authentication',
+        'mdi:account-card-details-outline',
+        'heroicons:arrow-path-20-solid',
+        'heroicons:circle-stack-20-solid'
       ]
     }
   },
