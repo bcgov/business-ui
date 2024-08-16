@@ -77,7 +77,6 @@ export default defineNuxtConfig({
       payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
       registryHomeURL: process.env.NUXT_REGISTRY_HOME_URL,
       appURL: process.env.NUXT_APP_URL,
-      barApiUrl: `${process.env.NUXT_BAR_API_URL || ''}${process.env.NUXT_BAR_API_VERSION || ''}`,
       paymentPortalUrl: process.env.NUXT_PAYMENT_PORTAL_URL,
       baseUrl: process.env.NUXT_BASE_URL,
       environment: process.env.NUXT_ENVIRONMENT_HEADER || '',
