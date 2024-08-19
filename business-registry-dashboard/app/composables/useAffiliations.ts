@@ -1,5 +1,6 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
+  const { t } = useI18n()
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
   const affiliations = (reactive({
@@ -125,9 +126,9 @@ export const useAffiliations = () => {
   const actionColumn = { key: 'actions', label: 'Actions' }
 
   const optionalColumns = [
-    { key: 'identifier', label: 'Number' },
-    { key: 'legalType', label: 'Type' },
-    { key: 'state', label: 'Status' }
+    { key: 'identifier', label: t('labels.number') },
+    { key: 'legalType', label: t('labels.type') },
+    { key: 'state', label: t('labels.status') }
   ]
 
   const selectedColumns = ref([...optionalColumns])

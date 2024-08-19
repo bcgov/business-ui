@@ -34,6 +34,14 @@ mockNuxtImport('useWindowSize', () => {
   )
 })
 
+mockNuxtImport('useI18n', () => {
+  return () => (
+    {
+      t: (key: string) => key
+    }
+  )
+})
+
 describe('useAffiliations', () => {
   let store: any
   beforeEach(() => {
@@ -212,9 +220,9 @@ describe('useAffiliations', () => {
         setTimeout(() => {
           expect(visibleColumns.value).toEqual([
             { key: 'legalName', label: 'Name' },
-            { key: 'identifier', label: 'Number' },
-            { key: 'legalType', label: 'Type' },
-            { key: 'state', label: 'Status' },
+            { key: 'identifier', label: 'labels.number' },
+            { key: 'legalType', label: 'labels.type' },
+            { key: 'state', label: 'labels.status' },
             { key: 'actions', label: 'Actions' }
           ])
           expect(selectedColumns.value).toEqual(optionalColumns)
@@ -234,7 +242,7 @@ describe('useAffiliations', () => {
         setTimeout(() => {
           expect(visibleColumns.value).toEqual([
             { key: 'legalName', label: 'Name' },
-            { key: 'identifier', label: 'Number' },
+            { key: 'identifier', label: 'labels.number' },
             { key: 'actions', label: 'Actions' }
           ])
           expect(selectedColumns.value).toEqual([optionalColumns[0]])
