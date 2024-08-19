@@ -1,0 +1,20 @@
+name: Business Registry UI CI
+
+on:
+  pull_request:
+    paths:
+      - "business-registry-dashboard/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./business-registry-dashboard
+
+jobs:
+  business-registry-ui-ci:
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
+    with:
+      app_name: "business-registry-ui"
+      working_directory: "./business-registry-dashboard"
+      codecov_flag: "businessregistryui"

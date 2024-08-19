@@ -11,7 +11,7 @@ gh repo fork bcgov/business-ui
 
 Change into the directory and install the packages.
 ```bash
-cd business-ui/business-registry-dashboard/web/brd-main
+cd business-ui/business-registry-dashboard
 pnpm install
 ```
 
