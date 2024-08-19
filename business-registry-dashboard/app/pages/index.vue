@@ -379,7 +379,6 @@ const selectedStates = ref([])
         <template #state-data="{ row }">
           <span class="inline-flex gap-1">
             {{ affiliationStatus(row) }}
-            <!-- TODO: add aria describedby to text with tooltip info -->
             <TableAffiliatedEntityStatusDetails
               v-if="getDetails(row).length > 0"
               icon="i-mdi-alert"
