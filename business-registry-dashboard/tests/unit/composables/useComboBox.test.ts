@@ -1,7 +1,38 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
-import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
-// import { flushPromises } from '@vue/test-utils'
+import { enI18n } from '~~/tests/mocks/i18n'
+
+const onSelectMock = vi.fn()
+const TestComponent = defineComponent({
+  props: {
+    searchFn: {
+      type: Function as unknown as () => (query: string) => Promise<any[]>,
+      required: true
+    },
+    idAttr: {
+      type: String,
+      default: 'identifier'
+    },
+    valueAttr: {
+      type: String,
+      default: 'name'
+    }
+  },
+  setup (props) {
+    const inputRef = ref(null)
+    const resultListItems = ref(null)
+
+    const comboBox = useComboBox(inputRef, resultListItems, props.searchFn, onSelectMock, props.valueAttr)
+
+    return {
+      ...comboBox,
+      inputRef,
+      resultListItems
+    }
+  },
+  template: '<div/>'
+})
 
 mockNuxtImport('useRuntimeConfig', () => {
   return () => (
@@ -22,12 +53,8 @@ mockNuxtImport('useKeycloak', () => {
   )
 })
 
-const onSelectMock = vi.fn()
-
 describe('useComboBox', () => {
   let store: any
-  let inputRef: any
-  let resultListItems: any
 
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -43,8 +70,6 @@ describe('useComboBox', () => {
       urlorigin: ''
     }
 
-    inputRef = ref(null)
-    resultListItems = ref(null)
     onSelectMock.mockClear()
   })
 
@@ -56,16 +81,23 @@ describe('useComboBox', () => {
   })
 
   it('fetches results and sets values', async () => {
-    const _fetch = vi.fn().mockResolvedValue({
-      searchResults: {
-        results: [
-          { name: 'Item 1', identifier: '1' },
-          { name: 'Item 2', identifier: '2' }
-        ]
+    const mockSearchFn = (): Promise<any[]> => {
+      return Promise.resolve([
+        { identifier: '1', name: 'Item 1' },
+        { identifier: '2', name: 'Item 2' }
+      ])
+    }
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
       }
     })
-    vi.stubGlobal('$fetch', _fetch)
-    const { query, results, statusText, loading, getResults } = useComboBox(inputRef, resultListItems, onSelectMock)
+
+    const { query, results, statusText, loading, getResults } = wrapper.setupState
 
     query.value = 'Item'
     getResults()
@@ -73,7 +105,6 @@ describe('useComboBox', () => {
     expect(loading.value).toEqual(true)
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        expect(_fetch).toHaveBeenCalledOnce()
         expect(results.value).toEqual([
           { name: 'Item 1', identifier: '1' },
           { name: 'Item 2', identifier: '2' }
@@ -87,20 +118,26 @@ describe('useComboBox', () => {
   })
 
   it('sets results to an empty array and updates status text when no results are found', async () => {
-    const _fetch = vi.fn().mockResolvedValue({
-      searchResults: {
-        results: []
+    const mockSearchFn = (): Promise<any[]> => {
+      return Promise.resolve([])
+    }
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
       }
     })
-    vi.stubGlobal('$fetch', _fetch)
-    const { query, results, getResults, statusText } = useComboBox(inputRef, resultListItems, onSelectMock)
+
+    const { query, results, statusText, getResults } = wrapper.setupState
 
     query.value = 'Nonexistent Item'
     getResults()
 
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        expect(_fetch).toHaveBeenCalledOnce()
         expect(results.value).toEqual([])
         expect(statusText.value).toBe('0 results')
         resolve()
@@ -109,32 +146,50 @@ describe('useComboBox', () => {
   })
 
   it('handles errors during fetch and sets error flag and status text', async () => {
-    const _fetch = vi.fn().mockRejectedValue(new Error('Fetch failed'))
-    vi.stubGlobal('$fetch', _fetch)
-    const { query, results, getResults, error, statusText } = useComboBox(inputRef, resultListItems, onSelectMock)
+    const mockSearchFn = (): Promise<any[]> => {
+      return Promise.reject(new Error('Fetch failed'))
+    }
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
+      }
+    })
+
+    const { query, results, statusText, getResults, error } = wrapper.setupState
 
     query.value = 'Item'
     getResults()
 
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        expect(_fetch).toHaveBeenCalledOnce()
         expect(results.value).toEqual([])
         expect(error.value).toBe(true)
-        expect(statusText.value).toBe('Error retrieving search results')
+        expect(statusText.value).toBe('Error retrieving search results, please try again later.')
         resolve()
       }, 1000)
     })
   })
 
   it('debounces fetch requests', async () => {
-    const _fetch = vi.fn().mockResolvedValue({
-      searchResults: {
-        results: [{ name: 'Item 1', identifier: '1' }]
+    const mockSearchFn = vi.fn().mockResolvedValue([
+      { identifier: '1', name: 'Item 1' },
+      { identifier: '2', name: 'Item 2' }
+    ])
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
       }
     })
-    vi.stubGlobal('$fetch', _fetch)
-    const { query, getResults } = useComboBox(inputRef, resultListItems, onSelectMock)
+
+    const { query, getResults } = wrapper.setupState
 
     query.value = 'I'
     getResults()
@@ -147,27 +202,36 @@ describe('useComboBox', () => {
 
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        expect(_fetch).toHaveBeenCalledOnce() // Should only call fetch once
+        expect(mockSearchFn).toHaveBeenCalledOnce() // Should only call fetch once
         resolve()
       }, 1000)
     })
   })
 
   it('calls onSelect with the correct item when an item is selected', async () => {
-    const _fetch = vi.fn().mockResolvedValue({
-      searchResults: {
-        results: [{ name: 'Item 1', identifier: '1' }]
+    const mockSearchFn = (): Promise<any[]> => {
+      return Promise.resolve([
+        { identifier: '1', name: 'Item 1' },
+        { identifier: '2', name: 'Item 2' }
+      ])
+    }
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
       }
     })
-    vi.stubGlobal('$fetch', _fetch)
-    const { query, results, getResults, emitSearchResult } = useComboBox(inputRef, resultListItems, onSelectMock)
+
+    const { query, results, getResults, emitSearchResult } = wrapper.setupState
 
     query.value = 'Item'
     getResults()
 
     await new Promise<void>((resolve) => {
       setTimeout(() => {
-        // @ts-expect-error
         emitSearchResult(results.value[0])
         expect(onSelectMock).toHaveBeenCalledWith({ name: 'Item 1', identifier: '1' })
         resolve()
@@ -175,16 +239,57 @@ describe('useComboBox', () => {
     })
   })
 
-  it('emitSearchResult updates query, resets dropdown, focuses input, and calls onSelect', () => {
-    const { query, emitSearchResult, showDropdown } = useComboBox(inputRef, resultListItems, onSelectMock)
+  it('emitSearchResult updates query, resets dropdown and calls onSelect', async () => {
+    const mockSearchFn = (): Promise<any[]> => {
+      return Promise.resolve([
+        { identifier: '1', name: 'Item 1' },
+        { identifier: '2', name: 'Item 2' }
+      ])
+    }
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
+      }
+    })
+
+    const { query, emitSearchResult, showDropdown } = wrapper.setupState
 
     const result = { name: 'Selected Item', identifier: '1' }
 
-    // @ts-expect-error
     emitSearchResult(result)
 
     expect(query.value).toBe('Selected Item')
     expect(showDropdown.value).toBe(false)
     expect(onSelectMock).toHaveBeenCalledWith(result)
   })
+
+  it('does not search on empty query', async () => {
+    const mockSearchFn = vi.fn().mockResolvedValue([
+      { identifier: '1', name: 'Item 1' },
+      { identifier: '2', name: 'Item 2' }
+    ])
+
+    const wrapper = await mountSuspended(TestComponent, {
+      props: {
+        searchFn: mockSearchFn
+      },
+      global: {
+        plugins: [enI18n]
+      }
+    })
+
+    const { query, results, getResults } = wrapper.setupState
+
+    query.value = '' // Simulate empty query
+    getResults()
+
+    expect(results.value).toEqual([]) // Ensure results are reset
+    expect(mockSearchFn).not.toHaveBeenCalled() // Ensure search function is not called
+  })
+
+  // TODO: test keyboard events
 })

@@ -1,20 +1,19 @@
 import { UInput } from '#components'
-import { KeyCode } from '~/enums/key-codes'
 
 export const useComboBox = (
   inputRef: Ref<InstanceType<typeof UInput> | null>,
   resultListItems: Ref<NodeListOf<HTMLLIElement> | null>,
-  onSelect: (item: RegSearchResult) => void
+  searchFn: (query: string) => Promise<any[]>,
+  onSelect: (item: any) => void,
+  valueAttr: string
 ) => {
-  const config = useRuntimeConfig().public
-  const accountStore = useConnectAccountStore()
-  const keycloak = useKeycloak()
+  const { t } = useI18n()
 
   const query = ref('')
   const loading = ref(false)
   const showDropdown = ref(false)
   const hasFocus = ref(false)
-  const results = ref<RegSearchResult[]>([])
+  const results = ref<any[]>([])
   const statusText = ref('')
   const error = ref(false)
 
@@ -35,38 +34,19 @@ export const useComboBox = (
       statusText.value = ''
       error.value = false
 
-      const token = await keycloak.getToken()
-      const response = await $fetch<RegSearchResponse>(`${config.regSearchApiUrl}/search/businesses`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'x-apikey': config.xApiKey,
-          'Account-Id': accountStore.currentAccount.id
-        },
-        body: {
-          query: {
-            value: query.value
-          },
-          categories: {
-            status: ['ACTIVE'],
-            legalType: ['A', 'BC', 'BEN', 'C', 'CBEN', 'CC', 'CCC', 'CP', 'CUL', 'FI', 'GP', 'LL', 'LLC', 'LP', 'PA', 'S', 'SP', 'ULC', 'XCP', 'XL', 'XP', 'XS']
-          },
-          rows: 20,
-          start: 0
-        }
-      })
+      const response = await searchFn(query.value)
 
-      if (response.searchResults.results.length >= 0) {
-        results.value = response.searchResults.results
+      if (response.length >= 0) {
+        results.value = response
         setTimeout(() => {
-          statusText.value = `${results.value.length} results`
+          statusText.value = t('AsyncComboBox.resultsCount', { count: results.value.length })
         }, 300) // delay so screen reader is updated correctly
       }
     } catch (e) {
       console.error('Error fetching search results:', e)
       error.value = true
       setTimeout(() => {
-        statusText.value = 'Error retrieving search results'
+        statusText.value = t('AsyncComboBox.error')
       }, 300) // delay so screen reader is updated correctly
     } finally {
       loading.value = false
@@ -206,8 +186,8 @@ export const useComboBox = (
   }
 
   // select and dispatch event with selected item, cleanup ui
-  function emitSearchResult (result: RegSearchResult) {
-    query.value = result.name
+  function emitSearchResult (result: any) {
+    query.value = result[valueAttr]
     resetDropdown()
 
     setTimeout(() => { // timeout required to wait for dom before applying focus, nextTick not working

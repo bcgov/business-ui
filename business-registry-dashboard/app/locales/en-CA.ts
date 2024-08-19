@@ -254,11 +254,22 @@ export default {
       title: 'Annual Report Overview - Service BC Annual Report'
     }
   },
-  regSearch: {
-    error: 'Error retrieving search results, please try again later.',
-    empty: {
-      title: 'No active B.C. business found',
-      content: 'Ensure you have entered the correct business name or number.'
+  search: {
+    reg: {
+      placeholder: 'My business name, incorporation number or registration number',
+      arialabel: 'Start typing to search by business name, incorporation number or registration number',
+      empty: {
+        title: 'No active B.C. business found',
+        content: 'Ensure you have entered the correct business name or number.'
+      }
+    },
+    namex: {
+      placeholder: 'My business name or name request number',
+      arialabel: 'Start typing to search by business name or name request number',
+      empty: {
+        title: 'No active Name Request found',
+        content: 'Ensure you have entered a Name Request that has not expired or been cancelled.'
+      }
     }
   },
   table: {
@@ -325,7 +336,14 @@ export default {
       }
     }
   },
+  // components
   ConnectHeader: {
     title: 'BC Registries and Online Services'
+  },
+  AsyncComboBox: {
+    resultsCount: '{count} results',
+    error: 'Error retrieving search results, please try again later.',
+    resultListLabel: 'Search Results',
+    noResults: 'No results found'
   }
 }

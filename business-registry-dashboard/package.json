@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.1",
+    "@iconify-json/mdi": "^1.1.68",
     "@nuxt/devtools": "^1.3.9",
     "@nuxt/image": "^1.7.0",
     "@nuxt/test-utils": "^3.13.1",

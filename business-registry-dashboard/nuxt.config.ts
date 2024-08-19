@@ -29,6 +29,41 @@ export default defineNuxtConfig({
     dirs: ['stores', 'composables', 'enums', 'interfaces', 'types', 'utils']
   },
 
+  icon: {
+    clientBundle: {
+      icons: [
+        'mdi:bell-outline',
+        'mdi:help-circle-outline',
+        'mdi:alert',
+        'mdi:domain',
+        'mdi:web',
+        'mdi:check',
+        'mdi:magnify',
+        'mdi:open-in-new',
+        'mdi:calendar',
+        'mdi:close',
+        'mdi:info-outline',
+        'mdi:delete',
+        'mdi:format-list-bulleted-square',
+        'mdi:delete-forever',
+        'mdi:window-close',
+        'mdi:checkbox-multiple-blank-outline',
+        'mdi:caret-down',
+        'mdi:account-cog',
+        'mdi:information-outline',
+        'mdi:account-group-outline',
+        'mdi:account-outline',
+        'mdi:logout-variant',
+        'mdi:plus',
+        'mdi:menu',
+        'mdi:two-factor-authentication',
+        'mdi:account-card-details-outline',
+        'heroicons:arrow-path-20-solid',
+        'heroicons:circle-stack-20-solid'
+      ]
+    }
+  },
+
   i18n: {
     locales: [
       {
@@ -65,7 +100,6 @@ export default defineNuxtConfig({
       payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
       registryHomeURL: process.env.NUXT_REGISTRY_HOME_URL,
       appURL: process.env.NUXT_APP_URL,
-      barApiUrl: `${process.env.NUXT_BAR_API_URL || ''}${process.env.NUXT_BAR_API_VERSION || ''}`,
       paymentPortalUrl: process.env.NUXT_PAYMENT_PORTAL_URL,
       baseUrl: process.env.NUXT_BASE_URL,
       environment: process.env.NUXT_ENVIRONMENT_HEADER || '',
@@ -82,7 +116,8 @@ export default defineNuxtConfig({
       corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL,
       legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
       regSearchApiUrl: `${process.env.NUXT_REGISTRIES_SEARCH_API_URL}${process.env.NUXT_REGISTRIES_SEARCH_API_VERSION}`,
-      xApiKey: process.env.NUXT_X_API_KEY
+      xApiKey: process.env.NUXT_X_API_KEY,
+      namexApiUrl: `${process.env.NUXT_NAMEX_API_URL}${process.env.NUXT_NAMEX_API_VERSION}`
     }
   },
 
