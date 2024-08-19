@@ -15,6 +15,25 @@ mockNuxtImport('useNuxtApp', () => {
   )
 })
 
+mockNuxtImport('useRuntimeConfig', () => {
+  return () => (
+    {
+      public: {
+        authApiUrl: 'https://authApiUrl.example.com/'
+      }
+    }
+  )
+})
+
+const mockWindowSize = vi.fn()
+mockNuxtImport('useWindowSize', () => {
+  return () => (
+    {
+      width: mockWindowSize
+    }
+  )
+})
+
 describe('useAffiliations', () => {
   let store: any
   beforeEach(() => {
@@ -179,5 +198,110 @@ describe('useAffiliations', () => {
     await flushPromises()
 
     expect(_fetch).toHaveBeenCalledTimes(2)
+  })
+
+  describe('affiliation columns', () => {
+    it('should set default columns on large screens', async () => {
+      const _fetch = vi.fn().mockResolvedValue({ entities: [] })
+      vi.stubGlobal('$fetch', _fetch)
+      mockWindowSize.mockReturnValue(1480)
+
+      const { visibleColumns, optionalColumns, selectedColumns } = useAffiliations()
+
+      await new Promise<void>((resolve) => { // required to wait for watcher to run
+        setTimeout(() => {
+          expect(visibleColumns.value).toEqual([
+            { key: 'legalName', label: 'Name' },
+            { key: 'identifier', label: 'Number' },
+            { key: 'legalType', label: 'Type' },
+            { key: 'state', label: 'Status' },
+            { key: 'actions', label: 'Actions' }
+          ])
+          expect(selectedColumns.value).toEqual(optionalColumns)
+          resolve()
+        }, 1000)
+      })
+    })
+
+    it('should set default columns on medium screens', async () => {
+      const _fetch = vi.fn().mockResolvedValue({ entities: [] })
+      vi.stubGlobal('$fetch', _fetch)
+      mockWindowSize.mockReturnValue(1000)
+
+      const { visibleColumns, optionalColumns, selectedColumns } = useAffiliations()
+
+      await new Promise<void>((resolve) => { // required to wait for watcher to run
+        setTimeout(() => {
+          expect(visibleColumns.value).toEqual([
+            { key: 'legalName', label: 'Name' },
+            { key: 'identifier', label: 'Number' },
+            { key: 'actions', label: 'Actions' }
+          ])
+          expect(selectedColumns.value).toEqual([optionalColumns[0]])
+          resolve()
+        }, 1000)
+      })
+    })
+
+    it('should set default columns on small screens', async () => {
+      const _fetch = vi.fn().mockResolvedValue({ entities: [] })
+      vi.stubGlobal('$fetch', _fetch)
+      mockWindowSize.mockReturnValue(600)
+
+      const { visibleColumns, selectedColumns } = useAffiliations()
+
+      await new Promise<void>((resolve) => { // required to wait for watcher to run
+        setTimeout(() => {
+          expect(visibleColumns.value).toEqual([
+            { key: 'legalName', label: 'Name' },
+            { key: 'actions', label: 'Actions' }
+          ])
+          expect(selectedColumns.value).toEqual([])
+          resolve()
+        }, 1000)
+      })
+    })
+
+    describe('setColumns', () => {
+      it('should set all columns when all optional columns are selected', () => {
+        const { visibleColumns, optionalColumns, setColumns } = useAffiliations()
+
+        setColumns()
+
+        expect(visibleColumns.value).toEqual([
+          { key: 'legalName', label: 'Name' },
+          ...optionalColumns,
+          { key: 'actions', label: 'Actions' }
+        ])
+      })
+
+      it('should set only name and actions columns when no optional columns are selected', () => {
+        const { visibleColumns, selectedColumns, setColumns } = useAffiliations()
+
+        selectedColumns.value = []
+
+        setColumns()
+
+        expect(visibleColumns.value).toEqual([
+          { key: 'legalName', label: 'Name' },
+          { key: 'actions', label: 'Actions' }
+        ])
+      })
+
+      it('should set only selected optional columns', () => {
+        const { visibleColumns, optionalColumns, selectedColumns, setColumns } = useAffiliations()
+
+        selectedColumns.value = [optionalColumns[0]!, optionalColumns[2]!] // Select first and last optional column
+
+        setColumns()
+
+        expect(visibleColumns.value).toEqual([
+          { key: 'legalName', label: 'Name' },
+          optionalColumns[0], // identifier
+          optionalColumns[2], // state
+          { key: 'actions', label: 'Actions' }
+        ])
+      })
+    })
   })
 })
