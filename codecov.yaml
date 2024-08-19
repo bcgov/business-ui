@@ -34,5 +34,5 @@ comment:
 flags:
   businessregistryui:
     paths:
-      - web/site
+      - business-registry-dashboard
     carryforward: true
