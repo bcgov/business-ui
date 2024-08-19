@@ -12,40 +12,14 @@ definePageMeta({
 
 const selected = ref('reg')
 
-const columns = [
-  {
-    key: 'legalName',
-    label: t('labels.busName')
-    // sortable: true
-  },
-  {
-    key: 'identifier',
-    label: 'Number'
-    // sortable: true
-  },
-  {
-    key: 'legalType',
-    label: 'Type'
-    // sortable: true
-  },
-  {
-    key: 'state',
-    label: 'Status'
-    // sortable: true
-  },
-  {
-    key: 'actions',
-    label: 'Actions'
-  }
-]
-
 const config = useRuntimeConfig()
 const nrWebUrl = config.public.nrURL
 
 const selectedColumns = ref([])
 
 const {
-  affiliations
+  affiliations,
+  columns
   // clearAllFilters,
   // getHeaders, headers,
   // updateFilter,

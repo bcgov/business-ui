@@ -121,10 +121,51 @@ export const useAffiliations = () => {
   //   affiliations.filters.isActive = false
   // }
 
+  const columns = ref([
+    { key: 'legalName', label: 'Name' },
+    { key: 'identifier', label: 'Number' },
+    { key: 'legalType', label: 'Type' },
+    { key: 'state', label: 'Status' },
+    { key: 'actions', label: 'Actions' }
+  ])
+
+  const { width } = useWindowSize()
+
+  watchDebounced(
+    width,
+    (newVal) => {
+      if (newVal < 640) {
+        // Mobile view
+        columns.value = [
+          { key: 'legalName', label: 'Name' },
+          { key: 'actions', label: 'Actions' }
+        ]
+      } else if (newVal < 1024) {
+        // Tablet view
+        columns.value = [
+          { key: 'legalName', label: 'name' },
+          { key: 'identifier', label: 'Number' },
+          { key: 'actions', label: 'Actions' }
+        ]
+      } else {
+        // Desktop view
+        columns.value = [
+          { key: 'legalName', label: 'name' },
+          { key: 'identifier', label: 'Number' },
+          { key: 'legalType', label: 'Type' },
+          { key: 'state', label: 'Status' },
+          { key: 'actions', label: 'Actions' }
+        ]
+      }
+    },
+    { debounce: 500, immediate: true }
+  )
+
   return {
     getAffiliatedEntities,
     affiliations,
-    resetAffiliations
+    resetAffiliations,
+    columns
     // clearAllFilters,
     // updateFilter,
   }
