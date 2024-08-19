@@ -15,13 +15,13 @@ const selected = ref('reg')
 const config = useRuntimeConfig()
 const nrWebUrl = config.public.nrURL
 
-const selectedColumns = ref([])
-
 const {
   affiliations,
-  columns
+  visibleColumns,
+  optionalColumns,
+  selectedColumns,
+  setColumns
   // clearAllFilters,
-  // getHeaders, headers,
   // updateFilter,
 } = useAffiliations()
 
@@ -131,9 +131,10 @@ const selectedStates = ref([])
         <USelectMenu
           v-slot="{ open }"
           v-model="selectedColumns"
-          :options="columns"
+          :options="optionalColumns"
           multiple
           :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+          @change="setColumns"
         >
           <UButton
             color="white"
@@ -148,7 +149,7 @@ const selectedStates = ref([])
       </template>
       <!-- affiliations table -->
       <UTable
-        :columns
+        :columns="visibleColumns"
         :rows="affiliations.results"
         :ui="{
           th: {

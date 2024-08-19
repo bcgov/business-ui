@@ -121,12 +121,21 @@ export const useAffiliations = () => {
   //   affiliations.filters.isActive = false
   // }
 
-  const columns = ref([
-    { key: 'legalName', label: 'Name' },
+  const nameColumn = { key: 'legalName', label: 'Name' }
+  const actionColumn = { key: 'actions', label: 'Actions' }
+
+  const optionalColumns = [
     { key: 'identifier', label: 'Number' },
     { key: 'legalType', label: 'Type' },
-    { key: 'state', label: 'Status' },
-    { key: 'actions', label: 'Actions' }
+    { key: 'state', label: 'Status' }
+  ]
+
+  const selectedColumns = ref([...optionalColumns])
+
+  const visibleColumns = ref([
+    nameColumn,
+    ...optionalColumns,
+    actionColumn
   ])
 
   const { width } = useWindowSize()
@@ -136,36 +145,45 @@ export const useAffiliations = () => {
     (newVal) => {
       if (newVal < 640) {
         // Mobile view
-        columns.value = [
-          { key: 'legalName', label: 'Name' },
-          { key: 'actions', label: 'Actions' }
-        ]
+        visibleColumns.value = [nameColumn, actionColumn]
+        selectedColumns.value = []
       } else if (newVal < 1024) {
         // Tablet view
-        columns.value = [
-          { key: 'legalName', label: 'name' },
-          { key: 'identifier', label: 'Number' },
-          { key: 'actions', label: 'Actions' }
+        visibleColumns.value = [
+          nameColumn,
+          optionalColumns[0]!,
+          actionColumn
         ]
+        selectedColumns.value = [optionalColumns[0]!]
       } else {
         // Desktop view
-        columns.value = [
-          { key: 'legalName', label: 'name' },
-          { key: 'identifier', label: 'Number' },
-          { key: 'legalType', label: 'Type' },
-          { key: 'state', label: 'Status' },
-          { key: 'actions', label: 'Actions' }
+        selectedColumns.value = [...optionalColumns]
+        visibleColumns.value = [
+          nameColumn,
+          ...optionalColumns,
+          actionColumn
         ]
       }
     },
     { debounce: 500, immediate: true }
   )
 
+  function setColumns () {
+    visibleColumns.value = [
+      nameColumn,
+      ...optionalColumns.filter(col => selectedColumns.value.includes(col)),
+      actionColumn
+    ]
+  }
+
   return {
     getAffiliatedEntities,
     affiliations,
     resetAffiliations,
-    columns
+    visibleColumns,
+    optionalColumns,
+    selectedColumns,
+    setColumns
     // clearAllFilters,
     // updateFilter,
   }
