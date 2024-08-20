@@ -111,7 +111,8 @@ export default {
       show: 'Help with Starting and Managing a Business',
       hide: 'Hide Help'
     },
-    moreOptions: 'More Options'
+    moreOptions: 'More Options',
+    clearFilters: 'Clear Filters'
   },
   currency: {
     cad: 'CAD',
@@ -216,7 +217,8 @@ export default {
     addresses: 'Addresses',
     directors: 'Directors',
     confirm: 'Confirm',
-    select: 'Select'
+    select: 'Select',
+    none: 'None'
   },
   page: {
     notFound: {
@@ -292,7 +294,7 @@ export default {
           }
         },
         legalType: {
-          aria: 'Filter by legal type, {count} selected',
+          aria: 'Filter by legal type, current filter: {filter}',
           placeholder: 'Type',
           selected: '{count} selected',
           clear: {
@@ -301,7 +303,7 @@ export default {
           }
         },
         busStates: {
-          aria: 'Filter by business status, {count} selected',
+          aria: 'Filter by business status, current filter: {filter}',
           placeholder: 'Status',
           selected: '{count} selected',
           clear: {

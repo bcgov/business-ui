@@ -20,16 +20,13 @@ const {
   visibleColumns,
   optionalColumns,
   selectedColumns,
-  setColumns
-  // clearAllFilters,
-  // updateFilter,
+  setColumns,
+  filteredResults,
+  typeOptions,
+  statusOptions,
+  hasFilters,
+  resetFilters
 } = useAffiliations()
-
-const busTypes = ['BC Sole Proprietorship', 'Name Request', 'Incorporation Application', 'Registration']
-const selectedTypes = ref([])
-
-const busStates = ['Active', 'Expired', 'Draft']
-const selectedStates = ref([])
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -150,11 +147,11 @@ const selectedStates = ref([])
       <!-- affiliations table -->
       <UTable
         :columns="visibleColumns"
-        :rows="affiliations.results"
+        :rows="filteredResults"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'
-          },
+          }
         }"
       >
         <!-- start table header slots -->
@@ -163,13 +160,14 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.busName')"
             :clear-button="{
-              show: selectedTypes.length > 0,
+              show: affiliations.filters.businessName !== '',
               tooltip: $t('table.affiliation.filter.busName.clear.tooltip'),
               aria: $t('table.affiliation.filter.busName.clear.aria')
             }"
-            @clear="selectedTypes = []"
+            @clear="affiliations.filters.businessName = ''"
           >
             <UInput
+              v-model="affiliations.filters.businessName"
               variant="bcGovSm"
               :placeholder="$t('table.affiliation.filter.busName.placeholder')"
               :aria-label="$t('table.affiliation.filter.busName.aria')"
@@ -182,13 +180,14 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.number')"
             :clear-button="{
-              show: selectedTypes.length > 0,
+              show: affiliations.filters.businessNumber !== '',
               tooltip: $t('table.affiliation.filter.busNumber.clear.tooltip'),
               aria: $t('table.affiliation.filter.busNumber.clear.aria')
             }"
-            @clear="selectedTypes = []"
+            @clear="affiliations.filters.businessNumber = ''"
           >
             <UInput
+              v-model="affiliations.filters.businessNumber"
               variant="bcGovSm"
               :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
               :aria-label="$t('table.affiliation.filter.busNumber.aria')"
@@ -201,25 +200,24 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.type')"
             :clear-button="{
-              show: selectedTypes.length > 0,
+              show: affiliations.filters.type !== '',
               tooltip: $t('table.affiliation.filter.legalType.clear.tooltip'),
               aria: $t('table.affiliation.filter.legalType.clear.aria')
             }"
-            @clear="selectedTypes = []"
+            @clear="affiliations.filters.type = ''"
           >
             <USelectMenu
               v-slot="{ open }"
-              v-model="selectedTypes"
-              :options="busTypes"
-              multiple
+              v-model="affiliations.filters.type"
+              :options="typeOptions"
               :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
             >
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.legalType.aria', { count: selectedTypes.length })"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', { filter: affiliations.filters.type || $t('words.none') })"
               >
-                {{ selectedTypes.length > 0 ? $t('table.affiliation.filter.legalType.selected', { count: selectedTypes.length }) : $t('table.affiliation.filter.legalType.placeholder') }}
+                {{ affiliations.filters.type !== '' ? affiliations.filters.type : $t('table.affiliation.filter.legalType.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
@@ -232,25 +230,24 @@ const selectedStates = ref([])
           <TableColumnHeader
             :label="$t('labels.status')"
             :clear-button="{
-              show: selectedStates.length > 0,
+              show: affiliations.filters.status !== '',
               tooltip: $t('table.affiliation.filter.busStates.clear.tooltip'),
               aria: $t('table.affiliation.filter.busStates.clear.aria')
             }"
-            @clear="selectedStates = []"
+            @clear="affiliations.filters.status = ''"
           >
             <USelectMenu
               v-slot="{ open }"
-              v-model="selectedStates"
-              :options="busStates"
-              multiple
+              v-model="affiliations.filters.status"
+              :options="statusOptions"
               :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
             >
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.busStates.aria', { count: selectedStates.length })"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', { filter: affiliations.filters.status || $t('words.none') })"
               >
-                {{ selectedStates.length > 0 ? $t('table.affiliation.filter.busStates.selected', { count: selectedStates.length }) : $t('table.affiliation.filter.busStates.placeholder') }}
+                {{ affiliations.filters.status !== '' ? affiliations.filters.status : $t('table.affiliation.filter.busStates.placeholder') }}
 
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
@@ -264,7 +261,16 @@ const selectedStates = ref([])
             :label="$t('labels.actions')"
             :clear-button="{ show: false }"
           >
-            <div class="h-[42px]" />
+            <div class="flex h-[42px] items-center">
+              <UButton
+                variant="outline"
+                :label="$t('btn.clearFilters')"
+                icon="i-mdi-close"
+                trailing
+                :disabled="!hasFilters"
+                @click="resetFilters"
+              />
+            </div>
           </TableColumnHeader>
         </template>
         <!-- end table header slots -->
@@ -294,14 +300,15 @@ const selectedStates = ref([])
                   name="i-mdi-check"
                   aria-hidden="true"
                 />
-                <span v-if="isApprovedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.approved', { name: nrName.name }) }}</span>
-                <span v-if="isRejectedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.rejected', { name: nrName.name }) }}</span>
                 <div
                   class="table-cell pl-2 align-top font-semibold"
                   aria-hidden="true"
                 >
                   {{ nrName.name }}
                 </div>
+                <span v-if="isApprovedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.approved', { name: nrName.name }) }}</span>
+                <span v-else-if="isRejectedName(nrName)" class="sr-only">{{ $t('table.affiliation.cell.name.rejected', { name: nrName.name }) }}</span>
+                <span v-else class="sr-only">{{ nrName.name }}</span>
               </div>
             </strong>
             <strong

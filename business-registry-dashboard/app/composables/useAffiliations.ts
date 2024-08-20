@@ -3,15 +3,18 @@ export const useAffiliations = () => {
   const { t } = useI18n()
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
-  const affiliations = (reactive({
+  const affiliations = reactive({
     filters: {
       isActive: false,
-      filterPayload: {}
-    } as AffiliationFilterParams,
+      businessName: '',
+      businessNumber: '',
+      type: '',
+      status: ''
+    },
     loading: false,
     results: [] as Business[],
     count: 0
-  }) as unknown) as AffiliationState
+  })
 
   // TODO: handle affiliation invitations
   // async function handleAffiliationInvitations (affiliatedEntities: Business[]): Promise<void> {
@@ -72,6 +75,7 @@ export const useAffiliations = () => {
             }
             entity.nameRequest = buildNameRequestObject(nr)
           }
+
           affiliations.results.push(entity)
           affiliations.count = affiliations.results.length
           // TODO: add affilaition invites to business object
@@ -97,30 +101,16 @@ export const useAffiliations = () => {
     affiliations.loading = false
     affiliations.results = []
     affiliations.count = 0
-    affiliations.filters.filterPayload = {}
-    affiliations.filters.isActive = false
+    resetFilters()
   }
 
-  // const updateFilter = (filterField?: string, value?: any) => {
-  //   if (filterField) {
-  //     if (value) {
-  //       affiliations.filters.filterPayload[filterField] = value
-  //       affiliations.filters.isActive = true
-  //     } else {
-  //       delete affiliations.filters.filterPayload[filterField]
-  //     }
-  //   }
-  //   if (Object.keys(affiliations.filters.filterPayload).length === 0) {
-  //     affiliations.filters.isActive = false
-  //   } else {
-  //     affiliations.filters.isActive = true
-  //   }
-  // }
-
-  // const clearAllFilters = () => {
-  //   affiliations.filters.filterPayload = {}
-  //   affiliations.filters.isActive = false
-  // }
+  function resetFilters () {
+    affiliations.filters.businessName = ''
+    affiliations.filters.businessNumber = ''
+    affiliations.filters.type = ''
+    affiliations.filters.status = ''
+    affiliations.filters.isActive = false
+  }
 
   const nameColumn = { key: 'legalName', label: 'Name' }
   const actionColumn = { key: 'actions', label: 'Actions' }
@@ -177,6 +167,67 @@ export const useAffiliations = () => {
     ]
   }
 
+  const filteredResults = computed(() => {
+    let results = affiliations.results
+
+    if (affiliations.filters.businessName) {
+      results = results.filter((result) => {
+        const businessName = affiliationName(result)
+        return businessName.toLowerCase().includes(affiliations.filters.businessName.toLowerCase())
+      })
+    }
+
+    if (affiliations.filters.businessNumber) {
+      results = results.filter((result) => {
+        const businessNumber = number(result)
+        return businessNumber.toLowerCase().includes(affiliations.filters.businessNumber.toLowerCase())
+      })
+    }
+
+    if (affiliations.filters.type) {
+      results = results.filter((result) => {
+        const type = affiliationType(result)
+        return type.includes(affiliations.filters.type)
+      })
+    }
+
+    if (affiliations.filters.status) {
+      results = results.filter((result) => {
+        const status = affiliationStatus(result)
+        return status.includes(affiliations.filters.status)
+      })
+    }
+
+    return results
+  })
+
+  const statusOptions = computed(() => {
+    const optionSet = new Set<string>()
+
+    affiliations.results.forEach((item) => {
+      optionSet.add(affiliationStatus(item))
+    })
+
+    return Array.from(optionSet)
+  })
+
+  const typeOptions = computed(() => {
+    const optionSet = new Set<string>()
+
+    affiliations.results.forEach((item) => {
+      optionSet.add(affiliationType(item))
+    })
+
+    return Array.from(optionSet)
+  })
+
+  const hasFilters = computed(() => {
+    return affiliations.filters.businessName !== '' ||
+      affiliations.filters.businessNumber !== '' ||
+      affiliations.filters.type !== '' ||
+      affiliations.filters.status !== ''
+  })
+
   return {
     getAffiliatedEntities,
     affiliations,
@@ -184,8 +235,11 @@ export const useAffiliations = () => {
     visibleColumns,
     optionalColumns,
     selectedColumns,
-    setColumns
-    // clearAllFilters,
-    // updateFilter,
+    setColumns,
+    filteredResults,
+    statusOptions,
+    typeOptions,
+    hasFilters,
+    resetFilters
   }
 }
