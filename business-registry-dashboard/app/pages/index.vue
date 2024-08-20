@@ -12,42 +12,16 @@ definePageMeta({
 
 const selected = ref('reg')
 
-const columns = [
-  {
-    key: 'legalName',
-    label: t('labels.busName')
-    // sortable: true
-  },
-  {
-    key: 'identifier',
-    label: 'Number'
-    // sortable: true
-  },
-  {
-    key: 'legalType',
-    label: 'Type'
-    // sortable: true
-  },
-  {
-    key: 'state',
-    label: 'Status'
-    // sortable: true
-  },
-  {
-    key: 'actions',
-    label: 'Actions'
-  }
-]
-
 const config = useRuntimeConfig()
 const nrWebUrl = config.public.nrURL
 
-const selectedColumns = ref([])
-
 const {
-  affiliations
+  affiliations,
+  visibleColumns,
+  optionalColumns,
+  selectedColumns,
+  setColumns
   // clearAllFilters,
-  // getHeaders, headers,
   // updateFilter,
 } = useAffiliations()
 
@@ -157,9 +131,10 @@ const selectedStates = ref([])
         <USelectMenu
           v-slot="{ open }"
           v-model="selectedColumns"
-          :options="columns"
+          :options="optionalColumns"
           multiple
           :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+          @change="setColumns"
         >
           <UButton
             color="white"
@@ -174,7 +149,7 @@ const selectedStates = ref([])
       </template>
       <!-- affiliations table -->
       <UTable
-        :columns
+        :columns="visibleColumns"
         :rows="affiliations.results"
         :ui="{
           th: {
@@ -379,7 +354,6 @@ const selectedStates = ref([])
         <template #state-data="{ row }">
           <span class="inline-flex gap-1">
             {{ affiliationStatus(row) }}
-            <!-- TODO: add aria describedby to text with tooltip info -->
             <TableAffiliatedEntityStatusDetails
               v-if="getDetails(row).length > 0"
               icon="i-mdi-alert"

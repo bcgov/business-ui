@@ -1,5 +1,6 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
+  const { t } = useI18n()
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
   const affiliations = (reactive({
@@ -121,10 +122,69 @@ export const useAffiliations = () => {
   //   affiliations.filters.isActive = false
   // }
 
+  const nameColumn = { key: 'legalName', label: 'Name' }
+  const actionColumn = { key: 'actions', label: 'Actions' }
+
+  const optionalColumns = [
+    { key: 'identifier', label: t('labels.number') },
+    { key: 'legalType', label: t('labels.type') },
+    { key: 'state', label: t('labels.status') }
+  ]
+
+  const selectedColumns = ref([...optionalColumns])
+
+  const visibleColumns = ref([
+    nameColumn,
+    ...optionalColumns,
+    actionColumn
+  ])
+
+  const { width } = useWindowSize()
+
+  watchDebounced(
+    width,
+    (newVal) => {
+      if (newVal < 640) {
+        // Mobile view
+        visibleColumns.value = [nameColumn, actionColumn]
+        selectedColumns.value = []
+      } else if (newVal < 1024) {
+        // Tablet view
+        visibleColumns.value = [
+          nameColumn,
+          optionalColumns[0]!,
+          actionColumn
+        ]
+        selectedColumns.value = [optionalColumns[0]!]
+      } else {
+        // Desktop view
+        selectedColumns.value = [...optionalColumns]
+        visibleColumns.value = [
+          nameColumn,
+          ...optionalColumns,
+          actionColumn
+        ]
+      }
+    },
+    { debounce: 500, immediate: true }
+  )
+
+  function setColumns () {
+    visibleColumns.value = [
+      nameColumn,
+      ...optionalColumns.filter(col => selectedColumns.value.includes(col)),
+      actionColumn
+    ]
+  }
+
   return {
     getAffiliatedEntities,
     affiliations,
-    resetAffiliations
+    resetAffiliations,
+    visibleColumns,
+    optionalColumns,
+    selectedColumns,
+    setColumns
     // clearAllFilters,
     // updateFilter,
   }
