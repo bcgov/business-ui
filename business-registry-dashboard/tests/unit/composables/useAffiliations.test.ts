@@ -2,6 +2,7 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
+import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 
 let mockAuthenticated = true
 mockNuxtImport('useNuxtApp', () => {
@@ -37,7 +38,10 @@ mockNuxtImport('useWindowSize', () => {
 mockNuxtImport('useI18n', () => {
   return () => (
     {
-      t: (key: string) => key
+      t: (key: string) => key,
+      locale: {
+        value: 'en-CA'
+      }
     }
   )
 })
@@ -309,6 +313,260 @@ describe('useAffiliations', () => {
           optionalColumns[2], // state
           { key: 'actions', label: 'Actions' }
         ])
+      })
+    })
+  })
+
+  describe('affiliation filtering', () => {
+    describe('filter by name', () => {
+      it('should filter a name request object', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.businessName = 'SOME TEST NAME 321'
+
+        expect(filteredResults.value).toHaveLength(1)
+        expect(filteredResults.value[0]?.nameRequest?.names?.some(item => item.name === 'SOME TEST NAME 321')).toEqual(true)
+      })
+
+      it('should filter a business object', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.businessName = '0871505 B.C. LTD.'
+
+        expect(filteredResults.value).toHaveLength(1)
+        expect(filteredResults.value).toEqual([
+          {
+            businessIdentifier: 'BC0871505',
+            name: '0871505 B.C. LTD.',
+            corpType: { code: 'BEN' },
+            corpSubType: { code: 'BEN' },
+            adminFreeze: false,
+            goodStanding: true,
+            status: 'ACTIVE'
+          }
+        ])
+      })
+    })
+
+    describe('filter by number', () => {
+      it('should filter a name request object', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.businessNumber = 'NR 3819593'
+
+        expect(filteredResults.value).toHaveLength(1)
+        expect(filteredResults.value[0]?.nameRequest?.names?.some(item => item.name === 'SOME TEST NAME 321')).toEqual(true)
+      })
+
+      it('should filter a business object', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.businessNumber = 'BC0871227'
+
+        expect(filteredResults.value).toHaveLength(1)
+        expect(filteredResults.value).toEqual([
+          {
+            businessIdentifier: 'BC0871227',
+            name: 'SEVERIN LIMITED COMPANY CORP.',
+            corpType: { code: 'BC' },
+            corpSubType: { code: 'BC' },
+            adminFreeze: false,
+            goodStanding: true,
+            status: 'HISTORICAL'
+          }
+        ])
+      })
+    })
+
+    describe('filter by type', () => {
+      it('should filter an Amalgamation Application', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.type = 'Amalgamation Application'
+
+        expect(filteredResults.value).toHaveLength(1)
+        expect(filteredResults.value.every(item => affiliationType(item) === 'Amalgamation Application')).toEqual(true)
+      })
+
+      it('should filter a BC Limited Company', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.type = 'BC Limited Company'
+
+        expect(filteredResults.value).toHaveLength(3)
+        expect(filteredResults.value.every(item => affiliationType(item) === 'BC Limited Company')).toEqual(true)
+      })
+    })
+
+    describe('filter by status', () => {
+      it('should filter by draft', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.status = 'Draft'
+
+        expect(filteredResults.value).toHaveLength(2)
+        expect(filteredResults.value.every(item => affiliationStatus(item) === 'Draft')).toEqual(true)
+      })
+
+      it('should filter by historical', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { affiliations, filteredResults } = useAffiliations()
+        await flushPromises()
+
+        affiliations.filters.status = 'Historical'
+
+        expect(filteredResults.value).toHaveLength(2)
+        expect(filteredResults.value.every(item => affiliationStatus(item) === 'Historical')).toEqual(true)
+      })
+    })
+
+    describe('statusOptions', () => {
+      it('should be created based off the results objects', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { statusOptions } = useAffiliations()
+        await flushPromises()
+
+        expect(statusOptions.value).toEqual(['Draft', 'Historical', 'Active'])
+      })
+    })
+
+    describe('typeOptions', () => {
+      it('should be created based off the results objects', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { typeOptions } = useAffiliations()
+        await flushPromises()
+
+        expect(typeOptions.value).toEqual([
+          'Amalgamation Application',
+          'BC Limited Company',
+          'BC Benefit Company',
+          'Registration'
+        ])
+      })
+    })
+
+    describe('hasFilters', () => {
+      it('should be false by default', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+      })
+
+      it('should be true with a name filter active', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters, affiliations } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+
+        affiliations.filters.businessName = 'test'
+
+        expect(hasFilters.value).toEqual(true)
+      })
+
+      it('should be true with a number filter active', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters, affiliations } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+
+        affiliations.filters.businessNumber = 'test'
+
+        expect(hasFilters.value).toEqual(true)
+      })
+
+      it('should be true with a type filter active', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters, affiliations } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+
+        affiliations.filters.type = 'test'
+
+        expect(hasFilters.value).toEqual(true)
+      })
+
+      it('should be true with a status filter active', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters, affiliations } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+
+        affiliations.filters.status = 'test'
+
+        expect(hasFilters.value).toEqual(true)
+      })
+    })
+
+    describe('resetFilters', () => {
+      it('should reset all filters', async () => {
+        const _fetch = vi.fn().mockResolvedValue(mockAffiliationResponse)
+        vi.stubGlobal('$fetch', _fetch)
+
+        const { hasFilters, affiliations, resetFilters } = useAffiliations()
+        await flushPromises()
+
+        expect(hasFilters.value).toEqual(false)
+
+        affiliations.filters.businessName = 'test'
+        affiliations.filters.businessNumber = 'test'
+        affiliations.filters.type = 'test'
+        affiliations.filters.status = 'test'
+
+        expect(hasFilters.value).toEqual(true)
+
+        resetFilters()
+
+        expect(hasFilters.value).toEqual(false)
       })
     })
   })
