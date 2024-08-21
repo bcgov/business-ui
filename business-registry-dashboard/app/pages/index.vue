@@ -148,6 +148,7 @@ const {
       <UTable
         :columns="visibleColumns"
         :rows="filteredResults"
+        :loading="affiliations.loading"
         :ui="{
           th: {
             padding: 'px-0 py-3.5'

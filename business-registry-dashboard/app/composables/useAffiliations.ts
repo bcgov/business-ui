@@ -1,11 +1,10 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
   const affiliations = reactive({
     filters: {
-      isActive: false,
       businessName: '',
       businessNumber: '',
       type: '',
@@ -89,6 +88,7 @@ export const useAffiliations = () => {
     }
   }
 
+  // load new affiliations when user changes accounts
   watch(
     [() => accountStore.currentAccount.id],
     async () => {
@@ -109,20 +109,23 @@ export const useAffiliations = () => {
     affiliations.filters.businessNumber = ''
     affiliations.filters.type = ''
     affiliations.filters.status = ''
-    affiliations.filters.isActive = false
   }
 
+  // label required for columns type but overwritten in header slot, i18n not required
   const nameColumn = { key: 'legalName', label: 'Name' }
   const actionColumn = { key: 'actions', label: 'Actions' }
 
+  // optional table columns, i18n required because this is also used to populate the 'columns to show' dropdown
   const optionalColumns = [
     { key: 'identifier', label: t('labels.number') },
     { key: 'legalType', label: t('labels.type') },
     { key: 'state', label: t('labels.status') }
   ]
 
+  // default user selectedColumns columns = optionalColumns
   const selectedColumns = ref([...optionalColumns])
 
+  // default visible columns as all columns
   const visibleColumns = ref([
     nameColumn,
     ...optionalColumns,
@@ -131,9 +134,11 @@ export const useAffiliations = () => {
 
   const { width } = useWindowSize()
 
+  // update default columns on page width change
   watchDebounced(
     width,
     (newVal) => {
+      resetFilters() // reset filters so active filters do not get hidden when screen size changes
       if (newVal < 640) {
         // Mobile view
         visibleColumns.value = [nameColumn, actionColumn]
@@ -156,9 +161,10 @@ export const useAffiliations = () => {
         ]
       }
     },
-    { debounce: 500, immediate: true }
+    { debounce: 100, immediate: true }
   )
 
+  // used to update columns @change on the 'columns to show' dropdown
   function setColumns () {
     visibleColumns.value = [
       nameColumn,
@@ -173,14 +179,14 @@ export const useAffiliations = () => {
     if (affiliations.filters.businessName) {
       results = results.filter((result) => {
         const businessName = affiliationName(result)
-        return businessName.toLowerCase().includes(affiliations.filters.businessName.toLowerCase())
+        return businessName.toLocaleLowerCase(locale.value).includes(affiliations.filters.businessName.toLocaleLowerCase(locale.value))
       })
     }
 
     if (affiliations.filters.businessNumber) {
       results = results.filter((result) => {
         const businessNumber = number(result)
-        return businessNumber.toLowerCase().includes(affiliations.filters.businessNumber.toLowerCase())
+        return businessNumber.toLocaleLowerCase(locale.value).includes(affiliations.filters.businessNumber.toLocaleLowerCase(locale.value))
       })
     }
 
@@ -201,31 +207,18 @@ export const useAffiliations = () => {
     return results
   })
 
+  // create status filter options relevant to affiliations.results
   const statusOptions = computed(() => {
-    const optionSet = new Set<string>()
-
-    affiliations.results.forEach((item) => {
-      optionSet.add(affiliationStatus(item))
-    })
-
-    return Array.from(optionSet)
+    return Array.from(new Set(affiliations.results.map(affiliationStatus)))
   })
 
+  // create type filter options relevant to affiliations.results
   const typeOptions = computed(() => {
-    const optionSet = new Set<string>()
-
-    affiliations.results.forEach((item) => {
-      optionSet.add(affiliationType(item))
-    })
-
-    return Array.from(optionSet)
+    return Array.from(new Set(affiliations.results.map(affiliationType)))
   })
 
   const hasFilters = computed(() => {
-    return affiliations.filters.businessName !== '' ||
-      affiliations.filters.businessNumber !== '' ||
-      affiliations.filters.type !== '' ||
-      affiliations.filters.status !== ''
+    return Object.values(affiliations.filters).some(value => value !== '')
   })
 
   return {
