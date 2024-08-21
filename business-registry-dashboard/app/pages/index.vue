@@ -147,9 +147,12 @@ const {
         :columns="visibleColumns"
         :rows="filteredResults"
         :loading="affiliations.loading"
+        :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: $t('labels.noAffiliationRecords') }"
         :ui="{
+          wrapper: 'relative overflow-x-auto h-[512px]',
+          thead: 'sticky top-0 bg-white z-10',
           th: {
-            padding: 'px-0 py-3.5'
+            padding: 'px-0 py-0'
           }
         }"
       >

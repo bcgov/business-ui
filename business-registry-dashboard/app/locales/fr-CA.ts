@@ -204,7 +204,8 @@ export default {
     removeFromTable: 'Supprimer du Tableau',
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
-    amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)'
+    amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
+    noAffiliationRecords: "Aucun dossier d'affiliation"
   },
   links: {
     busCorpAct: {

@@ -204,7 +204,8 @@ export default {
     removeFromTable: 'Remove From Table',
     manageBusiness: 'Manage Business',
     cancelRequest: 'Cancel Request',
-    amalgamateNowShortForm: 'Amalgamate Now (Short Form)'
+    amalgamateNowShortForm: 'Amalgamate Now (Short Form)',
+    noAffiliationRecords: 'No Affiliation Records'
   },
   links: {
     busCorpAct: {
