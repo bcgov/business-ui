@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
+const nrWebUrl = useRuntimeConfig().public.nrURL
 
 useHead({
   title: t('page.home.title')
@@ -10,10 +11,7 @@ definePageMeta({
   order: 0
 })
 
-const selected = ref('reg')
-
-const config = useRuntimeConfig()
-const nrWebUrl = config.public.nrURL
+const searchType = ref('reg')
 
 const {
   affiliations,
@@ -72,25 +70,25 @@ const {
         }"
       >
         <AsyncComboBox
-          :key="selected"
-          :search-fn="selected === 'reg' ? regSearch : namexSearch"
-          :id-attr="selected === 'reg' ? 'identifier' : 'nrNum'"
-          :value-attr="selected === 'reg' ? 'name' : 'nrNum'"
-          :text="{ placeholder: $t(`search.${selected}.placeholder`), arialabel: $t(`search.${selected}.arialabel`)}"
+          :key="searchType"
+          :search-fn="searchType === 'reg' ? regSearch : namexSearch"
+          :id-attr="searchType === 'reg' ? 'identifier' : 'nrNum'"
+          :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
+          :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
           @select="(e) => console.log('select: ', e)"
         >
           <template #empty>
             <div class="flex flex-col gap-2 px-4 py-2">
-              <span class="font-semibold">{{ $t(`search.${selected}.empty.title`) }}</span>
-              <span>{{ $t(`search.${selected}.empty.content`) }}</span>
+              <span class="font-semibold">{{ $t(`search.${searchType}.empty.title`) }}</span>
+              <span>{{ $t(`search.${searchType}.empty.content`) }}</span>
             </div>
           </template>
           <template #item="{ item }">
             <div class="flex items-center justify-between gap-2">
               <div class="max-w-36 flex-1">
-                <span>{{ selected === 'reg' ? item.identifier : item.nrNum }}</span>
+                <span>{{ searchType === 'reg' ? item.identifier : item.nrNum }}</span>
               </div>
-              <div v-if="selected === 'reg'" class="flex-1">
+              <div v-if="searchType === 'reg'" class="flex-1">
                 <span>{{ item.name }}</span>
               </div>
               <div v-else class="flex flex-1 flex-col gap-1">
@@ -106,7 +104,7 @@ const {
 
       <!-- TODO: link with search query -->
       <URadioGroup
-        v-model="selected"
+        v-model="searchType"
         :legend="$t('page.home.busOrNRSearch.opts.legend')"
         :options="[{value: 'reg', label: $t('page.home.busOrNRSearch.opts.existingBus')}, {value: 'namex', label: $t('page.home.busOrNRSearch.opts.nr')}]"
         :ui="{
