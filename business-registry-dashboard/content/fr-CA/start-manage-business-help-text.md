@@ -1,4 +1,4 @@
-### Help with Starting and Managing a Business
+### Help with Starting and Managing a Business FRENCH
 
 Start a named or numbered business in B.C. by following these steps:
 
