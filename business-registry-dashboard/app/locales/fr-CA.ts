@@ -111,7 +111,8 @@ export default {
       show: "Aide à la Création et à la Gestion d'une Entreprise",
       hide: "Masquer l'Aide"
     },
-    moreOptions: "Plus d'options"
+    moreOptions: "Plus d'options",
+    clearFilters: 'Effacer les Filtres'
   },
   currency: {
     cad: 'CAD',
@@ -203,7 +204,8 @@ export default {
     removeFromTable: 'Supprimer du Tableau',
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
-    amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)'
+    amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
+    noAffiliationRecords: "Aucun dossier d'affiliation"
   },
   links: {
     busCorpAct: {
@@ -216,7 +218,8 @@ export default {
     addresses: 'Adresses',
     directors: 'Directeurs',
     confirm: 'Confirmer',
-    select: 'Sélectionner'
+    select: 'Sélectionner',
+    none: 'Aucun'
   },
   page: {
     notFound: {
@@ -292,7 +295,7 @@ export default {
           }
         },
         legalType: {
-          aria: 'Filtrer par type juridique, {count} sélectionnés',
+          aria: 'Filtre par type juridique, filtre actuel: {filter}',
           placeholder: 'Taper',
           selected: '{count} sélectionnés',
           clear: {
@@ -301,7 +304,7 @@ export default {
           }
         },
         busStates: {
-          aria: "Filtrer par statut d'entreprise, {count} sélectionnés",
+          aria: "Filtrer par statut d'entreprise, filtre actuel: {filter}",
           placeholder: 'Statut',
           selected: '{count} sélectionnés',
           clear: {

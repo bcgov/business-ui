@@ -11,9 +11,9 @@ defineProps<{
 defineEmits(['clear'])
 </script>
 <template>
-  <div class="flex flex-col gap-2 font-normal">
+  <div class="flex flex-col gap-2 border-b border-gray-200 font-normal">
     <span class="border-b border-gray-200 p-2 font-semibold">{{ label }}</span>
-    <div class="inline-flex -space-x-px px-2 pt-2">
+    <div class="inline-flex -space-x-px p-2">
       <div class="grow">
         <slot />
       </div>

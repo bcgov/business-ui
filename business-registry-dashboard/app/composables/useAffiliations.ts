@@ -1,17 +1,19 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
-  const affiliations = (reactive({
+  const affiliations = reactive({
     filters: {
-      isActive: false,
-      filterPayload: {}
-    } as AffiliationFilterParams,
+      businessName: '',
+      businessNumber: '',
+      type: '',
+      status: ''
+    },
     loading: false,
     results: [] as Business[],
     count: 0
-  }) as unknown) as AffiliationState
+  })
 
   // TODO: handle affiliation invitations
   // async function handleAffiliationInvitations (affiliatedEntities: Business[]): Promise<void> {
@@ -72,6 +74,7 @@ export const useAffiliations = () => {
             }
             entity.nameRequest = buildNameRequestObject(nr)
           }
+
           affiliations.results.push(entity)
           affiliations.count = affiliations.results.length
           // TODO: add affilaition invites to business object
@@ -85,6 +88,7 @@ export const useAffiliations = () => {
     }
   }
 
+  // load new affiliations when user changes accounts
   watch(
     [() => accountStore.currentAccount.id],
     async () => {
@@ -97,42 +101,31 @@ export const useAffiliations = () => {
     affiliations.loading = false
     affiliations.results = []
     affiliations.count = 0
-    affiliations.filters.filterPayload = {}
-    affiliations.filters.isActive = false
+    resetFilters()
   }
 
-  // const updateFilter = (filterField?: string, value?: any) => {
-  //   if (filterField) {
-  //     if (value) {
-  //       affiliations.filters.filterPayload[filterField] = value
-  //       affiliations.filters.isActive = true
-  //     } else {
-  //       delete affiliations.filters.filterPayload[filterField]
-  //     }
-  //   }
-  //   if (Object.keys(affiliations.filters.filterPayload).length === 0) {
-  //     affiliations.filters.isActive = false
-  //   } else {
-  //     affiliations.filters.isActive = true
-  //   }
-  // }
+  function resetFilters () {
+    affiliations.filters.businessName = ''
+    affiliations.filters.businessNumber = ''
+    affiliations.filters.type = ''
+    affiliations.filters.status = ''
+  }
 
-  // const clearAllFilters = () => {
-  //   affiliations.filters.filterPayload = {}
-  //   affiliations.filters.isActive = false
-  // }
-
+  // label required for columns type but overwritten in header slot, i18n not required
   const nameColumn = { key: 'legalName', label: 'Name' }
   const actionColumn = { key: 'actions', label: 'Actions' }
 
+  // optional table columns, i18n required because this is also used to populate the 'columns to show' dropdown
   const optionalColumns = [
     { key: 'identifier', label: t('labels.number') },
     { key: 'legalType', label: t('labels.type') },
     { key: 'state', label: t('labels.status') }
   ]
 
+  // default user selectedColumns columns = optionalColumns
   const selectedColumns = ref([...optionalColumns])
 
+  // default visible columns as all columns
   const visibleColumns = ref([
     nameColumn,
     ...optionalColumns,
@@ -141,9 +134,11 @@ export const useAffiliations = () => {
 
   const { width } = useWindowSize()
 
+  // update default columns on page width change
   watchDebounced(
     width,
     (newVal) => {
+      resetFilters() // reset filters so active filters do not get hidden when screen size changes
       if (newVal < 640) {
         // Mobile view
         visibleColumns.value = [nameColumn, actionColumn]
@@ -166,9 +161,10 @@ export const useAffiliations = () => {
         ]
       }
     },
-    { debounce: 500, immediate: true }
+    { debounce: 100, immediate: true }
   )
 
+  // used to update columns @change on the 'columns to show' dropdown
   function setColumns () {
     visibleColumns.value = [
       nameColumn,
@@ -177,6 +173,54 @@ export const useAffiliations = () => {
     ]
   }
 
+  const filteredResults = computed(() => {
+    let results = affiliations.results
+
+    if (affiliations.filters.businessName) {
+      results = results.filter((result) => {
+        const businessName = affiliationName(result)
+        return businessName.toLocaleLowerCase(locale.value).includes(affiliations.filters.businessName.toLocaleLowerCase(locale.value))
+      })
+    }
+
+    if (affiliations.filters.businessNumber) {
+      results = results.filter((result) => {
+        const businessNumber = number(result)
+        return businessNumber.toLocaleLowerCase(locale.value).includes(affiliations.filters.businessNumber.toLocaleLowerCase(locale.value))
+      })
+    }
+
+    if (affiliations.filters.type) {
+      results = results.filter((result) => {
+        const type = affiliationType(result)
+        return type.includes(affiliations.filters.type)
+      })
+    }
+
+    if (affiliations.filters.status) {
+      results = results.filter((result) => {
+        const status = affiliationStatus(result)
+        return status.includes(affiliations.filters.status)
+      })
+    }
+
+    return results
+  })
+
+  // create status filter options relevant to affiliations.results
+  const statusOptions = computed(() => {
+    return Array.from(new Set(affiliations.results.map(affiliationStatus)))
+  })
+
+  // create type filter options relevant to affiliations.results
+  const typeOptions = computed(() => {
+    return Array.from(new Set(affiliations.results.map(affiliationType)))
+  })
+
+  const hasFilters = computed(() => {
+    return Object.values(affiliations.filters).some(value => value !== '')
+  })
+
   return {
     getAffiliatedEntities,
     affiliations,
@@ -184,8 +228,11 @@ export const useAffiliations = () => {
     visibleColumns,
     optionalColumns,
     selectedColumns,
-    setColumns
-    // clearAllFilters,
-    // updateFilter,
+    setColumns,
+    filteredResults,
+    statusOptions,
+    typeOptions,
+    hasFilters,
+    resetFilters
   }
 }

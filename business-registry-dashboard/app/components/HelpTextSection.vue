@@ -12,11 +12,11 @@ const toggleHelpText = () => {
   }
 }
 
-const { data: helpText } = await useAsyncData('start-manage-business-help-text', () => {
+const { data: helpText } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
   return queryContent()
     .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
     .findOne()
-}, { watch: [locale] })
+})
 </script>
 <template>
   <UButton
