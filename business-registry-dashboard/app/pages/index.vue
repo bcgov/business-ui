@@ -2,6 +2,7 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const nrWebUrl = useRuntimeConfig().public.nrURL
+const brdModal = useBrdModals()
 
 useHead({
   title: t('page.home.title')
@@ -25,6 +26,15 @@ const {
   hasFilters,
   resetFilters
 } = useAffiliations()
+
+function handleManageBusinessOrNameRequest (event: { names: string[]; nrNum: string }) {
+  if (searchType.value === 'reg') {
+    console.log('open manage business modal')
+  } else {
+    brdModal.manageNameRequest(true, event)
+  }
+  console.log(event)
+}
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -75,7 +85,7 @@ const {
           :id-attr="searchType === 'reg' ? 'identifier' : 'nrNum'"
           :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
           :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
-          @select="(e) => console.log('select: ', e)"
+          @select="handleManageBusinessOrNameRequest"
         >
           <template #empty>
             <div class="flex flex-col gap-2 px-4 py-2">
@@ -394,5 +404,8 @@ const {
         <!-- end table cell slots -->
       </UTable>
     </SbcPageSectionCard>
+
+    <UModals />
+    <UNotifications />
   </div>
 </template>

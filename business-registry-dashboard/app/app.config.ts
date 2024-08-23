@@ -91,6 +91,18 @@ export default defineAppConfig({
         primary: 'border-primary-500 placeholder-primary-500 border-b-2'
       }
     },
+    notification: {
+      title: 'text-sm font-medium text-white',
+      description: 'mt-1 text-sm leading-4 text-white',
+      background: 'bg-gray-700',
+      progress: {
+        base: 'hidden',
+        background: 'bg-{color}-500 dark:bg-{color}-400'
+      }
+    },
+    notifications: {
+      position: 'bottom-0 left-1/2 -translate-x-1/2'
+    },
     pagination: {
       wrapper: 'flex items-center -space-x-px',
       base: '',
