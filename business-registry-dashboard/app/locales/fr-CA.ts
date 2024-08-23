@@ -154,7 +154,7 @@ export default {
     manageNR: {
       heading: 'Gérer une Demande de Nom',
       requestedNames: 'Nom Demandé: | Noms Demandés:',
-      nrNum: 'Nom Numéro de Demande',
+      nrNum: 'Nom Numéro de Demande:',
       legend: "Entrez soit le numéro de téléphone du candidat OU l'adresse e-mail du candidat qui ont été utilisés lorsque le nom a été demandé:",
       fields: {
         phone: {

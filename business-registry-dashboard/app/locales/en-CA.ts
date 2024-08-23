@@ -154,7 +154,7 @@ export default {
     manageNR: {
       heading: 'Manage a Name Request',
       requestedNames: 'Requested Name: | Requested Names:',
-      nrNum: 'Name Request Number',
+      nrNum: 'Name Request Number:',
       legend: 'Enter either the applicant phone number OR applicant email that were used when the name was requested:',
       fields: {
         phone: {
