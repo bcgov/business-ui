@@ -8,13 +8,13 @@ defineProps<{
 </script>
 <template>
   <ModalBase
-    title="Manage a Name Request"
+    :title="$t('form.manageNR.heading')"
   >
     <!-- nr info section -->
     <div class="-mt-4 flex flex-col gap-2">
       <!-- nr names display -->
       <div class="flex gap-8">
-        <span class="font-semibold">Requested Name(s):</span>
+        <span class="font-semibold">{{ $t('form.manageNR.requestedNames', nameRequest.names.length) }}</span>
         <ul>
           <li v-for="name in nameRequest.names" :key="name">
             {{ name }}
@@ -23,10 +23,10 @@ defineProps<{
       </div>
       <!-- nr number display -->
       <div class="flex gap-8">
-        <span class="font-semibold">Name Request Number:</span>
+        <span class="font-semibold">{{ $t('form.manageNR.nrNum') }}</span>
         <span>{{ nameRequest.nrNum }}</span>
       </div>
     </div>
-    <FormAddNameRequest />
+    <FormAddNameRequest :nr-num="nameRequest.nrNum" />
   </ModalBase>
 </template>

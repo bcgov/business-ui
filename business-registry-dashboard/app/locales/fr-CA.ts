@@ -112,7 +112,31 @@ export default {
       hide: "Masquer l'Aide"
     },
     moreOptions: "Plus d'options",
-    clearFilters: 'Effacer les Filtres'
+    clearFilters: 'Effacer les Filtres',
+    help: 'Aide',
+    hideHelp: "Masquer l'Aide",
+    tryAgain: 'Essayer à nouveau',
+    cancel: 'Annuler'
+  },
+  contactInfo: {
+    bcRegGeneral: {
+      tollFree: {
+        title: 'Sans Frais:',
+        value: '1-877-370-1033'
+      },
+      victoriaOffice: {
+        title: 'Bureau de Victoria:',
+        value: '1-250-370-1033'
+      },
+      email: {
+        title: 'Email:',
+        value: "BCRegistries{'@'}gov.bc.ca"
+      },
+      hours: {
+        title: "Heures d'Ouverture:",
+        value: 'Du Lundi au Vendredi, 8:30am - 4:30pm heure du Pacifique'
+      }
+    }
   },
   currency: {
     cad: 'CAD',
@@ -125,6 +149,48 @@ export default {
     DISSOLUTION: 'Cette entreprise est en cours de dissolution',
     PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
     EXPIRED: "Cette demande d'incorporation n'est plus valide; la demande de dénomination est expirée."
+  },
+  form: {
+    manageNR: {
+      heading: 'Gérer une Demande de Nom',
+      requestedNames: 'Nom Demandé: | Noms Demandés:',
+      nrNum: 'Nom Numéro de Demande',
+      legend: "Entrez soit le numéro de téléphone du candidat OU l'adresse e-mail du candidat qui ont été utilisés lorsque le nom a été demandé:",
+      fields: {
+        phone: {
+          help: 'Exemple: 555-555-5555',
+          placeholder: 'Numéro de téléphone du demandeur',
+          arialabel: 'Numéro de téléphone du demandeur',
+          error: {
+            invalid: 'Veuillez entrer un numéro de téléphone valide (e.g., 123-456-7890).'
+          }
+        },
+        email: {
+          help: "Exemple: name{'@'}email.com",
+          placeholder: 'Adresse e-mail du candidat',
+          arialabel: 'Adresse e-mail du candidat',
+          error: {
+            invalid: "Veuillez entrer un email valide (e.g., name{'@'}email.com)."
+          }
+        },
+        alert: {
+          bothEmpty: 'Au moins un moyen de contact (e-mail ou téléphone) doit être fourni.',
+          bothInvalid: 'Les deux champs ne sont pas valides. Veuillez saisir soit un numéro de téléphone valide, soit un e-mail valide.'
+        }
+      },
+      submitBtn: 'Gérer cette Demande de Nom',
+      help: {
+        heading: "Besoin d'aide?",
+        description: "Si vous avez perdu votre reçu ou votre e-mail de résultats de nom et avez besoin d'aide pour trouver votre numéro de demande de nom (NR), veuillez nous contacter à:"
+      },
+      error: {
+        general: {
+          heading: "Erreur lors de l'ajout de la Demande de Nom",
+          description: "Nous n'avons pas trouvé de demande de nom associée au numéro de téléphone ou à l'adresse e-mail que vous avez saisi. Veuillez réessayer."
+        }
+      },
+      successToast: '{nrNum} a été ajouté avec succès à votre table.'
+    }
   },
   labels: {
     note: 'Note',
@@ -219,7 +285,9 @@ export default {
     directors: 'Directeurs',
     confirm: 'Confirmer',
     select: 'Sélectionner',
-    none: 'Aucun'
+    none: 'Aucun',
+    or: 'ou',
+    Or: 'Ou'
   },
   page: {
     notFound: {

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { FormAddNameRequestBase, FormAddNameRequestHelp, FormAddNameRequestError } from '#components'
 
+defineProps<{
+  nrNum: string
+}>()
+
 type Form = typeof FormAddNameRequestBase
 type Help = typeof FormAddNameRequestHelp
 type Error = typeof FormAddNameRequestError
@@ -15,9 +19,11 @@ const state: Record<string, Comp> = {
 const currentState = ref('FormAddNameRequestBase')
 </script>
 <template>
+  <!-- TODO: add state for when name is already added to table -->
   <transition name="fade" mode="out-in">
     <component
       :is="state[currentState]"
+      :nr-num="nrNum"
       @show-help="currentState = 'FormAddNameRequestHelp'"
       @hide-help="currentState = 'FormAddNameRequestBase'"
       @retry-name-request="currentState = 'FormAddNameRequestBase'"

@@ -5,10 +5,15 @@ import type { FormError, FormSubmitEvent, Form } from '#ui/types'
 
 const brdModal = useBrdModals()
 const toast = useToast()
+const { t } = useI18n()
 
 const emit = defineEmits<{
   showHelp: [void]
   nameRequestError: [void]
+}>()
+
+const props = defineProps<{
+  nrNum: string
 }>()
 
 const alertText = ref('')
@@ -29,39 +34,6 @@ const nrSchema = z.object({
   phone: z.string()
 })
 
-// const nrSchema = z.object({
-//   email: z.string().email({ message: 'Please enter a valid email.' }).optional(),
-//   phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, { message: 'Please enter a valid phone number (e.g., 123-456-7890).' }).optional()
-// }).refine(data => data.email || data.phone, {
-//   message: 'At least one contact method (email or phone) must be provided.',
-//   path: ['phone', 'email'] // Optional: can also target a specific path
-// }).superRefine((data, ctx) => {
-//   if (data.email && data.phone) {
-//     const emailValid = z.string().email().safeParse(data.email).success
-//     const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(data.phone).success
-
-//     if (!emailValid && !phoneValid) {
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: 'Both email and phone are invalid.',
-//         path: ['email', 'phone']
-//       })
-//     } else if (!emailValid && phoneValid) {
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: 'Email is invalid; using phone instead.',
-//         path: ['email']
-//       })
-//     } else if (emailValid && !phoneValid) {
-//       ctx.addIssue({
-//         code: z.ZodIssueCode.custom,
-//         message: 'Phone is invalid; using email instead.',
-//         path: ['phone']
-//       })
-//     }
-//   }
-// })
-
 type NRSchema = z.infer<typeof nrSchema>
 
 const validate = (state: NRSchema): FormError[] => {
@@ -70,21 +42,21 @@ const validate = (state: NRSchema): FormError[] => {
   const errors = []
   const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(state.phone).success
   const emailValid = z.string().email().safeParse(state.email).success
-  if (!state.phone && !state.email) {
-    alertText.value = 'At least one contact method (email or phone) must be provided.'
-  } else if (state.phone && !state.email) {
+  if (!state.phone && !state.email) { // show alert if both fields are empty
+    alertText.value = t('form.manageNR.fields.alert.bothEmpty')
+  } else if (state.phone && !state.email) { // show phone error if phone populated but invalid
     if (!phoneValid) {
-      errors.push({ path: 'phone', message: 'Please enter a valid phone number (e.g., 123-456-7890).' })
+      errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
     }
-  } else if (!state.phone && state.email) {
+  } else if (!state.phone && state.email) { // show email error if email populated but invalid
     if (!emailValid) {
-      errors.push({ path: 'email', message: 'Please enter a valid email.' })
+      errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
     }
-  } else if (state.phone && state.email) {
+  } else if (state.phone && state.email) { // show alert and error text if both fields populated and both are invalid
     if (!phoneValid && !emailValid) {
-      alertText.value = 'Both fields are invalid. Please enter either a valid phone number or a valid email.'
-      errors.push({ path: 'phone', message: 'Please enter a valid phone number (e.g., 123-456-7890).' })
-      errors.push({ path: 'email', message: 'Please enter a valid email.' })
+      alertText.value = t('form.manageNR.fields.alert.bothInvalid')
+      errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
+      errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
     }
   }
 
@@ -100,16 +72,18 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(event.data.phone).success
 
     if (phoneValid) {
+      // make api request
       console.log('submitting phone: ', event.data.phone)
       await new Promise<void>((resolve) => {
         setTimeout(() => {
           // emit('nameRequestError')
-          toast.add({ title: 'NR 1231231 was successfully added to your table.' })
+          toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) })
           brdModal.manageNameRequest(false)
           resolve()
         }, 500)
       })
     } else if (emailValid) {
+      // make api request
       console.log('submitting email: ', event.data.email)
       await new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -119,7 +93,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
       })
     }
   } catch (e) {
-    // do something
+    emit('nameRequestError') // pass error?
   } finally {
     formLoading.value = false
   }
@@ -136,38 +110,34 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     @error="handleFormErrorEvent"
   >
     <fieldset>
-      <legend class="sr-only">
-        Name Request Number and Applicant Phone Number or Email Address
+      <legend class="py-4">
+        {{ $t('form.manageNR.legend') }}
       </legend>
-
-      <div class="my-4">
-        Enter either the applicant phone number OR applicant email that were used when the name was requested:
-      </div>
 
       <div class="flex flex-col gap-4">
         <UFormGroup
           name="phone"
-          help="Example: 555-555-5555"
+          :help="$t('form.manageNR.fields.phone.help')"
         >
           <UInput
             v-model="state.phone"
             v-maska="phoneMask"
-            placeholder="Applicant Phone Number"
-            aria-label="Applicant Phone Number"
+            :placeholder="$t('form.manageNR.fields.phone.placeholder')"
+            :aria-label="$t('form.manageNR.fields.phone.arialabel')"
             variant="bcGovLg"
           />
         </UFormGroup>
 
-        <span class="font-semibold">Or</span>
+        <span class="font-semibold">{{ $t('words.Or') }}</span>
 
         <UFormGroup
           name="email"
-          help="Example: name@email.com"
+          :help="$t('form.manageNR.fields.email.help')"
         >
           <UInput
             v-model="state.email"
-            placeholder="Applicant Email Address"
-            aria-label="Applicant Email Address"
+            :placeholder="$t('form.manageNR.fields.email.placeholder')"
+            :aria-label="$t('form.manageNR.fields.email.arialabel')"
             variant="bcGovLg"
           />
         </UFormGroup>
@@ -184,7 +154,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
 
     <div class="flex justify-between">
       <UButton
-        label="Help"
+        :label="$t('btn.help')"
         variant="ghost"
         icon="i-mdi-help-circle-outline"
         @click="$emit('showHelp')"
@@ -192,13 +162,13 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
 
       <div class="flex gap-2">
         <UButton
-          label="Cancel"
+          :label="$t('btn.cancel')"
           variant="outline"
           @click="brdModal.manageNameRequest(false)"
         />
         <UButton
           type="submit"
-          label="Manage this Name Request"
+          :label="$t('form.manageNR.submitBtn')"
           :loading="formLoading"
         />
       </div>

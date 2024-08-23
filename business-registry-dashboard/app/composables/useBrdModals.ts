@@ -1,3 +1,4 @@
+// https://ui.nuxt.com/components/modal#control-programmatically
 import { ModalManageNameRequest } from '#components'
 
 export const useBrdModals = () => {
