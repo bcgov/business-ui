@@ -2,18 +2,19 @@
 import type { MaskInputOptions } from 'maska'
 import { z } from 'zod'
 import type { FormError, FormSubmitEvent, Form } from '#ui/types'
+import { FetchError } from 'ofetch'
 
 const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
 
-const emit = defineEmits<{
-  showHelp: [void]
-  nameRequestError: [void]
-}>()
-
 const props = defineProps<{
   nrNum: string
+}>()
+
+const emit = defineEmits<{
+  showHelp: [void]
+  nameRequestError: [error: FetchError]
 }>()
 
 const alertText = ref('')
@@ -63,37 +64,40 @@ const validate = (state: NRSchema): FormError[] => {
   return errors
 }
 
+async function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
+  const authApiUrl = useRuntimeConfig().public.authApiURL
+  const accountStore = useConnectAccountStore()
+  const token = await useKeycloak().getToken()
+  const url = `${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`
+  return $fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    method: 'POST',
+    body: affiliation
+  })
+}
+
 async function onSubmit (event: FormSubmitEvent<NRSchema>) {
-  // emit('nameRequestError')
-  // Do something with data
   try {
     formLoading.value = true
-    const emailValid = z.string().email().safeParse(event.data.email).success
+
+    // const emailValid = z.string().email().safeParse(event.data.email).success // might need in future
     const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(event.data.phone).success
 
-    if (phoneValid) {
-      // make api request
-      console.log('submitting phone: ', event.data.phone)
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          // emit('nameRequestError')
-          toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) })
-          brdModal.manageNameRequest(false)
-          resolve()
-        }, 500)
-      })
-    } else if (emailValid) {
-      // make api request
-      console.log('submitting email: ', event.data.email)
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          emit('nameRequestError')
-          resolve()
-        }, 500)
-      })
+    // create payload with either phone or email depending on what is valid
+    const payload: CreateNRAffiliationRequestBody = {
+      businessIdentifier: props.nrNum,
+      ...(phoneValid ? { phone: event.data.phone.replace(/-/g, '') } : { email: event.data.email })
     }
+
+    // submit post request
+    await createNRAffiliation(payload)
+
+    toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) })
+    brdModal.manageNameRequest(false)
   } catch (e) {
-    emit('nameRequestError') // pass error?
+    emit('nameRequestError', e as FetchError)
   } finally {
     formLoading.value = false
   }

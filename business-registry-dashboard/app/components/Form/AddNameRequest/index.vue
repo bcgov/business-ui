@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
 import { FormAddNameRequestBase, FormAddNameRequestHelp, FormAddNameRequestError } from '#components'
 
 defineProps<{
@@ -17,6 +18,12 @@ const state: Record<string, Comp> = {
 }
 
 const currentState = ref('FormAddNameRequestBase')
+const nrError = ref<FetchError>()
+
+function handleNrError (e: FetchError) {
+  nrError.value = e
+  currentState.value = 'FormAddNameRequestError'
+}
 </script>
 <template>
   <!-- TODO: add state for when name is already added to table -->
@@ -24,10 +31,11 @@ const currentState = ref('FormAddNameRequestBase')
     <component
       :is="state[currentState]"
       :nr-num="nrNum"
+      :error="nrError"
       @show-help="currentState = 'FormAddNameRequestHelp'"
       @hide-help="currentState = 'FormAddNameRequestBase'"
       @retry-name-request="currentState = 'FormAddNameRequestBase'"
-      @name-request-error="currentState = 'FormAddNameRequestError'"
+      @name-request-error="handleNrError"
     />
   </transition>
 </template>

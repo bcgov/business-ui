@@ -184,9 +184,21 @@ export default {
         description: "Si vous avez perdu votre reçu ou votre e-mail de résultats de nom et avez besoin d'aide pour trouver votre numéro de demande de nom (NR), veuillez nous contacter à:"
       },
       error: {
-        general: {
-          heading: "Erreur lors de l'ajout de la Demande de Nom",
-          description: "Nous n'avons pas trouvé de demande de nom associée au numéro de téléphone ou à l'adresse e-mail que vous avez saisi. Veuillez réessayer."
+        default: {
+          title: "Erreur Lors De L'Ajout De La Demande De Nom",
+          description: "Impossible d'ajouter la demande de nom pour le moment, veuillez réessayer ou revenir plus tard."
+        },
+        400: {
+          title: "Erreur Lors De L'Ajout De La Demande De Nom",
+          description: "Nous n'avons pas pu trouver de demande de nom associée au numéro de téléphone ou à l'adresse courriel que vous avez saisie. Veuillez réessayer."
+        },
+        404: {
+          title: 'Demande De Nom Introuvable',
+          description: 'La demande de nom spécifiée est introuvable.'
+        },
+        500: {
+          title: 'Erreur Interne Du Serveur',
+          description: "Impossible d'ajouter la demande de nom pour le moment, veuillez réessayer ou revenir plus tard."
         }
       },
       successToast: '{nrNum} a été ajouté avec succès à votre table.'

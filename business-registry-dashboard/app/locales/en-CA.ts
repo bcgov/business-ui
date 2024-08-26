@@ -184,9 +184,21 @@ export default {
         description: 'If you have lost your receipt or name results email and need assistance finding your Name Request (NR) Number, please contact us at:'
       },
       error: {
-        general: {
-          heading: 'Error Adding Name Request',
+        default: {
+          title: 'Error Adding Name Request',
+          description: 'Unable to add name request at this time, please try again or come back later.'
+        },
+        400: {
+          title: 'Error Adding Name Request',
           description: "We couldn't find a name request associated with the phone number or email address you entered. Please try again."
+        },
+        404: {
+          title: 'Name Request Not Found',
+          description: 'The specified name request was not found.'
+        },
+        500: {
+          title: 'Internal Server Error',
+          description: 'Unable to add name request at this time, please try again or come back later.'
         }
       },
       successToast: '{nrNum} was successfully added to your table.'
