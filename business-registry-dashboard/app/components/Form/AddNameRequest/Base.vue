@@ -7,6 +7,7 @@ import { FetchError } from 'ofetch'
 const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
+const { getAffiliatedEntities } = useAffiliations()
 
 const props = defineProps<{
   nrNum: string
@@ -95,8 +96,8 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     await createNRAffiliation(payload)
 
     toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) }) // add success toast
-    await useAffiliations().getAffiliatedEntities() // update table with new option
-    brdModal.manageNameRequest(false) // close modal
+    await getAffiliatedEntities() // update table with new option
+    brdModal.close() // close modal
   } catch (e) {
     emit('nameRequestError', e as FetchError)
   } finally {
@@ -169,7 +170,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"
-          @click="brdModal.manageNameRequest(false)"
+          @click="brdModal.close()"
         />
         <UButton
           type="submit"

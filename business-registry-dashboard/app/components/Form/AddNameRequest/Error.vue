@@ -46,11 +46,11 @@ const errorText = computed(() => {
       {{ errorText.title }}
     </h2>
     <p>{{ errorText.description }}</p>
-    <div class="flex gap-2">
+    <div class="mt-8 flex gap-2">
       <UButton
         :label="$t('btn.cancel')"
         variant="outline"
-        @click="brdModal.manageNameRequest(false)"
+        @click="brdModal.close()"
       />
       <UButton
         :label="$t('btn.tryAgain')"
