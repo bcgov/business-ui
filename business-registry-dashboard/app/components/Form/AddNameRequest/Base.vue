@@ -7,7 +7,7 @@ import { FetchError } from 'ofetch'
 const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
-const { getAffiliatedEntities } = useAffiliations()
+const { getAffiliatedEntities, createNRAffiliation } = useAffiliations()
 
 const props = defineProps<{
   nrNum: string
@@ -63,20 +63,6 @@ const validate = (state: NRSchema): FormError[] => {
   }
 
   return errors
-}
-
-async function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-  const authApiUrl = useRuntimeConfig().public.authApiURL
-  const accountStore = useConnectAccountStore()
-  const token = await useKeycloak().getToken()
-  const url = `${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`
-  return $fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    method: 'POST',
-    body: affiliation
-  })
 }
 
 async function onSubmit (event: FormSubmitEvent<NRSchema>) {

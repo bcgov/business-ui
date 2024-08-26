@@ -2,9 +2,6 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const nrWebUrl = useRuntimeConfig().public.nrURL
-const brdModal = useBrdModals()
-const keycloak = reactive(useKeycloak())
-const toast = useToast()
 
 useHead({
   title: t('page.home.title')
@@ -26,58 +23,9 @@ const {
   typeOptions,
   statusOptions,
   hasFilters,
-  resetFilters
+  resetFilters,
+  handleManageBusinessOrNameRequest
 } = useAffiliations()
-
-const isStaffOrSbcStaff = computed<boolean>(() => {
-  if (!keycloak.isAuthenticated) { return false }
-  const currentOrgIsStaff = [AccountType.STAFF, AccountType.SBC_STAFF].includes(accountStore.currentAccount?.accountType)
-  return currentOrgIsStaff || keycloak.kcUser.roles.includes(UserRole.Staff)
-})
-
-function handleManageBusinessOrNameRequest (event: { names: string[]; nrNum: string }) {
-  if (searchType.value === 'reg') {
-    console.log('open manage business modal')
-  } else if (isStaffOrSbcStaff.value) {
-    console.log('trying to add for staff')
-    addNameRequestForStaffSilently(event.nrNum)
-  } else {
-    brdModal.manageNameRequest(event)
-  }
-  console.log(event)
-}
-
-async function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-  const authApiUrl = useRuntimeConfig().public.authApiURL
-  const accountStore = useConnectAccountStore()
-  const token = await useKeycloak().getToken()
-  const url = `${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`
-  return $fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    method: 'POST',
-    body: affiliation
-  })
-}
-
-async function addNameRequestForStaffSilently (businessIdentifier: string) {
-  try {
-    const payload: CreateNRAffiliationRequestBody = {
-      businessIdentifier
-    }
-    const res = await createNRAffiliation(payload)
-    // emit event to let parent know business added
-    toast.add({ title: t('form.manageNR.successToast', { nrNum: businessIdentifier }) }) // add success toast
-    // $emit('add-success-nr', businessIdentifier)
-    // $refs.manageBusinessDialog.resetForm(true)
-    console.log('name request added: ', res)
-  } catch (err) {
-    // $emit('unknown-error', 'nr')
-
-    console.error('Error adding name request: ', err)
-  }
-}
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -85,10 +33,6 @@ async function addNameRequestForStaffSilently (businessIdentifier: string) {
       <div class="flex flex-col gap-4 md:flex-row md:justify-between">
         <div class="flex flex-col gap-4 md:flex-1">
           <SbcPageSectionH1 :heading="$t('page.home.h1')" />
-
-          <ClientOnly>
-            {{ isStaffOrSbcStaff }}
-          </ClientOnly>
 
           <p class="text-gray-700">
             {{ $t('page.home.intro') }}
@@ -132,7 +76,7 @@ async function addNameRequestForStaffSilently (businessIdentifier: string) {
           :id-attr="searchType === 'reg' ? 'identifier' : 'nrNum'"
           :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
           :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
-          @select="handleManageBusinessOrNameRequest"
+          @select="handleManageBusinessOrNameRequest(searchType, $event)"
         >
           <template #empty>
             <div class="flex flex-col gap-2 px-4 py-2">
