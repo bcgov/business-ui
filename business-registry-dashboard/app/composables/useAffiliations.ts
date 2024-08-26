@@ -57,6 +57,8 @@ export const useAffiliations = () => {
     const authApiUrl = useRuntimeConfig().public.authApiURL
     resetAffiliations()
     try {
+      affiliations.loading = true
+
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
       const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
         headers: {
@@ -85,6 +87,8 @@ export const useAffiliations = () => {
       }
     } catch (error) { // TODO: error handling
       throw new Error('Error fetching data from API: ' + error.message)
+    } finally {
+      affiliations.loading = false
     }
   }
 

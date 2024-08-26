@@ -94,8 +94,9 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     // submit post request
     await createNRAffiliation(payload)
 
-    toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) })
-    brdModal.manageNameRequest(false)
+    toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) }) // add success toast
+    await useAffiliations().getAffiliatedEntities() // update table with new option
+    brdModal.manageNameRequest(false) // close modal
   } catch (e) {
     emit('nameRequestError', e as FetchError)
   } finally {
