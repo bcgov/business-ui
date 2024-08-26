@@ -112,7 +112,31 @@ export default {
       hide: 'Hide Help'
     },
     moreOptions: 'More Options',
-    clearFilters: 'Clear Filters'
+    clearFilters: 'Clear Filters',
+    help: 'Help',
+    hideHelp: 'Hide Help',
+    tryAgain: 'Try Again',
+    cancel: 'Cancel'
+  },
+  contactInfo: {
+    bcRegGeneral: {
+      tollFree: {
+        title: 'Toll Free:',
+        value: '1-877-370-1033'
+      },
+      victoriaOffice: {
+        title: 'Victoria Office:',
+        value: '1-250-370-1033'
+      },
+      email: {
+        title: 'Email:',
+        value: "BCRegistries{'@'}gov.bc.ca"
+      },
+      hours: {
+        title: 'Hours of Operation:',
+        value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
+      }
+    }
   },
   currency: {
     cad: 'CAD',
@@ -125,6 +149,48 @@ export default {
     DISSOLUTION: 'This business is in the process of being dissolved',
     PROCESSING: 'This name request is still processing, it may take up to 10 minutes.',
     EXPIRED: 'This incorporation application is no longer valid; the name request is expired.'
+  },
+  form: {
+    manageNR: {
+      heading: 'Manage a Name Request',
+      requestedNames: 'Requested Name: | Requested Names:',
+      nrNum: 'Name Request Number:',
+      legend: 'Enter either the applicant phone number OR applicant email that were used when the name was requested:',
+      fields: {
+        phone: {
+          help: 'Example: 555-555-5555',
+          placeholder: 'Applicant Phone Number',
+          arialabel: 'Applicant Phone Number',
+          error: {
+            invalid: 'Please enter a valid phone number (e.g., 123-456-7890).'
+          }
+        },
+        email: {
+          help: "Example: name{'@'}email.com",
+          placeholder: 'Applicant Email Address',
+          arialabel: 'Applicant Email Address',
+          error: {
+            invalid: "Please enter a valid email (e.g., name{'@'}email.com)."
+          }
+        },
+        alert: {
+          bothEmpty: 'At least one contact method (email or phone) must be provided.',
+          bothInvalid: 'Both fields are invalid. Please enter either a valid phone number or a valid email.'
+        }
+      },
+      submitBtn: 'Manage this Name Request',
+      help: {
+        heading: 'Need Help?',
+        description: 'If you have lost your receipt or name results email and need assistance finding your Name Request (NR) Number, please contact us at:'
+      },
+      error: {
+        general: {
+          heading: 'Error Adding Name Request',
+          description: "We couldn't find a name request associated with the phone number or email address you entered. Please try again."
+        }
+      },
+      successToast: '{nrNum} was successfully added to your table.'
+    }
   },
   labels: {
     note: 'Note',
@@ -219,7 +285,9 @@ export default {
     directors: 'Directors',
     confirm: 'Confirm',
     select: 'Select',
-    none: 'None'
+    none: 'None',
+    or: 'or',
+    Or: 'Or'
   },
   page: {
     notFound: {

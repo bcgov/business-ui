@@ -59,6 +59,8 @@ export default defineNuxtConfig({
         'mdi:two-factor-authentication',
         'mdi:account-card-details-outline',
         'mdi:new-box',
+        'mdi:file-document-outline',
+        'mdi:alert-circle-outline',
         'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
         'heroicons:check-20-solid'
