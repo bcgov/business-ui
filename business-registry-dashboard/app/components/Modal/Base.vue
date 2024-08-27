@@ -2,9 +2,13 @@
 const modalModel = defineModel({ type: Boolean, default: false })
 
 defineProps<{
-  title: string
+  title?: string
   content?: string
   actions?: { label: string, handler:() => void }[]
+  error?: {
+    title: string
+    description: string
+  }
 }>()
 </script>
 <template>
@@ -25,9 +29,16 @@ defineProps<{
         </div>
       </template>
       <slot>
-        <p class="text-bcGovColor-midGray">
+        <p v-if="content" class="text-bcGovColor-midGray">
           {{ content }}
         </p>
+        <div v-if="error" class="flex flex-col items-center gap-4 text-center">
+          <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
+          <h2 class="text-xl font-semibold">
+            {{ error.title }}
+          </h2>
+          <p>{{ error.description }}</p>
+        </div>
       </slot>
       <template v-if="actions !== undefined || $slots.footer" #footer>
         <slot name="footer">

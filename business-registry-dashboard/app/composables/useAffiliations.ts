@@ -1,6 +1,11 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
+  const { $keycloak } = useNuxtApp()
+  const authApiUrl = useRuntimeConfig().public.authApiURL
   const { t, locale } = useI18n()
+  const toast = useToast()
+  const brdModal = useBrdModals()
+  const keycloak = reactive(useKeycloak())
   // const { getAffiliationInvitations } = useAffiliationInvitations()
 
   const affiliations = reactive({
@@ -53,10 +58,10 @@ export const useAffiliations = () => {
   // }
 
   async function getAffiliatedEntities (): Promise<void> {
-    const { $keycloak } = useNuxtApp()
-    const authApiUrl = useRuntimeConfig().public.authApiURL
     resetAffiliations()
     try {
+      affiliations.loading = true
+
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
       const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
         headers: {
@@ -85,6 +90,8 @@ export const useAffiliations = () => {
       }
     } catch (error) { // TODO: error handling
       throw new Error('Error fetching data from API: ' + error.message)
+    } finally {
+      affiliations.loading = false
     }
   }
 
@@ -221,6 +228,44 @@ export const useAffiliations = () => {
     return Object.values(affiliations.filters).some(value => value !== '')
   })
 
+  function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
+    const url = `${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`
+    return $fetch(url, {
+      headers: {
+        Authorization: `Bearer ${$keycloak.token}`
+      },
+      method: 'POST',
+      body: affiliation
+    })
+  }
+
+  const isStaffOrSbcStaff = computed<boolean>(() => { // TODO: move this into core layer along with a 'hasRoles' function
+    if (!$keycloak.authenticated) { return false }
+    const currentOrgIsStaff = [AccountType.STAFF, AccountType.SBC_STAFF].includes(accountStore.currentAccount?.accountType)
+    return currentOrgIsStaff || keycloak.kcUser.roles.includes(UserRole.Staff)
+  })
+
+  function handleManageBusinessOrNameRequest (searchType: string, event: { names: string[]; nrNum: string }) {
+    if (searchType === 'reg') {
+      console.log('open manage business modal')
+    } else if (isStaffOrSbcStaff.value) {
+      addNameRequestForStaffSilently(event.nrNum)
+    } else {
+      brdModal.manageNameRequest(event)
+    }
+  }
+
+  async function addNameRequestForStaffSilently (businessIdentifier: string) {
+    try {
+      await createNRAffiliation({ businessIdentifier })
+      toast.add({ title: t('form.manageNR.successToast', { nrNum: businessIdentifier }) }) // add success toast
+      await getAffiliatedEntities() // reload affiliated entities
+    } catch (err) {
+      console.error('Error adding name request: ', err)
+      brdModal.manageNRError() // show general nr error on staff add error
+    }
+  }
+
   return {
     getAffiliatedEntities,
     affiliations,
@@ -233,6 +278,8 @@ export const useAffiliations = () => {
     statusOptions,
     typeOptions,
     hasFilters,
-    resetFilters
+    resetFilters,
+    createNRAffiliation,
+    handleManageBusinessOrNameRequest
   }
 }

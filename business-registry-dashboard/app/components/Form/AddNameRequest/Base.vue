@@ -2,27 +2,35 @@
 import type { MaskInputOptions } from 'maska'
 import { z } from 'zod'
 import type { FormError, FormSubmitEvent, Form } from '#ui/types'
+import { FetchError } from 'ofetch'
 
 const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
-
-const emit = defineEmits<{
-  showHelp: [void]
-  nameRequestError: [void]
-}>()
+const { getAffiliatedEntities, createNRAffiliation } = useAffiliations()
 
 const props = defineProps<{
   nrNum: string
 }>()
 
+const emit = defineEmits<{
+  showHelp: [void]
+  nameRequestError: [error: FetchError]
+}>()
+
 const alertText = ref('')
+const ariaAlertText = ref('')
 const formRef = ref<Form<NRSchema>>()
 const formLoading = ref(false)
 const state = reactive({
   email: '',
   phone: ''
 })
+
+const setScreenReaderAlert = (message: string) => {
+  ariaAlertText.value = ''
+  ariaAlertText.value = `${t('words.Error')}, ${message}`
+}
 
 const phoneMask: MaskInputOptions = ({
   mask: '###-###-####',
@@ -44,17 +52,24 @@ const validate = (state: NRSchema): FormError[] => {
   const emailValid = z.string().email().safeParse(state.email).success
   if (!state.phone && !state.email) { // show alert if both fields are empty
     alertText.value = t('form.manageNR.fields.alert.bothEmpty')
+    setScreenReaderAlert(t('form.manageNR.fields.alert.bothEmpty'))
+    errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
+    errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
   } else if (state.phone && !state.email) { // show phone error if phone populated but invalid
     if (!phoneValid) {
       errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
+      setScreenReaderAlert(t('form.manageNR.fields.phone.error.invalid'))
     }
   } else if (!state.phone && state.email) { // show email error if email populated but invalid
     if (!emailValid) {
       errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
+      setScreenReaderAlert(t('form.manageNR.fields.email.error.invalid'))
     }
   } else if (state.phone && state.email) { // show alert and error text if both fields populated and both are invalid
     if (!phoneValid && !emailValid) {
       alertText.value = t('form.manageNR.fields.alert.bothInvalid')
+      ariaAlertText.value = t('form.manageNR.fields.alert.bothInvalid')
+      setScreenReaderAlert(t('form.manageNR.fields.alert.bothInvalid'))
       errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
       errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
     }
@@ -64,36 +79,26 @@ const validate = (state: NRSchema): FormError[] => {
 }
 
 async function onSubmit (event: FormSubmitEvent<NRSchema>) {
-  // emit('nameRequestError')
-  // Do something with data
   try {
     formLoading.value = true
-    const emailValid = z.string().email().safeParse(event.data.email).success
+
+    // const emailValid = z.string().email().safeParse(event.data.email).success // might need in future
     const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(event.data.phone).success
 
-    if (phoneValid) {
-      // make api request
-      console.log('submitting phone: ', event.data.phone)
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          // emit('nameRequestError')
-          toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) })
-          brdModal.manageNameRequest(false)
-          resolve()
-        }, 500)
-      })
-    } else if (emailValid) {
-      // make api request
-      console.log('submitting email: ', event.data.email)
-      await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          emit('nameRequestError')
-          resolve()
-        }, 500)
-      })
+    // create payload with either phone or email depending on what is valid
+    const payload: CreateNRAffiliationRequestBody = {
+      businessIdentifier: props.nrNum,
+      ...(phoneValid ? { phone: event.data.phone.replace(/-/g, '') } : { email: event.data.email })
     }
+
+    // submit post request
+    await createNRAffiliation(payload)
+
+    toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) }) // add success toast
+    await getAffiliatedEntities() // update table with new option
+    brdModal.close() // close modal
   } catch (e) {
-    emit('nameRequestError') // pass error?
+    emit('nameRequestError', e as FetchError)
   } finally {
     formLoading.value = false
   }
@@ -164,7 +169,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"
-          @click="brdModal.manageNameRequest(false)"
+          @click="brdModal.close()"
         />
         <UButton
           type="submit"
@@ -172,6 +177,9 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
           :loading="formLoading"
         />
       </div>
+    </div>
+    <div class="sr-only" role="status">
+      {{ ariaAlertText }}
     </div>
   </UForm>
 </template>
