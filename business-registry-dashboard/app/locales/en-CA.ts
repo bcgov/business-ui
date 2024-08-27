@@ -283,7 +283,8 @@ export default {
     manageBusiness: 'Manage Business',
     cancelRequest: 'Cancel Request',
     amalgamateNowShortForm: 'Amalgamate Now (Short Form)',
-    noAffiliationRecords: 'No Affiliation Records'
+    noAffiliationRecords: 'No Affiliation Records',
+    newRequest: 'New Request'
   },
   links: {
     busCorpAct: {

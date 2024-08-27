@@ -283,7 +283,8 @@ export default {
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
     amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
-    noAffiliationRecords: "Aucun dossier d'affiliation"
+    noAffiliationRecords: "Aucun dossier d'affiliation",
+    newRequest: 'Nouvelle Demande'
   },
   links: {
     busCorpAct: {

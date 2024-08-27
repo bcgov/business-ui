@@ -1,6 +1,6 @@
 export const useAffiliations = () => {
   const accountStore = useConnectAccountStore()
-  const { $keycloak } = useNuxtApp()
+  const { $keycloak, $authApi } = useNuxtApp()
   const authApiUrl = useRuntimeConfig().public.authApiURL
   const { t, locale } = useI18n()
   const toast = useToast()
@@ -63,11 +63,12 @@ export const useAffiliations = () => {
       affiliations.loading = true
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
-      const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
-        headers: {
-          Authorization: `Bearer ${$keycloak.token}`
-        }
-      })
+      // const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
+      //   headers: {
+      //     Authorization: `Bearer ${$keycloak.token}`
+      //   }
+      // })
+      const response = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountStore.currentAccount.id}/affiliations?new=true`)
 
       if (response.entities.length > 0) {
         response.entities.forEach((resp) => {
@@ -211,6 +212,7 @@ export const useAffiliations = () => {
       })
     }
 
+    // console.log('filtered results: ', results)
     return results
   })
 
