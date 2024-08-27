@@ -299,7 +299,9 @@ export default {
     select: 'Sélectionner',
     none: 'Aucun',
     or: 'ou',
-    Or: 'Ou'
+    Or: 'Ou',
+    error: 'erreur',
+    Error: 'Erreur'
   },
   page: {
     notFound: {

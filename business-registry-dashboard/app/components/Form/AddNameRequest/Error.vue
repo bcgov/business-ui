@@ -13,6 +13,7 @@ defineEmits<{
   retryNameRequest: [void]
 }>()
 
+const ariaAlertText = ref('')
 const errorText = computed(() => {
   let title = ''
   let description = ''
@@ -38,6 +39,17 @@ const errorText = computed(() => {
 
   return { title, description }
 })
+
+const setScreenReaderAlert = (message: string) => {
+  ariaAlertText.value = ''
+  ariaAlertText.value = message
+}
+
+onMounted(() => {
+  setTimeout(() => {
+    setScreenReaderAlert(errorText.value.title + errorText.value.description)
+  }, 1000)
+})
 </script>
 <template>
   <div class="flex flex-col items-center gap-4 text-center">
@@ -56,6 +68,9 @@ const errorText = computed(() => {
         :label="$t('btn.tryAgain')"
         @click="$emit('retryNameRequest')"
       />
+    </div>
+    <div class="sr-only" role="status">
+      {{ ariaAlertText }}
     </div>
   </div>
 </template>

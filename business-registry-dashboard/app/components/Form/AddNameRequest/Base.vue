@@ -19,12 +19,19 @@ const emit = defineEmits<{
 }>()
 
 const alertText = ref('')
+const ariaAlertText = ref('')
 const formRef = ref<Form<NRSchema>>()
 const formLoading = ref(false)
 const state = reactive({
   email: '',
   phone: ''
 })
+
+const setScreenReaderAlert = (message: string) => {
+  ariaAlertText.value = '' // Trigger DOM update
+  // await nextTick()
+  ariaAlertText.value = `${t('words.Error')}, ${message}`
+}
 
 const phoneMask: MaskInputOptions = ({
   mask: '###-###-####',
@@ -46,17 +53,27 @@ const validate = (state: NRSchema): FormError[] => {
   const emailValid = z.string().email().safeParse(state.email).success
   if (!state.phone && !state.email) { // show alert if both fields are empty
     alertText.value = t('form.manageNR.fields.alert.bothEmpty')
+    setScreenReaderAlert(t('form.manageNR.fields.alert.bothEmpty'))
+    // ariaAlertText.value = t('form.manageNR.fields.alert.bothEmpty')
+    errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
+    errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
   } else if (state.phone && !state.email) { // show phone error if phone populated but invalid
     if (!phoneValid) {
       errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
+      // ariaAlertText.value = t('form.manageNR.fields.phone.error.invalid')
+      setScreenReaderAlert(t('form.manageNR.fields.phone.error.invalid'))
     }
   } else if (!state.phone && state.email) { // show email error if email populated but invalid
     if (!emailValid) {
       errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
+      // ariaAlertText.value = t('form.manageNR.fields.email.error.invalid')
+      setScreenReaderAlert(t('form.manageNR.fields.email.error.invalid'))
     }
   } else if (state.phone && state.email) { // show alert and error text if both fields populated and both are invalid
     if (!phoneValid && !emailValid) {
       alertText.value = t('form.manageNR.fields.alert.bothInvalid')
+      ariaAlertText.value = t('form.manageNR.fields.alert.bothInvalid')
+      setScreenReaderAlert(t('form.manageNR.fields.alert.bothInvalid'))
       errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
       errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })
     }
@@ -164,6 +181,9 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
           :loading="formLoading"
         />
       </div>
+    </div>
+    <div class="sr-only" role="status">
+      {{ ariaAlertText }}
     </div>
   </UForm>
 </template>
