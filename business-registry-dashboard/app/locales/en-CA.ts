@@ -284,7 +284,9 @@ export default {
     cancelRequest: 'Cancel Request',
     amalgamateNowShortForm: 'Amalgamate Now (Short Form)',
     noAffiliationRecords: 'No Affiliation Records',
-    newRequest: 'New Request'
+    newRequest: 'New Request',
+    resendEmail: 'Resend Email',
+    removeFromList: 'Remove From List'
   },
   links: {
     busCorpAct: {

@@ -9,13 +9,24 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     })
   }
 
+  /** Remove Accepted affiliation invitations from business. */
+  async function removeAcceptedAffiliationInvitations (business: Business) {
+    const invitations = business.affiliationInvites || []
+    for (const affiliationInvitation of invitations) {
+      if (affiliationInvitation.status === AffiliationInvitationStatus.Accepted) {
+        await removeInvite(affiliationInvitation.id)
+      }
+    }
+  }
+
   // function $reset () {
   //   loading.value = true
   //   affiliations.value = []
   // }
 
   return {
-    removeInvite
+    removeInvite,
+    removeAcceptedAffiliationInvitations
     // $reset,
     // loading,
     // affiliations

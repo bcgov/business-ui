@@ -284,7 +284,9 @@ export default {
     cancelRequest: 'Annuler la Demande',
     amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
     noAffiliationRecords: "Aucun dossier d'affiliation",
-    newRequest: 'Nouvelle Demande'
+    newRequest: 'Nouvelle Demande',
+    resendEmail: 'Renvoyer le Courriel',
+    removeFromList: 'Supprimer de la Liste'
   },
   links: {
     busCorpAct: {
