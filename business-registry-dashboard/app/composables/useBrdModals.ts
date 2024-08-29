@@ -21,6 +21,16 @@ export const useBrdModals = () => {
     })
   }
 
+  function showBusinessError () {
+    modal.open(ModalBase, {
+      error: {
+        title: 'Error Adding Existing Business', // TODO: add translations
+        description: 'An error occurred adding your business. Please try again.'
+      },
+      actions: [{ label: t('btn.close'), handler: () => close() }]
+    })
+  }
+
   function close () {
     modal.close()
   }
@@ -28,6 +38,7 @@ export const useBrdModals = () => {
   return {
     manageNameRequest,
     manageNRError,
+    showBusinessError,
     close
   }
 }
