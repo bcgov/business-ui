@@ -6,7 +6,6 @@ export const useAffiliations = () => {
   const toast = useToast()
   const brdModal = useBrdModals()
   const keycloak = reactive(useKeycloak())
-  // const { getAffiliationInvitations } = useAffiliationInvitations()
 
   const affiliations = reactive({
     filters: {
@@ -63,11 +62,6 @@ export const useAffiliations = () => {
       affiliations.loading = true
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
-      // const response = await $fetch<{ entities: AffiliationResponse[] }>(`${authApiUrl}/orgs/${accountStore.currentAccount.id}/affiliations?new=true`, {
-      //   headers: {
-      //     Authorization: `Bearer ${$keycloak.token}`
-      //   }
-      // })
       const response = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountStore.currentAccount.id}/affiliations?new=true`)
 
       if (response.entities.length > 0) {
@@ -253,7 +247,7 @@ export const useAffiliations = () => {
     } else if (isStaffOrSbcStaff.value) {
       addNameRequestForStaffSilently(event.nrNum)
     } else {
-      brdModal.manageNameRequest(event)
+      brdModal.openManageNameRequest(event)
     }
   }
 
@@ -264,7 +258,7 @@ export const useAffiliations = () => {
       await getAffiliatedEntities() // reload affiliated entities
     } catch (err) {
       console.error('Error adding name request: ', err)
-      brdModal.manageNRError() // show general nr error on staff add error
+      brdModal.openManageNRError() // show general nr error on staff add error
     }
   }
 

@@ -21,7 +21,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'unknown-error': [void]
-  'remove-affiliation-invitation': [void]
   'remove-business': [{ orgIdentifier: string, business: Business }]
   'business-unavailable-error': [action: string]
   'resend-affiliation-invitation': [item: Business]
@@ -93,7 +92,7 @@ const removeAffiliationOrInvitation = async (item: Business) => {
   if (invite && invalidStatuses.includes(invite.status as AffiliationInvitationStatus)) {
     try {
       await affStore.removeInvite(invite.id)
-      emit('remove-affiliation-invitation')
+      await affStore.loadAffiliations() // reload after deleting invite
     } catch (e) {
       console.error('Could not delete the invite at this time. ', (e as FetchError).response)
       emit('unknown-error') // TODO: better error handling?
@@ -298,9 +297,9 @@ const primaryAction = async (item: Business): Promise<void> => {
   }
 }
 
+/* eslint-disable-next-line */ // ignore item not being used
 const showAmalgamateShortForm = (item: Business): boolean => {
   // reserve for changes in the future
-  console.log('show amalgamate short form: ', item)
   return false
 }
 

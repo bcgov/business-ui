@@ -91,7 +91,6 @@ const { handleManageBusinessOrNameRequest } = useAffiliations()
         </AsyncComboBox>
       </UFormGroup>
 
-      <!-- TODO: link with search query -->
       <URadioGroup
         v-model="searchType"
         :legend="$t('page.home.busOrNRSearch.opts.legend')"

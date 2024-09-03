@@ -5,8 +5,9 @@ import {
 } from '@bcrs-shared-components/corp-type-module'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
-  if (affiliationInviteInfos[0]?.status) {
-    return affiliationInviteInfos[0].status
+  const invite = affiliationInviteInfos[0]
+  if (invite && invite.status) {
+    return invite.status
   } else {
     return 'N/A'
   }

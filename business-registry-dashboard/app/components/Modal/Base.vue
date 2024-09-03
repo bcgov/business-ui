@@ -1,18 +1,25 @@
 <script setup lang="ts">
 const modalModel = defineModel({ type: Boolean, default: false })
+const isSmallScreen = useMediaQuery('(max-width: 640px)')
 
 defineProps<{
   title?: string
   content?: string
-  actions?: { label: string, handler:() => void }[]
+  actions?: { label: string, handler:() => void, color?: string, variant?: string }[]
   error?: {
     title: string
     description: string
+    showContactInfo?: boolean
   }
 }>()
 </script>
 <template>
-  <UModal v-model="modalModel">
+  <UModal
+    v-model="modalModel"
+    :ui="{
+      width: 'w-full sm:max-w-lg md:min-w-fit'
+    }"
+  >
     <UCard :ui="{ divide: '' }">
       <template #header>
         <div class="flex items-center justify-between">
@@ -38,15 +45,22 @@ defineProps<{
             {{ error.title }}
           </h2>
           <p>{{ error.description }}</p>
+          <p v-if="error.showContactInfo" class="self-start">
+            Please contact us if you require assistance.
+          </p>
+          <BCRegContactInfo v-if="error.showContactInfo" class="self-start text-left" />
         </div>
       </slot>
       <template v-if="actions !== undefined || $slots.footer" #footer>
         <slot name="footer">
-          <div v-if="actions !== undefined" class="flex items-center justify-center gap-4">
+          <div v-if="actions !== undefined" class="flex flex-wrap items-center justify-center gap-4">
             <UButton
               v-for="(action, index) in actions"
               :key="index"
+              :block="isSmallScreen"
               :label="action.label"
+              :variant="action.variant || 'solid'"
+              :color="action.color || 'primary'"
               @click="action.handler"
             />
           </div>

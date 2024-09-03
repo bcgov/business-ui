@@ -116,7 +116,8 @@ export default {
     help: 'Help',
     hideHelp: 'Hide Help',
     tryAgain: 'Try Again',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    ok: 'OK'
   },
   contactInfo: {
     bcRegGeneral: {
@@ -304,7 +305,8 @@ export default {
     or: 'or',
     Or: 'Or',
     error: 'error',
-    Error: 'Error'
+    Error: 'Error',
+    OK: 'OK'
   },
   page: {
     notFound: {
