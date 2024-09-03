@@ -7,6 +7,7 @@ import { FetchError } from 'ofetch'
 const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
+const affStore = useAffiliationsStore()
 const { getAffiliatedEntities, createNRAffiliation } = useAffiliations()
 
 const props = defineProps<{
@@ -92,10 +93,13 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     }
 
     // submit post request
-    await createNRAffiliation(payload)
+    // await affStore.createNRAffiliation(payload) // comment this out for demo
+
+    await new Promise(resolve => setTimeout(resolve, 1500)) // use these for demo
+    throw new Error('test error') // use this to show error state for demo
 
     toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) }) // add success toast
-    await getAffiliatedEntities() // update table with new option
+    await affStore.loadAffiliations() // update table with new affilitations
     brdModal.close() // close modal
   } catch (e) {
     emit('nameRequestError', e as FetchError)

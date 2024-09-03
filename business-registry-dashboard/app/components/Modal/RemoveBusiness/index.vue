@@ -21,10 +21,10 @@ async function removeBusiness (resetPasscodeEmail: string, resetPasscode = true)
     payload.passcodeResetEmail = resetPasscodeEmail
     payload.resetPasscode = resetPasscode
 
-    // await new Promise(resolve => setTimeout(resolve, 1500))
-    // throw new Error('test error')
+    await new Promise(resolve => setTimeout(resolve, 1500)) // use this to show loading for demo
+    // throw new Error('test error') // use this to show error state for demo
 
-    await affStore.removeBusiness(payload)
+    // await affStore.removeBusiness(payload) // comment this out for demo
     toast.add({ title: 'Business successfully removed from your list.' }) // add success toast
     brdModal.close()
   } catch (e) {
