@@ -1,6 +1,6 @@
 <script setup lang="ts">
 type ClearButtonProps =
-  | { show: true; tooltip: string; aria: string }
+  | { show: true; tooltip: string; aria: string; hideTooltip: boolean }
   | { show: false }
 
 defineProps<{
@@ -17,7 +17,7 @@ defineEmits(['clear'])
       <div class="grow">
         <slot />
       </div>
-      <UTooltip v-if="clearButton.show" :text="clearButton.tooltip">
+      <UTooltip v-if="clearButton.show" :text="clearButton.tooltip" :prevent="clearButton.hideTooltip">
         <UButton
           :ui="{ rounded: 'rounded-l-none rounded-r-md' }"
           class="-ml-1"

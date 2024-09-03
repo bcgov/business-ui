@@ -8,7 +8,6 @@ const brdModal = useBrdModals()
 const toast = useToast()
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
-const { getAffiliatedEntities, createNRAffiliation } = useAffiliations()
 
 const props = defineProps<{
   nrNum: string

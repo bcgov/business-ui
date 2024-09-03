@@ -52,7 +52,8 @@ onMounted(async () => {
           :clear-button="{
             show: affStore.affiliations.filters.businessName !== '',
             tooltip: $t('table.affiliation.filter.busName.clear.tooltip'),
-            aria: $t('table.affiliation.filter.busName.clear.aria')
+            aria: $t('table.affiliation.filter.busName.clear.aria'),
+            hideTooltip: true
           }"
           @clear="affStore.affiliations.filters.businessName = ''"
         >
@@ -72,7 +73,8 @@ onMounted(async () => {
           :clear-button="{
             show: affStore.affiliations.filters.businessNumber !== '',
             tooltip: $t('table.affiliation.filter.busNumber.clear.tooltip'),
-            aria: $t('table.affiliation.filter.busNumber.clear.aria')
+            aria: $t('table.affiliation.filter.busNumber.clear.aria'),
+            hideTooltip: true
           }"
           @clear="affStore.affiliations.filters.businessNumber = ''"
         >
@@ -92,7 +94,8 @@ onMounted(async () => {
           :clear-button="{
             show: affStore.affiliations.filters.type !== '',
             tooltip: $t('table.affiliation.filter.legalType.clear.tooltip'),
-            aria: $t('table.affiliation.filter.legalType.clear.aria')
+            aria: $t('table.affiliation.filter.legalType.clear.aria'),
+            hideTooltip: true
           }"
           @clear="affStore.affiliations.filters.type = ''"
         >
@@ -122,7 +125,8 @@ onMounted(async () => {
           :clear-button="{
             show: affStore.affiliations.filters.status !== '',
             tooltip: $t('table.affiliation.filter.busStates.clear.tooltip'),
-            aria: $t('table.affiliation.filter.busStates.clear.aria')
+            aria: $t('table.affiliation.filter.busStates.clear.aria'),
+            hideTooltip: true
           }"
           @clear="affStore.affiliations.filters.status = ''"
         >
