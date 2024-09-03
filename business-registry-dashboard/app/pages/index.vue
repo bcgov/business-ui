@@ -2,6 +2,7 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const nrWebUrl = useRuntimeConfig().public.nrURL
+const affStore = useAffiliationsStore()
 
 useHead({
   title: t('page.home.title')
@@ -12,8 +13,6 @@ definePageMeta({
 })
 
 const searchType = ref('reg')
-
-const { handleManageBusinessOrNameRequest } = useAffiliations()
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -64,7 +63,7 @@ const { handleManageBusinessOrNameRequest } = useAffiliations()
           :id-attr="searchType === 'reg' ? 'identifier' : 'nrNum'"
           :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
           :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
-          @select="handleManageBusinessOrNameRequest(searchType, $event)"
+          @select="affStore.handleManageBusinessOrNameRequest(searchType, $event)"
         >
           <template #empty>
             <div class="flex flex-col gap-2 px-4 py-2">

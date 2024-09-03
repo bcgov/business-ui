@@ -17,7 +17,7 @@ defineProps<{
   <UModal
     v-model="modalModel"
     :ui="{
-      width: 'w-full sm:max-w-lg md:min-w-fit'
+      width: 'w-full sm:max-w-lg md:min-w-min'
     }"
   >
     <UCard :ui="{ divide: '' }">

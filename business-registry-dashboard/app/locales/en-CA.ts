@@ -143,6 +143,12 @@ export default {
     cad: 'CAD',
     usd: 'USD'
   },
+  error: {
+    generic: {
+      title: 'Something Went Wrong',
+      description: 'An error occurred, please try again. If this error persists, please contact us.'
+    }
+  },
   entityAlertTypes: {
     FROZEN: 'This business is frozen',
     BAD_STANDING: 'This business is not in good standing',
@@ -287,12 +293,90 @@ export default {
     noAffiliationRecords: 'No Affiliation Records',
     newRequest: 'New Request',
     resendEmail: 'Resend Email',
-    removeFromList: 'Remove From List'
+    removeFromList: 'Remove From List',
+    removeBusiness: 'Remove Business'
   },
   links: {
     busCorpAct: {
       main: 'Business Corporations Act',
       sect182: 'Business Corporations Act (Section 182)'
+    }
+  },
+  modal: {
+    removeBusiness: {
+      generic: {
+        NR: {
+          title: 'Remove Name Request?',
+          description: 'Removing this Name Request will remove the request from your Business Registry list. You can add it back at a later time by selecting Add an Existing... Name Request. This Name Request will still be valid until it is used or cancelled, or it expires.',
+          primaryBtnLabel: 'Remove Name Request',
+          secondaryBtnLabel: 'Keep Name Request'
+        },
+        TMP: {
+          title: 'Delete Incorporation Application?',
+          description: 'Deleting this incorporation application will remove the application from your Business Registry list. The business associated with this application will not be incorporated. If this incorporation application was associated with a Name Request, the Name Request can still be used to incorporate a business.',
+          primaryBtnLabel: 'Delete Incorporation Application',
+          secondaryBtnLabel: 'Keep Incorporation Application'
+        },
+        ATMP: {
+          title: 'Delete Amalgamation Application?',
+          description: 'Deleting this amalgamation application will remove the application from your Business Registry list. If this amalgamation application was associated with a Name Request, the Name Request can still be used to start an amalgamation application.',
+          primaryBtnLabel: 'Delete Amalgamation Application',
+          secondaryBtnLabel: 'Keep Amalgamation Application'
+        },
+        RTMP: {
+          title: 'Delete Registration?',
+          description: 'Deleting this registration will remove the application from your Business Registry list. The business associated with this application will not be registered. If this registration was associated with a Name Request, the Name Request can still be used to register a business.',
+          primaryBtnLabel: 'Delete Registration',
+          secondaryBtnLabel: 'Keep Registration'
+        },
+        GP: {
+          title: 'Remove Registration?',
+          description: 'Removing this registration will remove the associated business from your Business Registry list. To add the business back to the My Business Registry list later, you will need the business registration number and the name of the proprietor exactly as it appears on the registration application.',
+          primaryBtnLabel: 'Remove Registration',
+          secondaryBtnLabel: 'Keep Registration'
+        },
+        SP: {
+          title: 'Remove Registration?',
+          description: 'Removing this registration will remove the associated business from your Business Registry list. To add the business back to the My Business Registry list later, you will need the business registration number and the name of the proprietor exactly as it appears on the registration application.',
+          primaryBtnLabel: 'Remove Registration',
+          secondaryBtnLabel: 'Keep Registration'
+        }
+      },
+      passcode: {
+        form: {
+          radio: {
+            reset: {
+              label: 'Reset my passcode and remove business',
+              help: 'Business will be removed from this account,New business passcode will be generated and will cancel the old business passcode,New business passcode will be sent through email to the person who will be responsible for managing this business moving forward'
+            },
+            noReset: {
+              label: 'Do not reset my passcode and remove business',
+              help: 'Business will be removed from this account,The current passcode for this business will be cancelled,You will not be able to add this business back to your account without a new passcode'
+            },
+            legend: 'Please select one of the two choices below to remove this business from the account'
+          },
+          email: {
+            arialabel: 'Email Address',
+            placeholder: 'Email Address',
+            error: {
+              required: 'Email address is required.',
+              invalid: 'Please enter a valid email address.'
+            }
+          },
+          confirmEmail: {
+            arialabel: 'Confirm Email Address',
+            placeholder: 'Confirm Email Address',
+            error: {
+              required: 'Email confirmation is required.',
+              invalid: 'Please enter a valid email address.',
+              match: 'Email addresses must match'
+            }
+          }
+        }
+      },
+      index: {
+        successToast: 'Business successfully removed from your list.'
+      }
     }
   },
   words: {
@@ -306,7 +390,9 @@ export default {
     Or: 'Or',
     error: 'error',
     Error: 'Error',
-    OK: 'OK'
+    OK: 'OK',
+    remove: 'remove',
+    Remove: 'Remove'
   },
   page: {
     notFound: {
