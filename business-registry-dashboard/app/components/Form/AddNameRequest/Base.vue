@@ -168,7 +168,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         @click="$emit('showHelp')"
       />
 
-      <div class="flex gap-2">
+      <div class="flex flex-col-reverse gap-2 sm:flex-row">
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"
