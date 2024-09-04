@@ -188,7 +188,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   function setColumns () {
     visibleColumns.value = [
       nameColumn,
-      ...optionalColumns.filter(col => selectedColumns.value.includes(col)),
+      ...optionalColumns.filter(col => selectedColumns.value.some(sel => sel.key === col.key)),
       actionColumn
     ]
   }
