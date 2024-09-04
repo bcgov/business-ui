@@ -92,10 +92,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     }
 
     // submit post request
-    // await affStore.createNRAffiliation(payload) // comment this out for demo
-
-    await new Promise(resolve => setTimeout(resolve, 1500)) // use these for demo
-    throw new Error('test error') // use this to show error state for demo
+    await affStore.createNRAffiliation(payload)
 
     toast.add({ title: t('form.manageNR.successToast', { nrNum: props.nrNum }) }) // add success toast
     await affStore.loadAffiliations() // update table with new affilitations
