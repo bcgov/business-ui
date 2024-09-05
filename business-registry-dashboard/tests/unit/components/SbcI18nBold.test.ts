@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { SbcI18nBold } from '#components'
 import { enI18n } from '~~/tests/mocks/i18n'
