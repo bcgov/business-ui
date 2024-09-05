@@ -290,6 +290,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     visibleColumns,
     optionalColumns,
     selectedColumns,
+    isStaffOrSbcStaff,
     setColumns,
     filteredResults,
     statusOptions,
@@ -299,6 +300,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     createNRAffiliation,
     handleManageBusinessOrNameRequest,
     removeBusiness,
+    removeAffiliation,
+    getFilings,
+    deleteBusinessFiling,
+    addNameRequestForStaffSilently,
     $reset
   }
 }

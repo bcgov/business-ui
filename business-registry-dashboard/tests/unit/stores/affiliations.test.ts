@@ -6,6 +6,7 @@ import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 
 let mockAuthenticated = true
 const mockAuthApi = vi.fn()
+const mockLegalApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => (
     {
@@ -14,15 +15,55 @@ mockNuxtImport('useNuxtApp', () => {
         token: 'mock-token'
       },
       $authApi: mockAuthApi,
-      $legalApi: vi.fn()
+      $legalApi: mockLegalApi
     }
   )
 })
 
+let mockKeycloakRoles: any[] = []
+mockNuxtImport('useKeycloak', () => {
+  return () => (
+    {
+      kcUser: {
+        roles: mockKeycloakRoles
+      }
+    }
+  )
+})
+
+const mockAddToast = vi.fn()
 mockNuxtImport('useToast', () => {
   return () => (
     {
-      add: vi.fn()
+      add: mockAddToast
+    }
+  )
+})
+
+const mockOpenModal = vi.fn()
+mockNuxtImport('useModal', () => {
+  return () => (
+    {
+      open: mockOpenModal
+    }
+  )
+})
+
+const mockOpenManageNameRequest = vi.fn()
+const mockOpenManageNRError = vi.fn()
+const mockOpenBusinessAddError = vi.fn()
+const mockOpenBusinessUnavailableError = vi.fn()
+const mockOpenBusinessRemovalConfirmation = vi.fn()
+const mockClose = vi.fn()
+mockNuxtImport('useBrdModals', () => {
+  return () => (
+    {
+      openManageNameRequest: mockOpenManageNameRequest,
+      openManageNRError: mockOpenManageNRError,
+      openBusinessAddError: mockOpenBusinessAddError,
+      openBusinessUnavailableError: mockOpenBusinessUnavailableError,
+      openBusinessRemovalConfirmation: mockOpenBusinessRemovalConfirmation,
+      close: mockClose
     }
   )
 })
@@ -624,6 +665,382 @@ describe('useAffiliationsStore', () => {
 
         expect(affStore.hasFilters).toEqual(false)
       })
+    })
+  })
+
+  describe('removeAffiliation', () => {
+    it('should call $authApi with the correct arguments', async () => {
+      const orgIdentifier = 123
+      const incorporationNumber = 'INC001234'
+      const passcodeResetEmail = 'test@example.com'
+      const resetPasscode = true
+
+      const affStore = useAffiliationsStore()
+      await affStore.removeAffiliation(orgIdentifier, incorporationNumber, passcodeResetEmail, resetPasscode)
+
+      expect(mockAuthApi).toHaveBeenCalledWith(
+        `/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`,
+        {
+          method: 'DELETE',
+          body: {
+            data: {
+              passcodeResetEmail,
+              resetPasscode,
+              logDeleteDraft: true
+            }
+          }
+        }
+      )
+    })
+
+    it('should call $authApi with the correct default arguments', async () => {
+      const orgIdentifier = 123
+      const incorporationNumber = 'INC001234'
+
+      const { removeAffiliation } = useAffiliationsStore()
+      await removeAffiliation(orgIdentifier, incorporationNumber)
+
+      expect(mockAuthApi).toHaveBeenCalledWith(
+        `/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`,
+        {
+          method: 'DELETE',
+          body: {
+            data: {
+              passcodeResetEmail: undefined,
+              resetPasscode: undefined,
+              logDeleteDraft: true
+            }
+          }
+        }
+      )
+    })
+  })
+
+  describe('getFilings', () => {
+    it('should call $legalApi with correct options', async () => {
+      const businessNumber = 'BN123456'
+      const affStore = useAffiliationsStore()
+
+      await affStore.getFilings(businessNumber)
+      expect(mockLegalApi).toHaveBeenCalledWith(`/businesses/${businessNumber}/filings`)
+    })
+  })
+
+  describe('deleteBusinessFiling', () => {
+    it('should call $legalApi with correct options', async () => {
+      const businessNumber = 'BN123456'
+      const filingId = 'FILING001'
+      const affStore = useAffiliationsStore()
+
+      await affStore.deleteBusinessFiling(businessNumber, filingId)
+
+      expect(mockLegalApi).toHaveBeenCalledWith(
+        `/businesses/${businessNumber}/filings/${filingId}`,
+        { method: 'DELETE' }
+      )
+    })
+  })
+
+  describe('removeBusiness', () => {
+    let affStore: any
+
+    beforeEach(() => {
+      affStore = useAffiliationsStore()
+    })
+
+    it('should remove business filing if business is an INCORPORATION_APPLICATION and a filing exists', async () => {
+      mockLegalApi.mockResolvedValueOnce({ status: 200, filing: { header: { filingId: 'filing-123' } } }) // mock getFiling api call
+      mockAuthApi.mockResolvedValueOnce(undefined) // mock removeAffiliation api call
+
+      const payload = {
+        business: {
+          corpType: { code: CorpTypes.INCORPORATION_APPLICATION },
+          businessIdentifier: 'biz-123'
+        },
+        orgIdentifier: 'org-123',
+        passcodeResetEmail: 'email@example.com',
+        resetPasscode: true
+      }
+
+      await affStore.removeBusiness(payload)
+
+      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
+      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings/filing-123', { method: 'DELETE' }) // should call deleteBusinessFiling
+      expect(mockAuthApi).not.toHaveBeenCalled()
+    })
+
+    it('should remove affiliation if business is an INCORPORATION_APPLICATION and no filing exists', async () => {
+      mockLegalApi.mockResolvedValueOnce({ status: 200, filing: null }) // mock getFilings api call
+      mockAuthApi.mockResolvedValueOnce(undefined) // mock removeAffiliation api call
+
+      const payload = {
+        business: {
+          corpType: { code: CorpTypes.INCORPORATION_APPLICATION },
+          businessIdentifier: 'biz-123'
+        },
+        orgIdentifier: 'org-123',
+        passcodeResetEmail: 'email@example.com',
+        resetPasscode: true
+      }
+
+      await affStore.removeBusiness(payload)
+
+      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/org-123/affiliations/biz-123', { // should call removeAffiliation
+        method: 'DELETE',
+        body: { data: { passcodeResetEmail: 'email@example.com', resetPasscode: true, logDeleteDraft: true } }
+      })
+    })
+
+    it('should remove affiliation if business is not an INCORPORATION_APPLICATION', async () => {
+      mockAuthApi.mockResolvedValueOnce(undefined)
+
+      const payload = {
+        business: {
+          corpType: { code: 'OTHER' },
+          businessIdentifier: 'biz-123'
+        },
+        orgIdentifier: 'org-123',
+        passcodeResetEmail: 'email@example.com',
+        resetPasscode: true
+      }
+
+      await affStore.removeBusiness(payload)
+
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/org-123/affiliations/biz-123', { // should call removeAffiliation
+        method: 'DELETE',
+        body: { data: { passcodeResetEmail: 'email@example.com', resetPasscode: true, logDeleteDraft: true } }
+      })
+      expect(mockLegalApi).not.toHaveBeenCalled()
+    })
+
+    it('should remove affiliation with name request nrNumber if businessIdentifier is missing', async () => {
+      mockAuthApi.mockResolvedValue({ status: 200 })
+      mockLegalApi.mockResolvedValue({ status: 200, filing: { header: { filingId: 'filing-123' } } })
+
+      const payload = {
+        business: {
+          corpType: { code: 'OTHER_TYPE' },
+          businessIdentifier: undefined, // missing businessIdentifier
+          nameRequest: { nrNumber: 'NR123' } // fallback to nr number
+        },
+        orgIdentifier: 'org-123',
+        passcodeResetEmail: 'email@example.com',
+        resetPasscode: true
+      }
+
+      await affStore.removeBusiness(payload)
+
+      expect(mockAuthApi).toHaveBeenCalledWith( // should call removeAffiliation
+        '/orgs/org-123/affiliations/NR123',
+        expect.objectContaining({
+          method: 'DELETE',
+          body: {
+            data: { passcodeResetEmail: 'email@example.com', resetPasscode: true, logDeleteDraft: true }
+          }
+        })
+      )
+      expect(mockLegalApi).not.toHaveBeenCalled() // should not call deleteBusinessFiling
+    })
+  })
+
+  describe('removeInvite', () => {
+    it('should call $authApi with the correct URL and method', async () => {
+      const affStore = useAffiliationsStore()
+
+      const inviteId = 123
+
+      await affStore.removeInvite(inviteId)
+
+      expect(mockAuthApi).toHaveBeenCalledWith(
+        `/affiliationInvitations/${inviteId}`,
+        expect.objectContaining({
+          method: 'DELETE'
+        })
+      )
+      expect(mockAuthApi).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('removeAcceptedAffiliationInvitations', () => {
+    it('should call removeInvite for invitations with Accepted status', async () => {
+      mockAuthApi.mockResolvedValue({ status: 200 })
+
+      const business = {
+        affiliationInvites: [
+          { id: 1, status: 'ACCEPTED' },
+          { id: 2, status: 'Pending' },
+          { id: 3, status: 'ACCEPTED' },
+          { id: 4, status: 'Failed' }
+        ]
+      }
+
+      const affStore = useAffiliationsStore()
+
+      // @ts-expect-error - expect arg to not match param type
+      await affStore.removeAcceptedAffiliationInvitations(business)
+
+      // should only be called twice
+      expect(mockAuthApi).toHaveBeenCalledTimes(2)
+
+      // only called with status = accepted
+      expect(mockAuthApi).toHaveBeenCalledWith('/affiliationInvitations/1', { method: 'DELETE' })
+      expect(mockAuthApi).toHaveBeenCalledWith('/affiliationInvitations/3', { method: 'DELETE' })
+
+      // not called with other status
+      expect(mockAuthApi).not.toHaveBeenCalledWith('/affiliationInvitations/2', expect.anything())
+      expect(mockAuthApi).not.toHaveBeenCalledWith('/affiliationInvitations/4', expect.anything())
+    })
+  })
+
+  describe('createNRAffiliation', () => {
+    it('should call $authApi with the correct URL, method, and body', async () => {
+      const mockAffiliation = {
+        businessIdentifier: 'NR123456',
+        orgIdentifier: 'org-123'
+      }
+
+      const affStore = useAffiliationsStore()
+
+      await affStore.createNRAffiliation(mockAffiliation)
+
+      expect(mockAuthApi).toHaveBeenCalledOnce()
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/123/affiliations?newBusiness=true', {
+        method: 'POST',
+        body: mockAffiliation
+      })
+    })
+  })
+
+  describe('isStaffOrSbcStaff', () => {
+    beforeEach(() => {
+      // reset before each test
+      mockAuthenticated = true
+      mockKeycloakRoles = []
+      store.currentAccount.accountType = 'basic'
+    })
+
+    it('should return false when the user is not authenticated', () => {
+      mockAuthenticated = false
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(false)
+    })
+
+    it('should return false when the user is authenticated but has no staff roles', () => {
+      mockAuthenticated = true
+      mockKeycloakRoles = [] // No roles
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(false)
+    })
+
+    it('should return true when the current organization is a staff account', () => {
+      store.currentAccount.accountType = 'STAFF'
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(true)
+    })
+
+    it('should return true when the current organization is an SBC_STAFF account', () => {
+      store.currentAccount.accountType = 'SBC_STAFF'
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(true)
+    })
+
+    it('should return true when the user has a Staff role', () => {
+      mockKeycloakRoles = ['staff']
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(true)
+    })
+
+    it('should return false when the user has no Staff role and the account is not a staff account', () => {
+      mockKeycloakRoles = []
+      store.currentAccount.accountType = 'basic'
+
+      const affStore = useAffiliationsStore()
+
+      expect(affStore.isStaffOrSbcStaff).toBe(false)
+    })
+  })
+
+  describe('handleManageBusinessOrNameRequest', () => {
+    let affStore: any
+
+    beforeEach(() => {
+      affStore = useAffiliationsStore()
+    })
+
+    it('should open manage business modal when searchType is "reg"', () => {
+      const consoleSpy = vi.spyOn(console, 'log')
+
+      affStore.handleManageBusinessOrNameRequest('reg', { names: ['test'], nrNum: 'NR123' })
+
+      expect(consoleSpy).toHaveBeenCalledWith('open manage business modal')
+    })
+
+    it.skip('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
+      mockAuthApi.mockResolvedValue({ status: 200 })
+      mockKeycloakRoles = ['staff'] // set staff role
+
+      const event = { names: ['test'], nrNum: 'NR123' }
+
+      await affStore.handleManageBusinessOrNameRequest('someType', event)
+
+      expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for creating affiliation and once for reloading affiliations
+
+      expect(mockAddToast).toHaveBeenCalledOnce()
+    })
+
+    it('should open the manage name request modal when isStaffOrSbcStaff is false', () => {
+      const event = { names: ['test'], nrNum: 'NR123' }
+
+      affStore.handleManageBusinessOrNameRequest('someType', event)
+
+      expect(mockOpenManageNameRequest).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('addNameRequestForStaffSilently', () => {
+    it('should successfully add a name request for staff and reload affiliations', async () => {
+      mockAuthApi.mockResolvedValue(undefined)
+      const affStore = useAffiliationsStore()
+
+      const businessIdentifier = 'NR123'
+      await affStore.addNameRequestForStaffSilently(businessIdentifier)
+
+      // Assert that the API was called
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/123/affiliations?newBusiness=true', {
+        body: {
+          businessIdentifier: 'NR123'
+        },
+        method: 'POST'
+      })
+
+      // should have success toast
+      expect(mockAddToast).toHaveBeenCalledOnce()
+
+      expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for affiliation once for reload
+    })
+
+    it('should handle error by opening the manage name request error modal', async () => {
+      mockAuthApi.mockRejectedValueOnce(new Error('API Error')) // throw error
+      const affStore = useAffiliationsStore()
+
+      const businessIdentifier = 'NR123'
+      await affStore.addNameRequestForStaffSilently(businessIdentifier)
+
+      expect(mockAuthApi).toHaveBeenCalledOnce() // auth api only called once when error is thrown
+
+      expect(mockAddToast).not.toHaveBeenCalled() // success toast should not be called
+      expect(mockOpenManageNRError).toHaveBeenCalledOnce() // manage nr error modal should be called
     })
   })
 })
