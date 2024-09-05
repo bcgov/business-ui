@@ -147,6 +147,10 @@ export default {
     generic: {
       title: "Quelque Chose S'est Mal Passé",
       description: "Une erreur s'est produite, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter."
+    },
+    businessAdd: {
+      title: "Error lors de l'ajout de l'Entreprise Existante",
+      description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
     }
   },
   entityAlertTypes: {

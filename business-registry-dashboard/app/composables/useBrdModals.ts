@@ -24,25 +24,27 @@ export const useBrdModals = () => {
   function openBusinessAddError () {
     modal.open(ModalBase, {
       error: {
-        title: 'Error Adding Existing Business', // TODO: add translations
-        description: 'An error occurred adding your business. Please try again.'
+        title: t('error.businessAdd.title'),
+        description: t('error.businessAdd.description')
       },
       actions: [{ label: t('btn.close'), handler: () => close() }]
     })
   }
 
-  function openBusinessUnavailableError (action: string) { // TODO: add translations
-    let description = 'You are not authorized to access the business'
+  function openBusinessUnavailableError (action: string) {
+    let title: string
+    let description: string
     if (action === 'change name') {
-      description += ' to change its name'
+      title = t('error.businessUnavailable.changeName.title')
+      description = t('error.businessUnavailable.changeName.description')
     } else {
-      description += ' you wish to ' + action
+      title = t('error.businessUnavailable.generic.title')
+      description = t('error.businessUnavailable.generic.description', { action })
     }
-    description += '. Please add this business to your table to continue.'
 
     modal.open(ModalBase, {
       error: {
-        title: 'Business Unavailable',
+        title,
         description,
         showContactInfo: true
       },

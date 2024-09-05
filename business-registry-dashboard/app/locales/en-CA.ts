@@ -147,6 +147,20 @@ export default {
     generic: {
       title: 'Something Went Wrong',
       description: 'An error occurred, please try again. If this error persists, please contact us.'
+    },
+    businessAdd: {
+      title: 'Error Adding Existing Business',
+      description: 'An error occurred adding your business. Please try again.'
+    },
+    businessUnavailable: {
+      changeName: {
+        title: 'Business Unavailable',
+        description: 'You are not authorized to access the business to change its name. Please add this business to your table to continue.'
+      },
+      generic: {
+        title: 'Business Unavailable',
+        description: 'You are not authorized to access the business you wish to {action}. Please add this business to your table to continue.'
+      }
     }
   },
   entityAlertTypes: {
