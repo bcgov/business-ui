@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// import { FetchError } from 'ofetch'
-// const affStore = useAffiliationsStore()
+import type { AccordionItem } from '#ui/types'
+import { FetchError } from 'ofetch'
+import { StatusCodes } from 'http-status-codes'
+const affStore = useAffiliationsStore()
 // const toast = useToast()
 const brdModal = useBrdModals()
 // const { t } = useI18n()
@@ -10,24 +12,12 @@ const props = defineProps<{
   business: ManageBusinessEvent
 }>()
 
-onMounted(() => {
-  console.log('business: ', props.business)
-  // const test = await $authApi(`/entities/${props.business.identifier}/authentication`)
-  // console.log(test)
-})
-
 const hasError = ref(false)
 const errorText = ref('') // TODO: add aria alert text
-// const loading = ref(false)
-const hasBusinessEmail = ref(false)
+const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
 const hasAffiliatedAccount = ref(false)
-const contactInfo = ref(null)
-
-const businessContactEmail = computed(() => {
-  // @ts-expect-error
-  return contactInfo.value?.email
-})
+const contactEmail = ref('')
 
 const isBusinessLegalTypeFirm = computed(() => {
   return props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP
@@ -46,17 +36,16 @@ const isBusinessLegalTypeCoOp = computed(() => {
 })
 
 const isBusinessLegalTypeCorporationOrBenefitOrCoop = computed(() => {
-  return (isBusinessLegalTypeCorporation.value || isBusinessLegalTypeBenefit.value || isBusinessLegalTypeCoOp.value) && hasBusinessEmail.value
+  return (isBusinessLegalTypeCorporation.value || isBusinessLegalTypeBenefit.value || isBusinessLegalTypeCoOp.value) && contactEmail.value !== ''
 })
 
 const showEmailOption = computed(() => {
-  return (isBusinessLegalTypeCorporationOrBenefitOrCoop.value || isBusinessLegalTypeFirm.value) && businessContactEmail.value &&
-       hasBusinessEmail.value
+  return (isBusinessLegalTypeCorporationOrBenefitOrCoop.value || isBusinessLegalTypeFirm.value) && contactEmail.value !== ''
 })
 
 const enableDelegationFeature = computed(() => {
-  // return LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false
-  return false
+  // return LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: fix after adding launch darkly
+  return true
 })
 
 const businessHasNoEmailAndNoAuthenticationAndNoAffiliation = computed(() => {
@@ -68,11 +57,6 @@ const showPasscodeOption = computed(() => {
   // const allowableBusinessPasscodeTypes: string = LaunchDarklyService.getFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP' // TODO: implememnt after adding launch darkly
   const allowableBusinessPasscodeTypes: string = 'BC,SP,GP'
   return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value
-})
-
-const noAuthenticationOptions = computed(() => {
-  return !((hasAffiliatedAccount.value && enableDelegationFeature.value) ||
-        showEmailOption.value || isBusinessLegalTypeFirm.value || showPasscodeOption.value)
 })
 
 const isCooperative = computed(() => {
@@ -93,75 +77,127 @@ const computedAddressType = computed(() => {
   }
 })
 
-const items = [{
-  label: `Use the business ${passwordText.value}`,
-  slot: 'passcode-option'
-}, {
-  label: 'Use the name of a proprietor or partner',
-  slot: 'firm-option'
-}, {
-  label: `Confirm authorization using your ${computedAddressType.value} email address`,
-  slot: 'email-option'
-}, {
-  label: 'Request authorization from an account currently managing the business',
-  slot: 'affiliated-enable-delegation'
-}]
+const authOptions = computed<AccordionItem[]>(() => {
+  const options: AccordionItem[] = []
 
-function tryAgain () {
-  hasError.value = false
-  errorText.value = ''
-}
+  if (showPasscodeOption.value) {
+    options.push({
+      label: `Use the business ${passwordText.value}`,
+      slot: 'passcode-option'
+    })
+  }
+
+  if (isBusinessLegalTypeFirm.value) {
+    options.push({
+      label: 'Use the name of a proprietor or partner',
+      slot: 'firm-option'
+    })
+  }
+
+  if (showEmailOption.value) {
+    options.push({
+      label: `Confirm authorization using your ${computedAddressType.value} email address`,
+      slot: 'email-option'
+    })
+  }
+
+  if (hasAffiliatedAccount.value && enableDelegationFeature.value) {
+    options.push({
+      label: 'Request authorization from an account currently managing the business',
+      slot: 'delagation-option'
+    })
+  }
+
+  return options
+})
+
+onMounted(async () => {
+  if (!affStore.isStaffOrSbcStaff) { // only try accessing if not staff - this might not be necessary but will need to look into it
+    // try loading contact info
+    try {
+      const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
+      console.log('contact: ', response)
+      contactEmail.value = response.email
+    } catch (error) {
+      const e = error as FetchError
+      if (e.response?.status !== StatusCodes.NOT_FOUND) {
+        console.error(e.response)
+      }
+    }
+
+    // try loading affiliated accounts
+    try {
+      const response = await $authApi<{ orgsDetails: Array<{branchName: string, name: string, uuid: string }>}>(`/orgs/affiliation/${props.business.identifier}`)
+      console.log('accounts: ', response)
+      hasAffiliatedAccount.value = response.orgsDetails.length > 0
+    } catch (error) {
+      const e = error as FetchError
+      hasAffiliatedAccount.value = false
+      console.error(e.response)
+    }
+
+    // try loading business passcode
+    try {
+      const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
+      console.log('passcode: ', response)
+      hasBusinessAuthentication.value = response.hasValidPassCode
+    } catch (error) {
+      const e = error as FetchError
+      hasBusinessAuthentication.value = true // TODO: this looks wrong?
+      if (e.response?.status !== StatusCodes.NOT_FOUND) {
+        console.error(e.response)
+      }
+    }
+    setTimeout(() => {
+      loading.value = false
+    }, 300)
+  }
+})
 </script>
 <template>
   <ModalBase title="Manage a B.C. Business">
-    <transition name="fade" mode="out-in">
+    <div class="flex flex-col gap-4 md:w-[700px]">
+      <ul class="-mt-8 flex-col gap-2 font-semibold text-bcGovColor-darkGray">
+        <li>
+          <span>Business Name: <span class="font-normal text-bcGovColor-midGray">{{ business.name }}</span></span>
+        </li>
+        <li>
+          <span>Incorporation Number: <span class="font-normal text-bcGovColor-midGray">{{ business.identifier }}</span></span>
+        </li>
+      </ul>
+
+      <div v-if="loading" class="relative h-48">
+        <SbcLoadingSpinner :overlay="false" />
+      </div>
+
       <div
-        v-if="business"
+        v-else-if="authOptions.length === 0"
         class="flex flex-col gap-4"
       >
-        <ul class="-mt-8 flex-col gap-2 font-semibold text-bcGovColor-darkGray">
-          <li>
-            <span>Business Name: <span class="font-normal text-bcGovColor-midGray">{{ business.name }}</span></span>
-          </li>
-          <li>
-            <span>Incorporation Number: <span class="font-normal text-bcGovColor-midGray">{{ business.identifier }}</span></span>
-          </li>
-        </ul>
-
-        <p>You must be authorized to manage this business. You can be authorized in one of the following ways:</p>
-
-        <UAccordion
-          :items
-          :ui="{
-            wrapper: 'w-full flex flex-col divide-y divide-gray-300 border-y border-gray-300',
-            default: {
-              class: 'mb-0 py-4 w-full rounded-none'
-            }
-          }"
-        />
-
-        <div class="ml-auto mt-6 flex gap-2">
-          <UButton
-            :label="$t('btn.cancel')"
-            variant="outline"
-            @click="brdModal.close()"
-          />
-          <UButton
-            label="Manage This Business"
-          />
-        </div>
-      </div>
-      <div v-else-if="noAuthenticationOptions">
         <p>The business doesn't have a password / passcode or email on record. Please contact us for help:</p>
         <BCRegContactInfo />
+        <UButton
+          :label="$t('btn.close')"
+          class="ml-auto"
+          @click="brdModal.close()"
+        />
       </div>
-      <div v-else-if="hasError" class="flex flex-col items-center gap-4 text-center md:w-[700px]">
+
+      <FormAddBusiness
+        v-else
+        :auth-options="authOptions"
+        :address-type="computedAddressType"
+        :contact-email="contactEmail"
+        :identifier="business.identifier"
+      />
+    </div>
+    <!-- <div v-else-if="hasError" class="flex flex-col items-center gap-4 text-center md:w-[700px]">
         <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
         <h2 class="text-xl font-semibold">
           {{ $t('error.generic.title') }}
-        </h2>
-        <!-- <p>{{ errorText }}</p> -->
-        <p>{{ $t('error.generic.description') }}</p>
+        </h2> -->
+    <!-- <p>{{ errorText }}</p> -->
+    <!-- <p>{{ $t('error.generic.description') }}</p>
         <BCRegContactInfo class="self-start text-left" />
         <div class="mt-4 flex gap-2">
           <UButton
@@ -173,13 +209,11 @@ function tryAgain () {
             :label="$t('btn.tryAgain')"
             @click="tryAgain"
           />
-        </div>
-        <!-- TODO: add aria alert -->
-        <!-- <div class="sr-only" role="status">
+        </div> -->
+    <!-- TODO: add aria alert -->
+    <!-- <div class="sr-only" role="status">
       {{ ariaAlertText }}
     </div> -->
-      </div>
-    </transition>
   </ModalBase>
 </template>
 <style scoped>

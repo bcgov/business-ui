@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
-import { StatusCodes } from 'http-status-codes'
 
-const { t } = useI18n()
+// const { t } = useI18n() // TODO: add translations
 const brdModal = useBrdModals()
 
 const props = defineProps<{
@@ -10,31 +9,19 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  retryNameRequest: [void]
+  retry: [void]
 }>()
 
 const ariaAlertText = ref('')
 const errorText = computed(() => {
-  let title = ''
+  const message = props.error?.data?.message
+  const title = 'Error Sending Authorization Email'
   let description = ''
 
-  switch (props.error.status) {
-    case StatusCodes.BAD_REQUEST:
-      title = t('form.manageNR.error.400.title')
-      description = props.error.data.message || t('form.manageNR.error.400.description')
-      break
-    case StatusCodes.NOT_FOUND:
-      title = t('form.manageNR.error.404.title')
-      description = t('form.manageNR.error.404.description')
-      break
-    case StatusCodes.INTERNAL_SERVER_ERROR:
-      title = t('form.manageNR.error.500.title')
-      description = t('form.manageNR.error.500.description')
-      break
-    default:
-      title = t('form.manageNR.error.default.title')
-      description = t('form.manageNR.error.default.description')
-      break
+  if (message) {
+    description = message
+  } else {
+    description = 'An error occurred sending authorization email. Please try again.'
   }
 
   return { title, description }
@@ -66,7 +53,7 @@ onMounted(() => {
       />
       <UButton
         :label="$t('btn.tryAgain')"
-        @click="$emit('retryNameRequest')"
+        @click="$emit('retry')"
       />
     </div>
     <div class="sr-only" role="status">
