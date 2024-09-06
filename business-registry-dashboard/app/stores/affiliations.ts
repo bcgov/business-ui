@@ -255,13 +255,24 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return currentOrgIsStaff || keycloak.kcUser.roles.includes(UserRole.Staff)
   })
 
-  function handleManageBusinessOrNameRequest (searchType: string, event: { names: string[]; nrNum: string }) {
-    if (searchType === 'reg') {
-      console.log('open manage business modal')
-    } else if (isStaffOrSbcStaff.value) {
-      addNameRequestForStaffSilently(event.nrNum)
+  function handleManageBusinessOrNameRequest (
+    searchType: 'reg' | 'namex',
+    event: ManageNameRequestEvent | ManageBusinessEvent
+  ) {
+    if (searchType === 'reg' && 'identifier' in event) {
+      if (isStaffOrSbcStaff.value) {
+        console.log('add business for staff')
+      } else {
+        brdModal.openManageBusiness(event)
+      }
+    } else if (searchType === 'namex' && 'nrNum' in event) {
+      if (isStaffOrSbcStaff.value) {
+        addNameRequestForStaffSilently(event.nrNum)
+      } else {
+        brdModal.openManageNameRequest(event)
+      }
     } else {
-      brdModal.openManageNameRequest(event)
+      console.error('Incorrect event type')
     }
   }
 

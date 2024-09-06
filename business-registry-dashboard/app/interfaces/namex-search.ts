@@ -3,3 +3,8 @@ export interface NamexResult {
   nrNum: string
   disabled?: boolean
 }
+
+export interface ManageNameRequestEvent {
+  names: string[]
+  nrNum: string
+}

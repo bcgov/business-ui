@@ -12,7 +12,7 @@ definePageMeta({
   order: 0
 })
 
-const searchType = ref('reg')
+const searchType = ref<'reg' | 'namex'>('reg')
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
