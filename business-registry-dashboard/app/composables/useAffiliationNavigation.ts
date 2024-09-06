@@ -1,3 +1,5 @@
+import { NrRequestActionCodes } from '@bcrs-shared-components/enums'
+
 export function useAffiliationNavigation () {
   const webUrl = getWebUrl()
   const accountStore = useConnectAccountStore()
@@ -87,6 +89,45 @@ export function useAffiliationNavigation () {
     }
   }
 
+  function isOpenExternal (item: Business): boolean {
+    const invitationStatus = item?.affiliationInvites?.[0]?.status
+
+    if (invitationStatus && [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired].includes(invitationStatus as AffiliationInvitationStatus)) {
+      return false
+    }
+
+    if (isTemporaryBusiness(item)) {
+      return false
+    }
+
+    if (isNameRequest(item)) {
+      const nrState = affiliationStatus(item)
+      if (nrState !== NrDisplayStates.APPROVED) {
+        return false
+      }
+      const nrRequestActionCd = item.nameRequest?.requestActionCd
+      if (nrRequestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
+        return !isModernizedEntity(item)
+      }
+      // temporarily show external icon for continue in
+      if (nrRequestActionCd === NrRequestActionCodes.MOVE) {
+        return !isSupportedContinuationInEntities(item)
+      }
+      // temporary show external icon for amalgamate for some entity types
+      if (nrRequestActionCd === NrRequestActionCodes.AMALGAMATE) {
+        return !isSupportedAmalgamationEntities(item)
+      }
+      // temporarily show external icon for restore/reinstate for some entity types
+      if (nrRequestActionCd === NrRequestActionCodes.RESTORE || nrRequestActionCd === NrRequestActionCodes.RENEW) {
+        return !isSupportedRestorationEntities(item)
+      }
+      return false
+    }
+
+    // check for business
+    return !isModernizedEntity(item)
+  }
+
   return {
     goToDashboard,
     goToNameRequest,
@@ -95,6 +136,7 @@ export function useAffiliationNavigation () {
     goToSocieties,
     goToRegister,
     goToAmalgamate,
-    goToContinuationIn
+    goToContinuationIn,
+    isOpenExternal
   }
 }

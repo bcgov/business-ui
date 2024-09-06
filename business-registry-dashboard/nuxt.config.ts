@@ -61,6 +61,7 @@ export default defineNuxtConfig({
         'mdi:new-box',
         'mdi:file-document-outline',
         'mdi:alert-circle-outline',
+        'mdi:refresh',
         'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
         'heroicons:check-20-solid'

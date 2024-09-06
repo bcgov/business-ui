@@ -116,7 +116,8 @@ export default {
     help: 'Aide',
     hideHelp: "Masquer l'Aide",
     tryAgain: 'Essayer à nouveau',
-    cancel: 'Annuler'
+    cancel: 'Annuler',
+    ok: "D'accord"
   },
   contactInfo: {
     bcRegGeneral: {
@@ -141,6 +142,12 @@ export default {
   currency: {
     cad: 'CAD',
     usd: 'USD'
+  },
+  error: {
+    generic: {
+      title: "Quelque Chose S'est Mal Passé",
+      description: "Une erreur s'est produite, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter."
+    }
   },
   entityAlertTypes: {
     FROZEN: 'Cette entreprise est gelée',
@@ -283,12 +290,93 @@ export default {
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
     amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
-    noAffiliationRecords: "Aucun dossier d'affiliation"
+    noAffiliationRecords: "Aucun dossier d'affiliation",
+    newRequest: 'Nouvelle Demande',
+    resendEmail: 'Renvoyer le Courriel',
+    removeFromList: 'Supprimer de la Liste',
+    removeBusiness: "Supprimer l'Entreprise"
   },
   links: {
     busCorpAct: {
       main: 'Business Corporations Act',
       sect182: 'Business Corporations Act (Section 182)'
+    }
+  },
+  modal: {
+    removeBusiness: {
+      generic: {
+        NR: {
+          title: 'Supprimer La Demande De Nom?',
+          description: "La suppression de cette demande de nom la retirera de votre liste de registre des entreprises. Vous pouvez la réintégrer plus tard en sélectionnant Ajouter une demande de nom existante. Cette demande de nom restera valide jusqu'à ce qu'elle soit utilisée ou annulée, ou qu'elle expire.",
+          primaryBtnLabel: 'Supprimer La Demande De Nom',
+          secondaryBtnLabel: 'Conserver La Demande De Nom'
+        },
+        TMP: {
+          title: "Supprimer La Demande D'Incorporation?",
+          description: "La suppression de cette demande d'incorporation la retirera de votre liste de registre des entreprises. L'entreprise associée à cette demande ne sera pas incorporée. Si cette demande d'incorporation était associée à une demande de nom, la demande de nom pourra toujours être utilisée pour incorporer une entreprise.",
+          primaryBtnLabel: "Supprimer La Demande D'Incorporation",
+          secondaryBtnLabel: "Conserver La Demande D'Incorporation"
+        },
+        ATMP: {
+          title: 'Supprimer La Demande De Fusion?',
+          description: 'La suppression de cette demande de fusion la retirera de votre liste de registre des entreprises. Si cette demande de fusion était associée à une demande de nom, la demande de nom pourra toujours être utilisée pour initier une demande de fusion.',
+          primaryBtnLabel: 'Supprimer La Demande De Fusion',
+          secondaryBtnLabel: 'Conserver La Demande De Fusion'
+        },
+        RTMP: {
+          title: "Supprimer L'Enregistrement?",
+          description: "La suppression de cet enregistrement le retirera de votre liste de registre des entreprises. L'entreprise associée à cet enregistrement ne sera pas enregistrée. Si cet enregistrement était associé à une demande de nom, la demande de nom pourra toujours être utilisée pour enregistrer une entreprise.",
+          primaryBtnLabel: "Supprimer L'Enregistrement",
+          secondaryBtnLabel: "Conserver L'Enregistrement"
+        },
+        GP: {
+          title: "Supprimer L'Enregistrement?",
+          description: "La suppression de cet enregistrement le retirera de votre liste de registre des entreprises. Pour réintégrer l'entreprise à la liste de registre des entreprises plus tard, vous aurez besoin du numéro d'enregistrement de l'entreprise et du nom du propriétaire exactement comme il apparaît sur la demande d'enregistrement.",
+          primaryBtnLabel: "Supprimer L'Enregistrement",
+          secondaryBtnLabel: "Conserver L'Enregistrement"
+        },
+        SP: {
+          title: "Supprimer L'Enregistrement?",
+          description: "La suppression de cet enregistrement le retirera de votre liste de registre des entreprises. Pour réintégrer l'entreprise à la liste de registre des entreprises plus tard, vous aurez besoin du numéro d'enregistrement de l'entreprise et du nom du propriétaire exactement comme il apparaît sur la demande d'enregistrement.",
+          primaryBtnLabel: "Supprimer L'Enregistrement",
+          secondaryBtnLabel: "Conserver L'Enregistrement"
+        }
+      }
+    },
+    passcode: {
+      form: {
+        radio: {
+          reset: {
+            label: "Réinitialiser mon code d'accès et retirer l'entreprise",
+            help: "L'entreprise sera retirée de ce compte,Un nouveau code d'accès sera généré et annulera l'ancien code d'accès,Le nouveau code d'accès sera envoyé par courriel à la personne responsable de la gestion de cette entreprise"
+          },
+          noReset: {
+            label: "Ne pas réinitialiser mon code d'accès et retirer l'entreprise",
+            help: "L'entreprise sera retirée de ce compte,Le code d'accès actuel pour cette entreprise sera annulé,Vous ne pourrez pas ajouter cette entreprise à votre compte sans un nouveau code d'accès"
+          },
+          legend: "Veuillez sélectionner l'une des deux options ci-dessous pour retirer cette entreprise du compte"
+        },
+        email: {
+          arialabel: 'Adresse Courriel',
+          placeholder: 'Adresse Courriel',
+          error: {
+            required: "L'adresse courriel est requise.",
+            invalid: 'Veuillez entrer une adresse courriel valide.'
+          }
+        },
+        confirmEmail: {
+          arialabel: 'Confirmer Adresse Email',
+          placeholder: 'Confirmer Adresse Email',
+          error: {
+            required: "La confirmation de l'adresse courriel est requise.",
+            invalid: 'Veuillez entrer une adresse courriel valide.',
+            match: 'Les adresses courriel doivent correspondre.'
+          }
+        }
+      }
+    },
+    index: {
+      successToast: 'Entreprise supprimée avec succès de votre liste.'
     }
   },
   words: {
@@ -301,7 +389,10 @@ export default {
     or: 'ou',
     Or: 'Ou',
     error: 'erreur',
-    Error: 'Erreur'
+    Error: 'Erreur',
+    OK: 'OK',
+    remove: 'retirer',
+    Remove: 'Retirer'
   },
   page: {
     notFound: {
