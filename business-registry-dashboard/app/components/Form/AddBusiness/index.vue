@@ -8,6 +8,7 @@ defineProps<{
   addressType: string
   contactEmail: string
   identifier: string
+  accounts: Array<{branchName: string, name: string, uuid: string }>
 }>()
 
 type Form = typeof FormAddBusinessBase
@@ -22,11 +23,11 @@ const state: Record<string, Comp> = {
 }
 
 const currentState = ref('FormAddBusinessBase')
-const error = ref<FetchError>()
+const errorObj = ref<{ error: FetchError, type: string }>()
 
-function handleError (e: FetchError) {
+function handleError (e: { error: FetchError, type: string }) {
   console.log('error emitted')
-  error.value = e
+  errorObj.value = e
   currentState.value = 'FormAddBusinessError'
 }
 </script>
@@ -35,11 +36,12 @@ function handleError (e: FetchError) {
   <transition name="fade" mode="out-in">
     <component
       :is="state[currentState]"
-      :error
+      :error-obj="errorObj"
       :auth-options="authOptions"
       :address-type="addressType"
       :contact-email="contactEmail"
-      :identifier="identifier"
+      :identifier
+      :accounts
       @retry="currentState = 'FormAddBusinessBase'"
       @business-error="handleError"
     />

@@ -18,6 +18,7 @@ const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
 const hasAffiliatedAccount = ref(false)
 const contactEmail = ref('')
+const affiliatedAccounts = ref()
 
 const isBusinessLegalTypeFirm = computed(() => {
   return props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP
@@ -127,9 +128,10 @@ onMounted(async () => {
 
     // try loading affiliated accounts
     try {
-      const response = await $authApi<{ orgsDetails: Array<{branchName: string, name: string, uuid: string }>}>(`/orgs/affiliation/${props.business.identifier}`)
+      const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
       console.log('accounts: ', response)
       hasAffiliatedAccount.value = response.orgsDetails.length > 0
+      affiliatedAccounts.value = response.orgsDetails
     } catch (error) {
       const e = error as FetchError
       hasAffiliatedAccount.value = false
@@ -189,6 +191,8 @@ onMounted(async () => {
         :address-type="computedAddressType"
         :contact-email="contactEmail"
         :identifier="business.identifier"
+        :business
+        :accounts="affiliatedAccounts"
       />
     </div>
     <!-- <div v-else-if="hasError" class="flex flex-col items-center gap-4 text-center md:w-[700px]">

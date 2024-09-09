@@ -112,3 +112,7 @@ export interface AffiliationInviteInfo {
   fromOrg: OrgNameAndId
   toOrg?: OrgNameAndId
 }
+
+export interface AffiliatedAccounts {
+  orgsDetails: Array<{branchName: string, name: string, uuid: string }>
+}
