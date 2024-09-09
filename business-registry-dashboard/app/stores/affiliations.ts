@@ -188,7 +188,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   function setColumns () {
     visibleColumns.value = [
       nameColumn,
-      ...optionalColumns.filter(col => selectedColumns.value.includes(col)),
+      ...optionalColumns.filter(col => selectedColumns.value.some(sel => sel.key === col.key)),
       actionColumn
     ]
   }
@@ -290,6 +290,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     visibleColumns,
     optionalColumns,
     selectedColumns,
+    isStaffOrSbcStaff,
     setColumns,
     filteredResults,
     statusOptions,
@@ -299,6 +300,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     createNRAffiliation,
     handleManageBusinessOrNameRequest,
     removeBusiness,
+    removeAffiliation,
+    getFilings,
+    deleteBusinessFiling,
+    addNameRequestForStaffSilently,
     $reset
   }
 }

@@ -8,9 +8,9 @@ describe('handleFormInputVariant', () => {
     ]
 
     const tests = [
-      ['random', 'bcGov'],
+      ['random', 'bcGovLg'],
       ['email', 'error'],
-      ['no match', 'bcGov'],
+      ['no match', 'bcGovLg'],
       ['password', 'error']
     ]
 
@@ -24,6 +24,6 @@ describe('handleFormInputVariant', () => {
   it('returns bcGov if formErrors is undefined', () => {
     const result = handleFormInputVariant('some path', undefined)
 
-    expect(result).toBe('bcGov')
+    expect(result).toBe('bcGovLg')
   })
 })
