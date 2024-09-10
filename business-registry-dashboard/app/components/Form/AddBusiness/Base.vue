@@ -23,16 +23,21 @@ const emit = defineEmits<{
 const formRef = ref()
 const accordianRef = ref()
 const noOptionAlert = ref<boolean>(false)
-const selectedAccount = ref<{ branchName: string; name: string; uuid: string } | null>(null)
-
-const formState = reactive({
-  selectedAccount: undefined,
-  requestAccessMessage: undefined,
-  proprietorPartnerName: undefined,
-  passcode: undefined
+const formState = reactive<{
+  partner: { name: string | undefined, certify: boolean | undefined },
+  passcode: string | undefined,
+  delegation: { account: { name: string, branchName?: string, uuid: string } | undefined, message: string | undefined }
+}>({
+  partner: {
+    name: undefined,
+    certify: undefined
+  },
+  passcode: undefined,
+  delegation: {
+    account: undefined,
+    message: undefined
+  }
 })
-
-watchEffect(() => console.log('selected account: ', selectedAccount.value))
 
 const openAuthOption = computed<AccordionItem | null>(() => {
   const buttonRefs = accordianRef.value?.buttonRefs
@@ -50,9 +55,10 @@ watch(openAuthOption, () => {
 
   // reset form state if open option changes
   formState.passcode = undefined
-  formState.selectedAccount = undefined
-  formState.requestAccessMessage = undefined
-  formState.proprietorPartnerName = undefined
+  formState.delegation.message = undefined
+  formState.delegation.account = undefined
+  formState.partner.name = undefined
+  formState.partner.certify = undefined
 })
 
 async function handleEmailOption () {
@@ -81,10 +87,10 @@ const handleDelegationOption = async () => {
   try {
     const payload = {
       fromOrgId: Number(accountStore.currentAccount.id),
-      toOrgUuid: selectedAccount.value?.uuid,
+      toOrgUuid: formState.delegation.account?.uuid,
       businessIdentifier: props.identifier,
       type: 'REQUEST',
-      additionalMessage: formState.requestAccessMessage
+      additionalMessage: formState.delegation.message
     }
     throw new Error('test error')
     await $authApi('/affiliationInvitations', {
@@ -99,13 +105,11 @@ const handleDelegationOption = async () => {
   }
 }
 
-async function submitManageRequest (event: FormSubmitEvent<FormSchema>) {
+async function submitManageRequest () {
   if (!openAuthOption.value) {
     noOptionAlert.value = true
     return
   }
-
-  console.log(event.data)
 
   // await handleRemoveExistingAffiliationInvitation() // TODO: implement ???
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
@@ -116,52 +120,36 @@ async function submitManageRequest (event: FormSubmitEvent<FormSchema>) {
     await handleDelegationOption()
   } else { // handle passcode or firm option
     console.log(' handle other options')
-    // addBusinessForm.value.validate()
-    // // Adding business to the list
-    // try {
-    //   const payload: LoginPayload = {
-    //     businessIdentifier: props.identifier,
-    //     certifiedByName: `${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`,
-    //     passCode: openAuthOption.value.slot === 'firm-option' ? proprietorPartnerName.value : passcode.value
-    //   }
+    // Adding business to the list
+    try {
+      const payload: LoginPayload = {
+        businessIdentifier: props.identifier,
+        certifiedByName: `${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`,
+        passCode: openAuthOption.value.slot === 'firm-option' ? formState.partner.name : formState.passcode
+      }
 
-    //   await $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations`, {
-    //     method: 'POST',
-    //     body: payload
-    //   })
+      console.log(payload)
 
-    //   // let parent know that add was successful
-    //   emit('addSuccess', props.identifier)
-    // } catch (error) {
-    //   const e = error as FetchError
-    //   emit('businessError', { error: e, type: 'other' })
-    // }
+      // await $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations`, {
+      //   method: 'POST',
+      //   body: payload
+      // })
+
+      // let parent know that add was successful
+      emit('addSuccess', props.identifier)
+    } catch (error) {
+      const e = error as FetchError
+      emit('businessError', { error: e, type: 'other' })
+    }
   }
 }
-
-onMounted(() => {
-  if (props.accounts.length === 1) { // preset selected account if only 1 available
-    selectedAccount.value = props.accounts[0] || null
-  } else {
-    selectedAccount.value = null
-  }
-  console.log('accounts from base modal: ', props.accounts)
-})
-
-const isBusinessLegalTypeFirm = computed(() => {
-  return props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP
-})
 
 const passcodeVals = computed(() => {
   let label: string
   let help: string
   let maxlength: number
 
-  if (isBusinessLegalTypeFirm.value) {
-    label = 'Proprietor or Partner Name (e.g., Last Name, First Name Middlename)'
-    help = 'Name as it appears on the Business Summary or the Statement of Registration'
-    maxlength = 150
-  } else if (props.identifier.toUpperCase().startsWith('CP')) {
+  if (props.identifier.toUpperCase().startsWith('CP')) {
     label = 'Passcode'
     help = 'Passcode must be exactly 9 digits'
     maxlength = 9
@@ -179,32 +167,34 @@ const formSchema = computed(() => {
 
   if (openOption === 'passcode-option') { // return passcode schema if passcode is the open option
     return z.object({
-      passcode: isBusinessLegalTypeFirm.value
-        ? z.string({ required_error: 'Proprietor or Partner Name is required' })
-          .max(150, 'Maximum 150 characters')
-        : props.identifier.toUpperCase().startsWith('CP')
-          ? z.string({ required_error: 'Passcode is required, enter the passcode you have setup in Corporate Online' })
-            .length(9, 'Passcode must be exactly 9 digits')
-            .refine(val => /^\d+$/.test(val), 'Passcode must be numeric')
-          : z.string({ required_error: 'Password is required' })
-            .min(8, 'Password must be 8 to 15 characters')
-            .max(15, 'Password must be 8 to 15 characters')
+      passcode: props.identifier.toUpperCase().startsWith('CP')
+        ? z.string({ required_error: 'Passcode is required, enter the passcode you have setup in Corporate Online' })
+          .length(9, 'Passcode must be exactly 9 digits')
+          .refine(val => /^\d+$/.test(val), 'Passcode must be numeric')
+        : z.string({ required_error: 'Password is required' })
+          .min(8, 'Password must be 8 to 15 characters')
+          .max(15, 'Password must be 8 to 15 characters')
     })
   }
 
   if (openOption === 'firm-option') {
     return z.object({
-      proprietorPartnerName: z.string({ required_error: 'Proprietor or Partner Name is required' })
-        .max(150, 'Maximum 150 characters')
+      partner: z.object({
+        name: z.string({ required_error: 'Proprietor or Partner Name is required' })
+          .max(150, 'Maximum 150 characters'),
+        certify: z.boolean({ required_error: 'Please certify in order to continue' }).refine(val => val === true)
+      })
     })
   }
 
   if (openOption === 'delagation-option') {
     return z.object({
-      selectedAccount: z.object({
-        branchName: z.string(),
-        name: z.string(),
-        uuid: z.string()
+      delegation: z.object({
+        account: z.any().refine(
+          obj => obj !== undefined,
+          { message: 'Please select an account to proceed' }
+        ),
+        message: z.string().optional()
       })
     })
   }
@@ -213,8 +203,18 @@ const formSchema = computed(() => {
   return z.object({})
 })
 
-type FormSchema = z.infer<typeof formSchema.value>
+const delegationLabel = computed(() => {
+  const account = formState.delegation.account as unknown as { name: string, branchName?: string, uuid: string }
 
+  if (account?.name !== undefined) {
+    if (account.branchName) {
+      return `${account.name} - ${account.branchName}`
+    }
+    return account.name
+  } else {
+    return 'Select an account below'
+  }
+})
 </script>
 <template>
   <UForm
@@ -252,21 +252,26 @@ type FormSchema = z.infer<typeof formSchema.value>
 
       <!-- firm option slot -->
       <template #firm-option>
-        <div class="-mt-4 space-y-4 pb-6">
+        <div class="space-y-4 pb-4">
           <UFormGroup
+            name="partner.name"
             help="Name as it appears on the Business Summary or the Statement of Registration"
           >
             <UInput
-              v-model="formState.proprietorPartnerName"
+              v-model="formState.partner.name"
               placeholder="Propietor or Partner Name (e.g., Last Name, First Name Middlename)"
               aria-label="Propietor or Partner Name (e.g., Last Name, First Name Middlename)"
+              :variant="handleFormInputVariant('partner.name', formRef?.errors)"
             />
           </UFormGroup>
 
-          <UFormGroup name="checkbox">
-            <UCheckbox>
+          <UFormGroup name="partner.certify">
+            <UCheckbox v-model="formState.partner.certify">
               <template #label>
-                <span>
+                <span
+                  class="text-sm"
+                  :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-darkGray'"
+                >
                   <strong>{{ `${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}` }}</strong> certifies that
                   they have relevant knowledge of the registered entity and is authorized to act
                   on behalf of this business.
@@ -295,21 +300,27 @@ type FormSchema = z.infer<typeof formSchema.value>
       <template #delagation-option>
         <div class="-mt-4 space-y-4 pb-6">
           <UFormGroup
+            name="delegation.account"
             label="Select an account:"
             :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
           >
             <USelectMenu
-              v-model="selectedAccount"
+              v-model="formState.delegation.account"
               :options="accounts"
-              :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+              :aria-label="'some aria label'"
+              option-attribute="name"
+              :ui="{
+                trigger: 'flex items-center w-full h-[42px]'
+              }"
             >
               <template #default="{ open }">
                 <UButton
                   variant="select_menu_trigger"
                   class="flex-1 justify-between text-gray-700"
-                  :disabled="accounts.length <= 1"
+                  aria-label="aria label here"
                 >
-                  {{ selectedAccount ? selectedAccount.name : 'Select an option' }}
+                  {{ delegationLabel }}
+
                   <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
                 </UButton>
               </template>
@@ -323,12 +334,14 @@ type FormSchema = z.infer<typeof formSchema.value>
               </template>
             </USelectMenu>
           </UFormGroup>
+
           <UFormGroup
+            name="delegation.message"
             label="You can add a message that will be included as part of your authorization request."
             :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
           >
             <UTextarea
-              v-model.trim="formState.requestAccessMessage"
+              v-model.trim="formState.delegation.message"
               placeholder="Request access additional message"
               :ui="{
                 placeholder: 'placeholder-gray-700',

@@ -57,7 +57,7 @@ const businessHasNoEmailAndNoAuthenticationAndNoAffiliation = computed(() => {
 const showPasscodeOption = computed(() => {
   // const allowableBusinessPasscodeTypes: string = LaunchDarklyService.getFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP' // TODO: implememnt after adding launch darkly
   const allowableBusinessPasscodeTypes: string = 'BC,SP,GP'
-  return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value
+  return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !isBusinessLegalTypeFirm.value
 })
 
 const isCooperative = computed(() => {
@@ -145,7 +145,7 @@ onMounted(async () => {
       hasBusinessAuthentication.value = response.hasValidPassCode
     } catch (error) {
       const e = error as FetchError
-      hasBusinessAuthentication.value = true // TODO: this looks wrong?
+      hasBusinessAuthentication.value = false // TODO: this looks wrong?
       if (e.response?.status !== StatusCodes.NOT_FOUND) {
         console.error(e.response)
       }
