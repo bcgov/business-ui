@@ -3,7 +3,6 @@ import type { AccordionItem } from '#ui/types'
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
 const affStore = useAffiliationsStore()
-// const toast = useToast()
 const brdModal = useBrdModals()
 // const { t } = useI18n()
 const { $authApi } = useNuxtApp()
@@ -12,13 +11,10 @@ const props = defineProps<{
   business: ManageBusinessEvent
 }>()
 
-const hasError = ref(false)
-const errorText = ref('') // TODO: add aria alert text
 const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
-const hasAffiliatedAccount = ref(false)
 const contactEmail = ref('')
-const affiliatedAccounts = ref()
+const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
 
 const isBusinessLegalTypeFirm = computed(() => {
   return props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP
@@ -47,11 +43,6 @@ const showEmailOption = computed(() => {
 const enableDelegationFeature = computed(() => {
   // return LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: fix after adding launch darkly
   return true
-})
-
-const businessHasNoEmailAndNoAuthenticationAndNoAffiliation = computed(() => {
-  const hasAuthenticationOption = isBusinessLegalTypeCorporationOrBenefitOrCoop.value && hasBusinessAuthentication.value
-  return !hasAuthenticationOption && !isBusinessLegalTypeFirm.value && !showEmailOption.value && !hasAffiliatedAccount.value
 })
 
 const showPasscodeOption = computed(() => {
@@ -102,7 +93,7 @@ const authOptions = computed<AccordionItem[]>(() => {
     })
   }
 
-  if (hasAffiliatedAccount.value && enableDelegationFeature.value) {
+  if (affiliatedAccounts.value.length > 0 && enableDelegationFeature.value) {
     options.push({
       label: 'Request authorization from an account currently managing the business',
       slot: 'delagation-option'
@@ -117,7 +108,6 @@ onMounted(async () => {
     // try loading contact info
     try {
       const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
-      console.log('contact: ', response)
       contactEmail.value = response.email
     } catch (error) {
       const e = error as FetchError
@@ -129,23 +119,19 @@ onMounted(async () => {
     // try loading affiliated accounts
     try {
       const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
-      console.log('accounts: ', response)
-      hasAffiliatedAccount.value = response.orgsDetails.length > 0
       affiliatedAccounts.value = response.orgsDetails
     } catch (error) {
       const e = error as FetchError
-      hasAffiliatedAccount.value = false
       console.error(e.response)
     }
 
     // try loading business passcode
     try {
       const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
-      console.log('passcode: ', response)
       hasBusinessAuthentication.value = response.hasValidPassCode
     } catch (error) {
       const e = error as FetchError
-      hasBusinessAuthentication.value = false // TODO: this looks wrong?
+      hasBusinessAuthentication.value = false
       if (e.response?.status !== StatusCodes.NOT_FOUND) {
         console.error(e.response)
       }
@@ -176,6 +162,7 @@ onMounted(async () => {
         v-else-if="authOptions.length === 0"
         class="flex flex-col gap-4"
       >
+        <p>Some required information for this business is missing.</p>
         <p>The business doesn't have a password / passcode or email on record. Please contact us for help:</p>
         <BCRegContactInfo />
         <UButton
@@ -191,33 +178,9 @@ onMounted(async () => {
         :address-type="computedAddressType"
         :contact-email="contactEmail"
         :identifier="business.identifier"
-        :business
         :accounts="affiliatedAccounts"
       />
     </div>
-    <!-- <div v-else-if="hasError" class="flex flex-col items-center gap-4 text-center md:w-[700px]">
-        <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
-        <h2 class="text-xl font-semibold">
-          {{ $t('error.generic.title') }}
-        </h2> -->
-    <!-- <p>{{ errorText }}</p> -->
-    <!-- <p>{{ $t('error.generic.description') }}</p>
-        <BCRegContactInfo class="self-start text-left" />
-        <div class="mt-4 flex gap-2">
-          <UButton
-            :label="$t('btn.cancel')"
-            variant="outline"
-            @click="brdModal.close()"
-          />
-          <UButton
-            :label="$t('btn.tryAgain')"
-            @click="tryAgain"
-          />
-        </div> -->
-    <!-- TODO: add aria alert -->
-    <!-- <div class="sr-only" role="status">
-      {{ ariaAlertText }}
-    </div> -->
   </ModalBase>
 </template>
 <style scoped>

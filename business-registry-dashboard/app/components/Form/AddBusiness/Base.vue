@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import type { AccordionItem, FormSubmitEvent } from '#ui/types'
+import type { AccordionItem } from '#ui/types'
 import { z } from 'zod'
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
+const affStore = useAffiliationsStore()
 const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
+const toast = useToast()
 
 const props = defineProps<{
   authOptions: AccordionItem[]
   addressType: string
   contactEmail: string
-  business: ManageBusinessEvent
   identifier: string
   accounts: Array<{branchName: string, name: string, uuid: string }>
 }>()
 
 const emit = defineEmits<{
-  businessError: [{error: FetchError, type: string}]
-  addSuccess: [identifier: string]
+  businessError: [{ error: FetchError, type: string }]
+  emailSuccess: [void]
 }>()
 
 const formRef = ref()
 const accordianRef = ref()
 const noOptionAlert = ref<boolean>(false)
+const loading = ref<boolean>(false)
 const formState = reactive<{
   partner: { name: string | undefined, certify: boolean | undefined },
   passcode: string | undefined,
@@ -70,20 +72,18 @@ async function handleEmailOption () {
       // @ts-expect-error - toOrgId has to be null, as this is a bug on the backend
       toOrgId: null
     }
-    throw new Error('test error')
-    await $authApi('/affiliationInvitations', {
-      method: 'POST',
-      body: payload
-    })
-    // TODO: show success state matching dialog below
-    // authorizationRequestSentDialog.value?.open()
+    // await $authApi('/affiliationInvitations', {
+    //   method: 'POST',
+    //   body: payload
+    // })
+    emit('emailSuccess')
   } catch (error) {
     const e = error as FetchError
     emit('businessError', { error: e, type: 'email' })
   }
 }
 
-const handleDelegationOption = async () => {
+async function handleDelegationOption () {
   try {
     const payload = {
       fromOrgId: Number(accountStore.currentAccount.id),
@@ -92,13 +92,14 @@ const handleDelegationOption = async () => {
       type: 'REQUEST',
       additionalMessage: formState.delegation.message
     }
-    throw new Error('test error')
-    await $authApi('/affiliationInvitations', {
-      method: 'POST',
-      body: payload
-    })
-    // TODO: show success state matching dialog below
-    // invitationRequestSentDialog.value?.open()
+    // await $authApi('/affiliationInvitations', {
+    //   method: 'POST',
+    //   body: payload
+    // })
+
+    toast.add({ title: 'Confirmation email sent, pending authorization.' }) // add success toast
+    await affStore.loadAffiliations() // update table with new affilitations
+    brdModal.close() // close modal
   } catch (error) {
     const e = error as FetchError
     emit('businessError', { error: e, type: 'delegation' })
@@ -110,7 +111,7 @@ async function submitManageRequest () {
     noOptionAlert.value = true
     return
   }
-
+  loading.value = true
   // await handleRemoveExistingAffiliationInvitation() // TODO: implement ???
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
     console.log('submit email option')
@@ -136,12 +137,15 @@ async function submitManageRequest () {
       // })
 
       // let parent know that add was successful
-      emit('addSuccess', props.identifier)
+      toast.add({ title: `${props.identifier} was successfully added to your table.` }) // add success toast
+      await affStore.loadAffiliations() // update table with new affilitations
+      brdModal.close() // close modal
     } catch (error) {
       const e = error as FetchError
       emit('businessError', { error: e, type: 'other' })
     }
   }
+  loading.value = false
 }
 
 const passcodeVals = computed(() => {
@@ -199,7 +203,7 @@ const formSchema = computed(() => {
     })
   }
 
-  // Return an empty schema if no option is open (or not yet selected)
+  // Return an empty schema if no option is open
   return z.object({})
 })
 
@@ -373,6 +377,7 @@ const delegationLabel = computed(() => {
       <UButton
         label="Manage This Business"
         type="submit"
+        :loading
       />
     </div>
   </UForm>
