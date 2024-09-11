@@ -72,10 +72,12 @@ async function handleEmailOption () {
       // @ts-expect-error - toOrgId has to be null, as this is a bug on the backend
       toOrgId: null
     }
-    // await $authApi('/affiliationInvitations', {
-    //   method: 'POST',
-    //   body: payload
-    // })
+
+    await $authApi('/affiliationInvitations', {
+      method: 'POST',
+      body: payload
+    })
+
     emit('emailSuccess')
   } catch (error) {
     const e = error as FetchError
@@ -92,10 +94,11 @@ async function handleDelegationOption () {
       type: 'REQUEST',
       additionalMessage: formState.delegation.message
     }
-    // await $authApi('/affiliationInvitations', {
-    //   method: 'POST',
-    //   body: payload
-    // })
+
+    await $authApi('/affiliationInvitations', {
+      method: 'POST',
+      body: payload
+    })
 
     toast.add({ title: 'Confirmation email sent, pending authorization.' }) // add success toast
     await affStore.loadAffiliations() // update table with new affilitations
@@ -112,16 +115,12 @@ async function submitManageRequest () {
     return
   }
   loading.value = true
-  // await handleRemoveExistingAffiliationInvitation() // TODO: implement ???
+  // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
-    console.log('submit email option')
     await handleEmailOption()
   } else if (openAuthOption.value.slot === 'delagation-option') { // try submitting delegation option
-    console.log('submit delagation option')
     await handleDelegationOption()
   } else { // handle passcode or firm option
-    console.log(' handle other options')
-    // Adding business to the list
     try {
       const payload: LoginPayload = {
         businessIdentifier: props.identifier,
@@ -129,12 +128,7 @@ async function submitManageRequest () {
         passCode: openAuthOption.value.slot === 'firm-option' ? formState.partner.name : formState.passcode
       }
 
-      console.log(payload)
-
-      // await $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations`, {
-      //   method: 'POST',
-      //   body: payload
-      // })
+      await affStore.createAffiliation(payload)
 
       // let parent know that add was successful
       toast.add({ title: `${props.identifier} was successfully added to your table.` }) // add success toast

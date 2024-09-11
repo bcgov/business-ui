@@ -68,7 +68,6 @@ const validate = (state: NRSchema): FormError[] => {
   } else if (state.phone && state.email) { // show alert and error text if both fields populated and both are invalid
     if (!phoneValid && !emailValid) {
       alertText.value = t('form.manageNR.fields.alert.bothInvalid')
-      ariaAlertText.value = t('form.manageNR.fields.alert.bothInvalid')
       setScreenReaderAlert(t('form.manageNR.fields.alert.bothInvalid'))
       errors.push({ path: 'phone', message: t('form.manageNR.fields.phone.error.invalid') })
       errors.push({ path: 'email', message: t('form.manageNR.fields.email.error.invalid') })

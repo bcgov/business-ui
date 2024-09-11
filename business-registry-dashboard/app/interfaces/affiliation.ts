@@ -3,8 +3,8 @@ import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-component
 
 export interface CreateAffiliationRequestBody {
   businessIdentifier: string
-  certifiedByName: string
-  passCode: string
+  certifiedByName?: string
+  passCode?: string
 }
 
 export interface CreateNRAffiliationRequestBody {

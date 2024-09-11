@@ -2,7 +2,6 @@
 import type { AccordionItem } from '#ui/types'
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
-const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 // const { t } = useI18n()
 const { $authApi } = useNuxtApp()
@@ -16,28 +15,16 @@ const hasBusinessAuthentication = ref(false)
 const contactEmail = ref('')
 const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
 
-const isBusinessLegalTypeFirm = computed(() => {
-  return props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP
-})
-
-const isBusinessLegalTypeCorporation = computed(() => {
-  return props.business.legalType === CorpTypes.BC_COMPANY
-})
-
-const isBusinessLegalTypeBenefit = computed(() => {
-  return props.business.legalType === CorpTypes.BENEFIT_COMPANY
-})
-
-const isBusinessLegalTypeCoOp = computed(() => {
-  return props.business.legalType === CorpTypes.COOP
-})
-
-const isBusinessLegalTypeCorporationOrBenefitOrCoop = computed(() => {
-  return (isBusinessLegalTypeCorporation.value || isBusinessLegalTypeBenefit.value || isBusinessLegalTypeCoOp.value) && contactEmail.value !== ''
-})
+const businessDetails = computed(() => ({
+  isFirm: props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP,
+  isCorporation: props.business.legalType === CorpTypes.BC_COMPANY,
+  isBenefit: props.business.legalType === CorpTypes.BENEFIT_COMPANY,
+  isCorpOrBenOrCoop: (props.business.legalType === CorpTypes.BC_COMPANY || props.business.legalType === CorpTypes.BENEFIT_COMPANY || props.business.legalType === CorpTypes.COOP) && contactEmail.value !== '',
+  isCoop: props.business.identifier.toUpperCase().startsWith('CP')
+}))
 
 const showEmailOption = computed(() => {
-  return (isBusinessLegalTypeCorporationOrBenefitOrCoop.value || isBusinessLegalTypeFirm.value) && contactEmail.value !== ''
+  return (businessDetails.value.isCorpOrBenOrCoop || businessDetails.value.isFirm) && contactEmail.value !== ''
 })
 
 const enableDelegationFeature = computed(() => {
@@ -48,21 +35,17 @@ const enableDelegationFeature = computed(() => {
 const showPasscodeOption = computed(() => {
   // const allowableBusinessPasscodeTypes: string = LaunchDarklyService.getFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP' // TODO: implememnt after adding launch darkly
   const allowableBusinessPasscodeTypes: string = 'BC,SP,GP'
-  return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !isBusinessLegalTypeFirm.value
-})
-
-const isCooperative = computed(() => {
-  return props.business.identifier.toUpperCase().startsWith('CP')
+  return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !businessDetails.value.isFirm
 })
 
 const passwordText = computed(() => {
-  return (isCooperative.value || isBusinessLegalTypeBenefit.value ? 'passcode' : 'password')
+  return (businessDetails.value.isCoop || businessDetails.value.isBenefit ? 'passcode' : 'password')
 })
 
 const computedAddressType = computed(() => {
-  if (isBusinessLegalTypeCorporationOrBenefitOrCoop.value) {
+  if (businessDetails.value.isCorpOrBenOrCoop) {
     return 'registered office'
-  } else if (isBusinessLegalTypeFirm.value) {
+  } else if (businessDetails.value.isFirm) {
     return 'business'
   } else {
     return ''
@@ -79,7 +62,7 @@ const authOptions = computed<AccordionItem[]>(() => {
     })
   }
 
-  if (isBusinessLegalTypeFirm.value) {
+  if (businessDetails.value.isFirm) {
     options.push({
       label: 'Use the name of a proprietor or partner',
       slot: 'firm-option'
@@ -104,42 +87,40 @@ const authOptions = computed<AccordionItem[]>(() => {
 })
 
 onMounted(async () => {
-  if (!affStore.isStaffOrSbcStaff) { // only try accessing if not staff - this might not be necessary but will need to look into it
-    // try loading contact info
-    try {
-      const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
-      contactEmail.value = response.email
-    } catch (error) {
-      const e = error as FetchError
-      if (e.response?.status !== StatusCodes.NOT_FOUND) {
-        console.error(e.response)
-      }
-    }
-
-    // try loading affiliated accounts
-    try {
-      const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
-      affiliatedAccounts.value = response.orgsDetails
-    } catch (error) {
-      const e = error as FetchError
+  // try loading contact info
+  try {
+    const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
+    contactEmail.value = response.email
+  } catch (error) {
+    const e = error as FetchError
+    if (e.response?.status !== StatusCodes.NOT_FOUND) {
       console.error(e.response)
     }
-
-    // try loading business passcode
-    try {
-      const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
-      hasBusinessAuthentication.value = response.hasValidPassCode
-    } catch (error) {
-      const e = error as FetchError
-      hasBusinessAuthentication.value = false
-      if (e.response?.status !== StatusCodes.NOT_FOUND) {
-        console.error(e.response)
-      }
-    }
-    setTimeout(() => {
-      loading.value = false
-    }, 300)
   }
+
+  // try loading affiliated accounts
+  try {
+    const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
+    affiliatedAccounts.value = response.orgsDetails
+  } catch (error) {
+    const e = error as FetchError
+    console.error(e.response)
+  }
+
+  // try loading business passcode
+  try {
+    const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
+    hasBusinessAuthentication.value = response.hasValidPassCode
+  } catch (error) {
+    const e = error as FetchError
+    hasBusinessAuthentication.value = false
+    if (e.response?.status !== StatusCodes.NOT_FOUND) {
+      console.error(e.response)
+    }
+  }
+  setTimeout(() => { // give enough time for computed options to update before removing loading state
+    loading.value = false
+  }, 300)
 })
 </script>
 <template>
