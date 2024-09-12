@@ -1,19 +1,32 @@
 <script setup lang="ts">
 import type { AccordionItem } from '#ui/types'
 import { z } from 'zod'
+import { manageBusinessDetails } from '~/utils/injection-keys'
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
 const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
 const toast = useToast()
+const { t } = useI18n()
+
+const test = inject(manageBusinessDetails)
+watchEffect(() => console.log(test?.value))
 
 const props = defineProps<{
   authOptions: AccordionItem[]
-  addressType: string
   contactEmail: string
   identifier: string
   accounts: Array<{branchName: string, name: string, uuid: string }>
+  businessDetails: {
+    isFirm: boolean
+    isCorporation: boolean
+    isBenefit: boolean
+    isCorpOrBenOrCoop: boolean
+    isCoop: boolean
+    name: string
+    identifier: string
+  }
 }>()
 
 const emit = defineEmits<{
@@ -51,18 +64,61 @@ const openAuthOption = computed<AccordionItem | null>(() => {
   }
 })
 
-watch(openAuthOption, () => {
-  noOptionAlert.value = false // reset no option alert if open option changes
-  formRef.value?.clear() // clear form errors if open option changes
+const formSchema = computed(() => {
+  const openOption = openAuthOption.value?.slot // open accordian
 
-  // reset form state if open option changes
-  formState.passcode = undefined
-  formState.delegation.message = undefined
-  formState.delegation.account = undefined
-  formState.partner.name = undefined
-  formState.partner.certify = undefined
+  if (openOption === 'passcode-option') { // return passcode schema if passcode is the open option
+    return z.object({
+      passcode: props.businessDetails.isCoop
+        ? z.string({ required_error: t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.required') })
+          .length(9, t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.length'))
+          .refine(val => /^\d+$/.test(val), t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.type'))
+        : z.string({ required_error: t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.required') })
+          .min(8, t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
+          .max(15, t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
+    })
+  }
+
+  if (openOption === 'firm-option') {
+    return z.object({
+      partner: z.object({
+        name: z.string({ required_error: t('form.manageBusiness.authOption.firm.fields.name.error.required') })
+          .max(150, t('form.manageBusiness.authOption.firm.fields.name.error.max')),
+        certify: z.boolean({ required_error: t('form.manageBusiness.authOption.firm.fields.certify.error') }).refine(val => val === true)
+      })
+    })
+  }
+
+  if (openOption === 'delegation-option') {
+    return z.object({
+      delegation: z.object({
+        account: z.any().refine(
+          obj => obj !== undefined,
+          { message: t('form.manageBusiness.authOption.delegation.fields.account.error.required') }
+        ),
+        message: z.string().optional()
+      })
+    })
+  }
+
+  // Return an empty schema if no option is open
+  return z.object({})
 })
 
+const delegationLabel = computed(() => {
+  const account = formState.delegation.account
+
+  if (account?.name !== undefined) {
+    if (account.branchName) {
+      return `${account.name} - ${account.branchName}`
+    }
+    return account.name
+  } else {
+    return t('form.manageBusiness.authOption.delegation.fields.account.placeholder')
+  }
+})
+
+// TODO: move to store
 async function handleEmailOption () {
   // Sending authorization email
   try {
@@ -85,6 +141,7 @@ async function handleEmailOption () {
   }
 }
 
+// TODO: move to store
 async function handleDelegationOption () {
   try {
     const payload = {
@@ -100,7 +157,7 @@ async function handleDelegationOption () {
       body: payload
     })
 
-    toast.add({ title: 'Confirmation email sent, pending authorization.' }) // add success toast
+    toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
     await affStore.loadAffiliations() // update table with new affilitations
     brdModal.close() // close modal
   } catch (error) {
@@ -109,6 +166,7 @@ async function handleDelegationOption () {
   }
 }
 
+// TODO: move to store
 async function submitManageRequest () {
   if (!openAuthOption.value) {
     noOptionAlert.value = true
@@ -118,7 +176,7 @@ async function submitManageRequest () {
   // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
     await handleEmailOption()
-  } else if (openAuthOption.value.slot === 'delagation-option') { // try submitting delegation option
+  } else if (openAuthOption.value.slot === 'delegation-option') { // try submitting delegation option
     await handleDelegationOption()
   } else { // handle passcode or firm option
     try {
@@ -130,8 +188,7 @@ async function submitManageRequest () {
 
       await affStore.createAffiliation(payload)
 
-      // let parent know that add was successful
-      toast.add({ title: `${props.identifier} was successfully added to your table.` }) // add success toast
+      toast.add({ title: t('form.manageBusiness.toast.success', { identifier: props.identifier }) }) // add success toast
       await affStore.loadAffiliations() // update table with new affilitations
       brdModal.close() // close modal
     } catch (error) {
@@ -142,76 +199,16 @@ async function submitManageRequest () {
   loading.value = false
 }
 
-const passcodeVals = computed(() => {
-  let label: string
-  let help: string
-  let maxlength: number
+watch(openAuthOption, () => {
+  noOptionAlert.value = false // reset no option alert if open option changes
+  formRef.value?.clear() // clear form errors if open option changes
 
-  if (props.identifier.toUpperCase().startsWith('CP')) {
-    label = 'Passcode'
-    help = 'Passcode must be exactly 9 digits'
-    maxlength = 9
-  } else {
-    label = 'Password'
-    help = 'Password must be 8 to 15 characters'
-    maxlength = 15
-  }
-
-  return { label, help, maxlength }
-})
-
-const formSchema = computed(() => {
-  const openOption = openAuthOption.value?.slot // open accordian
-
-  if (openOption === 'passcode-option') { // return passcode schema if passcode is the open option
-    return z.object({
-      passcode: props.identifier.toUpperCase().startsWith('CP')
-        ? z.string({ required_error: 'Passcode is required, enter the passcode you have setup in Corporate Online' })
-          .length(9, 'Passcode must be exactly 9 digits')
-          .refine(val => /^\d+$/.test(val), 'Passcode must be numeric')
-        : z.string({ required_error: 'Password is required' })
-          .min(8, 'Password must be 8 to 15 characters')
-          .max(15, 'Password must be 8 to 15 characters')
-    })
-  }
-
-  if (openOption === 'firm-option') {
-    return z.object({
-      partner: z.object({
-        name: z.string({ required_error: 'Proprietor or Partner Name is required' })
-          .max(150, 'Maximum 150 characters'),
-        certify: z.boolean({ required_error: 'Please certify in order to continue' }).refine(val => val === true)
-      })
-    })
-  }
-
-  if (openOption === 'delagation-option') {
-    return z.object({
-      delegation: z.object({
-        account: z.any().refine(
-          obj => obj !== undefined,
-          { message: 'Please select an account to proceed' }
-        ),
-        message: z.string().optional()
-      })
-    })
-  }
-
-  // Return an empty schema if no option is open
-  return z.object({})
-})
-
-const delegationLabel = computed(() => {
-  const account = formState.delegation.account as unknown as { name: string, branchName?: string, uuid: string }
-
-  if (account?.name !== undefined) {
-    if (account.branchName) {
-      return `${account.name} - ${account.branchName}`
-    }
-    return account.name
-  } else {
-    return 'Select an account below'
-  }
+  // reset form state if open option changes
+  formState.passcode = undefined
+  formState.delegation.message = undefined
+  formState.delegation.account = undefined
+  formState.partner.name = undefined
+  formState.partner.certify = undefined
 })
 </script>
 <template>
@@ -223,143 +220,148 @@ const delegationLabel = computed(() => {
     @submit="submitManageRequest"
     @error="handleFormErrorEvent"
   >
-    <p>You must be authorized to manage this business. You can be authorized in one of the following ways:</p>
+    <fieldset class="space-y-4">
+      <legend>{{ $t('form.manageBusiness.legend') }}</legend>
 
-    <UAccordion
-      ref="accordianRef"
-      :items="authOptions"
-      :ui="{
-        wrapper: 'w-full flex flex-col divide-y divide-gray-300 border-y border-gray-300',
-        default: {
-          class: 'mb-0 py-4 w-full rounded-none'
-        }
-      }"
-    >
-      <!-- passcode option slot -->
-      <template #passcode-option>
-        <UFormGroup :help="passcodeVals.help" name="passcode">
-          <UInput
-            v-model="formState.passcode"
-            :placeholder="passcodeVals.label"
-            aria-label="Enter the Business Password"
-            :variant="handleFormInputVariant('passcode', formRef?.errors)"
-            :maxlength="passcodeVals.maxlength"
-          />
-        </UFormGroup>
-      </template>
-
-      <!-- firm option slot -->
-      <template #firm-option>
-        <div class="space-y-4 pb-4">
+      <UAccordion
+        ref="accordianRef"
+        :items="authOptions"
+        :ui="{
+          wrapper: 'w-full flex flex-col divide-y divide-gray-300 border-y border-gray-300',
+          default: {
+            class: 'mb-0 py-4 w-full rounded-none'
+          }
+        }"
+      >
+        <!-- passcode option slot -->
+        <template #passcode-option>
           <UFormGroup
-            name="partner.name"
-            help="Name as it appears on the Business Summary or the Statement of Registration"
+            :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
+            name="passcode"
           >
             <UInput
-              v-model="formState.partner.name"
-              placeholder="Propietor or Partner Name (e.g., Last Name, First Name Middlename)"
-              aria-label="Propietor or Partner Name (e.g., Last Name, First Name Middlename)"
-              :variant="handleFormInputVariant('partner.name', formRef?.errors)"
+              v-model="formState.passcode"
+              :placeholder="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default')"
+              :aria-label="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default')"
+              :variant="handleFormInputVariant('passcode', formRef?.errors)"
+              :maxlength="businessDetails.isCoop ? 9 : 15"
             />
           </UFormGroup>
+        </template>
 
-          <UFormGroup name="partner.certify">
-            <UCheckbox v-model="formState.partner.certify">
-              <template #label>
-                <span
-                  class="text-sm"
-                  :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-darkGray'"
-                >
-                  <strong>{{ `${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}` }}</strong> certifies that
-                  they have relevant knowledge of the registered entity and is authorized to act
-                  on behalf of this business.
-                </span>
-              </template>
-            </UCheckbox>
-          </UFormGroup>
-        </div>
-      </template>
-
-      <!-- email option slot -->
-      <template #email-option>
-        <div>
-          <div>
-            An email will be sent to the {{ addressType }} contact email of the business:
-          </div>
-          <div><b>{{ contactEmail }}</b></div>
-          <div class="mb-4 mr-1 mt-1">
-            To confirm your access, please click on the link in the email. This will add the business to your
-            Business Registry List. The link is valid for 15 minutes.
-          </div>
-        </div>
-      </template>
-
-      <!-- delagation option slot -->
-      <template #delagation-option>
-        <div class="-mt-4 space-y-4 pb-6">
-          <UFormGroup
-            name="delegation.account"
-            label="Select an account:"
-            :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
-          >
-            <USelectMenu
-              v-model="formState.delegation.account"
-              :options="accounts"
-              :aria-label="'some aria label'"
-              option-attribute="name"
-              :ui="{
-                trigger: 'flex items-center w-full h-[42px]'
-              }"
+        <!-- firm option slot -->
+        <template #firm-option>
+          <div class="space-y-4 pb-4">
+            <UFormGroup
+              name="partner.name"
+              :help="$t('form.manageBusiness.authOption.firm.fields.name.help')"
             >
-              <template #default="{ open }">
-                <UButton
-                  variant="select_menu_trigger"
-                  class="flex-1 justify-between text-gray-700"
-                  aria-label="aria label here"
-                >
-                  {{ delegationLabel }}
+              <UInput
+                v-model="formState.partner.name"
+                :placeholder="$t('form.manageBusiness.authOption.firm.fields.name.placeholder')"
+                :aria-label="$t('form.manageBusiness.authOption.firm.fields.name.arialabel')"
+                :variant="handleFormInputVariant('partner.name', formRef?.errors)"
+              />
+            </UFormGroup>
 
-                  <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-                </UButton>
-              </template>
-              <template #option="{ option }">
-                <span v-if="option.branchName">
-                  {{ option.name }} - {{ option.branchName }}
-                </span>
-                <span v-else>
-                  {{ option.name }}
-                </span>
-              </template>
-            </USelectMenu>
-          </UFormGroup>
+            <UFormGroup name="partner.certify">
+              <UCheckbox v-model="formState.partner.certify">
+                <template #label>
+                  <span
+                    class="text-sm"
+                    :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-darkGray'"
+                  >
+                    <SbcI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                  </span>
+                </template>
+              </UCheckbox>
+            </UFormGroup>
+          </div>
+        </template>
 
-          <UFormGroup
-            name="delegation.message"
-            label="You can add a message that will be included as part of your authorization request."
-            :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
-          >
-            <UTextarea
-              v-model.trim="formState.delegation.message"
-              placeholder="Request access additional message"
-              :ui="{
-                placeholder: 'placeholder-gray-700',
-                color: {
-                  white: {
-                    outline: 'shadow-sm bg-gray-100 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
-                  }}
-              }"
-            />
-          </UFormGroup>
-        </div>
-      </template>
-    </UAccordion>
+        <!-- email option slot -->
+        <template #email-option>
+          <div>
+            <div>
+              {{ businessDetails.isCorpOrBenOrCoop
+                ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
+                : businessDetails.isFirm
+                  ? $t('form.manageBusiness.authOption.email.sentTo.firm')
+                  : $t('form.manageBusiness.authOption.email.sentTo.default') }}
+            </div>
+            <div><b>{{ contactEmail }}</b></div>
+            <div class="mb-4 mr-1 mt-1">
+              {{ $t('form.manageBusiness.authOption.email.instructions') }}
+            </div>
+          </div>
+        </template>
+
+        <!-- delegation option slot -->
+        <template #delegation-option>
+          <div class="-mt-4 space-y-4 pb-6">
+            <UFormGroup
+              name="delegation.account"
+              :label="t('form.manageBusiness.authOption.delegation.fields.account.label')"
+              :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
+            >
+              <USelectMenu
+                v-model="formState.delegation.account"
+                :options="accounts"
+                option-attribute="name"
+                :ui="{
+                  trigger: 'flex items-center w-full h-[42px]'
+                }"
+              >
+                <template #default="{ open }">
+                  <UButton
+                    variant="select_menu_trigger"
+                    class="flex-1 justify-between text-gray-700"
+                    :aria-label="t('form.manageBusiness.authOption.delegation.fields.account.arialabel', { account: formState.delegation.account?.name ?? $t('words.none') })"
+                  >
+                    {{ delegationLabel }}
+
+                    <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+                  </UButton>
+                </template>
+                <template #option="{ option }">
+                  <span v-if="option.branchName">
+                    {{ option.name }} - {{ option.branchName }}
+                  </span>
+                  <span v-else>
+                    {{ option.name }}
+                  </span>
+                </template>
+              </USelectMenu>
+            </UFormGroup>
+
+            <UFormGroup
+              name="delegation.message"
+              :label="$t('form.manageBusiness.authOption.delegation.fields.message.label')"
+              :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
+            >
+              <UTextarea
+                v-model.trim="formState.delegation.message"
+                :placeholder="$t('form.manageBusiness.authOption.delegation.fields.message.placeholder')"
+                :ui="{
+                  placeholder: 'placeholder-gray-700',
+                  color: {
+                    white: {
+                      outline: 'shadow-sm bg-gray-100 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
+                    }}
+                }"
+              />
+            </UFormGroup>
+          </div>
+        </template>
+      </UAccordion>
+    </fieldset>
 
     <UAlert
       v-if="noOptionAlert"
       icon="i-mdi-alert"
       color="red"
       variant="error"
-      description="Please select an option from the list above"
+      :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
     <div class="ml-auto flex justify-end gap-2">
@@ -369,7 +371,7 @@ const delegationLabel = computed(() => {
         @click="brdModal.close()"
       />
       <UButton
-        label="Manage This Business"
+        :label="$t('form.manageBusiness.submitBtn')"
         type="submit"
         :loading
       />

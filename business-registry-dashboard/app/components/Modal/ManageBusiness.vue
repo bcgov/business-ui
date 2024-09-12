@@ -2,8 +2,9 @@
 import type { AccordionItem } from '#ui/types'
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
+import { manageBusinessDetails } from '~/utils/injection-keys'
 const brdModal = useBrdModals()
-// const { t } = useI18n()
+const { t } = useI18n()
 const { $authApi } = useNuxtApp()
 
 const props = defineProps<{
@@ -20,8 +21,12 @@ const businessDetails = computed(() => ({
   isCorporation: props.business.legalType === CorpTypes.BC_COMPANY,
   isBenefit: props.business.legalType === CorpTypes.BENEFIT_COMPANY,
   isCorpOrBenOrCoop: (props.business.legalType === CorpTypes.BC_COMPANY || props.business.legalType === CorpTypes.BENEFIT_COMPANY || props.business.legalType === CorpTypes.COOP) && contactEmail.value !== '',
-  isCoop: props.business.identifier.toUpperCase().startsWith('CP')
+  isCoop: props.business.identifier.toUpperCase().startsWith('CP'),
+  name: props.business.name,
+  identifier: props.business.identifier
 }))
+
+provide(manageBusinessDetails, businessDetails)
 
 const showEmailOption = computed(() => {
   return (businessDetails.value.isCorpOrBenOrCoop || businessDetails.value.isFirm) && contactEmail.value !== ''
@@ -38,48 +43,40 @@ const showPasscodeOption = computed(() => {
   return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !businessDetails.value.isFirm
 })
 
-const passwordText = computed(() => {
-  return (businessDetails.value.isCoop || businessDetails.value.isBenefit ? 'passcode' : 'password')
-})
-
-const computedAddressType = computed(() => {
-  if (businessDetails.value.isCorpOrBenOrCoop) {
-    return 'registered office'
-  } else if (businessDetails.value.isFirm) {
-    return 'business'
-  } else {
-    return ''
-  }
-})
-
 const authOptions = computed<AccordionItem[]>(() => {
   const options: AccordionItem[] = []
 
   if (showPasscodeOption.value) {
     options.push({
-      label: `Use the business ${passwordText.value}`,
+      label: (businessDetails.value.isCoop || businessDetails.value.isBenefit)
+        ? t('form.manageBusiness.authOption.passcode.accordianLabel.coopOrBen')
+        : t('form.manageBusiness.authOption.passcode.accordianLabel.default'),
       slot: 'passcode-option'
     })
   }
 
   if (businessDetails.value.isFirm) {
     options.push({
-      label: 'Use the name of a proprietor or partner',
+      label: t('form.manageBusiness.authOption.firm.accordianLabel.default'),
       slot: 'firm-option'
     })
   }
 
   if (showEmailOption.value) {
     options.push({
-      label: `Confirm authorization using your ${computedAddressType.value} email address`,
+      label: businessDetails.value.isCorpOrBenOrCoop
+        ? t('form.manageBusiness.authOption.email.accordianLabel.corpOrBenOrCoop')
+        : businessDetails.value.isFirm
+          ? t('form.manageBusiness.authOption.email.accordianLabel.firm')
+          : t('form.manageBusiness.authOption.email.accordianLabel.default'),
       slot: 'email-option'
     })
   }
 
   if (affiliatedAccounts.value.length > 0 && enableDelegationFeature.value) {
     options.push({
-      label: 'Request authorization from an account currently managing the business',
-      slot: 'delagation-option'
+      label: t('form.manageBusiness.authOption.delegation.accordianLabel.default'),
+      slot: 'delegation-option'
     })
   }
 
@@ -124,14 +121,14 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <ModalBase title="Manage a B.C. Business">
+  <ModalBase :title="$t('form.manageBusiness.heading')">
     <div class="flex flex-col gap-4 md:w-[700px]">
-      <ul class="-mt-8 flex-col gap-2 font-semibold text-bcGovColor-darkGray">
+      <ul class="-mt-8 flex-col gap-2">
         <li>
-          <span>Business Name: <span class="font-normal text-bcGovColor-midGray">{{ business.name }}</span></span>
+          <SbcI18nBold translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <span>Incorporation Number: <span class="font-normal text-bcGovColor-midGray">{{ business.identifier }}</span></span>
+          <SbcI18nBold translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
         </li>
       </ul>
 
@@ -143,9 +140,11 @@ onMounted(async () => {
         v-else-if="authOptions.length === 0"
         class="flex flex-col gap-4"
       >
-        <p>Some required information for this business is missing.</p>
-        <p>The business doesn't have a password / passcode or email on record. Please contact us for help:</p>
+        <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p>
+        <p>{{ $t('form.manageBusiness.missingInfo.p2') }}</p>
+
         <BCRegContactInfo />
+
         <UButton
           :label="$t('btn.close')"
           class="ml-auto"
@@ -156,10 +155,10 @@ onMounted(async () => {
       <FormAddBusiness
         v-else
         :auth-options="authOptions"
-        :address-type="computedAddressType"
         :contact-email="contactEmail"
         :identifier="business.identifier"
         :accounts="affiliatedAccounts"
+        :business-details="businessDetails"
       />
     </div>
   </ModalBase>

@@ -223,6 +223,152 @@ export default {
         }
       },
       successToast: '{nrNum} was successfully added to your table.'
+    },
+    manageBusiness: {
+      heading: 'Manage a B.C. Business',
+      businessName: '{boldStart}Business Name:{boldEnd} {name}',
+      businessNumber: '{boldStart}Incorporation Number:{boldEnd} {number}',
+      missingInfo: {
+        p1: 'Some required information for this business is missing.',
+        p2: "The business doesn't have a password / passcode or email on record. Please contact us for help:"
+      },
+      legend: 'You must be authorized to manage this business. You can be authorized in one of the following ways:',
+      authOption: {
+        passcode: {
+          accordianLabel: {
+            default: 'Use the business password',
+            coopOrBen: 'Use the business passcode'
+          },
+          fields: {
+            passcode: {
+              arialabel: {
+                coop: 'Enter the business passcode',
+                default: 'Enter the business password'
+              },
+              placeholder: {
+                coop: 'Passcode',
+                default: 'Password'
+              },
+              help: {
+                coop: 'Passcode must be exactly 9 digits',
+                default: 'Password must be 8 to 15 characters'
+              },
+              error: {
+                coop: {
+                  required: 'Passcode is required, enter the passcode you have setup in Corporate Online',
+                  length: 'Passcode must be exactly 9 digits',
+                  type: 'Passcode must be numeric'
+                },
+                default: {
+                  required: 'Password is required',
+                  length: 'Password must be 8 to 15 characters'
+                }
+              }
+            }
+          }
+        },
+        firm: {
+          accordianLabel: {
+            default: 'Use the name of a proprietor or partner'
+          },
+          fields: {
+            name: {
+              arialabel: 'Propietor or Partner Name (e.g., Last Name, First Name Middlename)',
+              placeholder: 'Propietor or Partner Name (e.g., Last Name, First Name Middlename)',
+              help: 'Name as it appears on the Business Summary or the Statement of Registration',
+              error: {
+                required: 'Proprietor or Partner Name is required',
+                max: 'Maximum 150 characters'
+              }
+            },
+            certify: {
+              label: '{boldStart}{name}{boldEnd} certifies that they have relevant knowledge of the registered entity and is authorized to act on behalf of this business.',
+              error: 'Please certify in order to continue'
+            }
+          }
+        },
+        email: {
+          accordianLabel: {
+            default: 'Confirm authorization using your email address',
+            firm: 'Confirm authorization using your business email address',
+            corpOrBenOrCoop: "Confirm authorization using your registered office email address (If you forgot or don't have a business passcode)"
+          },
+          sentTo: {
+            default: 'An email will be sent to the contact email of the business:',
+            firm: 'An email will be sent to the business contact email of the business:',
+            corpOrBenOrCoop: 'An email will be sent to the registered office contact email of the business:'
+          },
+          instructions: 'To confirm your access, please click on the link in the email. This will add the business to your Business Registry List. The link is valid for 15 minutes.'
+        },
+        delegation: {
+          accordianLabel: {
+            default: 'Request authorization from an account currently managing the business'
+          },
+          fields: {
+            account: {
+              label: 'Select an account:',
+              placeholder: 'Select an account',
+              arialabel: 'Select an account: current selection, {account}',
+              error: {
+                required: 'Please select an account to proceed'
+              }
+            },
+            message: {
+              label: 'You can add a message that will be included as part of your authorization request.',
+              placeholder: 'Request access additional message'
+            }
+          }
+        }
+      },
+      emailSent: {
+        heading: 'Authorization Email Sent',
+        p1: 'An email was sent to {boldStart}{email}{boldEnd}',
+        p2: 'Confirm your access by clicking the link inside. This will add the business to your Business Registry List. The link is valid for 15 minutes.'
+      },
+      toast: {
+        success: '{identifier} was successfully added to your table.',
+        emailSent: 'Confirmation email sent, pending authorization.'
+      },
+      error: {
+        email: {
+          title: 'Error Sending Authorization Email',
+          description: 'An error occurred sending authorization email. Please try again.'
+        },
+        delegation: {
+          title: 'Error creating authorization invitation request',
+          description: 'An error occurred creating authorization invitation. Please try again later.'
+        },
+        other: {
+          401: {
+            coop: {
+              title: 'Invalid Passcode',
+              description: 'Unable to add the business. The provided passcode is invalid.'
+            },
+            default: {
+              title: 'Invalid Password',
+              description: 'Unable to add the business. The provided password is invalid.'
+            }
+          },
+          404: {
+            title: 'Business Not Found',
+            description: 'The specified business was not found.'
+          },
+          400: {
+            title: 'Business Already Added',
+            description: 'The business {name} with the business number {identifier} is already in your Business Registry List.'
+          },
+          406: {
+            title: 'Passcode Already Claimed',
+            description: 'This passcode has already been claimed. If you have questions, please contact us'
+          },
+          default: {
+            title: 'Something Went Wrong',
+            description: 'An error occurred, please try again. If this error persists, please contact us.'
+          }
+        }
+      },
+      submitBtn: 'Manage this Business',
+      noOptionAlert: 'Please select an option from the list above'
     }
   },
   labels: {

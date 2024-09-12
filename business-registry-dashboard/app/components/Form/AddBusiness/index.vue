@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 import type { AccordionItem } from '#ui/types'
-import { FormAddBusinessBase, FormAddBusinessError, FormAddBusinessEmailAuthSent } from '#components' // FormAddBusinessHelp
+import { FormAddBusinessBase, FormAddBusinessError, FormAddBusinessEmailAuthSent } from '#components'
 
 defineProps<{
   authOptions: AccordionItem[]
-  addressType: string
   contactEmail: string
   identifier: string
   accounts: Array<{ branchName?: string, name: string, uuid: string }>
+  businessDetails: {
+    isFirm: boolean
+    isCorporation: boolean
+    isBenefit: boolean
+    isCorpOrBenOrCoop: boolean
+    isCoop: boolean
+  }
 }>()
 
 type Form = typeof FormAddBusinessBase
@@ -39,10 +45,10 @@ function handleError (e: { error: FetchError, type: string }) {
       :error-obj="errorObj"
       :success-obj="successObj"
       :auth-options="authOptions"
-      :address-type="addressType"
       :contact-email="contactEmail"
       :identifier
       :accounts
+      :business-details="businessDetails"
       @retry="currentState = 'FormAddBusinessBase'"
       @business-error="handleError"
       @email-success="currentState = 'FormAddBusinessEmailAuthSent'"

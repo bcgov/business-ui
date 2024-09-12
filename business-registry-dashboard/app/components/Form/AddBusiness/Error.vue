@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
-
-// const { t } = useI18n() // TODO: add translations
+const { t } = useI18n()
 const brdModal = useBrdModals()
 
 const props = defineProps<{
   errorObj: {error: FetchError, type: string}
+  businessDetails: {
+    isFirm: boolean
+    isCorporation: boolean
+    isBenefit: boolean
+    isCorpOrBenOrCoop: boolean
+    isCoop: boolean
+    name: string
+    identifier: string
+  }
 }>()
 
 defineEmits<{
   retry: [void]
 }>()
 
-const apiErrorMsg = computed<string | null>(() => props.errorObj.error?.data?.message ?? null)
+// const apiErrorMsg = computed<string | null>(() => props.errorObj.error?.data?.message ?? null) // TODO: do we want to include the error message from the backend?
 
 const ariaAlertText = ref('')
 const errorText = computed(() => {
@@ -22,32 +30,36 @@ const errorText = computed(() => {
   let description = ''
 
   if (props.errorObj.type === 'email') {
-    title = 'Error Sending Authorization Email'
-    description = 'An error occurred sending authorization email. Please try again.'
+    title = t('form.manageBusiness.error.email.title')
+    description = t('form.manageBusiness.error.email.description')
   }
 
   if (props.errorObj.type === 'delegation') {
-    title = 'Error creating authorization invitation request'
-    description = 'An error occurred creating authorization invitation. Please try again later.'
+    title = t('form.manageBusiness.error.delegation.title')
+    description = t('form.manageBusiness.error.delegation.description')
   }
 
   if (props.errorObj.type === 'other') {
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
-      // emit('add-failed-invalid-code', passcodeLabel.value)
-      title = 'Invalid LABEL HERE' // TODO: add label
-      description = 'Unable to add the business. The provided LABEL HERE is invalid.'
+      if (props.businessDetails.isCoop) {
+        title = t('form.manageBusiness.error.other.401.coop.title')
+        description = t('form.manageBusiness.error.other.401.coop.description')
+      } else {
+        title = t('form.manageBusiness.error.other.401.default.title')
+        description = t('form.manageBusiness.error.other.401.default.description')
+      }
     } else if (error.response?.status === StatusCodes.NOT_FOUND) {
-      title = 'Business Not Found'
-      description = 'The specified business was not found.'
+      title = t('form.manageBusiness.error.other.404.title')
+      description = t('form.manageBusiness.error.other.404.description')
     } else if (error.response?.status === StatusCodes.NOT_ACCEPTABLE) {
-      title = 'Passcode Already Claimed'
-      description = 'This passcode has already been claimed. If you have questions, please contact us' // TODO: add contact info to error modal
+      title = t('form.manageBusiness.error.other.406.title')
+      description = t('form.manageBusiness.error.other.406.description')
     } else if (error.response?.status === StatusCodes.BAD_REQUEST) {
-      title = 'Business Already Added'
-      description = 'The business BUSINESS NAME with the business number BUSINESS IDENTIFIER is already in your Business Registry List.' // TODO: add business name and identifier
+      title = t('form.manageBusiness.error.other.400.title')
+      description = t('form.manageBusiness.error.other.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
     } else {
-      title = 'Something Went Wrong'
-      description = 'An error occurred, please try again. If this error persists, please contact us.'
+      title = t('form.manageBusiness.error.other.default.title')
+      description = t('form.manageBusiness.error.other.default.description')
     }
   }
 
@@ -61,7 +73,8 @@ const setScreenReaderAlert = (message: string) => {
 
 onMounted(() => {
   setTimeout(() => {
-    setScreenReaderAlert(errorText.value.title + ' ' + apiErrorMsg.value + ' ' + errorText.value.description)
+    setScreenReaderAlert(errorText.value.title + ' ' + errorText.value.description)
+    // setScreenReaderAlert(errorText.value.title + ' ' + apiErrorMsg.value + ' ' + errorText.value.description)
   }, 1000)
 })
 </script>
@@ -71,9 +84,9 @@ onMounted(() => {
     <h2 class="text-xl font-semibold">
       {{ errorText.title }}
     </h2>
-    <p v-if="apiErrorMsg">
+    <!-- <p v-if="apiErrorMsg">
       {{ apiErrorMsg }}
-    </p>
+    </p> -->
     <p>{{ errorText.description }}</p>
     <BCRegContactInfo class="self-start text-left" />
     <div class="flex gap-2">
