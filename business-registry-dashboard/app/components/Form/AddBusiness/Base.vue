@@ -231,6 +231,7 @@ watch(openAuthOption, () => {
       >
         <!-- accordian button -->
         <template #default="{ item, open }">
+          <!-- TODO: add aria-describedby property to give instructions on using the given option??? -->
           <UButton variant="accordian_trigger">
             <span
               class="text-left"
@@ -372,6 +373,7 @@ watch(openAuthOption, () => {
       </UAccordion>
     </fieldset>
 
+    <!-- TODO: make this accessible? -->
     <UAlert
       v-if="noOptionAlert"
       icon="i-mdi-alert"
