@@ -230,8 +230,8 @@ watch(openAuthOption, () => {
         }"
       >
         <!-- accordian button -->
+        <!-- TODO: add aria-describedby property to give instructions on using the given option??? -->
         <template #default="{ item, open }">
-          <!-- TODO: add aria-describedby property to give instructions on using the given option??? -->
           <UButton variant="accordian_trigger">
             <span
               class="text-left"
