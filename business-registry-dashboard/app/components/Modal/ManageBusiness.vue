@@ -2,7 +2,6 @@
 import type { AccordionItem } from '#ui/types'
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
-import { manageBusinessDetails } from '~/utils/injection-keys'
 const brdModal = useBrdModals()
 const { t } = useI18n()
 const { $authApi } = useNuxtApp()
@@ -25,8 +24,6 @@ const businessDetails = computed(() => ({
   name: props.business.name,
   identifier: props.business.identifier
 }))
-
-provide(manageBusinessDetails, businessDetails)
 
 const showEmailOption = computed(() => {
   return (businessDetails.value.isCorpOrBenOrCoop || businessDetails.value.isFirm) && contactEmail.value !== ''

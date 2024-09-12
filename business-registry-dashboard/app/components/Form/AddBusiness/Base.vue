@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { AccordionItem } from '#ui/types'
 import { z } from 'zod'
-import { manageBusinessDetails } from '~/utils/injection-keys'
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
@@ -9,9 +8,6 @@ const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
 const toast = useToast()
 const { t } = useI18n()
-
-const test = inject(manageBusinessDetails)
-watchEffect(() => console.log(test?.value))
 
 const props = defineProps<{
   authOptions: AccordionItem[]

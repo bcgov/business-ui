@@ -213,6 +213,152 @@ export default {
         }
       },
       successToast: '{nrNum} a été ajouté avec succès à votre table.'
+    },
+    manageBusiness: {
+      heading: 'Gérer une entreprise de la Colombie-Britannique',
+      businessName: "{boldStart}Nom de l'entreprise:{boldEnd} {name}",
+      businessNumber: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
+      missingInfo: {
+        p1: 'Certaines informations requises pour cette entreprise sont manquantes.',
+        p2: "L'entreprise n'a pas de mot de passe / code d'accès ou d'adresse e-mail enregistrée. Veuillez nous contacter pour obtenir de l'aide :"
+      },
+      legend: "Vous devez être autorisé à gérer cette entreprise. Vous pouvez être autorisé de l'une des manières suivantes :",
+      authOption: {
+        passcode: {
+          accordianLabel: {
+            default: "Utiliser le mot de passe de l'entreprise",
+            coopOrBen: "Utiliser le code d'accès de l'entreprise"
+          },
+          fields: {
+            passcode: {
+              arialabel: {
+                coop: "Entrez le code d'accès de l'entreprise",
+                default: "Entrez le mot de passe de l'entreprise"
+              },
+              placeholder: {
+                coop: "Code d'accès",
+                default: 'Mot de passe'
+              },
+              help: {
+                coop: "Le code d'accès doit comporter exactement 9 chiffres",
+                default: 'Le mot de passe doit comporter entre 8 et 15 caractères'
+              },
+              error: {
+                coop: {
+                  required: "Le code d'accès est requis, entrez le code d'accès que vous avez configuré dans Corporate Online",
+                  length: "Le code d'accès doit comporter exactement 9 chiffres",
+                  type: "Le code d'accès doit être numérique"
+                },
+                default: {
+                  required: 'Le mot de passe est requis',
+                  length: 'Le mot de passe doit comporter entre 8 et 15 caractères'
+                }
+              }
+            }
+          }
+        },
+        firm: {
+          accordianLabel: {
+            default: "Utiliser le nom d'un propriétaire ou d'un partenaire"
+          },
+          fields: {
+            name: {
+              arialabel: 'Nom du propriétaire ou du partenaire (ex : Nom de famille, Prénom, Second prénom)',
+              placeholder: 'Nom du propriétaire ou du partenaire (ex : Nom de famille, Prénom, Second prénom)',
+              help: "Nom tel qu'il apparaît sur le résumé d'entreprise ou la déclaration d'enregistrement",
+              error: {
+                required: 'Le nom du propriétaire ou du partenaire est requis',
+                max: 'Maximum de 150 caractères'
+              }
+            },
+            certify: {
+              label: "{boldStart}{name}{boldEnd} certifie qu'il a une connaissance pertinente de l'entité enregistrée et est autorisé à agir au nom de cette entreprise.",
+              error: 'Veuillez certifier pour continuer'
+            }
+          }
+        },
+        email: {
+          accordianLabel: {
+            default: "Confirmer l'autorisation en utilisant votre adresse e-mail",
+            firm: "Confirmer l'autorisation en utilisant l'adresse e-mail de votre entreprise",
+            corpOrBenOrCoop: "Confirmer l'autorisation en utilisant l'adresse e-mail de votre bureau enregistré (si vous avez oublié ou n'avez pas de code d'accès)"
+          },
+          sentTo: {
+            default: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
+            firm: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
+            corpOrBenOrCoop: "Un e-mail sera envoyé à l'adresse e-mail de contact du bureau enregistré de l'entreprise :"
+          },
+          instructions: "Pour confirmer votre accès, cliquez sur le lien dans l'e-mail. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes."
+        },
+        delegation: {
+          accordianLabel: {
+            default: "Demander une autorisation à un compte qui gère actuellement l'entreprise"
+          },
+          fields: {
+            account: {
+              label: 'Sélectionner un compte :',
+              placeholder: 'Sélectionner un compte',
+              arialabel: 'Sélectionner un compte : sélection actuelle, {account}',
+              error: {
+                required: 'Veuillez sélectionner un compte pour continuer'
+              }
+            },
+            message: {
+              label: "Vous pouvez ajouter un message qui sera inclus dans votre demande d'autorisation.",
+              placeholder: "Message supplémentaire pour la demande d'accès"
+            }
+          }
+        }
+      },
+      emailSent: {
+        heading: "E-mail d'autorisation envoyé",
+        p1: 'Un e-mail a été envoyé à {boldStart}{email}{boldEnd}',
+        p2: "Confirmez votre accès en cliquant sur le lien à l'intérieur. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes."
+      },
+      toast: {
+        success: '{identifier} a été ajouté avec succès à votre tableau.',
+        emailSent: "E-mail de confirmation envoyé, en attente d'autorisation."
+      },
+      error: {
+        email: {
+          title: "Erreur lors de l'envoi de l'e-mail d'autorisation",
+          description: "Une erreur est survenue lors de l'envoi de l'e-mail d'autorisation. Veuillez réessayer."
+        },
+        delegation: {
+          title: "Erreur lors de la création de la demande d'invitation d'autorisation",
+          description: "Une erreur est survenue lors de la création de l'invitation d'autorisation. Veuillez réessayer plus tard."
+        },
+        other: {
+          401: {
+            coop: {
+              title: "Code d'accès invalide",
+              description: "Impossible d'ajouter l'entreprise. Le code d'accès fourni est invalide."
+            },
+            default: {
+              title: 'Mot de passe invalide',
+              description: "Impossible d'ajouter l'entreprise. Le mot de passe fourni est invalide."
+            }
+          },
+          404: {
+            title: 'Entreprise non trouvée',
+            description: "L'entreprise spécifiée n'a pas été trouvée."
+          },
+          400: {
+            title: 'Entreprise déjà ajoutée',
+            description: "L'entreprise {name} avec le numéro {identifier} est déjà dans votre liste de registres d'entreprises."
+          },
+          406: {
+            title: "Code d'accès déjà réclamé",
+            description: "Ce code d'accès a déjà été réclamé. Si vous avez des questions, veuillez nous contacter."
+          },
+          default: {
+            title: "Quelque chose s'est mal passé",
+            description: 'Une erreur est survenue, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter.'
+          }
+        }
+      },
+      submitBtn: 'Gérer cette entreprise',
+      noOptionAlert: 'Veuillez sélectionner une option dans la liste ci-dessus'
     }
   },
   labels: {
