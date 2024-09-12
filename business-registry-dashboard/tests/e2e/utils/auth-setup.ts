@@ -1,7 +1,6 @@
 import { expect, type Browser, chromium, type Page } from '@playwright/test'
 import dotenv from 'dotenv'
-import { mockedBusinessNano } from '../../mocks/mockedData'
-import { mockRoute } from './mock-route'
+// import { mockRoute } from './mock-route'
 // load default env
 // eslint-disable-next-line import/no-named-as-default-member
 dotenv.config()
@@ -40,7 +39,7 @@ async function authSetup () {
   const page: Page = await context.newPage()
 
   // mock api call so login button is available
-  await mockRoute(page, '**/business/token/123', { json: mockedBusinessNano })
+  // await mockRoute(page, '**/business/token/123', { json: mockedBusinessNano })
 
   // do login steps
   await page.goto(`${baseURL}en-CA?nanoid=123`) // navigate to home page with mocked token response
