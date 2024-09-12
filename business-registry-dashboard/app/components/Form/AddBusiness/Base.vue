@@ -225,10 +225,30 @@ watch(openAuthOption, () => {
         :ui="{
           wrapper: 'w-full flex flex-col divide-y divide-gray-300 border-y border-gray-300',
           default: {
-            class: 'mb-0 py-4 w-full rounded-none'
+            variant: 'accordian_trigger',
           }
         }"
       >
+        <!-- accordian button -->
+        <template #default="{ item, open }">
+          <UButton variant="accordian_trigger">
+            <span
+              class="text-left"
+              :class="{ 'font-semibold text-bcGovColor-darkGray': open, 'font-normal text-blue-500': !open }"
+            >
+              {{ item.label }}
+            </span>
+
+            <template #trailing>
+              <UIcon
+                name="i-heroicons-chevron-down-20-solid"
+                class="ms-auto size-5 shrink-0 transition-transform duration-200"
+                :class="[open && 'rotate-180', open ? 'text-bcGovColor-darkGray' : 'text-blue-500']"
+              />
+            </template>
+          </UButton>
+        </template>
+
         <!-- passcode option slot -->
         <template #passcode-option>
           <UFormGroup
@@ -360,7 +380,7 @@ watch(openAuthOption, () => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="ml-auto flex justify-end gap-2">
+    <div class="ml-auto mt-auto flex justify-end gap-2">
       <UButton
         :label="$t('btn.cancel')"
         variant="outline"

@@ -215,7 +215,7 @@ export default {
       successToast: '{nrNum} a été ajouté avec succès à votre table.'
     },
     manageBusiness: {
-      heading: 'Gérer une entreprise de la Colombie-Britannique',
+      heading: 'Gérer une entreprise de la C.B.',
       businessName: "{boldStart}Nom de l'entreprise:{boldEnd} {name}",
       businessNumber: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
       missingInfo: {
