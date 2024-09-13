@@ -4,17 +4,6 @@ import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { FormAddBusinessBase } from '#components'
 import { enI18n } from '~~/tests/mocks/i18n'
 
-// const mockAuthApi = vi.fn()
-// const mockLegalApi = vi.fn()
-// mockNuxtImport('useNuxtApp', () => {
-//   return () => (
-//     {
-//       $authApi: mockAuthApi,
-//       $legalApi: mockLegalApi
-//     }
-//   )
-// })
-
 const testProps: any = {
   authOptions: [],
   contactEmail: 'test@email.com',
