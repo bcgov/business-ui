@@ -168,6 +168,7 @@ async function submitManageRequest () {
     noOptionAlert.value = true
     return
   }
+  console.log('submitting form')
   loading.value = true
   // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
@@ -232,7 +233,10 @@ watch(openAuthOption, () => {
         <!-- accordian button -->
         <!-- TODO: add aria-describedby property to give instructions on using the given option??? -->
         <template #default="{ item, open }">
-          <UButton variant="accordian_trigger">
+          <UButton
+            variant="accordian_trigger"
+            data-testid="auth-option-button"
+          >
             <span
               class="text-left"
               :class="{ 'font-semibold text-bcGovColor-darkGray': open, 'font-normal text-blue-500': !open }"
@@ -255,6 +259,7 @@ watch(openAuthOption, () => {
           <UFormGroup
             :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
             name="passcode"
+            data-testid="formgroup-passcode-input"
           >
             <UInput
               v-model="formState.passcode"
@@ -270,6 +275,7 @@ watch(openAuthOption, () => {
         <template #firm-option>
           <div class="space-y-4 pb-4">
             <UFormGroup
+              data-testid="formgroup-firm-input"
               name="partner.name"
               :help="$t('form.manageBusiness.authOption.firm.fields.name.help')"
             >
@@ -281,7 +287,10 @@ watch(openAuthOption, () => {
               />
             </UFormGroup>
 
-            <UFormGroup name="partner.certify">
+            <UFormGroup
+              name="partner.certify"
+              data-testid="formgroup-firm-checkbox"
+            >
               <UCheckbox v-model="formState.partner.certify">
                 <template #label>
                   <span
@@ -298,7 +307,7 @@ watch(openAuthOption, () => {
 
         <!-- email option slot -->
         <template #email-option>
-          <div>
+          <div data-testid="formgroup-email">
             <div>
               {{ businessDetails.isCorpOrBenOrCoop
                 ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
@@ -317,6 +326,7 @@ watch(openAuthOption, () => {
         <template #delegation-option>
           <div class="-mt-4 space-y-4 pb-6">
             <UFormGroup
+              data-testid="formgroup-delegation-account"
               name="delegation.account"
               :label="t('form.manageBusiness.authOption.delegation.fields.account.label')"
               :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
@@ -331,6 +341,7 @@ watch(openAuthOption, () => {
               >
                 <template #default="{ open }">
                   <UButton
+                    data-testid="delegation-select-menu"
                     variant="select_menu_trigger"
                     class="flex-1 justify-between text-gray-700"
                     :aria-label="t('form.manageBusiness.authOption.delegation.fields.account.arialabel', { account: formState.delegation.account?.name ?? $t('words.none') })"
@@ -352,6 +363,7 @@ watch(openAuthOption, () => {
             </UFormGroup>
 
             <UFormGroup
+              data-testid="formgroup-delegation-message"
               name="delegation.message"
               :label="$t('form.manageBusiness.authOption.delegation.fields.message.label')"
               :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
@@ -359,6 +371,7 @@ watch(openAuthOption, () => {
               <UTextarea
                 v-model.trim="formState.delegation.message"
                 :placeholder="$t('form.manageBusiness.authOption.delegation.fields.message.placeholder')"
+                maxlength="400"
                 :ui="{
                   placeholder: 'placeholder-gray-700',
                   color: {
@@ -376,6 +389,7 @@ watch(openAuthOption, () => {
     <!-- TODO: make this accessible? -->
     <UAlert
       v-if="noOptionAlert"
+      data-testid="no-option-alert"
       icon="i-mdi-alert"
       color="red"
       variant="error"
