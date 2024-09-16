@@ -41,7 +41,6 @@ describe('<FormAddBusinessError />', () => {
       }
     }
     wrapper = await mountComp(props)
-    console.log(wrapper.html())
     expect(wrapper).toBeTruthy()
     expect(wrapper.findComponent(BCRegContactInfo).exists()).toBe(true)
   })
@@ -216,7 +215,6 @@ describe('<FormAddBusinessError />', () => {
         const status = wrapper.find('[role="status"]')
         expect(status.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.title'))
         expect(status.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.description'))
-        console.log(status.html())
         resolve() // resolve after assertion
       }, 1000) // wait for timeout to complete
     })

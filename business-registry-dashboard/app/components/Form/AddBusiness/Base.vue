@@ -168,7 +168,7 @@ async function submitManageRequest () {
     noOptionAlert.value = true
     return
   }
-  console.log('submitting form')
+
   loading.value = true
   // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
