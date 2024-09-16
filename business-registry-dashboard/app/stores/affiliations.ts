@@ -75,6 +75,54 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function handleAffiliationInvitations (affiliatedEntities: Business[]): Promise<Business[]> {
+    const currentAccountId = Number(accountStore.currentAccount.id)
+    // if (!LaunchDarklyService.getFlag(LDFlags.AffiliationInvitationRequestAccess)) { // TODO: implement after adding ld
+    //   return affiliatedEntities
+    // }
+
+    const pendingInvites = await $authApi<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
+      params: {
+        orgId: currentAccountId,
+        businessDetails: true
+      }
+    }).catch((error) => {
+      const e = error as FetchError
+      console.error('Error retrieving affiliation invitations: ', e.data)
+    })
+    // const includeAffiliationInviteRequest = LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: implement after adding ld
+    console.log('pending invites: ', pendingInvites)
+    if (pendingInvites && pendingInvites.affiliationInvitations.length > 0) {
+      for (const invite of pendingInvites.affiliationInvitations) {
+      // Skip over affiliation requests for type REQUEST for now.
+      // if (affiliationInvite.type === AffiliationInvitationType.REQUEST && !includeAffiliationInviteRequest) {  // TODO: implement after adding ld
+      //   continue
+      // }
+        const isFromOrg = invite.fromOrg.id === currentAccountId
+        const isToOrgAndPending = invite.toOrg?.id === currentAccountId &&
+        invite.status === AffiliationInvitationStatus.Pending
+        const isAccepted = invite.status === AffiliationInvitationStatus.Accepted
+        const business = affiliatedEntities.find(
+          business => business.businessIdentifier === invite.entity.businessIdentifier)
+        console.log('found business: ', business)
+        if (business && (isToOrgAndPending || isFromOrg)) {
+          business.affiliationInvites = (business.affiliationInvites || []).concat([invite])
+        } else if (!business && isFromOrg && !isAccepted) {
+        // This returns corpType: 'BEN' instead of corpType: { code: 'BEN' }.
+          const corpType = invite.entity.corpType
+          const newBusiness = {
+            ...invite,
+            affiliationInvites: [invite],
+            corpType: { code: corpType as unknown as string } as CorpType
+          }
+          affiliatedEntities.push(newBusiness)
+        }
+      }
+    }
+
+    return sortEntitiesByInvites(affiliatedEntities)
+  }
+
   async function loadAffiliations (): Promise<void> {
     resetAffiliations()
     try {
@@ -82,6 +130,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
       const response = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountStore.currentAccount.id}/affiliations?new=true`)
+
+      let affiliatedEntities: Business[] = []
 
       if (response.entities.length > 0) {
         response.entities.forEach((resp) => {
@@ -93,14 +143,18 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
             }
             entity.nameRequest = buildNameRequestObject(nr)
           }
-
-          affiliations.results.push(entity)
-          affiliations.count = affiliations.results.length
-          // TODO: add affilaition invites to business object
-          // affiliatedEntities = await handleAffiliationInvitations(affiliatedEntities)
-
-          // affiliations.results = affiliatedEntities
+          affiliatedEntities.push(entity)
         })
+
+        console.log('affiliatedEntities before: ', affiliatedEntities)
+        affiliatedEntities = await handleAffiliationInvitations(affiliatedEntities)
+        console.log('affiliatedEntities after: ', affiliatedEntities)
+        // affiliations.results.push(entity)
+        // affiliations.count = affiliations.results.length
+
+        affiliations.results = affiliatedEntities
+        affiliations.count = affiliatedEntities.length
+        console.log(affiliations.results)
       }
     } catch (error) {
       console.error('Error while retrieving businesses: ', error)
@@ -310,6 +364,21 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  /* Internal function for sorting affiliations / entities by invites. */
+  function sortEntitiesByInvites (affiliatedEntities: Business[]): Business[] {
+    // bubble the ones with the invitations to the top
+    affiliatedEntities?.sort((a, b) => {
+      if (a.affiliationInvites && !b.affiliationInvites) {
+        return -1
+      }
+      if (!a.affiliationInvites && b.affiliationInvites) {
+        return 1
+      }
+      return 0
+    })
+    return affiliatedEntities
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -339,6 +408,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     getFilings,
     deleteBusinessFiling,
     addNameRequestForStaffSilently,
+    handleAffiliationInvitations,
+    sortEntitiesByInvites,
     $reset
   }
 }
