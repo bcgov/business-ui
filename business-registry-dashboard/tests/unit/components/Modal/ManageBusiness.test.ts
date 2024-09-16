@@ -1,21 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
+import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { ModalManageBusiness } from '#components'
 import { enI18n } from '~~/tests/mocks/i18n'
-
-// const mockAuthApi = vi.fn()
-// const mockLegalApi = vi.fn()
-// mockNuxtImport('useNuxtApp', () => {
-//   return () => (
-//     {
-//       deferHydration: vi.fn(),
-//       $authApi: mockAuthApi,
-//       $legalApi: mockLegalApi
-//     }
-//   )
-// })
-
-// const modalSymbol = Symbol('nuxt-ui.modal')
 
 describe.skip('<ModalManageBusiness />', () => { // TODO: figure out how to test UModal components
   it('should mount', async () => {
