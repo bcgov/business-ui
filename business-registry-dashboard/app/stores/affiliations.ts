@@ -340,7 +340,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       logFetchError(error, 'Error adding name request')
       const e = error as FetchError
       const msg = e.data?.message ?? ''
-      toast.add({ title: 'Unable to add name request', description: msg })
+      toast.add({ title: t('toast.unableToAddNr'), description: msg })
     }
   }
 
@@ -353,7 +353,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       logFetchError(error, 'Error adding business')
       const e = error as FetchError
       const msg = e.data?.message ?? ''
-      toast.add({ title: 'Unable to add business', description: msg })
+      toast.add({ title: t('toast.unableToAddBusiness'), description: msg })
     }
   }
 
@@ -370,6 +370,40 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       return 0
     })
     return affiliatedEntities
+  }
+
+  // need to get business identifier in the args
+  async function resendAffiliationInvitation (event: Business) {
+    const invite = event.affiliationInvites?.[0]
+    console.log(event)
+    // let invitationId = ''
+    const invitationId = ''
+
+    // if (this.base64Token && this.base64OrgName) { // TODO: implement base 64 token from magic link
+    //   const base64TokenObject = this.base64Token.split('.')[0]
+    //   const decodedToken = Base64.decode(base64TokenObject)
+    //   const token = JSON.parse(decodedToken)
+    //   invitationId = token.id
+    // }
+
+    try {
+      const affiliationInvitationId = invitationId || invite?.id || ''
+      await $authApi(`/affiliationInvitations/${affiliationInvitationId}`, {
+        method: 'PATCH',
+        body: {} // empty body required
+      })
+
+      if (invite?.recipientEmail === undefined) { // show toast if no email in the event object
+        toast.add({ title: t('form.manageBusiness.toast.emailSent') })
+      } else { // else open confirmation/instructions modal
+        brdModal.openAuthEmailSent(invite.recipientEmail)
+      }
+    } catch (error) {
+      logFetchError(error, 'Error resending affiliation invitation')
+      const e = error as FetchError
+      const msg = e.data?.message ?? ''
+      toast.add({ title: t('toast.errorResendingAffInvite'), description: msg })
+    }
   }
 
   function $reset () {
@@ -403,6 +437,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     addNameRequestForStaffSilently,
     handleAffiliationInvitations,
     sortEntitiesByInvites,
+    resendAffiliationInvitation,
     $reset
   }
 }

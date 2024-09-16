@@ -220,8 +220,6 @@ onMounted(async () => {
           </strong>
         </span>
 
-        <!-- TODO: implement after adding invite option in build business object -->
-        <!-- v-if="getAffiliationInvitationStatus(row.affiliationInvites) !== 'N/A'" -->
         <div
           v-if="row.affiliationInvites"
           id="affiliationInvitesStatus"
@@ -290,7 +288,7 @@ onMounted(async () => {
           @unknown-error="brdModal.openBusinessAddError()"
           @business-unavailable-error="brdModal.openBusinessUnavailableError"
           @remove-business="brdModal.openBusinessRemovalConfirmation"
-          @resend-affiliation-invitation="() => console.log('resend-affiliation-invitation emitted')"
+          @resend-affiliation-invitation="affStore.resendAffiliationInvitation(row)"
           @show-manage-business-dialog="() => console.log('show-manage-business-dialog emitted')"
         />
       </template>

@@ -654,6 +654,11 @@ export default {
       }
     }
   },
+  toast: {
+    unableToAddNr: 'Unable to add name request',
+    unableToAddBusiness: 'Unable to add business',
+    errorResendingAffInvite: 'Error resending affiliation invitation'
+  },
   tooltips: {
     affiliationActionBtn: 'Go to {option} to access this business'
   },

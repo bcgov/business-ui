@@ -644,6 +644,11 @@ export default {
       }
     }
   },
+  toast: {
+    unableToAddNr: "Impossible d'ajouter la demande de nom",
+    unableToAddBusiness: "Impossible d'ajouter l'entreprise",
+    errorResendingAffInvite: "Erreur lors de la réexpédition de l'invitation à l'affiliation"
+  },
   tooltips: {
     affiliationActionBtn: 'Accédez à {option} pour accéder à cette entreprise'
   },
