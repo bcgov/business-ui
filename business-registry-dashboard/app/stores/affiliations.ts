@@ -375,7 +375,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // need to get business identifier in the args
   async function resendAffiliationInvitation (event: Business) {
     const invite = event.affiliationInvites?.[0]
-    console.log(event)
     // let invitationId = ''
     const invitationId = ''
 
