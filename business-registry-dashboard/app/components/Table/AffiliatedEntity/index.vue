@@ -41,7 +41,14 @@ onMounted(async () => {
         thead: 'sticky top-0 bg-white z-10',
         th: {
           padding: 'px-0 py-0'
-        }
+        },
+        td: {
+          base: 'whitespace-normal max-w-96',
+          padding: 'px-4 py-4',
+          color: 'text-bcGovColor-midGray',
+          font: '',
+          size: 'text-sm',
+        },
       }"
     >
       <!-- start table header slots -->
@@ -214,23 +221,26 @@ onMounted(async () => {
         </span>
 
         <!-- TODO: implement after adding invite option in build business object -->
-        <!-- <span
-            v-if="getAffiliationInvitationStatus(row.affiliationInvites) !== 'N/A'"
-            id="affiliationInvitesStatus"
-            class="align-top"
-          >
+        <!-- v-if="getAffiliationInvitationStatus(row.affiliationInvites) !== 'N/A'" -->
+        <div
+          v-if="row.affiliationInvites"
+          id="affiliationInvitesStatus"
+          class="flex flex-col"
+        >
+          <span class="flex items-center align-middle">
             <UIcon
-              class="mt-1 pr-1"
+              class="mr-1 size-5 self-start"
               :class="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
                 ? 'text-red-500' : 'text-blue-500'"
               :name="getAffiliationInvitationStatus(row.affiliationInvites) === AffiliationInvitationStatus.Expired
                 ? 'i-mdi-alert' : 'i-mdi-account-cog'"
-            /> -->
-        <!-- <p class="mb-0 text-xs"> -->
-        <!-- eslint-disable vue/no-v-html -->
-        <!-- <span v-html="getRequestForAuthorizationStatusText(row.affiliationInvites)" />
-            </p> -->
-        <!-- </span> -->
+            />
+            <p class="mb-0 text-xs">
+              <!-- eslint-disable vue/no-v-html -->
+              <span v-html="getRequestForAuthorizationStatusText(row.affiliationInvites)" />
+            </p>
+          </span>
+        </div>
       </template>
 
       <!-- business identifier table cell -->

@@ -42,8 +42,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     // If the business is a new registration then remove the business filing from legal-db
     if (payload.business.corpType.code === CorpTypes.INCORPORATION_APPLICATION) {
       const filingResponse = await getFilings(payload.business.businessIdentifier)
-      if (filingResponse && filingResponse.status === 200) {
-        const filingId = filingResponse.filing?.header?.filingId
+      if (filingResponse && filingResponse.status === 200) { // TODO: fix typing
+        const filingId = filingResponse.filing?.header?.filingId // TODO: fix typing
         // If there is a filing delete it which will delete the affiliation, else delete the affiliation
         if (filingId) {
           await deleteBusinessFiling(payload.business.businessIdentifier, filingId)
@@ -87,11 +87,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         businessDetails: true
       }
     }).catch((error) => {
-      const e = error as FetchError
-      console.error('Error retrieving affiliation invitations: ', e.data)
+      logFetchError(error, 'Error retrieving affiliation invitations')
     })
     // const includeAffiliationInviteRequest = LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: implement after adding ld
-    console.log('pending invites: ', pendingInvites)
+
     if (pendingInvites && pendingInvites.affiliationInvitations.length > 0) {
       for (const invite of pendingInvites.affiliationInvitations) {
       // Skip over affiliation requests for type REQUEST for now.
@@ -104,14 +103,14 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         const isAccepted = invite.status === AffiliationInvitationStatus.Accepted
         const business = affiliatedEntities.find(
           business => business.businessIdentifier === invite.entity.businessIdentifier)
-        console.log('found business: ', business)
+
         if (business && (isToOrgAndPending || isFromOrg)) {
           business.affiliationInvites = (business.affiliationInvites || []).concat([invite])
         } else if (!business && isFromOrg && !isAccepted) {
         // This returns corpType: 'BEN' instead of corpType: { code: 'BEN' }.
           const corpType = invite.entity.corpType
           const newBusiness = {
-            ...invite,
+            ...invite.entity,
             affiliationInvites: [invite],
             corpType: { code: corpType as unknown as string } as CorpType
           }
@@ -146,21 +145,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           affiliatedEntities.push(entity)
         })
 
-        console.log('affiliatedEntities before: ', affiliatedEntities)
         affiliatedEntities = await handleAffiliationInvitations(affiliatedEntities)
-        console.log('affiliatedEntities after: ', affiliatedEntities)
-        // affiliations.results.push(entity)
-        // affiliations.count = affiliations.results.length
 
         affiliations.results = affiliatedEntities
         affiliations.count = affiliatedEntities.length
-        console.log(affiliations.results)
       }
     } catch (error) {
-      console.error('Error while retrieving businesses: ', error)
+      logFetchError(error, 'Error retrieving businesses')
     } finally {
       affiliations.loading = false
-      // console.log(affiliations.results)
     }
   }
 
@@ -343,9 +336,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       await createNRAffiliation({ businessIdentifier })
       toast.add({ title: t('form.manageNR.successToast', { nrNum: businessIdentifier }) }) // add success toast
       await loadAffiliations() // reload affiliated entities
-    } catch (err) {
-      const e = err as FetchError
-      console.error('Error adding name request: ', e.data)
+    } catch (error) {
+      logFetchError(error, 'Error adding name request')
+      const e = error as FetchError
       const msg = e.data?.message ?? ''
       toast.add({ title: 'Unable to add name request', description: msg })
     }
@@ -356,9 +349,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       await createAffiliation({ businessIdentifier })
       toast.add({ title: `${businessIdentifier} successfully added to your list` }) // add success toast
       await loadAffiliations() // reload affiliated entities
-    } catch (err) {
-      const e = err as FetchError
-      console.error('Error adding business: ', e.data)
+    } catch (error) {
+      logFetchError(error, 'Error adding business')
+      const e = error as FetchError
       const msg = e.data?.message ?? ''
       toast.add({ title: 'Unable to add business', description: msg })
     }
