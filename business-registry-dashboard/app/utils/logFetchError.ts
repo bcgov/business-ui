@@ -5,5 +5,5 @@ export function logFetchError (error: unknown, contextMessage: string) {
   const statusText = e.response?.statusText
   const hasMessage = e.data?.message !== undefined
 
-  console.error(`${contextMessage}: ${status} - ${statusText} ${hasMessage ? `--- ${e.data}` : ''}`)
+  console.error(`${contextMessage}: ${status} - ${statusText} ${hasMessage ? `--- ${JSON.stringify(e.data)}` : ''}`)
 }

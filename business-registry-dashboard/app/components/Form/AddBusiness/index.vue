@@ -36,6 +36,10 @@ function handleError (e: { error: FetchError, type: string }) {
   errorObj.value = e
   currentState.value = 'FormAddBusinessError'
 }
+
+defineExpose({
+  currentState
+})
 </script>
 <template>
   <!-- TODO: add state for when business is already added to table -->

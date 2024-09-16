@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { AccordionItem } from '#ui/types'
+import { FormAddBusiness } from '#components'
 const brdModal = useBrdModals()
+const toast = useToast()
+const affStore = useAffiliationsStore()
 const { t } = useI18n()
 const { $authApi } = useNuxtApp()
 
@@ -12,6 +15,7 @@ const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
 const contactEmail = ref('')
 const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
+const formAddBusinessRef = ref<InstanceType<typeof FormAddBusiness> | null>(null)
 
 const businessDetails = computed(() => ({
   isFirm: props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP,
@@ -78,6 +82,14 @@ const authOptions = computed<AccordionItem[]>(() => {
   return options
 })
 
+async function handleEmailAuthSentStateClosed () {
+  if (formAddBusinessRef.value?.currentState === 'FormAddBusinessEmailAuthSent') {
+    toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
+    await affStore.loadAffiliations() // update table with new affilitations
+    brdModal.close()
+  }
+}
+
 onMounted(async () => {
   // try loading contact info
   try {
@@ -109,7 +121,10 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <ModalBase :title="$t('form.manageBusiness.heading')">
+  <ModalBase
+    :title="$t('form.manageBusiness.heading')"
+    @modal-closed="handleEmailAuthSentStateClosed "
+  >
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
         <li>
@@ -142,6 +157,7 @@ onMounted(async () => {
 
       <FormAddBusiness
         v-else
+        ref="formAddBusinessRef"
         :auth-options="authOptions"
         :contact-email="contactEmail"
         :identifier="business.identifier"
