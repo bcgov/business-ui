@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { AccordionItem } from '#ui/types'
-import { FetchError } from 'ofetch'
-import { StatusCodes } from 'http-status-codes'
 const brdModal = useBrdModals()
 const { t } = useI18n()
 const { $authApi } = useNuxtApp()
@@ -86,10 +84,7 @@ onMounted(async () => {
     const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
     contactEmail.value = response.email
   } catch (error) {
-    const e = error as FetchError
-    if (e.response?.status !== StatusCodes.NOT_FOUND) {
-      console.error(e.response)
-    }
+    logFetchError(error, 'Error retrieving business contacts')
   }
 
   // try loading affiliated accounts
@@ -97,8 +92,7 @@ onMounted(async () => {
     const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
     affiliatedAccounts.value = response.orgsDetails
   } catch (error) {
-    const e = error as FetchError
-    console.error(e.response)
+    logFetchError(error, 'Error retrieving affiliated accounts')
   }
 
   // try loading business passcode
@@ -106,11 +100,8 @@ onMounted(async () => {
     const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
     hasBusinessAuthentication.value = response.hasValidPassCode
   } catch (error) {
-    const e = error as FetchError
     hasBusinessAuthentication.value = false
-    if (e.response?.status !== StatusCodes.NOT_FOUND) {
-      console.error(e.response)
-    }
+    logFetchError(error, 'Error retrieving business passcode')
   }
   setTimeout(() => { // give enough time for computed options to update before removing loading state
     loading.value = false

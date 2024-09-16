@@ -1,6 +1,5 @@
 <script setup lang='ts'>
 import type { DropdownItem } from '#ui/types'
-import { FetchError } from 'ofetch'
 import {
   NrRequestActionCodes,
   FilingTypes
@@ -93,8 +92,8 @@ const removeAffiliationOrInvitation = async (item: Business) => {
     try {
       await affStore.removeInvite(invite.id)
       await affStore.loadAffiliations() // reload after deleting invite
-    } catch (e) {
-      console.error('Could not delete the invite at this time. ', (e as FetchError).response)
+    } catch (error) {
+      logFetchError(error, 'Could not delete the invite at this time')
       emit('unknown-error') // TODO: better error handling?
     }
   } else {
