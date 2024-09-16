@@ -47,7 +47,7 @@ const setScreenReaderAlert = (message: string) => {
 
 onMounted(() => {
   setTimeout(() => {
-    setScreenReaderAlert(errorText.value.title + errorText.value.description)
+    setScreenReaderAlert(errorText.value.title + ' ' + errorText.value.description)
   }, 1000)
 })
 </script>

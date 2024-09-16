@@ -54,7 +54,7 @@ export default defineAppConfig({
       },
       variant: {
         table_header_clear: 'text-bcGovColor-darkGray rounded-none rounded-tr-md bg-gray-100 hover:bg-gray-200 font-semibold dark:text-white dark:hover:bg-blue-100/10 disabled:bg-{color}-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white transition-colors duration-300 ease-in-out border-gray-700 focus:border-primary-500 bg-gray-100 hover:bg-gray-200 border-b-[1px] focus:border-b-2 focus:ring-0',
-        accordian_trigger: 'text-bcGovColor-darkGray font-semibold dark:text-white dark:hover:bg-blue-100/10 hover:bg-blue-50 disabled:bg-{color}-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white transition-colors duration-300 ease-in-out',
+        accordian_trigger: 'mb-0 py-4 w-full rounded-none whitespace-normal text-bcGovColor-darkGray font-semibold dark:text-white dark:hover:bg-blue-100/10 hover:bg-blue-50 disabled:bg-{color}-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white transition-colors duration-300 ease-in-out',
         link: 'text-{color}-500 tracking-wide text-base hover:text-{color}-600 disabled:text-{color}-500 dark:text-white dark:hover:text-blue-300 dark:disabled:text-{color}-400 underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-{color}-500 dark:focus-visible:ring-white',
         solid: 'shadow-sm text-white dark:text-gray-900 bg-{color}-500 hover:bg-{color}-600 disabled:bg-{color}-500 dark:bg-[#E0E7ED] dark:hover:bg-bcGovGray-500 dark:disabled:bg-{color}-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-{color}-500 dark:focus-visible:outline-white',
         outline: 'ring-1 ring-inset ring-current text-{color}-500 dark:text-[#E0E7ED] hover:bg-{color}-50 disabled:bg-transparent dark:hover:bg-[#E0E7ED]/25 dark:disabled:bg-transparent focus-visible:ring-2 focus-visible:ring-{color}-500 dark:focus-visible:ring-white',
@@ -79,7 +79,8 @@ export default defineAppConfig({
       }
     },
     formGroup: {
-      label: { base: 'block text-base font-bold py-3 text-gray-900' }
+      label: { base: 'block text-base font-bold py-3 text-gray-900' },
+      help: 'mt-2 text-xs text-gray-600 dark:text-gray-400'
     },
     input: {
       base: 'bg-gray-100 hover:bg-gray-200 border-b-[1px] focus:border-b-2 focus:ring-0',
@@ -87,7 +88,7 @@ export default defineAppConfig({
       variant: {
         bcGovLg: 'h-[56px] border-gray-700 placeholder-gray-700 focus:border-primary-500 focus:placeholder-primary-500',
         bcGovSm: 'h-[42px] border-gray-700 placeholder-gray-700 focus:border-primary-500 focus:placeholder-primary-500',
-        error: 'border-red-500 focus:border-red-500 placeholder-red-500 focus:placeholder-red-500',
+        error: 'h-[56px] border-red-500 focus:border-red-500 placeholder-red-500 focus:placeholder-red-500',
         primary: 'border-primary-500 placeholder-primary-500 border-b-2'
       }
     },

@@ -3,8 +3,8 @@ import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-component
 
 export interface CreateAffiliationRequestBody {
   businessIdentifier: string
-  certifiedByName: string
-  passCode: string
+  certifiedByName?: string
+  passCode?: string
 }
 
 export interface CreateNRAffiliationRequestBody {
@@ -111,4 +111,8 @@ export interface AffiliationInviteInfo {
   entity: Business
   fromOrg: OrgNameAndId
   toOrg?: OrgNameAndId
+}
+
+export interface AffiliatedAccounts {
+  orgsDetails: Array<{branchName: string, name: string, uuid: string }>
 }

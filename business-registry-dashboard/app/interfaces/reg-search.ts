@@ -50,3 +50,12 @@ export interface FacetsResult {
     state: Facet[]
   }
 }
+
+export interface ManageBusinessEvent {
+  bn: string
+  identifier: string
+  legalType: string
+  name: string
+  score: number
+  status: string
+}

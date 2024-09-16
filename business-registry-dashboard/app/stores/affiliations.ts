@@ -1,4 +1,5 @@
 // import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
+import { FetchError } from 'ofetch'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
@@ -101,8 +102,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           // affiliations.results = affiliatedEntities
         })
       }
-    } catch (error) { // TODO: error handling
-      throw new Error('Error fetching data from API: ' + error.message)
+    } catch (error) {
+      console.error('Error while retrieving businesses: ', error)
     } finally {
       affiliations.loading = false
       // console.log(affiliations.results)
@@ -242,6 +243,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return Object.values(affiliations.filters).some(value => value !== '')
   })
 
+  function createAffiliation (affiliation: CreateAffiliationRequestBody) {
+    return $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations`, {
+      method: 'POST',
+      body: affiliation
+    })
+  }
+
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
     return $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`, {
       method: 'POST',
@@ -255,13 +263,24 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return currentOrgIsStaff || keycloak.kcUser.roles.includes(UserRole.Staff)
   })
 
-  function handleManageBusinessOrNameRequest (searchType: string, event: { names: string[]; nrNum: string }) {
-    if (searchType === 'reg') {
-      console.log('open manage business modal')
-    } else if (isStaffOrSbcStaff.value) {
-      addNameRequestForStaffSilently(event.nrNum)
+  async function handleManageBusinessOrNameRequest (
+    searchType: 'reg' | 'namex',
+    event: ManageNameRequestEvent | ManageBusinessEvent
+  ) {
+    if (searchType === 'reg' && 'identifier' in event) {
+      if (isStaffOrSbcStaff.value) {
+        await addBusinessForStaffSilently(event.identifier)
+      } else {
+        brdModal.openManageBusiness(event)
+      }
+    } else if (searchType === 'namex' && 'nrNum' in event) {
+      if (isStaffOrSbcStaff.value) {
+        await addNameRequestForStaffSilently(event.nrNum)
+      } else {
+        brdModal.openManageNameRequest(event)
+      }
     } else {
-      brdModal.openManageNameRequest(event)
+      console.error('Incorrect event type') // should never happen
     }
   }
 
@@ -271,8 +290,23 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       toast.add({ title: t('form.manageNR.successToast', { nrNum: businessIdentifier }) }) // add success toast
       await loadAffiliations() // reload affiliated entities
     } catch (err) {
-      console.error('Error adding name request: ', err)
-      brdModal.openManageNRError() // show general nr error on staff add error
+      const e = err as FetchError
+      console.error('Error adding name request: ', e.data)
+      const msg = e.data?.message ?? ''
+      toast.add({ title: 'Unable to add name request', description: msg })
+    }
+  }
+
+  async function addBusinessForStaffSilently (businessIdentifier: string) {
+    try {
+      await createAffiliation({ businessIdentifier })
+      toast.add({ title: `${businessIdentifier} successfully added to your list` }) // add success toast
+      await loadAffiliations() // reload affiliated entities
+    } catch (err) {
+      const e = err as FetchError
+      console.error('Error adding business: ', e.data)
+      const msg = e.data?.message ?? ''
+      toast.add({ title: 'Unable to add business', description: msg })
     }
   }
 
@@ -298,6 +332,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     hasFilters,
     resetFilters,
     createNRAffiliation,
+    createAffiliation,
     handleManageBusinessOrNameRequest,
     removeBusiness,
     removeAffiliation,

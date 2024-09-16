@@ -10,17 +10,25 @@ defineProps<{
     title: string
     description: string
     showContactInfo?: boolean
-  }
+  },
+  fullscreen?: boolean
 }>()
 </script>
 <template>
   <UModal
     v-model="modalModel"
+    :fullscreen
     :ui="{
       width: 'w-full sm:max-w-lg md:min-w-min'
     }"
   >
-    <UCard :ui="{ divide: '' }">
+    <UCard
+      :ui="{
+        divide: '',
+        rounded: fullscreen ? 'rounded-none' : 'rounded-lg',
+        base: fullscreen ? 'h-screen' : ''
+      }"
+    >
       <template #header>
         <div class="flex items-center justify-between">
           <span class="text-xl font-semibold text-bcGovColor-darkGray">{{ title }}</span>
