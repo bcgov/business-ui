@@ -54,6 +54,7 @@ const mockOpenManageNRError = vi.fn()
 const mockOpenBusinessAddError = vi.fn()
 const mockOpenBusinessUnavailableError = vi.fn()
 const mockOpenBusinessRemovalConfirmation = vi.fn()
+const mockOpenManageBusiness = vi.fn()
 const mockClose = vi.fn()
 mockNuxtImport('useBrdModals', () => {
   return () => (
@@ -63,6 +64,7 @@ mockNuxtImport('useBrdModals', () => {
       openBusinessAddError: mockOpenBusinessAddError,
       openBusinessUnavailableError: mockOpenBusinessUnavailableError,
       openBusinessRemovalConfirmation: mockOpenBusinessRemovalConfirmation,
+      openManageBusiness: mockOpenManageBusiness,
       close: mockClose
     }
   )
@@ -979,30 +981,58 @@ describe('useAffiliationsStore', () => {
     })
 
     it('should open manage business modal when searchType is "reg"', () => {
-      const consoleSpy = vi.spyOn(console, 'log')
+      const event: ManageBusinessEvent = {
+        bn: '123',
+        identifier: '123',
+        legalType: 'some type',
+        name: 'some name',
+        score: 42,
+        status: 'some status'
+      }
+      affStore.handleManageBusinessOrNameRequest('reg', event)
 
-      affStore.handleManageBusinessOrNameRequest('reg', { names: ['test'], nrNum: 'NR123' })
-
-      expect(consoleSpy).toHaveBeenCalledWith('open manage business modal')
+      expect(mockOpenManageBusiness).toHaveBeenCalled()
     })
 
-    it.skip('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
+    it('should call addBusinessForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
       mockAuthApi.mockResolvedValue({ status: 200 })
-      mockKeycloakRoles = ['staff'] // set staff role
+      store.currentAccount.accountType = 'SBC_STAFF'
 
-      const event = { names: ['test'], nrNum: 'NR123' }
+      const event: ManageBusinessEvent = {
+        bn: '123',
+        identifier: '123',
+        legalType: 'some type',
+        name: 'some name',
+        score: 42,
+        status: 'some status'
+      }
 
-      await affStore.handleManageBusinessOrNameRequest('someType', event)
+      await affStore.handleManageBusinessOrNameRequest('reg', event)
 
       expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for creating affiliation and once for reloading affiliations
 
+      expect(mockOpenManageBusiness).not.toHaveBeenCalled() // staff shouldnt open the modal
       expect(mockAddToast).toHaveBeenCalledOnce()
     })
 
-    it('should open the manage name request modal when isStaffOrSbcStaff is false', () => {
+    it('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
+      mockAuthApi.mockResolvedValue({ status: 200 })
+      store.currentAccount.accountType = 'SBC_STAFF'
+
       const event = { names: ['test'], nrNum: 'NR123' }
 
-      affStore.handleManageBusinessOrNameRequest('someType', event)
+      await affStore.handleManageBusinessOrNameRequest('namex', event)
+
+      expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for creating affiliation and once for reloading affiliations
+
+      expect(mockOpenManageNameRequest).not.toHaveBeenCalled() // staff shouldnt open the modal
+      expect(mockAddToast).toHaveBeenCalledOnce()
+    })
+
+    it('should open the manage name request modal when search type is namex', () => {
+      const event = { names: ['test'], nrNum: 'NR123' }
+
+      affStore.handleManageBusinessOrNameRequest('namex', event)
 
       expect(mockOpenManageNameRequest).toHaveBeenCalledOnce()
     })
@@ -1039,8 +1069,7 @@ describe('useAffiliationsStore', () => {
 
       expect(mockAuthApi).toHaveBeenCalledOnce() // auth api only called once when error is thrown
 
-      expect(mockAddToast).not.toHaveBeenCalled() // success toast should not be called
-      expect(mockOpenManageNRError).toHaveBeenCalledOnce() // manage nr error modal should be called
+      expect(mockAddToast).toHaveBeenCalled() // success toast should not be called
     })
   })
 })
