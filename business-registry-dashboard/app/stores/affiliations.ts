@@ -405,6 +405,32 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function deletePendingInvitations (businessIdentifier: string) {
+    try {
+      const { affiliationInvitations = [] } = await $authApi<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
+        params: {
+          orgId: accountStore.currentAccount.id,
+          businessDetails: true,
+          status: AffiliationInvitationStatus.Pending
+        }
+      })
+
+      const pendingInvites = affiliationInvitations.filter(invite => businessIdentifier === invite.entity.businessIdentifier)
+
+      if (pendingInvites.length > 0) {
+        await Promise.all(pendingInvites.map(async (invite) => {
+          await removeInvite(invite.id).catch(error => logFetchError(error, `Error deleting invite with ID ${invite.id}`)
+          )
+        }))
+
+        // reload if at least one invite was deleted
+        await loadAffiliations()
+      }
+    } catch (error) {
+      logFetchError(error, 'Error deleting existing affiliation invitations')
+    }
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -437,6 +463,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     handleAffiliationInvitations,
     sortEntitiesByInvites,
     resendAffiliationInvitation,
+    deletePendingInvitations,
     $reset
   }
 }

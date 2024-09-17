@@ -170,7 +170,9 @@ async function submitManageRequest () {
   }
 
   loading.value = true
-  // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
+
+  await affStore.deletePendingInvitations(props.identifier) // delete any existing pending affiliations
+
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
     await handleEmailOption()
   } else if (openAuthOption.value.slot === 'delegation-option') { // try submitting delegation option

@@ -52,10 +52,10 @@ export interface FacetsResult {
 }
 
 export interface ManageBusinessEvent {
-  bn: string
+  bn?: string
   identifier: string
   legalType: string
   name: string
-  score: number
-  status: string
+  score?: number
+  status?: string
 }

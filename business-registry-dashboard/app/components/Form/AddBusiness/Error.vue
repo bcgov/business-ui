@@ -72,6 +72,7 @@ const setScreenReaderAlert = (message: string) => {
 }
 
 onMounted(() => {
+  console.log(props)
   setTimeout(() => {
     setScreenReaderAlert(errorText.value.title + ' ' + errorText.value.description)
     // setScreenReaderAlert(errorText.value.title + ' ' + apiErrorMsg.value + ' ' + errorText.value.description)

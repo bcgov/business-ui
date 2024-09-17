@@ -20,6 +20,7 @@ export interface CorpType {
     desc?: string
 }
 
+// TODO: why are all these properties optional
 export interface Business {
     businessIdentifier: string
     businessNumber?: string

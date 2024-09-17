@@ -23,7 +23,7 @@ const emit = defineEmits<{
   'remove-business': [{ orgIdentifier: string, business: Business }]
   'business-unavailable-error': [action: string]
   'resend-affiliation-invitation': [item: Business]
-  'show-manage-business-dialog': [item: Business]
+  'show-manage-business-dialog': [item: ManageBusinessEvent]
 }>()
 
 const invalidStatuses = [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired, AffiliationInvitationStatus.Failed]
@@ -304,8 +304,12 @@ const showAmalgamateShortForm = (item: Business): boolean => {
 
 // This is called when an affiliation invitation request already exists.
 const openNewAffiliationInvite = (business: Business) => {
-  // businessStore.setRemoveExistingAffiliationInvitation(true)  // TODO: implement after adding affiliation invitations
-  emit('show-manage-business-dialog', business)
+  const manageBusinessObject = {
+    identifier: business.businessIdentifier,
+    legalType: business.corpType.code ?? business.corpSubType?.code ?? undefined,
+    name: business.name!
+  }
+  emit('show-manage-business-dialog', manageBusinessObject)
 }
 
 const showOpenButton = (item: Business): boolean => {

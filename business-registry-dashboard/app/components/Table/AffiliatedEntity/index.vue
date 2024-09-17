@@ -289,7 +289,7 @@ onMounted(async () => {
           @business-unavailable-error="brdModal.openBusinessUnavailableError"
           @remove-business="brdModal.openBusinessRemovalConfirmation"
           @resend-affiliation-invitation="affStore.resendAffiliationInvitation(row)"
-          @show-manage-business-dialog="() => console.log('show-manage-business-dialog emitted')"
+          @show-manage-business-dialog="brdModal.openManageBusiness"
         />
       </template>
       <!-- end table cell slots -->
