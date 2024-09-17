@@ -109,6 +109,33 @@ const mockEntities = {
   ]
 }
 
+const processedAffiliations = [
+  {
+    businessIdentifier: '123',
+    corpType: { code: undefined },
+    adminFreeze: false,
+    goodStanding: true
+  },
+  {
+    businessIdentifier: '456',
+    corpType: { code: undefined },
+    adminFreeze: false,
+    goodStanding: true
+  },
+  {
+    businessIdentifier: '789',
+    corpType: { code: undefined },
+    adminFreeze: false,
+    goodStanding: true
+  },
+  {
+    businessIdentifier: '321',
+    corpType: { code: undefined },
+    adminFreeze: false,
+    goodStanding: true
+  }
+]
+
 describe('useAffiliationsStore', () => {
   let store: any
 
@@ -152,32 +179,7 @@ describe('useAffiliationsStore', () => {
 
       expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for affiliations and another for invitations
       // results mapped to business object
-      expect(affStore.affiliations.results).toEqual([
-        {
-          businessIdentifier: '123',
-          corpType: { code: undefined },
-          adminFreeze: false,
-          goodStanding: true
-        },
-        {
-          businessIdentifier: '456',
-          corpType: { code: undefined },
-          adminFreeze: false,
-          goodStanding: true
-        },
-        {
-          businessIdentifier: '789',
-          corpType: { code: undefined },
-          adminFreeze: false,
-          goodStanding: true
-        },
-        {
-          businessIdentifier: '321',
-          corpType: { code: undefined },
-          adminFreeze: false,
-          goodStanding: true
-        }
-      ])
+      expect(affStore.affiliations.results).toEqual(processedAffiliations)
       expect(affStore.affiliations.count).toEqual(4)
     })
 
@@ -220,9 +222,9 @@ describe('useAffiliationsStore', () => {
       expect(mockAuthApi).not.toHaveBeenCalled()
     })
 
-    it.skip('should handle fetch errors', async () => { // TODO: implement after adding better error handling
-      const _fetch = vi.fn().mockRejectedValue(new Error('API Error'))
-      vi.stubGlobal('$fetch', _fetch)
+    it('should handle fetch errors', async () => { // TODO: implement after adding better error handling
+      mockAuthApi.mockRejectedValue({ response: { status: 400, statusText: 'NOT FOUND' } })
+      const consoleSpy = vi.spyOn(console, 'error')
 
       const affStore = useAffiliationsStore()
 
@@ -230,21 +232,9 @@ describe('useAffiliationsStore', () => {
 
       await flushPromises()
 
-      expect(_fetch).toHaveBeenCalledOnce()
+      expect(consoleSpy).toHaveBeenCalledWith('Error retrieving businesses: 400 - NOT FOUND ')
       expect(affStore.affiliations.results).toEqual([]) // Should remain empty
       expect(affStore.affiliations.count).toEqual(0)
-    })
-
-    it.skip('should reset affiliations', async () => { // TODO: figure out why spy isnt being called
-      mockAuthApi.mockResolvedValue({ entities: [] })
-
-      const affStore = useAffiliationsStore()
-
-      const resetAffiliationsSpy = vi.spyOn(affStore, 'resetAffiliations')
-
-      await affStore.loadAffiliations()
-
-      expect(resetAffiliationsSpy).toHaveBeenCalledTimes(1)
     })
 
     it('should set loading to true initially and false after API call', async () => {
@@ -1120,6 +1110,130 @@ describe('useAffiliationsStore', () => {
       expect(mockAuthApi).toHaveBeenCalledOnce() // auth api only called once when error is thrown
 
       expect(mockAddToast).toHaveBeenCalled() // success toast should not be called
+    })
+  })
+
+  describe('handleAffiliationInvitations', () => {
+    it('should return affiliation invitations and add to affiliatedEntities with an existing business', async () => {
+      mockAuthApi
+        .mockResolvedValueOnce({
+          entities: [
+            { identifier: '123', legalType: 'BEN', affiliationInvites: [] },
+            { identifier: '456', legalType: 'BEN', affiliationInvites: [] }
+          ]
+        }) // affiliations
+        .mockResolvedValueOnce({ // invitations
+          affiliationInvitations: [{
+            entity: { businessIdentifier: '123', corpType: 'BEN' }, // existing business identifier
+            fromOrg: { id: 123 },
+            status: AffiliationInvitationStatus.Pending
+          }]
+        })
+
+      const affStore = useAffiliationsStore()
+      await affStore.loadAffiliations()
+
+      await flushPromises()
+
+      expect(affStore.affiliations.results).toHaveLength(2)
+      // invite should be added to current business
+      expect(affStore.affiliations.results).toEqual([
+        {
+          businessIdentifier: '123',
+          corpType: { code: 'BEN' },
+          corpSubType: { code: 'BEN' },
+          adminFreeze: false,
+          goodStanding: true,
+          affiliationInvites: [
+            {
+              entity: {
+                businessIdentifier: '123',
+                corpType: 'BEN'
+              },
+              fromOrg: {
+                id: 123
+              },
+              status: 'PENDING'
+            }
+          ]
+        },
+        {
+          businessIdentifier: '456',
+          corpType: { code: 'BEN' },
+          corpSubType: { code: 'BEN' },
+          adminFreeze: false,
+          goodStanding: true
+        }
+      ])
+    })
+
+    it('should return affiliation invitations and add to affiliatedEntities with a new business', async () => {
+      mockAuthApi
+        .mockResolvedValueOnce({
+          entities: [
+            { identifier: '123', legalType: 'BEN', affiliationInvites: [] },
+            { identifier: '456', legalType: 'BEN', affiliationInvites: [] }
+          ]
+        }) // affiliations
+        .mockResolvedValueOnce({ // invitations
+          affiliationInvitations: [{
+            entity: { businessIdentifier: '789', corpType: 'BEN' }, // new business identifier
+            fromOrg: { id: 123 },
+            status: AffiliationInvitationStatus.Pending
+          }]
+        })
+
+      const affStore = useAffiliationsStore()
+      await affStore.loadAffiliations()
+
+      await flushPromises()
+
+      expect(affStore.affiliations.results).toHaveLength(3)
+      // invite should create new business object
+      expect(affStore.affiliations.results).toEqual([
+        {
+          businessIdentifier: '789',
+          corpType: { code: 'BEN' },
+          affiliationInvites: [
+            {
+              entity: { businessIdentifier: '789', corpType: 'BEN' },
+              fromOrg: { id: 123 },
+              status: 'PENDING'
+            }
+          ]
+        },
+        {
+          businessIdentifier: '123',
+          corpType: { code: 'BEN' },
+          corpSubType: { code: 'BEN' },
+          adminFreeze: false,
+          goodStanding: true
+        },
+        {
+          businessIdentifier: '456',
+          corpType: { code: 'BEN' },
+          corpSubType: { code: 'BEN' },
+          adminFreeze: false,
+          goodStanding: true
+        }
+      ])
+    })
+
+    it('should log an error if the API request fails', async () => {
+      const consoleSpy = vi.spyOn(console, 'error')
+      mockAuthApi
+        .mockResolvedValueOnce(mockEntities) // affiliations
+        .mockRejectedValueOnce({ response: { status: 404, statusText: 'NOT FOUND' } }) // invitations
+
+      const affStore = useAffiliationsStore()
+      await affStore.loadAffiliations()
+
+      await flushPromises()
+
+      expect(consoleSpy).toHaveBeenCalledOnce()
+      expect(consoleSpy).toHaveBeenCalledWith('Error retrieving affiliation invitations: 404 - NOT FOUND ')
+
+      expect(affStore.affiliations.results).toEqual(processedAffiliations)
     })
   })
 })
