@@ -26,7 +26,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  businessError: [{ error: FetchError, type: string }]
+  businessError: [{ error: FetchError, type: 'email' | 'delegation' | 'firm' | 'passcode' }]
   emailSuccess: [void]
 }>()
 
@@ -192,7 +192,11 @@ async function submitManageRequest () {
       brdModal.close() // close modal
     } catch (error) {
       const e = error as FetchError
-      emit('businessError', { error: e, type: 'other' })
+      if (openAuthOption.value.slot === 'firm-option') {
+        emit('businessError', { error: e, type: 'firm' })
+      } else {
+        emit('businessError', { error: e, type: 'passcode' })
+      }
     }
   }
   loading.value = false

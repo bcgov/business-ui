@@ -338,7 +338,7 @@ export default {
           title: 'Error creating authorization invitation request',
           description: 'An error occurred creating authorization invitation. Please try again later.'
         },
-        other: {
+        passcode: {
           401: {
             coop: {
               title: 'Invalid Passcode',
@@ -360,6 +360,24 @@ export default {
           406: {
             title: 'Passcode Already Claimed',
             description: 'This passcode has already been claimed. If you have questions, please contact us'
+          },
+          default: {
+            title: 'Something Went Wrong',
+            description: 'An error occurred, please try again. If this error persists, please contact us.'
+          }
+        },
+        firm: {
+          401: {
+            title: 'Invalid Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
+            description: 'Unable to add the business. The provided proprietor or partner name (e.g., last name, first name middlename) is invalid.'
+          },
+          404: {
+            title: 'Business Not Found',
+            description: 'The specified business was not found.'
+          },
+          400: {
+            title: 'Business Already Added',
+            description: 'The business {name} with the business number {identifier} is already in your Business Registry List.'
           },
           default: {
             title: 'Something Went Wrong',
