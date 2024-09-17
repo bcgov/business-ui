@@ -92,7 +92,7 @@ describe('useAffiliationNavigation', () => {
     expect(sessionStorage.setItem).toHaveBeenCalledWith('BCREG-emailAddress', 'test@example.com')
     expect(sessionStorage.setItem).toHaveBeenCalledWith('BCREG-phoneNumber', '123-456-7890')
     expect(navigateToMock).toHaveBeenCalledWith(
-      'https://namerequest.example.com/nr/1',
+      'https://namerequest.example.com/nr/1?accountid=123',
       { external: true }
     )
   })

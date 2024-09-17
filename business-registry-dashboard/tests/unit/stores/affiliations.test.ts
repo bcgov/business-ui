@@ -137,7 +137,11 @@ describe('useAffiliationsStore', () => {
 
   describe('loadAffiliations', () => {
     it('should fetch and set affiliations correctly', async () => {
-      mockAuthApi.mockResolvedValue(mockEntities)
+      mockAuthApi
+        .mockResolvedValueOnce(mockEntities) // affiliations
+        .mockResolvedValueOnce({ // invitations
+          affiliationInvitations: []
+        })
 
       const affStore = useAffiliationsStore()
 
@@ -146,7 +150,7 @@ describe('useAffiliationsStore', () => {
       // wait for getAffiliatedEntities to finish
       await flushPromises()
 
-      expect(mockAuthApi).toHaveBeenCalledOnce()
+      expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for affiliations and another for invitations
       // results mapped to business object
       expect(affStore.affiliations.results).toEqual([
         {
@@ -256,15 +260,12 @@ describe('useAffiliationsStore', () => {
     })
   })
 
-  // it.only('should call test2', () => {
-  //   const testStore = useTestStore()
-  //   const test2Spy = vi.spyOn(testStore, 'test2')
-  //   testStore.test1()
-  //   expect(test2Spy).toHaveBeenCalledOnce()
-  // })
-
   it('resetAffiliations should reset affiliations correctly', async () => {
-    mockAuthApi.mockResolvedValue(mockEntities)
+    mockAuthApi
+      .mockResolvedValueOnce(mockEntities) // affiliations
+      .mockResolvedValueOnce({ // invitations
+        affiliationInvitations: []
+      })
 
     const affStore = useAffiliationsStore()
 
@@ -272,7 +273,7 @@ describe('useAffiliationsStore', () => {
 
     await flushPromises()
 
-    expect(mockAuthApi).toHaveBeenCalledOnce()
+    expect(mockAuthApi).toHaveBeenCalledTimes(2)
 
     expect(affStore.affiliations.results).toHaveLength(4)
     expect(affStore.affiliations.count).toEqual(4)
@@ -284,21 +285,29 @@ describe('useAffiliationsStore', () => {
   })
 
   it('should call loadAffiliations when currentAccount ID changes', async () => {
-    mockAuthApi.mockResolvedValue(mockEntities)
+    mockAuthApi
+      .mockResolvedValueOnce(mockEntities) // affiliations
+      .mockResolvedValueOnce({ // invitations
+        affiliationInvitations: []
+      })
+      .mockResolvedValueOnce(mockEntities) // affiliations
+      .mockResolvedValueOnce({ // invitations
+        affiliationInvitations: []
+      })
 
     const affStore = useAffiliationsStore()
 
     await affStore.loadAffiliations()
 
     await flushPromises()
-    expect(mockAuthApi).toHaveBeenCalledOnce()
+    expect(mockAuthApi).toHaveBeenCalledTimes(2)
 
     // trigger the watcher by changing currentAccount.id
     store.currentAccount.id = '456'
 
     await flushPromises()
 
-    expect(mockAuthApi).toHaveBeenCalledTimes(2)
+    expect(mockAuthApi).toHaveBeenCalledTimes(4)
   })
 
   describe('affiliation columns', () => {
@@ -403,13 +412,18 @@ describe('useAffiliationsStore', () => {
   describe('affiliation filtering', () => {
     describe('filter by name', () => {
       it('should filter a name request object', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
 
         await flushPromises()
 
+        expect(mockAuthApi).toHaveBeenCalledTimes(2)
         affStore.affiliations.filters.businessName = 'SOME TEST NAME 321'
 
         expect(affStore.filteredResults).toHaveLength(1)
@@ -417,7 +431,11 @@ describe('useAffiliationsStore', () => {
       })
 
       it('should filter a business object', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -443,7 +461,11 @@ describe('useAffiliationsStore', () => {
 
     describe('filter by number', () => {
       it('should filter a name request object', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -457,7 +479,11 @@ describe('useAffiliationsStore', () => {
       })
 
       it('should filter a business object', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -483,7 +509,11 @@ describe('useAffiliationsStore', () => {
 
     describe('filter by type', () => {
       it('should filter an Amalgamation Application', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -497,7 +527,11 @@ describe('useAffiliationsStore', () => {
       })
 
       it('should filter a BC Limited Company', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -513,7 +547,11 @@ describe('useAffiliationsStore', () => {
 
     describe('filter by status', () => {
       it('should filter by draft', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -527,7 +565,11 @@ describe('useAffiliationsStore', () => {
       })
 
       it('should filter by historical', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -543,7 +585,11 @@ describe('useAffiliationsStore', () => {
 
     describe('statusOptions', () => {
       it('should be created based off the results objects', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
@@ -556,7 +602,11 @@ describe('useAffiliationsStore', () => {
 
     describe('typeOptions', () => {
       it('should be created based off the results objects', async () => {
-        mockAuthApi.mockResolvedValue(mockAffiliationResponse)
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
 
         const affStore = useAffiliationsStore()
         await affStore.loadAffiliations()
