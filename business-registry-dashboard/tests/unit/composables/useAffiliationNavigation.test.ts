@@ -35,6 +35,15 @@ mockNuxtImport('useRuntimeConfig', () => {
   )
 })
 
+const mockGetStoredFlag = vi.fn()
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
+
 describe('useAffiliationNavigation', () => {
   let store: any
   beforeEach(() => {
@@ -176,6 +185,7 @@ describe('useAffiliationNavigation', () => {
 
   describe('goToRegister', () => {
     it('should navigate to goToBusiness when business is a modernized entity', async () => {
+      mockGetStoredFlag.mockReturnValue('BC') // mock ld so isSupportedAmalgamationEntities returns true
       const { goToRegister } = useAffiliationNavigation()
       const business: Business = { corpType: { code: CorpTypes.BC_COMPANY }, businessIdentifier: '123' }
       const cb = vi.fn().mockResolvedValue('BC1234567')
@@ -189,17 +199,16 @@ describe('useAffiliationNavigation', () => {
       )
     })
 
-    it.skip('should navigate goToSocieties when business is societies', async () => { // this will not ever run with current hardcoded ld flags
+    it('should navigate goToSocieties when business is societies', async () => {
       const { goToRegister } = useAffiliationNavigation()
       const business: Business = { corpType: { code: CorpTypes.SOCIETY }, businessIdentifier: '123' }
       const cb = vi.fn().mockResolvedValue('BC1234567')
 
       await goToRegister(business, cb)
 
-      expect(cb).toHaveBeenCalledWith(business)
       expect(navigateToMock).toHaveBeenCalledWith(
-        'https://business.example.com/BC1234567?accountid=123',
-        { external: true }
+        'https://societies.example.com/?accountid=123',
+        { open: { target: '_blank' } }
       )
     })
 
@@ -242,6 +251,7 @@ describe('useAffiliationNavigation', () => {
 
   describe('goToAmalgamate', () => {
     it('should navigate to goToDashboard when the entity is supported for amalgamation', async () => {
+      mockGetStoredFlag.mockReturnValue('BC') // mock ld so isSupportedAmalgamationEntities returns true
       const { goToAmalgamate } = useAffiliationNavigation()
       const business: Business = { corpType: { code: CorpTypes.BC_COMPANY }, businessIdentifier: '123' }
       const cb = vi.fn().mockResolvedValue('BC1234567')
@@ -272,6 +282,7 @@ describe('useAffiliationNavigation', () => {
 
   describe('goToContinuationIn', () => {
     it('should navigate to goToDashboard when the entity is supported for continuation in', async () => {
+      mockGetStoredFlag.mockReturnValue('C') // mock ld so isSupportedContinuationInEntities returns true
       const { goToContinuationIn } = useAffiliationNavigation()
       const business: Business = { corpType: { code: CorpTypes.CONTINUE_IN }, businessIdentifier: '456' }
       const cb = vi.fn().mockResolvedValue('BC1234567')
