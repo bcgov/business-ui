@@ -8,6 +8,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const toast = useToast()
   const brdModal = useBrdModals()
   const keycloak = reactive(useKeycloak())
+  const ldStore = useConnectLaunchdarklyStore()
 
   const affiliations = reactive({
     filters: {
@@ -77,9 +78,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   async function handleAffiliationInvitations (affiliatedEntities: Business[]): Promise<Business[]> {
     const currentAccountId = Number(accountStore.currentAccount.id)
-    // if (!LaunchDarklyService.getFlag(LDFlags.AffiliationInvitationRequestAccess)) { // TODO: implement after adding ld
-    //   return affiliatedEntities
-    // }
+    if (!ldStore.getStoredFlag(LDFlags.AffiliationInvitationRequestAccess)) {
+      return affiliatedEntities
+    }
 
     const pendingInvites = await $authApi<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
       params: {
@@ -89,14 +90,14 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }).catch((error) => {
       logFetchError(error, 'Error retrieving affiliation invitations')
     })
-    // const includeAffiliationInviteRequest = LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: implement after adding ld
+    const includeAffiliationInviteRequest = ldStore.getStoredFlag(LDFlags.EnableAffiliationDelegation) || false
 
     if (pendingInvites && pendingInvites.affiliationInvitations.length > 0) {
       for (const invite of pendingInvites.affiliationInvitations) {
       // Skip over affiliation requests for type REQUEST for now.
-      // if (affiliationInvite.type === AffiliationInvitationType.REQUEST && !includeAffiliationInviteRequest) {  // TODO: implement after adding ld
-      //   continue
-      // }
+        if (invite.type === AffiliationInvitationType.REQUEST && !includeAffiliationInviteRequest) {
+          continue
+        }
         const isFromOrg = invite.fromOrg.id === currentAccountId
         const isToOrgAndPending = invite.toOrg?.id === currentAccountId &&
         invite.status === AffiliationInvitationStatus.Pending
