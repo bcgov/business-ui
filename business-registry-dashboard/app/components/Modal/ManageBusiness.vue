@@ -6,6 +6,7 @@ const toast = useToast()
 const affStore = useAffiliationsStore()
 const { t } = useI18n()
 const { $authApi } = useNuxtApp()
+const ldStore = useConnectLaunchdarklyStore()
 
 const props = defineProps<{
   business: ManageBusinessEvent
@@ -31,14 +32,8 @@ const showEmailOption = computed(() => {
   return (businessDetails.value.isCorpOrBenOrCoop || businessDetails.value.isFirm) && contactEmail.value !== ''
 })
 
-const enableDelegationFeature = computed(() => {
-  // return LaunchDarklyService.getFlag(LDFlags.EnableAffiliationDelegation) || false // TODO: fix after adding launch darkly
-  return true
-})
-
 const showPasscodeOption = computed(() => {
-  // const allowableBusinessPasscodeTypes: string = LaunchDarklyService.getFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP' // TODO: implememnt after adding launch darkly
-  const allowableBusinessPasscodeTypes: string = 'BC,SP,GP'
+  const allowableBusinessPasscodeTypes: string = ldStore.getStoredFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP'
   return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !businessDetails.value.isFirm
 })
 
@@ -72,7 +67,7 @@ const authOptions = computed<AccordionItem[]>(() => {
     })
   }
 
-  if (affiliatedAccounts.value.length > 0 && enableDelegationFeature.value) {
+  if (affiliatedAccounts.value.length > 0 && (ldStore.getStoredFlag(LDFlags.EnableAffiliationDelegation) || false)) {
     options.push({
       label: t('form.manageBusiness.authOption.delegation.accordianLabel.default'),
       slot: 'delegation-option'
