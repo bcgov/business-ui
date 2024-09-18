@@ -10,7 +10,6 @@ onMounted(async () => {
   <SbcPageSectionCard :heading="$t('labels.myList', { count: affStore.affiliations.count })">
     <!-- columns to show dropdown -->
     <template #header-right>
-      <!-- TODO: map dropdown items to come from table columns -->
       <USelectMenu
         v-slot="{ open }"
         v-model="affStore.selectedColumns"
@@ -279,7 +278,6 @@ onMounted(async () => {
       </template>
 
       <!-- actions table cell -->
-      <!-- TODO: add events to actions component -->
       <template #actions-data="{ row, index }">
         <TableAffiliatedEntityAction
           :item="row"

@@ -5,12 +5,12 @@ import {
   FilingTypes
   // NrRequestTypeCodes
 } from '@bcrs-shared-components/enums'
-// import launchdarklyServices from 'sbc-common-components/src/services/launchdarkly.services'
 
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
 const { t } = useI18n()
+const ldStore = useConnectLaunchdarklyStore()
 
 const props = defineProps<{
   affiliations: Business[],
@@ -28,14 +28,10 @@ const emit = defineEmits<{
 
 const invalidStatuses = [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired, AffiliationInvitationStatus.Failed]
 
-/** Create a business record in LEAR. */ // TODO: implement
+/** Create a business record in LEAR. */
 async function createBusinessRecord (business: Business): Promise<string> {
-  // const amalgamationTypes = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
-  const ldAmalgTypes = 'BC BEN CC ULC' // use hardcoded for now
-  const amalgamationTypes = ldAmalgTypes.split(' ') || []
-  // const continuationInTypes = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-  const ldContTypes = 'C CBEN CCC CUL' // use hardcoded for now
-  const continuationInTypes = ldContTypes.split(' ') || []
+  const amalgamationTypes = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
+  const continuationInTypes = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
   const regTypes = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
   const iaTypes = [CorpTypes.BENEFIT_COMPANY, CorpTypes.COOP, CorpTypes.BC_CCC, CorpTypes.BC_COMPANY,
     CorpTypes.BC_ULC_COMPANY]
@@ -60,7 +56,6 @@ async function createBusinessRecord (business: Business): Promise<string> {
   }
 
   if (payload) {
-    // filingResponse = await businessStore.createNamedBusiness(payload)
     filingResponse = await createNamedBusiness(payload)
   }
 
@@ -70,8 +65,6 @@ async function createBusinessRecord (business: Business): Promise<string> {
   }
   return filingResponse.filing.business.identifier // TODO: fix ts error
 }
-
-// MOVE THESE INTO AFFILIATION NAVIGATION COMPOSABLE??? REFACTOR AFFILIATIONS INTO STORE INSTEAD OF COMPOSABLE
 
 const showAffiliationInvitationNewRequestButton = (item: Business): boolean => {
   const invite = item.affiliationInvites?.[0]
@@ -367,7 +360,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
     }
   }
 
-  if (showAmalgamateShortForm(props.item)) { // TODO: implement after adding affiliation invitations showAmalgamation short form, add click funciton to option
+  if (showAmalgamateShortForm(props.item)) {
     options.push({
       label: t('labels.amalgamateNowShortForm'),
       click: () => showAmalgamateShortForm(props.item),
