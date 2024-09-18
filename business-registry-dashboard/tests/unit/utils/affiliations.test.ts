@@ -43,6 +43,15 @@ const mockBusiness: Business = {
   status: 'ACTIVE'
 }
 
+const mockGetStoredFlag = vi.fn()
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
+
 describe('affiliations utils', () => {
   describe('getAffiliationInvitationStatus', () => {
     it('should return the status if defined', () => {
@@ -591,7 +600,8 @@ describe('affiliations utils', () => {
   })
 
   describe('canUseNameRequest', () => {
-    it('should return true when all conditions are met', () => {
+    it('should return true when all conditions are met and is modernized entity', () => {
+      mockGetStoredFlag.mockReturnValue('BC') // mock LDFlags.IaSupportedEntities so isModernized entity return true
       const business: Business = {
         businessIdentifier: '123',
         corpType: { code: CorpTypes.NAME_REQUEST },
@@ -605,6 +615,23 @@ describe('affiliations utils', () => {
       const result = canUseNameRequest(business)
 
       expect(result).toBe(true)
+    })
+
+    it('should return false when all conditions are met and is not modernized entity', () => {
+      mockGetStoredFlag.mockReturnValue('') // mock LDFlags.IaSupportedEntities so isModernized entity return false
+      const business: Business = {
+        businessIdentifier: '123',
+        corpType: { code: CorpTypes.NAME_REQUEST },
+        nameRequest: {
+          legalType: CorpTypes.BC_COMPANY,
+          enableIncorporation: true,
+          expirationDate: new Date('2024-12-31')
+        }
+      }
+
+      const result = canUseNameRequest(business)
+
+      expect(result).toBe(false)
     })
 
     it('should return false when isNameRequest returns false', () => {
