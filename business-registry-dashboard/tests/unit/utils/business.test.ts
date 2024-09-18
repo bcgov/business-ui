@@ -10,6 +10,15 @@ mockNuxtImport('useKeycloak', () => {
   )
 })
 
+const mockGetStoredFlag = vi.fn()
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
+
 describe('business utils', () => {
   describe('determineDisplayName', () => {
     it('should return the legal name when alternate names are disabled', () => {
@@ -17,13 +26,15 @@ describe('business utils', () => {
       expect(result).toBe('Legal Name')
     })
 
-    it('should return the correct alternate name if legal type is SOLE_PROP and name matches identifier', () => {
+    it('should return the correct alternate name if legal type is SOLE_PROP and name matches identifier with LDFlags.AlternateNamesMbr = true', () => {
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AlternateNamesMbr to true
       const alternateNames = [{ identifier: '12345', name: 'Alternate Name' }]
       const result = determineDisplayName('Legal Name', CorpTypes.SOLE_PROP, '12345', alternateNames)
       expect(result).toBe('Alternate Name')
     })
 
-    it('should return an empty string if no matching alternate name is found for SOLE_PROP', () => {
+    it('should return an empty string if no matching alternate name is found for SOLE_PROP with LDFlags.AlternateNamesMbr = true', () => {
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AlternateNamesMbr to true
       const alternateNames = [{ identifier: '67890', name: 'Alternate Name' }]
       const result = determineDisplayName('Legal Name', CorpTypes.SOLE_PROP, '12345', alternateNames)
       expect(result).toBe('')
@@ -133,6 +144,7 @@ describe('business utils', () => {
 
   describe('isModernizedEntity', () => {
     it('should return true if entity type is in the supported list', () => {
+      mockGetStoredFlag.mockReturnValue('BC')
       const business: Business = { corpType: { code: CorpTypes.BC_COMPANY }, businessIdentifier: '123' }
       expect(isModernizedEntity(business)).toBe(true)
     })
@@ -146,6 +158,7 @@ describe('business utils', () => {
 
   describe('isSupportedAmalgamationEntities', () => {
     it('should return true if entity type supports amalgamation', () => {
+      mockGetStoredFlag.mockReturnValue('BC')
       const business: Business = { corpType: { code: CorpTypes.BC_COMPANY }, businessIdentifier: '123' }
       expect(isSupportedAmalgamationEntities(business)).toBe(true)
     })
@@ -159,6 +172,7 @@ describe('business utils', () => {
 
   describe('isSupportedContinuationInEntities', () => {
     it('should return true if entity type supports continuation in', () => {
+      mockGetStoredFlag.mockReturnValue('C')
       const business: Business = { corpType: { code: CorpTypes.CONTINUE_IN }, businessIdentifier: '123' }
       expect(isSupportedContinuationInEntities(business)).toBe(true)
     })
