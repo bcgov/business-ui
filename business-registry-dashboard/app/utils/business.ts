@@ -74,30 +74,46 @@ export function isSocieties (item: Business): boolean {
 
 export function isModernizedEntity (item: Business): boolean {
   const ldStore = useConnectLaunchdarklyStore()
-  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.IaSupportedEntities)
   const entityType = getEntityType(item)
-  return supportedEntityFlags.includes(entityType)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
 
 export function isSupportedAmalgamationEntities (item: Business): boolean {
   const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
 
 export function isSupportedContinuationInEntities (item: Business): boolean {
   const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
 
 export function isSupportedRestorationEntities (item: Business): boolean {
   const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportRestorationEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
 
 export async function createNamedBusiness ({ filingType, business }: { filingType: FilingTypes, business: Business}) {
