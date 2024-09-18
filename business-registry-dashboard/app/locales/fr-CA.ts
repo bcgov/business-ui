@@ -1,5 +1,5 @@
 export default {
-  alerts: { // TODO: review alert messages
+  alerts: {
     'future-filing': {
       title: '',
       description: "Le prochain Rapport Annuel de cette entreprise n'est pas dû avant le {date}. Veuillez déposer le Rapport Annuel à partir de cette date."
@@ -430,7 +430,7 @@ export default {
     corpNum: 'Numéro de constitution',
     busNum: "Numéro d'entreprise",
     arDate: 'Date du Rapport Annuel',
-    name: 'Nom', // TODO: start review
+    name: 'Nom',
     mailingAddress: 'Adresse Postale',
     deliveryAddress: 'Adresse de Livraison',
     effectiveDates: "Dates d'Effet",
@@ -581,7 +581,7 @@ export default {
         }
       }
     },
-    tos: { // TODO: review tos page translations
+    tos: {
       title: "Conditions d'Utilisation - Rapport Annuel de Service CB",
       h1: "Conditions d'Utilisation",
       form: {
@@ -594,7 +594,7 @@ export default {
         content: "En refusant les Conditions d'Utilisation, vous ne pourrez pas continuer à utiliser ce service. Veuillez accepter les Conditions d'Utilisation pour continuer."
       }
     },
-    help: { // TODO: review help page translations
+    help: {
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
     }
   },
