@@ -9,8 +9,8 @@ dependencies:
     specifier: ^1.1.16
     version: 1.1.16
   '@daxiom/nuxt-core-layer-test':
-    specifier: ^0.0.1
-    version: 0.0.1(nuxt@3.12.3)(pinia@2.1.7)(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3)(vue@3.4.31)
+    specifier: ^0.0.2
+    version: 0.0.2(nuxt@3.12.3)(pinia@2.1.7)(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3)(vue@3.4.31)
   '@vuepic/vue-datepicker':
     specifier: ^8.8.1
     version: 8.8.1(vue@3.4.31)
@@ -684,8 +684,8 @@ packages:
       postcss-selector-parser: 6.1.0
     dev: false
 
-  /@daxiom/nuxt-core-layer-test@0.0.1(nuxt@3.12.3)(pinia@2.1.7)(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3)(vue@3.4.31):
-    resolution: {integrity: sha512-QUICvSnfbVKfQlIKHgXvueZCTkjJJE9IQlnkZ0wkpGRvPo9mwwLOxO6+z1Elfr9rSkEWp+JrZtt7dQfOMMfoPw==}
+  /@daxiom/nuxt-core-layer-test@0.0.2(nuxt@3.12.3)(pinia@2.1.7)(rollup@4.18.0)(typescript@5.5.3)(vite@5.3.3)(vue@3.4.31):
+    resolution: {integrity: sha512-i33lrbDFOWX69R2LwfeULRfNrKcj0r9j4LC1NYPt0c7O/K/pp6dSdXcCkIjblBLUjoIGkixvOCoAJjAg3SprbA==}
     dependencies:
       '@iconify-json/mdi': 1.1.68
       '@nuxt/content': 2.13.2(nuxt@3.12.3)(rollup@4.18.0)(vue@3.4.31)
@@ -695,6 +695,7 @@ packages:
       '@pinia/nuxt': 0.5.1(rollup@4.18.0)(typescript@5.5.3)(vue@3.4.31)
       '@vueuse/nuxt': 10.11.0(nuxt@3.12.3)(rollup@4.18.0)(vue@3.4.31)
       keycloak-js: 25.0.1
+      launchdarkly-vue-client-sdk: 2.2.2(vue@3.4.31)
       zod: 3.23.8
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -1999,7 +2000,7 @@ packages:
       pathe: 1.1.2
       picocolors: 1.0.1
       source-map-js: 1.2.0
-      unplugin: 1.11.0
+      unplugin: 1.12.0
       vue-i18n: 9.10.2(vue@3.4.31)
     transitivePeerDependencies:
       - rollup
@@ -2086,6 +2087,7 @@ packages:
   /@koa/router@12.0.1:
     resolution: {integrity: sha512-ribfPYfHb+Uw3b27Eiw6NPqjhIhTpVFzEWLwyc/1Xp+DCdwRRyIlAUODX+9bPARF6aQtUu1+/PHzdNvRzcs/+Q==}
     engines: {node: '>= 12'}
+    deprecated: Use v12.0.2 or higher to fix the vulnerability issue
     dependencies:
       debug: 4.3.5
       http-errors: 2.0.0
@@ -2744,7 +2746,7 @@ packages:
       '@nuxt/kit': 3.12.4(rollup@4.18.0)
       pathe: 1.1.2
       pkg-types: 1.1.3
-      semver: 7.6.2
+      semver: 7.6.3
     transitivePeerDependencies:
       - magicast
       - rollup
@@ -2818,7 +2820,7 @@ packages:
       '@intlify/unplugin-vue-i18n': 3.0.1(rollup@4.18.0)(vue-i18n@9.10.2)
       '@intlify/utils': 0.12.0
       '@miyaneee/rollup-plugin-json5': 1.2.0(rollup@4.18.0)
-      '@nuxt/kit': 3.12.3(magicast@0.3.4)(rollup@4.18.0)
+      '@nuxt/kit': 3.12.4(rollup@4.18.0)
       '@rollup/plugin-yaml': 4.1.2(rollup@4.18.0)
       '@vue/compiler-sfc': 3.4.31
       debug: 4.3.5
@@ -2831,8 +2833,8 @@ packages:
       pathe: 1.1.2
       scule: 1.3.0
       sucrase: 3.35.0
-      ufo: 1.5.3
-      unplugin: 1.11.0
+      ufo: 1.5.4
+      unplugin: 1.12.0
       vue-i18n: 9.10.2(vue@3.4.31)
       vue-router: 4.4.0(vue@3.4.31)
     transitivePeerDependencies:
@@ -2901,7 +2903,7 @@ packages:
       postcss-nesting: 12.1.5(postcss@8.4.39)
       tailwind-config-viewer: 2.0.4(tailwindcss@3.4.7)
       tailwindcss: 3.4.7
-      ufo: 1.5.3
+      ufo: 1.5.4
       unctx: 2.3.1
     transitivePeerDependencies:
       - magicast
@@ -3296,7 +3298,7 @@ packages:
   /@pinia/nuxt@0.5.1(rollup@4.18.0)(typescript@5.5.3)(vue@3.4.31):
     resolution: {integrity: sha512-6wT6TqY81n+7/x3Yhf0yfaJVKkZU42AGqOR0T3+UvChcaOJhSma7OWPN64v+ptYlznat+fS1VTwNAcbi2lzHnw==}
     dependencies:
-      '@nuxt/kit': 3.12.3(magicast@0.3.4)(rollup@4.18.0)
+      '@nuxt/kit': 3.12.4(rollup@4.18.0)
       pinia: 2.1.7(typescript@5.5.3)(vue@3.4.31)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -3801,12 +3803,6 @@ packages:
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
-
-  /@types/mdast@4.0.3:
-    resolution: {integrity: sha512-LsjtqsyF+d2/yFOYaN22dHZI1Cpwkrj+g06G8+qtUKlhovPW89YhqSnfKtMbkgmEtYpH2gydRNULd6y8mciAFg==}
-    dependencies:
-      '@types/unist': 3.0.2
-    dev: false
 
   /@types/mdast@4.0.4:
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -4497,7 +4493,7 @@ packages:
     peerDependencies:
       nuxt: ^3.0.0
     dependencies:
-      '@nuxt/kit': 3.12.3(magicast@0.3.4)(rollup@4.18.0)
+      '@nuxt/kit': 3.12.4(rollup@4.18.0)
       '@vueuse/core': 10.11.0(vue@3.4.31)
       '@vueuse/metadata': 10.11.0
       local-pkg: 0.5.0
@@ -8205,7 +8201,7 @@ packages:
       acorn: 8.12.1
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      semver: 7.6.2
+      semver: 7.6.3
     dev: false
 
   /jsonc-parser@3.2.1:
@@ -8337,8 +8333,23 @@ packages:
       launchdarkly-js-sdk-common: 5.2.0
     dev: false
 
+  /launchdarkly-js-client-sdk@3.4.0:
+    resolution: {integrity: sha512-3v1jKy1RECT0SG/3SGlyRO32vweoNxvWiJuIChRh/Zhk98cHpANuwameXVhwJ4WEDNZJTur73baaKAyatSP46A==}
+    dependencies:
+      escape-string-regexp: 4.0.0
+      launchdarkly-js-sdk-common: 5.3.0
+    dev: false
+
   /launchdarkly-js-sdk-common@5.2.0:
     resolution: {integrity: sha512-aLv2ZrUv229RIwLtFhdILu2aJS/fqGSJzTk4L/bCDZA8RuIh7PutI3ui/AJeNnzPzjKzdEQZw6wVhkVc84baog==}
+    dependencies:
+      base64-js: 1.5.1
+      fast-deep-equal: 2.0.1
+      uuid: 8.3.2
+    dev: false
+
+  /launchdarkly-js-sdk-common@5.3.0:
+    resolution: {integrity: sha512-NI5wFF8qhjtpRb4KelGdnwNIOf/boLlbLiseV7uf1jxSeoM/L30DAz87RT8VhYCSGCo4LedGILQFednI/MKFkA==}
     dependencies:
       base64-js: 1.5.1
       fast-deep-equal: 2.0.1
@@ -8352,6 +8363,16 @@ packages:
       vue: ^3.2.36
     dependencies:
       launchdarkly-js-client-sdk: 3.3.0
+      vue: 3.4.31(typescript@5.5.3)
+    dev: false
+
+  /launchdarkly-vue-client-sdk@2.2.2(vue@3.4.31):
+    resolution: {integrity: sha512-fi8HLhnDqDKaVvtpu92iRVNs3XK+mUThhou8e805nWvn4EqD0Q6A5R2KK4OK5MdhSU429443pIhTHOlVYpZ+6A==}
+    engines: {node: '>=16.15.1', npm: '>=8.11.0'}
+    peerDependencies:
+      vue: ^3.2.36
+    dependencies:
+      launchdarkly-js-client-sdk: 3.4.0
       vue: 3.4.31(typescript@5.5.3)
     dev: false
 
@@ -8681,7 +8702,7 @@ packages:
   /mdast-util-to-string@4.0.0:
     resolution: {integrity: sha512-0H44vDimn51F0YwvxSJSm0eCDOJTRlmN0R1yBh4HLj9wiV1Dn0QoXGbvFAWj2hSItVTlCmBF1hqKlIyUBVFLPg==}
     dependencies:
-      '@types/mdast': 4.0.3
+      '@types/mdast': 4.0.4
     dev: false
 
   /mdn-data@2.0.28:
@@ -9869,7 +9890,7 @@ packages:
       '@vue/devtools-api': 6.6.3
       typescript: 5.5.3
       vue: 3.4.31(typescript@5.5.3)
-      vue-demi: 0.14.7(vue@3.4.31)
+      vue-demi: 0.14.10(vue@3.4.31)
 
   /pirates@4.0.6:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
@@ -12453,7 +12474,6 @@ packages:
         optional: true
     dependencies:
       vue: 3.4.31(typescript@5.5.3)
-    dev: false
 
   /vue-demi@0.14.7(vue@3.4.31):
     resolution: {integrity: sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==}
@@ -12468,6 +12488,7 @@ packages:
         optional: true
     dependencies:
       vue: 3.4.31(typescript@5.5.3)
+    dev: true
 
   /vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
