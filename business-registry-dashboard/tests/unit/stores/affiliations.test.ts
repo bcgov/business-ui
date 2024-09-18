@@ -222,7 +222,7 @@ describe('useAffiliationsStore', () => {
       expect(mockAuthApi).not.toHaveBeenCalled()
     })
 
-    it('should handle fetch errors', async () => { // TODO: implement after adding better error handling
+    it('should handle fetch errors', async () => {
       mockAuthApi.mockRejectedValue({ response: { status: 400, statusText: 'NOT FOUND' } })
       const consoleSpy = vi.spyOn(console, 'error')
 
@@ -1034,7 +1034,7 @@ describe('useAffiliationsStore', () => {
       expect(mockOpenManageBusiness).toHaveBeenCalled()
     })
 
-    it('should call addBusinessForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
+    it('should call addBusinessForStaffSilently when isStaffOrSbcStaff is true', async () => {
       mockAuthApi.mockResolvedValue({ status: 200 })
       store.currentAccount.accountType = 'SBC_STAFF'
 
@@ -1055,7 +1055,7 @@ describe('useAffiliationsStore', () => {
       expect(mockAddToast).toHaveBeenCalledOnce()
     })
 
-    it('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => { // TODO: figure out why auth api isnt being called
+    it('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => {
       mockAuthApi.mockResolvedValue({ status: 200 })
       store.currentAccount.accountType = 'SBC_STAFF'
 
