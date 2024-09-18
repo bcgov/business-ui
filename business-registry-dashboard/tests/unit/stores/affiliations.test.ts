@@ -136,6 +136,15 @@ const processedAffiliations = [
   }
 ]
 
+const mockGetStoredFlag = vi.fn()
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
+
 describe('useAffiliationsStore', () => {
   let store: any
 
@@ -164,6 +173,7 @@ describe('useAffiliationsStore', () => {
 
   describe('loadAffiliations', () => {
     it('should fetch and set affiliations correctly', async () => {
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
       mockAuthApi
         .mockResolvedValueOnce(mockEntities) // affiliations
         .mockResolvedValueOnce({ // invitations
@@ -251,6 +261,7 @@ describe('useAffiliationsStore', () => {
   })
 
   it('resetAffiliations should reset affiliations correctly', async () => {
+    mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
     mockAuthApi
       .mockResolvedValueOnce(mockEntities) // affiliations
       .mockResolvedValueOnce({ // invitations
@@ -275,6 +286,7 @@ describe('useAffiliationsStore', () => {
   })
 
   it('should call loadAffiliations when currentAccount ID changes', async () => {
+    mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
     mockAuthApi
       .mockResolvedValueOnce(mockEntities) // affiliations
       .mockResolvedValueOnce({ // invitations
@@ -402,6 +414,7 @@ describe('useAffiliationsStore', () => {
   describe('affiliation filtering', () => {
     describe('filter by name', () => {
       it('should filter a name request object', async () => {
+        mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
         mockAuthApi
           .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
           .mockResolvedValueOnce({ // invitations
@@ -1115,6 +1128,7 @@ describe('useAffiliationsStore', () => {
 
   describe('handleAffiliationInvitations', () => {
     it('should return affiliation invitations and add to affiliatedEntities with an existing business', async () => {
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
       mockAuthApi
         .mockResolvedValueOnce({
           entities: [
@@ -1168,6 +1182,7 @@ describe('useAffiliationsStore', () => {
     })
 
     it('should return affiliation invitations and add to affiliatedEntities with a new business', async () => {
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
       mockAuthApi
         .mockResolvedValueOnce({
           entities: [
@@ -1221,6 +1236,7 @@ describe('useAffiliationsStore', () => {
 
     it('should log an error if the API request fails', async () => {
       const consoleSpy = vi.spyOn(console, 'error')
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
       mockAuthApi
         .mockResolvedValueOnce(mockEntities) // affiliations
         .mockRejectedValueOnce({ response: { status: 404, statusText: 'NOT FOUND' } }) // invitations
@@ -1233,6 +1249,21 @@ describe('useAffiliationsStore', () => {
       expect(consoleSpy).toHaveBeenCalledOnce()
       expect(consoleSpy).toHaveBeenCalledWith('Error retrieving affiliation invitations: 404 - NOT FOUND ')
 
+      expect(affStore.affiliations.results).toEqual(processedAffiliations)
+    })
+
+    it('should not fetch invitations if LDFlags.AffiliationInvitationRequestAccess = false', async () => {
+      mockGetStoredFlag.mockReturnValue(false) // set LDFlags.AffiliationInvitationRequestAccess = false - do not allow invitations fetch
+      mockAuthApi
+        .mockResolvedValueOnce(mockEntities) // affiliations
+        .mockRejectedValueOnce({ response: { status: 404, statusText: 'NOT FOUND' } }) // invitations
+
+      const affStore = useAffiliationsStore()
+      await affStore.loadAffiliations()
+
+      await flushPromises()
+
+      expect(mockAuthApi).toHaveBeenCalledOnce() // should only be called once for initial affiliations fetch
       expect(affStore.affiliations.results).toEqual(processedAffiliations)
     })
   })
