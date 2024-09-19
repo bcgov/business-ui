@@ -19,20 +19,20 @@ const props = defineProps<{
 const emit = defineEmits<{select: [item: any]}>()
 
 const inputRef = ref<InstanceType<typeof UInput> | null>(null)
-const resultListItems = ref<NodeListOf<HTMLLIElement> | null>(null)
+const resultListItems = ref<HTMLLIElement[] | null>(null)
 const query = ref('')
 const loading = ref(false)
 const showDropdown = ref(false)
 const hasFocus = ref(false)
-const results = ref<any[]>([])
+const searchResults = ref<any[]>([])
 const statusText = ref('')
-const error = ref(false)
+const hasError = ref(false)
 
 // Helper function to reset dropdown states
 function resetDropdown () {
   showDropdown.value = false
   resetActiveElement()
-  results.value = []
+  searchResults.value = []
 }
 
 function isItemDisabled (item: any): boolean {
@@ -58,24 +58,24 @@ async function fetchResults () {
 
     resultListItems.value = null
     statusText.value = ''
-    error.value = false
+    hasError.value = false
 
     const response = await props.searchFn(query.value)
 
     if (response.length >= 0) {
-      results.value = response.map((item) => {
+      searchResults.value = response.map((item) => {
         const disabled = isItemDisabled(item)
         return { ...item, disabled }
       })
 
-      const enabledResultsCount = results.value.filter(item => !item.disabled).length
+      const enabledResultsCount = searchResults.value.filter(item => !item.disabled).length
       setTimeout(() => {
         statusText.value = t('AsyncComboBox.resultsCount', { count: enabledResultsCount })
       }, 300) // delay so screen reader is updated correctly
     }
   } catch (e) {
     logFetchError(e, 'Error fetching search results')
-    error.value = true
+    hasError.value = true
     setTimeout(() => {
       statusText.value = t('AsyncComboBox.error')
     }, 300) // delay so screen reader is updated correctly
@@ -88,7 +88,7 @@ const debouncedFetchResults = useDebounceFn(fetchResults, 500)
 
 function getResults () {
   loading.value = true
-  results.value = []
+  searchResults.value = []
   debouncedFetchResults()
 }
 
@@ -116,11 +116,8 @@ function resetActiveElement () {
 // find active <li> index in search results list
 function getActiveElementIndex () {
   if (resultListItems.value) {
-    // convert nodelist into array
-    const resultArray = Array.from(resultListItems.value)
-
     // return active index
-    return resultArray.findIndex(
+    return resultListItems.value.findIndex(
       el => el.getAttribute('aria-selected') === 'true'
     )
   } else {
@@ -132,7 +129,7 @@ function keyupHandler (e: KeyboardEvent) {
   const allowedKeys = [KeyCode.ARROWUP, KeyCode.ARROWDOWN, KeyCode.ENTER, KeyCode.ESCAPE, KeyCode.TAB]
   const key = e.code as KeyCode
   const activeElIndex = getActiveElementIndex() // get aria-activedescendant index or return -1
-  const resultMax = results.value.length - 1 // last <li> element index
+  const resultMax = searchResults.value.length - 1 // last <li> element index
 
   if (key === KeyCode.TAB) {
     resetDropdown()
@@ -152,7 +149,7 @@ function keyupHandler (e: KeyboardEvent) {
         if (!resultListItems.value || resultListItems.value?.length === 0) { return } // return early if no results
 
         // return early if all items are disabled
-        const allItemsDisabled = results.value.every(item => item.disabled)
+        const allItemsDisabled = searchResults.value.every(item => item.disabled)
         if (allItemsDisabled) {
           return
         }
@@ -160,21 +157,21 @@ function keyupHandler (e: KeyboardEvent) {
         let nextIndex = activeElIndex === -1 || activeElIndex === resultMax ? 0 : activeElIndex + 1
 
         // skip disabled items while moving down
-        while (results.value[nextIndex]?.disabled && nextIndex < resultMax) {
+        while (searchResults.value[nextIndex]?.disabled && nextIndex < resultMax) {
           nextIndex++
         }
 
         // if last item disabled, wrap to first item
-        if (results.value[nextIndex]?.disabled && nextIndex === resultMax) {
+        if (searchResults.value[nextIndex]?.disabled && nextIndex === resultMax) {
           nextIndex = 0
-          while (results.value[nextIndex]?.disabled && nextIndex < resultMax) {
+          while (searchResults.value[nextIndex]?.disabled && nextIndex < resultMax) {
             nextIndex++ // skip disabled items while moving down again
           }
         }
 
         // set active element if found
         const nextElement = resultListItems.value[nextIndex]
-        if (nextElement && !results.value[nextIndex]?.disabled) {
+        if (nextElement && !searchResults.value[nextIndex]?.disabled) {
           setActiveElement(nextElement)
         }
         break
@@ -185,7 +182,7 @@ function keyupHandler (e: KeyboardEvent) {
         if (!resultListItems.value || resultListItems.value.length === 0) { return } // return early if in error or no results state
 
         // return early if all items are disabled
-        const allItemsDisabled = results.value.every(item => item.disabled)
+        const allItemsDisabled = searchResults.value.every(item => item.disabled)
         if (allItemsDisabled) {
           return
         }
@@ -193,21 +190,21 @@ function keyupHandler (e: KeyboardEvent) {
         let prevIndex = activeElIndex <= 0 ? resultMax : activeElIndex - 1
 
         // skip disabled items while moving up
-        while (results.value[prevIndex]?.disabled && prevIndex > 0) {
+        while (searchResults.value[prevIndex]?.disabled && prevIndex > 0) {
           prevIndex--
         }
 
         // if first item is disabled, wrap to last item
-        if (results.value[prevIndex]?.disabled && prevIndex === 0) {
+        if (searchResults.value[prevIndex]?.disabled && prevIndex === 0) {
           prevIndex = resultMax
-          while (results.value[prevIndex]?.disabled && prevIndex > 0) {
+          while (searchResults.value[prevIndex]?.disabled && prevIndex > 0) {
             prevIndex-- // skip disabled items while moving up again
           }
         }
 
         // set active element if found
         const prevElement = resultListItems.value[prevIndex]
-        if (prevElement && !results.value[prevIndex]?.disabled) {
+        if (prevElement && !searchResults.value[prevIndex]?.disabled) {
           setActiveElement(prevElement)
         }
         break
@@ -216,8 +213,8 @@ function keyupHandler (e: KeyboardEvent) {
       case KeyCode.ENTER:
         e.preventDefault()
         // emit if active element found and its not disabled
-        if (activeElIndex >= 0 && results.value[activeElIndex] && !results.value[activeElIndex].disabled) {
-          emitSearchResult(results.value[activeElIndex])
+        if (activeElIndex >= 0 && searchResults.value[activeElIndex] && !searchResults.value[activeElIndex].disabled) {
+          emitSearchResult(searchResults.value[activeElIndex])
         }
         break
         // handle escape, close dropdown, reset active element and search results
@@ -241,14 +238,14 @@ function keyupHandler (e: KeyboardEvent) {
         e.preventDefault()
         query.value = ''
         resetActiveElement()
-        results.value = []
+        searchResults.value = []
         break
 
         // rerun search and display results
       case KeyCode.ENTER:
         e.preventDefault()
         resetActiveElement()
-        results.value = []
+        searchResults.value = []
         showDropdown.value = true
         getResults()
         break
@@ -314,16 +311,17 @@ function handleInput (e: Event) {
     />
     <div
       v-show="showDropdown && hasFocus && !loading"
+      data-testid="asynccombobox-dropdown-container"
       class="absolute z-[999] max-h-72 w-full overflow-auto rounded-b-md bg-white shadow-md"
     >
-      <div v-if="error">
+      <div v-if="hasError">
         <slot name="error">
           <div class="p-4">
             <span class="font-semibold">{{ $t('AsyncComboBox.error') }}</span>
           </div>
         </slot>
       </div>
-      <div v-else-if="results.length === 0">
+      <div v-else-if="searchResults.length === 0">
         <slot name="empty">
           <div class="p-4">
             <span class="font-semibold">{{ $t('AsyncComboBox.noResults') }}</span>
@@ -337,7 +335,7 @@ function handleInput (e: Event) {
         :aria-label="$t('AsyncComboBox.resultListLabel')"
       >
         <li
-          v-for="item in results"
+          v-for="item in searchResults"
           :id="item[idAttr]"
           ref="resultListItems"
           :key="item[idAttr]"
@@ -351,7 +349,7 @@ function handleInput (e: Event) {
           }"
           @mousedown.prevent.stop="!item.disabled && emitSearchResult(item)"
         >
-          <slot name="item" :item="{ ...item, disabled: item.disabled}">
+          <slot name="item" :item>
             <div class="flex items-center justify-between gap-2">
               <div class="flex-1">
                 <span>{{ item[valueAttr] }}</span>
