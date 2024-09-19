@@ -1,6 +1,5 @@
 <script setup lang='ts'>
 import type { DropdownItem } from '#ui/types'
-import { FetchError } from 'ofetch'
 import {
   NrRequestActionCodes,
   FilingTypes
@@ -24,7 +23,7 @@ const emit = defineEmits<{
   'remove-business': [{ orgIdentifier: string, business: Business }]
   'business-unavailable-error': [action: string]
   'resend-affiliation-invitation': [item: Business]
-  'show-manage-business-dialog': [item: Business]
+  'show-manage-business-dialog': [item: ManageBusinessEvent]
 }>()
 
 const invalidStatuses = [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired, AffiliationInvitationStatus.Failed]
@@ -93,8 +92,8 @@ const removeAffiliationOrInvitation = async (item: Business) => {
     try {
       await affStore.removeInvite(invite.id)
       await affStore.loadAffiliations() // reload after deleting invite
-    } catch (e) {
-      console.error('Could not delete the invite at this time. ', (e as FetchError).response)
+    } catch (error) {
+      logFetchError(error, 'Could not delete the invite at this time')
       emit('unknown-error') // TODO: better error handling?
     }
   } else {
@@ -305,8 +304,12 @@ const showAmalgamateShortForm = (item: Business): boolean => {
 
 // This is called when an affiliation invitation request already exists.
 const openNewAffiliationInvite = (business: Business) => {
-  // businessStore.setRemoveExistingAffiliationInvitation(true)  // TODO: implement after adding affiliation invitations
-  emit('show-manage-business-dialog', business)
+  const manageBusinessObject = {
+    identifier: business.businessIdentifier,
+    legalType: business.corpType.code ?? business.corpSubType?.code ?? undefined,
+    name: business.name!
+  }
+  emit('show-manage-business-dialog', manageBusinessObject)
 }
 
 const showOpenButton = (item: Business): boolean => {

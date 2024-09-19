@@ -1,5 +1,5 @@
 // https://ui.nuxt.com/components/modal#control-programmatically
-import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusiness } from '#components'
+import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusiness, ModalAuthEmailSent } from '#components'
 
 export const useBrdModals = () => {
   const modal = useModal()
@@ -70,6 +70,10 @@ export const useBrdModals = () => {
     modal.open(ModalManageBusiness, { business })
   }
 
+  function openAuthEmailSent (email: string) {
+    modal.open(ModalAuthEmailSent, { email })
+  }
+
   function close () {
     modal.close()
   }
@@ -81,6 +85,7 @@ export const useBrdModals = () => {
     openBusinessUnavailableError,
     openBusinessRemovalConfirmation,
     openManageBusiness,
+    openAuthEmailSent,
     close
   }
 }

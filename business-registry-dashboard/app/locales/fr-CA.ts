@@ -328,7 +328,7 @@ export default {
           title: "Erreur lors de la création de la demande d'invitation d'autorisation",
           description: "Une erreur est survenue lors de la création de l'invitation d'autorisation. Veuillez réessayer plus tard."
         },
-        other: {
+        passcode: {
           401: {
             coop: {
               title: "Code d'accès invalide",
@@ -350,6 +350,24 @@ export default {
           406: {
             title: "Code d'accès déjà réclamé",
             description: "Ce code d'accès a déjà été réclamé. Si vous avez des questions, veuillez nous contacter."
+          },
+          default: {
+            title: "Quelque chose s'est mal passé",
+            description: 'Une erreur est survenue, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter.'
+          }
+        },
+        firm: {
+          401: {
+            title: 'Nom du propriétaire ou du partenaire invalide (p. ex., Nom de famille, Prénom Deuxième prénom)',
+            description: "Impossible d'ajouter l'entreprise. Le nom du propriétaire ou du partenaire fourni (p. ex., nom de famille, prénom deuxième prénom) est invalide."
+          },
+          404: {
+            title: 'Entreprise non trouvée',
+            description: "L'entreprise spécifiée n'a pas été trouvée."
+          },
+          400: {
+            title: 'Entreprise déjà ajoutée',
+            description: "L'entreprise {name} avec le numéro {identifier} est déjà dans votre liste de registres d'entreprises."
           },
           default: {
             title: "Quelque chose s'est mal passé",
@@ -643,6 +661,11 @@ export default {
         }
       }
     }
+  },
+  toast: {
+    unableToAddNr: "Impossible d'ajouter la demande de nom",
+    unableToAddBusiness: "Impossible d'ajouter l'entreprise",
+    errorResendingAffInvite: "Erreur lors de la réexpédition de l'invitation à l'affiliation"
   },
   tooltips: {
     affiliationActionBtn: 'Accédez à {option} pour accéder à cette entreprise'

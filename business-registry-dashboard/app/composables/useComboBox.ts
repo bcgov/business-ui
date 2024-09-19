@@ -43,7 +43,7 @@ export const useComboBox = (
         }, 300) // delay so screen reader is updated correctly
       }
     } catch (e) {
-      console.error('Error fetching search results:', e)
+      logFetchError(e, 'Error fetching search results')
       error.value = true
       setTimeout(() => {
         statusText.value = t('AsyncComboBox.error')

@@ -13,14 +13,20 @@ defineProps<{
   },
   fullscreen?: boolean
 }>()
+
+defineEmits<{
+  modalClosed: [void]
+}>()
 </script>
 <template>
   <UModal
+    ref="modalRef"
     v-model="modalModel"
     :fullscreen
     :ui="{
       width: 'w-full sm:max-w-lg md:min-w-min'
     }"
+    @after-leave="$emit('modalClosed')"
   >
     <UCard
       :ui="{

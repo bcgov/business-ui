@@ -21,7 +21,7 @@ export function useAffiliationNavigation () {
         sessionStorage.setItem('BCREG-emailAddress', nameRequest.applicantEmail)
         sessionStorage.setItem('BCREG-phoneNumber', nameRequest.applicantPhone)
       }
-      return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}`), { external: true })
+      return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}?accountid=${currentAccountId.value}`), { external: true })
     } else {
       console.log('handle no name request case')
     }

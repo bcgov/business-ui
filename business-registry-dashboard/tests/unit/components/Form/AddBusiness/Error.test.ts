@@ -73,7 +73,7 @@ describe('<FormAddBusinessError />', () => {
     expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.delegation.description'))
   })
 
-  describe("renders correct message for 'other' error type", () => {
+  describe("renders correct message for 'passcode' error type", () => {
     it('should render error text for 401 as coop', async () => {
       const props = {
         businessDetails: {
@@ -81,7 +81,7 @@ describe('<FormAddBusinessError />', () => {
           isCoop: true
         },
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 401
@@ -91,15 +91,15 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.401.coop.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.401.coop.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.coop.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.coop.description'))
     })
 
     it('should render error text for 401 as not coop', async () => {
       const props = {
         ...testProps,
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 401
@@ -109,15 +109,15 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.401.default.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.401.default.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.default.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.default.description'))
     })
 
     it('should render error text for 404', async () => {
       const props = {
         ...testProps,
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 404
@@ -127,15 +127,15 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.404.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.description'))
     })
 
     it('should render error text for 406', async () => {
       const props = {
         ...testProps,
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 406
@@ -145,15 +145,15 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.406.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.406.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.406.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.406.description'))
     })
 
     it('should render error text for 404', async () => {
       const props = {
         ...testProps,
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 404
@@ -163,15 +163,15 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.404.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.description'))
     })
 
-    it('should render error text for other statuses', async () => {
+    it('should render error text for unknown statuses', async () => {
       const props = {
         ...testProps,
         errorObj: {
-          type: 'other',
+          type: 'passcode',
           error: {
             response: {
               status: 1234
@@ -181,8 +181,82 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.default.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.other.default.description'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.default.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.default.description'))
+    })
+  })
+
+  describe("renders correct message for 'firm' error type", () => {
+    it('should render error text for 401', async () => {
+      const props = {
+        ...testProps,
+        errorObj: {
+          type: 'firm',
+          error: {
+            response: {
+              status: 401
+            }
+          }
+        }
+      }
+      wrapper = await mountComp(props)
+
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.401.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.401.description'))
+    })
+
+    it('should render error text for 404', async () => {
+      const props = {
+        ...testProps,
+        errorObj: {
+          type: 'firm',
+          error: {
+            response: {
+              status: 404
+            }
+          }
+        }
+      }
+      wrapper = await mountComp(props)
+
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.description'))
+    })
+
+    it('should render error text for 404', async () => {
+      const props = {
+        ...testProps,
+        errorObj: {
+          type: 'firm',
+          error: {
+            response: {
+              status: 404
+            }
+          }
+        }
+      }
+      wrapper = await mountComp(props)
+
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.description'))
+    })
+
+    it('should render error text for unknown statuses', async () => {
+      const props = {
+        ...testProps,
+        errorObj: {
+          type: 'firm',
+          error: {
+            response: {
+              status: 1234
+            }
+          }
+        }
+      }
+      wrapper = await mountComp(props)
+
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.default.title'))
+      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.default.description'))
     })
   })
 

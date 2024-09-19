@@ -26,7 +26,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  businessError: [{ error: FetchError, type: string }]
+  businessError: [{ error: FetchError, type: 'email' | 'delegation' | 'firm' | 'passcode' }]
   emailSuccess: [void]
 }>()
 
@@ -170,7 +170,9 @@ async function submitManageRequest () {
   }
 
   loading.value = true
-  // await handleRemoveExistingAffiliationInvitation() // TODO: figure out if this is necessary, I do not think it is
+
+  await affStore.deletePendingInvitations(props.identifier) // delete any existing pending affiliations
+
   if (openAuthOption.value.slot === 'email-option') { // try submitting email option
     await handleEmailOption()
   } else if (openAuthOption.value.slot === 'delegation-option') { // try submitting delegation option
@@ -190,7 +192,11 @@ async function submitManageRequest () {
       brdModal.close() // close modal
     } catch (error) {
       const e = error as FetchError
-      emit('businessError', { error: e, type: 'other' })
+      if (openAuthOption.value.slot === 'firm-option') {
+        emit('businessError', { error: e, type: 'firm' })
+      } else {
+        emit('businessError', { error: e, type: 'passcode' })
+      }
     }
   }
   loading.value = false

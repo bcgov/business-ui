@@ -111,6 +111,7 @@ export interface AffiliationInviteInfo {
   entity: Business
   fromOrg: OrgNameAndId
   toOrg?: OrgNameAndId
+  recipientEmail?: string
 }
 
 export interface AffiliatedAccounts {

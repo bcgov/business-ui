@@ -23,12 +23,13 @@ async function removeBusiness (resetPasscodeEmail: string, resetPasscode = true)
     await affStore.removeBusiness(payload)
     toast.add({ title: t('modal.removeBusiness.index.successToast') }) // add success toast
     brdModal.close()
-  } catch (e) {
-    errorText.value = (e as FetchError).data?.message || t('error.generic.description')
+  } catch (error) {
+    logFetchError(error, 'Error removing business')
+    errorText.value = (error as FetchError).data?.message || t('error.generic.description')
     hasError.value = true
   } finally {
     if (!hasError.value) {
-      await affStore.loadAffiliations().catch(e => console.error('Could not refresh affiliations at this time. ', (e as FetchError).response))
+      await affStore.loadAffiliations().catch(e => logFetchError(e, 'Could not refresh affiliations at this time'))
     }
     loading.value = false
   }

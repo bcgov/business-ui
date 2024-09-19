@@ -5,7 +5,7 @@ const { t } = useI18n()
 const brdModal = useBrdModals()
 
 const props = defineProps<{
-  errorObj: {error: FetchError, type: string}
+  errorObj: {error: FetchError, type: 'email' | 'delegation' | 'firm' | 'passcode'}
   businessDetails: {
     isFirm: boolean
     isCorporation: boolean
@@ -39,27 +39,43 @@ const errorText = computed(() => {
     description = t('form.manageBusiness.error.delegation.description')
   }
 
-  if (props.errorObj.type === 'other') {
+  if (props.errorObj.type === 'passcode') {
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       if (props.businessDetails.isCoop) {
-        title = t('form.manageBusiness.error.other.401.coop.title')
-        description = t('form.manageBusiness.error.other.401.coop.description')
+        title = t('form.manageBusiness.error.passcode.401.coop.title')
+        description = t('form.manageBusiness.error.passcode.401.coop.description')
       } else {
-        title = t('form.manageBusiness.error.other.401.default.title')
-        description = t('form.manageBusiness.error.other.401.default.description')
+        title = t('form.manageBusiness.error.passcode.401.default.title')
+        description = t('form.manageBusiness.error.passcode.401.default.description')
       }
     } else if (error.response?.status === StatusCodes.NOT_FOUND) {
-      title = t('form.manageBusiness.error.other.404.title')
-      description = t('form.manageBusiness.error.other.404.description')
+      title = t('form.manageBusiness.error.passcode.404.title')
+      description = t('form.manageBusiness.error.passcode.404.description')
     } else if (error.response?.status === StatusCodes.NOT_ACCEPTABLE) {
-      title = t('form.manageBusiness.error.other.406.title')
-      description = t('form.manageBusiness.error.other.406.description')
+      title = t('form.manageBusiness.error.passcode.406.title')
+      description = t('form.manageBusiness.error.passcode.406.description')
     } else if (error.response?.status === StatusCodes.BAD_REQUEST) {
-      title = t('form.manageBusiness.error.other.400.title')
-      description = t('form.manageBusiness.error.other.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
+      title = t('form.manageBusiness.error.passcode.400.title')
+      description = t('form.manageBusiness.error.passcode.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
     } else {
-      title = t('form.manageBusiness.error.other.default.title')
-      description = t('form.manageBusiness.error.other.default.description')
+      title = t('form.manageBusiness.error.passcode.default.title')
+      description = t('form.manageBusiness.error.passcode.default.description')
+    }
+  }
+
+  if (props.errorObj.type === 'firm') {
+    if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+      title = t('form.manageBusiness.error.firm.401.title')
+      description = t('form.manageBusiness.error.firm.401.description')
+    } else if (error.response?.status === StatusCodes.NOT_FOUND) {
+      title = t('form.manageBusiness.error.firm.404.title')
+      description = t('form.manageBusiness.error.firm.404.description')
+    } else if (error.response?.status === StatusCodes.BAD_REQUEST) {
+      title = t('form.manageBusiness.error.firm.400.title')
+      description = t('form.manageBusiness.error.firm.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
+    } else {
+      title = t('form.manageBusiness.error.firm.default.title')
+      description = t('form.manageBusiness.error.firm.default.description')
     }
   }
 
