@@ -560,7 +560,9 @@ export default {
     Error: 'Erreur',
     OK: 'OK',
     remove: 'retirer',
-    Remove: 'Retirer'
+    Remove: 'Retirer',
+    added: 'ajouté',
+    Added: 'Ajouté'
   },
   page: {
     notFound: {

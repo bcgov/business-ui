@@ -2,7 +2,7 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const nrWebUrl = useRuntimeConfig().public.nrURL
-const affStore = useAffiliationsStore()
+// const affStore = useAffiliationsStore()
 
 useHead({
   title: t('page.home.title')
@@ -12,7 +12,7 @@ definePageMeta({
   order: 0
 })
 
-const searchType = ref<'reg' | 'namex'>('reg')
+// const searchType = ref<'reg' | 'namex'>('reg')
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
@@ -46,7 +46,8 @@ const searchType = ref<'reg' | 'namex'>('reg')
 
       <HelpTextSection />
     </div>
-    <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
+    <BusinessLookup class="-mt-4" />
+    <!-- <div class="-mt-4 flex max-w-screen-sm flex-col gap-4">
       <UFormGroup
         :label="$t('page.home.busOrNRSearch.label')"
         :help="$t('page.home.busOrNRSearch.help')"
@@ -104,7 +105,7 @@ const searchType = ref<'reg' | 'namex'>('reg')
           container: 'flex items-center h-full',
         }"
       />
-    </div>
+    </div> -->
 
     <TableAffiliatedEntity />
 

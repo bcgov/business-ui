@@ -5,7 +5,12 @@ export const useComboBox = (
   resultListItems: Ref<NodeListOf<HTMLLIElement> | null>,
   searchFn: (query: string) => Promise<any[]>,
   onSelect: (item: any) => void,
-  valueAttr: string
+  valueAttr: string,
+  idAttr: string,
+  disabledConfig?: {
+    items: Array<any>,
+    comparisonAttrs: Array<string>
+  }
 ) => {
   const { t } = useI18n()
 
@@ -24,6 +29,21 @@ export const useComboBox = (
     results.value = []
   }
 
+  function isItemDisabled (item: any): boolean {
+    const { items = [], comparisonAttrs = [] } = disabledConfig || {}
+
+    console.log('disabled ocnfig: ', disabledConfig)
+    if (!items.length || !comparisonAttrs.length) {
+      return false
+    }
+
+    const itemIdValue = item[idAttr]
+
+    return items.some((disabledItem) => {
+      return comparisonAttrs.some(attr => disabledItem[attr] && disabledItem[attr] === itemIdValue)
+    })
+  }
+
   const fetchResults = async () => {
     try {
       if (query.value.trim() === '') { // return if query is empty
@@ -37,9 +57,15 @@ export const useComboBox = (
       const response = await searchFn(query.value)
 
       if (response.length >= 0) {
-        results.value = response
+        results.value = response.map((item) => {
+          const disabled = isItemDisabled(item)
+          console.log('Item:', item, 'Disabled:', disabled) // Add this to check the mapping
+          return { ...item, disabled }
+        })
+
+        const enabledResultsCount = results.value.filter(item => !item.disabled).length
         setTimeout(() => {
-          statusText.value = t('AsyncComboBox.resultsCount', { count: results.value.length })
+          statusText.value = t('AsyncComboBox.resultsCount', { count: enabledResultsCount })
         }, 300) // delay so screen reader is updated correctly
       }
     } catch (e) {
@@ -50,6 +76,7 @@ export const useComboBox = (
       }, 300) // delay so screen reader is updated correctly
     } finally {
       loading.value = false
+      console.log(results.value)
     }
   }
 
