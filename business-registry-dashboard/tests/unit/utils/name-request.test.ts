@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { NrRequestActionCodes, NrRequestTypeCodes } from '@bcrs-shared-components/enums'
 
 const mockNrResponse: NameRequestResponse = {
@@ -24,6 +25,15 @@ const mockNrResponse: NameRequestResponse = {
   applicants: undefined,
   corpNum: undefined
 }
+
+const mockGetStoredFlag = vi.fn()
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
 
 describe('name-request util', () => {
   describe('mapRequestActionCdToNrType', () => {
@@ -51,7 +61,8 @@ describe('name-request util', () => {
   })
 
   describe('buildNameRequestObject', () => {
-    it('should build the correct name request object', () => { // TODO: test more once types are fixed (why are almost all properties in the types optional?)
+    it('should build the correct name request object when LDFlags.EnableBcCccUlc = true', () => {
+      mockGetStoredFlag.mockReturnValue(true)
       const result = buildNameRequestObject(mockNrResponse)
 
       expect(result).toEqual({
@@ -66,6 +77,32 @@ describe('name-request util', () => {
         enableIncorporation: false,
         folioNumber: mockNrResponse.folioNumber,
         target: 'lear',
+        entityTypeCd: mockNrResponse.entityTypeCd,
+        requestTypeCd: mockNrResponse.requestTypeCd,
+        requestActionCd: mockNrResponse.requestActionCd,
+        natureOfBusiness: mockNrResponse.natureBusinessInfo,
+        expirationDate: mockNrResponse.expirationDate,
+        applicants: mockNrResponse.applicants,
+        corpNum: mockNrResponse.corpNum
+      })
+    })
+
+    it('should build the correct name request object when LDFlags.EnableBcCccUlc = false', () => {
+      mockGetStoredFlag.mockReturnValue(false)
+      const result = buildNameRequestObject(mockNrResponse)
+
+      expect(result).toEqual({
+        actions: mockNrResponse.actions,
+        names: mockNrResponse.names,
+        id: mockNrResponse.id,
+        legalType: mockNrResponse.legalType,
+        nrNumber: mockNrResponse.nrNum,
+        state: mockNrResponse.stateCd,
+        applicantEmail: mockNrResponse.applicantEmail,
+        applicantPhone: mockNrResponse.applicantPhone,
+        enableIncorporation: false,
+        folioNumber: mockNrResponse.folioNumber,
+        target: 'colin',
         entityTypeCd: mockNrResponse.entityTypeCd,
         requestTypeCd: mockNrResponse.requestTypeCd,
         requestActionCd: mockNrResponse.requestActionCd,

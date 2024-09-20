@@ -14,11 +14,10 @@ export function mapRequestTypeCdToNrType (requestTypeCd: NrRequestTypeCodes): st
   return NrRequestTypeStrings[requestTypeCd] as string
 }
 
-// TODO: add launch darkly
 /* Internal function to build the namerequest object. */
 export function buildNameRequestObject (nr: NameRequestResponse) {
-  // const enableBcCccUlc = LaunchDarklyService.getFlag(LDFlags.EnableBcCccUlc) || false
-  const enableBcCccUlc = true
+  const ldStore = useConnectLaunchdarklyStore()
+  const enableBcCccUlc = ldStore.getStoredFlag(LDFlags.EnableBcCccUlc) || false
 
   /** Returns True if NR has applicants for registration. */
   const isApplicantsExist = (nr: NameRequestResponse): boolean => {

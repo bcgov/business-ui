@@ -1,6 +1,5 @@
 import { FilingTypes, AmalgamationTypes } from '@bcrs-shared-components/enums'
 
-// TODO: add launch darkly
 /**
  * Determines the display name of a given business object.
  *
@@ -19,8 +18,8 @@ export function determineDisplayName (
   identifier?: string,
   alternateNames?: AlternateNames[]
 ): string {
-  const enableAltNamesMbr = true // TODO: add launch darkly
-  // if (!LaunchDarklyService.getFlag(LDFlags.AlternateNamesMbr, false)) { enable-alternate-names-mbr: true
+  const ldStore = useConnectLaunchdarklyStore()
+  const enableAltNamesMbr = ldStore.getStoredFlag(LDFlags.AlternateNamesMbr)
   if (!enableAltNamesMbr) {
     return legalName ?? ''
   }
@@ -73,49 +72,49 @@ export function isSocieties (item: Business): boolean {
   return [CorpTypes.CONT_IN_SOCIETY, CorpTypes.SOCIETY, CorpTypes.XPRO_SOCIETY].includes(getEntityType(item))
 }
 
-// TODO: add launch darkly
 export function isModernizedEntity (item: Business): boolean {
+  const ldStore = useConnectLaunchdarklyStore()
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.IaSupportedEntities)
   const entityType = getEntityType(item)
-  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.IaSupportedEntities)?.split(' ') || []
-  const ldFlag = 'BC BEN C CBEN CC CCC CP CR CS CUL EPR FI GP LLC PA PAR S SP UL ULC XL XS'
-  const supportedEntityFlags = ldFlag.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
-// is modernized entity uses:
-// ia-supported-entities: "BC BEN C CBEN CC CCC CP CR CS CUL EPR FI GP LLC PA PAR S SP UL ULC XL XS"
 
-// TODO: add launch darkly
 export function isSupportedAmalgamationEntities (item: Business): boolean {
+  const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const ldFlag = 'BC BEN CC ULC'
-  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
-  const supportedEntityFlags = ldFlag.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
-// isSupportedAmalgamationEntities uses:
-// supported-amalgamation-entities: "BC BEN CC ULC"
 
-// TODO: add launch darkly
 export function isSupportedContinuationInEntities (item: Business): boolean {
+  const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const ldFlag = 'C CBEN CCC CUL'
-  const supportedEntityFlags = ldFlag.split(' ') || []
-  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
-// isSupportedContinuationInEntities uses:
-// supported-continuation-in-entities: "C CBEN CCC CUL"
 
-// TODO: add launch darkly
 export function isSupportedRestorationEntities (item: Business): boolean {
+  const ldStore = useConnectLaunchdarklyStore()
   const entityType = getEntityType(item)
-  const ldFlag = ''
-  const supportedEntityFlags = ldFlag.split(' ') || []
-  // const supportedEntityFlags = launchdarklyServices.getFlag(LDFlags.SupportRestorationEntities)?.split(' ') || []
-  return supportedEntityFlags.includes(entityType)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.SupportRestorationEntities)
+  if (typeof supportedEntityFlags === 'string') {
+    return supportedEntityFlags.split(' ').includes(entityType)
+  } else {
+    return false
+  }
 }
-// isSupportedRestorationEntities uses:
-// supported-restoration-entities: ""
 
 export async function createNamedBusiness ({ filingType, business }: { filingType: FilingTypes, business: Business}) {
   if (!business.nameRequest) {
