@@ -570,7 +570,9 @@ export default {
     Error: 'Error',
     OK: 'OK',
     remove: 'remove',
-    Remove: 'Remove'
+    Remove: 'Remove',
+    added: 'added',
+    Added: 'Added'
   },
   page: {
     notFound: {
