@@ -462,7 +462,8 @@ export default {
     newRequest: 'Nouvelle Demande',
     resendEmail: 'Renvoyer le Courriel',
     removeFromList: 'Supprimer de la Liste',
-    removeBusiness: "Supprimer l'Entreprise"
+    removeBusiness: "Supprimer l'Entreprise",
+    bcRegDashboard: 'Tableau de Bord des Registres de la CB'
   },
   links: {
     busCorpAct: {

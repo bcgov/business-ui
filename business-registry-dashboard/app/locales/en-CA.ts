@@ -472,7 +472,8 @@ export default {
     newRequest: 'New Request',
     resendEmail: 'Resend Email',
     removeFromList: 'Remove From List',
-    removeBusiness: 'Remove Business'
+    removeBusiness: 'Remove Business',
+    bcRegDashboard: 'BC Registries Dashboard'
   },
   links: {
     busCorpAct: {
