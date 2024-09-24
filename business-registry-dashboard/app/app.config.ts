@@ -29,6 +29,7 @@ export default defineAppConfig({
       }
     },
     button: {
+      rounded: 'rounded',
       size: {
         bcGov: 'text-sm'
       },
@@ -84,7 +85,7 @@ export default defineAppConfig({
     },
     input: {
       base: 'bg-gray-100 hover:bg-gray-200 border-b-[1px] focus:border-b-2 focus:ring-0',
-      rounded: 'rounded-none rounded-t-md',
+      rounded: 'rounded-none rounded-t',
       variant: {
         bcGovLg: 'h-[56px] border-gray-700 placeholder-gray-700 focus:border-primary-500 focus:placeholder-primary-500',
         bcGovSm: 'h-[42px] border-gray-700 placeholder-gray-700 focus:border-primary-500 focus:placeholder-primary-500',

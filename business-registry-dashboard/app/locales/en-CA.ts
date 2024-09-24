@@ -585,8 +585,8 @@ export default {
       intro: 'Start B.C. based businesses and keep business records up to date.',
       busOrNRSearch: {
         label: 'Retrieve an existing business or active Name Request to manage:',
-        placeholder: 'My business name, incorporation number or registration number',
-        help: "For example: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        placeholder: 'My business name, incorporation number, or registration number',
+        help: 'For example: "Joe\'s Plumbing Inc.", "BC1234567", "FM1234567"',
         opts: {
           legend: 'Select to search either for an existing business or name request',
           existingBus: 'Existing Business',

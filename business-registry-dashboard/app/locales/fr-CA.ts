@@ -575,8 +575,8 @@ export default {
       intro: 'Commencer la CB entreprises basées et tenir à jour les dossiers commerciaux.',
       busOrNRSearch: {
         label: 'Rechercher une Entreprise Existante ou une Demande de Nom Active à Gérer:',
-        placeholder: "Mon nom commercial, mon numéro d'entreprise ou mon numéro d'enregistrement",
-        help: "Par exemple: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        placeholder: "Mon nom commercial, mon numéro d'entreprise, ou mon numéro d'enregistrement",
+        help: 'Par exemple: "Joe\'s Plumbing Inc.", "BC1234567", "FM1234567"',
         opts: {
           legend: 'Choisissez de Rechercher soit une Entreprise Existante, soit une Demande de Nom',
           existingBus: 'Entreprise Existante',
