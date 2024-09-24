@@ -443,7 +443,7 @@ export default {
     number: 'Nombre',
     type: 'Taper',
     actions: 'Actions',
-    myList: 'Ma liste ({count})',
+    myList: '{boldStart}Ma liste{boldEnd} ({count})',
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',

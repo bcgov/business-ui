@@ -453,7 +453,7 @@ export default {
     number: 'Number',
     type: 'Type',
     actions: 'Actions',
-    myList: 'My List ({count})',
+    myList: '{boldStart}My List{boldEnd} ({count})',
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',

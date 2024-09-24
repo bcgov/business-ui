@@ -7,7 +7,12 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <SbcPageSectionCard :heading="$t('labels.myList', { count: affStore.affiliations.count })">
+  <SbcPageSectionCard>
+    <template #header-left>
+      <h2 class="text-base font-normal">
+        <ConnectI18nBold translation-path="labels.myList" :count="affStore.affiliations.count" />
+      </h2>
+    </template>
     <!-- columns to show dropdown -->
     <template #header-right>
       <USelectMenu
