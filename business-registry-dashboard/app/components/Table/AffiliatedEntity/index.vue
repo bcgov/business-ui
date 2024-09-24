@@ -20,12 +20,12 @@ onMounted(async () => {
         v-model="affStore.selectedColumns"
         :options="affStore.optionalColumns"
         multiple
-        :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+        :ui="{ trigger: 'flex items-center w-full' }"
         @change="affStore.setColumns"
       >
         <UButton
           color="white"
-          class="flex-1 justify-between text-gray-700"
+          class="h-[42px] flex-1 justify-between text-gray-700"
           :aria-label="$t('btn.colsToShow.aria', { count: affStore.selectedColumns.length })"
         >
           <span>{{ $t('btn.colsToShow.label') }}</span>
@@ -168,11 +168,12 @@ onMounted(async () => {
         >
           <div class="flex h-[42px] items-center">
             <UButton
+              v-if="affStore.hasFilters"
               variant="outline"
               :label="$t('btn.clearFilters')"
               icon="i-mdi-close"
+              :block="true"
               trailing
-              :disabled="!affStore.hasFilters"
               @click="affStore.resetFilters"
             />
           </div>
@@ -186,7 +187,6 @@ onMounted(async () => {
         <span>
           <strong
             v-if="isNameRequest(row)"
-            class="text-gray-900"
           >
             <div
               v-for="(nrName, i) in row.nameRequest.names"
@@ -195,18 +195,18 @@ onMounted(async () => {
             >
               <UIcon
                 v-if="isRejectedName(nrName)"
-                class="table-cell size-4 pr-1 align-top text-red-500"
+                class="mr-1 size-4 align-middle text-red-500"
                 name="i-mdi-close"
                 aria-hidden="true"
               />
               <UIcon
                 v-if="isApprovedName(nrName)"
-                class="table-cell size-4 pr-1 align-top text-green-500"
+                class="mr-1 size-4 align-middle text-green-500"
                 name="i-mdi-check"
                 aria-hidden="true"
               />
               <div
-                class="table-cell pl-2 align-top font-semibold"
+                class="table-cell align-top font-semibold"
                 aria-hidden="true"
               >
                 {{ nrName.name }}
@@ -218,7 +218,7 @@ onMounted(async () => {
           </strong>
           <strong
             v-else
-            class="font-semibold text-gray-900"
+            class="font-semibold"
           >
             {{ affiliationName(row) }}
           </strong>
@@ -252,13 +252,13 @@ onMounted(async () => {
 
       <!-- business legal type table cell  -->
       <template #legalType-data="{ row }">
-        <div class="inline-block font-semibold text-gray-900">
+        <div class="inline-block font-semibold">
           {{ affiliationType(row) }}
         </div>
         <!-- Need to keep the NR type separate or else the table filter treats each distinctly. See PR 2389 -->
         <div
           v-if="isNameRequest(row)"
-          class="ml-1 inline-block font-semibold text-gray-900"
+          class="ml-1 inline-block font-semibold"
         >
           {{ nameRequestType(row) }}
         </div>
