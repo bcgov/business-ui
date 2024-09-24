@@ -123,10 +123,10 @@ onMounted(async () => {
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
         <li>
-          <SbcI18nBold translation-path="form.manageBusiness.businessName" :name="business.name" />
+          <ConnectI18nBold translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <SbcI18nBold translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
+          <ConnectI18nBold translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
         </li>
       </ul>
 

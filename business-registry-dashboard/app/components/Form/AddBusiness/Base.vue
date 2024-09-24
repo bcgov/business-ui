@@ -303,7 +303,7 @@ watch(openAuthOption, () => {
                     class="text-sm"
                     :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-darkGray'"
                   >
-                    <SbcI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                    <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
                   </span>
                 </template>
               </UCheckbox>

@@ -453,7 +453,7 @@ export default {
     number: 'Number',
     type: 'Type',
     actions: 'Actions',
-    myList: 'My List ({count})',
+    myList: '{boldStart}My List{boldEnd} ({count})',
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',
@@ -472,7 +472,8 @@ export default {
     newRequest: 'New Request',
     resendEmail: 'Resend Email',
     removeFromList: 'Remove From List',
-    removeBusiness: 'Remove Business'
+    removeBusiness: 'Remove Business',
+    bcRegDashboard: 'BC Registries Dashboard'
   },
   links: {
     busCorpAct: {
@@ -584,8 +585,8 @@ export default {
       intro: 'Start B.C. based businesses and keep business records up to date.',
       busOrNRSearch: {
         label: 'Retrieve an existing business or active Name Request to manage:',
-        placeholder: 'My business name, incorporation number or registration number',
-        help: "For example: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        placeholder: 'My business name, incorporation number, or registration number',
+        help: 'For example: "Joe\'s Plumbing Inc.", "BC1234567", "FM1234567"',
         opts: {
           legend: 'Select to search either for an existing business or name request',
           existingBus: 'Existing Business',
@@ -706,11 +707,5 @@ export default {
     error: 'Error retrieving search results, please try again later.',
     resultListLabel: 'Search Results',
     noResults: 'No results found'
-  },
-  test: {
-    i18nBold: {
-      strong: 'This should have {boldStart} bold {boldEnd} text',
-      strongWithProps: 'This should have {boldStart} bold {boldEnd} text and allow a {prop}'
-    }
   }
 }

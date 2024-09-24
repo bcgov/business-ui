@@ -376,7 +376,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
     :id="`action-menu-${index}`"
     class="mx-auto"
   >
-    <UButtonGroup>
+    <UButtonGroup :ui="{ rounded: 'rounded' }">
       <UTooltip
         :text="$t('tooltips.affiliationActionBtn', { option: isSocieties(item) ? 'Societies Online' : 'Corporate Online' })"
         :prevent="disableTooltip(item)"
@@ -384,6 +384,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
       >
         <UButton
           :label="getPrimaryActionLabel(item)"
+          class="px-4"
           :icon="affNav.isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
           @click="primaryAction(item)"
         />

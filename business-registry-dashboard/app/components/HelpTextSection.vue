@@ -26,6 +26,7 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text-'
     icon="i-mdi-help-circle-outline"
     class="max-w-fit"
     :aria-expanded="showHelpText"
+    :padded="false"
     aria-controls="help-text-content"
     :ui="{ icon: { size: { sm: 'size-6' } } }"
     @click="toggleHelpText"
@@ -34,13 +35,13 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text-'
     id="help-text-content"
     :aria-hidden="!showHelpText"
     role="region"
-    class="mx-auto min-w-[75vw] max-w-screen-lg overflow-hidden border-y border-dashed border-gray-700 transition-all duration-500 ease-in-out"
+    class="mx-auto max-w-bcGovLg overflow-hidden border-y border-dashed border-gray-700 transition-all duration-500 ease-in-out"
     :class="{
       '-mb-3 max-h-0 opacity-0': !showHelpText,
       '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
     }"
   >
-    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 min-w-full" />
+    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg" />
     <div class="flex">
       <UButton
         :label="$t('btn.busStartHelp.hide')"

@@ -300,6 +300,9 @@ function handleInput (e: Event) {
         icon: {
           base: hasFocus ? 'text-blue-500' : 'text-gray-600',
           size: { sm: 'size-6' }
+        },
+        padding: {
+          sm: 'pl-4 pr-2.5'
         }
       }"
       icon="i-mdi-magnify"

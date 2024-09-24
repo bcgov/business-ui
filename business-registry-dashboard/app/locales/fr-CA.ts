@@ -443,7 +443,7 @@ export default {
     number: 'Nombre',
     type: 'Taper',
     actions: 'Actions',
-    myList: 'Ma liste ({count})',
+    myList: '{boldStart}Ma liste{boldEnd} ({count})',
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',
@@ -462,7 +462,8 @@ export default {
     newRequest: 'Nouvelle Demande',
     resendEmail: 'Renvoyer le Courriel',
     removeFromList: 'Supprimer de la Liste',
-    removeBusiness: "Supprimer l'Entreprise"
+    removeBusiness: "Supprimer l'Entreprise",
+    bcRegDashboard: 'Tableau de Bord des Registres de la CB'
   },
   links: {
     busCorpAct: {
@@ -574,8 +575,8 @@ export default {
       intro: 'Commencer la CB entreprises basées et tenir à jour les dossiers commerciaux.',
       busOrNRSearch: {
         label: 'Rechercher une Entreprise Existante ou une Demande de Nom Active à Gérer:',
-        placeholder: "Mon nom commercial, mon numéro d'entreprise ou mon numéro d'enregistrement",
-        help: "Par exemple: 'Joes Plumbing Inc.', 'BC1234567', 'FM1234567",
+        placeholder: "Mon nom commercial, mon numéro d'entreprise, ou mon numéro d'enregistrement",
+        help: 'Par exemple: "Joe\'s Plumbing Inc.", "BC1234567", "FM1234567"',
         opts: {
           legend: 'Choisissez de Rechercher soit une Entreprise Existante, soit une Demande de Nom',
           existingBus: 'Entreprise Existante',

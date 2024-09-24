@@ -20,7 +20,7 @@ async function handleClose () {
     @modal-closed="handleClose"
   >
     <div class="-mt-6 space-y-4">
-      <p> <SbcI18nBold translation-path="form.manageBusiness.emailSent.p1" :email /> </p>
+      <p> <ConnectI18nBold translation-path="form.manageBusiness.emailSent.p1" :email /> </p>
       <p> {{ $t('form.manageBusiness.emailSent.p2') }} </p>
       <div class="flex justify-center">
         <UButton
