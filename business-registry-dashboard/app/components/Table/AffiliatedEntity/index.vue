@@ -47,7 +47,7 @@ onMounted(async () => {
           padding: 'px-0 py-0'
         },
         td: {
-          base: 'whitespace-normal max-w-96',
+          base: 'whitespace-normal max-w-96 align-top',
           padding: 'px-4 py-4',
           color: 'text-bcGovColor-midGray',
           font: '',
