@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { MaskInputOptions } from 'maska'
 import { z } from 'zod'
 import type { FormError, FormSubmitEvent, Form } from '#ui/types'
 import { FetchError } from 'ofetch'
