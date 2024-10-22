@@ -183,7 +183,7 @@ export default {
           placeholder: 'Applicant Phone Number',
           arialabel: 'Applicant Phone Number',
           error: {
-            invalid: 'Please enter a valid phone number (e.g., 123-456-7890).'
+            invalid: 'Phone number is invalid.'
           }
         },
         email: {

@@ -32,14 +32,9 @@ const setScreenReaderAlert = (message: string) => {
   ariaAlertText.value = `${t('words.Error')}, ${message}`
 }
 
-const phoneMask: MaskInputOptions = ({
-  mask: '###-###-####',
-  eager: true
-})
-
 const nrSchema = z.object({
   email: z.string(),
-  phone: z.string()
+  phone: z.string().max(12)
 })
 
 type NRSchema = z.infer<typeof nrSchema>
@@ -48,7 +43,7 @@ const validate = (state: NRSchema): FormError[] => {
   alertText.value = ''
 
   const errors = []
-  const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(state.phone).success
+  const phoneValid = state.phone.length <= 12
   const emailValid = z.string().email().safeParse(state.email).success
   if (!state.phone && !state.email) { // show alert if both fields are empty
     alertText.value = t('form.manageNR.fields.alert.bothEmpty')
@@ -82,7 +77,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     formLoading.value = true
 
     // const emailValid = z.string().email().safeParse(event.data.email).success // might need in future
-    const phoneValid = z.string().regex(/^\d{3}-\d{3}-\d{4}$/).safeParse(event.data.phone).success
+    const phoneValid = event.data.phone.length <= 12
 
     // create payload with either phone or email depending on what is valid
     const payload: CreateNRAffiliationRequestBody = {
@@ -107,7 +102,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
   <UForm
     ref="formRef"
     :state
-    :validate-on="['submit']"
+    :validate-on="['input', 'submit']"
     :validate="validate"
     class="space-y-4"
     @submit="onSubmit"
@@ -125,7 +120,6 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         >
           <UInput
             v-model="state.phone"
-            v-maska="phoneMask"
             :placeholder="$t('form.manageNR.fields.phone.placeholder')"
             :aria-label="$t('form.manageNR.fields.phone.arialabel')"
             variant="bcGovLg"
