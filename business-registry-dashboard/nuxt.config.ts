@@ -26,7 +26,7 @@ export default defineNuxtConfig({
   extends: ['@daxiom/nuxt-core-layer-test'],
 
   imports: {
-    dirs: ['stores', 'composables', 'enums', 'interfaces', 'types', 'utils']
+    dirs: ['stores', 'composables', 'enums', 'interfaces', 'types', 'utils', 'services']
   },
 
   icon: {

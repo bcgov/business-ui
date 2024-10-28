@@ -151,6 +151,18 @@ export default {
     businessAdd: {
       title: "Error lors de l'ajout de l'Entreprise Existante",
       description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
+    },
+    magicLinkUnauthorized: {
+      title: 'Impossible de gérer l\'entreprise',
+      description: 'Le compte qui a demandé l\'autorisation ne correspond pas à votre compte actuel. Veuillez vous connecter avec le compte qui a initié la demande.'
+    },
+    magicLinkExpired: {
+      title: 'Lien expiré',
+      description: 'Votre demande d\'autorisation pour gérer {identifier} a expiré. Veuillez réessayer.'
+    },
+    magicLinkAlreadyAdded: {
+      title: 'Entreprise déjà ajoutée',
+      description: 'L\'entreprise {identifier} est déjà dans votre liste du Registre des entreprises.'
     }
   },
   entityAlertTypes: {
@@ -472,6 +484,11 @@ export default {
     }
   },
   modal: {
+    manageBusiness: {
+      success: {
+        title: 'Entreprise ajoutée. Vous pouvez maintenant gérer {identifier}.'
+      }
+    },
     removeBusiness: {
       generic: {
         NR: {

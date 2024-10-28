@@ -161,6 +161,18 @@ export default {
         title: 'Business Unavailable',
         description: 'You are not authorized to access the business you wish to {action}. Please add this business to your table to continue.'
       }
+    },
+    magicLinkUnauthorized: {
+      title: 'Unable to Manage Business',
+      description: 'The account that requested authorisation does not match your current account. Please log in as the account that initiated the request.'
+    },
+    magicLinkExpired: {
+      title: 'Link Expired',
+      description: 'Your authorization request to manage {identifier} has expired. Please try again.'
+    },
+    magicLinkAlreadyAdded: {
+      title: 'Business Already Added',
+      description: 'The business {identifier} is already in your Business Registry List.'
     }
   },
   entityAlertTypes: {
@@ -482,6 +494,11 @@ export default {
     }
   },
   modal: {
+    manageBusiness: {
+      success: {
+        title: 'Business Added. You can now manage {identifier}.'
+      }
+    },
     removeBusiness: {
       generic: {
         NR: {
