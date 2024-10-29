@@ -13,24 +13,40 @@ export default class AffiliationInvitationService {
   }
 
   /**
+   * Makes an authenticated API request to the auth service.
+   * @param endpoint - The API endpoint to call.
+   * @param options - Fetch options.
+   * @returns The response from the API call.
+   */
+  private static async authenticatedRequest<T> (endpoint: string, options: {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
+    body?: any
+    params?: Record<string, any>
+  } = {}): Promise<T> {
+    const { config, token } = await this.getConfigAndToken()
+    const url = `${config.public.authApiURL}${endpoint}`
+
+    return $fetch<T>(url, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  }
+
+  /**
    * Fetches affiliation invitations for a given organization.
    * @param orgIdentifier - The organization's identifier (number or string).
    * @param status - Optional status filter for the invitations.
    * @returns An array of AffiliationInviteInfo objects.
    */
   static async getAffiliationInvitations (orgIdentifier: number | string, status?: AffiliationInvitationStatus): Promise<AffiliationInviteInfo[]> {
-    const { config, token } = await this.getConfigAndToken()
     try {
-      const params: any = { orgId: orgIdentifier, businessDetails: true }
-      if (status) {
-        params.status = status
-      }
-      const response = await $fetch<{ affiliationInvitations: AffiliationInviteInfo[] }>(`${config.public.authApiURL}/affiliationInvitations`, {
-        params,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const params = { orgId: orgIdentifier, businessDetails: true, ...(status && { status }) }
+      const response = await this.authenticatedRequest<{ affiliationInvitations: AffiliationInviteInfo[] }>(
+        '/affiliationInvitations',
+        { params }
+      )
       return response.affiliationInvitations
     } catch (err) {
       console.error(err)
@@ -44,14 +60,11 @@ export default class AffiliationInvitationService {
    * @returns A boolean indicating success (true) or failure (false).
    */
   static async removeAffiliationInvitation (affiliationInvitationId: number): Promise<boolean> {
-    const { config, token } = await this.getConfigAndToken()
     try {
-      await $fetch(`${config.public.authApiURL}/affiliationInvitations/${affiliationInvitationId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      await this.authenticatedRequest(
+        `/affiliationInvitations/${affiliationInvitationId}`,
+        { method: 'DELETE' }
+      )
       return true
     } catch (err) {
       console.error(err)
@@ -65,14 +78,10 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async createInvitation (payload: CreateAffiliationInvitation): Promise<any> {
-    const { config, token } = await this.getConfigAndToken()
-    return $fetch(`${config.public.authApiURL}/affiliationInvitations`, {
-      method: 'POST',
-      body: payload,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    return await this.authenticatedRequest(
+      '/affiliationInvitations',
+      { method: 'POST', body: payload }
+    )
   }
 
   /**
@@ -81,14 +90,10 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async updateInvitation (id: string): Promise<any> {
-    const { config, token } = await this.getConfigAndToken()
-    return $fetch(`${config.public.authApiURL}/affiliationInvitations/${id}`, {
-      method: 'PATCH',
-      body: {},
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    return await this.authenticatedRequest(
+      `/affiliationInvitations/${id}`,
+      { method: 'PATCH', body: {} }
+    )
   }
 
   /**
@@ -98,12 +103,9 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async acceptInvitation (id: string, invitationToken: string): Promise<any> {
-    const { config, token } = await this.getConfigAndToken()
-    return $fetch(`${config.public.authApiURL}/affiliationInvitations/${id}/token/${invitationToken}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      method: 'PUT'
-    })
+    return await this.authenticatedRequest(
+      `/affiliationInvitations/${id}/token/${invitationToken}`,
+      { method: 'PUT' }
+    )
   }
 }
