@@ -50,7 +50,7 @@ describe('AcceptToken Page', () => {
           $brdModal: mockBrdModal
         },
         stubs: {
-          'NuxtLayout': true // Stub out NuxtLayout component
+          NuxtLayout: true // Stub out NuxtLayout component
         }
       }
     })
@@ -60,7 +60,7 @@ describe('AcceptToken Page', () => {
     it('successfully parses a valid token', () => {
       const wrapper = mountComponent()
       const component = wrapper.vm as any
-      
+
       // Mock parseToken to return expected data structure
       vi.spyOn(component, 'parseToken').mockReturnValue(mockParsedToken)
 

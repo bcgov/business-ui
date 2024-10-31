@@ -1,7 +1,7 @@
-import { BusinessLookup, TableAffiliatedEntity } from '#components'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import Dashboard from '~/layouts/dashboard.vue'
 import { describe, it, expect } from 'vitest'
+import { BusinessLookup, TableAffiliatedEntity } from '#components'
+import Dashboard from '~/layouts/dashboard.vue'
 import { enI18n } from '~~/tests/mocks/i18n'
 import Index from '~/pages/index.vue'
 
