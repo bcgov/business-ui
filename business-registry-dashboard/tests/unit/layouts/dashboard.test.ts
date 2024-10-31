@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { DashboardLayout, HelpTextSection, BusinessLookup, TableAffiliatedEntity } from '#components'
+import { HelpTextSection } from '#components'
 import { enI18n } from '~~/tests/mocks/i18n'
+import DashboardLayout from '~/layouts/dashboard.vue'
 
 const mockAccountStore = {
   currentAccount: {
@@ -18,7 +19,7 @@ vi.mock('#imports', async () => {
   }
 })
 
-describe('DashboardLayout', () => {
+describe('Dashboard Layout', () => {
   function mountComponent () {
     return mountSuspended(DashboardLayout, {
       global: {
@@ -44,12 +45,10 @@ describe('DashboardLayout', () => {
     expect(intro.text()).toBe(enI18n.global.t('page.home.intro'))
   })
 
-  it('renders child components', async () => {
+  it('renders help text section correctly', async () => {
     const wrapper = await mountComponent()
 
     expect(wrapper.findComponent(HelpTextSection).exists()).toBe(true)
-    expect(wrapper.findComponent(BusinessLookup).exists()).toBe(true)
-    expect(wrapper.findComponent(TableAffiliatedEntity).exists()).toBe(true)
   })
 
   it('renders the "Get Started" button when account exists', async () => {

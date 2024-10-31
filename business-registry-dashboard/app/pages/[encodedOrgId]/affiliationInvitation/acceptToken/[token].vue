@@ -2,7 +2,6 @@
 import { useRoute } from 'vue-router'
 
 const { t } = useI18n()
-const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 const route = useRoute()
@@ -28,15 +27,10 @@ definePageMeta({
 onMounted(async () => {
   try {
     const token = parseToken(route.params.token as string)
-    const orgId = token.fromOrgId
-    if (orgId === accountStore.currentAccount.id) { // Check if the account is the same as the one that initiated the request
-      // Parse the URL and try to add the affiliation
-      parseUrlAndAddAffiliation(token, route.params.token as string)
-      // Load affiliations to update the table
-      await affStore.loadAffiliations()
-    } else {
-      toast.add({ title: 'Please login with the account that initiated the request.' })
-    }
+    // Parse the URL and try to add the affiliation
+    parseUrlAndAddAffiliation(token, route.params.token as string)
+    // Load affiliations to update the table
+    await affStore.loadAffiliations()
   } catch (e) {
     console.error('Error accepting affiliation invitation:', e)
   }
@@ -55,7 +49,7 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
 
     // 2. Adding magic link success
     if (response.status === AffiliationInvitationStatus.Accepted) {
-      toast.add({ title: t('modal.manageBusiness.success.title', { identifier }) }) // add success toast
+      toast.add({ title: t('modal.manageBusiness.success.toast', { identifier }) }) // add success toast
     }
   } catch (error: any) {
     console.error(error)
@@ -82,5 +76,10 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
 }
 </script>
 <template>
-  <DashboardLayout />
+  <NuxtLayout name="dashboard">
+    <div>
+      <BusinessLookup class="-mt-4" />
+      <TableAffiliatedEntity />
+    </div>
+  </NuxtLayout>
 </template>

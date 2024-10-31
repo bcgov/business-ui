@@ -1,37 +1,13 @@
-import { useRuntimeConfig } from '#app'
-
 export default class AffiliationInvitationService {
   /**
-   * Retrieves the runtime configuration and Keycloak token.
-   * @returns An object containing the config and token.
+   * Gets the authenticated Auth API client.
+   * This method is called within class methods to ensure useNuxtApp() is only executed
+   * when the methods are called from within the proper Nuxt context (like components, plugins).
+   * Direct usage of useNuxtApp() at the class level would cause errors as it would execute
+   * outside the Nuxt lifecycle.
    */
-  private static async getConfigAndToken () {
-    const config = useRuntimeConfig()
-    const keycloak = useKeycloak()
-    const token = await keycloak.getToken()
-    return { config, token }
-  }
-
-  /**
-   * Makes an authenticated API request to the auth service.
-   * @param endpoint - The API endpoint to call.
-   * @param options - Fetch options.
-   * @returns The response from the API call.
-   */
-  private static async authenticatedRequest<T> (endpoint: string, options: {
-    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-    body?: any
-    params?: Record<string, any>
-  } = {}): Promise<T> {
-    const { config, token } = await this.getConfigAndToken()
-    const url = `${config.public.authApiURL}${endpoint}`
-
-    return $fetch<T>(url, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+  private static getAuthApi () {
+    return useNuxtApp().$authApi
   }
 
   /**
@@ -43,7 +19,7 @@ export default class AffiliationInvitationService {
   static async getAffiliationInvitations (orgIdentifier: number | string, status?: AffiliationInvitationStatus): Promise<AffiliationInviteInfo[]> {
     try {
       const params = { orgId: orgIdentifier, businessDetails: true, ...(status && { status }) }
-      const response = await this.authenticatedRequest<{ affiliationInvitations: AffiliationInviteInfo[] }>(
+      const response = await this.getAuthApi()<{ affiliationInvitations: AffiliationInviteInfo[] }>(
         '/affiliationInvitations',
         { params }
       )
@@ -61,7 +37,7 @@ export default class AffiliationInvitationService {
    */
   static async removeAffiliationInvitation (affiliationInvitationId: number): Promise<boolean> {
     try {
-      await this.authenticatedRequest(
+      await this.getAuthApi()(
         `/affiliationInvitations/${affiliationInvitationId}`,
         { method: 'DELETE' }
       )
@@ -78,7 +54,7 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async createInvitation (payload: CreateAffiliationInvitation): Promise<any> {
-    return await this.authenticatedRequest(
+    return await this.getAuthApi()(
       '/affiliationInvitations',
       { method: 'POST', body: payload }
     )
@@ -90,7 +66,7 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async updateInvitation (id: string): Promise<any> {
-    return await this.authenticatedRequest(
+    return await this.getAuthApi()(
       `/affiliationInvitations/${id}`,
       { method: 'PATCH', body: {} }
     )
@@ -103,7 +79,7 @@ export default class AffiliationInvitationService {
    * @returns The response from the API call.
    */
   static async acceptInvitation (id: string, invitationToken: string): Promise<any> {
-    return await this.authenticatedRequest(
+    return await this.getAuthApi()(
       `/affiliationInvitations/${id}/token/${invitationToken}`,
       { method: 'PUT' }
     )

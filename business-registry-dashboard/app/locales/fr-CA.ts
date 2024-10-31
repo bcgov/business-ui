@@ -153,15 +153,15 @@ export default {
       description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
     },
     magicLinkUnauthorized: {
-      title: 'Impossible de gérer l\'entreprise',
+      title: 'Impossible De Gérer L\'entreprise',
       description: 'Le compte qui a demandé l\'autorisation ne correspond pas à votre compte actuel. Veuillez vous connecter avec le compte qui a initié la demande.'
     },
     magicLinkExpired: {
-      title: 'Lien expiré',
+      title: 'Lien Expiré',
       description: 'Votre demande d\'autorisation pour gérer {identifier} a expiré. Veuillez réessayer.'
     },
     magicLinkAlreadyAdded: {
-      title: 'Entreprise déjà ajoutée',
+      title: 'Entreprise Déjà Ajoutée',
       description: 'L\'entreprise {identifier} est déjà dans votre liste du Registre des entreprises.'
     }
   },
@@ -486,7 +486,7 @@ export default {
   modal: {
     manageBusiness: {
       success: {
-        title: 'Entreprise ajoutée. Vous pouvez maintenant gérer {identifier}.'
+        toast: 'Entreprise Ajoutée. Vous Pouvez Maintenant Gérer {identifier}.'
       }
     },
     removeBusiness: {

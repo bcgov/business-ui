@@ -45,10 +45,8 @@ setBreadcrumbs([
       </div>
       <HelpTextSection />
     </div>
-    <BusinessLookup class="-mt-4" />
 
-    <TableAffiliatedEntity />
-
+    <slot /> <!-- This is where the page content will be injected -->
     <UModals />
     <UNotifications />
   </div>

@@ -496,7 +496,7 @@ export default {
   modal: {
     manageBusiness: {
       success: {
-        title: 'Business Added. You can now manage {identifier}.'
+        toast: 'Business Added. You can now manage {identifier}.'
       }
     },
     removeBusiness: {

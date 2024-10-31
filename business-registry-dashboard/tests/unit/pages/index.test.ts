@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { BusinessLookup, TableAffiliatedEntity } from '#components'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { DashboardLayout } from '#components'
-import Index from '~/pages/index.vue'
+import Dashboard from '~/layouts/dashboard.vue'
+import { describe, it, expect } from 'vitest'
 import { enI18n } from '~~/tests/mocks/i18n'
+import Index from '~/pages/index.vue'
 
 describe('Index Page', () => {
   function mountPage () {
@@ -18,8 +19,14 @@ describe('Index Page', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('should render DashboardLayout component', async () => {
+  it('should render Dashboard layout correctly', async () => {
     const wrapper = await mountPage()
-    expect(wrapper.findComponent(DashboardLayout).exists()).toBe(true)
+    expect(wrapper.findComponent(Dashboard).exists()).toBe(true)
+  })
+
+  it('should render child components correctly', async () => {
+    const wrapper = await mountPage()
+    expect(wrapper.findComponent(BusinessLookup).exists()).toBe(true)
+    expect(wrapper.findComponent(TableAffiliatedEntity).exists()).toBe(true)
   })
 })
