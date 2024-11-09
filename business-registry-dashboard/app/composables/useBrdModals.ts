@@ -31,6 +31,16 @@ export const useBrdModals = () => {
     })
   }
 
+  function openMagicLinkModal (title: string, description: string) {
+    modal.open(ModalBase, {
+      error: {
+        title,
+        description
+      },
+      actions: [{ label: t('btn.close'), handler: () => close() }]
+    })
+  }
+
   function openBusinessUnavailableError (action: string) {
     let title: string
     let description: string
@@ -85,6 +95,7 @@ export const useBrdModals = () => {
     openBusinessUnavailableError,
     openBusinessRemovalConfirmation,
     openManageBusiness,
+    openMagicLinkModal,
     openAuthEmailSent,
     close
   }
