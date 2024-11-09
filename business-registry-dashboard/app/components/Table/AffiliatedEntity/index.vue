@@ -5,6 +5,32 @@ const affStore = useAffiliationsStore()
 onMounted(async () => {
   await affStore.loadAffiliations()
 })
+
+// Watch for newly added businesses to highlight them temporarily
+watch(
+  () => affStore.newlyAddedIdentifier,
+  () => {
+    const firstResult = affStore.filteredResults?.[0] as any
+    const newIdentifier = affStore.newlyAddedIdentifier
+
+    // Skip if no results or no new identifier
+    if (!firstResult) { return }
+
+    // If the first result matches the newly added business, highlight it
+    if (newIdentifier && firstResult.businessIdentifier === newIdentifier) {
+      firstResult.class = 'bg-[#E8F5E9]'
+
+      // Remove highlight and clear identifier
+      setTimeout(() => {
+        affStore.newlyAddedIdentifier = ''
+      }, 6000)
+    } else {
+      // Clear any existing highlight
+      firstResult.class = ''
+    }
+  },
+  { immediate: true }
+)
 </script>
 <template>
   <SbcPageSectionCard>

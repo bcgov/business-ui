@@ -95,24 +95,30 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="flex flex-col items-center gap-4 text-center">
-    <UIcon name="i-mdi-alert-circle-outline" class="size-8 text-red-500" />
-    <h2 class="text-xl font-semibold">
-      {{ errorText.title }}
-    </h2>
+  <div class="flex flex-col gap-4 pt-2 text-left">
+    <div class="flex">
+      <UIcon name="i-mdi-alert" class="mr-2 size-6 text-red-500" />
+      <h2 class="text-base font-semibold text-bcGovColor-midGray">
+        {{ errorText.title }}
+      </h2>
+    </div>
     <!-- <p v-if="apiErrorMsg">
       {{ apiErrorMsg }}
     </p> -->
     <p>{{ errorText.description }}</p>
     <BCRegContactInfo class="self-start text-left" />
-    <div class="flex gap-2">
+    <div class="flex justify-center gap-2 pt-8">
       <UButton
         :label="$t('btn.cancel')"
         variant="outline"
+        class="px-7"
+        :ui="{ base: 'h-11 rounded' }"
         @click="brdModal.close()"
       />
       <UButton
         :label="$t('btn.tryAgain')"
+        class="px-7"
+        :ui="{ base: 'h-11 rounded' }"
         @click="$emit('retry')"
       />
     </div>

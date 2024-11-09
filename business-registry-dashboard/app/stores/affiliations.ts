@@ -22,6 +22,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     count: 0
   })
 
+  const newlyAddedIdentifier = ref<string>('')
+
   function removeAffiliation (orgIdentifier: number, incorporationNumber: string, passcodeResetEmail?: string, resetPasscode?: boolean) {
     return $authApi(`/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`, {
       method: 'DELETE',
@@ -337,6 +339,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       await createNRAffiliation({ businessIdentifier })
       toast.add({ title: t('form.manageNR.successToast', { nrNum: businessIdentifier }) }) // add success toast
       await loadAffiliations() // reload affiliated entities
+      newlyAddedIdentifier.value = businessIdentifier
     } catch (error) {
       logFetchError(error, 'Error adding name request')
       const e = error as FetchError
@@ -350,6 +353,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       await createAffiliation({ businessIdentifier })
       toast.add({ title: `${businessIdentifier} successfully added to your list` }) // add success toast
       await loadAffiliations() // reload affiliated entities
+      newlyAddedIdentifier.value = businessIdentifier
     } catch (error) {
       logFetchError(error, 'Error adding business')
       const e = error as FetchError
@@ -465,7 +469,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     sortEntitiesByInvites,
     resendAffiliationInvitation,
     deletePendingInvitations,
-    $reset
+    newlyAddedIdentifier,
+    $reset,
   }
 }
 // { persist: true } // persist store values in session storage

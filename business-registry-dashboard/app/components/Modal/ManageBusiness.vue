@@ -118,15 +118,15 @@ onMounted(async () => {
 <template>
   <ModalBase
     :title="$t('form.manageBusiness.heading')"
-    @modal-closed="handleEmailAuthSentStateClosed "
+    @modal-closed="handleEmailAuthSentStateClosed"
   >
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
         <li>
-          <ConnectI18nBold translation-path="form.manageBusiness.businessName" :name="business.name" />
+          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <ConnectI18nBold translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
+          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
         </li>
       </ul>
 

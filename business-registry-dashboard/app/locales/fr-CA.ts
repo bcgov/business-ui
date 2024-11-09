@@ -121,6 +121,7 @@ export default {
   },
   contactInfo: {
     bcRegGeneral: {
+      title: "Si vous avez des difficultés à ajouter l'entreprise, veuillez nous contacter à:",
       tollFree: {
         title: 'Sans Frais:',
         value: '1-877-370-1033'
