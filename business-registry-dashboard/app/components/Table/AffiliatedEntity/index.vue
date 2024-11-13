@@ -6,7 +6,7 @@ onMounted(async () => {
   await affStore.loadAffiliations()
 })
 
-// Watch for newly added businesses to highlight them temporarily
+// Watch for newly added businesses or name requests to highlight them temporarily
 watch(
   () => affStore.newlyAddedIdentifier,
   () => {
