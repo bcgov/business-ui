@@ -11,7 +11,7 @@ defineEmits<{
     <p>{{ $t('form.manageNR.help.description') }}</p>
     <BCRegContactInfo />
     <UButton
-      class="self-start"
+      class="self-start pl-0"
       :label="$t('btn.hideHelp')"
       variant="ghost"
       icon="i-mdi-help-circle-outline"

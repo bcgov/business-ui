@@ -16,8 +16,8 @@ watch(
     // Skip if no results or no new identifier
     if (!firstResult) { return }
 
-    // If the first result matches the newly added business, highlight it
-    if (newIdentifier && firstResult.businessIdentifier === newIdentifier) {
+    // If the first result matches the newly added business or name request, highlight it
+    if (newIdentifier && (firstResult.businessIdentifier === newIdentifier || firstResult.nrNumber === newIdentifier)) {
       firstResult.class = 'bg-[#E8F5E9]'
 
       // Remove highlight and clear identifier

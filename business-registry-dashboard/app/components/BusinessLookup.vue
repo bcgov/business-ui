@@ -12,7 +12,7 @@ const searchType = ref<'reg' | 'namex'>('reg')
         label: {
           base: 'block font-normal text-gray-700 dark:text-gray-200'
         },
-        help: 'mt-2 ml-4 text-xs text-bcGovColor-midGray',
+        help: 'mt-2 ml-2 text-xs text-bcGovColor-midGray',
       }"
     >
       <AsyncComboBox

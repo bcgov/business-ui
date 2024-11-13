@@ -470,7 +470,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     resendAffiliationInvitation,
     deletePendingInvitations,
     newlyAddedIdentifier,
-    $reset,
+    $reset
   }
 }
 // { persist: true } // persist store values in session storage

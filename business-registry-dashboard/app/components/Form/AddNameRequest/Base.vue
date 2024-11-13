@@ -108,7 +108,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
     @error="handleFormErrorEvent"
   >
     <fieldset>
-      <legend class="py-4">
+      <legend class="py-4 text-bcGovColor-midGray">
         {{ $t('form.manageNR.legend') }}
       </legend>
 
@@ -125,7 +125,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
           />
         </UFormGroup>
 
-        <span class="font-semibold">{{ $t('words.Or') }}</span>
+        <span class="font-semibold text-bcGovColor-midGray">{{ $t('words.Or') }}</span>
 
         <UFormGroup
           name="email"
@@ -154,6 +154,7 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         :label="$t('btn.help')"
         variant="ghost"
         icon="i-mdi-help-circle-outline"
+        class="pl-0"
         @click="$emit('showHelp')"
       />
 
@@ -161,10 +162,12 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"
+          class="h-11"
           @click="brdModal.close()"
         />
         <UButton
           type="submit"
+          class="h-11"
           :label="$t('form.manageNR.submitBtn')"
           :loading="formLoading"
         />

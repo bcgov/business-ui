@@ -287,9 +287,6 @@ watch(openAuthOption, () => {
               data-testid="formgroup-firm-input"
               name="partner.name"
               :help="$t('form.manageBusiness.authOption.firm.fields.name.help')"
-              :ui="{
-                help: 'mt-2 ml-2 text-xs text-gray-600 dark:text-gray-400'
-              }"
             >
               <UInput
                 v-model="formState.partner.name"
