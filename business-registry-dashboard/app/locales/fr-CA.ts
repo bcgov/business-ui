@@ -214,7 +214,7 @@ export default {
         },
         400: {
           title: "Erreur Lors De L'Ajout De La Demande De Nom",
-          description: "L'email ou le numéro de téléphone que vous avez entré ne correspond pas avec l'application de demande de nom."
+          description: "L'email ou le numéro de téléphone que vous avez entré ne correspond pas avec l'application pour votre demande de nom."
         },
         404: {
           title: 'Demande De Nom Introuvable',

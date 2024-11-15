@@ -224,7 +224,7 @@ export default {
         },
         400: {
           title: 'Error Adding Name Request',
-          description: "The email or phone number you entered doesn't match with the name request application."
+          description: "The email or phone number you entered doesn't match the application for your Name Request."
         },
         404: {
           title: 'Name Request Not Found',
