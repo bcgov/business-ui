@@ -21,7 +21,7 @@ const errorText = computed(() => {
   switch (props.error.status) {
     case StatusCodes.BAD_REQUEST:
       title = t('form.manageNR.error.400.title')
-      description = props.error.data.message || t('form.manageNR.error.400.description')
+      description = t('form.manageNR.error.400.description')
       break
     case StatusCodes.NOT_FOUND:
       title = t('form.manageNR.error.404.title')
@@ -52,20 +52,27 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="flex flex-col items-center gap-4 text-center">
-    <UIcon name="i-mdi-alert-circle-outline" class="mt-10 size-8 text-red-500" />
-    <h2 class="text-xl font-semibold">
-      {{ errorText.title }}
-    </h2>
+  <div class="flex flex-col gap-4 pt-8 text-left">
+    <div class="flex">
+      <UIcon name="i-mdi-alert" class="mr-2 size-6 text-red-500" />
+      <h2 class="text-base font-semibold text-bcGovColor-midGray">
+        {{ errorText.title }}
+      </h2>
+    </div>
     <p>{{ errorText.description }}</p>
-    <div class="mt-8 flex gap-2">
+    <BCRegContactInfo class="self-start text-left" />
+    <div class="flex justify-center gap-2 pt-8">
       <UButton
         :label="$t('btn.cancel')"
         variant="outline"
+        class="px-7"
+        :ui="{ base: 'h-11 rounded' }"
         @click="brdModal.close()"
       />
       <UButton
         :label="$t('btn.tryAgain')"
+        class="px-7"
+        :ui="{ base: 'h-11 rounded' }"
         @click="$emit('retryNameRequest')"
       />
     </div>

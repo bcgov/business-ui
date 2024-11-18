@@ -121,6 +121,7 @@ export default {
   },
   contactInfo: {
     bcRegGeneral: {
+      title: "Si vous avez des difficultés à ajouter l'entreprise, veuillez nous contacter à:",
       tollFree: {
         title: 'Sans Frais:',
         value: '1-877-370-1033'
@@ -213,7 +214,7 @@ export default {
         },
         400: {
           title: "Erreur Lors De L'Ajout De La Demande De Nom",
-          description: "Nous n'avons pas pu trouver de demande de nom associée au numéro de téléphone ou à l'adresse courriel que vous avez saisie. Veuillez réessayer."
+          description: "L'email ou le numéro de téléphone que vous avez entré ne correspond pas avec l'application pour votre demande de nom."
         },
         404: {
           title: 'Demande De Nom Introuvable',
@@ -493,7 +494,7 @@ export default {
       generic: {
         NR: {
           title: 'Supprimer La Demande De Nom?',
-          description: "La suppression de cette demande de nom la retirera de votre liste de registre des entreprises. Vous pouvez la réintégrer plus tard en sélectionnant Ajouter une demande de nom existante. Cette demande de nom restera valide jusqu'à ce qu'elle soit utilisée ou annulée, ou qu'elle expire.",
+          description: "Cette demande de nom sera supprimée de votre liste. Vous pourrez le rajouter ultérieurement en utilisant le champ de recherche. Cette demande de nom sera toujours valide jusqu'à ce qu'elle soit utilisée, annulée ou expirée.",
           primaryBtnLabel: 'Supprimer La Demande De Nom',
           secondaryBtnLabel: 'Conserver La Demande De Nom'
         },

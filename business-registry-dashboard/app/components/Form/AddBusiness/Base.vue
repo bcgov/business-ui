@@ -224,7 +224,9 @@ watch(openAuthOption, () => {
     @error="handleFormErrorEvent"
   >
     <fieldset class="space-y-4">
-      <legend>{{ $t('form.manageBusiness.legend') }}</legend>
+      <legend class="text-bcGovColor-midGray">
+        {{ $t('form.manageBusiness.legend') }}
+      </legend>
 
       <UAccordion
         ref="accordianRef"
@@ -242,9 +244,10 @@ watch(openAuthOption, () => {
           <UButton
             variant="accordian_trigger"
             data-testid="auth-option-button"
+            class="pl-0"
           >
             <span
-              class="text-left"
+              class="text-left text-base"
               :class="{ 'font-semibold text-bcGovColor-darkGray': open, 'font-normal text-blue-500': !open }"
             >
               {{ item.label }}
@@ -301,7 +304,7 @@ watch(openAuthOption, () => {
                 <template #label>
                   <span
                     class="text-sm"
-                    :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-darkGray'"
+                    :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
                   >
                     <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
                   </span>
@@ -402,16 +405,20 @@ watch(openAuthOption, () => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="ml-auto mt-auto flex justify-end gap-2">
+    <div class="ml-auto mt-auto flex justify-end gap-2 pt-4">
       <UButton
         :label="$t('btn.cancel')"
         variant="outline"
+        class="px-5"
+        :ui="{ base: 'h-11 rounded' }"
         @click="brdModal.close()"
       />
       <UButton
         :label="$t('form.manageBusiness.submitBtn')"
         type="submit"
+        class="px-5"
         :loading
+        :ui="{ base: 'h-11 rounded' }"
       />
     </div>
   </UForm>

@@ -81,7 +81,8 @@ export default defineAppConfig({
     },
     formGroup: {
       label: { base: 'block text-base font-bold py-3 text-gray-900' },
-      help: 'mt-2 text-xs text-gray-600 dark:text-gray-400'
+      help: 'mt-2 ml-2 text-xs text-bcGovColor-midGray dark:text-gray-400',
+      error: 'mt-2 ml-2 text-xs text-bcGovColor-error'
     },
     input: {
       base: 'bg-gray-100 hover:bg-gray-200 border-b-[1px] focus:border-b-2 focus:ring-0',

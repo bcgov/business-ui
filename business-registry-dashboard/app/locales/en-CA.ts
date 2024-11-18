@@ -121,6 +121,7 @@ export default {
   },
   contactInfo: {
     bcRegGeneral: {
+      title: 'If you have trouble adding the business, please contact us at:',
       tollFree: {
         title: 'Toll Free:',
         value: '1-877-370-1033'
@@ -223,7 +224,7 @@ export default {
         },
         400: {
           title: 'Error Adding Name Request',
-          description: "We couldn't find a name request associated with the phone number or email address you entered. Please try again."
+          description: "The email or phone number you entered doesn't match the application for your Name Request."
         },
         404: {
           title: 'Name Request Not Found',
@@ -503,7 +504,7 @@ export default {
       generic: {
         NR: {
           title: 'Remove Name Request?',
-          description: 'Removing this Name Request will remove the request from your Business Registry list. You can add it back at a later time by selecting Add an Existing... Name Request. This Name Request will still be valid until it is used or cancelled, or it expires.',
+          description: 'This Name Request will be removed from your list. You can add it back later by using the search field. This Name Request will still be valid until it is used, canceled, or expired.',
           primaryBtnLabel: 'Remove Name Request',
           secondaryBtnLabel: 'Keep Name Request'
         },

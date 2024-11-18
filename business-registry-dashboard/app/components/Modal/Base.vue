@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { UButton } from '#components'
 const modalModel = defineModel({ type: Boolean, default: false })
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
+const closeButtonRef = ref<InstanceType<typeof UButton> | null>(null)
 
 defineProps<{
   title?: string
@@ -17,6 +19,13 @@ defineProps<{
 defineEmits<{
   modalClosed: [void]
 }>()
+
+// Remove focus from close button after modal mount to prevent it from being auto-focused
+// This ensures the close button isn't immediately highlighted when the modal opens
+onMounted(async () => {
+  await nextTick()
+  closeButtonRef.value?.$el?.blur()
+})
 </script>
 <template>
   <UModal
@@ -29,6 +38,7 @@ defineEmits<{
     @after-leave="$emit('modalClosed')"
   >
     <UCard
+      class="p-4"
       :ui="{
         divide: '',
         rounded: fullscreen ? 'rounded-none' : 'rounded-lg',
@@ -37,8 +47,9 @@ defineEmits<{
     >
       <template #header>
         <div class="flex items-center justify-between">
-          <span class="text-xl font-semibold text-bcGovColor-darkGray">{{ title }}</span>
+          <span class="pb-3 text-xl font-semibold text-bcGovColor-darkGray">{{ title }}</span>
           <UButton
+            ref="closeButtonRef"
             :ui="{ icon: { base: 'shrink-0 scale-150' } }"
             icon="i-mdi-close"
             color="primary"
