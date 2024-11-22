@@ -42,22 +42,38 @@ watch(
     <!-- columns to show dropdown -->
     <template #header-right>
       <USelectMenu
-        v-slot="{ open }"
         v-model="affStore.selectedColumns"
         :options="affStore.optionalColumns"
+        option-attribute="label"
         multiple
-        :ui="{ trigger: 'flex items-center w-full' }"
+        selected-icon="hidden"
         @change="affStore.setColumns"
       >
-        <UButton
-          color="white"
-          class="h-[42px] flex-1 justify-between text-gray-700"
-          :aria-label="$t('btn.colsToShow.aria', { count: affStore.selectedColumns.length })"
-        >
-          <span>{{ $t('btn.colsToShow.label') }}</span>
+        <template #default="{ open }">
+          <UButton
+            color="white"
+            class="h-[42px] w-[192px] flex-1 justify-between text-gray-700"
+            :aria-label="$t('btn.colsToShow.aria', { count: affStore.selectedColumns.length })"
+          >
+            <span>{{ $t('btn.colsToShow.label') }}</span>
+            <UIcon
+              name="i-mdi-caret-down"
+              class="size-5 text-gray-700 transition-transform"
+              :class="[open && 'rotate-180']"
+            />
+          </UButton>
+        </template>
 
-          <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-        </UButton>
+        <template #option="{ option, selected }">
+          <div class="flex items-center gap-2 pb-1 cursor-pointer">
+            <UCheckbox
+              :model-value="selected"
+              :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option.label })"
+              class="pointer-events-none"
+            />
+            <span class="pt-1">{{ option.label }}</span>
+          </div>
+        </template>
       </USelectMenu>
     </template>
     <!-- affiliations table -->
@@ -73,7 +89,24 @@ watch(
           padding: 'px-0 py-0'
         },
         td: {
-          base: 'whitespace-normal max-w-96 align-top',
+          base: `
+            /* Default text handling */
+            whitespace-normal
+            align-top
+
+            /* Standard column width constraints */
+            w-48
+            min-w-[192px]
+            max-w-[192px]
+
+            /* Wider first column for business names */
+            [&:first-child]:min-w-[250px]
+            [&:first-child]:max-w-[250px]
+
+            /* Wider third column for type */
+            [&:nth-child(3)]:min-w-[230px]
+            [&:nth-child(3)]:max-w-[230px]
+          `,
           padding: 'px-4 py-4',
           color: 'text-bcGovColor-midGray',
           font: '',
@@ -137,20 +170,32 @@ watch(
           @clear="affStore.affiliations.filters.type = ''"
         >
           <USelectMenu
-            v-slot="{ open }"
             v-model="affStore.affiliations.filters.type"
             :options="affStore.typeOptions"
+            selected-icon="hidden"
             :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
           >
-            <UButton
-              variant="select_menu_trigger"
-              class="flex-1 justify-between text-gray-700"
-              :aria-label="$t('table.affiliation.filter.legalType.aria', { filter: affStore.affiliations.filters.type || $t('words.none') })"
-            >
-              {{ affStore.affiliations.filters.type !== '' ? affStore.affiliations.filters.type : $t('table.affiliation.filter.legalType.placeholder') }}
+            <template #default="{ open }">
+              <UButton
+                variant="select_menu_trigger"
+                class="flex-1 justify-between text-gray-700"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', { filter: affStore.affiliations.filters.type || $t('words.none') })"
+              >
+                {{ affStore.affiliations.filters.type !== '' ? affStore.affiliations.filters.type : $t('table.affiliation.filter.legalType.placeholder') }}
+                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+              </UButton>
+            </template>
 
-              <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-            </UButton>
+            <template #option="{ option, selected }">
+              <div class="flex items-center gap-2 pb-1 cursor-pointer">
+                <UCheckbox
+                  :model-value="selected"
+                  :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
+                  class="pointer-events-none"
+                />
+                <span>{{ option }}</span>
+              </div>
+            </template>
           </USelectMenu>
         </TableColumnHeader>
       </template>
@@ -168,20 +213,32 @@ watch(
           @clear="affStore.affiliations.filters.status = ''"
         >
           <USelectMenu
-            v-slot="{ open }"
             v-model="affStore.affiliations.filters.status"
             :options="affStore.statusOptions"
+            selected-icon="hidden"
             :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
           >
-            <UButton
-              variant="select_menu_trigger"
-              class="flex-1 justify-between text-gray-700"
-              :aria-label="$t('table.affiliation.filter.busStates.aria', { filter: affStore.affiliations.filters.status || $t('words.none') })"
-            >
-              {{ affStore.affiliations.filters.status !== '' ? affStore.affiliations.filters.status : $t('table.affiliation.filter.busStates.placeholder') }}
+            <template #default="{ open }">
+              <UButton
+                variant="select_menu_trigger"
+                class="flex-1 justify-between text-gray-700"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', { filter: affStore.affiliations.filters.status || $t('words.none') })"
+              >
+                {{ affStore.affiliations.filters.status !== '' ? affStore.affiliations.filters.status : $t('table.affiliation.filter.busStates.placeholder') }}
+                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+              </UButton>
+            </template>
 
-              <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-            </UButton>
+            <template #option="{ option, selected }">
+              <div class="flex items-center gap-2 pb-1 cursor-pointer">
+                <UCheckbox
+                  :model-value="selected"
+                  :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
+                  class="pointer-events-none"
+                />
+                <span>{{ option }}</span>
+              </div>
+            </template>
           </USelectMenu>
         </TableColumnHeader>
       </template>

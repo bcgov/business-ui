@@ -62,6 +62,8 @@ export const tempDescription = (business: Business): string => {
   switch ((business.corpType?.code || business.corpType) as CorpTypes) {
     case CorpTypes.AMALGAMATION_APPLICATION:
       return AffiliationTypes.AMALGAMATION_APPLICATION
+    case CorpTypes.CONTINUATION_IN:
+      return AffiliationTypes.CONTINUATION_APPLICATION
     case CorpTypes.INCORPORATION_APPLICATION:
       return AffiliationTypes.INCORPORATION_APPLICATION
     case CorpTypes.REGISTRATION:
@@ -75,6 +77,7 @@ export const tempDescription = (business: Business): string => {
 export const isTemporaryBusiness = (business: Business): boolean => {
   return (
     (business.corpType?.code || business.corpType) === CorpTypes.AMALGAMATION_APPLICATION ||
+    (business.corpType?.code || business.corpType) === CorpTypes.CONTINUATION_IN ||
     (business.corpType?.code || business.corpType) === CorpTypes.INCORPORATION_APPLICATION ||
     (business.corpType?.code || business.corpType) === CorpTypes.REGISTRATION
   )

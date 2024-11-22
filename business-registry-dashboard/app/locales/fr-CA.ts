@@ -588,7 +588,7 @@ export default {
       h1: 'Page introuvable'
     },
     home: {
-      title: 'Accueil - Mon Tableau de Bord des Entreprises',
+      title: "Mon Registre d'Entreprise",
       h1: "Mon Registre d'Entreprise",
       intro: 'Commencer la CB entreprises basées et tenir à jour les dossiers commerciaux.',
       busOrNRSearch: {
@@ -621,7 +621,7 @@ export default {
   },
   search: {
     reg: {
-      placeholder: "Mon nom commercial, mon numéro d'entreprise ou mon numéro d'enregistrement",
+      placeholder: "Mon nom commercial, mon numéro d'entreprise, ou mon numéro d'enregistrement",
       arialabel: "Commencez à taper pour effectuer une recherche par nom d'entreprise, numéro de société ou numéro d'enregistrement.",
       empty: {
         title: 'Aucune entreprise active en C.B. trouvée.',

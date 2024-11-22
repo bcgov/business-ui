@@ -173,6 +173,7 @@ export default defineAppConfig({
       label: 'text-gray-700',
       rounded: 'rounded-none',
       width: 'min-w-fit',
+      padding: 'p-0',
       option: {
         rounded: 'rounded-none',
         active: 'text-primary-500',
@@ -247,15 +248,15 @@ export default defineAppConfig({
     tooltip: {
       wrapper: 'relative inline-flex max-h-min',
       container: 'z-20 group min-h-fit',
-      background: 'bg-gray-700',
+      background: 'bg-gray-700/90',
       color: 'text-white',
-      ring: 'ring-1 ring-gray-700',
+      ring: 'ring-1 ring-gray-700/90',
       rounded: 'rounded',
-      base: 'h-auto px-2 py-1 text-sm font-normal relative whitespace-normal',
+      base: 'h-auto p-4 text-sm font-normal relative whitespace-normal',
       arrow: {
         base: 'before:w-3 before:h-3',
-        ring: 'before:ring-1 before:ring-gray-700',
-        background: 'before:bg-gray-700',
+        ring: 'before:ring-1 before:ring-gray-700/90',
+        background: 'before:bg-gray-700/90',
         rounded: 'before:rounded-none'
       }
     },
