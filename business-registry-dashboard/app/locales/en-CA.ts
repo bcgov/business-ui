@@ -121,7 +121,7 @@ export default {
   },
   contactInfo: {
     bcRegGeneral: {
-      title: 'If this error persists, please contact us at:',
+      title: 'If this problem continues, please contact us at:',
       tollFree: {
         title: 'Toll Free:',
         value: '1-877-370-1033'

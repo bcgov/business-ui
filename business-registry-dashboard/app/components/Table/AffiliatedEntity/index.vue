@@ -65,7 +65,7 @@ watch(
         </template>
 
         <template #option="{ option, selected }">
-          <div class="flex items-center gap-2 pb-1 cursor-pointer">
+          <div class="flex cursor-pointer items-center gap-2 pb-1">
             <UCheckbox
               :model-value="selected"
               :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option.label })"
@@ -187,7 +187,7 @@ watch(
             </template>
 
             <template #option="{ option, selected }">
-              <div class="flex items-center gap-2 pb-1 cursor-pointer">
+              <div class="flex cursor-pointer items-center gap-2 pb-1">
                 <UCheckbox
                   :model-value="selected"
                   :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
@@ -230,7 +230,7 @@ watch(
             </template>
 
             <template #option="{ option, selected }">
-              <div class="flex items-center gap-2 pb-1 cursor-pointer">
+              <div class="flex cursor-pointer items-center gap-2 pb-1">
                 <UCheckbox
                   :model-value="selected"
                   :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
