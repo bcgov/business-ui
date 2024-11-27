@@ -13,7 +13,7 @@ defineProps<{
       header: {
         base: 'rounded-t',
         background: 'bg-bcGovColor-gray2',
-        padding: 'px-4 py-5 sm:px-6',
+        padding: 'px-4 py-5 sm:px-4',
       },
       body: {
         padding: 'px-0 py-0 sm:p-0',

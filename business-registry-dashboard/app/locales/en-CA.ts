@@ -121,7 +121,7 @@ export default {
   },
   contactInfo: {
     bcRegGeneral: {
-      title: 'If you have trouble adding the business, please contact us at:',
+      title: 'If this problem continues, please contact us at:',
       tollFree: {
         title: 'Toll Free:',
         value: '1-877-370-1033'
@@ -598,7 +598,7 @@ export default {
       h1: 'Page Not Found'
     },
     home: {
-      title: 'Home - My Business Registry Dashboard',
+      title: 'My Business Registry',
       h1: 'My Business Registry',
       intro: 'Start B.C. based businesses and keep business records up to date.',
       busOrNRSearch: {
@@ -631,7 +631,7 @@ export default {
   },
   search: {
     reg: {
-      placeholder: 'My business name, incorporation number or registration number',
+      placeholder: 'My business name, incorporation number, or registration number',
       arialabel: 'Start typing to search by business name, incorporation number or registration number',
       empty: {
         title: 'No active B.C. business found',

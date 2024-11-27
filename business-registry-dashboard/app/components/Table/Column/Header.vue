@@ -12,8 +12,8 @@ defineEmits(['clear'])
 </script>
 <template>
   <div class="flex flex-col border-b border-gray-200 font-normal">
-    <span class="border-b border-gray-200 p-4 font-semibold">{{ label }}</span>
-    <div class="inline-flex -space-x-px p-4">
+    <span class="border-b border-gray-200 px-4 py-5 font-semibold">{{ label }}</span>
+    <div class="inline-flex -space-x-px px-4 py-5">
       <div class="grow">
         <slot />
       </div>
