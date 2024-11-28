@@ -15,7 +15,8 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { redirect: '/en-CA' },
-    '/[encodedOrgId]/affiliationInvitation/acceptToken/**': { redirect: '/en-CA/[encodedOrgId]/affiliationInvitation/acceptToken/**' }
+    // '/[encodedOrgId]/affiliationInvitation/acceptToken/**': { redirect: '/en-CA/[encodedOrgId]/affiliationInvitation/acceptToken/**' },
+    '/[encodedOrgId]/**': { ssr: false }
   },
 
   modules: [
