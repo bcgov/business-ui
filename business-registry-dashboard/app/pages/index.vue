@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
-const route = useRoute()
 const toast = useToast()
 
 definePageMeta({
-  checkMagicLink: true,
   order: 0
 })
 
@@ -44,9 +40,6 @@ onMounted(async () => {
 
 // Function to parse the URL and extract the parameters, used for magic link email
 const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
-  if (!route.meta.checkMagicLink) {
-    return
-  }
   const { businessIdentifier: identifier, id: invitationId } = token
 
   try {
@@ -81,7 +74,6 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
   }
 }
 </script>
-
 <template>
   <NuxtLayout name="dashboard">
     <div>
