@@ -14,13 +14,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/': { redirect: '/en-CA' },
-    '/:locale/:encodedOrgId/affiliationInvitation/acceptToken/:token': {
-      headers: {
-        'x-xss-protection': '1; mode=block',
-        'x-content-type-options': 'nosniff'
-      }
-    }
+    '/': { redirect: '/en-CA' }
   },
 
   modules: [

@@ -26,13 +26,9 @@ definePageMeta({
 
 onMounted(async () => {
   try {
-    // URL encode the parameters before using them
-    const encodedOrgId = encodeURIComponent(route.params.encodedOrgId as string)
-    const encodedToken = encodeURIComponent(route.params.token as string)
-
-    const token = parseToken(encodedToken)
+    const token = parseToken(route.params.token as string)
     // Parse the URL and try to add the affiliation
-    parseUrlAndAddAffiliation(token, encodedToken)
+    parseUrlAndAddAffiliation(token, route.params.token as string)
     // Load affiliations to update the table
     await affStore.loadAffiliations()
   } catch (e) {
