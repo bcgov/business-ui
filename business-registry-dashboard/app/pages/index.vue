@@ -28,6 +28,7 @@ onMounted(async () => {
   // Check for affiliation token from session storage
   if (sessionStorage.getItem('affiliationToken')) {
     const affiliationToken = sessionStorage.getItem('affiliationToken') as string
+    // Remove the token from session storage after it's used
     sessionStorage.removeItem('affiliationToken')
     try {
       const parsedToken = parseToken(affiliationToken)
