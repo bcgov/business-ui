@@ -25,9 +25,7 @@ const parseToken = (encodedToken: string): AffiliationToken => {
 }
 
 onMounted(async () => {
-  console.log('affiliationToken', sessionStorage.getItem('affiliationToken'))
-  console.log('to.path', sessionStorage.getItem('to.path'))
-  // Handle token acceptance if token parameter exists
+  // Check for affiliation token from session storage
   if (sessionStorage.getItem('affiliationToken')) {
     const affiliationToken = sessionStorage.getItem('affiliationToken') as string
     sessionStorage.removeItem('affiliationToken')

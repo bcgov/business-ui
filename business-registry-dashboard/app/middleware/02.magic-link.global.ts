@@ -8,6 +8,5 @@ export default defineNuxtRouteMiddleware((to) => {
       sessionStorage.setItem('affiliationToken', token)
     }
     window.location.href = localePath('/')
-    return
   }
 })
