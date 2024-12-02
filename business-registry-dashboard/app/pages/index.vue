@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { StatusCodes } from 'http-status-codes'
+
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
@@ -53,18 +55,18 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
   } catch (error: any) {
     console.error(error)
     // 3. Unauthorized
-    if (error.response?.status === 401) {
+    if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       brdModal.openMagicLinkModal(t('error.magicLinkUnauthorized.title'), t('error.magicLinkUnauthorized.description'))
       return
     }
     // 4. Expired
-    if (error.response?.status === 400 &&
+    if (error.response?.status === StatusCodes.BAD_REQUEST &&
       error.response?._data.code === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkExpired.title'), t('error.magicLinkExpired.description', { identifier }))
       return
     }
     // 5. Already Added
-    if (error.response?.status === 400 &&
+    if (error.response?.status === StatusCodes.BAD_REQUEST &&
       error.response?._data.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
       return
