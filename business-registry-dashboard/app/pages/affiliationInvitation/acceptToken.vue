@@ -24,6 +24,7 @@ definePageMeta({
 
 onMounted(async () => {
   try {
+    console.log('route.query.token', route.query.token)
     const token = parseToken(route.query.token as string)
     // Parse the URL and try to add the affiliation
     parseUrlAndAddAffiliation(token, route.query.token as string)
