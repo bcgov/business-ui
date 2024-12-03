@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware((to) => {
   if (to.path.includes('/affiliationInvitation/acceptToken')) {
-    window.location.replace(window.location.href)
+    window.location.href = to.fullPath
     return
   }
 
