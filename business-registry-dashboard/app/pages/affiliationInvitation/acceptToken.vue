@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()

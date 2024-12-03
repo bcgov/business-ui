@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
@@ -26,9 +24,9 @@ definePageMeta({
 
 onMounted(async () => {
   try {
-    const token = parseToken(route.params.token as string)
+    const token = parseToken(route.query.token as string)
     // Parse the URL and try to add the affiliation
-    parseUrlAndAddAffiliation(token, route.params.token as string)
+    parseUrlAndAddAffiliation(token, route.query.token as string)
     // Load affiliations to update the table
     await affStore.loadAffiliations()
   } catch (e) {
