@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { StatusCodes } from 'http-status-codes'
 
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
@@ -26,9 +26,9 @@ definePageMeta({
 
 onMounted(async () => {
   try {
-    const token = parseToken(route.params.token as string)
+    const token = parseToken(route.query.token as string)
     // Parse the URL and try to add the affiliation
-    parseUrlAndAddAffiliation(token, route.params.token as string)
+    parseUrlAndAddAffiliation(token, route.query.token as string)
     // Load affiliations to update the table
     await affStore.loadAffiliations()
   } catch (e) {
@@ -54,18 +54,18 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
   } catch (error: any) {
     console.error(error)
     // 3. Unauthorized
-    if (error.response?.status === 401) {
+    if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       brdModal.openMagicLinkModal(t('error.magicLinkUnauthorized.title'), t('error.magicLinkUnauthorized.description'))
       return
     }
     // 4. Expired
-    if (error.response?.status === 400 &&
+    if (error.response?.status === StatusCodes.BAD_REQUEST &&
       error.response?._data.code === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkExpired.title'), t('error.magicLinkExpired.description', { identifier }))
       return
     }
     // 5. Already Added
-    if (error.response?.status === 400 &&
+    if (error.response?.status === StatusCodes.BAD_REQUEST &&
       error.response?._data.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
       return

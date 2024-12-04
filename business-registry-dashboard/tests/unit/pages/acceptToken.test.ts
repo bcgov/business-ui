@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import AcceptToken from '~/pages/[encodedOrgId]/affiliationInvitation/acceptToken/[token].vue'
+import AcceptToken from '~/pages/affiliationInvitation/acceptToken.vue'
 import { enI18n } from '~~/tests/mocks/i18n'
 
 // Mock useRoute to provide test route parameters and metadata
