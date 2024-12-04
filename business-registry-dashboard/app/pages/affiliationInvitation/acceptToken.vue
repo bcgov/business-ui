@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { StatusCodes } from 'http-status-codes'
+
 const { t } = useI18n()
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 const route = useRoute()
 const toast = useToast()
+
 // Token parsing
 const parseToken = (encodedToken: string): AffiliationToken => {
   try {
@@ -16,10 +18,12 @@ const parseToken = (encodedToken: string): AffiliationToken => {
     throw new Error('Invalid token format')
   }
 }
+
 definePageMeta({
   checkMagicLink: true,
   order: 0
 })
+
 onMounted(async () => {
   try {
     const token = parseToken(route.query.token as string)
@@ -31,15 +35,18 @@ onMounted(async () => {
     console.error('Error accepting affiliation invitation:', e)
   }
 })
+
 // Function to parse the URL and extract the parameters, used for magic link email
 const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
   if (!route.meta.checkMagicLink) {
     return
   }
   const { businessIdentifier: identifier, id: invitationId } = token
+
   try {
     // 1. Accept invitation
     const response = await affiliationInvitationService.acceptInvitation(invitationId, base64Token)
+
     // 2. Adding magic link success
     if (response.status === AffiliationInvitationStatus.Accepted) {
       toast.add({ title: t('modal.manageBusiness.success.toast', { identifier }) }) // add success toast
