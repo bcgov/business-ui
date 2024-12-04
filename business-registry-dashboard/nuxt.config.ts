@@ -65,7 +65,8 @@ export default defineNuxtConfig({
         'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
         'heroicons:check-20-solid',
-        'heroicons:chevron-down-20-solid'
+        'heroicons:chevron-down-20-solid',
+        'heroicons:chevron-right-20-solid'
       ]
     }
   },
