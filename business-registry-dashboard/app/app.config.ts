@@ -254,10 +254,10 @@ export default defineAppConfig({
       rounded: 'rounded',
       base: 'h-auto p-4 text-sm font-normal relative whitespace-normal',
       arrow: {
-        base: 'before:w-3 before:h-3',
-        ring: 'before:ring-1 before:ring-gray-700/90',
-        background: 'before:bg-gray-700/90',
-        rounded: 'before:rounded-none'
+        base: 'before:w-0 before:h-0 before:-mt-[2px]',
+        ring: '',
+        background: 'before:border-[6px] before:border-b-transparent before:border-r-transparent before:border-l-gray-700/90 before:border-t-gray-700/90',
+        rounded: ''
       }
     },
     verticalNavigation: {

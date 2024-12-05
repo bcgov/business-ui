@@ -7,7 +7,7 @@ definePageMeta({
   <NuxtLayout name="dashboard">
     <div>
       <BusinessLookup class="-mt-4" />
-      <TableAffiliatedEntity />
+      <TableAffiliatedEntity class="mt-6" />
     </div>
   </NuxtLayout>
 </template>
