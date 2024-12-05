@@ -384,7 +384,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
       >
         <UButton
           :label="getPrimaryActionLabel(item)"
-          class="w-44 px-4"
+          class="w-44 px-4 transition-all duration-200 hover:opacity-95 hover:brightness-125"
           :icon="affNav.isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
           @click="primaryAction(item)"
         />
