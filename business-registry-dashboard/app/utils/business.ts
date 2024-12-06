@@ -1,4 +1,5 @@
 import { FilingTypes, AmalgamationTypes } from '@bcrs-shared-components/enums'
+import { StatusCodes } from 'http-status-codes'
 
 /**
  * Determines the display name of a given business object.
@@ -269,4 +270,29 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
   })
 
   return { errorMsg: 'Cannot add business due to some technical reasons' }
+}
+
+/**
+ * Checks if a business exists in LEAR.
+ * @param corpNum - The corporation number/business identifier to look up
+ * @returns Promise<boolean> - True if the business exists, false otherwise
+ */
+export async function checkBusinessExistsInLear (corpNum: string): Promise<boolean> {
+  const { $legalApi } = useNuxtApp()
+
+  try {
+    const response = await $legalApi(`/businesses/${corpNum}`)
+    // If we get a response, the business exists
+    return !!response
+  } catch (error) {
+    if (error instanceof Error) {
+      // Handle 404 Not Found
+      if ('response' in error && (error as any).response?.status === StatusCodes.NOT_FOUND) {
+        return false
+      }
+      // Log other errors
+      console.error(`Failed to check business ${corpNum}:`, error.message)
+    }
+    return false
+  }
 }

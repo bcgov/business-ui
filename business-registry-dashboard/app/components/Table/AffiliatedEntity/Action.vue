@@ -27,6 +27,7 @@ const emit = defineEmits<{
 }>()
 
 const invalidStatuses = [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired, AffiliationInvitationStatus.Failed]
+const isButtonActionProcessing = ref(false)
 
 /** Create a business record in LEAR. */
 async function createBusinessRecord (business: Business): Promise<string> {
@@ -193,18 +194,25 @@ const handleApprovedNameRequestRenew = (item: Business): void => {
   }
 }
 
-const handleApprovedNameRequestChangeName = (item: Business, nrRequestActionCd: NrRequestActionCodes): void => {
-  if (!isModernizedEntity(item)) {
+const handleApprovedNameRequestChangeName = async (item: Business, nrRequestActionCd: NrRequestActionCodes): Promise<void> => {
+  // Extract corporation number from the name request
+  const corpNum = item.nameRequest?.corpNum
+  if (!corpNum) { return } // Early return if no corpNum exists
+
+  // Show loading state while checking business existence
+  isButtonActionProcessing.value = true
+  const businessExists = await checkBusinessExistsInLear(corpNum)
+  isButtonActionProcessing.value = false
+
+  // Case 1: Business exists and is affiliated - go to dashboard
+  if (businessExists && isBusinessAffiliated(props.affiliations, corpNum)) {
+    affNav.goToDashboard(corpNum)
+  } else if (!businessExists) { // Case 2: Business doesn't exist in LEAR - redirect to legacy system
     affNav.goToCorpOnline()
-  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(props.affiliations, item.nameRequest?.corpNum)) {
-    affNav.goToDashboard(item.nameRequest?.corpNum)
-  } else {
-    let action = ''
-    if (nrRequestActionCd === NrRequestActionCodes.CONVERSION) {
-      action = 'alter'
-    } else if (nrRequestActionCd === NrRequestActionCodes.CHANGE_NAME) {
-      action = 'change name'
-    }
+  } else { // Case 3: General error
+    const action = nrRequestActionCd === NrRequestActionCodes.CONVERSION
+      ? 'alter'
+      : 'change name'
     emit('business-unavailable-error', action)
   }
 }
@@ -386,6 +394,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
           :label="getPrimaryActionLabel(item)"
           class="w-44 px-4 transition-all duration-200 hover:opacity-95 hover:brightness-125"
           :icon="affNav.isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
+          :loading="isButtonActionProcessing"
           @click="primaryAction(item)"
         />
       </UTooltip>
