@@ -186,6 +186,10 @@ export default {
     magicLinkGenericError: {
       title: 'Error Processing Link',
       description: 'An error occurred while processing the link.'
+    },
+    magicLinkInvalidNameRequest: {
+      title: 'Invalid Name Request',
+      description: 'An error occurred while processing the name request. Please make sure the name request is affiliated with your account and try again.'
     }
   },
   entityAlertTypes: {

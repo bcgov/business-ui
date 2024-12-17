@@ -8,7 +8,8 @@ const { t } = useI18n()
 const brdModal = useBrdModals()
 const route = useRoute()
 const affNav = useAffiliationNavigation()
-const { isAuthenticated } = useKeycloak()
+const isLoading = ref(true)
+const affStore = useAffiliationsStore()
 
 // Define eligible corporation types for incorporation
 const ELIGIBLE_CORP_TYPES = [
@@ -38,21 +39,15 @@ const createBusinessFromNR = async (business: any) => {
 
 /**
  * Magic Link Processing Flow:
- * 1. Verify user authentication
+ * 1. Verify user authentication (done in dashboard layout)
  * 2. Extract and validate URL parameters (nrId, email, phone)
  * 3. Fetch name request details
  * 4. Verify business eligibility
  * 5. Create business and redirect to dashboard
  */
 onMounted(async () => {
-  // Redirect unauthenticated users to login page with current URL as redirect target
-  if (!isAuthenticated.value) {
-    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
-    const redirectUrl = encodeURIComponent(window.location.href)
-    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
-  }
-
   try {
+    isLoading.value = true
     // Extract query parameters from the URL
     const { nrId, email, phone } = route.query as { nrId: string, email: string, phone: string }
 
@@ -77,9 +72,14 @@ onMounted(async () => {
       }
     }
 
+    // Load user's affiliated businesses and check if this name request is already affiliated
+    // This prevents unauthorized access to name requests that belong to other users
+    await affStore.loadAffiliations()
+    const isAffiliated = isNameRequestAffiliated(affStore.affiliations.results, business.nameRequest?.nrNumber)
+
     // Verify business eligibility and proceed with incorporation
     if (business.nameRequest.requestActionCd === NrRequestActionCodes.NEW_BUSINESS &&
-        ELIGIBLE_CORP_TYPES.includes(business.nameRequest.legalType)) {
+        ELIGIBLE_CORP_TYPES.includes(business.nameRequest.legalType) && isAffiliated) {
       try {
         // Create the business and redirect to dashboard
         const identifier = await createBusinessFromNR(business)
@@ -91,6 +91,11 @@ onMounted(async () => {
           t('error.magicLinkCreateBusinessFailed.description')
         )
       }
+    } else {
+      brdModal.openMagicLinkModal(
+        t('error.magicLinkInvalidNameRequest.title'),
+        t('error.magicLinkInvalidNameRequest.description')
+      )
     }
   } catch (error) {
     // Handle any unexpected errors during magic link processing
@@ -99,14 +104,19 @@ onMounted(async () => {
       t('error.magicLinkGenericError.title'),
       t('error.magicLinkGenericError.description')
     )
+  } finally {
+    isLoading.value = false
   }
 })
 </script>
 <template>
   <NuxtLayout name="dashboard">
     <div>
-      <BusinessLookup class="-mt-4" />
-      <TableAffiliatedEntity class="mt-6" />
+      <SbcLoadingSpinner v-if="isLoading" :overlay="true" />
+      <template v-else>
+        <BusinessLookup class="-mt-4" />
+        <TableAffiliatedEntity class="mt-6" />
+      </template>
     </div>
   </NuxtLayout>
 </template>

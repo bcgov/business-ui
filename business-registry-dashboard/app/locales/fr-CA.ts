@@ -176,6 +176,10 @@ export default {
     magicLinkGenericError: {
       title: 'Erreur de Traitement du Lien',
       description: 'Une erreur s\'est produite lors du traitement du lien.'
+    },
+    magicLinkInvalidNameRequest: {
+      title: 'Demande de Nom Invalide',
+      description: 'Une erreur s\'est produite lors du traitement de la demande de nom. Veuillez vérifier que la demande de nom est affiliée à votre compte et réessayer.'
     }
   },
   entityAlertTypes: {

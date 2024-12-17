@@ -284,3 +284,10 @@ export function isBusinessAffiliated (affiliations: Business[], businessIdentifi
   }
   return affiliations.some(business => businessIdentifier === business.businessIdentifier)
 }
+
+export function isNameRequestAffiliated (affiliations: Business[], nrNumber: string): boolean {
+  if (!nrNumber) {
+    return false
+  }
+  return affiliations.some(business => nrNumber === business.nameRequest?.nrNumber)
+}
