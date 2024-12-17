@@ -174,6 +174,18 @@ export default {
     magicLinkAlreadyAdded: {
       title: 'Business Already Added',
       description: 'The business {identifier} is already in your Business Registry List.'
+    },
+    magicLinkMissingContactInfo: {
+      title: 'Invalid Link',
+      description: 'The link is missing contact information. Please provide an email or phone number.'
+    },
+    magicLinkCreateBusinessFailed: {
+      title: 'Error Creating Business',
+      description: 'An error occurred while creating the business.'
+    },
+    magicLinkGenericError: {
+      title: 'Error Processing Link',
+      description: 'An error occurred while processing the link.'
     }
   },
   entityAlertTypes: {
