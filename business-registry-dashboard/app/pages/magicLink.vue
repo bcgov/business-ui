@@ -47,9 +47,9 @@ const createBusinessFromNR = async (business: any) => {
 onMounted(async () => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
-    const authWebUrl = useRuntimeConfig().public.authWebUrl
+    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
     const redirectUrl = encodeURIComponent(window.location.href)
-    window.location.href = `${authWebUrl}/login?redirect=${redirectUrl}`
+    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
   }
 
   try {
