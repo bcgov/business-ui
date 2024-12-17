@@ -36,8 +36,16 @@ const createBusinessFromNR = async (business: any) => {
   return filingResponse.filing.business.identifier
 }
 
-// Handle magic link processing on component mount
+/**
+ * Magic Link Processing Flow:
+ * 1. Verify user authentication
+ * 2. Extract and validate URL parameters (nrId, email, phone)
+ * 3. Fetch name request details
+ * 4. Verify business eligibility
+ * 5. Create business and redirect to dashboard
+ */
 onMounted(async () => {
+  // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
     const authWebUrl = useRuntimeConfig().public.authWebUrl
     const redirectUrl = encodeURIComponent(window.location.href)
