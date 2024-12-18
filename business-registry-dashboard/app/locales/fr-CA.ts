@@ -165,21 +165,9 @@ export default {
       title: 'Entreprise Déjà Ajoutée',
       description: 'L\'entreprise {identifier} est déjà dans votre liste du Registre des entreprises.'
     },
-    magicLinkMissingContactInfo: {
-      title: 'Lien Invalide',
-      description: 'Le lien est manquant des informations de contact. Veuillez fournir un e-mail ou un numéro de téléphone.'
-    },
-    magicLinkCreateBusinessFailed: {
-      title: 'Erreur de Création de l\'Entreprise',
-      description: 'Une erreur s\'est produite lors de la création de l\'entreprise. Veuillez réessayer ou contacter le support pour obtenir de l\'aide.'
-    },
-    magicLinkGenericError: {
+    magicLinkIncorporateNowError: {
       title: 'Erreur de Traitement du Lien',
-      description: 'Une erreur s\'est produite lors du traitement du lien.'
-    },
-    magicLinkInvalidNameRequest: {
-      title: 'Demande de Nom Invalide',
-      description: 'Une erreur s\'est produite lors du traitement de la demande de nom. Veuillez vérifier que la demande de nom est affiliée à votre compte et réessayer.'
+      description: 'Le lien semble avoir été mal saisi. Veuillez revenir en arrière et cliquer sur le lien complet.'
     }
   },
   entityAlertTypes: {

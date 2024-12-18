@@ -175,21 +175,9 @@ export default {
       title: 'Business Already Added',
       description: 'The business {identifier} is already in your Business Registry List.'
     },
-    magicLinkMissingContactInfo: {
-      title: 'Invalid Link',
-      description: 'The link is missing contact information. Please provide an email or phone number.'
-    },
-    magicLinkCreateBusinessFailed: {
-      title: 'Error Creating Business',
-      description: 'An error occurred while creating the business.'
-    },
-    magicLinkGenericError: {
+    magicLinkIncorporateNowError: {
       title: 'Error Processing Link',
-      description: 'An error occurred while processing the link.'
-    },
-    magicLinkInvalidNameRequest: {
-      title: 'Invalid Name Request',
-      description: 'An error occurred while processing the name request. Please make sure the name request is affiliated with your account and try again.'
+      description: 'The link appears to be entered incorrectly. Please go back and click the full link.'
     }
   },
   entityAlertTypes: {

@@ -285,9 +285,28 @@ export function isBusinessAffiliated (affiliations: Business[], businessIdentifi
   return affiliations.some(business => businessIdentifier === business.businessIdentifier)
 }
 
+/**
+ * Checks if a Name Request is already affiliated with any business in the affiliations list
+ * @param affiliations - Array of affiliated businesses
+ * @param nrNumber - Name Request number to check
+ * @returns true if the Name Request is already affiliated with a business
+ */
 export function isNameRequestAffiliated (affiliations: Business[], nrNumber: string): boolean {
   if (!nrNumber) {
     return false
   }
   return affiliations.some(business => nrNumber === business.nameRequest?.nrNumber)
+}
+
+/**
+ * Gets the temporary business identifier associated with a Name Request
+ * @param affiliations - Array of affiliated businesses
+ * @param nrNumber - Name Request number to look up
+ * @returns The business identifier if found, undefined otherwise
+ */
+export function getTempBusinessIdentifierOfNameRequest (affiliations: Business[], nrNumber: string): string | undefined {
+  if (isNameRequestAffiliated(affiliations, nrNumber)) {
+    return affiliations.find(business => business.nameRequest?.nrNumber === nrNumber)?.businessIdentifier
+  }
+  return undefined
 }
