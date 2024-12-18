@@ -174,6 +174,10 @@ export default {
     magicLinkAlreadyAdded: {
       title: 'Business Already Added',
       description: 'The business {identifier} is already in your Business Registry List.'
+    },
+    magicLinkIncorporateNowError: {
+      title: 'Error Processing Link',
+      description: 'The link appears to be entered incorrectly. Please go back and click the full link.'
     }
   },
   entityAlertTypes: {

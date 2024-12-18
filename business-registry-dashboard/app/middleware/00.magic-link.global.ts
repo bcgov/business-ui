@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware((to) => {
   // Check if the route is an affiliation invitation link without locale prefix
-  if (to.path.startsWith('/affiliationInvitation/acceptToken') && !to.path.startsWith('/en-CA/')) {
+  if ((to.path.startsWith('/affiliationInvitation/acceptToken') || to.path.startsWith('/incorporateNow')) && !to.path.startsWith('/en-CA/')) {
     // Convert query params to URLSearchParams to maintain all existing query parameters
     const searchParams = new URLSearchParams(to.query as Record<string, string>)
     const queryString = searchParams.toString()

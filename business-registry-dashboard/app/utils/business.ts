@@ -296,3 +296,27 @@ export async function checkBusinessExistsInLear (corpNum: string): Promise<boole
     return false
   }
 }
+
+/**
+ * Fetches a name request with optional phone and email for authorization.
+ * @param nrNumber the name request number (eg, NR 1234567)
+ * @param phone the name request phone number (eg, 123-4567)
+ * @param email the name request email address (eg, me@example.com)
+ * @returns a promise to return the NR data
+ */
+export async function fetchNameRequest (nrNumber: string, phone = '', email = ''): Promise<NameRequest> {
+  if (!nrNumber) { throw new Error('Invalid parameter \'nrNumber\'') }
+
+  const { $legalApi } = useNuxtApp()
+
+  try {
+    const response = await $legalApi(`nameRequests/${nrNumber}/validate?phone=${phone}&email=${email}`) as NameRequest
+    if (!response) { throw new Error('Invalid API response') }
+    return response
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(`Failed to fetch name request ${nrNumber}:`, error.message)
+    }
+    throw error
+  }
+}

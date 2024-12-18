@@ -2,6 +2,7 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
+const { isAuthenticated } = useKeycloak()
 
 useHead({
   title: t('page.home.title')
@@ -11,6 +12,15 @@ setBreadcrumbs([
   { to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`, label: t('labels.bcRegDashboard') },
   { label: t('page.home.h1') }
 ])
+
+onMounted(() => {
+  // Redirect unauthenticated users to login page with current URL as redirect target
+  if (!isAuthenticated.value) {
+    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
+    const redirectUrl = encodeURIComponent(window.location.href)
+    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+  }
+})
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">

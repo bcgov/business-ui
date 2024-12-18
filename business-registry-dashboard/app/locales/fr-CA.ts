@@ -164,6 +164,10 @@ export default {
     magicLinkAlreadyAdded: {
       title: 'Entreprise Déjà Ajoutée',
       description: 'L\'entreprise {identifier} est déjà dans votre liste du Registre des entreprises.'
+    },
+    magicLinkIncorporateNowError: {
+      title: 'Erreur de Traitement du Lien',
+      description: 'Le lien semble avoir été mal saisi. Veuillez revenir en arrière et cliquer sur le lien complet.'
     }
   },
   entityAlertTypes: {
