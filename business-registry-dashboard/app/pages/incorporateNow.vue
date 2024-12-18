@@ -70,21 +70,13 @@ onMounted(async () => {
       }
     }
 
-    // Load and check if the NR is already affiliated
-    await affStore.loadAffiliations()
-    const isAffiliated = isNameRequestAffiliated(affStore.affiliations.results, business.nameRequest?.nrNumber)
-
-    // Create affiliation if it doesn't exist
-    if (!isAffiliated) {
-      await affStore.createNRAffiliation({
-        businessIdentifier: business.nameRequest?.nrNumber,
-        ...(phone && { phone }),
-        ...(email && { email })
-      })
+    // Before the affiliation checks, add a guard clause
+    if (!business.nameRequest?.nrNumber) {
+      throw new Error('Name request number is required')
     }
 
-    // Get the temporary business identifier if it exists
-    const tempBusinessIdentifier = getTempBusinessIdentifierOfNameRequest(affStore.affiliations.results, business.nameRequest?.nrNumber)
+    // Now TypeScript knows nrNumber is defined for all following uses
+    const nrNumber = business.nameRequest.nrNumber
 
     // Check basic eligibility conditions
     const isEligibleRequest = business.nameRequest.requestActionCd === NrRequestActionCodes.NEW_BUSINESS &&
@@ -93,6 +85,22 @@ onMounted(async () => {
     if (!isEligibleRequest) {
       throw new Error('Invalid name request')
     }
+
+    // Load and check if the NR is already affiliated
+    await affStore.loadAffiliations()
+    const isAffiliated = isNameRequestAffiliated(affStore.affiliations.results, nrNumber)
+
+    // Create affiliation if it doesn't exist
+    if (!isAffiliated) {
+      await affStore.createNRAffiliation({
+        businessIdentifier: nrNumber,
+        ...(phone && { phone }),
+        ...(email && { email })
+      })
+    }
+
+    // Get the temporary business identifier if it exists
+    const tempBusinessIdentifier = getTempBusinessIdentifierOfNameRequest(affStore.affiliations.results, nrNumber)
 
     // If the NR is already affiliated and a draft business exists, navigate to the dashboard with the temporary business identifier
     if (tempBusinessIdentifier) {

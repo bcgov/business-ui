@@ -304,9 +304,9 @@ export function isNameRequestAffiliated (affiliations: Business[], nrNumber: str
  * @param nrNumber - Name Request number to look up
  * @returns The business identifier if found, undefined otherwise
  */
-export function getTempBusinessIdentifierOfNameRequest (affiliations: Business[], nrNumber: string): string | undefined {
+export function getTempBusinessIdentifierOfNameRequest (affiliations: Business[], nrNumber: string): string | null {
   if (isNameRequestAffiliated(affiliations, nrNumber)) {
-    return affiliations.find(business => business.nameRequest?.nrNumber === nrNumber)?.businessIdentifier
+    return affiliations.find(business => business.nameRequest?.nrNumber === nrNumber)?.businessIdentifier || null
   }
-  return undefined
+  return null
 }
