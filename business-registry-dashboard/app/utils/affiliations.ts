@@ -157,11 +157,11 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   if (isExpired(item)) {
     const typeMap = {
       [CorpTypes.REGISTRATION]: 'registration',
-      [CorpTypes.INCORPORATION_APPLICATION]: 'incorporation',
-      [CorpTypes.AMALGAMATION_APPLICATION]: 'amalgamation',
-      [CorpTypes.CONTINUATION_IN]: 'continuation'
+      [CorpTypes.INCORPORATION_APPLICATION]: 'incorporation application',
+      [CorpTypes.AMALGAMATION_APPLICATION]: 'amalgamation application',
+      [CorpTypes.CONTINUATION_IN]: 'continuation application'
     }
-    const type = typeMap[item.corpType?.code] || 'incorporation'
+    const type = typeMap[item.corpType?.code] || 'incorporation application'
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
   }
   if (isFrozed(item)) {
