@@ -155,7 +155,14 @@ export const isDissolution = (item: Business) => {
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const details = []
   if (isExpired(item)) {
-    details.push(EntityAlertTypes.EXPIRED)
+    const typeMap = {
+      [CorpTypes.REGISTRATION]: 'registration',
+      [CorpTypes.INCORPORATION_APPLICATION]: 'incorporation application',
+      [CorpTypes.AMALGAMATION_APPLICATION]: 'amalgamation application',
+      [CorpTypes.CONTINUATION_IN]: 'continuation application'
+    }
+    const type = typeMap[item.corpType?.code] || 'incorporation application'
+    details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
   }
   if (isFrozed(item)) {
     details.push(EntityAlertTypes.FROZEN)
