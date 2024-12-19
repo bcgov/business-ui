@@ -47,16 +47,24 @@ const entityAlertMessages: Record<string, Message> = {
     message: t(`entityAlertTypes.${EntityAlertTypes.DISSOLUTION}`),
     colour: 'text-red-600',
     priority: 1
-  },
-  [EntityAlertTypes.EXPIRED]: {
-    message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`),
-    colour: 'text-red-600',
-    priority: 5
   }
 }
 
-const generateMessage = (status: string): Message | null => {
-  return entityAlertMessages[status] || null
+const generateMessage = (status: string | { type: string, data: any }): Message | null => {
+  if (typeof status === 'string') {
+    return entityAlertMessages[status] || null
+  }
+
+  // Handle EXPIRED case with dynamic type
+  if (status.type === EntityAlertTypes.EXPIRED) {
+    return {
+      message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`, status.data),
+      colour: 'text-red-600',
+      priority: 5
+    }
+  }
+
+  return null
 }
 
 const makeMessages = () => {
