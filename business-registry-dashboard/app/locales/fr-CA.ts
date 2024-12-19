@@ -176,7 +176,7 @@ export default {
     LIQUIDATION: 'Cette entreprise est en liquidation',
     DISSOLUTION: 'Cette entreprise est en cours de dissolution',
     PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
-    EXPIRED: "Cette demande d'incorporation n'est plus valide; la demande de dénomination est expirée."
+    EXPIRED: "Cette {type} application n'est plus valide; la demande de nom est expirée."
   },
   form: {
     manageNR: {
