@@ -17,7 +17,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       type: '',
       status: ''
     },
-    loading: false,
+    loading: true,
     results: [] as Business[],
     count: 0
   })
