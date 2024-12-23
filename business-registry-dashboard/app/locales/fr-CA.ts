@@ -170,6 +170,12 @@ export default {
       description: 'Le lien semble avoir été mal saisi. Veuillez revenir en arrière et cliquer sur le lien complet.'
     }
   },
+  entityTypes: {
+    registration: 'inscription',
+    incorporationApplication: 'demande de constitution',
+    amalgamationApplication: 'demande de fusion',
+    continuationApplication: 'demande de continuation'
+  },
   entityAlertTypes: {
     FROZEN: 'Cette entreprise est gelée',
     BAD_STANDING: "Cette entreprise n'est pas en règle",

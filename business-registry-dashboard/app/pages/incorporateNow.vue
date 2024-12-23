@@ -114,8 +114,8 @@ onMounted(async () => {
     // All errors are handled with a generic error modal
     console.error('Error in incorporate flow:', error)
     brdModal.openMagicLinkModal(
-      t('error.magicLinkGenericError.title'),
-      t('error.magicLinkGenericError.description')
+      t('error.magicLinkIncorporateNowError.title'),
+      t('error.magicLinkIncorporateNowError.description')
     )
   } finally {
     isLoading.value = false

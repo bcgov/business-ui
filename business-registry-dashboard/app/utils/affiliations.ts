@@ -153,15 +153,16 @@ export const isDissolution = (item: Business) => {
 }
 
 export const getDetails = (item: Business): EntityAlertTypes[] => {
+  const { t } = useI18n()
   const details = []
   if (isExpired(item)) {
     const typeMap = {
-      [CorpTypes.REGISTRATION]: 'registration',
-      [CorpTypes.INCORPORATION_APPLICATION]: 'incorporation application',
-      [CorpTypes.AMALGAMATION_APPLICATION]: 'amalgamation application',
-      [CorpTypes.CONTINUATION_IN]: 'continuation application'
+      [CorpTypes.REGISTRATION]: t('entityTypes.registration'),
+      [CorpTypes.INCORPORATION_APPLICATION]: t('entityTypes.incorporationApplication'),
+      [CorpTypes.AMALGAMATION_APPLICATION]: t('entityTypes.amalgamationApplication'),
+      [CorpTypes.CONTINUATION_IN]: t('entityTypes.continuationApplication')
     }
-    const type = typeMap[item.corpType?.code] || 'incorporation application'
+    const type = typeMap[item.corpType?.code] || t('entityTypes.incorporationApplication')
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
   }
   if (isFrozed(item)) {
