@@ -180,13 +180,19 @@ export default {
       description: 'The link appears to be entered incorrectly. Please go back and click the full link.'
     }
   },
+  entityTypes: {
+    registration: 'registration',
+    incorporationApplication: 'incorporation application',
+    amalgamationApplication: 'amalgamation application',
+    continuationApplication: 'continuation application'
+  },
   entityAlertTypes: {
     FROZEN: 'This business is frozen',
     BAD_STANDING: 'This business is not in good standing',
     LIQUIDATION: 'This business is in liquidation',
     DISSOLUTION: 'This business is in the process of being dissolved',
-    PROCESSING: 'This name request is still processing, it may take up to 10 minutes.',
-    EXPIRED: 'This incorporation application is no longer valid; the name request is expired.'
+    PROCESSING: 'This name request is still processing. It may take up to 10 minutes.',
+    EXPIRED: 'This {type} is no longer valid; the name request is expired.'
   },
   form: {
     manageNR: {

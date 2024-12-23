@@ -153,9 +153,17 @@ export const isDissolution = (item: Business) => {
 }
 
 export const getDetails = (item: Business): EntityAlertTypes[] => {
+  const { t } = useNuxtApp().$i18n
   const details = []
   if (isExpired(item)) {
-    details.push(EntityAlertTypes.EXPIRED)
+    const typeMap = {
+      [CorpTypes.REGISTRATION]: t('entityTypes.registration'),
+      [CorpTypes.INCORPORATION_APPLICATION]: t('entityTypes.incorporationApplication'),
+      [CorpTypes.AMALGAMATION_APPLICATION]: t('entityTypes.amalgamationApplication'),
+      [CorpTypes.CONTINUATION_IN]: t('entityTypes.continuationApplication')
+    }
+    const type = typeMap[item.corpType?.code] || t('entityTypes.incorporationApplication')
+    details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
   }
   if (isFrozed(item)) {
     details.push(EntityAlertTypes.FROZEN)
