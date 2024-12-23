@@ -153,7 +153,7 @@ export const isDissolution = (item: Business) => {
 }
 
 export const getDetails = (item: Business): EntityAlertTypes[] => {
-  const { t } = useI18n()
+  const { t } = useNuxtApp().$i18n
   const details = []
   if (isExpired(item)) {
     const typeMap = {

@@ -111,7 +111,7 @@ onMounted(async () => {
       await affNav.goToDashboard(identifier)
     }
   } catch (error) {
-    // All errors are handled with a generic error modal
+    // All errors are handled with the incorporate now error modal
     console.error('Error in incorporate flow:', error)
     brdModal.openMagicLinkModal(
       t('error.magicLinkIncorporateNowError.title'),
