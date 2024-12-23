@@ -42,11 +42,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function removeBusiness (payload: RemoveBusinessPayload) {
-    // If the business is a new IA, amalgamation, continuation in, or registration then remove the business filing from legal-db
+    // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
+    // TODO: Add continuation in to the list of filings to remove (for MVP)
     if ([
       CorpTypes.INCORPORATION_APPLICATION,
       CorpTypes.AMALGAMATION_APPLICATION,
-      CorpTypes.CONTINUATION_IN,
       CorpTypes.REGISTRATION
     ].includes(payload.business.corpType.code)) {
       const filingResponse = await getFilings(payload.business.businessIdentifier)
