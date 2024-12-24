@@ -17,7 +17,7 @@ export function mapRequestTypeCdToNrType (requestTypeCd: NrRequestTypeCodes): st
 /* Internal function to build the namerequest object. */
 export function buildNameRequestObject (nr: NameRequestResponse) {
   const ldStore = useConnectLaunchdarklyStore()
-  const enableBcCccUlc = ldStore.getStoredFlag(LDFlags.EnableBcCccUlc) || false
+  const enableBcCccUlc = ldStore.getStoredFlag(LDFlags.EnableBcCccUlcBrd) || false
 
   /** Returns True if NR has applicants for registration. */
   const isApplicantsExist = (nr: NameRequestResponse): boolean => {
