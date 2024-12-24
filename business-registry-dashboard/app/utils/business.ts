@@ -75,7 +75,7 @@ export function isSocieties (item: Business): boolean {
 
 export function isModernizedEntity (item: Business): boolean {
   const ldStore = useConnectLaunchdarklyStore()
-  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.IaSupportedEntities)
+  const supportedEntityFlags = ldStore.getStoredFlag(LDFlags.IaSupportedEntitiesBrd)
   const entityType = getEntityType(item)
   if (typeof supportedEntityFlags === 'string') {
     return supportedEntityFlags.split(' ').includes(entityType)
