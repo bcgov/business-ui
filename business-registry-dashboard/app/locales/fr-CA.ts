@@ -573,7 +573,8 @@ export default {
       }
     },
     index: {
-      successToast: 'Entreprise supprimée avec succès de votre liste.'
+      businessSuccessToast: 'Entreprise supprimée avec succès de votre liste.',
+      nameRequestSuccessToast: 'Demande de nom supprimée avec succès de votre liste.'
     }
   },
   words: {
