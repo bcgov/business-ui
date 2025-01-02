@@ -124,8 +124,8 @@ export function useAffiliationNavigation () {
       return false
     }
 
-    // check for business
-    return !isModernizedEntity(item)
+    // existing businesses will route to Business Dashboard -- don't check FF
+    return false
   }
 
   return {
