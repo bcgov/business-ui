@@ -21,7 +21,10 @@ async function removeBusiness (resetPasscodeEmail: string, resetPasscode = true)
     payload.passcodeResetEmail = resetPasscodeEmail
     payload.resetPasscode = resetPasscode
     await affStore.removeBusiness(payload)
-    toast.add({ title: t('modal.removeBusiness.index.successToast') }) // add success toast
+    const toastMessage = payload.business.corpType.code === CorpTypes.NAME_REQUEST
+      ? t('modal.removeBusiness.index.nameRequestSuccessToast')
+      : t('modal.removeBusiness.index.businessSuccessToast')
+    toast.add({ title: toastMessage })
     brdModal.close()
   } catch (error) {
     logFetchError(error, 'Error removing business')

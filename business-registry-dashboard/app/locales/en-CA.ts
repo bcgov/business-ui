@@ -582,7 +582,8 @@ export default {
         }
       },
       index: {
-        successToast: 'Business successfully removed from your list.'
+        businessSuccessToast: 'Business successfully removed from your list.',
+        nameRequestSuccessToast: 'Name Request successfully removed from your list.'
       }
     }
   },
