@@ -124,7 +124,7 @@ export function useAffiliationNavigation () {
       return false
     }
 
-    // existing businesses will route to Business Dashboard -- don't check FF
+    // existing businesses will route to Business Dashboard -- don't show external icon
     return false
   }
 
