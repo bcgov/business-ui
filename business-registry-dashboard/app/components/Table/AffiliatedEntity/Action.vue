@@ -256,13 +256,11 @@ async function redirect (item: Business) {
     } else {
       affNav.goToNameRequest(item.nameRequest)
     }
-  } else if (isModernizedEntity(item)) { // handle modernized entity
-    await affStore.removeAcceptedAffiliationInvitations(item)
-    affNav.goToDashboard(item.businessIdentifier)
   } else if (isSocieties(item)) {
     affNav.goToSocieties()
   } else {
-    affNav.goToCorpOnline()
+    await affStore.removeAcceptedAffiliationInvitations(item)
+    affNav.goToDashboard(item.businessIdentifier)
   }
 }
 
