@@ -3,7 +3,6 @@ const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
-// const isStaffOrSbcStaff = computed(() => [AccountType.STAFF, AccountType.SBC_STAFF].includes(accountStore.currentAccount.accountType))
 
 useHead({
   title: t('page.home.title')
