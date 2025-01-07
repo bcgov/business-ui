@@ -5,7 +5,7 @@ const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
 
 useHead({
-  title: t('page.home.title')
+  title: accountStore.isStaffOrSbcStaff ? t('page.home.titleStaff') : t('page.home.title')
 })
 
 setBreadcrumbs([
@@ -13,7 +13,7 @@ setBreadcrumbs([
     to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
     label: accountStore.isStaffOrSbcStaff ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
   },
-  { label: t('page.home.h1') }
+  { label: accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
 
 onMounted(() => {
@@ -31,7 +31,7 @@ onMounted(() => {
       <div class="flex flex-col gap-4 md:flex-row md:justify-between">
         <div class="flex flex-col gap-4 md:flex-1">
           <h1 class="text-[32px]">
-            {{ $t('page.home.h1') }}
+            {{ accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }}
           </h1>
 
           <p class="text-gray-700">

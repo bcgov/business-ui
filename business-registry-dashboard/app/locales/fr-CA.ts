@@ -601,7 +601,9 @@ export default {
     },
     home: {
       title: "Mon Registre d'Entreprise",
+      titleStaff: 'Registre des Entreprises de mon Personnel',
       h1: "Mon Registre d'Entreprise",
+      h1Staff: 'Registre des Entreprises de mon Personnel',
       intro: 'Commencer la CB entreprises basées et tenir à jour les dossiers commerciaux.',
       busOrNRSearch: {
         label: 'Rechercher une Entreprise Existante ou une Demande de Nom Active à Gérer:',

@@ -611,7 +611,9 @@ export default {
     },
     home: {
       title: 'My Business Registry',
+      titleStaff: 'My Staff Business Registry',
       h1: 'My Business Registry',
+      h1Staff: 'My Staff Business Registry',
       intro: 'Start B.C. based businesses and keep business records up to date.',
       busOrNRSearch: {
         label: 'Retrieve an existing business or active Name Request to manage:',
