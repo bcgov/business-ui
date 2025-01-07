@@ -139,7 +139,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       const route = useRoute()
       // Use route param if staff, otherwise use current account
-      const orgId = (isStaffOrSbcStaff && route.params.orgId)
+      const orgId = (accountStore.isStaffOrSbcStaff && route.params.orgId)
         ? route.params.orgId
         : accountStore.currentAccount.id
 
