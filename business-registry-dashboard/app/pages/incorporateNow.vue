@@ -127,8 +127,7 @@ onMounted(async () => {
     <div>
       <SbcLoadingSpinner v-if="isLoading" :overlay="true" />
       <template v-else>
-        <BusinessLookup class="-mt-4" />
-        <TableAffiliatedEntity class="mt-6" />
+        <DashboardContent />
       </template>
     </div>
   </NuxtLayout>
