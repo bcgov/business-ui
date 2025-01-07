@@ -77,9 +77,6 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
 </script>
 <template>
   <NuxtLayout name="dashboard">
-    <div>
-      <BusinessLookup class="-mt-4" />
-      <TableAffiliatedEntity class="mt-6" />
-    </div>
+    <DashboardContent />
   </NuxtLayout>
 </template>
