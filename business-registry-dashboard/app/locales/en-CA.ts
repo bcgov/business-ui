@@ -496,7 +496,8 @@ export default {
     resendEmail: 'Resend Email',
     removeFromList: 'Remove From List',
     removeBusiness: 'Remove Business',
-    bcRegDashboard: 'BC Registries Dashboard'
+    bcRegDashboard: 'BC Registries Dashboard',
+    bcRegStaffDashboard: 'Staff Dashboard'
   },
   links: {
     busCorpAct: {

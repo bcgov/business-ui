@@ -3,13 +3,17 @@ const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
+// const isStaffOrSbcStaff = computed(() => [AccountType.STAFF, AccountType.SBC_STAFF].includes(accountStore.currentAccount.accountType))
 
 useHead({
   title: t('page.home.title')
 })
 
 setBreadcrumbs([
-  { to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`, label: t('labels.bcRegDashboard') },
+  {
+    to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
+    label: accountStore.isStaffOrSbcStaff ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
+  },
   { label: t('page.home.h1') }
 ])
 
