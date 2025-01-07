@@ -201,8 +201,8 @@ describe('useAffiliationsStore', () => {
 
     it('should use route param orgId when user is staff', async () => {
       store.currentAccount.accountType = 'STAFF' // Make user staff
-      mockRoute.params.orgId = '456' // Set route param
-      
+      mockRoute.params = { orgId: '456' } // Set route param
+
       mockGetStoredFlag.mockReturnValue(true)
       mockAuthApi
         .mockResolvedValueOnce(mockEntities)
