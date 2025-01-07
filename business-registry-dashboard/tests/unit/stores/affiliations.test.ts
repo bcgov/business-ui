@@ -180,10 +180,10 @@ describe('useAffiliationsStore', () => {
 
   describe('loadAffiliations', () => {
     it('should fetch and set affiliations correctly', async () => {
-      mockGetStoredFlag.mockReturnValue(true)
+      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
       mockAuthApi
-        .mockResolvedValueOnce(mockEntities)
-        .mockResolvedValueOnce({
+        .mockResolvedValueOnce(mockEntities) // affiliations
+        .mockResolvedValueOnce({ // invitations
           affiliationInvitations: []
         })
 
