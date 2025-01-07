@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to) => {
-  // Check if the route is an affiliation invitation link without locale prefix
+  // Check if the route is an account link without locale prefix
   if (to.path.startsWith('/account')) {
     // Construct the full URL with the en-CA locale prefix
     const newUrl = `/en-CA${to.path}`
