@@ -145,6 +145,12 @@ mockNuxtImport('useConnectLaunchdarklyStore', () => {
   )
 })
 
+// Add mock for useRoute
+const mockRoute = { params: {} }
+mockNuxtImport('useRoute', () => {
+  return () => mockRoute
+})
+
 describe('useAffiliationsStore', () => {
   let store: any
 
@@ -169,6 +175,7 @@ describe('useAffiliationsStore', () => {
     vi.clearAllMocks()
     vi.resetAllMocks()
     mockAuthenticated = true
+    mockRoute.params = {} // Reset route params after each test
   })
 
   describe('loadAffiliations', () => {
@@ -183,11 +190,33 @@ describe('useAffiliationsStore', () => {
       const affStore = useAffiliationsStore()
 
       await affStore.loadAffiliations()
-
-      // wait for getAffiliatedEntities to finish
       await flushPromises()
 
-      expect(mockAuthApi).toHaveBeenCalledTimes(2) // once for affiliations and another for invitations
+      // Should use accountStore.currentAccount.id since not staff
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/123/affiliations?new=true')
+      // results mapped to business object
+      expect(affStore.affiliations.results).toEqual(processedAffiliations)
+      expect(affStore.affiliations.count).toEqual(4)
+    })
+
+    it('should use route param orgId when user is staff', async () => {
+      store.currentAccount.accountType = 'STAFF' // Make user staff
+      mockRoute.params = { orgId: '456' } // Set route param
+
+      mockGetStoredFlag.mockReturnValue(true)
+      mockAuthApi
+        .mockResolvedValueOnce(mockEntities)
+        .mockResolvedValueOnce({
+          affiliationInvitations: []
+        })
+
+      const affStore = useAffiliationsStore()
+
+      await affStore.loadAffiliations()
+      await flushPromises()
+
+      // Should use route.params.orgId since user is staff
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/456/affiliations?new=true')
       // results mapped to business object
       expect(affStore.affiliations.results).toEqual(processedAffiliations)
       expect(affStore.affiliations.count).toEqual(4)

@@ -1,6 +1,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect } from 'vitest'
-import { BusinessLookup, TableAffiliatedEntity } from '#components'
+import { DashboardContent } from '#components'
 import Dashboard from '~/layouts/dashboard.vue'
 import { enI18n } from '~~/tests/mocks/i18n'
 import Index from '~/pages/index.vue'
@@ -26,7 +26,6 @@ describe('Index Page', () => {
 
   it('should render child components correctly', async () => {
     const wrapper = await mountPage()
-    expect(wrapper.findComponent(BusinessLookup).exists()).toBe(true)
-    expect(wrapper.findComponent(TableAffiliatedEntity).exists()).toBe(true)
+    expect(wrapper.findComponent(DashboardContent).exists()).toBe(true)
   })
 })

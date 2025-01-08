@@ -136,7 +136,18 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       affiliations.loading = true
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
-      const response = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountStore.currentAccount.id}/affiliations?new=true`)
+
+      const route = useRoute()
+      // Use route param if staff, otherwise use current account
+      const orgId = (isStaffOrSbcStaff.value && route.params.orgId)
+        ? route.params.orgId
+        : accountStore.currentAccount.id
+
+      if (!orgId) { return }
+
+      const response = await $authApi<{ entities: AffiliationResponse[] }>(
+        `/orgs/${orgId}/affiliations?new=true`
+      )
 
       let affiliatedEntities: Business[] = []
 
