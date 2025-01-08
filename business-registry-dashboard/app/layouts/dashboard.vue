@@ -16,9 +16,12 @@ setBreadcrumbs([
   { label: accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
 
-onMounted(() => {
+onMounted(async () => {
+  // Wait for next tick to ensure Keycloak has initialized
+  await nextTick()
+
   // Redirect unauthenticated users to login page with current URL as redirect target
-  if (!isAuthenticated.value) {
+  if (isAuthenticated.value === false) { // explicitly check for false
     const registryHomeURL = useRuntimeConfig().public.registryHomeURL
     const redirectUrl = encodeURIComponent(window.location.href)
     window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
