@@ -2,7 +2,6 @@
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
-const { isAuthenticated } = useKeycloak()
 
 useHead({
   title: accountStore.isStaffOrSbcStaff ? t('page.home.titleStaff') : t('page.home.title')
@@ -15,18 +14,6 @@ setBreadcrumbs([
   },
   { label: accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
-
-onMounted(async () => {
-  // Wait for next tick to ensure Keycloak has initialized
-  await nextTick()
-
-  // Redirect unauthenticated users to login page with current URL as redirect target
-  if (isAuthenticated.value !== true) { // explicitly check for false
-    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
-    const redirectUrl = encodeURIComponent(window.location.href)
-    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
-  }
-})
 </script>
 <template>
   <div class="mx-auto flex flex-col gap-4 px-2 py-8 sm:px-4 sm:py-10">
