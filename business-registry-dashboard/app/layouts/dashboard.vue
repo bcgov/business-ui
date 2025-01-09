@@ -3,6 +3,7 @@ const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
+const { $keycloak } = useNuxtApp()
 
 useHead({
   title: accountStore.isStaffOrSbcStaff ? t('page.home.titleStaff') : t('page.home.title')
@@ -16,15 +17,19 @@ setBreadcrumbs([
   { label: accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
 
-onMounted(async () => {
-  // Wait for next tick to ensure Keycloak has initialized
-  await nextTick()
-
-  // Redirect unauthenticated users to login page with current URL as redirect target
-  if (isAuthenticated.value !== true) { // explicitly check for false
-    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
-    const redirectUrl = encodeURIComponent(window.location.href)
-    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+onMounted(() => {
+  console.log('isAuthenticated.value', isAuthenticated.value)
+  console.log('$keycloak.authenticated', $keycloak.authenticated)
+  console.log('$keycloak', $keycloak)
+  if (!$keycloak.authenticated) {
+    console.log('keycloak not authenticated')
+  } else {
+    console.log('keycloak authenticated')
+  }
+  if (!isAuthenticated.value) {
+    console.log('isAuthenticated not authenticated')
+  } else {
+    console.log('isAuthenticated authenticated')
   }
 })
 </script>
