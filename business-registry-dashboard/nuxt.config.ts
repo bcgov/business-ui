@@ -88,7 +88,7 @@ export default defineNuxtConfig({
         file: 'fr-CA.ts'
       }
     ],
-    strategy: 'prefix',
+    strategy: 'prefix_except_default',
     lazy: true,
     langDir: 'locales',
     defaultLocale: 'en-CA',
