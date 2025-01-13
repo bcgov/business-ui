@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/': { redirect: '/en-CA' }
+    '/en-CA': { redirect: '/' }
   },
 
   modules: [
