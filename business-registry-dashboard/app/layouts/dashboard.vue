@@ -3,17 +3,24 @@ const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
+const route = useRoute()
+
+// Create a computed property to determine if we should show staff text
+const showStaffText = computed(() => {
+  return accountStore.isStaffOrSbcStaff &&
+         (!route.params.orgId || route.params.orgId === accountStore.currentAccount.id.toString())
+})
 
 useHead({
-  title: accountStore.isStaffOrSbcStaff ? t('page.home.titleStaff') : t('page.home.title')
+  title: showStaffText.value ? t('page.home.titleStaff') : t('page.home.title')
 })
 
 setBreadcrumbs([
   {
     to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
-    label: accountStore.isStaffOrSbcStaff ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
+    label: showStaffText.value ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
   },
-  { label: accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }
+  { label: showStaffText.value ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
 
 onMounted(() => {
@@ -31,7 +38,7 @@ onMounted(() => {
       <div class="flex flex-col gap-4 md:flex-row md:justify-between">
         <div class="flex flex-col gap-4 md:flex-1">
           <h1 class="text-[32px]">
-            {{ accountStore.isStaffOrSbcStaff ? t('page.home.h1Staff') : t('page.home.h1') }}
+            {{ showStaffText ? t('page.home.h1Staff') : t('page.home.h1') }}
           </h1>
 
           <p class="text-gray-700">
@@ -50,7 +57,9 @@ onMounted(() => {
                 icon="i-mdi-domain"
                 size="bcGov"
                 class="w-full"
-                :to="`${config.nrURL}${accountStore.currentAccount.id.toString()}`"
+                :to="`${config.nrURL}${(accountStore.isStaffOrSbcStaff && route.params.orgId)
+                  ? route.params.orgId
+                  : accountStore.currentAccount.id.toString()}`"
               />
             </UTooltip>
           </div>
