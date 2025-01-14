@@ -3,6 +3,7 @@ const { t } = useI18n()
 const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
+const route = useRoute()
 
 useHead({
   title: accountStore.isStaffOrSbcStaff ? t('page.home.titleStaff') : t('page.home.title')
@@ -50,7 +51,9 @@ onMounted(() => {
                 icon="i-mdi-domain"
                 size="bcGov"
                 class="w-full"
-                :to="`${config.nrURL}${accountStore.currentAccount.id.toString()}`"
+                :to="`${config.nrURL}${(accountStore.isStaffOrSbcStaff && route.params.orgId) 
+                  ? route.params.orgId
+                  : accountStore.currentAccount.id.toString()}`"
               />
             </UTooltip>
           </div>
