@@ -51,7 +51,7 @@ onMounted(() => {
                 icon="i-mdi-domain"
                 size="bcGov"
                 class="w-full"
-                :to="`${config.nrURL}${(accountStore.isStaffOrSbcStaff && route.params.orgId) 
+                :to="`${config.nrURL}${(accountStore.isStaffOrSbcStaff && route.params.orgId)
                   ? route.params.orgId
                   : accountStore.currentAccount.id.toString()}`"
               />
