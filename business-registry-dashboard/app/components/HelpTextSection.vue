@@ -14,7 +14,10 @@ const toggleHelpText = () => {
 
 const { data: helpText } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
   return queryContent()
-    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
+    .where({
+      _locale: locale.value,
+      _path: '/start-manage-business-help-text'
+    })
     .findOne()
 })
 </script>
