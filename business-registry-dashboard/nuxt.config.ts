@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/en-CA': { redirect: '/' }
+    '/': { redirect: '/en-CA' }
   },
 
   modules: [
@@ -89,7 +89,7 @@ export default defineNuxtConfig({
         file: 'fr-CA.ts'
       }
     ],
-    strategy: 'prefix_except_default',
+    strategy: 'prefix',
     lazy: true,
     langDir: 'locales',
     defaultLocale: 'en-CA',

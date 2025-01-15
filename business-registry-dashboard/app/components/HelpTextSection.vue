@@ -12,10 +12,19 @@ const toggleHelpText = () => {
   }
 }
 
+// Handle default locale (en-CA) without prefix, other locales with prefix
 const { data: helpText } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
-  return queryContent()
-    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
+  const isDefaultLocale = locale.value === 'en-CA'
+  return queryContent(isDefaultLocale ? '' : locale.value)
+    .where({
+      _path: { $contains: 'start-manage-business-help-text' }
+    })
     .findOne()
+})
+
+onMounted(() => {
+  console.log('Current locale:', locale.value)
+  console.log('Help Text Data:', helpText.value)
 })
 </script>
 <template>
@@ -41,7 +50,13 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text-'
       '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
     }"
   >
-    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg" />
+    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg">
+      <template #default="{ value }">
+        <div v-if="value">
+          <ContentRendererMarkdown :value="value" />
+        </div>
+      </template>
+    </ContentRenderer>
     <div class="flex">
       <UButton
         :label="$t('btn.busStartHelp.hide')"
