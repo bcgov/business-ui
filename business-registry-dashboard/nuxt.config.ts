@@ -20,7 +20,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/eslint-module',
     '@nuxt/test-utils/module',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@nuxt/content'
   ],
 
   extends: ['@daxiom/nuxt-core-layer-test'],
