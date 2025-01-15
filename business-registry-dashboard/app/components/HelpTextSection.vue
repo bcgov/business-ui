@@ -13,8 +13,19 @@ const toggleHelpText = () => {
 }
 
 const { data: helpText, error } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
-  return queryContent()
-    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
+  // For default locale, don't include the locale in the query
+  const isDefaultLocale = locale.value === 'en-CA'
+  
+  console.log('Query params:', {
+    isDefaultLocale,
+    locale: locale.value,
+    path: isDefaultLocale ? '/start-manage-business-help-text' : `/en-CA/start-manage-business-help-text`
+  })
+
+  return queryContent(isDefaultLocale ? '' : locale.value)
+    .where({ 
+      _path: { $contains: 'start-manage-business-help-text' } 
+    })
     .findOne()
 })
 

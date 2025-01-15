@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      routes: []
+      routes: ['/en-CA/start-manage-business-help-text']
     }
   },
 
