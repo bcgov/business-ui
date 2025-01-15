@@ -14,10 +14,7 @@ const toggleHelpText = () => {
 
 const { data: helpText } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
   return queryContent()
-    .where({
-      _locale: locale.value,
-      _path: '/start-manage-business-help-text'
-    })
+    .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
     .findOne()
 })
 </script>
@@ -44,11 +41,11 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text-'
       '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
     }"
   >
-    <ContentDoc
-      v-if="helpText"
-      :path="helpText._path"
-      class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg"
-    />
+    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg">
+      <template #empty>
+        <slot />
+      </template>
+    </ContentRenderer>
     <div class="flex">
       <UButton
         :label="$t('btn.busStartHelp.hide')"
