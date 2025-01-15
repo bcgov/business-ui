@@ -8,7 +8,7 @@ export function useAffiliationNavigation () {
   /** Navigation handler for entities dashboard. */
   function goToDashboard (businessIdentifier: string) {
     sessionStorage.setItem(SessionStorageKeys.BusinessIdentifierKey, businessIdentifier)
-    const redirectURL = `${webUrl.getBusinessURL()}${businessIdentifier}?accountid=${currentAccountId.value}`
+    const redirectURL = `${webUrl.getBusinessDashUrl()}${businessIdentifier}?accountid=${currentAccountId.value}`
     return navigateTo(decodeURIComponent(redirectURL), { external: true })
   }
 

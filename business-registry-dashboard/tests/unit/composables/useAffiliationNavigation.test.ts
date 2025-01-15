@@ -21,7 +21,7 @@ mockNuxtImport('useRuntimeConfig', () => {
   return () => (
     {
       public: {
-        businessUrl: 'https://business.example.com/',
+        businessDashUrl: 'https://business-dash.example.com/',
         nrURL: 'https://namerequest.example.com/',
         oneStopUrl: 'https://onestop.example.com/',
         corpOLUrl: 'https://corporateonline.example.com/',

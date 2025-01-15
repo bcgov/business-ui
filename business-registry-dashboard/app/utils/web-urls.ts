@@ -1,45 +1,45 @@
 export function getWebUrl () {
   const config = useRuntimeConfig().public
 
-  function getBusinessURL () {
+  function getBusinessDashUrl () {
     // this needs trailing slash
-    return config.businessUrl
+    return config.businessDashUrl as string
   }
 
   function getNameRequestUrl () {
-    return config.nrURL
+    return config.nrURL as string
   }
 
   function getOneStopUrl () {
-    return config.oneStopUrl
+    return config.oneStopUrl as string
   }
 
   function getCorporateOnlineUrl () {
-    return config.corpOLUrl
+    return config.corpOLUrl as string
   }
 
   function getLLPFormsUrl () {
-    return config.llpFormsUrl
+    return config.llpFormsUrl as string
   }
 
   function getLPFormsUrl () {
-    return config.lpFormsUrl
+    return config.lpFormsUrl as string
   }
 
   function getXLPFormsUrl () {
-    return config.xlpFormUrl
+    return config.xlpFormUrl as string
   }
 
   function getCorpFormsUrl () {
-    return config.corpFormsUrl
+    return config.corpFormsUrl as string
   }
 
   function getSocietiesUrl () {
-    return config.societiesUrl
+    return config.societiesUrl as string
   }
 
   return {
-    getBusinessURL,
+    getBusinessDashUrl,
     getCorpFormsUrl,
     getCorporateOnlineUrl,
     getLLPFormsUrl,
