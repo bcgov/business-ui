@@ -12,26 +12,19 @@ const toggleHelpText = () => {
   }
 }
 
-const { data: helpText, error } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
-  // For default locale, don't include the locale in the query
+// Handle default locale (en-CA) without prefix, other locales with prefix
+const { data: helpText } = await useAsyncData('start-manage-business-help-text-' + locale.value, () => {
   const isDefaultLocale = locale.value === 'en-CA'
-  
-  console.log('Query params:', {
-    isDefaultLocale,
-    locale: locale.value,
-    path: isDefaultLocale ? '/start-manage-business-help-text' : `/en-CA/start-manage-business-help-text`
-  })
-
   return queryContent(isDefaultLocale ? '' : locale.value)
-    .where({ 
-      _path: { $contains: 'start-manage-business-help-text' } 
+    .where({
+      _path: { $contains: 'start-manage-business-help-text' }
     })
     .findOne()
 })
 
 onMounted(() => {
+  console.log('Current locale:', locale.value)
   console.log('Help Text Data:', helpText.value)
-  console.log('Help Text Error:', error.value)
 })
 </script>
 <template>
@@ -57,18 +50,7 @@ onMounted(() => {
       '-mb-0 max-h-[10000px] py-8 opacity-100': showHelpText,
     }"
   >
-    <ContentRenderer
-      v-if="helpText"
-      :value="helpText"
-      class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg"
-    >
-      <template #empty>
-        <slot />
-      </template>
-    </ContentRenderer>
-    <div v-else-if="error" class="text-red-600">
-      Error loading content: {{ error }}
-    </div>
+    <ContentRenderer :value="helpText" class="prose prose-bcGov prose-h3:text-center prose-p:my-8 prose-ol:space-y-10 max-w-bcGovLg" />
     <div class="flex">
       <UButton
         :label="$t('btn.busStartHelp.hide')"

@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      routes: ['/en-CA/start-manage-business-help-text']
+      routes: []
     }
   },
 
@@ -20,8 +20,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/eslint-module',
     '@nuxt/test-utils/module',
-    '@nuxt/image',
-    '@nuxt/content'
+    '@nuxt/image'
   ],
 
   extends: ['@daxiom/nuxt-core-layer-test'],
