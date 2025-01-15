@@ -5,7 +5,7 @@ mockNuxtImport('useRuntimeConfig', () => {
   return () => (
     {
       public: {
-        businessUrl: 'https://business.example.com',
+        businessDashUrl: 'https://business-dash.example.com',
         nrURL: 'https://namerequest.example.com',
         oneStopUrl: 'https://onestop.example.com',
         corpOLUrl: 'https://corporateonline.example.com',
@@ -22,7 +22,7 @@ mockNuxtImport('useRuntimeConfig', () => {
 describe('getWebUrl', () => {
   it('should return the correct business URL', () => {
     const urls = getWebUrl()
-    expect(urls.getBusinessURL()).toBe('https://business.example.com')
+    expect(urls.getBusinessDashUrl()).toBe('https://business-dash.example.com')
   })
 
   it('should return the correct name request URL', () => {

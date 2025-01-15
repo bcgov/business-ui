@@ -5,10 +5,10 @@ export function useAffiliationNavigation () {
   const accountStore = useConnectAccountStore()
   const currentAccountId = computed(() => accountStore.currentAccount.id)
 
-  /** Navigation handler for entities dashboard. */
+  /** Navigation handler for business dashboard. */
   function goToDashboard (businessIdentifier: string) {
     sessionStorage.setItem(SessionStorageKeys.BusinessIdentifierKey, businessIdentifier)
-    const redirectURL = `${webUrl.getBusinessURL()}${businessIdentifier}?accountid=${currentAccountId.value}`
+    const redirectURL = `${webUrl.getBusinessDashUrl()}${businessIdentifier}?accountid=${currentAccountId.value}`
     return navigateTo(decodeURIComponent(redirectURL), { external: true })
   }
 
