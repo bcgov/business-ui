@@ -739,5 +739,48 @@ export default {
     error: 'Error retrieving search results, please try again later.',
     resultListLabel: 'Search Results',
     noResults: 'No results found'
+  },
+  startManageBusinessHelp: {
+    heading: 'Help with Starting and Managing a Business',
+    intro: 'Start a named or numbered business in B.C. by following these steps:',
+    steps: {
+      businessType: {
+        heading: 'Decide on a Business Type',
+        content1: 'Decide which business structure is the most appropriate for you. A few options are: a sole proprietorship, partnership, or corporation. Each structure has different legal and financial implications.',
+        content2: 'If you want to start a corporation, you also have the choice of using a named or numbered company.',
+        content3: 'Once your Name Request has been approved you must return to this screen to Incorporate or Register your business using your approved Name Request.',
+        wizardLink: 'Use the Business Structures Wizard to help you decide.'
+      },
+      requestName: {
+        heading: 'Request a Business Name or Use a Numbered Company',
+        namedBusiness: {
+          heading: 'Request a Business Name',
+          content1: 'To start a named business in B.C., change the business name of an existing company, or merge two or more companies using a new name, click the {boldStart}"Get Started with a B.C. Based Business"{boldEnd} button on this screen and follow the instructions.',
+          content2: 'Before registering or incorporating a named business, you will need to first submit a Name Request. You will be asked to create a unique name for your business and submit your name(s) for review by BC Registries staff.',
+          content3: 'Once you submit your Name Request you can return to this screen and your Name Request (NR) will automatically appear in your table.',
+          content4: 'If you do not see your Name Request in your table (e.g. if you submitted your Name Request without being logged into your BC Registries account), you can add your Name Request manually by looking up your business name or your NR number.',
+          content5: 'You can track the approval status of your Name Request from your table on this screen by clicking the {boldStart}"Open Name Request"{boldEnd} button next to your Name Request.'
+        },
+        numberedCompany: {
+          heading: 'Use a Numbered Company',
+          content1: 'To start a numbered corporation in B.C., click the {boldStart}"Get Started with a B.C. Based Business"{boldEnd} button and follow the instructions.'
+        }
+      },
+      incorporateRegister: {
+        heading: 'Incorporate or Register Your Business',
+        content1: 'For named businesses, once your Name Request has been approved and added to your table on this screen, you must select the {boldStart}"Register Now"{boldEnd} button beside the name to begin your incorporation or registration.',
+        content2: 'Follow the steps in the application and complete all of the required information including addresses, contact information, people and roles, and share structure (if applicable).',
+        content3: 'Retain a copy of all incorporation or registration documents for your business\' records.'
+      },
+      manageMaintain: {
+        heading: 'Manage and Maintain Your Business',
+        content1: 'Once your business is incorporated or registered you are required to keep information about your business up to date with the Business Registry.',
+        content2: 'From your table, click {boldStart}"Manage Business"{boldEnd} to manage and maintain your business information including:',
+        content3: 'View and change business information.',
+        content4: 'See when annual reports are due and file them each year (if applicable).',
+        content5: 'See the history of your business\' filings and download copies of all documents.',
+        content6: 'Dissolve your business.'
+      }
+    }
   }
 }

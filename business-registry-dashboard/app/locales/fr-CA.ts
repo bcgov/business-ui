@@ -729,5 +729,48 @@ export default {
     error: 'Erreur lors de la récupération des résultats, veuillez réessayer plus tard.',
     resultListLabel: 'Résultats de la recherche',
     noResults: 'Aucun résultat trouvé'
+  },
+  startManageBusinessHelp: {
+    heading: 'Aide pour Démarrer et Gérer une Entreprise',
+    intro: 'Démarrez une entreprise nommée ou numérotée en C.-B. en suivant ces étapes :',
+    steps: {
+      businessType: {
+        heading: "Choisir un Type d'Entreprise",
+        content1: "Décidez quelle structure d'entreprise est la plus appropriée pour vous. Quelques options sont : une entreprise individuelle, une société en nom collectif ou une société par actions. Chaque structure a des implications juridiques et financières différentes.",
+        content2: "Si vous souhaitez créer une société par actions, vous avez également le choix d'utiliser une entreprise nommée ou numérotée.",
+        content3: 'Une fois que votre demande de nom a été approuvée, vous devez revenir à cet écran pour constituer ou enregistrer votre entreprise en utilisant votre demande de nom approuvée.',
+        wizardLink: "Utilisez l'Assistant des Structures d'Entreprise pour vous aider à décider."
+      },
+      requestName: {
+        heading: "Demander un Nom d'Entreprise ou Utiliser une Entreprise Numérotée",
+        namedBusiness: {
+          heading: "Demander un Nom d'Entreprise",
+          content1: "Pour démarrer une entreprise nommée en C.-B., changer le nom d'une entreprise existante, ou fusionner deux entreprises ou plus en utilisant un nouveau nom, cliquez sur le bouton {boldStart}'Commencer avec une entreprise basée en C.-B.'{boldEnd} sur cet écran et suivez les instructions.",
+          content2: "Avant d'enregistrer ou de constituer une entreprise nommée, vous devrez d'abord soumettre une demande de nom. On vous demandera de créer un nom unique pour votre entreprise et de soumettre votre ou vos noms pour examen par le personnel des Registres BC.",
+          content3: 'Une fois que vous aurez soumis votre demande de nom, vous pourrez revenir à cet écran et votre demande de nom (NR) apparaîtra automatiquement dans votre tableau.',
+          content4: 'Si vous ne voyez pas votre demande de nom dans votre tableau (par exemple, si vous avez soumis votre demande de nom sans être connecté à votre compte des Registres BC), vous pouvez ajouter votre demande de nom manuellement en recherchant le nom de votre entreprise ou votre numéro NR.',
+          content5: "Vous pouvez suivre l'état d'approbation de votre demande de nom depuis votre tableau sur cet écran en cliquant sur le bouton {boldStart}'Ouvrir la Demande de Nom'{boldEnd} à côté de votre demande de nom."
+        },
+        numberedCompany: {
+          heading: 'Utiliser une Entreprise Numérotée',
+          content1: "Pour démarrer une société numérotée en C.-B., cliquez sur le bouton {boldStart}'Commencer avec une entreprise basée en C.-B.'{boldEnd} et suivez les instructions."
+        }
+      },
+      incorporateRegister: {
+        heading: 'Constituer ou Enregistrer Votre Entreprise',
+        content1: "Pour les entreprises nommées, une fois que votre demande de nom a été approuvée et ajoutée à votre tableau sur cet écran, vous devez sélectionner le bouton {boldStart}'Enregistrer Maintenant'{boldEnd} à côté du nom pour commencer votre constitution ou votre enregistrement.",
+        content2: 'Suivez les étapes de la demande et remplissez toutes les informations requises, y compris les adresses, les coordonnées, les personnes et les rôles, et la structure des actions (le cas échéant).',
+        content3: "Conservez une copie de tous les documents de constitution ou d'enregistrement pour les dossiers de votre entreprise."
+      },
+      manageMaintain: {
+        heading: 'Gérer et Maintenir Votre Entreprise',
+        content1: 'Une fois que votre entreprise est constituée ou enregistrée, vous êtes tenu de maintenir à jour les informations concernant votre entreprise auprès du Registre des entreprises.',
+        content2: "Depuis votre tableau, cliquez sur {boldStart}'Gérer l'Entreprise'{boldEnd} pour gérer et maintenir les informations de votre entreprise, notamment :",
+        content3: "Consulter et modifier les informations de l'entreprise.",
+        content4: 'Voir quand les rapports annuels sont dus et les déposer chaque année (le cas échéant).',
+        content5: "Consulter l'historique des dépôts de votre entreprise et télécharger des copies de tous les documents.",
+        content6: 'Dissoudre votre entreprise.'
+      }
+    }
   }
 }
