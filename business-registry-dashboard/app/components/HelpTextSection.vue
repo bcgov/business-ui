@@ -17,6 +17,10 @@ const { data: helpText } = await useAsyncData('start-manage-business-help-text-'
     .where({ _locale: locale.value, _path: { $contains: 'start-manage-business-help-text' } })
     .findOne()
 })
+
+onMounted(() => {
+  console.log('helpText', helpText)
+})
 </script>
 <template>
   <UButton
