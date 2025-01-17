@@ -11,6 +11,7 @@ defineProps<{
   error?: {
     title: string
     description: string
+    description2?: string
     showContactInfo?: boolean
   },
   fullscreen?: boolean
@@ -70,6 +71,9 @@ onMounted(async () => {
             {{ error.title }}
           </h2>
           <p>{{ error.description }}</p>
+          <p v-if="error.description2">
+            {{ error.description2 }}
+          </p>
           <p v-if="error.showContactInfo" class="self-start">
             Please contact us if you require assistance.
           </p>
