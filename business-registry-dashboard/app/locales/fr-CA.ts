@@ -166,8 +166,8 @@ export default {
       description: 'L\'entreprise {identifier} est déjà dans votre liste du Registre des entreprises.'
     },
     magicLinkIncorporateNowError: {
-      title: 'Erreur de Traitement du Lien',
-      description: 'Le lien semble avoir été mal saisi. Veuillez revenir en arrière et cliquer sur le lien complet.'
+      title: 'Cette demande de nom est consommée ou est toujours en cours de traitement',
+      description: "Confirmez que vous n'avez pas déjà utilisé ce nom pour une autre entreprise. Si le nom est disponible, veuillez vérifier dans quelques minutes la dernière mise à jour, car le système est peut-être encore en cours de traitement."
     }
   },
   entityTypes: {

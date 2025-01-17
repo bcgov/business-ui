@@ -176,8 +176,8 @@ export default {
       description: 'The business {identifier} is already in your Business Registry List.'
     },
     magicLinkIncorporateNowError: {
-      title: 'Error Processing Link',
-      description: 'The link appears to be entered incorrectly. Please go back and click the full link.'
+      title: 'This Name Request is consumed or is still processing',
+      description: "Confirm that you haven't already used this name for another business. If the name is available, please check back in a few minutes for the latest update, as the system may still be processing."
     }
   },
   entityTypes: {
