@@ -115,7 +115,8 @@ onMounted(async () => {
     console.error('Error in incorporate flow:', error)
     brdModal.openMagicLinkModal(
       t('error.magicLinkIncorporateNowError.title'),
-      t('error.magicLinkIncorporateNowError.description')
+      t('error.magicLinkIncorporateNowError.description'),
+      t('error.magicLinkIncorporateNowError.description2')
     )
   } finally {
     isLoading.value = false

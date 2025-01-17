@@ -31,11 +31,12 @@ export const useBrdModals = () => {
     })
   }
 
-  function openMagicLinkModal (title: string, description: string) {
+  function openMagicLinkModal (title: string, description: string, description2?: string) {
     modal.open(ModalBase, {
       error: {
         title,
-        description
+        description,
+        description2
       },
       actions: [{ label: t('btn.close'), handler: () => close() }]
     })
