@@ -13,7 +13,7 @@ export async function regSearch (queryStr: string): Promise<RegSearchResult[]> {
   const response = await $fetch<RegSearchResponse>(url, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'x-apikey': config.xApiKey,
+      'x-apikey': config.registriesSearchApiKey,
       'Account-Id': accountStore.currentAccount.id
     }
   })

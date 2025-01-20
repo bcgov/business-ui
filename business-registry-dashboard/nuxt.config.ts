@@ -126,7 +126,8 @@ export default defineNuxtConfig({
       regSearchApiUrl: `${process.env.NUXT_REGISTRIES_SEARCH_API_URL}${process.env.NUXT_REGISTRIES_SEARCH_API_VERSION}`,
       xApiKey: process.env.NUXT_X_API_KEY,
       namexApiUrl: `${process.env.NUXT_NAMEX_API_URL}${process.env.NUXT_NAMEX_API_VERSION}`,
-      authWebUrl: process.env.NUXT_AUTH_WEB_URL
+      authWebUrl: process.env.NUXT_AUTH_WEB_URL,
+      registriesSearchApiKey: process.env.NUXT_REGISTRIES_SEARCH_API_KEY
     }
   },
 
