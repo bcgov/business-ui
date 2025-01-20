@@ -20,6 +20,16 @@ mockNuxtImport('useConnectAccountStore', () => {
   )
 })
 
+// Add LaunchDarkly mock
+const mockGetStoredFlag = vi.fn().mockReturnValue('A,BC,BEN,C,CBEN,CC,CCC,CP,CUL,FI,GP,LL,LLC,LP,PA,S,SP,ULC,XCP,XL,XP,XS')
+mockNuxtImport('useConnectLaunchdarklyStore', () => {
+  return () => (
+    {
+      getStoredFlag: mockGetStoredFlag
+    }
+  )
+})
+
 mockNuxtImport('useRuntimeConfig', () => {
   return () => (
     {
