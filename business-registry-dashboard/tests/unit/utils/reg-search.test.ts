@@ -35,7 +35,7 @@ mockNuxtImport('useRuntimeConfig', () => {
     {
       public: {
         regSearchApiUrl: 'https://regSearchApiUrl.example.com',
-        xApiKey: 'xApiKey.example'
+        registriesSearchApiKey: 'registriesSearchApiKey.example'
       }
     }
   )
@@ -61,7 +61,7 @@ describe('regSearch', () => {
       {
         headers: {
           Authorization: 'Bearer 123',
-          'x-apikey': 'xApiKey.example',
+          'x-apikey': 'registriesSearchApiKey.example',
           'Account-Id': 1
         }
       }
