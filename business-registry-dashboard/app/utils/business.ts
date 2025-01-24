@@ -55,7 +55,8 @@ export function buildBusinessObject (resp: AffiliationResponse): Business {
     ...(resp.nrNumber && { nrNumber: resp.nrNumber }),
     ...(resp.adminFreeze !== undefined ? { adminFreeze: resp.adminFreeze } : { adminFreeze: false }),
     ...(resp.goodStanding !== undefined ? { goodStanding: resp.goodStanding } : { goodStanding: true }),
-    ...(resp.state && { status: resp.state })
+    ...(resp.state && { status: resp.state }),
+    ...(resp.draftStatus && { draftStatus: resp.draftStatus })
   }
 }
 
