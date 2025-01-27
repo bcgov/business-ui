@@ -28,6 +28,7 @@ export interface Business {
     contacts?: Contact[]
     corpType: CorpType
     corpSubType?: CorpType
+    draftStatus?: string
     folioNumber?: string
     lastModified?: string
     modified?: string

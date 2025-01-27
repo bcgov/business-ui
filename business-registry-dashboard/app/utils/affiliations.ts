@@ -98,6 +98,9 @@ export const affiliationType = (business: Business): string => {
 /** Returns the status of the affiliation. */ // TODO: add i18n for these states
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
+    if (business.draftStatus === 'WITHDRAWN') {
+      return BusinessState.WITHDRAWN
+    }
     return BusinessState.DRAFT
   }
   if (isNameRequest(business)) {

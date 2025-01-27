@@ -38,6 +38,7 @@ export interface AlternateNames {
 export interface AffiliationResponse {
   identifier?: string
   draftType?: CorpTypes
+  draftStatus?: string
   legalType?: CorpTypes
   businessNumber?: string
   name?: string

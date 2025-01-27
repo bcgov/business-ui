@@ -154,6 +154,9 @@ function getPrimaryActionLabel (item: Business): string {
   }
 
   if (isTemporaryBusiness(item)) {
+    if (item.draftStatus === 'WITHDRAWN') {
+      return t('labels.manageBusiness')
+    }
     return t('labels.resumeDraft')
   }
   if (isNameRequest(item)) {
