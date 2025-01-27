@@ -223,7 +223,7 @@ export const getApprovedName = (business: Business): string => {
 }
 
 export const getConditionalName = (business: Business): string => {
-  const conditionalNameObj = business.nameRequest?.names?.find(each => 
+  const conditionalNameObj = business.nameRequest?.names?.find(each =>
     each.state === NrState.NE || each.state === NrState.CONDITIONAL
   )
   const conditionalName = conditionalNameObj?.name

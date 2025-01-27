@@ -514,7 +514,7 @@ describe('affiliations utils', () => {
         legalType: CorpTypes.BC_COMPANY
       }
     }
-  
+
     it('should return the name when state is NE', () => {
       const business: Business = {
         ...mockNrBusiness,
@@ -527,7 +527,7 @@ describe('affiliations utils', () => {
       }
       expect(getConditionalName(business)).toBe('NE Name')
     })
-  
+
     it('should return the name when state is CONDITIONAL', () => {
       const business: Business = {
         ...mockNrBusiness,
@@ -540,11 +540,11 @@ describe('affiliations utils', () => {
       }
       expect(getConditionalName(business)).toBe('Conditional Name')
     })
-  
+
     it('should return the first conditional name when both NE and CONDITIONAL states exist', () => {
       expect(getConditionalName(mockNrBusiness)).toBe('NE Name')
     })
-  
+
     it('should return an empty string when there is no conditional name', () => {
       const business: Business = {
         ...mockNrBusiness,
@@ -557,7 +557,7 @@ describe('affiliations utils', () => {
       }
       expect(getConditionalName(business)).toBe('')
     })
-  
+
     it('should return an empty string when nameRequest is undefined', () => {
       const business: Business = {
         ...mockNrBusiness,
@@ -565,7 +565,7 @@ describe('affiliations utils', () => {
       }
       expect(getConditionalName(business)).toBe('')
     })
-  
+
     it('should return an empty string when names array is undefined', () => {
       const business: Business = {
         ...mockNrBusiness,
@@ -577,7 +577,7 @@ describe('affiliations utils', () => {
       }
       expect(getConditionalName(business)).toBe('')
     })
-  
+
     it('should return an empty string when names array is empty', () => {
       const business: Business = {
         ...mockNrBusiness,
