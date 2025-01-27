@@ -106,7 +106,7 @@ export default defineNuxtConfig({
 
   gtm: {
     enabled: !!process.env.NUXT_GTM_ID?.trim(),
-    id: process.env.NUXT_GTM_ID?.trim() as string,
+    id: process.env.NUXT_GTM_ID?.trim() || 'GTM-DUMMY', // the dummy value allows app to run if GTM ID could not be loaded
     debug: true,
     defer: true
   },
