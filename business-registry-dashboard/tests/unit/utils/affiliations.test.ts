@@ -501,6 +501,96 @@ describe('affiliations utils', () => {
     })
   })
 
+  describe('getConditionalName', () => {
+    const mockNrBusiness: Business = {
+      businessIdentifier: 'BC1234567',
+      corpType: { code: CorpTypes.BC_COMPANY },
+      nameRequest: {
+        names: [
+          { name: 'Regular Name', state: NrState.APPROVED, decision_text: '', name_type_cd: '', designation: '' },
+          { name: 'NE Name', state: NrState.NE, decision_text: '', name_type_cd: '', designation: '' },
+          { name: 'Conditional Name', state: NrState.CONDITIONAL, decision_text: '', name_type_cd: '', designation: '' }
+        ],
+        legalType: CorpTypes.BC_COMPANY
+      }
+    }
+  
+    it('should return the name when state is NE', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: {
+          ...mockNrBusiness.nameRequest,
+          names: [
+            { name: 'NE Name', state: NrState.NE, decision_text: '', name_type_cd: '', designation: '' }
+          ]
+        } as any
+      }
+      expect(getConditionalName(business)).toBe('NE Name')
+    })
+  
+    it('should return the name when state is CONDITIONAL', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: {
+          ...mockNrBusiness.nameRequest,
+          names: [
+            { name: 'Conditional Name', state: NrState.CONDITIONAL, decision_text: '', name_type_cd: '', designation: '' }
+          ]
+        } as any
+      }
+      expect(getConditionalName(business)).toBe('Conditional Name')
+    })
+  
+    it('should return the first conditional name when both NE and CONDITIONAL states exist', () => {
+      expect(getConditionalName(mockNrBusiness)).toBe('NE Name')
+    })
+  
+    it('should return an empty string when there is no conditional name', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: {
+          ...mockNrBusiness.nameRequest,
+          names: [
+            { name: 'Regular Name', state: NrState.APPROVED, decision_text: '', name_type_cd: '', designation: '' }
+          ]
+        } as any
+      }
+      expect(getConditionalName(business)).toBe('')
+    })
+  
+    it('should return an empty string when nameRequest is undefined', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: undefined
+      }
+      expect(getConditionalName(business)).toBe('')
+    })
+  
+    it('should return an empty string when names array is undefined', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: {
+          ...mockNrBusiness.nameRequest,
+          legalType: CorpTypes.BC_COMPANY,
+          names: undefined
+        }
+      }
+      expect(getConditionalName(business)).toBe('')
+    })
+  
+    it('should return an empty string when names array is empty', () => {
+      const business: Business = {
+        ...mockNrBusiness,
+        nameRequest: {
+          ...mockNrBusiness.nameRequest,
+          legalType: CorpTypes.BC_COMPANY,
+          names: []
+        }
+      }
+      expect(getConditionalName(business)).toBe('')
+    })
+  })
+
   describe('affiliationName', () => {
     afterEach(() => {
       vi.clearAllMocks()

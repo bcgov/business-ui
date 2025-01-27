@@ -222,6 +222,14 @@ export const getApprovedName = (business: Business): string => {
   return approvedName || ''
 }
 
+export const getConditionalName = (business: Business): string => {
+  const conditionalNameObj = business.nameRequest?.names?.find(each => 
+    each.state === NrState.NE || each.state === NrState.CONDITIONAL
+  )
+  const conditionalName = conditionalNameObj?.name
+  return conditionalName || ''
+}
+
 /** Returns the name of the affiliation. */
 export const affiliationName = (item: Business): string => {
   if (isNumberedIncorporationApplication(item)) {
@@ -230,7 +238,7 @@ export const affiliationName = (item: Business): string => {
     return GetCorpNumberedDescription(legalType as CorpTypeCd) || 'Numbered Company'
   }
   if (item.nameRequest) {
-    return getApprovedName(item)
+    return getApprovedName(item) || getConditionalName(item)
   }
   return item.name ?? ''
 }
