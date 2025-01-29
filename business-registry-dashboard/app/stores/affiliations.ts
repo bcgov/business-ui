@@ -43,7 +43,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function removeBusiness (payload: RemoveBusinessPayload) {
-    const orgId = route.params.orgId || payload.orgIdentifier
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
     // TODO: Add continuation in to the list of filings to remove (for MVP)
     if ([
@@ -312,7 +312,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   })
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {
-    const orgId = route.params.orgId || accountStore.currentAccount.id
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations`, {
       method: 'POST',
       body: affiliation
@@ -320,7 +320,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-    const orgId = route.params.orgId || accountStore.currentAccount.id
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations?newBusiness=true`, {
       method: 'POST',
       body: affiliation
