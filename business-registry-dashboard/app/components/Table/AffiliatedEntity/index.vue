@@ -81,7 +81,12 @@ watch(
       :columns="affStore.visibleColumns"
       :rows="affStore.filteredResults"
       :loading="affStore.affiliations.loading"
-      :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: $t('labels.noAffiliationRecords') }"
+      :empty-state="{
+        icon: 'i-heroicons-circle-stack-20-solid',
+        label: affStore.affiliations.results.length === 0
+          ? $t('labels.noAffiliationRecords')
+          : $t('labels.noAffiliationRecordsFiltered')
+      }"
       :ui="{
         wrapper: 'relative overflow-x-auto h-[512px]',
         thead: 'sticky top-0 bg-white z-10',
