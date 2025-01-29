@@ -98,8 +98,29 @@ export const affiliationType = (business: Business): string => {
 /** Returns the status of the affiliation. */ // TODO: add i18n for these states
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
-    if (business.draftStatus === 'WITHDRAWN') {
-      return BusinessState.WITHDRAWN
+    if (business?.draftStatus) {
+      if (business.draftStatus === 'WITHDRAWN') {
+        return BusinessState.WITHDRAWN
+      }
+      // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
+      if (business.corpType.code === CorpTypes.CONTINUATION_IN) {
+        switch (true) {
+          case (business.draftStatus === 'AWAITING_REVIEW'): // Authorization Manage
+            return BusinessState.AWAITING_REVIEW
+          case (business.draftStatus === 'REJECTED'): // Authorization Manage
+            return BusinessState.REJECTED
+          case (business.draftStatus === 'CHANGE_REQUESTED'): // Authorization Manage
+            return BusinessState.CHANGE_REQUESTED
+          case (business.draftStatus === 'APPROVED'): // Application Manage
+            return BusinessState.APPROVED
+          case (business.draftStatus === 'PENDING'): // Application Manage
+            return BusinessState.PENDING
+          case (business.draftStatus === 'PAID'): // Application Manage
+            return BusinessState.PAID
+          default:
+            return BusinessState.DRAFT
+        }
+      }
     }
     return BusinessState.DRAFT
   }

@@ -171,8 +171,29 @@ function getPrimaryActionLabel (item: Business): string {
   }
 
   if (isTemporaryBusiness(item)) {
-    if (item.draftStatus === 'WITHDRAWN') {
-      return t('labels.manageBusiness')
+    if (item?.draftStatus) {
+      if (item.draftStatus === 'WITHDRAWN') {
+        return t('labels.manageBusiness')
+      }
+      // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
+      if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
+        switch (true) {
+          case (item.draftStatus === 'AWAITING_REVIEW'):
+            return t('labels.openAuthorization')
+          case (item.draftStatus === 'REJECTED'):
+            return t('labels.openAuthorization')
+          case (item.draftStatus === 'CHANGE_REQUESTED'):
+            return t('labels.makeChanges')
+          case (item.draftStatus === 'APPROVED'):
+            return t('labels.resumeApplication')
+          case (item.draftStatus === 'PENDING'):
+            return t('labels.openApplication')
+          case (item.draftStatus === 'PAID'):
+            return t('labels.openApplication')
+          default:
+            return t('labels.resumeDraft')
+        }
+      }
     }
     return t('labels.resumeDraft')
   }
