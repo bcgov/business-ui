@@ -9,6 +9,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const brdModal = useBrdModals()
   const keycloak = reactive(useKeycloak())
   const ldStore = useConnectLaunchdarklyStore()
+  const route = useRoute()
 
   const affiliations = reactive({
     filters: {
@@ -42,6 +43,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function removeBusiness (payload: RemoveBusinessPayload) {
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
     // TODO: Add continuation in to the list of filings to remove (for MVP)
     if ([
@@ -57,13 +59,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           await deleteBusinessFiling(payload.business.businessIdentifier, filingId)
         } else {
           const businessIdentifier = payload.business.businessIdentifier || payload.business.nameRequest?.nrNumber
-          await removeAffiliation(payload.orgIdentifier, businessIdentifier!, payload.passcodeResetEmail, payload.resetPasscode)
+          await removeAffiliation(orgId as number, businessIdentifier!, payload.passcodeResetEmail, payload.resetPasscode)
         }
       }
     } else {
       // Remove an affiliation between the given business and each specified org
       const businessIdentifier = payload.business.businessIdentifier || payload.business.nameRequest?.nrNumber
-      await removeAffiliation(payload.orgIdentifier, businessIdentifier!, payload.passcodeResetEmail, payload.resetPasscode)
+      await removeAffiliation(orgId as number, businessIdentifier!, payload.passcodeResetEmail, payload.resetPasscode)
     }
   }
 
@@ -310,14 +312,16 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   })
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {
-    return $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations`, {
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
+    return $authApi(`/orgs/${orgId}/affiliations`, {
       method: 'POST',
       body: affiliation
     })
   }
 
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-    return $authApi(`/orgs/${accountStore.currentAccount.id}/affiliations?newBusiness=true`, {
+    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
+    return $authApi(`/orgs/${orgId}/affiliations?newBusiness=true`, {
       method: 'POST',
       body: affiliation
     })
