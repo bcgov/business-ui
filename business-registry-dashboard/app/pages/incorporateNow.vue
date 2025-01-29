@@ -80,7 +80,8 @@ onMounted(async () => {
 
     // Check basic eligibility conditions
     const isEligibleRequest = business.nameRequest.requestActionCd === NrRequestActionCodes.NEW_BUSINESS &&
-      ELIGIBLE_CORP_TYPES.includes(business.nameRequest.legalType)
+      ELIGIBLE_CORP_TYPES.includes(business.nameRequest.legalType) &&
+      !!nameRequest.expirationDate
 
     if (!isEligibleRequest) {
       throw new Error('Invalid name request')
