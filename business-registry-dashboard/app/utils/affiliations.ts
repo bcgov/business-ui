@@ -104,18 +104,18 @@ export const affiliationStatus = (business: Business): string => {
       }
       // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
       if (business.corpType.code === CorpTypes.CONTINUATION_IN) {
-        switch (true) {
-          case (business.draftStatus === FilingStatus.AWAITING_REVIEW):
+        switch (business.draftStatus) {
+          case (FilingStatus.AWAITING_REVIEW):
             return BusinessState.AWAITING_REVIEW
-          case (business.draftStatus === FilingStatus.REJECTED):
+          case (FilingStatus.REJECTED):
             return BusinessState.REJECTED
-          case (business.draftStatus === FilingStatus.CHANGE_REQUESTED):
+          case (FilingStatus.CHANGE_REQUESTED):
             return BusinessState.CHANGE_REQUESTED
-          case (business.draftStatus === FilingStatus.APPROVED):
+          case (FilingStatus.APPROVED):
             return BusinessState.APPROVED
-          case (business.draftStatus === FilingStatus.PENDING):
+          case (FilingStatus.PENDING):
             return BusinessState.PENDING
-          case (business.draftStatus === FilingStatus.PAID):
+          case (FilingStatus.PAID):
             return BusinessState.PAID
           default:
             return BusinessState.DRAFT

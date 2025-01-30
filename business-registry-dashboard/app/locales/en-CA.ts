@@ -490,8 +490,6 @@ export default {
     stepsToReinstate: 'Steps to Reinstate',
     openNameRequest: 'Open Name Request',
     resumeDraft: 'Resume Draft',
-    resumeAuthorization: 'Resume Authorization',
-    openAuthorization: 'Open Authorization',
     resumeApplication: 'Resume Application',
     makeChanges: 'Make Changes',
     openApplication: 'Open Application',
