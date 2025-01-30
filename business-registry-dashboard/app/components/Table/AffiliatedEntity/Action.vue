@@ -176,8 +176,6 @@ function getPrimaryActionLabel (item: Business): string {
       }
       // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
       if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
-        console.log(item.draftStatus)
-        console.log(item.draftStatus === FilingStatus.AWAITING_REVIEW)
         switch (true) {
           case (item.draftStatus === FilingStatus.AWAITING_REVIEW):
             return t('labels.openAuthorization')
