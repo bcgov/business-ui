@@ -3,7 +3,6 @@ import type { DropdownItem } from '#ui/types'
 import {
   NrRequestActionCodes,
   FilingTypes
-  // NrRequestTypeCodes
 } from '@bcrs-shared-components/enums'
 
 const affNav = useAffiliationNavigation()
@@ -172,23 +171,25 @@ function getPrimaryActionLabel (item: Business): string {
 
   if (isTemporaryBusiness(item)) {
     if (item?.draftStatus) {
-      if (item.draftStatus === 'WITHDRAWN') {
+      if (item.draftStatus === FilingStatus.WITHDRAWN) {
         return t('labels.manageBusiness')
       }
       // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
       if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
+        console.log(item.draftStatus)
+        console.log(item.draftStatus === FilingStatus.AWAITING_REVIEW)
         switch (true) {
-          case (item.draftStatus === 'AWAITING_REVIEW'):
+          case (item.draftStatus === FilingStatus.AWAITING_REVIEW):
             return t('labels.openAuthorization')
-          case (item.draftStatus === 'REJECTED'):
+          case (item.draftStatus === FilingStatus.REJECTED):
             return t('labels.openAuthorization')
-          case (item.draftStatus === 'CHANGE_REQUESTED'):
+          case (item.draftStatus === FilingStatus.CHANGE_REQUESTED):
             return t('labels.makeChanges')
-          case (item.draftStatus === 'APPROVED'):
+          case (item.draftStatus === FilingStatus.APPROVED):
             return t('labels.resumeApplication')
-          case (item.draftStatus === 'PENDING'):
+          case (item.draftStatus === FilingStatus.PENDING):
             return t('labels.openApplication')
-          case (item.draftStatus === 'PAID'):
+          case (item.draftStatus === FilingStatus.PAID):
             return t('labels.openApplication')
           default:
             return t('labels.resumeDraft')
