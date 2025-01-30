@@ -478,8 +478,6 @@ export default {
     reinstateNow: 'Réintégrer Maintenant',
     openNameRequest: 'Ouvrir la Demande de Nom',
     resumeDraft: 'Reprendre le Brouillon',
-    resumeAuthorization: 'Autorisation de Reprise',
-    openAuthorization: 'Autorisation Ouverte',
     resumeApplication: 'Reprendre la Candidature',
     makeChanges: 'Apporter des Modifications',
     openApplication: 'Ouvrir une Candidature',
