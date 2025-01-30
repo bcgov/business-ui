@@ -492,7 +492,10 @@ export default {
     manageBusiness: 'Manage Business',
     cancelRequest: 'Cancel Request',
     amalgamateNowShortForm: 'Amalgamate Now (Short Form)',
-    noAffiliationRecords: 'You don\'t have any businesses listed. Retrieve an existing business or active Name Request from the search box above.',
+    noAffiliationRecords: {
+      line1: 'You don\'t have any businesses listed.',
+      line2: 'Retrieve an existing business or active Name Request from the search box above.'
+    },
     noAffiliationRecordsFiltered: 'No results found.',
     newRequest: 'New Request',
     resendEmail: 'Resend Email',
@@ -517,7 +520,7 @@ export default {
       generic: {
         NR: {
           title: 'Remove Name Request?',
-          description: 'This Name Request will be removed from your list. You can add it back later by using the search field. This Name Request will still be valid until it is used, canceled, or expired.',
+          description: 'This Name Request will be removed from your list. You can add it back later by using the search field. This Name Request will still be valid until it is used, canceled, or expired.',
           primaryBtnLabel: 'Remove Name Request',
           secondaryBtnLabel: 'Keep Name Request'
         },
