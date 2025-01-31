@@ -482,7 +482,10 @@ export default {
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
     amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
-    noAffiliationRecords: "Vous n'avez aucune entreprise répertoriée. Récupérez une entreprise existante ou une demande de nom active à partir du champ de recherche ci-dessus.",
+    noAffiliationRecords: {
+      line1: "Vous n'avez aucune entreprise répertoriée.",
+      line2: 'Récupérez une entreprise existante ou une demande de nom active à partir du champ de recherche ci-dessus.'
+    },
     noAffiliationRecordsFiltered: 'Aucun résultat trouvé.',
     newRequest: 'Nouvelle Demande',
     resendEmail: 'Renvoyer le Courriel',

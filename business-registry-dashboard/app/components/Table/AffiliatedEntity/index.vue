@@ -81,12 +81,6 @@ watch(
       :columns="affStore.visibleColumns"
       :rows="affStore.filteredResults"
       :loading="affStore.affiliations.loading"
-      :empty-state="{
-        icon: 'i-heroicons-circle-stack-20-solid',
-        label: affStore.affiliations.results.length === 0
-          ? $t('labels.noAffiliationRecords')
-          : $t('labels.noAffiliationRecordsFiltered')
-      }"
       :ui="{
         wrapper: 'relative overflow-x-auto h-[512px]',
         thead: 'sticky top-0 bg-white z-10',
@@ -116,9 +110,28 @@ watch(
           color: 'text-bcGovColor-midGray',
           font: '',
           size: 'text-sm',
-        },
+        }
       }"
     >
+      <!-- Empty state template (Table is empty) -->
+      <template #empty-state>
+        <div class="flex flex-col items-center justify-center gap-4 py-14">
+          <UIcon
+            name="i-heroicons-circle-stack-20-solid"
+            class="size-6 text-gray-400"
+          />
+          <div class="flex flex-col items-center">
+            <p v-if="affStore.affiliations.results.length === 0" class="text-center text-sm text-bcGovColor-darkGray">
+              {{ $t('labels.noAffiliationRecords.line1') }}
+              <br>
+              {{ $t('labels.noAffiliationRecords.line2') }}
+            </p>
+            <p v-else class="text-sm text-bcGovColor-darkGray">
+              {{ $t('labels.noAffiliationRecordsFiltered') }}
+            </p>
+          </div>
+        </div>
+      </template>
       <!-- start table header slots -->
       <!-- business name header -->
       <template #legalName-header>
