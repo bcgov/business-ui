@@ -113,7 +113,7 @@ watch(
         }
       }"
     >
-      <!-- Add this new template -->
+      <!-- Empty state template (Table is empty) -->
       <template #empty-state>
         <div class="flex flex-col items-center justify-center gap-4 py-14">
           <UIcon
