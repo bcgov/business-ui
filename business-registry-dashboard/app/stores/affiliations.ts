@@ -139,7 +139,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
-      const route = useRoute()
       // Use route param if staff, otherwise use current account
       const orgId = (isStaffOrSbcStaff.value && route.params.orgId)
         ? route.params.orgId
