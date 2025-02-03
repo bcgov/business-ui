@@ -3,6 +3,10 @@ import {
   GetCorpFullDescription,
   GetCorpNumberedDescription
 } from '@bcrs-shared-components/corp-type-module'
+import {
+  EntityStates,
+  EntityStateStatus
+} from '@bcrs-shared-components/enums'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
   const invite = affiliationInviteInfos[0]
@@ -99,30 +103,30 @@ export const affiliationType = (business: Business): string => {
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
     if (business?.draftStatus) {
-      if (business.draftStatus === FilingStatus.WITHDRAWN) {
-        return BusinessState.WITHDRAWN
+      if (business.draftStatus === EntityStates.WITHDRAWN) {
+        return EntityStateStatus.WITHDRAWN
       }
       // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
       if (business.corpType.code === CorpTypes.CONTINUATION_IN) {
         switch (business.draftStatus) {
-          case (FilingStatus.AWAITING_REVIEW):
-            return BusinessState.AWAITING_REVIEW
-          case (FilingStatus.REJECTED):
-            return BusinessState.REJECTED
-          case (FilingStatus.CHANGE_REQUESTED):
-            return BusinessState.CHANGE_REQUESTED
-          case (FilingStatus.APPROVED):
-            return BusinessState.APPROVED
-          case (FilingStatus.PENDING):
-            return BusinessState.PENDING
-          case (FilingStatus.PAID):
-            return BusinessState.PAID
+          case (EntityStates.AWAITING_REVIEW):
+            return EntityStateStatus.AWAITING_REVIEW
+          case (EntityStates.REJECTED):
+            return EntityStateStatus.REJECTED
+          case (EntityStates.CHANGE_REQUESTED):
+            return EntityStateStatus.CHANGE_REQUESTED
+          case (EntityStates.APPROVED):
+            return EntityStateStatus.APPROVED
+          case (EntityStates.PENDING):
+            return EntityStateStatus.PENDING
+          case (EntityStates.PAID):
+            return EntityStateStatus.PAID
           default:
-            return BusinessState.DRAFT
+            return EntityStateStatus.DRAFT
         }
       }
     }
-    return BusinessState.DRAFT
+    return EntityStateStatus.DRAFT
   }
   if (isNameRequest(business)) {
     // Format name request state value
