@@ -23,6 +23,22 @@ setBreadcrumbs([
   { label: showStaffText.value ? t('page.home.h1Staff') : t('page.home.h1') }
 ])
 
+// Watch for changes to the orgId route parameter
+watch(() => route.params.orgId, (orgId) => {
+  // Only proceed if we have an orgId and it exists in the user's account list
+  if (orgId &&
+      accountStore.userAccounts.find(account => account.id.toString() === orgId)) {
+    // Find the account that matches the orgId
+    const targetAccount = accountStore.userAccounts.find(
+      account => account.id.toString() === orgId
+    )
+    // If matching account found, update the current account
+    if (targetAccount) {
+      accountStore.currentAccount = targetAccount
+    }
+  }
+}, { immediate: true }) // immediate: true ensures this runs on initial page load
+
 onMounted(() => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
