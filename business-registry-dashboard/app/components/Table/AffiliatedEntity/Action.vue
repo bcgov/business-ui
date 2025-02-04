@@ -111,6 +111,20 @@ const disableTooltip = (item: Business): boolean => {
   return true
 }
 
+const getTooltipText = (item: Business): string => {
+  // For restore/renew cases when user is not staff
+  if (item.nameRequest?.requestActionCd &&
+      [NrRequestActionCodes.RESTORE, NrRequestActionCodes.RENEW].includes(item.nameRequest.requestActionCd) &&
+      !accountStore.isStaffOrSbcStaff) {
+    return t('tooltips.submitForms')
+  }
+
+  // Default case
+  return t('tooltips.affiliationActionBtn', {
+    option: isSocieties(item) ? 'Societies Online' : 'Corporate Online'
+  })
+}
+
 const getNrRequestDescription = (item: Business): string => {
   const nrRequestActionCd = item.nameRequest?.requestActionCd
   switch (nrRequestActionCd) {
@@ -125,9 +139,12 @@ const getNrRequestDescription = (item: Business): string => {
     case NrRequestActionCodes.NEW_BUSINESS:
       return isOtherEntities(item) ? t('labels.downloadForm') : t('labels.registerNow')
     case NrRequestActionCodes.RESTORE:
-      return isForRestore(item) ? t('labels.restoreNow') : t('labels.reinstateNow')
     case NrRequestActionCodes.RENEW:
-      return t('labels.restoreNow')
+      if (accountStore.isStaffOrSbcStaff) {
+        return isForRestore(item) ? t('labels.restoreNow') : t('labels.reinstateNow')
+      } else {
+        return isForRestore(item) ? t('labels.stepsToRestore') : t('labels.stepsToReinstate')
+      }
     default:
       return t('labels.openNameRequest')
   }
@@ -186,11 +203,28 @@ const showRemoveButton = (item: Business): boolean => {
   return !isShowRemoveAsPrimaryAction(item) && !showAffiliationInvitationNewRequestButton(item)
 }
 
-const handleApprovedNameRequestRenew = (item: Business): void => {
-  if (!isSupportedRestorationEntities(item)) {
+const handleApprovedNameRequestRenew = async (item: Business): Promise<void> => {
+  // Extract corporation number from the name request
+  const corpNum = item.nameRequest?.corpNum
+  if (!corpNum) { return } // Early return if no corpNum exists
+
+  // If user is not staff, redirect to steps to restore page
+  if (!accountStore.isStaffOrSbcStaff) {
+    const stepsToRestoreURL = 'https://www2.gov.bc.ca/gov/content?id=DDEA1139C80B48D5B8F62B0485249AC5#restore'
+    navigateTo(stepsToRestoreURL, { open: { target: '_blank' } })
+    return
+  }
+
+  // Show loading state while checking business existence
+  isButtonActionProcessing.value = true
+  const businessExists = await checkBusinessExistsInLear(corpNum)
+  isButtonActionProcessing.value = false
+
+  // Case 1: Business exists and is affiliated - go to dashboard
+  if (businessExists && isBusinessAffiliated(props.affiliations, corpNum)) {
+    affNav.goToDashboard(corpNum)
+  } else if (!businessExists) { // Case 2: Business doesn't exist in LEAR - redirect to legacy system
     affNav.goToCorpOnline()
-  } else if (item.nameRequest?.corpNum && isBusinessAffiliated(props.affiliations, item.nameRequest?.corpNum)) {
-    affNav.goToDashboard(item.nameRequest?.corpNum)
   } else {
     const action = isForRestore(item) ? 'restore' : 'reinstate'
     emit('business-unavailable-error', action)
@@ -387,7 +421,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   >
     <UButtonGroup :ui="{ rounded: 'rounded' }">
       <UTooltip
-        :text="$t('tooltips.affiliationActionBtn', { option: isSocieties(item) ? 'Societies Online' : 'Corporate Online' })"
+        :text="getTooltipText(item)"
         :prevent="disableTooltip(item)"
         :popper="{ arrow: true }"
       >
