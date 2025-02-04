@@ -2,8 +2,8 @@
 import type { DropdownItem } from '#ui/types'
 import {
   NrRequestActionCodes,
-  FilingTypes
-  // NrRequestTypeCodes
+  FilingTypes,
+  EntityStates
 } from '@bcrs-shared-components/enums'
 
 const affNav = useAffiliationNavigation()
@@ -154,8 +154,27 @@ function getPrimaryActionLabel (item: Business): string {
   }
 
   if (isTemporaryBusiness(item)) {
-    if (item.draftStatus === 'WITHDRAWN') {
-      return t('labels.manageBusiness')
+    if (item?.draftStatus) {
+      if (item.draftStatus === EntityStates.WITHDRAWN) {
+        return t('labels.manageBusiness')
+      }
+      // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
+      if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
+        switch (item.draftStatus) {
+          case (EntityStates.CHANGE_REQUESTED):
+            return t('labels.makeChanges')
+          case (EntityStates.APPROVED):
+            return t('labels.resumeApplication')
+          case (EntityStates.AWAITING_REVIEW):
+            return t('labels.openApplication')
+          case (EntityStates.PENDING):
+          case (EntityStates.PAID):
+          case (EntityStates.REJECTED):
+            return t('labels.manageBusiness')
+          default:
+            return t('labels.resumeDraft')
+        }
+      }
     }
     return t('labels.resumeDraft')
   }
