@@ -67,7 +67,8 @@ export function isOtherEntities (item: Business): boolean {
 
 export function isForRestore (item: Business): boolean {
   return [CorpTypes.BC_COMPANY, CorpTypes.BC_CCC, CorpTypes.BC_ULC_COMPANY,
-    CorpTypes.COOP, CorpTypes.BENEFIT_COMPANY].includes(getEntityType(item))
+    CorpTypes.COOP, CorpTypes.BENEFIT_COMPANY, CorpTypes.CONTINUE_IN, CorpTypes.BEN_CONTINUE_IN,
+    CorpTypes.CCC_CONTINUE_IN, CorpTypes.ULC_CONTINUE_IN].includes(getEntityType(item))
 }
 
 export function isSocieties (item: Business): boolean {

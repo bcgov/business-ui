@@ -485,7 +485,9 @@ export default {
     downloadForm: 'Download Form',
     registerNow: 'Register Now',
     restoreNow: 'Restore Now',
+    stepsToRestore: 'Steps to Restore',
     reinstateNow: 'Reinstate Now',
+    stepsToReinstate: 'Steps to Reinstate',
     openNameRequest: 'Open Name Request',
     resumeDraft: 'Resume Draft',
     removeFromTable: 'Remove From Table',
@@ -718,7 +720,8 @@ export default {
     errorResendingAffInvite: 'Error resending affiliation invitation'
   },
   tooltips: {
-    affiliationActionBtn: 'Go to {option} to access this business'
+    affiliationActionBtn: 'Go to {option} to access this business',
+    submitForms: 'Submit the required forms to BC Registries.'
   },
   widgets: {
     feeSummary: {
