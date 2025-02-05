@@ -154,7 +154,7 @@ export const affiliationStatus = (business: Business): string => {
   if (business.status) {
     return business.status.charAt(0)?.toUpperCase() + business.status?.slice(1)?.toLowerCase()
   }
-  return BusinessState.ACTIVE
+  return EntityStates.ACTIVE
 }
 
 /** Draft IA with Expired NR */

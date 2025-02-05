@@ -178,18 +178,16 @@ function getPrimaryActionLabel (item: Business): string {
       // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
       if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
         switch (item.draftStatus) {
+          case (EntityStates.DRAFT):
+            return t('labels.resumeDraft')
           case (EntityStates.CHANGE_REQUESTED):
             return t('labels.makeChanges')
           case (EntityStates.APPROVED):
             return t('labels.resumeApplication')
           case (EntityStates.AWAITING_REVIEW):
             return t('labels.openApplication')
-          case (EntityStates.PENDING):
-          case (EntityStates.PAID):
-          case (EntityStates.REJECTED):
-            return t('labels.manageBusiness')
           default:
-            return t('labels.resumeDraft')
+            return t('labels.manageBusiness')
         }
       }
     }
