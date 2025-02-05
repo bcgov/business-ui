@@ -114,7 +114,7 @@ const disableTooltip = (item: Business): boolean => {
 const getTooltipText = (item: Business): string => {
   // For restore/renew cases when user is not staff
   if (item.nameRequest?.requestActionCd &&
-      [NrRequestActionCodes.RESTORE, NrRequestActionCodes.RENEW].includes(item.nameRequest.requestActionCd) &&
+      item.nameRequest.requestActionCd === NrRequestActionCodes.RESTORE &&
       !accountStore.isStaffOrSbcStaff) {
     return t('tooltips.submitForms')
   }
@@ -210,7 +210,7 @@ const handleApprovedNameRequestRenew = async (item: Business): Promise<void> => 
 
   // If user is not staff, redirect to steps to restore page
   if (!accountStore.isStaffOrSbcStaff) {
-    const stepsToRestoreURL = 'https://www2.gov.bc.ca/gov/content?id=DDEA1139C80B48D5B8F62B0485249AC5#restore'
+    const stepsToRestoreURL = useRuntimeConfig().public.stepsToRestoreUrl
     navigateTo(stepsToRestoreURL, { open: { target: '_blank' } })
     return
   }
