@@ -1,5 +1,6 @@
 // import { type AlternateNameIF } from '@bcrs-shared-components/interfaces'
 import { FetchError } from 'ofetch'
+import { EntityStates } from '@bcrs-shared-components/enums'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
@@ -49,13 +50,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     if ([
       CorpTypes.INCORPORATION_APPLICATION,
       CorpTypes.AMALGAMATION_APPLICATION,
-      CorpTypes.REGISTRATION
+      CorpTypes.REGISTRATION,
+      CorpTypes.CONTINUATION_IN
     ].includes(payload.business.corpType.code)) {
       const filingResponse = await getFilings(payload.business.businessIdentifier)
       if (filingResponse) {
         const filingId = filingResponse.filing?.header?.filingId // TODO: fix typing
         // If there is a filing delete it which will delete the affiliation, else delete the affiliation
-        if (filingId) {
+        const deleteBusiness = canBusinessBeDeleted(payload)
+        if (filingId && deleteBusiness) {
           await deleteBusinessFiling(payload.business.businessIdentifier, filingId)
         } else {
           const businessIdentifier = payload.business.businessIdentifier || payload.business.nameRequest?.nrNumber
@@ -66,6 +69,16 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       // Remove an affiliation between the given business and each specified org
       const businessIdentifier = payload.business.businessIdentifier || payload.business.nameRequest?.nrNumber
       await removeAffiliation(orgId as number, businessIdentifier!, payload.passcodeResetEmail, payload.resetPasscode)
+    }
+  }
+
+  /* Check if Business can be deleted safely (i.e. does not have a review record) */
+  function canBusinessBeDeleted (payload: RemoveBusinessPayload) {
+    // For now only including Continuation Ins where only draft records can be deleted
+    if (payload.business.corpType.code === CorpTypes.CONTINUATION_IN && payload.business?.draftStatus !== EntityStates.DRAFT) {
+      return false
+    } else {
+      return true
     }
   }
 

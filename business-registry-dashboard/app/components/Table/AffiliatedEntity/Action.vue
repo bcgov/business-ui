@@ -386,6 +386,7 @@ const showAffiliationInvitationCancelRequestButton = (item: Business): boolean =
 
 const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   const options = []
+  console.log(props)
   if (showAffiliationInvitationNewRequestButton(props.item)) {
     options.push({
       label: t('labels.newRequest'),
@@ -432,9 +433,16 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
       icon: 'i-mdi-checkbox-multiple-blank-outline'
     })
   }
-
   return [options]
 })
+
+function canBusinessBeDeleted (item: Business) {
+  if (item.corpType.code === CorpTypes.CONTINUATION_IN && item?.draftStatus !== EntityStates.DRAFT) {
+    return false
+  } else {
+    return true
+  }
+}
 </script>
 <template>
   <div
