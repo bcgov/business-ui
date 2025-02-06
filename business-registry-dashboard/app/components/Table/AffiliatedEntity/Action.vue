@@ -181,6 +181,7 @@ function getPrimaryActionLabel (item: Business): string {
           case (EntityStates.DRAFT):
             return t('labels.resumeDraft')
           case (EntityStates.AWAITING_REVIEW):
+          case (EntityStates.REJECTED) :
             return t('labels.openApplication')
           case (EntityStates.CHANGE_REQUESTED):
             return t('labels.makeChanges')

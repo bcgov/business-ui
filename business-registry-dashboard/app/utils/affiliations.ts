@@ -118,9 +118,9 @@ export const affiliationStatus = (business: Business): string => {
           case (EntityStates.APPROVED):
             return EntityStateStatus.APPROVED
           case (EntityStates.PENDING):
-            return EntityStateStatus.PENDING
+            return EntityStateStatus.ACTIVE
           case (EntityStates.PAID):
-            return EntityStateStatus.PAID
+            return EntityStateStatus.ACTIVE
           default:
             return EntityStateStatus.DRAFT
         }
