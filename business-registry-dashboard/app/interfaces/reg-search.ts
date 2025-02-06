@@ -1,4 +1,4 @@
-import type { EntityStates } from "@bcrs-shared-components/enums"
+import type { EntityStates } from '@bcrs-shared-components/enums'
 
 export interface RegSearchPayload {
   query: {

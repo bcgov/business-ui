@@ -180,12 +180,12 @@ function getPrimaryActionLabel (item: Business): string {
         switch (item.draftStatus) {
           case (EntityStates.DRAFT):
             return t('labels.resumeDraft')
+          case (EntityStates.AWAITING_REVIEW):
+            return t('labels.openApplication')
           case (EntityStates.CHANGE_REQUESTED):
             return t('labels.makeChanges')
           case (EntityStates.APPROVED):
             return t('labels.resumeApplication')
-          case (EntityStates.AWAITING_REVIEW):
-            return t('labels.openApplication')
           default:
             return t('labels.manageBusiness')
         }
