@@ -475,7 +475,9 @@ export default {
     downloadForm: 'Télécharger le Formulaire',
     registerNow: 'Enregistrer Maintenant',
     restoreNow: 'Restaurer Maintenant',
+    stepsToRestore: 'Étapes pour Restaurer',
     reinstateNow: 'Réintégrer Maintenant',
+    stepsToReinstate: 'Étapes pour Réintégrer',
     openNameRequest: 'Ouvrir la Demande de Nom',
     resumeDraft: 'Reprendre le Brouillon',
     removeFromTable: 'Supprimer du Tableau',
@@ -708,7 +710,8 @@ export default {
     errorResendingAffInvite: "Erreur lors de la réexpédition de l'invitation à l'affiliation"
   },
   tooltips: {
-    affiliationActionBtn: 'Accédez à {option} pour accéder à cette entreprise'
+    affiliationActionBtn: 'Accédez à {option} pour accéder à cette entreprise',
+    submitForms: 'Soumettre les formulaires requis aux Registres BC.'
   },
   widgets: {
     feeSummary: {

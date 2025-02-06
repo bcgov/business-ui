@@ -119,7 +119,7 @@ export function useAffiliationNavigation () {
       }
       // temporarily show external icon for restore/reinstate for some entity types
       if (nrRequestActionCd === NrRequestActionCodes.RESTORE || nrRequestActionCd === NrRequestActionCodes.RENEW) {
-        return !isSupportedRestorationEntities(item)
+        if (!accountStore.isStaffOrSbcStaff) { return true }
       }
       return false
     }
