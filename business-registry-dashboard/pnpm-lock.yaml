@@ -9,10 +9,10 @@ importers:
   .:
     dependencies:
       '@bcrs-shared-components/enums':
-        specifier: ^1.1.20
+        specifier: 1.1.20
         version: 1.1.20
       '@bcrs-shared-components/interfaces':
-        specifier: ^1.1.16
+        specifier: 1.1.16
         version: 1.1.16
       '@daxiom/nuxt-core-layer-test':
         specifier: ^0.0.4
@@ -9982,7 +9982,7 @@ snapshots:
 
   '@vue/compiler-sfc@2.7.16':
     dependencies:
-      '@babel/parser': 7.24.7
+      '@babel/parser': 7.26.5
       postcss: 8.4.39
       source-map: 0.6.1
     optionalDependencies:
