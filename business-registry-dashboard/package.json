@@ -2,7 +2,7 @@
   "name": "business-registry-dashboard",
   "private": true,
   "type": "module",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
@@ -48,7 +48,8 @@
     "vue-router": "^4.4.0"
   },
   "dependencies": {
-    "@bcrs-shared-components/interfaces": "^1.1.16",
+    "@bcrs-shared-components/interfaces": "1.1.16",
+    "@bcrs-shared-components/enums": "1.1.20",
     "@daxiom/nuxt-core-layer-test": "^0.0.4",
     "@vuepic/vue-datepicker": "^8.8.1",
     "firebase": "^10.12.3",

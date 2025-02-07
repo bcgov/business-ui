@@ -3,6 +3,10 @@ import {
   GetCorpFullDescription,
   GetCorpNumberedDescription
 } from '@bcrs-shared-components/corp-type-module'
+import {
+  EntityStates,
+  EntityStateStatus
+} from '@bcrs-shared-components/enums'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
   const invite = affiliationInviteInfos[0]
@@ -98,10 +102,31 @@ export const affiliationType = (business: Business): string => {
 /** Returns the status of the affiliation. */ // TODO: add i18n for these states
 export const affiliationStatus = (business: Business): string => {
   if (isTemporaryBusiness(business)) {
-    if (business.draftStatus === 'WITHDRAWN') {
-      return BusinessState.WITHDRAWN
+    if (business?.draftStatus) {
+      if (business.draftStatus === EntityStates.WITHDRAWN) {
+        return EntityStateStatus.WITHDRAWN
+      }
+      // For now seperating out Cont In's, but leaving in ability to switch messages to other filing types
+      if (business.corpType.code === CorpTypes.CONTINUATION_IN) {
+        switch (business.draftStatus) {
+          case (EntityStates.AWAITING_REVIEW):
+            return EntityStateStatus.AWAITING_REVIEW
+          case (EntityStates.REJECTED):
+            return EntityStateStatus.REJECTED
+          case (EntityStates.CHANGE_REQUESTED):
+            return EntityStateStatus.CHANGE_REQUESTED
+          case (EntityStates.APPROVED):
+            return EntityStateStatus.APPROVED
+          case (EntityStates.PENDING):
+            return EntityStateStatus.ACTIVE
+          case (EntityStates.PAID):
+            return EntityStateStatus.ACTIVE
+          default:
+            return EntityStateStatus.DRAFT
+        }
+      }
     }
-    return BusinessState.DRAFT
+    return EntityStateStatus.DRAFT
   }
   if (isNameRequest(business)) {
     // Format name request state value
@@ -129,7 +154,7 @@ export const affiliationStatus = (business: Business): string => {
   if (business.status) {
     return business.status.charAt(0)?.toUpperCase() + business.status?.slice(1)?.toLowerCase()
   }
-  return BusinessState.ACTIVE
+  return EntityStates.ACTIVE
 }
 
 /** Draft IA with Expired NR */

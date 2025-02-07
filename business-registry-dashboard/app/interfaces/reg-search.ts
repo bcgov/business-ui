@@ -1,3 +1,5 @@
+import type { EntityStates } from '@bcrs-shared-components/enums'
+
 export interface RegSearchPayload {
   query: {
     value?: string
@@ -7,7 +9,7 @@ export interface RegSearchPayload {
     parties?: { partyName: string }
   }
   categories: {
-    status?: BusinessState[]
+    status?: EntityStates[]
     legalType?: CorpTypes[]
   },
   rows?: number
@@ -18,7 +20,7 @@ export interface RegSearchResult {
   name: string
   identifier: string
   bn: string
-  status: BusinessState.ACTIVE | BusinessState.HISTORICAL
+  status: EntityStates.ACTIVE | EntityStates.HISTORICAL
   legalType: CorpTypes
 }
 
