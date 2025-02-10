@@ -443,9 +443,15 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
         :prevent="disableTooltip(item)"
         :popper="{ arrow: true }"
       >
+        <!-- Using inline width style here as we need 177px width to prevent text wrapping
+            and horizontal scrollbar. This is an exception to our usual Tailwind-first approach.
+            - w-44 (176px) causes text to wrap to two lines
+            - w-48 (192px) causes horizontal scrollbar to appear
+            Therefore using a precise 177px width to avoid both issues -->
         <UButton
           :label="getPrimaryActionLabel(item)"
-          class="w-44 px-4 transition-all duration-200 hover:opacity-95 hover:brightness-125"
+          class="px-4 transition-all duration-200 hover:opacity-95 hover:brightness-125"
+          style="width: 177px"
           :icon="affNav.isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
           :loading="isButtonActionProcessing"
           @click="primaryAction(item)"
