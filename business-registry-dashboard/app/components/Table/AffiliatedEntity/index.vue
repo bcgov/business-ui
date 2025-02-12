@@ -373,7 +373,11 @@ watch(
           <TableAffiliatedEntityStatusDetails
             v-if="getDetails(row).length > 0"
             icon="i-mdi-alert"
-            :details="getDetails(row)"
+            :details="getDetails(row).map(detail =>
+              detail === EntityAlertTypes.FUTURE_EFFECTIVE
+                ? { type: EntityAlertTypes.FUTURE_EFFECTIVE, data: { effectiveDate: row.effectiveDate } }
+                : detail
+            )"
           />
           <TableAffiliatedEntityStatusDetails
             v-if="isProcessing(affiliationStatus(row))"

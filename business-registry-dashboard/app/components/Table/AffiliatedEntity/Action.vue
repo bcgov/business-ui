@@ -192,6 +192,9 @@ function getPrimaryActionLabel (item: Business): string {
         }
       }
     }
+    if (item.effectiveDate) {
+      return t('labels.openApplication')
+    }
     return t('labels.resumeDraft')
   }
   if (isNameRequest(item)) {
@@ -400,7 +403,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
   }
 
   if (showRemoveButton(props.item)) {
-    if (isTemporaryBusiness(props.item)) {
+    if (isTemporaryBusiness(props.item) && !props.item.effectiveDate) {
       options.push({
         label: 'Delete ' + tempDescription(props.item), // TODO: do we want these to be translated?
         click: () => removeAffiliationOrInvitation(props.item),
@@ -415,8 +418,9 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
     } else {
       options.push({
         label: t('labels.removeFromTable'),
-        click: () => removeAffiliationOrInvitation(props.item),
-        icon: 'i-mdi-delete'
+        click: () => !props.item.effectiveDate && removeAffiliationOrInvitation(props.item),
+        icon: 'i-mdi-delete',
+        disabled: !!props.item.effectiveDate
       })
     }
   }
@@ -458,7 +462,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
           width: 'min-w-fit',
           item: {
             base: 'group flex items-center gap-2 w-full',
-            disabled: 'cursor-default opacity-100 font-semibold',
+            disabled: 'py-3 cursor-default opacity-50 font-normal',
             inactive: 'text-blue-500 dark:text-gray-200',
             icon: {
               base: 'flex-shrink-0 size-5',

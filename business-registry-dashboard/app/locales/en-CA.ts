@@ -193,7 +193,8 @@ export default {
     LIQUIDATION: 'This business is in liquidation',
     DISSOLUTION: 'This business is in the process of being dissolved',
     PROCESSING: 'This name request is still processing. It may take up to 10 minutes.',
-    EXPIRED: 'This {type} is no longer valid; the name request is expired.'
+    EXPIRED: 'This {type} is no longer valid; the name request is expired.',
+    FUTURE_EFFECTIVE: 'Scheduled to take effect on {effectiveDate}.'
   },
   form: {
     manageNR: {

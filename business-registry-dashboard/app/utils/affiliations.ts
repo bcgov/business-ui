@@ -4,8 +4,7 @@ import {
   GetCorpNumberedDescription
 } from '@bcrs-shared-components/corp-type-module'
 import {
-  EntityStates,
-  EntityStateStatus
+  EntityStates
 } from '@bcrs-shared-components/enums'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
@@ -126,6 +125,9 @@ export const affiliationStatus = (business: Business): string => {
         }
       }
     }
+    if (business.effectiveDate) {
+      return EntityStateStatus.FUTURE_EFFECTIVE
+    }
     return EntityStateStatus.DRAFT
   }
   if (isNameRequest(business)) {
@@ -180,6 +182,10 @@ export const isDissolution = (item: Business) => {
   return item.dissolved
 }
 
+export const isFutureEffective = (item: Business) => {
+  return item.effectiveDate
+}
+
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
@@ -201,6 +207,9 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   }
   if (isDissolution(item)) {
     details.push(EntityAlertTypes.DISSOLUTION)
+  }
+  if (isFutureEffective(item)) {
+    details.push(EntityAlertTypes.FUTURE_EFFECTIVE)
   }
   return details
 }

@@ -10,7 +10,7 @@ interface Message {
 
 const props = defineProps({
   details: {
-    type: Array as PropType<Array<EntityAlertTypes>>,
+    type: Array as PropType<Array<EntityAlertTypes | { type: EntityAlertTypes, data: any }>>,
     required: true
   },
   showAlertHeader: {
@@ -26,22 +26,22 @@ const entityAlertMessages: Record<string, Message> = {
   [EntityAlertTypes.PROCESSING]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.PROCESSING}`),
     colour: 'text-blue-500',
-    priority: 5
+    priority: 6
   },
   [EntityAlertTypes.FROZEN]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.FROZEN}`),
     colour: 'text-bcGovColor-caution',
-    priority: 4
+    priority: 5
   },
   [EntityAlertTypes.BADSTANDING]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.BADSTANDING}`),
     colour: 'text-bcGovColor-caution',
-    priority: 3
+    priority: 4
   },
   [EntityAlertTypes.LIQUIDATION]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.LIQUIDATION}`),
     colour: 'text-red-600',
-    priority: 2
+    priority: 3
   },
   [EntityAlertTypes.DISSOLUTION]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.DISSOLUTION}`),
@@ -60,7 +60,16 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`, status.data),
       colour: 'text-red-600',
-      priority: 5
+      priority: 2
+    }
+  }
+
+  if (status.type === EntityAlertTypes.FUTURE_EFFECTIVE) {
+    const effectiveDateFormatted = formatEffectiveDate(status.data.effectiveDate)
+    return {
+      message: t(`entityAlertTypes.${EntityAlertTypes.FUTURE_EFFECTIVE}`, { effectiveDate: effectiveDateFormatted }),
+      colour: 'text-blue-500',
+      priority: 7
     }
   }
 
@@ -79,13 +88,22 @@ const makeMessages = () => {
 }
 
 const alertMessages = makeMessages()
+
+const getIconForMessage = (message: Message) => {
+  // Check priority to determine if it's a future effective message. Show information outline icon if it is.
+  return message.priority === 7
+    ? 'i-mdi-information-outline'
+    : props.icon
+}
 </script>
 <template>
   <div>
     <UTooltip :popper="{ arrow: true }">
       <UIcon
-        :name="icon"
-        :class="alertMessages[0]?.colour"
+        v-for="(message, i) in alertMessages"
+        :key="i"
+        :name="getIconForMessage(message)"
+        :class="message.colour"
         class="size-5"
       />
       <template #text>
