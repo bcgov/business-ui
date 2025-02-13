@@ -41,6 +41,7 @@ export interface Business {
     inDissolution?: boolean
     affiliationInvites?: AffiliationInviteInfo[]
     dissolved?: boolean
+    effectiveDate?: string
 }
 
 export interface BusinessSearchResultDto {

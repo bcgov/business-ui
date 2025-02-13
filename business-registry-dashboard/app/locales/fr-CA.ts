@@ -183,7 +183,8 @@ export default {
     LIQUIDATION: 'Cette entreprise est en liquidation',
     DISSOLUTION: 'Cette entreprise est en cours de dissolution',
     PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
-    EXPIRED: "Cette {type} n'est plus valide; la demande de nom est expirée."
+    EXPIRED: "Cette {type} n'est plus valide; la demande de nom est expirée.",
+    FUTURE_EFFECTIVE: 'Programmé pour prendre effet le {effectiveDate}.'
   },
   form: {
     manageNR: {
