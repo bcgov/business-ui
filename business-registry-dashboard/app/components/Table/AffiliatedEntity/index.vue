@@ -31,6 +31,19 @@ watch(
   },
   { immediate: true }
 )
+
+/** Map details with effective date
+ * @param details details to map
+ * @param row row to map details to
+ * @returns mapped details with effective date
+ */
+const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
+  return details.map(detail =>
+    detail === EntityAlertTypes.FUTURE_EFFECTIVE
+      ? { type: EntityAlertTypes.FUTURE_EFFECTIVE, data: { effectiveDate: row.effectiveDate } }
+      : detail
+  )
+}
 </script>
 <template>
   <SbcPageSectionCard>
@@ -373,11 +386,7 @@ watch(
           <TableAffiliatedEntityStatusDetails
             v-if="getDetails(row).length > 0"
             icon="i-mdi-alert"
-            :details="getDetails(row).map(detail =>
-              detail === EntityAlertTypes.FUTURE_EFFECTIVE
-                ? { type: EntityAlertTypes.FUTURE_EFFECTIVE, data: { effectiveDate: row.effectiveDate } }
-                : detail
-            )"
+            :details="mapDetailsWithEffectiveDate(getDetails(row), row)"
           />
           <TableAffiliatedEntityStatusDetails
             v-if="isProcessing(affiliationStatus(row))"

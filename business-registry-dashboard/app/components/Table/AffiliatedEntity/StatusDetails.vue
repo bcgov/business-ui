@@ -6,6 +6,7 @@ interface Message {
   message: string
   colour: string
   priority: number
+  type?: string
 }
 
 const props = defineProps({
@@ -60,7 +61,8 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`, status.data),
       colour: 'text-red-600',
-      priority: 2
+      priority: 2,
+      type: status.type
     }
   }
 
@@ -69,7 +71,8 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.FUTURE_EFFECTIVE}`, { effectiveDate: effectiveDateFormatted }),
       colour: 'text-blue-500',
-      priority: 7
+      priority: 7,
+      type: status.type
     }
   }
 
@@ -90,8 +93,8 @@ const makeMessages = () => {
 const alertMessages = makeMessages()
 
 const getIconForMessage = (message: Message) => {
-  // Check priority to determine if it's a future effective message. Show information outline icon if it is.
-  return message.priority === 7
+  // Check if the message is future effective. If it is, return the information outline icon.
+  return message.type === EntityAlertTypes.FUTURE_EFFECTIVE
     ? 'i-mdi-information-outline'
     : props.icon
 }

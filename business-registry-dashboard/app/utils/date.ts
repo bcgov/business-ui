@@ -35,12 +35,12 @@ export function addOneYear (dateString: string) {
   return moment(date).add(1, 'year').format('YYYY-MM-DD')
 }
 
-/** Format a UTC date string into Pacific time
+/** Format a UTC date string into Pacific time (UTC is converted to Pacific time)
  * @param dateString UTC date string (format: YYYY-MM-DDT:HH:mm:ss+00:00)
  * @returns formatted date string in Pacific time (example: "Jan 1, 2024 at 9:00 AM Pacific time")
  */
 export function formatEffectiveDate (dateString: string) {
   return moment(dateString)
-    .tz('America/Vancouver') // Convert UTC to Pacific time
+    .tz('America/Vancouver')
     .format('MMM D, YYYY [at] h:mm a [Pacific time]')
 }
