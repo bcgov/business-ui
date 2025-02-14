@@ -151,12 +151,22 @@ export const affiliationStatus = (business: Business): string => {
       return NrDisplayStates[NrState.HOLD]
     }
 
+    // When the NR is conditionally approved, and the consent flag is received or waived
+    // (or null which means not required), then the NR is considered approved
+    if (state === NrState.CONDITIONAL && (
+      business.nameRequest?.consentFlag === NrConditionalStates.RECEIVED ||
+      business.nameRequest?.consentFlag === NrConditionalStates.WAIVED ||
+      business.nameRequest?.consentFlag === null
+    )) {
+      return NrDisplayStates.APPROVED
+    }
+
     return NrDisplayStates[state] || 'Unknown'
   }
   if (business.status) {
     return business.status.charAt(0)?.toUpperCase() + business.status?.slice(1)?.toLowerCase()
   }
-  return EntityStates.ACTIVE
+  return EntityStateStatus.ACTIVE
 }
 
 /** Draft IA with Expired NR */

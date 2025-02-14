@@ -65,6 +65,7 @@ export function buildNameRequestObject (nr: NameRequestResponse) {
     legalType: nr.legalType,
     nrNumber: nr.nrNum,
     state: nr.stateCd,
+    consentFlag: nr.consentFlag,
     applicantEmail: isApplicantsExist(nr) ? nr.applicants?.[0]?.emailAddress ?? null : null,
     applicantPhone: isApplicantsExist(nr) ? nr.applicants?.[0]?.phoneNumber ?? null : null,
     enableIncorporation: isApprovedForIaOrRegistration(nr),
