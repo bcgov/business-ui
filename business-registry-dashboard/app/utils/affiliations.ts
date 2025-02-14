@@ -151,6 +151,11 @@ export const affiliationStatus = (business: Business): string => {
       return NrDisplayStates[NrState.HOLD]
     }
 
+    // When the NR is conditionally approved, and the consent flag is received, then the NR is considered approved
+    if (state === NrState.CONDITIONAL && business.nameRequest?.consentFlag === NrConditionalStates.RECEIVED) {
+      return NrDisplayStates.APPROVED
+    }
+
     return NrDisplayStates[state] || 'Unknown'
   }
   if (business.status) {
