@@ -556,7 +556,7 @@ export default {
         },
         CTMP: {
           title: 'Delete Continuation Application',
-          description: 'This action will permanently delete your Continuation Application',
+          description: 'This action will permanently delete your Continuation Application.',
           descriptionNamed: 'This action will permanently delete your Continuation Application. However, you will be able to use your Name Request to start a new Continuation Application.',
           primaryBtnLabel: 'Delete Application',
           secondaryBtnLabel: 'Cancel'
