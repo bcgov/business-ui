@@ -162,7 +162,10 @@ describe('useBrdModals', () => {
         CorpTypes.AMALGAMATION_APPLICATION,
         CorpTypes.REGISTRATION,
         CorpTypes.PARTNERSHIP,
-        CorpTypes.SOLE_PROP].forEach((item) => {
+        CorpTypes.SOLE_PROP,
+        CorpTypes.CONTINUE_IN,
+        'future types' // Future types will automatically get generic module rather than passcode
+      ].forEach((item) => {
         const payload = {
           business: { corpType: { code: item } }
         }
@@ -193,10 +196,10 @@ describe('useBrdModals', () => {
         vi.restoreAllMocks()
       })
     })
-
+    // Only COOPs should have the passcode model
     it('should open ModalRemoveBusiness for passcode type', () => {
       const payload = {
-        business: { corpType: { code: 'some other code' } }
+        business: { corpType: { code: CorpTypes.COOP } }
       }
 
       // @ts-expect-error - payload arg doesnt match function param
@@ -213,7 +216,7 @@ describe('useBrdModals', () => {
           removeBusinessPayload: {
             business: {
               corpType: {
-                code: 'some other code'
+                code: 'CP'
               }
             }
           },
