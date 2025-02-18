@@ -9,6 +9,13 @@ defineEmits<{
   confirm: [void]
   close: [void]
 }>()
+function selectDescription (removeBusinessPayload: RemoveBusinessPayload) {
+  // Different discriptions for Continuation In's if they have a name request
+  if (removeBusinessPayload.business.corpType.code === CorpTypes.CONTINUATION_IN && removeBusinessPayload.business.nameRequest) {
+    return `modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.descriptionNamed`
+  }
+  return `modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.description`
+}
 </script>
 <template>
   <div class="flex flex-col items-center gap-4 text-center">
@@ -16,7 +23,7 @@ defineEmits<{
     <h2 class="text-xl font-semibold">
       {{ $t(`modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.title`) }}
     </h2>
-    <p>{{ $t(`modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.description`) }}</p>
+    <p>{{ $t(selectDescription(removeBusinessPayload)) }}</p>
     <div class="mt-2 flex flex-wrap items-center justify-center gap-4">
       <UButton
         :block="isSmallScreen"

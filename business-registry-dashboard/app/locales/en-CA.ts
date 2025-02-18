@@ -554,6 +554,37 @@ export default {
           primaryBtnLabel: 'Remove Registration',
           secondaryBtnLabel: 'Keep Registration'
         },
+        CTMP: {
+          title: 'Delete Continuation Application',
+          description: 'This action will permanently delete your Continuation Application',
+          descriptionNamed: 'This action will permanently delete your Continuation Application. However, you will be able to use your Name Request to start a new Continuation Application.',
+          primaryBtnLabel: 'Delete Application',
+          secondaryBtnLabel: 'Cancel'
+        },
+        C: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        CBEN: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        CCC: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        CUL: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
         SP: {
           title: 'Remove Registration?',
           description: 'Removing this registration will remove the associated business from your Business Registry list. To add the business back to the My Business Registry list later, you will need the business registration number and the name of the proprietor exactly as it appears on the registration application.',
