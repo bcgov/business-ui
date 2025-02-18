@@ -75,13 +75,15 @@ async function onSubmit (event: FormSubmitEvent<NRSchema>) {
   try {
     formLoading.value = true
 
-    // const emailValid = z.string().email().safeParse(event.data.email).success // might need in future
-    const phoneValid = event.data.phone.length <= 12
+    const emailValid = z.string().email().safeParse(event.data.email).success
+    const phoneWithoutHyphens = event.data.phone.replace(/-/g, '')
+    const phoneValid = phoneWithoutHyphens.length <= 12
 
-    // create payload with either phone or email depending on what is valid
+    // create payload with phone and email if they are valid
     const payload: CreateNRAffiliationRequestBody = {
       businessIdentifier: props.nrNum,
-      ...(phoneValid ? { phone: event.data.phone.replace(/-/g, '') } : { email: event.data.email })
+      ...(phoneValid && { phone: phoneWithoutHyphens }),
+      ...(emailValid && { email: event.data.email })
     }
 
     // submit post request
