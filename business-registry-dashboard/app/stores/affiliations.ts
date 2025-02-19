@@ -75,7 +75,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   /* Check if Business can be deleted safely (i.e. does not have a review record) */
   function canBusinessBeDeleted (payload: RemoveBusinessPayload) {
     // For now only including Continuation Ins where only draft records can be deleted
-    if (payload.business.corpType.code === CorpTypes.CONTINUATION_IN && payload.business?.draftStatus !== EntityStates.DRAFT) {
+    if (payload.business.corpType.code === CorpTypes.CONTINUATION_IN &&
+      payload.business?.draftStatus &&
+      payload.business.draftStatus !== EntityStates.DRAFT
+    ) {
       return false
     } else {
       return true
