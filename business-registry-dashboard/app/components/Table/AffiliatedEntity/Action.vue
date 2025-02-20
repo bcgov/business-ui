@@ -432,9 +432,9 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
       icon: 'i-mdi-checkbox-multiple-blank-outline'
     })
   }
-
   return [options]
 })
+
 </script>
 <template>
   <div

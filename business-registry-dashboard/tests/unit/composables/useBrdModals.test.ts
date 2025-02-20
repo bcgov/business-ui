@@ -155,14 +155,26 @@ describe('useBrdModals', () => {
     })
   })
 
+  /* There are two types of modals available, generic and passcode.
+     The passcode type model is only used for COOPs.
+  */
   describe('openBusinessRemovalConfirmation', () => {
+  /* Testing that the generic Modal is used.
+
+    This should show for anything that is included in the CorpTypes enum
+    - i.e bootstrap filings, societies and business types (other than COOPS).
+    Because it is the current default, it will show as long as it receives a string.
+  */
     it('should open ModalRemoveBusiness for generic type', () => {
       [CorpTypes.NAME_REQUEST,
         CorpTypes.INCORPORATION_APPLICATION,
         CorpTypes.AMALGAMATION_APPLICATION,
         CorpTypes.REGISTRATION,
         CorpTypes.PARTNERSHIP,
-        CorpTypes.SOLE_PROP].forEach((item) => {
+        CorpTypes.SOLE_PROP,
+        CorpTypes.CONTINUE_IN,
+        'future types' // Future types will automatically get generic module rather than passcode
+      ].forEach((item) => {
         const payload = {
           business: { corpType: { code: item } }
         }
@@ -194,9 +206,11 @@ describe('useBrdModals', () => {
       })
     })
 
+    /* Testing that the passcode Modal is used.
+      This should show for COOPS only. */
     it('should open ModalRemoveBusiness for passcode type', () => {
       const payload = {
-        business: { corpType: { code: 'some other code' } }
+        business: { corpType: { code: CorpTypes.COOP } }
       }
 
       // @ts-expect-error - payload arg doesnt match function param
@@ -213,7 +227,7 @@ describe('useBrdModals', () => {
           removeBusinessPayload: {
             business: {
               corpType: {
-                code: 'some other code'
+                code: 'CP'
               }
             }
           },

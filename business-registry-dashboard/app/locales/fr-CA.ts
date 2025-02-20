@@ -544,6 +544,37 @@ export default {
           primaryBtnLabel: "Supprimer L'Enregistrement",
           secondaryBtnLabel: "Conserver L'Enregistrement"
         },
+        CTMP: {
+          title: 'Supprimer la Demande de Continuation',
+          description: 'Cette action supprimera définitivement votre Demande de Continuation.',
+          descriptionNamed: 'Cette action supprimera définitivement votre Demande de Continuation. Cependant, vous pourrez utiliser votre Demande de Nom pour démarrer une nouvelle Demande de Continuation.',
+          primaryBtnLabel: "Supprimer l'application",
+          secondaryBtnLabel: 'Annuler'
+        },
+        C: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        CBEN: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        CCC: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        CUL: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
         SP: {
           title: "Supprimer L'Enregistrement?",
           description: "La suppression de cet enregistrement le retirera de votre liste de registre des entreprises. Pour réintégrer l'entreprise à la liste de registre des entreprises plus tard, vous aurez besoin du numéro d'enregistrement de l'entreprise et du nom du propriétaire exactement comme il apparaît sur la demande d'enregistrement.",

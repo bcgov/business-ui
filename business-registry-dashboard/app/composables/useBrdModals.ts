@@ -65,15 +65,10 @@ export const useBrdModals = () => {
 
   function openBusinessRemovalConfirmation (removeBusinessPayload: RemoveBusinessPayload) {
     const type = removeBusinessPayload.business.corpType.code
-    if ([CorpTypes.NAME_REQUEST,
-      CorpTypes.INCORPORATION_APPLICATION,
-      CorpTypes.AMALGAMATION_APPLICATION,
-      CorpTypes.REGISTRATION,
-      CorpTypes.PARTNERSHIP,
-      CorpTypes.SOLE_PROP].includes(type)) {
-      modal.open(ModalRemoveBusiness, { removeBusinessPayload, type: 'generic' })
-    } else {
+    if (type === CorpTypes.COOP) {
       modal.open(ModalRemoveBusiness, { removeBusinessPayload, type: 'passcode' })
+    } else {
+      modal.open(ModalRemoveBusiness, { removeBusinessPayload, type: 'generic' })
     }
   }
 
