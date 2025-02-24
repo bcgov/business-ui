@@ -42,9 +42,13 @@ watch(() => route.params.orgId, (orgId) => {
 onMounted(() => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
-    const registryHomeURL = useRuntimeConfig().public.registryHomeURL
+    const registryHomeURL = config.registryHomeURL
     const redirectUrl = encodeURIComponent(window.location.href)
     window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+  }
+  if (accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
+    const accountId = accountStore.currentAccount.id
+    window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
   }
 })
 </script>
