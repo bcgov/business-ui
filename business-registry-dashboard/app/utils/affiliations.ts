@@ -196,6 +196,10 @@ export const isFutureEffective = (item: Business) => {
   return item.effectiveDate
 }
 
+export const isChangeRequested = (item: Business) => {
+  return item.draftStatus === EntityStates.CHANGE_REQUESTED
+}
+
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
@@ -220,6 +224,9 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   }
   if (isFutureEffective(item)) {
     details.push(EntityAlertTypes.FUTURE_EFFECTIVE)
+  }
+  if (isChangeRequested(item)) {
+    details.push(EntityAlertTypes.CHANGE_REQUESTED)
   }
   return details
 }

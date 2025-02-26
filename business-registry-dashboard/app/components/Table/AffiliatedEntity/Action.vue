@@ -135,7 +135,7 @@ const getNrRequestDescription = (item: Business): string => {
     case NrRequestActionCodes.CHANGE_NAME:
       return t('labels.changeNameNow')
     case NrRequestActionCodes.MOVE:
-      return t('labels.continueInNow')
+      return t('labels.beginContinuation')
     case NrRequestActionCodes.NEW_BUSINESS:
       return isOtherEntities(item) ? t('labels.downloadForm') : t('labels.registerNow')
     case NrRequestActionCodes.RESTORE:

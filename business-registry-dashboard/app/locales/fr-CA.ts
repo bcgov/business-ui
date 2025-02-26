@@ -184,7 +184,8 @@ export default {
     DISSOLUTION: 'Cette entreprise est en cours de dissolution',
     PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
     EXPIRED: "Cette {type} n'est plus valide; la demande de nom est expirée.",
-    FUTURE_EFFECTIVE: 'Programmé pour prendre effet le {effectiveDate}.'
+    FUTURE_EFFECTIVE: 'Programmé pour prendre effet le {effectiveDate}.',
+    CHANGE_REQUESTED: 'Des modifications à votre autorisation ont été demandées.'
   },
   form: {
     manageNR: {
@@ -472,7 +473,7 @@ export default {
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',
-    continueInNow: 'Continuer Maintenant',
+    beginContinuation: 'Démarrer la Continuation',
     downloadForm: 'Télécharger le Formulaire',
     registerNow: 'Enregistrer Maintenant',
     restoreNow: 'Restaurer Maintenant',

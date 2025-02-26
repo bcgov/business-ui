@@ -194,7 +194,8 @@ export default {
     DISSOLUTION: 'This business is in the process of being dissolved',
     PROCESSING: 'This name request is still processing. It may take up to 10 minutes.',
     EXPIRED: 'This {type} is no longer valid; the name request is expired.',
-    FUTURE_EFFECTIVE: 'Scheduled to take effect on {effectiveDate}.'
+    FUTURE_EFFECTIVE: 'Scheduled to take effect on {effectiveDate}.',
+    CHANGE_REQUESTED: 'Changes to your authorization have been requested.'
   },
   form: {
     manageNR: {
@@ -482,7 +483,7 @@ export default {
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',
-    continueInNow: 'Continue In Now',
+    beginContinuation: 'Begin Continuation',
     downloadForm: 'Download Form',
     registerNow: 'Register Now',
     restoreNow: 'Restore Now',
