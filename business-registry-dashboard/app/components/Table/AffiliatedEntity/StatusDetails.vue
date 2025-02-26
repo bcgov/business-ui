@@ -27,10 +27,15 @@ const entityAlertMessages: Record<string, Message> = {
   [EntityAlertTypes.PROCESSING]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.PROCESSING}`),
     colour: 'text-blue-500',
-    priority: 6
+    priority: 7
   },
   [EntityAlertTypes.FROZEN]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.FROZEN}`),
+    colour: 'text-bcGovColor-caution',
+    priority: 6
+  },
+  [EntityAlertTypes.CHANGE_REQUESTED]: {
+    message: t(`entityAlertTypes.${EntityAlertTypes.CHANGE_REQUESTED}`),
     colour: 'text-bcGovColor-caution',
     priority: 5
   },
@@ -71,7 +76,7 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.FUTURE_EFFECTIVE}`, { effectiveDate: effectiveDateFormatted }),
       colour: 'text-blue-500',
-      priority: 7,
+      priority: 8,
       type: status.type
     }
   }
