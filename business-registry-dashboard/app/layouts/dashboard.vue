@@ -51,7 +51,7 @@ onMounted(() => {
   // We check for valid IDs (>= 0) to ensure we only redirect accounts that exist in the system
   if (accountStore.currentAccount &&
       +accountStore.currentAccount.id >= 0 &&
-      accountStore.currentAccount.accountStatus === AccountStatus.ACTIVE) {
+      accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
     const accountId = accountStore.currentAccount.id
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
   }
