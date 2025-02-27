@@ -153,9 +153,9 @@ export default {
       title: "Error lors de l'ajout de l'Entreprise Existante",
       description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
     },
-    invalidContinuationApplication: {
-      title: 'Application de Continuation Invalide',
-      description: 'Vous ne pouvez pas ouvrir cette application car la demande de nom associée a expiré. Veuillez soumettre une nouvelle demande de nom et une application de continuation.'
+    invalidFilingApplication: {
+      title: '{type} Invalide',
+      description: 'Vous ne pouvez pas ouvrir cette application car la demande de nom associée a expiré. Veuillez soumettre une nouvelle demande de nom et une {type}.'
     },
     magicLinkUnauthorized: {
       title: 'Impossible De Gérer L\'entreprise',

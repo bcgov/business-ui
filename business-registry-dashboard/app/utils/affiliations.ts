@@ -6,6 +6,7 @@ import {
 import {
   EntityStates
 } from '@bcrs-shared-components/enums'
+import moment from 'moment-timezone'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
   const invite = affiliationInviteInfos[0]
@@ -181,8 +182,13 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
     return false
   }
 
-  // Check if the expiration date is in the past
-  const isExpiredDate = new Date(item.nameRequest.expirationDate) < new Date()
+  // Using moment-timezone with a specific timezone (America/Vancouver) for date comparison
+  // This approach addresses several issues with using new Date():
+  // Prevents manipulation by users who might change their system clock
+  // Ensures consistent timezone handling across all users regardless of their location
+  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
+  const currentDate = moment().tz('America/Vancouver')
+  const isExpiredDate = expirationDate.isBefore(currentDate)
 
   if (!isExpiredDate) {
     return false

@@ -307,9 +307,11 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd?: NrRequest
 
 async function redirect (item: Business) {
   if (isTemporaryBusiness(item)) { // handle if temp business
-    if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
-      // Show error dialog for continuation application with expired name request
-      brdModal.openInvalidContinuationApplication()
+    // Check for expired name requests
+    if (isExpired(item, item.corpType.code === CorpTypes.CONTINUATION_IN ? CorpTypes.CONTINUATION_IN : undefined)) {
+      // Use tempDescription to get the full application type name
+      const applicationType = tempDescription(item)
+      brdModal.openInvalidFilingApplication(applicationType)
       return
     }
     affNav.goToDashboard(item.businessIdentifier)
