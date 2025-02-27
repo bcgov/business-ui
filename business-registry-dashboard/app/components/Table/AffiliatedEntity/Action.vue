@@ -11,6 +11,7 @@ const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
 const { t } = useI18n()
 const ldStore = useConnectLaunchdarklyStore()
+const brdModal = useBrdModals()
 
 const props = defineProps<{
   affiliations: Business[],
@@ -306,6 +307,11 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd?: NrRequest
 
 async function redirect (item: Business) {
   if (isTemporaryBusiness(item)) { // handle if temp business
+    if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
+      // Show error dialog for continuation application with expired name request
+      brdModal.openInvalidContinuationApplication()
+      return
+    }
     affNav.goToDashboard(item.businessIdentifier)
   } else if (isNameRequest(item)) { // handle if name request
     if (affiliationStatus(item) === NrDisplayStates.APPROVED) {

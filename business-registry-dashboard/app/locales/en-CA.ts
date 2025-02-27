@@ -163,6 +163,10 @@ export default {
         description: 'You are not authorized to access the business you wish to {action}. Please add this business to your table to continue.'
       }
     },
+    invalidContinuationApplication: {
+      title: 'Invalid Continuation Application',
+      description: 'You cannot open this application because the associated name request has expired. Please submit a new name request and continuation application.'
+    },
     magicLinkUnauthorized: {
       title: 'Unable to Manage Business',
       description: 'The account that requested authorisation does not match your current account. Please log in as the account that initiated the request.'
