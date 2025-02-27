@@ -48,7 +48,9 @@ onMounted(() => {
   }
   // Redirect inactive accounts to the account settings page
   // This ensures users can't access the dashboard until their account is activated
-  if (accountStore.currentAccount?.id &&
+  // We check for valid IDs (>= 0) to ensure we only redirect accounts that exist in the system
+  if (accountStore.currentAccount &&
+      Number(accountStore.currentAccount.id) >= 0 &&
       accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
     const accountId = accountStore.currentAccount.id
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
