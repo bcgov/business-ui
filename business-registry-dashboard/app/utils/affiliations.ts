@@ -172,7 +172,7 @@ export const affiliationStatus = (business: Business): string => {
 /**
  * Checks if an item has an expired Name Request
  * @param item - The business to check
- * @param type - Optional entity type to check for
+ * @param type - Optional corp type to check for
  * @returns True if the item has an expired Name Request matching the criteria
  */
 export const isExpired = (item: Business, type?: CorpTypes): boolean => {
