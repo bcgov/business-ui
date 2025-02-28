@@ -487,7 +487,7 @@ export default {
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',
-    beginContinuation: 'Begin Continuation',
+    continueInNow: 'Continue In Now',
     downloadForm: 'Download Form',
     registerNow: 'Register Now',
     restoreNow: 'Restore Now',

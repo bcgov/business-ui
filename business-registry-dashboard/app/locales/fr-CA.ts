@@ -477,7 +477,7 @@ export default {
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',
-    beginContinuation: 'Démarrer la Continuation',
+    continueInNow: 'Continuer Maintenant',
     downloadForm: 'Télécharger le Formulaire',
     registerNow: 'Enregistrer Maintenant',
     restoreNow: 'Restaurer Maintenant',
