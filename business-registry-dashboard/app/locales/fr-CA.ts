@@ -155,7 +155,7 @@ export default {
     },
     invalidFilingApplication: {
       title: '{type} Invalide',
-      description: 'Vous ne pouvez pas ouvrir cette application car la demande de nom associée a expiré. Veuillez soumettre une nouvelle demande de nom et une {type}.'
+      description: 'Vous ne pouvez pas ouvrir cette application car la Demande de Nom associée a expiré. Veuillez soumettre une nouvelle Demande de Nom et une {type}.'
     },
     magicLinkUnauthorized: {
       title: 'Impossible De Gérer L\'entreprise',
@@ -477,7 +477,7 @@ export default {
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',
-    beginContinuation: 'Démarrer la Continuation',
+    continueInNow: 'Continuer Maintenant',
     downloadForm: 'Télécharger le Formulaire',
     registerNow: 'Enregistrer Maintenant',
     restoreNow: 'Restaurer Maintenant',
