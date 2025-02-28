@@ -11,6 +11,7 @@ const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
 const { t } = useI18n()
 const ldStore = useConnectLaunchdarklyStore()
+const brdModal = useBrdModals()
 
 const props = defineProps<{
   affiliations: Business[],
@@ -306,6 +307,13 @@ const handleApprovedNameRequest = (item: Business, nrRequestActionCd?: NrRequest
 
 async function redirect (item: Business) {
   if (isTemporaryBusiness(item)) { // handle if temp business
+    // Check for expired name requests
+    if (isExpired(item, item.corpType.code === CorpTypes.CONTINUATION_IN ? CorpTypes.CONTINUATION_IN : undefined)) {
+      // Use tempDescription to get the full application type name
+      const applicationType = tempDescription(item)
+      brdModal.openInvalidFilingApplication(applicationType)
+      return
+    }
     affNav.goToDashboard(item.businessIdentifier)
   } else if (isNameRequest(item)) { // handle if name request
     if (affiliationStatus(item) === NrDisplayStates.APPROVED) {

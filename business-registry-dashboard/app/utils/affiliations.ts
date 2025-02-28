@@ -6,6 +6,7 @@ import {
 import {
   EntityStates
 } from '@bcrs-shared-components/enums'
+import moment from 'moment-timezone'
 
 export const getAffiliationInvitationStatus = (affiliationInviteInfos: AffiliationInviteInfo[]): string => {
   const invite = affiliationInviteInfos[0]
@@ -169,14 +170,37 @@ export const affiliationStatus = (business: Business): string => {
   return EntityStateStatus.ACTIVE
 }
 
-/** Draft IA with Expired NR */
-export const isExpired = (item: Business): boolean => {
-  if (item.nameRequest?.expirationDate) {
-    return isDraft(affiliationStatus(item)) && (item.nameRequest && (item.nameRequest.expirationDate !== null) &&
-    (new Date(item.nameRequest.expirationDate) < new Date())) && isIA(affiliationType(item))
-  } else {
+/**
+ * Checks if an item has an expired Name Request
+ * @param item - The business to check
+ * @param type - Optional corp type to check for
+ * @returns True if the item has an expired Name Request matching the criteria
+ */
+export const isExpired = (item: Business, type?: CorpTypes): boolean => {
+  // Return false if there's no expiration date
+  if (!item.nameRequest?.expirationDate) {
     return false
   }
+
+  // Using moment-timezone with a specific timezone (America/Vancouver) for date comparison
+  // This approach addresses several issues with using new Date():
+  // Prevents manipulation by users who might change their system clock
+  // Ensures consistent timezone handling across all users regardless of their location
+  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
+  const currentDate = moment().tz('America/Vancouver')
+  const isExpiredDate = expirationDate.isBefore(currentDate)
+
+  if (!isExpiredDate) {
+    return false
+  }
+
+  // If type is specified, use that for specific checking
+  if (type === CorpTypes.CONTINUATION_IN) {
+    return affiliationStatus(item) === EntityStateStatus.APPROVED
+  }
+
+  // Default behavior (IA/Registration/Amalgamation)
+  return isDraft(affiliationStatus(item)) && (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
 }
 
 export const isFrozed = (item: Business): boolean => {
@@ -203,15 +227,21 @@ export const isChangeRequested = (item: Business) => {
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
+  // Check for expired Name Requests for IAs/Registrations/Amalgamations
+  // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
     const typeMap = {
       [CorpTypes.REGISTRATION]: t('entityTypes.registration'),
       [CorpTypes.INCORPORATION_APPLICATION]: t('entityTypes.incorporationApplication'),
-      [CorpTypes.AMALGAMATION_APPLICATION]: t('entityTypes.amalgamationApplication'),
-      [CorpTypes.CONTINUATION_IN]: t('entityTypes.continuationApplication')
+      [CorpTypes.AMALGAMATION_APPLICATION]: t('entityTypes.amalgamationApplication')
     }
     const type = typeMap[item.corpType?.code] || t('entityTypes.incorporationApplication')
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
+  }
+  // Special case: Check for expired Name Requests for Continuation Applications
+  // Unlike other filings, Continuation Applications can expire even when in APPROVED status
+  if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
+    details.push({ type: EntityAlertTypes.EXPIRED, data: { type: t('entityTypes.continuationApplication') } })
   }
   if (isFrozed(item)) {
     details.push(EntityAlertTypes.FROZEN)
@@ -237,6 +267,10 @@ export const isDraft = (state: string): boolean => {
 
 export const isIA = (type: string): boolean => {
   return (type === AffiliationTypes.INCORPORATION_APPLICATION || type === AffiliationTypes.REGISTRATION)
+}
+
+export const isAmalgamation = (type: string): boolean => {
+  return (type === AffiliationTypes.AMALGAMATION_APPLICATION)
 }
 
 export const isProcessing = (state: string): boolean => {

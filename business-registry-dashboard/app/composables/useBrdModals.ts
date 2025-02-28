@@ -42,6 +42,16 @@ export const useBrdModals = () => {
     })
   }
 
+  function openInvalidFilingApplication (type: string) {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.invalidFilingApplication.title', { type }),
+        description: t('error.invalidFilingApplication.description', { type })
+      },
+      actions: [{ label: t('btn.close'), handler: () => close() }]
+    })
+  }
+
   function openBusinessUnavailableError (action: string) {
     let title: string
     let description: string
@@ -89,6 +99,7 @@ export const useBrdModals = () => {
     openManageNRError,
     openBusinessAddError,
     openBusinessUnavailableError,
+    openInvalidFilingApplication,
     openBusinessRemovalConfirmation,
     openManageBusiness,
     openMagicLinkModal,
