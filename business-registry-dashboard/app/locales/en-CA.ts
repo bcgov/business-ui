@@ -165,7 +165,7 @@ export default {
     },
     invalidFilingApplication: {
       title: 'Invalid {type}',
-      description: 'You cannot open this application because the associated name request has expired. Please submit a new name request and {type}.'
+      description: 'You cannot open this application because the associated Name Request has expired. Please submit a new Name Request and {type}.'
     },
     magicLinkUnauthorized: {
       title: 'Unable to Manage Business',
@@ -487,7 +487,7 @@ export default {
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',
-    continueInNow: 'Continue In Now',
+    beginContinuation: 'Begin Continuation',
     downloadForm: 'Download Form',
     registerNow: 'Register Now',
     restoreNow: 'Restore Now',
