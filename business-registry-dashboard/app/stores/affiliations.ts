@@ -242,7 +242,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   watchDebounced(
     width,
     (newVal) => {
-      resetFilters() // reset filters so active filters do not get hidden when screen size changes
       if (newVal < 640) {
         // Mobile view
         visibleColumns.value = [nameColumn, actionColumn]
