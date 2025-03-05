@@ -5,7 +5,7 @@ import {
 
 export interface MagicLinkConfig {
   filingType: FilingTypes
-  eligibleCorpTypes: string[]
+  eligibleCorpTypes: CorpTypes[]
   requestActionCode: NrRequestActionCodes
   errorModalTitle: string
   errorModalDescription: string
