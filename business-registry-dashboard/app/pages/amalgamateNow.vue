@@ -6,10 +6,9 @@ import {
 
 const { t } = useI18n()
 
-// Define eligible corporation types for incorporation
+// Define eligible corporation types for amalgamation
 const ELIGIBLE_CORP_TYPES = [
   CorpTypes.BENEFIT_COMPANY,
-  CorpTypes.COOP,
   CorpTypes.BC_CCC,
   CorpTypes.BC_COMPANY,
   CorpTypes.BC_ULC_COMPANY
@@ -20,15 +19,15 @@ definePageMeta({ order: 0 })
 const { isLoading, processMagicLink } = useMagicLinkProcessing()
 
 /**
- * Handles the magic link flow for incorporation applications.
+ * Handles the magic link flow for amalgamation applications.
  * Processes name request data from URL parameters and creates a new
  * draft filing if one doesn't already exist for this name request.
  */
 onMounted(async () => {
   await processMagicLink({
-    filingType: FilingTypes.INCORPORATION_APPLICATION,
+    filingType: FilingTypes.AMALGAMATION_APPLICATION,
     eligibleCorpTypes: ELIGIBLE_CORP_TYPES,
-    requestActionCode: NrRequestActionCodes.NEW_BUSINESS,
+    requestActionCode: NrRequestActionCodes.AMALGAMATE,
     errorModalTitle: t('error.magicLinkFilingError.title'),
     errorModalDescription: t('error.magicLinkFilingError.description'),
     errorModalDescription2: t('error.magicLinkFilingError.description2')
