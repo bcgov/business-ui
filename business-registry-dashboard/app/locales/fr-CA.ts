@@ -556,6 +556,30 @@ export default {
           primaryBtnLabel: "Supprimer l'application",
           secondaryBtnLabel: 'Annuler'
         },
+        BC: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        BEN: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        CC: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
+        ULC: {
+          title: 'Supprimer du Tableau',
+          description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",
+          primaryBtnLabel: "Supprimer l'entreprise",
+          secondaryBtnLabel: 'Annuler'
+        },
         C: {
           title: 'Supprimer du Tableau',
           description: "Cette entreprise sera supprimée de votre liste du registre des entreprises et ne sera plus liée à ce compte. Vous pourrez rajouter l'entreprise à votre compte ultérieurement.",

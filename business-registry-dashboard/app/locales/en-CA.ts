@@ -566,6 +566,30 @@ export default {
           primaryBtnLabel: 'Delete Application',
           secondaryBtnLabel: 'Cancel'
         },
+        BC: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        BEN: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        CC: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
+        ULC: {
+          title: 'Remove from Table',
+          description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
+          primaryBtnLabel: 'Remove Business',
+          secondaryBtnLabel: 'Cancel'
+        },
         C: {
           title: 'Remove from Table',
           description: 'This business will be removed from your Business Registry list and will no longer be linked to this account. You can add the business back to your account later on.',
