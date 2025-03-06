@@ -6,6 +6,16 @@ import {
   EntityStates
 } from '@bcrs-shared-components/enums'
 
+// Define a type for the response from createNamedBusiness to fix ts error
+interface BusinessResponse {
+  filing?: {
+    business: {
+      identifier: string
+    }
+  }
+  errorMsg?: string
+}
+
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
@@ -34,18 +44,19 @@ const isButtonActionProcessing = ref(false)
 async function createBusinessRecord (business: Business): Promise<string> {
   const amalgamationTypes = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
   const continuationInTypes = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
-  const regTypes = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
-  const iaTypes = [CorpTypes.BENEFIT_COMPANY, CorpTypes.COOP, CorpTypes.BC_CCC, CorpTypes.BC_COMPANY,
-    CorpTypes.BC_ULC_COMPANY]
+  const supportedIaRegTypes = ldStore.getStoredFlag(LDFlags.IaSupportedEntitiesBrd)?.split(' ') || []
 
-  let filingResponse = null
+  let filingResponse: BusinessResponse | null = null
   let payload = null
   // If Incorporation or Registration
   if (business.nameRequest?.requestActionCd === NrRequestActionCodes.NEW_BUSINESS) {
-    if (regTypes.includes(business.nameRequest?.legalType)) {
-      payload = { filingType: FilingTypes.REGISTRATION, business }
-    } else if (iaTypes.includes(business.nameRequest?.legalType)) {
-      payload = { filingType: FilingTypes.INCORPORATION_APPLICATION, business }
+    if (supportedIaRegTypes.includes(business.nameRequest?.legalType)) {
+      // Determine if it's a registration or incorporation based on the legal type
+      const isRegistrationType = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP].includes(business.nameRequest?.legalType)
+      payload = {
+        filingType: isRegistrationType ? FilingTypes.REGISTRATION : FilingTypes.INCORPORATION_APPLICATION,
+        business
+      }
     }
   } else if (business.nameRequest?.requestActionCd === NrRequestActionCodes.AMALGAMATE) { // If Amalgmation
     if (amalgamationTypes.includes(business.nameRequest?.legalType)) {
@@ -58,14 +69,14 @@ async function createBusinessRecord (business: Business): Promise<string> {
   }
 
   if (payload) {
-    filingResponse = await createNamedBusiness(payload)
+    filingResponse = await createNamedBusiness(payload) as BusinessResponse
   }
 
-  if (filingResponse?.errorMsg) { // TODO: fix ts error
+  if (filingResponse?.errorMsg) {
     emit('unknown-error')
     return ''
   }
-  return filingResponse.filing.business.identifier // TODO: fix ts error
+  return filingResponse?.filing?.business?.identifier || ''
 }
 
 const showAffiliationInvitationNewRequestButton = (item: Business): boolean => {

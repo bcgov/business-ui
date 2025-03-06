@@ -6,13 +6,10 @@ import {
 
 const { t } = useI18n()
 
-// Define eligible corporation types for incorporation
+// Define eligible corporation types for registration
 const ELIGIBLE_CORP_TYPES = [
-  CorpTypes.BENEFIT_COMPANY,
-  CorpTypes.COOP,
-  CorpTypes.BC_CCC,
-  CorpTypes.BC_COMPANY,
-  CorpTypes.BC_ULC_COMPANY
+  CorpTypes.SOLE_PROP,
+  CorpTypes.PARTNERSHIP
 ]
 
 definePageMeta({ order: 0 })
@@ -20,13 +17,13 @@ definePageMeta({ order: 0 })
 const { isLoading, processMagicLink } = useMagicLinkProcessing()
 
 /**
- * Handles the magic link flow for incorporation applications.
+ * Handles the magic link flow for registrations.
  * Processes name request data from URL parameters and creates a new
  * draft filing if one doesn't already exist for this name request.
  */
 onMounted(async () => {
   await processMagicLink({
-    filingType: FilingTypes.INCORPORATION_APPLICATION,
+    filingType: FilingTypes.REGISTRATION,
     eligibleCorpTypes: ELIGIBLE_CORP_TYPES,
     requestActionCode: NrRequestActionCodes.NEW_BUSINESS,
     errorModalTitle: t('error.magicLinkFilingError.title'),
