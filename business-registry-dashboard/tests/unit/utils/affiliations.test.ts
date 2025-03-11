@@ -388,14 +388,14 @@ describe('affiliations utils', () => {
   })
 
   describe('number', () => {
-    it('should return "Pending" for a numbered incorporation application', () => {
+    it('should return empty string for a numbered incorporation application', () => {
       const business: Business = {
         businessIdentifier: 'BC1234567',
         corpType: { code: CorpTypes.INCORPORATION_APPLICATION },
         corpSubType: { code: CorpTypes.BC_COMPANY }
       }
 
-      expect(number(business)).toBe(AffidavitNumberStatus.PENDING)
+      expect(number(business)).toBe('')
     })
 
     it('should return nrNumber if the business is a temporary business', () => {
