@@ -46,7 +46,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   async function removeBusiness (payload: RemoveBusinessPayload) {
     const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
-    // TODO: Add continuation in to the list of filings to remove (for MVP)
     if ([
       CorpTypes.INCORPORATION_APPLICATION,
       CorpTypes.AMALGAMATION_APPLICATION,
@@ -72,17 +71,20 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  /* Check if Business can be deleted safely (i.e. does not have a review record) */
+  /* Check if Business can be deleted safely. */
   function canBusinessBeDeleted (payload: RemoveBusinessPayload) {
-    // For now only including Continuation Ins where only draft records can be deleted
-    if (payload.business.corpType.code === CorpTypes.CONTINUATION_IN &&
-      payload.business?.draftStatus &&
-      payload.business.draftStatus !== EntityStates.DRAFT
-    ) {
-      return false
-    } else {
+    const { draftStatus, corpType } = payload.business
+
+    // Allow deletion if there's no draft status
+    if (!draftStatus) {
       return true
     }
+
+    // Don't allow deletion if:
+    // 1. It's withdrawn, or
+    // 2. It's a continuation in with non-draft status since only draft records can be deleted
+    return draftStatus !== EntityStates.WITHDRAWN &&
+           !(corpType.code === CorpTypes.CONTINUATION_IN && draftStatus !== EntityStates.DRAFT)
   }
 
   function removeInvite (inviteId: number) {
@@ -495,6 +497,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     createAffiliation,
     handleManageBusinessOrNameRequest,
     removeBusiness,
+    canBusinessBeDeleted,
     removeAffiliation,
     getFilings,
     deleteBusinessFiling,
