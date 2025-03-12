@@ -2,8 +2,8 @@ import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
-import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 import { EntityStates } from '@bcrs-shared-components/enums'
+import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 
 let mockAuthenticated = true
 const mockAuthApi = vi.fn()
@@ -982,7 +982,7 @@ describe('useAffiliationsStore', () => {
       const payload = {
         business: {
           corpType: { code: CorpTypes.CONTINUATION_IN },
-          draftStatus:  EntityStates.ACTIVE, // Any status other than DRAFT
+          draftStatus: EntityStates.ACTIVE, // Any status other than DRAFT
           businessIdentifier: 'BC1234567'
         },
         orgIdentifier: 123
