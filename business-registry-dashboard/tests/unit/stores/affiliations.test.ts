@@ -3,6 +3,7 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
+import { EntityStates } from '@bcrs-shared-components/enums'
 
 let mockAuthenticated = true
 const mockAuthApi = vi.fn()
@@ -925,6 +926,98 @@ describe('useAffiliationsStore', () => {
         })
       )
       expect(mockLegalApi).not.toHaveBeenCalled() // should not call deleteBusinessFiling
+    })
+  })
+
+  describe('canBusinessBeDeleted', () => {
+    let affStore: any
+
+    beforeEach(() => {
+      affStore = useAffiliationsStore()
+    })
+
+    it('should return true when draftStatus is undefined', () => {
+      const payload = {
+        business: {
+          corpType: { code: 'ANY_TYPE' },
+          draftStatus: undefined,
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(true)
+    })
+
+    it('should return true when draftStatus is null', () => {
+      const payload = {
+        business: {
+          corpType: { code: 'ANY_TYPE' },
+          draftStatus: null,
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(true)
+    })
+
+    it('should return false when draftStatus is WITHDRAWN', () => {
+      const payload = {
+        business: {
+          corpType: { code: 'ANY_TYPE' },
+          draftStatus: EntityStates.WITHDRAWN,
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(false)
+    })
+
+    it('should return false when corpType is CONTINUATION_IN and draftStatus is not DRAFT', () => {
+      const payload = {
+        business: {
+          corpType: { code: CorpTypes.CONTINUATION_IN },
+          draftStatus:  EntityStates.ACTIVE, // Any status other than DRAFT
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(false)
+    })
+
+    it('should return true when corpType is CONTINUATION_IN and draftStatus is DRAFT', () => {
+      const payload = {
+        business: {
+          corpType: { code: CorpTypes.CONTINUATION_IN },
+          draftStatus: EntityStates.DRAFT,
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(true)
+    })
+
+    it('should return true for other draftStatus values that are not WITHDRAWN', () => {
+      const payload = {
+        business: {
+          corpType: { code: 'ANY_TYPE' },
+          draftStatus: EntityStates.DRAFT,
+          businessIdentifier: 'BC1234567'
+        },
+        orgIdentifier: 123
+      }
+
+      const result = affStore.canBusinessBeDeleted(payload)
+      expect(result).toBe(true)
     })
   })
 

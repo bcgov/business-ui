@@ -497,6 +497,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     createAffiliation,
     handleManageBusinessOrNameRequest,
     removeBusiness,
+    canBusinessBeDeleted,
     removeAffiliation,
     getFilings,
     deleteBusinessFiling,
