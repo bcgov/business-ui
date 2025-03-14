@@ -147,7 +147,7 @@ export default {
   },
   error: {
     generic: {
-      title: "Quelque chose s'est mal passé",
+      title: "Quelque Chose S'est Mal Passé",
       description: "Une erreur s'est produite, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter."
     },
     listNotFound: {
