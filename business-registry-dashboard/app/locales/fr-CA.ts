@@ -117,7 +117,8 @@ export default {
     hideHelp: "Masquer l'Aide",
     tryAgain: 'Essayer à nouveau',
     cancel: 'Annuler',
-    ok: "D'accord"
+    ok: "D'accord",
+    refreshTable: 'Rafraîchir le tableau'
   },
   contactInfo: {
     bcRegGeneral: {
@@ -146,8 +147,14 @@ export default {
   },
   error: {
     generic: {
-      title: "Quelque Chose S'est Mal Passé",
+      title: "Quelque chose s'est mal passé",
       description: "Une erreur s'est produite, veuillez réessayer. Si cette erreur persiste, veuillez nous contacter."
+    },
+    listNotFound: {
+      title: 'Liste non trouvée',
+      description: 'Votre liste n\'a pas pu être chargée. Essayez de rafraîchir le tableau.',
+      stillNotWorking: 'Ça ne fonctionne toujours pas?',
+      contactBCRegistries: 'Contactez BC Registries'
     },
     businessAdd: {
       title: "Error lors de l'ajout de l'Entreprise Existante",

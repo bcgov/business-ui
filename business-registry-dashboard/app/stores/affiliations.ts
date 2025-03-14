@@ -21,7 +21,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     },
     loading: true,
     results: [] as Business[],
-    count: 0
+    count: 0,
+    error: false
   })
 
   const newlyAddedIdentifier = ref<string>('')
@@ -154,6 +155,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     resetAffiliations()
     try {
       affiliations.loading = true
+      affiliations.error = false
+
+      // For testing purposes - force an error
+      throw new Error('Testing error handling')
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
@@ -190,6 +195,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       }
     } catch (error) {
       logFetchError(error, 'Error retrieving businesses')
+      affiliations.error = true
     } finally {
       affiliations.loading = false
     }
@@ -207,6 +213,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     affiliations.loading = false
     affiliations.results = []
     affiliations.count = 0
+    affiliations.error = false
     resetFilters()
   }
 
