@@ -6,11 +6,11 @@
     <ul>
       <li class="text-bcGovColor-midGray">
         {{ $t('contactInfo.bcRegGeneral.tollFree.title') }}
-        <a class="text-blue-500 underline" href="tel:+1-877-370-1033">{{ $t('contactInfo.bcRegGeneral.tollFree.value') }}</a>
+        <a class="text-blue-500 underline" :href="`tel:${$t('contactInfo.bcRegGeneral.tollFree.value')}`">{{ $t('contactInfo.bcRegGeneral.tollFree.value') }}</a>
       </li>
       <li class="text-bcGovColor-midGray">
         {{ $t('contactInfo.bcRegGeneral.victoriaOffice.title') }}
-        <a class="text-blue-500 underline" href="tel:+1-250-370-1033">{{ $t('contactInfo.bcRegGeneral.victoriaOffice.value') }}</a>
+        <a class="text-blue-500 underline" :href="`tel:${$t('contactInfo.bcRegGeneral.victoriaOffice.value')}`">{{ $t('contactInfo.bcRegGeneral.victoriaOffice.value') }}</a>
       </li>
       <li class="text-bcGovColor-midGray">
         {{ $t('contactInfo.bcRegGeneral.email.title') }}
