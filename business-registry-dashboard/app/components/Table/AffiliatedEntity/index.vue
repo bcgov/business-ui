@@ -128,13 +128,18 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
     >
       <!-- Empty state template (Table is empty) -->
       <template #empty-state>
-        <div class="flex flex-col items-center justify-center gap-4 py-14">
+        <div class="flex flex-col items-center justify-center gap-4 py-6">
           <UIcon
+            v-if="!affStore.affiliations.error"
             name="i-heroicons-circle-stack-20-solid"
             class="size-6 text-gray-400"
           />
           <div class="flex flex-col items-center">
-            <p v-if="affStore.affiliations.results.length === 0" class="text-center text-sm text-bcGovColor-darkGray">
+            <TableAffiliatedEntityAffiliationLoadingError
+              v-if="affStore.affiliations.error"
+              @refresh="affStore.loadAffiliations()"
+            />
+            <p v-else-if="affStore.affiliations.results.length === 0" class="text-center text-sm text-bcGovColor-darkGray">
               {{ $t('labels.noAffiliationRecords.line1') }}
               <br>
               {{ $t('labels.noAffiliationRecords.line2') }}

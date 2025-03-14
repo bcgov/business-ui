@@ -117,7 +117,8 @@ export default {
     hideHelp: 'Hide Help',
     tryAgain: 'Try Again',
     cancel: 'Cancel',
-    ok: 'OK'
+    ok: 'OK',
+    refreshTable: 'Refresh Table'
   },
   contactInfo: {
     bcRegGeneral: {
@@ -148,6 +149,12 @@ export default {
     generic: {
       title: 'Something Went Wrong',
       description: 'An error occurred, please try again. If this error persists, please contact us.'
+    },
+    listNotFound: {
+      title: 'List not found',
+      description: 'Your list failed to load. Try refreshing the table.',
+      stillNotWorking: 'Still not working?',
+      contactBCRegistries: 'Contact BC Registries'
     },
     businessAdd: {
       title: 'Error Adding Existing Business',
