@@ -251,7 +251,8 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
   const response = await $fetch(`${legalApiUrl}/businesses?draft=true`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
+      'App-Name': useRuntimeConfig().public.appName
     },
     body: filingBody
   })
@@ -267,7 +268,8 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
   await $fetch(`${authApiUrl}/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
+      'App-Name': useRuntimeConfig().public.appName
     },
     body: { data: { passcodeResetEmail: undefined, resetPasscode: false, logDeleteDraft: true } }
   })
