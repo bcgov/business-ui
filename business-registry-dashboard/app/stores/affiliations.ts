@@ -19,11 +19,37 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       type: '',
       status: ''
     },
+    pagination: {
+      page: 1,
+      limit: 100,
+      sortBy: '',
+      sortDesc: false
+    } as PaginationOptions,
     loading: true,
     results: [] as Business[],
     count: 0,
+    totalResults: 0,
     error: false
   })
+
+  // Pagination limit options
+  const paginationLimitOptions = ref([
+    { label: '50', value: 50 },
+    { label: '100', value: 100 },
+    { label: '500', value: 500 }
+  ])
+
+  // Flag for whether server-side filtering is enabled
+  const enableServerFiltering = computed(() =>
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
+  )
+
+  // Flag for whether pagination is enabled
+  const enablePagination = computed(() =>
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+  )
 
   const newlyAddedIdentifier = ref<string>('')
 
@@ -55,7 +81,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     ].includes(payload.business.corpType.code)) {
       const filingResponse = await getFilings(payload.business.businessIdentifier)
       if (filingResponse) {
-        const filingId = filingResponse.filing?.header?.filingId // TODO: fix typing
+        const filingId = (filingResponse as any).filing?.header?.filingId
         // If there is a filing delete it which will delete the affiliation, else delete the affiliation
         const deleteBusiness = canBusinessBeDeleted(payload)
         if (filingId && deleteBusiness) {
@@ -152,7 +178,14 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function loadAffiliations (): Promise<void> {
-    resetAffiliations()
+    // Only reset if server-side filtering/pagination is disabled
+    const shouldUseServerFeatures = enableServerFiltering.value && enablePagination.value
+    if (!shouldUseServerFeatures) {
+      resetAffiliations()
+    }
+    affiliations.results = []
+    affiliations.count = 0
+
     try {
       affiliations.loading = true
       affiliations.error = false
@@ -166,9 +199,36 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       if (!orgId) { return }
 
-      const response = await $authApi<{ entities: AffiliationResponse[] }>(
-        `/orgs/${orgId}/affiliations?new=true`
-      )
+      // Build the query URL with filters and pagination if enabled
+      let url = `/orgs/${orgId}/affiliations?new=true`
+
+      // Add filters if server-side filtering is enabled
+      if (enableServerFiltering.value) {
+        if (affiliations.filters.businessName) {
+          url += `&name=${encodeURIComponent(affiliations.filters.businessName)}`
+        }
+        if (affiliations.filters.businessNumber) {
+          url += `&identifier=${encodeURIComponent(affiliations.filters.businessNumber)}`
+        }
+        if (affiliations.filters.status) {
+          url += `&status=${encodeURIComponent(affiliations.filters.status)}`
+        }
+        if (affiliations.filters.type) {
+          url += `&type=${encodeURIComponent(affiliations.filters.type)}`
+        }
+      }
+
+      // Add pagination if enabled
+      if (enablePagination.value) {
+        url += `&page=${affiliations.pagination.page}`
+        url += `&limit=${affiliations.pagination.limit}`
+        if (affiliations.pagination.sortBy) {
+          url += `&sortBy=${affiliations.pagination.sortBy}`
+          url += `&sortDesc=${affiliations.pagination.sortDesc}`
+        }
+      }
+
+      const response = await $authApi<{ entities: AffiliationResponse[], totalResults?: number }>(url)
 
       let affiliatedEntities: Business[] = []
 
@@ -189,6 +249,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
         affiliations.results = affiliatedEntities
         affiliations.count = affiliatedEntities.length
+
+        // Set total results if pagination is enabled and the server returns it
+        if (enablePagination.value && response.totalResults) {
+          affiliations.totalResults = response.totalResults
+        } else {
+          affiliations.totalResults = affiliations.count
+        }
+      } else {
+        affiliations.totalResults = 0
       }
     } catch (error) {
       logFetchError(error, 'Error retrieving businesses')
@@ -198,11 +267,30 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  // load new affiliations when user changes accounts
-  watch(
-    [() => accountStore.currentAccount.id],
+  // Watch for changes to account, filters, or pagination with debounce
+  // This prevents multiple rapid successive API calls
+  // For example: when user is typing in the business name filter,
+  // the API is called with the final value after the user has stopped typing
+  watchDebounced(
+    [
+      () => accountStore.currentAccount.id,
+      () => enableServerFiltering.value ? affiliations.filters : null,
+      () => enablePagination.value ? affiliations.pagination : null
+    ],
     async () => {
       await loadAffiliations()
+    },
+    { debounce: 100, deep: true } // 100ms debounce time - wait for all changes to settle before calling API
+  )
+
+  // Separate watch for immediately resetting page when limit changes
+  // This doesn't trigger an API call directly but affects the pagination object
+  // which is picked up by the debounced watcher above
+  watch(
+    () => affiliations.pagination.limit,
+    () => {
+      // Reset to page 1 when limit changes to prevent accessing non-existent pages
+      affiliations.pagination.page = 1
     }
   )
 
@@ -210,6 +298,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     affiliations.loading = false
     affiliations.results = []
     affiliations.count = 0
+    affiliations.totalResults = 0
     affiliations.error = false
     resetFilters()
   }
@@ -283,6 +372,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   const filteredResults = computed(() => {
+    // Skip client-side filtering if server-side filtering is enabled
+    if (enableServerFiltering.value) {
+      return affiliations.results
+    }
+
     let results = affiliations.results
 
     if (affiliations.filters.businessName) {
@@ -313,7 +407,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       })
     }
 
-    // console.log('filtered results: ', results)
     return results
   })
 
@@ -511,6 +604,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     resendAffiliationInvitation,
     deletePendingInvitations,
     newlyAddedIdentifier,
+    paginationLimitOptions,
+    enablePagination,
     $reset
   }
 }

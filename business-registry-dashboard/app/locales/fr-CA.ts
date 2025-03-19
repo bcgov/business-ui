@@ -851,5 +851,9 @@ export default {
         content6: 'Dissoudre votre entreprise.'
       }
     }
+  },
+  pagination: {
+    itemsPerPage: 'Éléments par page',
+    showing: 'Affichage de {start} à {end} sur {total} éléments'
   }
 }

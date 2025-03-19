@@ -3,6 +3,8 @@ export enum LDFlags {
   AffiliationInvitationRequestAccess = 'enable-affiliation-invitation-request-access',
   BannerText = 'banner-text',
   BusSearchLink = 'bus-search-staff-link',
+  EnableAffiliationsServerFiltering = 'enable-affiliations-server-filtering',
+  EnableAffiliationsPagination = 'enable-affiliations-pagination',
   EnableBcCccUlc = 'enable-bc-ccc-ulc',
   EnableBcCccUlcBrd = 'enable-bc-ccc-ulc-brd',
   EnableBusinessNrSearch = 'enable-business-nr-search',
