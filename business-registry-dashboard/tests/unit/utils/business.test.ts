@@ -217,7 +217,7 @@ describe('business utils', () => {
 
       expect(_fetch).toHaveBeenCalledWith(expect.stringContaining('/businesses?draft=true'), expect.objectContaining({
         method: 'POST',
-        headers: { Authorization: 'Bearer 123' },
+        headers: { 'App-Name': 'Business Registry Dashboard', Authorization: 'Bearer 123' },
         body: expect.objectContaining({
           filing: expect.objectContaining({
             amalgamationApplication: expect.objectContaining({
