@@ -41,14 +41,12 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Flag for whether server-side filtering is enabled
   const enableServerFiltering = computed(() =>
-    true
-    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
+    ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
   )
 
   // Flag for whether pagination is enabled
   const enablePagination = computed(() =>
-    true
-    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+    ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
   )
 
   const newlyAddedIdentifier = ref<string>('')
