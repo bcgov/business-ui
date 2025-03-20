@@ -861,5 +861,9 @@ export default {
         content6: 'Dissolve your business.'
       }
     }
+  },
+  pagination: {
+    itemsPerPage: 'Items per page',
+    showing: 'Showing {start} to {end} of {total} items'
   }
 }

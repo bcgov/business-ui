@@ -26,6 +26,13 @@ export interface AffiliationFilter {
   actions?: string
 }
 
+export interface PaginationOptions {
+  page: number,
+  limit: number,
+  sortBy?: string,
+  sortDesc?: boolean
+}
+
 export interface AlternateNames {
   entityType?: string
   identifier?: string
@@ -101,9 +108,11 @@ export interface AffiliationState {
     isActive: boolean
     filterPayload: AffiliationFilter
   }
+  pagination: PaginationOptions
   loading: boolean
   results: Business[]
   count: number
+  totalResults?: number
 }
 
 export interface AffiliationInviteInfo {

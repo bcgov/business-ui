@@ -128,7 +128,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
     >
       <!-- Empty state template (Table is empty) -->
       <template #empty-state>
-        <div class="flex flex-col items-center justify-center gap-4 py-6">
+        <div class="flex flex-col items-center justify-center gap-4 py-14">
           <UIcon
             v-if="!affStore.affiliations.error"
             name="i-heroicons-circle-stack-20-solid"
@@ -416,5 +416,40 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       </template>
       <!-- end table cell slots -->
     </UTable>
+
+    <!-- Pagination controls - only show when enabled and there are results -->
+    <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0">
+      <!-- Divider to separate table from pagination controls -->
+      <hr class="w-full border-t border-bcGovGray-300">
+
+      <div class="flex flex-col items-center justify-between px-3 py-5 sm:flex-row">
+        <div class="flex items-center">
+          <span class="mr-2 text-sm text-bcGovColor-midGray">{{ $t('pagination.itemsPerPage') }}</span>
+          <USelectMenu
+            v-model="affStore.affiliations.pagination.limit"
+            :options="affStore.paginationLimitOptions"
+            option-attribute="label"
+            value-attribute="value"
+            :ui="{ base: 'h-[42px]', trigger: 'flex items-center h-[42px]' }"
+          />
+        </div>
+
+        <div class="flex items-center">
+          <span class="mr-4 text-sm text-bcGovColor-midGray">
+            {{ $t('pagination.showing', {
+              start: ((affStore.affiliations.pagination.page - 1) * affStore.affiliations.pagination.limit) + 1,
+              end: Math.min(affStore.affiliations.pagination.page * affStore.affiliations.pagination.limit, affStore.affiliations.totalResults),
+              total: affStore.affiliations.totalResults
+            }) }}
+          </span>
+          <UPagination
+            v-model="affStore.affiliations.pagination.page"
+            :total="affStore.affiliations.totalResults"
+            :page-count="affStore.affiliations.pagination.limit"
+            :max="6"
+          />
+        </div>
+      </div>
+    </div>
   </SbcPageSectionCard>
 </template>
