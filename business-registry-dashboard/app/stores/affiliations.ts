@@ -41,12 +41,14 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Flag for whether server-side filtering is enabled
   const enableServerFiltering = computed(() =>
-    ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
   )
 
   // Flag for whether pagination is enabled
   const enablePagination = computed(() =>
-    ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
   )
 
   const newlyAddedIdentifier = ref<string>('')
@@ -68,6 +70,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return $legalApi(`/businesses/${businessNumber}/filings/${filingId}`, { method: 'DELETE' })
   }
 
+  // Interface for filing response to fix typing issue
+  interface FilingResponse {
+    filing?: {
+      header?: {
+        filingId?: string
+      }
+    }
+  }
+
   async function removeBusiness (payload: RemoveBusinessPayload) {
     const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
@@ -77,9 +88,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       CorpTypes.REGISTRATION,
       CorpTypes.CONTINUATION_IN
     ].includes(payload.business.corpType.code)) {
-      const filingResponse = await getFilings(payload.business.businessIdentifier)
+      const filingResponse = await getFilings(payload.business.businessIdentifier) as FilingResponse
       if (filingResponse) {
-        const filingId = (filingResponse as any).filing?.header?.filingId
+        const filingId = filingResponse.filing?.header?.filingId
         // If there is a filing delete it which will delete the affiliation, else delete the affiliation
         const deleteBusiness = canBusinessBeDeleted(payload)
         if (filingId && deleteBusiness) {
