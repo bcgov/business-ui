@@ -128,7 +128,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
     >
       <!-- Empty state template (Table is empty) -->
       <template #empty-state>
-        <div class="flex flex-col items-center justify-center gap-4 py-6">
+        <div class="flex flex-col items-center justify-center gap-4 py-14">
           <UIcon
             v-if="!affStore.affiliations.error"
             name="i-heroicons-circle-stack-20-solid"
