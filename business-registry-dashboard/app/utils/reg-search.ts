@@ -14,7 +14,8 @@ export async function regSearch (queryStr: string): Promise<RegSearchResult[]> {
     headers: {
       Authorization: `Bearer ${token}`,
       'x-apikey': config.registriesSearchApiKey as string,
-      'Account-Id': accountStore.currentAccount.id
+      'Account-Id': accountStore.currentAccount.id,
+      'App-Name': useRuntimeConfig().public.appName
     }
   })
 
