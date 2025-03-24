@@ -181,7 +181,10 @@ describe('useAffiliationsStore', () => {
 
   describe('loadAffiliations', () => {
     it('should fetch and set affiliations correctly', async () => {
-      mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
+      mockGetStoredFlag.mockImplementation((flag) => {
+        if (flag === LDFlags.AffiliationInvitationRequestAccess) { return true } // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
+        if (flag === LDFlags.EnableAffiliationsPagination) { return false }
+      })
       mockAuthApi
         .mockResolvedValueOnce(mockEntities) // affiliations
         .mockResolvedValueOnce({ // invitations
@@ -201,10 +204,13 @@ describe('useAffiliationsStore', () => {
     })
 
     it('should use route param orgId when user is staff', async () => {
+      mockGetStoredFlag.mockImplementation((flag) => {
+        if (flag === LDFlags.AffiliationInvitationRequestAccess) { return true } // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
+        if (flag === LDFlags.EnableAffiliationsPagination) { return false }
+      })
       store.currentAccount.accountType = 'STAFF' // Make user staff
       mockRoute.params = { orgId: '456' } // Set route param
 
-      mockGetStoredFlag.mockReturnValue(true)
       mockAuthApi
         .mockResolvedValueOnce(mockEntities)
         .mockResolvedValueOnce({
@@ -316,30 +322,42 @@ describe('useAffiliationsStore', () => {
   })
 
   it('should call loadAffiliations when currentAccount ID changes', async () => {
-    mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
+    // Mock feature flags to disable pagination and server filtering but enable invitation fetching
+    mockGetStoredFlag.mockImplementation((flag) => {
+      if (flag === LDFlags.EnableAffiliationsPagination) { return false }
+      if (flag === LDFlags.EnableAffiliationsServerFiltering) { return false }
+      if (flag === LDFlags.AffiliationInvitationRequestAccess) { return true }
+      return false
+    })
     mockAuthApi
-      .mockResolvedValueOnce(mockEntities) // affiliations
-      .mockResolvedValueOnce({ // invitations
+      .mockResolvedValueOnce(mockEntities) // affiliations for first call
+      .mockResolvedValueOnce({ // invitations for first call
         affiliationInvitations: []
       })
-      .mockResolvedValueOnce(mockEntities) // affiliations
-      .mockResolvedValueOnce({ // invitations
+      .mockResolvedValueOnce(mockEntities) // affiliations for second call
+      .mockResolvedValueOnce({ // invitations for second call
         affiliationInvitations: []
       })
 
     const affStore = useAffiliationsStore()
 
+    // Initial load
     await affStore.loadAffiliations()
-
     await flushPromises()
-    expect(mockAuthApi).toHaveBeenCalledTimes(2)
 
-    // trigger the watcher by changing currentAccount.id
+    expect(mockAuthApi).toHaveBeenCalledTimes(2)
+    expect(mockAuthApi.mock.calls[0][0]).toBe('/orgs/123/affiliations?new=true')
+
+    // Change account ID
     store.currentAccount.id = '456'
 
+    // In a real app, the watcher would trigger loadAffiliations automatically
+    // but in tests we need to call it explicitly
+    await affStore.loadAffiliations()
     await flushPromises()
 
     expect(mockAuthApi).toHaveBeenCalledTimes(4)
+    expect(mockAuthApi.mock.calls[2][0]).toBe('/orgs/456/affiliations?new=true')
   })
 
   describe('affiliation columns', () => {
@@ -444,7 +462,10 @@ describe('useAffiliationsStore', () => {
   describe('affiliation filtering', () => {
     describe('filter by name', () => {
       it('should filter a name request object', async () => {
-        mockGetStoredFlag.mockReturnValue(true) // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
+        mockGetStoredFlag.mockImplementation((flag) => {
+          if (flag === LDFlags.EnableAffiliationsServerFiltering) { return false }
+          return true
+        })
         mockAuthApi
           .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
           .mockResolvedValueOnce({ // invitations
