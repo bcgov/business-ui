@@ -197,6 +197,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       affiliations.loading = true
       affiliations.error = false
 
+      throw new Error('test')
+
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
       // Use route param if staff, otherwise use current account
