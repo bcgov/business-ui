@@ -71,7 +71,6 @@ async function createBusinessRecord (business: Business): Promise<string> {
 
   if (payload) {
     try {
-      throw new Error('Test error')
       filingResponse = await createNamedBusiness(payload) as BusinessResponse
       if (filingResponse?.errorMsg) {
         // Handle explicit error message from API response and prevent navigation
