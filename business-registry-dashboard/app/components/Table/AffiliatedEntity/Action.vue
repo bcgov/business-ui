@@ -74,7 +74,7 @@ async function createBusinessRecord (business: Business): Promise<string> {
       filingResponse = await createNamedBusiness(payload) as BusinessResponse
       if (filingResponse?.errorMsg) {
         // Handle explicit error message from API response and prevent navigation
-        emit('name-request-action-error')
+        emit('unknown-error')
         return ''
       }
       return filingResponse?.filing?.business?.identifier || ''
