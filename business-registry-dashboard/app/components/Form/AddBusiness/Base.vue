@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AccordionItem } from '#ui/types'
 import { z } from 'zod'
+import type { AccordionItem } from '#ui/types'
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
@@ -18,11 +18,11 @@ const props = defineProps<{
     isFirm: boolean
     isCorporation: boolean
     isBenefit: boolean
-    isCorpOrBenOrCoop: boolean
     isCoop: boolean
     name: string
     identifier: string
   }
+  isCorpOrBenOrCoop: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,7 +37,8 @@ const loading = ref<boolean>(false)
 const formState = reactive<{
   partner: { name: string | undefined, certify: boolean | undefined },
   passcode: string | undefined,
-  delegation: { account: { name: string, branchName?: string, uuid: string } | undefined, message: string | undefined }
+  delegation: { account: { name: string, branchName?: string, uuid: string } | undefined, message: string | undefined },
+  options: number
 }>({
   partner: {
     name: undefined,
@@ -47,12 +48,14 @@ const formState = reactive<{
   delegation: {
     account: undefined,
     message: undefined
-  }
+  },
+  options: 0
 })
 
 const openAuthOption = computed<AccordionItem | null>(() => {
   const buttonRefs = accordianRef.value?.buttonRefs
   if (buttonRefs && buttonRefs.length > 0) {
+    formState.options = buttonRefs.length
     const openIndex = buttonRefs.findIndex((item: { open: boolean, close: any }) => item.open === true)
     return props.authOptions[openIndex] ?? null
   } else {
@@ -212,6 +215,7 @@ watch(openAuthOption, () => {
   formState.delegation.account = undefined
   formState.partner.name = undefined
   formState.partner.certify = undefined
+  formState.options = 0
 })
 </script>
 <template>
@@ -225,7 +229,9 @@ watch(openAuthOption, () => {
   >
     <fieldset class="space-y-4">
       <legend class="text-bcGovColor-midGray">
-        {{ $t('form.manageBusiness.legend') }}
+        {{ formState.options >= 2
+          ? $t('form.manageBusiness.legendMultiple')
+          : $t('form.manageBusiness.legend') }}
       </legend>
 
       <UAccordion
@@ -316,24 +322,39 @@ watch(openAuthOption, () => {
 
         <!-- email option slot -->
         <template #email-option>
-          <div data-testid="formgroup-email">
+          <div data-testid="formgroup-email" class="text-base text-bcGovColor-midGray">
             <div>
-              {{ businessDetails.isCorpOrBenOrCoop
+              {{ props.isCorpOrBenOrCoop
                 ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
                 : businessDetails.isFirm
                   ? $t('form.manageBusiness.authOption.email.sentTo.firm')
                   : $t('form.manageBusiness.authOption.email.sentTo.default') }}
             </div>
+            <br>
             <div><b>{{ contactEmail }}</b></div>
+            <br>
             <div class="mb-4 mr-1 mt-1">
               {{ $t('form.manageBusiness.authOption.email.instructions') }}
             </div>
+            <span v-if="props.isCorpOrBenOrCoop">
+              {{ $t('form.manageBusiness.authOption.email.update') }}
+              <a
+                href=" "
+                target="_blank"
+                class="text-blue-500 underline"
+              >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
+              </a>
+              <UIcon
+                name="i-mdi-open-in-new"
+                class="mr-2 size-5 text-bcGovColor-activeBlue"
+              />
+            </span>
           </div>
         </template>
 
         <!-- delegation option slot -->
         <template #delegation-option>
-          <div class="-mt-4 space-y-4 pb-6">
+          <div class="-mt-4 space-y-4 pb-6 text-base">
             <UFormGroup
               data-testid="formgroup-delegation-account"
               name="delegation.account"
@@ -370,7 +391,6 @@ watch(openAuthOption, () => {
                 </template>
               </USelectMenu>
             </UFormGroup>
-
             <UFormGroup
               data-testid="formgroup-delegation-message"
               name="delegation.message"
@@ -405,21 +425,28 @@ watch(openAuthOption, () => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="ml-auto mt-auto flex justify-end gap-2 pt-4">
-      <UButton
-        :label="$t('btn.cancel')"
-        variant="outline"
-        class="px-5"
-        :ui="{ base: 'h-11 rounded' }"
-        @click="brdModal.close()"
-      />
-      <UButton
-        :label="$t('form.manageBusiness.submitBtn')"
-        type="submit"
-        class="px-5"
-        :loading
-        :ui="{ base: 'h-11 rounded' }"
-      />
+    <div class="grid auto-cols-auto">
+      <div v-if="props.isCorpOrBenOrCoop" class="grid-flow-col place-content-start justify-start">
+        <HelpBusinessContact />
+      </div>
+      <div class="grid grid-rows-subgrid">
+        <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
+          <UButton
+            :label="$t('btn.cancel')"
+            variant="outline"
+            class="m-px px-5"
+            :ui="{ base: 'h-11 rounded' }"
+            @click="brdModal.close()"
+          />
+          <UButton
+            :label="$t('form.manageBusiness.submitBtn')"
+            type="submit"
+            class="m-px px-5"
+            :loading
+            :ui="{ base: 'h-11 rounded' }"
+          />
+        </div>
+      </div>
     </div>
   </UForm>
 </template>

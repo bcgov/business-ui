@@ -13,7 +13,6 @@ const testProps: any = {
     isFirm: false,
     isCorporation: false,
     isBenefit: false,
-    isCorpOrBenOrCoop: false,
     isCoop: false,
     name: 'Business Name',
     identifier: '1234567890'
@@ -359,8 +358,9 @@ describe('<FormAddBusinessBase />', () => {
           authOptions: [{ label: 'Email Button Label', slot: 'email-option' }],
           businessDetails: {
             ...testProps.businessDetails,
-            isCorpOrBenOrCoop: true
-          }
+            isCorp: true
+          },
+          isCorpOrBenOrCoop: true
         }
         wrapper = await mountComp(props)
 

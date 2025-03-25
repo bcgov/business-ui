@@ -17,29 +17,44 @@ const hasBusinessAuthentication = ref(false)
 const contactEmail = ref('')
 const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
 const formAddBusinessRef = ref<InstanceType<typeof FormAddBusiness> | null>(null)
+const includedBCCorpTypes: string[] = [
+  CorpTypes.BC_CCC,
+  CorpTypes.BC_COMPANY,
+  CorpTypes.BC_ULC_COMPANY,
+  CorpTypes.CONTINUE_IN,
+  CorpTypes.CCC_CONTINUE_IN,
+  CorpTypes.ULC_CONTINUE_IN
+]
+const includedBCFirmTypes: string [] = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
+const includedBenTypes: string [] = [CorpTypes.BENEFIT_COMPANY, CorpTypes.BEN_CONTINUE_IN]
 
 const businessDetails = computed(() => ({
-  isFirm: props.business.legalType === CorpTypes.SOLE_PROP || props.business.legalType === CorpTypes.PARTNERSHIP,
-  isCorporation: props.business.legalType === CorpTypes.BC_COMPANY,
-  isBenefit: props.business.legalType === CorpTypes.BENEFIT_COMPANY,
-  isCorpOrBenOrCoop: (props.business.legalType === CorpTypes.BC_COMPANY || props.business.legalType === CorpTypes.BENEFIT_COMPANY || props.business.legalType === CorpTypes.COOP) && contactEmail.value !== '',
-  isCoop: props.business.identifier.toUpperCase().startsWith('CP'),
+  isFirm: includedBCFirmTypes.includes(props.business.legalType),
+  isCorporation: includedBCCorpTypes.includes(props.business.legalType),
+  isBenefit: includedBenTypes.includes(props.business.legalType),
+  isCoop: props.business.legalType === CorpTypes.COOP,
   name: props.business.name,
   identifier: props.business.identifier
 }))
 
+const isCorpOrBenOrCoop = computed(() => {
+  return (businessDetails.value.isCorporation ||
+    businessDetails.value.isBenefit ||
+    businessDetails.value.isCoop) &&
+    contactEmail.value !== ''
+})
+
 const showEmailOption = computed(() => {
-  return (businessDetails.value.isCorpOrBenOrCoop || businessDetails.value.isFirm) && contactEmail.value !== ''
+  return isCorpOrBenOrCoop.value || (businessDetails.value.isFirm && contactEmail.value !== '')
 })
 
 const showPasscodeOption = computed(() => {
-  const allowableBusinessPasscodeTypes: string = ldStore.getStoredFlag(LDFlags.AllowableBusinessPasscodeTypes) || 'BC,SP,GP'
+  const allowableBusinessPasscodeTypes: string = ldStore.getStoredFlag(LDFlags.AllowableBusinessPasscodeTypes)
   return allowableBusinessPasscodeTypes.includes(props.business.legalType) && hasBusinessAuthentication.value && !businessDetails.value.isFirm
 })
 
 const authOptions = computed<AccordionItem[]>(() => {
   const options: AccordionItem[] = []
-
   if (showPasscodeOption.value) {
     options.push({
       label: (businessDetails.value.isCoop || businessDetails.value.isBenefit)
@@ -58,9 +73,9 @@ const authOptions = computed<AccordionItem[]>(() => {
 
   if (showEmailOption.value) {
     options.push({
-      label: businessDetails.value.isCorpOrBenOrCoop
+      label: isCorpOrBenOrCoop.value
         ? t('form.manageBusiness.authOption.email.accordianLabel.corpOrBenOrCoop')
-        : businessDetails.value.isFirm
+        : businessDetails.value.isFirm && contactEmail.value !== ''
           ? t('form.manageBusiness.authOption.email.accordianLabel.firm')
           : t('form.manageBusiness.authOption.email.accordianLabel.default'),
       slot: 'email-option'
@@ -139,15 +154,34 @@ onMounted(async () => {
         class="flex flex-col gap-4"
       >
         <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p>
-        <p>{{ $t('form.manageBusiness.missingInfo.p2') }}</p>
-
-        <BCRegContactInfo />
-
-        <UButton
-          :label="$t('btn.close')"
-          class="ml-auto"
-          @click="brdModal.close()"
-        />
+        <p>
+          {{ $t('form.manageBusiness.missingInfo.fragmentPrt1') }}
+          <a
+            href=" "
+            target="_blank"
+            class="text-blue-500 underline"
+          >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
+          </a>
+          <UIcon
+            name="i-mdi-open-in-new"
+            class="mr-2 size-5 text-bcGovColor-activeBlue"
+          />
+          {{ $t('form.manageBusiness.missingInfo.fragmentPrt3') }}
+        </p>
+        <div class="grid auto-cols-auto">
+          <div class="grid-flow-col place-content-start justify-start">
+            <HelpBusinessContact />
+          </div>
+        </div>
+        <div class="grid grid-rows-subgrid">
+          <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
+            <UButton
+              :label="$t('btn.close')"
+              class="ml-auto"
+              @click="brdModal.close()"
+            />
+          </div>
+        </div>
       </div>
 
       <FormAddBusiness
@@ -158,6 +192,7 @@ onMounted(async () => {
         :identifier="business.identifier"
         :accounts="affiliatedAccounts"
         :business-details="businessDetails"
+        :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
       />
     </div>
   </ModalBase>
