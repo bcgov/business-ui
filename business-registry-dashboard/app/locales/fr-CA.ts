@@ -167,6 +167,10 @@ export default {
       title: "Error lors de l'ajout de l'Entreprise Existante",
       description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
     },
+    nameRequestAction: {
+      title: "Erreur lors du Traitement de l'Action de Demande de Nom",
+      description: "Une erreur s'est produite lors du traitement de l'action de demande de nom. Veuillez réessayer."
+    },
     invalidFilingApplication: {
       title: '{type} Invalide',
       description: 'Vous ne pouvez pas ouvrir cette application car la Demande de Nom associée a expiré. Veuillez soumettre une nouvelle Demande de Nom et une {type}.'

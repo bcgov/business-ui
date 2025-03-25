@@ -31,6 +31,16 @@ export const useBrdModals = () => {
     })
   }
 
+  function nameRequestActionError () {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.nameRequestAction.title'),
+        description: t('error.nameRequestAction.description')
+      },
+      actions: [{ label: t('btn.close'), handler: () => close() }]
+    })
+  }
+
   function openMagicLinkModal (title: string, description: string, description2?: string) {
     modal.open(ModalBase, {
       error: {
@@ -98,6 +108,7 @@ export const useBrdModals = () => {
     openManageNameRequest,
     openManageNRError,
     openBusinessAddError,
+    nameRequestActionError,
     openBusinessUnavailableError,
     openInvalidFilingApplication,
     openBusinessRemovalConfirmation,

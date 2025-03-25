@@ -61,7 +61,9 @@ export function useAffiliationNavigation () {
   async function goToRegister (item: Business, cb: (item: Business) => Promise<string>) {
     if (isModernizedEntity(item)) {
       const businessIdentifier = await cb(item)
-      goToDashboard(businessIdentifier)
+      if (businessIdentifier) {
+        goToDashboard(businessIdentifier)
+      }
     } else if (isSocieties(item)) {
       goToSocieties()
     } else if (isOtherEntities(item)) {
@@ -74,7 +76,9 @@ export function useAffiliationNavigation () {
   async function goToAmalgamate (item: Business, cb: (item: Business) => Promise<string>) {
     if (isSupportedAmalgamationEntities(item)) {
       const businessIdentifier = await cb(item)
-      goToDashboard(businessIdentifier)
+      if (businessIdentifier) {
+        goToDashboard(businessIdentifier)
+      }
     } else {
       goToCorpOnline()
     }
@@ -83,7 +87,9 @@ export function useAffiliationNavigation () {
   async function goToContinuationIn (item: Business, cb: (item: Business) => Promise<string>) {
     if (isSupportedContinuationInEntities(item)) {
       const businessIdentifier = await cb(item)
-      goToDashboard(businessIdentifier)
+      if (businessIdentifier) {
+        goToDashboard(businessIdentifier)
+      }
     } else {
       goToCorpOnline()
     }

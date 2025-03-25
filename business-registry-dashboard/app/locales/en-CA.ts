@@ -167,6 +167,10 @@ export default {
       title: 'Error Adding Existing Business',
       description: 'An error occurred adding your business. Please try again.'
     },
+    nameRequestAction: {
+      title: 'Error Processing Name Request Action',
+      description: 'An error occurred processing the name request action. Please try again.'
+    },
     businessUnavailable: {
       changeName: {
         title: 'Business Unavailable',
