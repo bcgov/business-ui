@@ -354,11 +354,10 @@ watch(openAuthOption, () => {
 
         <!-- delegation option slot -->
         <template #delegation-option>
-          <div class="-mt-4 space-y-4 pb-6 text-base">
+          <div class="-mt-4 space-y-4 py-6 text-base">
             <UFormGroup
               data-testid="formgroup-delegation-account"
               name="delegation.account"
-              :label="t('form.manageBusiness.authOption.delegation.fields.account.label')"
               :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
             >
               <USelectMenu
@@ -394,8 +393,7 @@ watch(openAuthOption, () => {
             <UFormGroup
               data-testid="formgroup-delegation-message"
               name="delegation.message"
-              :label="$t('form.manageBusiness.authOption.delegation.fields.message.label')"
-              :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
+              :ui="{ label: { base: 'block py-3 font-normal text-gray-700 dark:text-gray-200' } }"
             >
               <UTextarea
                 v-model.trim="formState.delegation.message"
@@ -405,11 +403,12 @@ watch(openAuthOption, () => {
                   placeholder: 'placeholder-gray-700',
                   color: {
                     white: {
-                      outline: 'shadow-sm bg-gray-100 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
+                      outline: 'shadow-sm bg-gray-100 text-gray-900 pt-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
                     }}
                 }"
               />
             </UFormGroup>
+            <span class="px-3 py-6 text-xs font-normal text-gray-700 dark:text-gray-200">{{ $t('form.manageBusiness.authOption.delegation.fields.message.label') }}</span>
           </div>
         </template>
       </UAccordion>

@@ -143,7 +143,7 @@ export default {
     bcRegModal: {
       title: 'If you need help managing a B.C. Business, contact the Business Registry Help Desk:',
       tollFree: {
-        title: 'Canada and U.S Toll Free:'
+        title: 'Canada and U.S. Toll Free:'
       }
     }
   },

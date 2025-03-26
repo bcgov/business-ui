@@ -17,7 +17,7 @@ const hasBusinessAuthentication = ref(false)
 const contactEmail = ref('')
 const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
 const formAddBusinessRef = ref<InstanceType<typeof FormAddBusiness> | null>(null)
-const includedBCCorpTypes: string[] = [
+const includedCorpTypes: string[] = [
   CorpTypes.BC_CCC,
   CorpTypes.BC_COMPANY,
   CorpTypes.BC_ULC_COMPANY,
@@ -25,12 +25,12 @@ const includedBCCorpTypes: string[] = [
   CorpTypes.CCC_CONTINUE_IN,
   CorpTypes.ULC_CONTINUE_IN
 ]
-const includedBCFirmTypes: string [] = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
+const includedFirmTypes: string [] = [CorpTypes.SOLE_PROP, CorpTypes.PARTNERSHIP]
 const includedBenTypes: string [] = [CorpTypes.BENEFIT_COMPANY, CorpTypes.BEN_CONTINUE_IN]
 
 const businessDetails = computed(() => ({
-  isFirm: includedBCFirmTypes.includes(props.business.legalType),
-  isCorporation: includedBCCorpTypes.includes(props.business.legalType),
+  isFirm: includedFirmTypes.includes(props.business.legalType),
+  isCorporation: includedCorpTypes.includes(props.business.legalType),
   isBenefit: includedBenTypes.includes(props.business.legalType),
   isCoop: props.business.legalType === CorpTypes.COOP,
   name: props.business.name,
@@ -151,10 +151,10 @@ onMounted(async () => {
 
       <div
         v-else-if="authOptions.length === 0"
-        class="flex flex-col gap-4"
+        class="flex flex-col gap-4  border-t border-gray-300 pt-3"
       >
         <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p>
-        <p>
+        <p class="border-b border-gray-300 pb-3">
           {{ $t('form.manageBusiness.missingInfo.fragmentPrt1') }}
           <a
             href=" "
