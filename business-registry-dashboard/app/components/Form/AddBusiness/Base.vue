@@ -429,18 +429,18 @@ watch(openAuthOption, () => {
         <HelpBusinessContact />
       </div>
       <div class="grid grid-rows-subgrid">
-        <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
+        <div class="col-span-full -mt-6 max-w-xl place-content-end justify-end place-self-end">
           <UButton
             :label="$t('btn.cancel')"
             variant="outline"
-            class="m-px px-5"
+            class="mr-5 px-5"
             :ui="{ base: 'h-11 rounded' }"
             @click="brdModal.close()"
           />
           <UButton
             :label="$t('form.manageBusiness.submitBtn')"
             type="submit"
-            class="m-px px-5"
+            class="px-5"
             :loading
             :ui="{ base: 'h-11 rounded' }"
           />

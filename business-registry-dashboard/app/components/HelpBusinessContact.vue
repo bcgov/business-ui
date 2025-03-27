@@ -17,7 +17,7 @@ const toggleHelpText = () => {
     :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show')"
     variant="link"
     icon="i-mdi-help-circle-outline"
-    class="-mt-1 self-start text-sm"
+    class="mt-2 self-start text-sm"
     :aria-expanded="showHelpText"
     :padded="false"
     aria-controls="help-text-content"
@@ -30,11 +30,11 @@ const toggleHelpText = () => {
     role="region"
     class="mx-auto max-w-bcGovLg overflow-hidden text-sm transition-all duration-500 ease-in-out"
     :class="{
-      '-mb-3 max-h-0 opacity-0': !showHelpText,
-      '-mb-0 max-h-[10000px] py-5 opacity-100': showHelpText,
+      '-mb-2 max-h-0 opacity-0': !showHelpText,
+      'mb-8 max-h-[10000px] py-5 opacity-100': showHelpText,
     }"
   >
-    <div class="flex justify-start gap-0">
+    <div class="flex justify-start ">
       <div class="flex-col justify-start pb-5 pl-5 text-sm text-bcGovColor-midGray ">
         {{ $t('contactInfo.bcRegModal.title') }}
       </div>
