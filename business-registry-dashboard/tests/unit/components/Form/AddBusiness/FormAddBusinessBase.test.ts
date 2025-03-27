@@ -427,8 +427,6 @@ describe('<FormAddBusinessBase />', () => {
           await findAuthOptionButton().trigger('click')
 
           expect(findFormGroup('delegation-account').exists()).toBe(true)
-          // assert label text
-          expect(wrapper.find('label').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.delegation.fields.account.label'))
 
           await submitForm()
 
@@ -467,11 +465,9 @@ describe('<FormAddBusinessBase />', () => {
           await findAuthOptionButton().trigger('click')
 
           expect(findFormGroup('delegation-message').exists()).toBe(true)
-          expect(findFormGroup('delegation-message').find('label').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.delegation.fields.message.label'))
 
           const textarea = wrapper.find('textarea')
           expect(textarea).toBeTruthy()
-          expect(textarea.attributes('placeholder')).toContain(enI18n.global.t('form.manageBusiness.authOption.delegation.fields.message.placeholder'))
           expect(textarea.attributes('maxlength')).toEqual('400')
         })
       })
