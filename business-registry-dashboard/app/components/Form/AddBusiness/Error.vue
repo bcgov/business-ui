@@ -10,7 +10,6 @@ const props = defineProps<{
     isFirm: boolean
     isCorporation: boolean
     isBenefit: boolean
-    isCorpOrBenOrCoop: boolean
     isCoop: boolean
     name: string
     identifier: string

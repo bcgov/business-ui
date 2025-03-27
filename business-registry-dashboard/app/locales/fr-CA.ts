@@ -97,6 +97,7 @@ export default {
     downloadReport: 'Télécharger le Rapport',
     info: {
       show: 'Afficher les informations',
+      show2: "Aide à la gestion d'une entreprise en Colombie-Britannique",
       hide: 'Masquer les informations'
     },
     colsToShow: {
@@ -138,6 +139,12 @@ export default {
       hours: {
         title: "Heures d'Ouverture:",
         value: 'Du Lundi au Vendredi, 8:30am - 4:30pm heure du Pacifique'
+      }
+    },
+    bcRegModal: {
+      title: "Si vous avez besoin d’aide pour gérer une entreprise en Colombie-Britannique, Entreprises, contactez le service d'assistance du registre des entreprises :",
+      tollFree: {
+        title: 'Canada et États-Unis sans frais :'
       }
     }
   },
@@ -257,9 +264,12 @@ export default {
       businessNumber: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
       missingInfo: {
         p1: 'Certaines informations requises pour cette entreprise sont manquantes.',
-        p2: "L'entreprise n'a pas de mot de passe / code d'accès ou d'adresse e-mail enregistrée. Veuillez nous contacter pour obtenir de l'aide :"
+        fragmentPrt1: "L'entreprise n'a pas d'adresse courriel dans ses dossiers. Vous pouvez télécharger et soumettre ceci",
+        fragmentPrt2: 'formulaire',
+        fragmentPrt3: 'pour ajouter une adresse courriel à cette entreprise'
       },
-      legend: "Vous devez être autorisé à gérer cette entreprise. Vous pouvez être autorisé de l'une des manières suivantes :",
+      legend: 'Vous devez être autorisé à gérer cette entreprise.',
+      legendMultiple: "Vous devez être autorisé à gérer cette entreprise. Vous pouvez être autorisé de l'une des façons suivantes:",
       authOption: {
         passcode: {
           accordianLabel: {
@@ -318,18 +328,19 @@ export default {
           accordianLabel: {
             default: "Confirmer l'autorisation en utilisant votre adresse e-mail",
             firm: "Confirmer l'autorisation en utilisant l'adresse e-mail de votre entreprise",
-            corpOrBenOrCoop: "Confirmer l'autorisation en utilisant l'adresse e-mail de votre bureau enregistré (si vous avez oublié ou n'avez pas de code d'accès)"
+            corpOrBenOrCoop: "Confirmez la permission en utilisant l'adresse courriel de votre siège social"
           },
           sentTo: {
             default: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
             firm: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
             corpOrBenOrCoop: "Un e-mail sera envoyé à l'adresse e-mail de contact du bureau enregistré de l'entreprise :"
           },
-          instructions: "Pour confirmer votre accès, cliquez sur le lien dans l'e-mail. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes."
+          instructions: "Pour confirmer votre accès, cliquez sur le lien dans l'e-mail. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes.",
+          update: 'Pour mettre à jour ce courriel, téléchargez et soumettez ceci'
         },
         delegation: {
           accordianLabel: {
-            default: "Demander une autorisation à un compte qui gère actuellement l'entreprise"
+            default: "Demander l'autorisation d'un compte gérant l'entreprise"
           },
           fields: {
             account: {
@@ -342,7 +353,7 @@ export default {
             },
             message: {
               label: "Vous pouvez ajouter un message qui sera inclus dans votre demande d'autorisation.",
-              placeholder: "Message supplémentaire pour la demande d'accès"
+              placeholder: 'Message supplémentaire (facultatif)'
             }
           }
         }

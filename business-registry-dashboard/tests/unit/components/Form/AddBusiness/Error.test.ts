@@ -9,7 +9,6 @@ const testProps: any = {
     isFirm: false,
     isCorporation: false,
     isBenefit: false,
-    isCorpOrBenOrCoop: false,
     isCoop: false,
     name: 'Business Name',
     identifier: '1234567890'

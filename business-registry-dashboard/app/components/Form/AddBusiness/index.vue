@@ -12,9 +12,9 @@ defineProps<{
     isFirm: boolean
     isCorporation: boolean
     isBenefit: boolean
-    isCorpOrBenOrCoop: boolean
     isCoop: boolean
   }
+  isCorpOrBenOrCoop: boolean
 }>()
 
 type Form = typeof FormAddBusinessBase
@@ -53,6 +53,7 @@ defineExpose({
       :identifier
       :accounts
       :business-details="businessDetails"
+      :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
       @retry="currentState = 'FormAddBusinessBase'"
       @business-error="handleError"
       @email-success="currentState = 'FormAddBusinessEmailAuthSent'"

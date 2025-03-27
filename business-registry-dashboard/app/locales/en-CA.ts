@@ -109,6 +109,7 @@ export default {
     },
     busStartHelp: {
       show: 'Help with Starting and Managing a Business',
+      show2: 'Help with Managing a B.C. Business',
       hide: 'Hide Help'
     },
     moreOptions: 'More Options',
@@ -138,6 +139,12 @@ export default {
       hours: {
         title: 'Hours of Operation:',
         value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
+      }
+    },
+    bcRegModal: {
+      title: 'If you need help managing a B.C. Business, contact the Business Registry Help Desk:',
+      tollFree: {
+        title: 'Canada and U.S. Toll Free:'
       }
     }
   },
@@ -267,9 +274,12 @@ export default {
       businessNumber: '{boldStart}Incorporation Number:{boldEnd} {number}',
       missingInfo: {
         p1: 'Some required information for this business is missing.',
-        p2: "The business doesn't have a password / passcode or email on record. Please contact us for help:"
+        fragmentPrt1: 'The business doesn\'t have an email on file. You can download and submit this',
+        fragmentPrt2: 'form',
+        fragmentPrt3: 'to add an email to this business'
       },
-      legend: 'You must be authorized to manage this business. You can be authorized in one of the following ways:',
+      legend: 'You must be authorized to manage this business.',
+      legendMultiple: 'You must be authorized to manage this business. You can be authorized in one of the following ways:',
       authOption: {
         passcode: {
           accordianLabel: {
@@ -328,18 +338,19 @@ export default {
           accordianLabel: {
             default: 'Confirm authorization using your email address',
             firm: 'Confirm authorization using your business email address',
-            corpOrBenOrCoop: "Confirm authorization using your registered office email address (If you forgot or don't have a business passcode)"
+            corpOrBenOrCoop: 'Confirm authorization using your registered office email address'
           },
           sentTo: {
             default: 'An email will be sent to the contact email of the business:',
             firm: 'An email will be sent to the business contact email of the business:',
             corpOrBenOrCoop: 'An email will be sent to the registered office contact email of the business:'
           },
-          instructions: 'To confirm your access, please click on the link in the email. This will add the business to your Business Registry List. The link is valid for 15 minutes.'
+          instructions: 'Click on the link in the email to add this business. The link will valid for 15 minutes.',
+          update: 'To update this email, download and submit this'
         },
         delegation: {
           accordianLabel: {
-            default: 'Request authorization from an account currently managing the business'
+            default: 'Request authorization from an account managing this business'
           },
           fields: {
             account: {
@@ -352,7 +363,7 @@ export default {
             },
             message: {
               label: 'You can add a message that will be included as part of your authorization request.',
-              placeholder: 'Request access additional message'
+              placeholder: 'Additional Message (Optional)'
             }
           }
         }
