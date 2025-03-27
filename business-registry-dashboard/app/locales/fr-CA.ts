@@ -97,6 +97,7 @@ export default {
     downloadReport: 'Télécharger le Rapport',
     info: {
       show: 'Afficher les informations',
+      show2: "Aide à la gestion d'une entreprise en Colombie-Britannique",
       hide: 'Masquer les informations'
     },
     colsToShow: {
@@ -352,7 +353,7 @@ export default {
             },
             message: {
               label: "Vous pouvez ajouter un message qui sera inclus dans votre demande d'autorisation.",
-              placeholder: "Message supplémentaire pour la demande d'accès"
+              placeholder: 'Message supplémentaire (facultatif)'
             }
           }
         }

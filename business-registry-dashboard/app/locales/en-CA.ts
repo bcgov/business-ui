@@ -109,6 +109,7 @@ export default {
     },
     busStartHelp: {
       show: 'Help with Starting and Managing a Business',
+      show2: 'Help with Managing a B.C. Business',
       hide: 'Hide Help'
     },
     moreOptions: 'More Options',
@@ -362,7 +363,7 @@ export default {
             },
             message: {
               label: 'You can add a message that will be included as part of your authorization request.',
-              placeholder: 'Request access additional message'
+              placeholder: 'Additional Message (Optional)'
             }
           }
         }

@@ -372,7 +372,7 @@ watch(openAuthOption, () => {
                   <UButton
                     data-testid="delegation-select-menu"
                     variant="select_menu_trigger"
-                    class="flex-1 justify-between text-gray-700"
+                    class="mb-6 flex-1 justify-between py-7 text-gray-700"
                     :aria-label="t('form.manageBusiness.authOption.delegation.fields.account.arialabel', { account: formState.delegation.account?.name ?? $t('words.none') })"
                   >
                     {{ delegationLabel }}
@@ -393,7 +393,7 @@ watch(openAuthOption, () => {
             <UFormGroup
               data-testid="formgroup-delegation-message"
               name="delegation.message"
-              :ui="{ label: { base: 'block py-3 font-normal text-gray-700 dark:text-gray-200' } }"
+              :ui="{ label: { base: 'block py-5 font-normal text-gray-700 dark:text-gray-200' } }"
             >
               <UTextarea
                 v-model.trim="formState.delegation.message"
@@ -424,12 +424,12 @@ watch(openAuthOption, () => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="grid auto-cols-auto">
+    <div class="grid auto-cols-auto pt-8">
       <div v-if="props.isCorpOrBenOrCoop" class="grid-flow-col place-content-start justify-start">
         <HelpBusinessContact />
       </div>
-      <div class="grid grid-rows-subgrid">
-        <div class="col-span-full -mt-6 max-w-xl place-content-end justify-end place-self-end">
+      <div class="grid grid-rows-subgrid ">
+        <div class="xs:mt-6 col-span-full  max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
           <UButton
             :label="$t('btn.cancel')"
             variant="outline"

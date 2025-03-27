@@ -14,7 +14,7 @@ const toggleHelpText = () => {
 <template>
   <UButton
     ref="showHelpTextBtnRef"
-    :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show')"
+    :label="showHelpText ? $t('btn.busStartHelp.hide') : $t('btn.busStartHelp.show2')"
     variant="link"
     icon="i-mdi-help-circle-outline"
     class="mt-2 self-start text-sm"
@@ -30,7 +30,7 @@ const toggleHelpText = () => {
     role="region"
     class="mx-auto max-w-bcGovLg overflow-hidden text-sm transition-all duration-500 ease-in-out"
     :class="{
-      '-mb-2 max-h-0 opacity-0': !showHelpText,
+      'xs:mb-4 max-h-0 opacity-0 sm:mb-4 md:-mb-2': !showHelpText,
       'mb-8 max-h-[10000px] py-5 opacity-100': showHelpText,
     }"
   >
