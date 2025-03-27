@@ -1,0 +1,27 @@
+{
+  "name": "person-roles",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-check": "nuxt build",
+    "build": "nuxt generate",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "@sbc-connect/nuxt-core-layer-beta": "^0.0.5",
+    "nuxt": "^3.16.1"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.2.0",
+    "@nuxt/image": "^1.10.0",
+    "@nuxtjs/i18n": "^9.3.4",
+    "eslint": "^9.23.0",
+    "typescript": "^5.8.2"
+  }
+}
