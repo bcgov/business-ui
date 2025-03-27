@@ -336,6 +336,7 @@ watch(openAuthOption, () => {
             <div class="mb-4 mr-1 mt-1">
               {{ $t('form.manageBusiness.authOption.email.instructions') }}
             </div>
+            <!-- On hold for form.
             <span v-if="props.isCorpOrBenOrCoop">
               {{ $t('form.manageBusiness.authOption.email.update') }}
               <a
@@ -348,7 +349,7 @@ watch(openAuthOption, () => {
                 name="i-mdi-open-in-new"
                 class="mr-2 size-5 text-bcGovColor-activeBlue"
               />
-            </span>
+            </span> -->
           </div>
         </template>
 

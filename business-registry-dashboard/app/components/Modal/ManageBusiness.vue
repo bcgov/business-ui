@@ -154,6 +154,7 @@ onMounted(async () => {
         class="flex flex-col gap-4  border-t border-gray-300 pt-3"
       >
         <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p>
+        <!-- On hold for email form
         <p class="border-b border-gray-300 pb-3">
           {{ $t('form.manageBusiness.missingInfo.fragmentPrt1') }}
           <a
@@ -167,7 +168,9 @@ onMounted(async () => {
             class="mr-2 size-5 text-bcGovColor-activeBlue"
           />
           {{ $t('form.manageBusiness.missingInfo.fragmentPrt3') }}
-        </p>
+        </p> -->
+        <!-- short term text until form available -->
+        <p>The business doesn't have an email on file. Please contact B.C. Registries by choosing one of the options in the help section below</p>
         <div class="grid auto-cols-auto">
           <div class="grid-flow-col place-content-start justify-start">
             <HelpBusinessContact />
