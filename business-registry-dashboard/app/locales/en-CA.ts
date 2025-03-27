@@ -350,7 +350,7 @@ export default {
         },
         delegation: {
           accordianLabel: {
-            default: 'Request authorization from an account managing the business'
+            default: 'Request authorization from an account managing this business'
           },
           fields: {
             account: {
