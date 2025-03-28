@@ -35,9 +35,13 @@ export const useBrdModals = () => {
     modal.open(ModalBase, {
       error: {
         title: t('error.nameRequestAction.title'),
-        description: t('error.nameRequestAction.description')
+        description: t('error.nameRequestAction.description'),
+        showContactInfo: true
       },
-      actions: [{ label: t('btn.close'), handler: () => close() }]
+      actions: [
+        { label: t('btn.goBack'), variant: 'outline', handler: () => close() },
+        { label: t('btn.refreshPage'), handler: () => window.location.reload() }
+      ]
     })
   }
 

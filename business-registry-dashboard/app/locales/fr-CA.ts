@@ -119,11 +119,12 @@ export default {
     tryAgain: 'Essayer à nouveau',
     cancel: 'Annuler',
     ok: "D'accord",
+    refreshPage: 'Rafraîchir la page',
     refreshTable: 'Rafraîchir le tableau'
   },
   contactInfo: {
     bcRegGeneral: {
-      title: 'Si ce problème persiste, veuillez nous contacter à:',
+      title: 'Si ce problème persiste, veuillez nous contacter pour obtenir de l\'aide.',
       tollFree: {
         title: 'Sans Frais:',
         value: '1-877-370-1033'
@@ -168,8 +169,8 @@ export default {
       description: "Une erreur s'est produite lors de l'ajout de votre entreprise. Veuillez réessayer."
     },
     nameRequestAction: {
-      title: "Erreur lors du Traitement de l'Action de Demande de Nom",
-      description: "Une erreur s'est produite lors du traitement de l'action de demande de nom. Veuillez réessayer."
+      title: 'Erreur de Demande de Nom',
+      description: 'Nous ne pouvons pas afficher ces informations pour le moment. Veuillez réessayer plus tard.'
     },
     invalidFilingApplication: {
       title: '{type} Invalide',

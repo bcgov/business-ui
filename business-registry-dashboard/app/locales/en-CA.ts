@@ -119,11 +119,12 @@ export default {
     tryAgain: 'Try Again',
     cancel: 'Cancel',
     ok: 'OK',
+    refreshPage: 'Refresh Page',
     refreshTable: 'Refresh Table'
   },
   contactInfo: {
     bcRegGeneral: {
-      title: 'If this problem continues, please contact us at:',
+      title: 'If this problem continues, please contact us for help.',
       tollFree: {
         title: 'Toll Free:',
         value: '1-877-370-1033'
@@ -168,8 +169,8 @@ export default {
       description: 'An error occurred adding your business. Please try again.'
     },
     nameRequestAction: {
-      title: 'Error Processing Name Request Action',
-      description: 'An error occurred processing the name request action. Please try again.'
+      title: 'Name Request Error',
+      description: 'We cannot display this information right now. Please try refreshing the page.'
     },
     businessUnavailable: {
       changeName: {

@@ -65,7 +65,7 @@ onMounted(async () => {
         <p v-if="content" class="text-bcGovColor-midGray">
           {{ content }}
         </p>
-        <div v-if="error" class="flex flex-col items-center gap-4 text-center">
+        <div v-if="error" class="-mb-4 flex flex-col items-center gap-4">
           <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
           <h2 class="text-xl font-semibold">
             {{ error.title }}
@@ -73,9 +73,6 @@ onMounted(async () => {
           <p>{{ error.description }}</p>
           <p v-if="error.description2">
             {{ error.description2 }}
-          </p>
-          <p v-if="error.showContactInfo" class="self-start">
-            Please contact us if you require assistance.
           </p>
           <BCRegContactInfo v-if="error.showContactInfo" class="self-start text-left" />
         </div>
@@ -90,6 +87,7 @@ onMounted(async () => {
               :label="action.label"
               :variant="action.variant || 'solid'"
               :color="action.color || 'primary'"
+              class="px-7 py-3"
               @click="action.handler"
             />
           </div>
