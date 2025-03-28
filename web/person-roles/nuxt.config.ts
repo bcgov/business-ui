@@ -14,7 +14,9 @@ export default defineNuxtConfig({
   ],
 
   modules: [
-    '@nuxt/eslint'
+    '@nuxt/eslint',
+    '@nuxt/test-utils/module',
+    'nuxt-lodash'
   ],
 
   extends: [

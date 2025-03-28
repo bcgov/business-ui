@@ -97,3 +97,7 @@ sw.*
 
 # nuxt/content
 .data
+
+# playwright e2e test
+test-results
+tests/e2e/.auth/**
