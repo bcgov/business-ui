@@ -1,7 +1,7 @@
 {
   "hosting":
     {
-      "site": "yfthig-dev",
+      "site": "business-people-dev",
       "public": "dist",
       "ignore": ["**/devops/**", "**/.*", "**/node_modules/**"],
       "rewrites": [

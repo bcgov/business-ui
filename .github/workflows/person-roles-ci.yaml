@@ -1,4 +1,4 @@
-name: Person Roles CI
+name: Business People UI CI
 
 on:
   pull_request:
@@ -12,10 +12,10 @@ defaults:
     working-directory: "./web/person-roles"
 
 jobs:
-  person-roles-cd:
+  business-people-cd:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
-      app_name: "person-roles"
+      app_name: "business-people"
       working_directory: "./web/person-roles"
       codecov_flag: "personroles"
       node_version: 20
