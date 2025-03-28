@@ -1,4 +1,4 @@
-name: Person Roles CD
+name: Business People UI CD
 
 on:
   push:
@@ -19,11 +19,11 @@ on:
         - prod
 
 jobs:
-  person-roles-cd:
+  business-people-ui-cd:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
     with:
       target: ${{ inputs.target }}
-      app_name: "person-roles"
+      app_name: "business-people"
       working_directory: "./web/person-roles"
       node_version: 20
       pnpm_version: 10.0.0
