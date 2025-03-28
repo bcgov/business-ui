@@ -37,6 +37,7 @@ async function globalSetup() {
   const context = await browser.newContext()
   const page: Page = await context.newPage()
 
+  // complete login steps
   await page.goto(baseUrl)
 
   const username = process.env.PLAYWRIGHT_TEST_BCSC_USERNAME!
@@ -49,7 +50,10 @@ async function globalSetup() {
   await page.getByLabel('Password').fill(password)
   await page.getByRole('button', { name: 'Continue' }).click()
 
+  // should be redirected back to baseUrl after successful login
   await page.waitForURL(baseUrl + '**')
+
+  // save auth state and close browser
   await page.context().storageState({ path: `tests/e2e/.auth/bcsc-user.json` })
   await browser.close()
 }
