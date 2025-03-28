@@ -5,14 +5,17 @@
     </p>
     <ul>
       <li class="text-bcGovColor-midGray">
+        <UIcon name="i-mdi-phone" class="mr-1 size-[14px] text-bcGovColor-nonClickable" />
         {{ $t('contactInfo.bcRegGeneral.tollFree.title') }}
         <a class="text-blue-500 underline" :href="`tel:${$t('contactInfo.bcRegGeneral.tollFree.value')}`">{{ $t('contactInfo.bcRegGeneral.tollFree.value') }}</a>
       </li>
       <li class="text-bcGovColor-midGray">
+        <UIcon name="i-mdi-phone" class="mr-1 size-[14px] text-bcGovColor-nonClickable" />
         {{ $t('contactInfo.bcRegGeneral.victoriaOffice.title') }}
         <a class="text-blue-500 underline" :href="`tel:${$t('contactInfo.bcRegGeneral.victoriaOffice.value')}`">{{ $t('contactInfo.bcRegGeneral.victoriaOffice.value') }}</a>
       </li>
       <li class="text-bcGovColor-midGray">
+        <UIcon name="i-mdi-email" class="mr-1 size-[14px] text-bcGovColor-nonClickable" />
         {{ $t('contactInfo.bcRegGeneral.email.title') }}
         <a class="text-blue-500 underline" href="mailto:BCRegistries@gov.bc.ca?subject=BC Registries and Online Services - Support Request">BCRegistries@gov.bc.ca</a>
       </li>

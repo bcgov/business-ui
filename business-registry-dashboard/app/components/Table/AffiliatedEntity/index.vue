@@ -408,6 +408,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           :index="index"
           :affiliations="affStore.affiliations.results"
           @unknown-error="brdModal.openBusinessAddError()"
+          @name-request-action-error="brdModal.nameRequestActionError()"
           @business-unavailable-error="brdModal.openBusinessUnavailableError"
           @remove-business="brdModal.openBusinessRemovalConfirmation"
           @resend-affiliation-invitation="affStore.resendAffiliationInvitation(row)"

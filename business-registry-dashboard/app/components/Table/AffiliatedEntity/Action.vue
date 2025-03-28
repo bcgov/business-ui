@@ -31,6 +31,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'unknown-error': [void]
+  'name-request-action-error': [void]
   'remove-business': [{ orgIdentifier: string, business: Business }]
   'business-unavailable-error': [action: string]
   'resend-affiliation-invitation': [item: Business]
@@ -69,14 +70,22 @@ async function createBusinessRecord (business: Business): Promise<string> {
   }
 
   if (payload) {
-    filingResponse = await createNamedBusiness(payload) as BusinessResponse
+    try {
+      filingResponse = await createNamedBusiness(payload) as BusinessResponse
+      if (filingResponse?.errorMsg) {
+        // Handle explicit error message from API response and prevent navigation
+        emit('unknown-error')
+        return ''
+      }
+      return filingResponse?.filing?.business?.identifier || ''
+    } catch (error) {
+      // Log the error for debugging and emit event to show appropriate error dialog to user
+      logFetchError(error, 'Failed to create business record')
+      emit('name-request-action-error')
+      return ''
+    }
   }
-
-  if (filingResponse?.errorMsg) {
-    emit('unknown-error')
-    return ''
-  }
-  return filingResponse?.filing?.business?.identifier || ''
+  return ''
 }
 
 const showAffiliationInvitationNewRequestButton = (item: Business): boolean => {
