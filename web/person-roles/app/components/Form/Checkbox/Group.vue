@@ -16,9 +16,10 @@ const model = defineModel<AcceptableValue[]>({ required: true })
     v-model="model"
     class="grid grid-cols-2 gap-4"
   >
+    <!-- TODO: confirm key type -->
     <div
       v-for="item in items"
-      :key="item.value"
+      :key="item.value as string"
       class="flex items-center gap-3"
     >
       <FormCheckboxItem

@@ -1,30 +1,62 @@
 <script setup lang="ts">
-const state = ref({
+import * as z from 'zod'
+import type { Form } from '@nuxt/ui'
+
+const { t } = useI18n()
+
+const schema = z.object({
+  name: z.object({
+    first: z.string().optional(),
+    middle: z.string().optional(),
+    last: z.string().min(2)
+  }),
+  roles: z.string().array().min(1),
+  mailingAddress: getRequiredAddress(
+    t('validation.address.street'),
+    t('validation.address.city'),
+    t('validation.address.region'),
+    t('validation.address.postalCode'),
+    t('validation.address.country')
+  ),
+  deliveryAddress: getRequiredAddress(
+    t('validation.address.street'),
+    t('validation.address.city'),
+    t('validation.address.region'),
+    t('validation.address.postalCode'),
+    t('validation.address.country')
+  )
+})
+
+type Schema = z.output<typeof schema>
+
+const state = ref<Schema>({
   name: {
     first: '',
     middle: '',
     last: ''
+  },
+  roles: [],
+  mailingAddress: {
+    street: '',
+    streetAdditional: '',
+    city: '',
+    region: '',
+    postalCode: '',
+    country: '',
+    locationDescription: ''
+  },
+  deliveryAddress: {
+    street: '',
+    streetAdditional: '',
+    city: '',
+    region: '',
+    postalCode: '',
+    country: '',
+    locationDescription: ''
   }
-  // roles: [],
-  // mailingAddress: {
-  //   street: '',
-  //   streetAdditional: '',
-  //   city: '',
-  //   region: '',
-  //   postalCode: '',
-  //   country: '',
-  //   locationDescription: ''
-  // },
-  // deliveryAddress: {
-  //   street: '',
-  //   streetAdditional: '',
-  //   city: '',
-  //   region: '',
-  //   postalCode: '',
-  //   country: '',
-  //   locationDescription: ''
-  // }
 })
+
+const formRef = useTemplateRef('officer-form')
 
 const items = [
   { label: 'Chief Executive Officer', value: 'ceo' },
@@ -48,8 +80,11 @@ watchEffect(() => console.log(roles.value))
     <h1>Officer Change</h1>
 
     <UForm
+      ref="officer-form"
       :state
+      :schema
       class="bg-white rounded-sm p-6 max-w-4xl mx-auto"
+      :validate-on="['blur']"
     >
       <div class="flex flex-col sm:flex-row gap-6">
         <h2 class="w-1/4 font-bold text-bcGovGray-900 text-base">
@@ -66,7 +101,7 @@ watchEffect(() => console.log(roles.value))
                 name="name.first"
                 class="grow flex-1"
               >
-                <FormInput
+                <ConnectInput
                   id="first-name"
                   v-model="state.name.first"
                   required
@@ -79,7 +114,7 @@ watchEffect(() => console.log(roles.value))
                 name="name.middle"
                 class="grow flex-1"
               >
-                <FormInput
+                <ConnectInput
                   id="middle-name"
                   v-model="state.name.middle"
                   :invalid="!!error"
@@ -91,7 +126,7 @@ watchEffect(() => console.log(roles.value))
                 name="name.last"
                 class="grow flex-1"
               >
-                <FormInput
+                <ConnectInput
                   id="last-name"
                   v-model="state.name.last"
                   required
@@ -106,17 +141,31 @@ watchEffect(() => console.log(roles.value))
             label="Roles"
             :invalid="false"
           >
-            <FormCheckboxGroup
-              v-model="roles"
-              :items
-            />
+            <UFormField
+              v-slot="{ error }"
+              name="roles"
+              :ui="{
+                error: 'sr-only'
+              }"
+            >
+              <div
+                v-if="error !== undefined"
+                class="text-red-600 text-base mb-3"
+              >
+                Choose at least one role
+              </div>
+              <FormCheckboxGroup
+                v-model="roles"
+                :items
+              />
+            </UFormField>
           <!-- <div class="flex flex-col gap-4 sm:flex-row">
             <UFormField
               v-slot="{ error }"
               name="name.first"
               class="grow flex-1"
             >
-              <FormInput
+              <ConnectInput
                 id="first-name"
                 v-model="state.name.first"
                 required
@@ -129,7 +178,7 @@ watchEffect(() => console.log(roles.value))
               name="name.middle"
               class="grow flex-1"
             >
-              <FormInput
+              <ConnectInput
                 id="middle-name"
                 v-model="state.name.middle"
                 :invalid="!!error"
@@ -141,7 +190,7 @@ watchEffect(() => console.log(roles.value))
               name="name.last"
               class="grow flex-1"
             >
-              <FormInput
+              <ConnectInput
                 id="last-name"
                 v-model="state.name.last"
                 required
@@ -151,6 +200,32 @@ watchEffect(() => console.log(roles.value))
             </UFormField>
           </div> -->
           </FormSection>
+
+          <FormSection
+            label="Mailing Address"
+            :invalid="false"
+          >
+            <FormAddress
+              id="mailing-address"
+              v-model="state.mailingAddress"
+              schema-prefix="mailingAddress."
+              :form-ref="formRef"
+            />
+          </FormSection>
+
+          <div class="flex gap-6 justify-end">
+            <UButton
+              label="Done"
+              type="submit"
+              class="font-bold"
+              size="xl"
+            />
+            <UButton
+              label="Cancel"
+              variant="outline"
+              size="xl"
+            />
+          </div>
         </div>
       </div>
     </UForm>
