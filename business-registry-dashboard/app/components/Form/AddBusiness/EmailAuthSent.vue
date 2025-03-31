@@ -17,6 +17,7 @@ defineProps<{
     <div class="flex justify-center gap-2">
       <UButton
         :label="$t('btn.close')"
+        class="ml-auto mr-6 px-3 py-2"
         @click="brdModal.close()"
       />
     </div>

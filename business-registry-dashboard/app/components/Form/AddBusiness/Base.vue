@@ -425,27 +425,24 @@ watch(openAuthOption, () => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="grid auto-cols-auto pt-8">
-      <div v-if="props.isCorpOrBenOrCoop" class="grid-flow-col place-content-start justify-start">
+    <div class="pt-8">
+      <div v-if="props.isCorpOrBenOrCoop" class="place-content-start justify-start">
         <HelpBusinessContact />
       </div>
-      <div class="grid grid-rows-subgrid ">
-        <div class="xs:mt-6 col-span-full  max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
-          <UButton
-            :label="$t('btn.cancel')"
-            variant="outline"
-            class="mr-5 px-5"
-            :ui="{ base: 'h-11 rounded' }"
-            @click="brdModal.close()"
-          />
-          <UButton
-            :label="$t('form.manageBusiness.submitBtn')"
-            type="submit"
-            class="px-5"
-            :loading
-            :ui="{ base: 'h-11 rounded' }"
-          />
-        </div>
+      <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
+        <UButton
+          :label="$t('btn.cancel')"
+          variant="outline"
+          :ui="{ base: 'h-11 rounded' }"
+          @click="brdModal.close()"
+        />
+        <UButton
+          :label="$t('form.manageBusiness.submitBtn')"
+          type="submit"
+          class="ml-5 flex flex-none"
+          :loading
+          :ui="{ base: 'h-11 rounded' }"
+        />
       </div>
     </div>
   </UForm>
