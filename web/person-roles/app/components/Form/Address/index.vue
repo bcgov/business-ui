@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import type * as z from 'zod'
 import type { Form } from '@nuxt/ui'
 
-type AddressField = 'country' | 'street' | 'streetName' | 'streetNumber' |
-  'unitNumber' | 'streetAdditional' | 'city' | 'region' | 'postalCode' |
-  'locationDescription'
+// type AddressField = 'country' | 'street' | 'streetName' | 'streetNumber' |
+//   'unitNumber' | 'streetAdditional' | 'city' | 'region' | 'postalCode' |
+//   'locationDescription'
 
 const props = defineProps<{
   id: string
-  // schema: z.ZodSchema<Partial<ConnectAddress>>
   schemaPrefix: string
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   formRef?: Form<any> | null
-  disabledFields?: AddressField[]
-  excludedFields?: AddressField[]
+  disabledFields?: Array<keyof ConnectAddress>
+  excludedFields?: Array<keyof ConnectAddress>
   // TODO: cleanup below strategies
   hideStreetHint?: boolean
   locationDescLabel?: boolean
@@ -23,7 +21,7 @@ const props = defineProps<{
 const state = defineModel<Partial<ConnectAddress>>({ required: true })
 
 async function populateAddressComplete(e: ConnectAddress) {
-  const keys = Object.keys(e) as AddressField[]
+  const keys = Object.keys(e) as Array<keyof ConnectAddress>
   for (const key of keys) {
     if (
       !props.disabledFields?.includes(key)
@@ -35,10 +33,8 @@ async function populateAddressComplete(e: ConnectAddress) {
 
   await nextTick()
 
-  // TODO: confirm type of keys
   if (props.formRef) {
     const fields = keys.map(k => props.schemaPrefix + k)
-    // @ts-expect-error - keys type mismatch
     props.formRef.validate({ name: fields, silent: true })
   }
 }
