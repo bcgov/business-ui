@@ -49,7 +49,7 @@ const displayedCountryName = computed(() => {
         @change="$emit('change')"
       >
         <template #default="{ modelValue }">
-          <div class="relative px-2.5 pb-1.5 pt-5 w-full">
+          <div class="relative px-2.5 pb-2 pt-6 w-full">
             <span
               aria-hidden="true"
               class="absolute left-0 px-2.5 text-sm transition-all"

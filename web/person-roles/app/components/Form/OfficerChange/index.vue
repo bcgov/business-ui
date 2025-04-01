@@ -111,7 +111,8 @@ watchDebounced(
     ref="officer-form"
     :state
     :schema
-    class="bg-white rounded-sm p-6 max-w-4xl mx-auto"
+    class="bg-white rounded-sm p-6 max-w-4xl mx-auto ring ring-gray-300"
+    :class="{ 'border-l-3 border-red-600': !!formRef?.errors.length }"
     :validate-on="['blur']"
     @submit="(e) => console.log(e.data)"
     @error="onError"
@@ -134,7 +135,6 @@ watchDebounced(
               <ConnectInput
                 id="first-name"
                 v-model="state.name.first"
-                required
                 :invalid="!!error"
                 :label="$t('label.firstName')"
               />

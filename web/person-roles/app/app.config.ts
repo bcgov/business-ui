@@ -82,7 +82,7 @@ export default defineAppConfig({
       variants: {
         size: {
           bcGovLg: {
-            base: 'px-2.5 pb-1.5 pt-5 text-base gap-1.5',
+            base: 'px-2.5 pb-2 pt-6 text-base gap-1.5',
             leading: 'ps-2.5',
             trailing: 'pe-2.5',
             leadingIcon: 'size-5',
