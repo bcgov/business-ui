@@ -132,7 +132,7 @@ async function handleEmailOption () {
       method: 'POST',
       body: payload
     })
-
+    affStore.newlyAddedIdentifier = props.identifier
     emit('emailSuccess')
   } catch (error) {
     const e = error as FetchError
@@ -157,6 +157,7 @@ async function handleDelegationOption () {
     })
 
     toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
+    affStore.newlyAddedIdentifier = props.identifier
     await affStore.loadAffiliations() // update table with new affilitations
     brdModal.close() // close modal
   } catch (error) {

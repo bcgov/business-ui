@@ -165,7 +165,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         const isAccepted = invite.status === AffiliationInvitationStatus.Accepted
         const business = affiliatedEntities.find(
           business => business.businessIdentifier === invite.entity.businessIdentifier)
-
         if (business && (isToOrgAndPending || isFromOrg)) {
           business.affiliationInvites = (business.affiliationInvites || []).concat([invite])
         } else if (!business && isFromOrg && !isAccepted) {
@@ -301,6 +300,28 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   )
 
+  // Mark any new affiliation on the list.
+  watch(
+    () => affiliations.totalResults > 0,
+    () => {
+      const firstResult = affiliations.results?.[0] as any
+      const newIdentifier = newlyAddedIdentifier.value
+      // Skip if no results or no new identifier
+      if (!firstResult) { return }
+      // If the first result matches the newly added business or name request, highlight it
+      if (newIdentifier && (firstResult.businessIdentifier === newIdentifier)) {
+        firstResult.class = 'bg-[#E8F5E9]'
+        // Remove highlight and clear identifier
+        setTimeout(() => {
+          newlyAddedIdentifier.value = ''
+        }, 4000)
+      } else {
+        // Clear any existing highlight
+        firstResult.class = ''
+      }
+    },
+    { immediate: true }
+  )
   function resetAffiliations () {
     affiliations.loading = false
     affiliations.results = []
