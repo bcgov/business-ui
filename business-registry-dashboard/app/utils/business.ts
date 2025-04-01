@@ -248,7 +248,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
 
   // create an affiliation between implicit org and requested business
   // const response = await BusinessService.createDraftFiling(filingBody)
-  const response = await $fetch(`${legalApiUrl}/businesses?draft=true`, {
+  const response = await $fetch(`${legalApiUrl}/businesses?draft=true/debug`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
