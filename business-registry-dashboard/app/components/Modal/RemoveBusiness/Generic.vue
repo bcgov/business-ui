@@ -19,7 +19,20 @@ function selectDescription (removeBusinessPayload: RemoveBusinessPayload) {
 </script>
 <template>
   <div class="flex flex-col items-center gap-4 text-center">
-    <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
+    <div class="relative -mt-10 flex w-full items-center justify-center">
+      <UIcon name="i-mdi-alert-circle-outline" class="size-8 text-red-500" />
+      <UButton
+        ref="closeButtonRef"
+        :ui="{ icon: { base: 'shrink-0 scale-150' } }"
+        icon="i-mdi-close"
+        color="primary"
+        :aria-label="$t('btn.close')"
+        square
+        variant="ghost"
+        class="absolute right-0"
+        @click="$emit('close')"
+      />
+    </div>
     <h2 class="text-xl font-semibold">
       {{ $t(`modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.title`) }}
     </h2>

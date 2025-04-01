@@ -6,7 +6,6 @@ const closeButtonRef = ref<InstanceType<typeof UButton> | null>(null)
 
 defineProps<{
   title?: string
-  content?: string
   actions?: { label: string, handler:() => void, color?: string, variant?: string }[]
   error?: {
     title: string
@@ -47,7 +46,7 @@ onMounted(async () => {
       }"
     >
       <template #header>
-        <div class="flex items-center justify-between">
+        <div v-if="title" class="flex items-center justify-between">
           <span class="pb-3 text-xl font-semibold text-bcGovColor-darkGray">{{ title }}</span>
           <UButton
             ref="closeButtonRef"
@@ -62,11 +61,24 @@ onMounted(async () => {
         </div>
       </template>
       <slot>
-        <p v-if="content" class="text-bcGovColor-midGray">
-          {{ content }}
-        </p>
-        <div v-if="error" class="-mb-4 flex flex-col items-center gap-4">
-          <UIcon name="i-mdi-alert-circle-outline" class="-mt-10 size-8 text-red-500" />
+        <div v-if="error" class="-mb-4 -mt-12 flex flex-col items-center gap-4">
+          <div class="relative w-full">
+            <div class="flex justify-center">
+              <UIcon name="i-mdi-alert-circle-outline" class="size-8 text-red-500" />
+            </div>
+            <UButton
+              v-if="!title"
+              ref="closeButtonRef"
+              :ui="{ icon: { base: 'shrink-0 scale-150' } }"
+              icon="i-mdi-close"
+              color="primary"
+              :aria-label="$t('btn.close')"
+              square
+              variant="ghost"
+              class="absolute right-0 top-0"
+              @click="modalModel = false"
+            />
+          </div>
           <h2 class="text-xl font-semibold">
             {{ error.title }}
           </h2>
