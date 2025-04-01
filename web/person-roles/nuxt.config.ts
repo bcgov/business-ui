@@ -110,7 +110,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Person Roles UI v${process.env.npm_package_version || ''}`,
-      addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY
+      addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY,
+      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`
     }
   }
 })
