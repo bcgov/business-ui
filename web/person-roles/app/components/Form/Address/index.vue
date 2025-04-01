@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Form } from '@nuxt/ui'
-
 // type AddressField = 'country' | 'street' | 'streetName' | 'streetNumber' |
 //   'unitNumber' | 'streetAdditional' | 'city' | 'region' | 'postalCode' |
 //   'locationDescription'
@@ -9,7 +7,7 @@ const props = defineProps<{
   id: string
   schemaPrefix: string
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  formRef?: Form<any> | null
+  formRef?: any
   disabledFields?: Array<keyof ConnectAddress>
   excludedFields?: Array<keyof ConnectAddress>
   // TODO: cleanup below strategies
