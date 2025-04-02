@@ -4,63 +4,95 @@ import { z } from 'zod'
 
 const { t } = useI18n()
 const officerStore = useOfficerStore()
+
+// const defaultOfficer = officerStore.getNewOfficer()
+
+// const {
+//   defaultObj = defaultOfficer
+// } = defineProps<{
+//   defaultObj?: Partial<Officer>
+// }>()
+
+const props = withDefaults(defineProps<{
+  defaultObj?: Partial<Officer>
+}>(), {
+  defaultObj: () => ({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    roles: [],
+    mailingAddress: {
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: 'CA',
+      locationDescription: ''
+    },
+    deliveryAddress: {
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: 'CA',
+      locationDescription: ''
+    }
+  })
+})
+
+defineEmits<{
+  cancel: []
+}>()
+
 const formRef = useTemplateRef('officer-form')
+
+// const defaultObj = officerStore.getNewOfficer()
 
 const sameAsMailing = ref(false)
 
-const schema = computed(() => z.object({
+const schema = z.object({})
+
+const nameSchema = z.object({
   firstName: z.string().optional(),
   middleName: z.string().optional(),
   lastName: z
     .string({ required_error: t('validation.fieldRequired') })
-    .min(2, { message: t('validation.minChars', { count: 2 }) }),
-  roles: z.string().array().min(1, { message: t('validation.role.min') }),
+    .min(2, { message: t('validation.minChars', { count: 2 }) })
+})
+
+const rolesSchema = z.object({
+  roles: z.string().array().min(1, { message: t('validation.role.min') })
+})
+
+const mailingSchema = z.object({
   mailingAddress: getRequiredAddress(
     t('validation.address.street'),
     t('validation.address.city'),
     t('validation.address.region'),
     t('validation.address.postalCode'),
     t('validation.address.country')
-  ),
-  deliveryAddress: sameAsMailing.value
-    ? z.object({})
-    : getRequiredAddress(
-      t('validation.address.street'),
-      t('validation.address.city'),
-      t('validation.address.region'),
-      t('validation.address.postalCode'),
-      t('validation.address.country')
-    )
-}))
+  )
+  // sameAsMailing: z.boolean().default(false)
+})
 
-type Schema = z.output<typeof schema.value>
+const deliverySchema = z.object({
+  deliveryAddress: getRequiredAddress(
+    t('validation.address.street'),
+    t('validation.address.city'),
+    t('validation.address.region'),
+    t('validation.address.postalCode'),
+    t('validation.address.country')
+  )
+})
 
-// const state = ref<Schema>({
-//   name: {
-//     first: '',
-//     middle: '',
-//     last: ''
-//   },
-//   roles: [],
-//   mailingAddress: {
-//     street: '',
-//     streetAdditional: '',
-//     city: '',
-//     region: '',
-//     postalCode: '',
-//     country: 'CA',
-//     locationDescription: ''
-//   },
-//   deliveryAddress: {
-//     street: '',
-//     streetAdditional: '',
-//     city: '',
-//     region: '',
-//     postalCode: '',
-//     country: 'CA',
-//     locationDescription: ''
-//   }
-// })
+type Schema = z.output<typeof schema>
+type NameSchema = z.output<typeof nameSchema>
+type MailingSchema = z.output<typeof mailingSchema>
+type DeliverySchema = z.output<typeof deliverySchema>
+
+const state = reactive<Partial<Schema & NameSchema & MailingSchema & DeliverySchema>>(props.defaultObj)
 
 const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CEO}`), value: OfficerRole.CEO },
@@ -84,147 +116,152 @@ const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, d
 })
 
 async function onError(event: FormErrorEvent) {
-  if (event?.errors?.[0]?.id) {
-    console.info(event.errors)
-    const element = document.getElementById(event.errors[0].id)
-
+  const elId = event?.errors?.[0]?.id ?? event?.children?.[0]?.errors?.[0]?.id
+  if (elId) {
+    const element = document.getElementById(elId)
     // element?.scrollIntoView({ behavior: 'smooth', block: 'center' }) // TODO: fix or remove smooth scroll
     await new Promise(resolve => setTimeout(resolve, 100))
     element?.focus()
   }
 }
-
-async function onSubmit(event: FormSubmitEvent<any>) {
-  officerStore.addOfficer(event.data)
-  // console.info(event.data)
-}
-
-// watchDebounced(
-//   [sameAsMailing, () => officerStore.activeOfficer?.mailingAddress],
-//   ([same, address]) => {
-//     if (same && address) {
-//       officerStore.activeOfficer!.deliveryAddress = { ...address! }
-//     }
-//   },
-//   { debounce: 100, deep: true }
-// )
 </script>
 
 <template>
   <UForm
-    v-if="officerStore.activeOfficer"
     ref="officer-form"
-    :state="officerStore.activeOfficer"
+    :state
     :schema
     class="bg-white rounded-sm p-6 max-w-4xl mx-auto ring ring-gray-300"
     :class="{ 'border-l-3 border-red-600': !!formRef?.errors.length }"
     :validate-on="['blur']"
-    @submit="onSubmit"
     @error="onError"
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h2 class="w-1/4 font-bold text-bcGovGray-900 text-base">
         {{ $t('label.addOfficer') }}
       </h2>
-      <div class="flex flex-col gap-8">
-        <FormSection
-          :label="$t('label.name')"
-          :invalid="formErrors.name"
+      <div class="flex flex-col gap-8 w-full">
+        <UForm
+          v-if="state.firstName !== undefined"
+          :state
+          :schema="nameSchema"
         >
-          <div class="flex flex-col gap-4 sm:flex-row">
-            <UFormField
-              v-slot="{ error }"
-              name="firstName"
-              class="grow flex-1"
-            >
-              <ConnectInput
-                id="first-name"
-                v-model="officerStore.activeOfficer.firstName"
-                :invalid="!!error"
-                :label="$t('label.firstName')"
-              />
-            </UFormField>
-            <UFormField
-              v-slot="{ error }"
-              name="middleName"
-              class="grow flex-1"
-            >
-              <ConnectInput
-                id="middle-name"
-                v-model="officerStore.activeOfficer.middleName"
-                :invalid="!!error"
-                :label="$t('label.middleNameOpt')"
-              />
-            </UFormField>
-            <UFormField
-              v-slot="{ error }"
-              name="lastName"
-              class="grow flex-1"
-            >
-              <ConnectInput
-                id="last-name"
-                v-model="officerStore.activeOfficer.lastName"
-                required
-                :invalid="!!error"
-                :label="$t('label.lastName')"
-              />
-            </UFormField>
-          </div>
-        </FormSection>
-
-        <FormSection
-          :label="$t('label.roles')"
-          :invalid="formErrors.roles"
-        >
-          <UFormField
-            v-slot="{ error }"
-            name="roles"
-            :ui="{
-              error: 'sr-only'
-            }"
+          <FormSection
+            :label="$t('label.name')"
+            :invalid="formErrors.name"
           >
-            <div
-              v-if="error !== undefined"
-              class="text-red-600 text-base mb-3"
-            >
-              {{ error }}
+            <div class="flex flex-col gap-4 sm:flex-row">
+              <UFormField
+                v-slot="{ error }"
+                name="firstName"
+                class="grow flex-1"
+              >
+                <ConnectInput
+                  id="first-name"
+                  v-model="state.firstName"
+                  :invalid="!!error"
+                  :label="$t('label.firstName')"
+                />
+              </UFormField>
+              <UFormField
+                v-slot="{ error }"
+                name="middleName"
+                class="grow flex-1"
+              >
+                <ConnectInput
+                  id="middle-name"
+                  v-model="state.middleName"
+                  :invalid="!!error"
+                  :label="$t('label.middleNameOpt')"
+                />
+              </UFormField>
+              <UFormField
+                v-slot="{ error }"
+                name="lastName"
+                class="grow flex-1"
+              >
+                <ConnectInput
+                  id="last-name"
+                  v-model="state.lastName"
+                  required
+                  :invalid="!!error"
+                  :label="$t('label.lastName')"
+                />
+              </UFormField>
             </div>
-            <FormCheckboxGroup
-              v-model="officerStore.activeOfficer.roles"
-              :items="roles"
+          </FormSection>
+        </UForm>
+
+        <UForm
+          v-if="state.roles !== undefined"
+          :state
+          :schema="rolesSchema"
+        >
+          <FormSection
+            :label="$t('label.roles')"
+            :invalid="formErrors.roles"
+          >
+            <UFormField
+              v-slot="{ error }"
+              name="roles"
+              :ui="{
+                error: 'sr-only'
+              }"
+            >
+              <div
+                v-if="error !== undefined"
+                class="text-red-600 text-base mb-3"
+              >
+                {{ error }}
+              </div>
+              <FormCheckboxGroup
+                v-model="state.roles"
+                :items="roles"
+              />
+            </UFormField>
+          </FormSection>
+        </UForm>
+
+        <UForm
+          v-if="state.mailingAddress"
+          :state
+          :schema="mailingSchema"
+        >
+          <FormSection
+            :label="$t('label.mailingAddress')"
+            :invalid="formErrors.mailing"
+          >
+            <FormAddress
+              id="mailing-address"
+              v-model="state.mailingAddress"
+              schema-prefix="mailingAddress."
+              :form-ref="formRef"
             />
-          </UFormField>
-        </FormSection>
+          </FormSection>
+        </UForm>
 
-        <FormSection
-          :label="$t('label.mailingAddress')"
-          :invalid="formErrors.mailing"
+        <UForm
+          v-if="state.deliveryAddress"
+          :state
+          :schema="deliverySchema"
         >
-          <FormAddress
-            id="mailing-address"
-            v-model="officerStore.activeOfficer.mailingAddress"
-            schema-prefix="mailingAddress."
-            :form-ref="formRef"
-          />
-        </FormSection>
-
-        <FormSection
-          :label="$t('label.deliveryAddress')"
-          :invalid="formErrors.delivery"
-        >
-          <UCheckbox
+          <FormSection
+            :label="$t('label.deliveryAddress')"
+            :invalid="formErrors.delivery"
+          >
+            <!-- <UCheckbox
             v-model="sameAsMailing"
             :label="$t('label.sameAsMailAddress')"
-          />
+          /> -->
 
-          <FormAddress
-            v-if="!sameAsMailing"
-            id="delivery-address"
-            v-model="officerStore.activeOfficer.deliveryAddress"
-            schema-prefix="deliveryAddress."
-            :form-ref="formRef"
-          />
-        </FormSection>
+            <FormAddress
+              id="delivery-address"
+              v-model="state.deliveryAddress"
+              schema-prefix="deliveryAddress."
+              :form-ref="formRef"
+            />
+          </FormSection>
+        </UForm>
 
         <div class="flex gap-6 justify-end">
           <UButton
@@ -237,6 +274,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
             :label="$t('btn.cancel')"
             variant="outline"
             size="xl"
+            @click="$emit('cancel')"
           />
         </div>
       </div>

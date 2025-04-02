@@ -1,5 +1,14 @@
 <script setup lang="ts">
+import type { FormSubmitEvent } from '@nuxt/ui'
+
 const officerStore = useOfficerStore()
+
+const addOfficer = ref<boolean>(false)
+
+async function onFormSubmit(event: FormSubmitEvent<any>) {
+  officerStore.addOfficer(event.data)
+  // console.info(event.data)
+}
 
 onMounted(async () => {
   const { $legalApi } = useNuxtApp()
@@ -21,10 +30,15 @@ onMounted(async () => {
       color="primary"
       icon="i-mdi-account-plus"
       variant="outline"
-      @click="officerStore.initNewOfficer()"
+      :disabled="addOfficer === true"
+      @click="addOfficer = true"
     />
 
-    <FormOfficerChange />
+    <FormOfficerChange
+      v-if="addOfficer"
+      @submit="onFormSubmit"
+      @cancel="addOfficer = false"
+    />
 
     <TableOfficerChange />
 
