@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import type { FormErrorEvent } from '@nuxt/ui'
+import type { FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 
 const { t } = useI18n()
+const officerStore = useOfficerStore()
 const formRef = useTemplateRef('officer-form')
 
 const sameAsMailing = ref(false)
 
 const schema = computed(() => z.object({
-  name: z.object({
-    first: z.string().optional(),
-    middle: z.string().optional(),
-    last: z
-      .string({ required_error: t('validation.fieldRequired') })
-      .min(2, { message: t('validation.minChars', { count: 2 }) })
-  }),
+  firstName: z.string().optional(),
+  middleName: z.string().optional(),
+  lastName: z
+    .string({ required_error: t('validation.fieldRequired') })
+    .min(2, { message: t('validation.minChars', { count: 2 }) }),
   roles: z.string().array().min(1, { message: t('validation.role.min') }),
   mailingAddress: getRequiredAddress(
     t('validation.address.street'),
@@ -36,32 +35,32 @@ const schema = computed(() => z.object({
 
 type Schema = z.output<typeof schema.value>
 
-const state = ref<Schema>({
-  name: {
-    first: '',
-    middle: '',
-    last: ''
-  },
-  roles: [],
-  mailingAddress: {
-    street: '',
-    streetAdditional: '',
-    city: '',
-    region: '',
-    postalCode: '',
-    country: 'CA',
-    locationDescription: ''
-  },
-  deliveryAddress: {
-    street: '',
-    streetAdditional: '',
-    city: '',
-    region: '',
-    postalCode: '',
-    country: 'CA',
-    locationDescription: ''
-  }
-})
+// const state = ref<Schema>({
+//   name: {
+//     first: '',
+//     middle: '',
+//     last: ''
+//   },
+//   roles: [],
+//   mailingAddress: {
+//     street: '',
+//     streetAdditional: '',
+//     city: '',
+//     region: '',
+//     postalCode: '',
+//     country: 'CA',
+//     locationDescription: ''
+//   },
+//   deliveryAddress: {
+//     street: '',
+//     streetAdditional: '',
+//     city: '',
+//     region: '',
+//     postalCode: '',
+//     country: 'CA',
+//     locationDescription: ''
+//   }
+// })
 
 const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CEO}`), value: OfficerRole.CEO },
@@ -95,26 +94,32 @@ async function onError(event: FormErrorEvent) {
   }
 }
 
-watchDebounced(
-  [sameAsMailing, () => state.value.mailingAddress],
-  ([same, address]) => {
-    if (same) {
-      state.value.deliveryAddress = { ...address }
-    }
-  },
-  { debounce: 100, deep: true }
-)
+async function onSubmit(event: FormSubmitEvent<any>) {
+  officerStore.addOfficer(event.data)
+  // console.info(event.data)
+}
+
+// watchDebounced(
+//   [sameAsMailing, () => officerStore.activeOfficer?.mailingAddress],
+//   ([same, address]) => {
+//     if (same && address) {
+//       officerStore.activeOfficer!.deliveryAddress = { ...address! }
+//     }
+//   },
+//   { debounce: 100, deep: true }
+// )
 </script>
 
 <template>
   <UForm
+    v-if="officerStore.activeOfficer"
     ref="officer-form"
-    :state
+    :state="officerStore.activeOfficer"
     :schema
     class="bg-white rounded-sm p-6 max-w-4xl mx-auto ring ring-gray-300"
     :class="{ 'border-l-3 border-red-600': !!formRef?.errors.length }"
     :validate-on="['blur']"
-    @submit="(e) => console.log(e.data)"
+    @submit="onSubmit"
     @error="onError"
   >
     <div class="flex flex-col sm:flex-row gap-6">
@@ -129,36 +134,36 @@ watchDebounced(
           <div class="flex flex-col gap-4 sm:flex-row">
             <UFormField
               v-slot="{ error }"
-              name="name.first"
+              name="firstName"
               class="grow flex-1"
             >
               <ConnectInput
                 id="first-name"
-                v-model="state.name.first"
+                v-model="officerStore.activeOfficer.firstName"
                 :invalid="!!error"
                 :label="$t('label.firstName')"
               />
             </UFormField>
             <UFormField
               v-slot="{ error }"
-              name="name.middle"
+              name="middleName"
               class="grow flex-1"
             >
               <ConnectInput
                 id="middle-name"
-                v-model="state.name.middle"
+                v-model="officerStore.activeOfficer.middleName"
                 :invalid="!!error"
                 :label="$t('label.middleNameOpt')"
               />
             </UFormField>
             <UFormField
               v-slot="{ error }"
-              name="name.last"
+              name="lastName"
               class="grow flex-1"
             >
               <ConnectInput
                 id="last-name"
-                v-model="state.name.last"
+                v-model="officerStore.activeOfficer.lastName"
                 required
                 :invalid="!!error"
                 :label="$t('label.lastName')"
@@ -185,7 +190,7 @@ watchDebounced(
               {{ error }}
             </div>
             <FormCheckboxGroup
-              v-model="state.roles"
+              v-model="officerStore.activeOfficer.roles"
               :items="roles"
             />
           </UFormField>
@@ -197,7 +202,7 @@ watchDebounced(
         >
           <FormAddress
             id="mailing-address"
-            v-model="state.mailingAddress"
+            v-model="officerStore.activeOfficer.mailingAddress"
             schema-prefix="mailingAddress."
             :form-ref="formRef"
           />
@@ -215,7 +220,7 @@ watchDebounced(
           <FormAddress
             v-if="!sameAsMailing"
             id="delivery-address"
-            v-model="state.deliveryAddress"
+            v-model="officerStore.activeOfficer.deliveryAddress"
             schema-prefix="deliveryAddress."
             :form-ref="formRef"
           />
