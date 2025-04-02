@@ -10,14 +10,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   const addingOfficer = ref<boolean>(false)
   const activeOfficer = ref<Officer | undefined>(undefined)
-  const newOfficers = ref<OfficerTableState[]>([])
 
-  const originalOfficerState: OfficerTableState[] = [
+  const officers = ref<OfficerTableState[]>([
   {
     officer: {
-      firstName: 'Officer 1',
-      middleName: 'Officer 1',
-      lastName: 'Officer 1',
+      firstName: 'Officer 1 first',
+      middleName: 'Officer 1 middle',
+      lastName: 'Officer 1 last',
       roles: [OfficerRole.CEO],
       mailingAddress: {
         street: '260 Champ Ave',
@@ -42,9 +41,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
     },
     {
       officer: {
-        firstName: 'Officer 2',
-        middleName: 'Officer 2',
-        lastName: 'Officer 2',
+        firstName: 'Officer 2 first',
+        middleName: 'Officer 2 middle',
+        lastName: 'Officer 2 last',
         roles: [OfficerRole.CFO, OfficerRole.TREASURER],
         mailingAddress: {
           street: '260 Champ Ave',
@@ -67,11 +66,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       },
       history: []
     }
-  ]
-
-  const displayedOfficerState = computed(() => {
-    return [...originalOfficerState, ...newOfficers.value]
-  })
+  ])
 
   function getNewOfficer(): Officer {
     return {
@@ -135,7 +130,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   function addOfficer(v: Officer) {
-    newOfficers.value.push({
+    officers.value.push({
       officer: v,
       history: []
     })
@@ -148,9 +143,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   return {
-    displayedOfficerState,
+    officers,
     activeOfficer,
-    newOfficers,
     addingOfficer,
     initNewOfficer,
     getNewOfficer,

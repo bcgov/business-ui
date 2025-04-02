@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
+import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { isEqual } from 'lodash'
-import { getRequiredAddress } from '~/utils/validate/address/mailing'
+import { isEqual, merge } from 'lodash'
 
-const { t } = useI18n()
-const officerStore = useOfficerStore()
-
-const UButton = resolveComponent('UButton')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
-// const AddressDisplay = resolveComponent('AddressDisplay')
+const { officers } = storeToRefs(useOfficerStore())
 
 const columns: TableColumn<OfficerTableState>[] = [
   {
@@ -23,7 +16,8 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const name = row.original.officer.firstName as string
+      const officer = row.original.officer
+      const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`
       return name.toUpperCase()
     }
   },
@@ -53,51 +47,97 @@ const columns: TableColumn<OfficerTableState>[] = [
   }
 ]
 
-// const mailingAddressState = ref({
-//   street: '260 Champ Ave',
-//   streetAdditional: '',
-//   city: 'Vancouver',
-//   region: 'BC',
-//   postalCode: 'G1J 4M6',
-//   country: 'CA',
-//   locationDescription: ''
-// })
-
-// const schema = getRequiredAddress(
-//   t('validation.address.street'),
-//   t('validation.address.city'),
-//   t('validation.address.region'),
-//   t('validation.address.postalCode'),
-//   t('validation.address.country')
-// )
-
 const expanded = ref<ExpandedState | undefined>(undefined)
+const editState = ref({})
 
-function handleEdit(index: number) {
-  expanded.value = { [index]: true }
+function initRowEdit(row: Row<OfficerTableState>, section: 'name' | 'roles' | 'address') {
+  const officer = JSON.parse(JSON.stringify(row.original.officer))
+
+  const sectionMap: Record<string, Partial<Officer>> = {
+    name: {
+      firstName: officer.firstName,
+      middleName: officer.middleName,
+      lastName: officer.lastName
+    },
+    roles: {
+      roles: officer.roles
+    },
+    address: {
+      mailingAddress: officer.mailingAddress,
+      deliveryAddress: officer.deliveryAddress
+    }
+  }
+
+  editState.value = sectionMap[section] || {}
+
+  expanded.value = { [row.index]: true }
+}
+
+function cancelRowEdit() {
+  expanded.value = undefined
+  editState.value = {}
+}
+
+function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo') {
+  const index = row.index
+  const initialOfficer = row.original.officer
+  const initialHistory = row.original.history
+
+  let newOfficer: OfficerTableState = {} as OfficerTableState
+
+  if (action === 'edit') {
+    newOfficer = {
+      officer: merge({}, initialOfficer, data),
+      history: [...initialHistory, initialOfficer]
+    }
+  } else {
+    const previousOfficer = initialHistory[initialHistory.length - 1]
+    if (previousOfficer) {
+      const newHistory = initialHistory.slice(0, initialHistory.length - 1)
+      newOfficer = {
+        officer: { ...previousOfficer },
+        history: newHistory
+      }
+    }
+  }
+
+  officers.value = [
+    ...officers.value.slice(0, index),
+    newOfficer,
+    ...officers.value.slice(index + 1)
+  ]
+}
+
+async function onRowEditSubmit(event: FormSubmitEvent<any>, row: Row<OfficerTableState>) {
+  updateOfficers(event.data, row, 'edit')
+
+  cancelRowEdit()
 }
 
 function getRowActions(row: Row<OfficerTableState>) {
-  return [
+  const actions = [
     {
       label: 'Change Legal Name',
-      onSelect() {
-        console.log('change legal name: ', row.original.officer.firstName)
-      }
+      onSelect: () => initRowEdit(row, 'name')
     },
     {
       label: 'Change Roles',
-      onSelect() {
-        console.log('change roles: ', row.original.officer.roles)
-      }
+      onSelect: () => initRowEdit(row, 'roles')
     },
     {
       label: 'Change Address',
-      onSelect() {
-        console.log('change address: ', row.original.officer.mailingAddress)
-      }
+      onSelect: () => initRowEdit(row, 'address')
     }
   ]
+
+  if (row.original.history.length) {
+    actions.unshift({
+      label: 'Undo',
+      onSelect: () => updateOfficers({}, row, 'undo')
+    })
+  }
+
+  return actions
 }
 </script>
 
@@ -105,9 +145,9 @@ function getRowActions(row: Row<OfficerTableState>) {
   <!-- eslint-disable -->
   <UTable
     v-model:expanded="expanded"
-    :data="officerStore.displayedOfficerState"
+    :data="officers"
     :columns="columns"
-    class="flex-1"
+    class="flex-1 max-w-[945px] mx-auto"
     sticky
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',
@@ -156,37 +196,14 @@ function getRowActions(row: Row<OfficerTableState>) {
       </div>
     </template>
 
-    <!-- <template #roles-cell>
-      test
-    </template> -->
-
     <template #expanded="{ row }">
-      <div class="flex flex-col sm:flex-row gap-2 px-4">
-        <div
-          id="officer-form-title"
-          class="w-1/4 font-bold text-black text-base"
-        >
-          Edit Item
-        </div>
-        <!-- <FormAddressMailing
-          id="mailing-address"
-          v-model="mailingAddressState"
-          class="w-full grow"
-          :schema="schema"
-          schema-prefix=""
-        /> -->
-        <!-- <pre>{{ row }}</pre> -->
-      </div>
-      <div class="flex gap-4 w-full ml-auto justify-end pr-4 py-8">
-        <UButton
-          label="Done"
-        />
-        <UButton
-          label="Cancel"
-          variant="outline"
-        />
-      </div>
-      <pre>{{ row }}</pre>
+      <FormOfficerChange 
+        :default-obj="editState" 
+        @cancel="cancelRowEdit"
+        @submit.prevent="onRowEditSubmit($event, row)"
+      />
     </template>
   </UTable>
+
+  <pre>{{officers}}</pre>
 </template>
