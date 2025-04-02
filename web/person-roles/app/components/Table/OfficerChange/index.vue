@@ -7,11 +7,10 @@ const { officers } = storeToRefs(useOfficerStore())
 
 const columns: TableColumn<OfficerTableState>[] = [
   {
-    accessorKey: 'officer.firstName',
     header: 'Name',
     meta: {
       class: {
-        td: 'pl-6 font-bold',
+        td: 'pl-6 font-bold min-w-48 max-w-48 whitespace-normal',
         th: 'pl-6'
       }
     },
@@ -23,16 +22,13 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'roles',
-    accessorKey: 'officer.roles',
     header: 'Roles'
   },
   {
-    accessorKey: 'mailingAddress',
     id: 'mailingAddress',
     header: 'Mailing Address'
   },
   {
-    accessorKey: 'deliveryAddress',
     id: 'deliveryAddress',
     header: 'Delivery Address'
   },
@@ -156,9 +152,14 @@ function getRowActions(row: Row<OfficerTableState>) {
       td: 'px-2 text-bcGovGray-700 align-top'
     }"
   >
+    <template #roles-cell="{ row }">
+      <ul>
+        <li v-for="role in row.original.officer.roles" :key="role">{{ $t(`enum.officerRole.${role}`) }}</li>
+      </ul>
+    </template>
+    
     <template #mailingAddress-cell="{ row }">
       <ConnectAddressDisplay :address="row.original.officer.mailingAddress" />
-      <!-- <pre>{{row.original}}</pre> -->
     </template>
     
     <template #deliveryAddress-cell="{ row }">
