@@ -41,7 +41,5 @@ onMounted(async () => {
     />
 
     <TableOfficerChange />
-
-    <pre>{{ officerStore.newOfficers }}</pre>
   </div>
 </template>

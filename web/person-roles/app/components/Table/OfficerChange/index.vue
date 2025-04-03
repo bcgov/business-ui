@@ -4,6 +4,8 @@ import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual, merge } from 'lodash'
 
+const { t } = useI18n()
+
 const UBadge = resolveComponent('UBadge')
 
 const { officers } = storeToRefs(useOfficerStore())
@@ -21,17 +23,18 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const officer = row.original.state.officer
       const badges = row.original.state.badges
+      const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`
 
       return h('div', { class: 'flex flex-col gap-2' }, [
-        h('span', {}, officer.firstName),
+        h('span', {}, name),
         badges.length
           ? h('ul', { class: 'flex flex-col gap-2' },
               badges.map(badge =>
                 h(UBadge, {
                   as: 'li',
-                  label: badge.label,
                   class: 'w-min',
-                  key: badge.label
+                  key: badge.label,
+                  ...badge
                 })
               )
           )
@@ -41,7 +44,18 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'roles',
-    header: 'Roles'
+    header: 'Roles',
+    cell: ({ row }) => {
+      const roles = row.original.state.officer.roles
+
+      return roles.length
+        ? h('ul', { class: 'flex flex-col gap-1' },
+            roles.map(role =>
+              h('li', {}, t(`enum.officerRole.${role}`))
+            )
+        )
+        : null
+    }
   },
   {
     id: 'mailingAddress',
@@ -63,12 +77,12 @@ const columns: TableColumn<OfficerTableState>[] = [
 ]
 
 const expanded = ref<ExpandedState | undefined>(undefined)
-const editState = ref({})
+const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
-function initRowEdit(row: Row<OfficerTableState>, section: 'name' | 'roles' | 'address') {
+function initRowEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
   const officer = JSON.parse(JSON.stringify(row.original.state.officer))
 
-  const sectionMap: Record<string, Partial<Officer>> = {
+  const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
     name: {
       firstName: officer.firstName,
       middleName: officer.middleName,
@@ -83,14 +97,17 @@ function initRowEdit(row: Row<OfficerTableState>, section: 'name' | 'roles' | 'a
     }
   }
 
-  editState.value = sectionMap[section] || {}
+  editState.value = {
+    data: sectionMap[section],
+    section
+  }
 
   expanded.value = { [row.index]: true }
 }
 
 function cancelRowEdit() {
   expanded.value = undefined
-  editState.value = {}
+  editState.value = {} as OfficerTableEditState
 }
 
 function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo') {
@@ -101,9 +118,8 @@ function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableS
   let newState: OfficerTableState = {} as OfficerTableState
 
   if (action === 'edit') {
-    const newBadgeLabel = 'firstName' in data ? 'CHANGED NAME' : 'roles' in data ? 'CHANGED ROLES' : 'CHANGED ADDRESS'
     const newOfficer = merge({}, initialState.officer, data)
-    const newBadges = [...initialState.badges, { label: newBadgeLabel }]
+    const newBadges = getOfficerTableBadges(initialState.badges, editState.value.section)
     newState = {
       state: {
         officer: newOfficer,
@@ -192,11 +208,11 @@ function getRowActions(row: Row<OfficerTableState>) {
       </div>
     </template> -->
     
-    <template #roles-cell="{ row }">
+    <!-- <template #roles-cell="{ row }">
       <ul>
         <li v-for="role in row.original.state.officer.roles" :key="role">{{ $t(`enum.officerRole.${role}`) }}</li>
       </ul>
-    </template>
+    </template> -->
     
     <template #mailingAddress-cell="{ row }">
       <ConnectAddressDisplay :address="row.original.state.officer.mailingAddress" />
@@ -216,8 +232,8 @@ function getRowActions(row: Row<OfficerTableState>) {
         <UButtonGroup>
           <UButton
             variant="ghost"
-            label="Cease"
-            icon="i-mdi-close"
+            label="Remove"
+            icon="i-mdi-delete"
             class="px-4"
             @click="() => console.info('Cease: ', row.original)"
           />
@@ -239,7 +255,7 @@ function getRowActions(row: Row<OfficerTableState>) {
 
     <template #expanded="{ row }">
       <FormOfficerChange 
-        :default-obj="editState" 
+        :default-obj="editState.data" 
         @cancel="cancelRowEdit"
         @submit.prevent="onRowEditSubmit($event, row)"
       />

@@ -1,4 +1,11 @@
 export default {
+  badge: {
+    rolesChanged: 'ROLES CHANGED',
+    nameChanged: 'NAME CHANGED',
+    addressChanged: 'ADDRESS CHANGED',
+    added: 'ADDED',
+    removed: 'REMOVED'
+  },
   btn: {
     done: 'Done',
     cancel: 'Cancel'
