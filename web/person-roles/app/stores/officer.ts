@@ -1,10 +1,13 @@
-// import { z } from 'zod'
+import type { ExpandedState, Row } from '@tanstack/vue-table'
+import { merge } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   // const t = useNuxtApp().$i18n.t
 
   const addingOfficer = ref<boolean>(false)
-  const activeOfficer = ref<Officer | undefined>(undefined)
+
+  const expanded = ref<ExpandedState | undefined>(undefined)
+  const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
   const officers = ref<OfficerTableState[]>([
     {
@@ -99,16 +102,67 @@ export const useOfficerStore = defineStore('officer-store', () => {
     }
   }
 
-  function addOfficer(v: Officer) {
-    officers.value.push({
+  function addNewOfficer(v: Officer) {
+    const newState = {
       state: {
         officer: v,
-        badges: [{ label: 'ADDED' }]
+        badges: getOfficerTableBadges([], 'added')
       },
       history: []
-    })
-    addingOfficer.value = false
-    activeOfficer.value = undefined
+    }
+
+    officers.value = [
+      ...officers.value,
+      newState
+    ]
+  }
+
+  function updateOfficers(
+    data: Partial<Officer>,
+    row: Row<OfficerTableState>,
+    action: 'edit' | 'undo' | 'removed' | 'add'
+  ) {
+    const index = row.index
+    const initialState = row.original.state
+    const initialHistory = row.original.history
+
+    let newState: OfficerTableState = {} as OfficerTableState
+
+    if (action === 'edit') {
+      const newOfficer = merge({}, initialState.officer, data)
+      const newBadges = getOfficerTableBadges(initialState.badges, editState.value.section)
+      newState = {
+        state: {
+          officer: newOfficer,
+          badges: newBadges
+        },
+        history: [...initialHistory, initialState]
+      }
+    } else if (action === 'undo') {
+      const previousState = initialHistory[initialHistory.length - 1]
+      if (previousState) {
+        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
+        newState = {
+          state: previousState,
+          history: newHistory
+        }
+      }
+    } else if (action === 'removed') {
+      const newBadges = getOfficerTableBadges(initialState.badges, 'removed')
+      newState = {
+        state: {
+          officer: initialState.officer,
+          badges: newBadges
+        },
+        history: [...initialHistory, initialState]
+      }
+    }
+
+    officers.value = [
+      ...officers.value.slice(0, index),
+      newState,
+      ...officers.value.slice(index + 1)
+    ]
   }
 
   function $reset() {
@@ -117,10 +171,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   return {
     officers,
-    activeOfficer,
     addingOfficer,
+    expanded,
+    editState,
     getNewOfficer,
-    addOfficer,
+    addNewOfficer,
+    updateOfficers,
     $reset
   }
 }

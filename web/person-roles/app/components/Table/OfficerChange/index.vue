@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { h } from 'vue'
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
-import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { isEqual, merge } from 'lodash'
+import type { Row } from '@tanstack/vue-table'
+import { isEqual } from 'lodash'
 
 const { t } = useI18n()
 
@@ -12,7 +12,8 @@ const UButtonGroup = resolveComponent('UButtonGroup')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 
-const { officers } = storeToRefs(useOfficerStore())
+const officerStore = useOfficerStore()
+const { officers, expanded, editState } = storeToRefs(useOfficerStore())
 
 function isRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.badges.some(b => b.label === 'REMOVED')
@@ -128,7 +129,9 @@ const columns: TableColumn<OfficerTableState>[] = [
                   label: isRemoved ? 'Undo' : 'Remove',
                   icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-delete',
                   class: 'px-4',
-                  onClick: () => isRemoved ? updateOfficers({}, row, 'undo') : updateOfficers({}, row, 'removed')
+                  onClick: () => isRemoved
+                    ? officerStore.updateOfficers({}, row, 'undo')
+                    : officerStore.updateOfficers({}, row, 'removed')
                 }),
                 isRemoved
                   ? null
@@ -152,9 +155,6 @@ const columns: TableColumn<OfficerTableState>[] = [
     }
   }
 ]
-
-const expanded = ref<ExpandedState | undefined>(undefined)
-const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
 function initRowEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
   const officer = JSON.parse(JSON.stringify(row.original.state.officer))
@@ -187,52 +187,8 @@ function cancelRowEdit() {
   editState.value = {} as OfficerTableEditState
 }
 
-function updateOfficers(data: Partial<Officer>, row: Row<OfficerTableState>, action: 'edit' | 'undo' | 'removed') {
-  const index = row.index
-  const initialState = row.original.state
-  const initialHistory = row.original.history
-
-  let newState: OfficerTableState = {} as OfficerTableState
-
-  if (action === 'edit') {
-    const newOfficer = merge({}, initialState.officer, data)
-    const newBadges = getOfficerTableBadges(initialState.badges, editState.value.section)
-    newState = {
-      state: {
-        officer: newOfficer,
-        badges: newBadges
-      },
-      history: [...initialHistory, initialState]
-    }
-  } else if (action === 'undo') {
-    const previousState = initialHistory[initialHistory.length - 1]
-    if (previousState) {
-      const newHistory = initialHistory.slice(0, initialHistory.length - 1)
-      newState = {
-        state: previousState,
-        history: newHistory
-      }
-    }
-  } else if (action === 'removed') {
-    const newBadges = getOfficerTableBadges(initialState.badges, 'removed')
-    newState = {
-      state: {
-        officer: initialState.officer,
-        badges: newBadges
-      },
-      history: [...initialHistory, initialState]
-    }
-  }
-
-  officers.value = [
-    ...officers.value.slice(0, index),
-    newState,
-    ...officers.value.slice(index + 1)
-  ]
-}
-
 async function onRowEditSubmit(event: FormSubmitEvent<any>, row: Row<OfficerTableState>) {
-  updateOfficers(event.data, row, 'edit')
+  officerStore.updateOfficers(event.data, row, 'edit')
 
   cancelRowEdit()
 }
@@ -256,7 +212,7 @@ function getRowActions(row: Row<OfficerTableState>) {
   if (row.original.history.length) {
     actions.unshift({
       label: 'Undo',
-      onSelect: () => updateOfficers({}, row, 'undo')
+      onSelect: () => officerStore.updateOfficers({}, row, 'undo')
     })
   }
 

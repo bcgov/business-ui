@@ -6,7 +6,7 @@ const officerStore = useOfficerStore()
 const addOfficer = ref<boolean>(false)
 
 async function onFormSubmit(event: FormSubmitEvent<any>) {
-  officerStore.addOfficer(event.data)
+  officerStore.addNewOfficer(event.data)
   // console.info(event.data)
 }
 
