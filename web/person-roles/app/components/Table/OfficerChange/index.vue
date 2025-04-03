@@ -7,8 +7,16 @@ import { isEqual, merge } from 'lodash'
 const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
+const UButton = resolveComponent('UButton')
+const UButtonGroup = resolveComponent('UButtonGroup')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
+const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 
 const { officers } = storeToRefs(useOfficerStore())
+
+function isRowRemoved(row: Row<OfficerTableState>) {
+  return row.original.state.badges.some(b => b.label === 'REMOVED')
+}
 
 const columns: TableColumn<OfficerTableState>[] = [
   {
@@ -16,7 +24,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: 'Name',
     meta: {
       class: {
-        td: 'pl-6 font-bold min-w-48 max-w-48 whitespace-normal',
+        td: 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal',
         th: 'pl-6'
       }
     },
@@ -24,8 +32,9 @@ const columns: TableColumn<OfficerTableState>[] = [
       const officer = row.original.state.officer
       const badges = row.original.state.badges
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`
+      const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
 
-      return h('div', { class: 'flex flex-col gap-2' }, [
+      return h('div', { class: containerClass }, [
         h('span', {}, name),
         badges.length
           ? h('ul', { class: 'flex flex-col gap-2' },
@@ -45,11 +54,17 @@ const columns: TableColumn<OfficerTableState>[] = [
   {
     id: 'roles',
     header: 'Roles',
+    meta: {
+      class: {
+        td: 'px-2 py-4'
+      }
+    },
     cell: ({ row }) => {
       const roles = row.original.state.officer.roles
+      const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-1' : 'flex flex-col gap-1'
 
       return roles.length
-        ? h('ul', { class: 'flex flex-col gap-1' },
+        ? h('ul', { class: containerClass },
             roles.map(role =>
               h('li', {}, t(`enum.officerRole.${role}`))
             )
@@ -59,19 +74,81 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'mailingAddress',
-    header: 'Mailing Address'
+    header: 'Mailing Address',
+    meta: {
+      class: {
+        td: 'px-2 py-4'
+      }
+    },
+    cell: ({ row }) => {
+      const address = row.original.state.officer.mailingAddress
+      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+      return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
+    }
   },
   {
     id: 'deliveryAddress',
-    header: 'Delivery Address'
+    header: 'Delivery Address',
+    meta: {
+      class: {
+        td: 'px-2 py-4'
+      }
+    },
+    cell: ({ row }) => {
+      const mailingAddress = row.original.state.officer.mailingAddress
+      const deliveryAddress = row.original.state.officer.deliveryAddress
+      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+      return h('div', { class: containerClass }, h(isEqual(mailingAddress, deliveryAddress)
+        ? h('span', {}, t('label.sameAsMailAddress'))
+        : h(ConnectAddressDisplay, { address: deliveryAddress })
+      ))
+    }
   },
   {
     id: 'actions',
     meta: {
       class: {
-        td: 'pr-6 ml-auto',
+        td: 'pl-2 py-4 pr-6 ml-auto',
         th: 'pr-6'
       }
+    },
+    cell: ({ row }) => {
+      const isRemoved = row.original.state.badges.some(b => b.label === 'REMOVED')
+      return h(
+        'div',
+        { class: 'flex justify-end' },
+        [
+          h(
+            UButtonGroup,
+            {},
+            {
+              default: () => [
+                h(UButton, {
+                  variant: 'ghost',
+                  label: isRemoved ? 'Undo' : 'Remove',
+                  icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-delete',
+                  class: 'px-4',
+                  onClick: () => isRemoved ? updateOfficers({}, row, 'undo') : updateOfficers({}, row, 'removed')
+                }),
+                isRemoved
+                  ? null
+                  : h(UDropdownMenu, {
+                    items: getRowActions(row),
+                    content: { align: 'end' }
+                  }, {
+                    default: () =>
+                      h(UButton, {
+                        'variant': 'ghost',
+                        'icon': 'i-mdi-caret-down',
+                        'class': 'px-4',
+                        'aria-label': 'More Actions'
+                      })
+                  })
+              ]
+            }
+          )
+        ]
+      )
     }
   }
 ]
@@ -110,7 +187,7 @@ function cancelRowEdit() {
   editState.value = {} as OfficerTableEditState
 }
 
-function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo') {
+function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo' | 'removed') {
   const index = row.index
   const initialState = row.original.state
   const initialHistory = row.original.history
@@ -135,6 +212,15 @@ function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableS
         state: previousState,
         history: newHistory
       }
+    }
+  } else if (action === 'removed') {
+    const newBadges = getOfficerTableBadges(initialState.badges, 'removed')
+    newState = {
+      state: {
+        officer: initialState.officer,
+        badges: newBadges
+      },
+      history: [...initialHistory, initialState]
     }
   }
 
@@ -179,7 +265,6 @@ function getRowActions(row: Row<OfficerTableState>) {
 </script>
 
 <template>
-  <!-- eslint-disable -->
   <UTable
     v-model:expanded="expanded"
     :data="officers"
@@ -190,77 +275,17 @@ function getRowActions(row: Row<OfficerTableState>) {
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-2 text-bcGovGray-700 align-top'
+      td: 'px-0 py-0 text-bcGovGray-700 align-top'
     }"
   >
-    <!-- <template #name-cell="{ row }">
-      <div class="flex flex-col gap-2">
-        <span>{{ row.original.state.officer.firstName }}</span>
-        <ul v-if="row.original.state.badges.length" class="flex flex-col gap-2">
-          <UBadge 
-            v-for="badge in row.original.state.badges" 
-            :key="badge.label" 
-            as="li"
-            :label="badge.label"
-            class="w-min"
-          />
-        </ul>
-      </div>
-    </template> -->
-    
-    <!-- <template #roles-cell="{ row }">
-      <ul>
-        <li v-for="role in row.original.state.officer.roles" :key="role">{{ $t(`enum.officerRole.${role}`) }}</li>
-      </ul>
-    </template> -->
-    
-    <template #mailingAddress-cell="{ row }">
-      <ConnectAddressDisplay :address="row.original.state.officer.mailingAddress" />
-    </template>
-    
-    <template #deliveryAddress-cell="{ row }">
-      <ConnectAddressDisplay 
-        v-if="!isEqual(row.original.state.officer.mailingAddress, row.original.state.officer.deliveryAddress)" 
-        :address="row.original.state.officer.deliveryAddress" 
-      />
-      <span v-else>{{ $t('label.sameAsMailAddress') }}</span>
-    </template>
-
-    <template #actions-cell="{ row }">
-      <!-- <pre>{{ row }}</pre> -->
-      <div class="flex justify-end">
-        <UButtonGroup>
-          <UButton
-            variant="ghost"
-            label="Remove"
-            icon="i-mdi-delete"
-            class="px-4"
-            @click="() => console.info('Cease: ', row.original)"
-          />
-
-          <UDropdownMenu
-            :items="getRowActions(row)"
-            :content="{ align: 'end' }"
-          >
-            <UButton
-              variant="ghost"
-              icon="i-mdi-caret-down"
-              class="px-4"
-              aria-label="More Actions"
-            />
-          </UDropdownMenu>
-        </UButtonGroup>
-      </div>
-    </template>
-
     <template #expanded="{ row }">
-      <FormOfficerChange 
-        :default-obj="editState.data" 
+      <FormOfficerChange
+        :default-state="editState.data"
         @cancel="cancelRowEdit"
         @submit.prevent="onRowEditSubmit($event, row)"
       />
     </template>
   </UTable>
 
-  <pre>{{officers}}</pre>
+  <pre>{{ officers }}</pre>
 </template>

@@ -3,20 +3,12 @@ import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
 
 const { t } = useI18n()
-// const officerStore = useOfficerStore()
-
-// const defaultOfficer = officerStore.getNewOfficer()
-
-// const {
-//   defaultObj = defaultOfficer
-// } = defineProps<{
-//   defaultObj?: Partial<Officer>
-// }>()
 
 const props = withDefaults(defineProps<{
-  defaultObj?: Partial<Officer>
+  defaultState?: Partial<Officer>
+  editing?: boolean
 }>(), {
-  defaultObj: () => ({
+  defaultState: () => ({
     firstName: '',
     middleName: '',
     lastName: '',
@@ -90,7 +82,7 @@ type NameSchema = z.output<typeof nameSchema>
 type MailingSchema = z.output<typeof mailingSchema>
 type DeliverySchema = z.output<typeof deliverySchema>
 
-const state = reactive<Partial<Schema & NameSchema & MailingSchema & DeliverySchema>>(props.defaultObj)
+const state = reactive<Partial<Schema & NameSchema & MailingSchema & DeliverySchema>>(props.defaultState)
 
 const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CEO}`), value: OfficerRole.CEO },
@@ -129,8 +121,11 @@ async function onError(event: FormErrorEvent) {
     ref="officer-form"
     :state
     :schema
-    class="bg-white rounded-sm p-6 max-w-4xl mx-auto ring ring-gray-300"
-    :class="{ 'border-l-3 border-red-600': !!formRef?.errors.length }"
+    class="bg-white p-6 mx-auto"
+    :class="{
+      'border-l-3 border-red-600': !!formRef?.errors.length,
+      'rounded-sm ring ring-gray-300': !!editing
+    }"
     :validate-on="['blur']"
     @error="onError"
   >

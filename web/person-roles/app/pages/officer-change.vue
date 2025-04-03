@@ -10,14 +10,15 @@ async function onFormSubmit(event: FormSubmitEvent<any>) {
   // console.info(event.data)
 }
 
-onMounted(async () => {
-  const { $legalApi } = useNuxtApp()
+// TODO: load from legal api
+// onMounted(async () => {
+//   const { $legalApi } = useNuxtApp()
 
-  // const res = await $legalApi('/businesses/BC0871274/filings').catch()
-  const res = await $legalApi('/businesses/BC0871274/parties').catch()
+//   // const res = await $legalApi('/businesses/BC0871274/filings').catch()
+//   const res = await $legalApi('/businesses/BC0871274/parties').catch()
 
-  console.log(res)
-})
+//   console.log(res)
+// })
 </script>
 
 <template>
