@@ -281,6 +281,7 @@ function getRowActions(row: Row<OfficerTableState>) {
     <template #expanded="{ row }">
       <FormOfficerChange
         :default-state="editState.data"
+        :editing="true"
         @cancel="cancelRowEdit"
         @submit.prevent="onRowEditSubmit($event, row)"
       />

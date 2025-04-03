@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { FormErrorEvent } from '@nuxt/ui'
+import type { FormErrorEvent, Form } from '@nuxt/ui'
 import { z } from 'zod'
+import { UForm } from '#components'
 
 const { t } = useI18n()
 
@@ -37,10 +38,6 @@ const props = withDefaults(defineProps<{
 defineEmits<{
   cancel: []
 }>()
-
-const formRef = useTemplateRef('officer-form')
-
-const sameAsMailing = ref(false)
 
 const schema = z.object({})
 
@@ -79,10 +76,26 @@ const deliverySchema = z.object({
 
 type Schema = z.output<typeof schema>
 type NameSchema = z.output<typeof nameSchema>
+type RolesSchema = z.output<typeof rolesSchema>
 type MailingSchema = z.output<typeof mailingSchema>
 type DeliverySchema = z.output<typeof deliverySchema>
 
-const state = reactive<Partial<Schema & NameSchema & MailingSchema & DeliverySchema>>(props.defaultState)
+const state = reactive<Partial<Schema & NameSchema & RolesSchema & MailingSchema & DeliverySchema>>(props.defaultState)
+
+const formRef = useTemplateRef<Form<Schema>>('officer-form')
+const nameFormRef = useTemplateRef<Form<NameSchema>>('name-form')
+const rolesFormRef = useTemplateRef<Form<RolesSchema>>('roles-form')
+const mailingAddressFormRef = useTemplateRef<Form<MailingSchema>>('mailing-address-form')
+const deliveryAddressFormRef = useTemplateRef<Form<DeliverySchema>>('delivery-address-form')
+
+const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
+  return {
+    name: !!nameFormRef.value?.getErrors().length,
+    roles: !!rolesFormRef.value?.getErrors().length,
+    mailing: !!mailingAddressFormRef.value?.getErrors().length,
+    delivery: !!deliveryAddressFormRef.value?.getErrors().length
+  }
+})
 
 const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CEO}`), value: OfficerRole.CEO },
@@ -95,15 +108,6 @@ const roles = [
   { label: t(`enum.officerRole.${OfficerRole.OTHER}`), value: OfficerRole.OTHER },
   { label: t(`enum.officerRole.${OfficerRole.CHAIR}`), value: OfficerRole.CHAIR }
 ]
-
-const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
-  return {
-    name: !!formRef.value?.errors.some(item => item.name?.includes('name')),
-    roles: !!formRef.value?.errors.some(item => item.name?.includes('roles')),
-    mailing: !!formRef.value?.errors.some(item => item.name?.includes('mailing')),
-    delivery: sameAsMailing.value ? false : !!formRef.value?.errors.some(item => item.name?.includes('delivery'))
-  }
-})
 
 async function onError(event: FormErrorEvent) {
   const elId = event?.errors?.[0]?.id ?? event?.children?.[0]?.errors?.[0]?.id
@@ -123,8 +127,8 @@ async function onError(event: FormErrorEvent) {
     :schema
     class="bg-white p-6 mx-auto"
     :class="{
-      'border-l-3 border-red-600': !!formRef?.errors.length,
-      'rounded-sm ring ring-gray-300': !!editing
+      'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
+      'rounded-sm ring ring-gray-300': !editing
     }"
     :validate-on="['blur']"
     @error="onError"
@@ -136,6 +140,7 @@ async function onError(event: FormErrorEvent) {
       <div class="flex flex-col gap-8 w-full">
         <UForm
           v-if="state.firstName !== undefined"
+          ref="name-form"
           :state
           :schema="nameSchema"
         >
@@ -187,6 +192,7 @@ async function onError(event: FormErrorEvent) {
 
         <UForm
           v-if="state.roles !== undefined"
+          ref="roles-form"
           :state
           :schema="rolesSchema"
         >
@@ -217,6 +223,7 @@ async function onError(event: FormErrorEvent) {
 
         <UForm
           v-if="state.mailingAddress"
+          ref="mailing-address-form"
           :state
           :schema="mailingSchema"
         >
@@ -235,6 +242,7 @@ async function onError(event: FormErrorEvent) {
 
         <UForm
           v-if="state.deliveryAddress"
+          ref="delivery-address-form"
           :state
           :schema="deliverySchema"
         >
