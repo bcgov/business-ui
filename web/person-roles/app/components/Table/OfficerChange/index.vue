@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { h } from 'vue'
 import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual, merge } from 'lodash'
+
+const UBadge = resolveComponent('UBadge')
 
 const { officers } = storeToRefs(useOfficerStore())
 
 const columns: TableColumn<OfficerTableState>[] = [
   {
+    id: 'name',
     header: 'Name',
     meta: {
       class: {
@@ -15,9 +19,24 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const officer = row.original.officer
-      const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`
-      return name.toUpperCase()
+      const officer = row.original.state.officer
+      const badges = row.original.state.badges
+
+      return h('div', { class: 'flex flex-col gap-2' }, [
+        h('span', {}, officer.firstName),
+        badges.length
+          ? h('ul', { class: 'flex flex-col gap-2' },
+              badges.map(badge =>
+                h(UBadge, {
+                  as: 'li',
+                  label: badge.label,
+                  class: 'w-min',
+                  key: badge.label
+                })
+              )
+          )
+          : null
+      ])
     }
   },
   {
@@ -47,7 +66,7 @@ const expanded = ref<ExpandedState | undefined>(undefined)
 const editState = ref({})
 
 function initRowEdit(row: Row<OfficerTableState>, section: 'name' | 'roles' | 'address') {
-  const officer = JSON.parse(JSON.stringify(row.original.officer))
+  const officer = JSON.parse(JSON.stringify(row.original.state.officer))
 
   const sectionMap: Record<string, Partial<Officer>> = {
     name: {
@@ -76,22 +95,28 @@ function cancelRowEdit() {
 
 function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo') {
   const index = row.index
-  const initialOfficer = row.original.officer
+  const initialState = row.original.state
   const initialHistory = row.original.history
 
-  let newOfficer: OfficerTableState = {} as OfficerTableState
+  let newState: OfficerTableState = {} as OfficerTableState
 
   if (action === 'edit') {
-    newOfficer = {
-      officer: merge({}, initialOfficer, data),
-      history: [...initialHistory, initialOfficer]
+    const newBadgeLabel = 'firstName' in data ? 'CHANGED NAME' : 'roles' in data ? 'CHANGED ROLES' : 'CHANGED ADDRESS'
+    const newOfficer = merge({}, initialState.officer, data)
+    const newBadges = [...initialState.badges, { label: newBadgeLabel }]
+    newState = {
+      state: {
+        officer: newOfficer,
+        badges: newBadges
+      },
+      history: [...initialHistory, initialState]
     }
-  } else {
-    const previousOfficer = initialHistory[initialHistory.length - 1]
-    if (previousOfficer) {
+  } else if (action === 'undo') {
+    const previousState = initialHistory[initialHistory.length - 1]
+    if (previousState) {
       const newHistory = initialHistory.slice(0, initialHistory.length - 1)
-      newOfficer = {
-        officer: { ...previousOfficer },
+      newState = {
+        state: previousState,
         history: newHistory
       }
     }
@@ -99,7 +124,7 @@ function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableS
 
   officers.value = [
     ...officers.value.slice(0, index),
-    newOfficer,
+    newState,
     ...officers.value.slice(index + 1)
   ]
 }
@@ -152,20 +177,35 @@ function getRowActions(row: Row<OfficerTableState>) {
       td: 'px-2 text-bcGovGray-700 align-top'
     }"
   >
+    <!-- <template #name-cell="{ row }">
+      <div class="flex flex-col gap-2">
+        <span>{{ row.original.state.officer.firstName }}</span>
+        <ul v-if="row.original.state.badges.length" class="flex flex-col gap-2">
+          <UBadge 
+            v-for="badge in row.original.state.badges" 
+            :key="badge.label" 
+            as="li"
+            :label="badge.label"
+            class="w-min"
+          />
+        </ul>
+      </div>
+    </template> -->
+    
     <template #roles-cell="{ row }">
       <ul>
-        <li v-for="role in row.original.officer.roles" :key="role">{{ $t(`enum.officerRole.${role}`) }}</li>
+        <li v-for="role in row.original.state.officer.roles" :key="role">{{ $t(`enum.officerRole.${role}`) }}</li>
       </ul>
     </template>
     
     <template #mailingAddress-cell="{ row }">
-      <ConnectAddressDisplay :address="row.original.officer.mailingAddress" />
+      <ConnectAddressDisplay :address="row.original.state.officer.mailingAddress" />
     </template>
     
     <template #deliveryAddress-cell="{ row }">
       <ConnectAddressDisplay 
-        v-if="!isEqual(row.original.officer.mailingAddress, row.original.officer.deliveryAddress)" 
-        :address="row.original.officer.deliveryAddress" 
+        v-if="!isEqual(row.original.state.officer.mailingAddress, row.original.state.officer.deliveryAddress)" 
+        :address="row.original.state.officer.deliveryAddress" 
       />
       <span v-else>{{ $t('label.sameAsMailAddress') }}</span>
     </template>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
+import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
 
 const { t } = useI18n()
-const officerStore = useOfficerStore()
+// const officerStore = useOfficerStore()
 
 // const defaultOfficer = officerStore.getNewOfficer()
 
@@ -47,8 +47,6 @@ defineEmits<{
 }>()
 
 const formRef = useTemplateRef('officer-form')
-
-// const defaultObj = officerStore.getNewOfficer()
 
 const sameAsMailing = ref(false)
 

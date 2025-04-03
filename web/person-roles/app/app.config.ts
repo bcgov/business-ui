@@ -6,6 +6,16 @@ export default defineAppConfig({
       primary: 'blue',
       neutral: 'bcGovGray'
     },
+    badge: {
+      slots: {
+        base: 'font-medium inline-flex items-center',
+        label: 'truncate font-bold',
+        leadingIcon: 'shrink-0',
+        leadingAvatar: 'shrink-0',
+        leadingAvatarSize: '',
+        trailingIcon: 'shrink-0'
+      }
+    },
     button: {
       compoundVariants: [
         {
