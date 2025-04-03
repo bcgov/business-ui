@@ -40,7 +40,7 @@ defineEmits<{
   cancel: []
 }>()
 
-const defaultDeliveryAddress = { ...props.defaultState.deliveryAddress }
+const defaultDeliveryAddress = { ...props.defaultState.deliveryAddress } as ConnectAddress // default defined correctly
 
 const emptySchema = z.object({})
 
@@ -127,7 +127,6 @@ watch(
       delete state.deliveryAddress
       deliveryAddressFormRef.value?.clear()
     } else {
-      // @ts-expect-error - type is partial but default defined correctly above in props/withDefaults
       state.deliveryAddress = defaultDeliveryAddress
     }
   },
