@@ -9,6 +9,17 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
+  app: {
+    head: {
+      link: [
+        { rel: 'stylesheet', href: '/css/addresscomplete-2.50.min.css' }
+      ],
+      script: [
+        { src: '/js/addresscomplete-2.50.min.js', type: 'text/javascript', defer: true }
+      ]
+    }
+  },
+
   css: [
     '~/assets/css/tw.css'
   ],
@@ -31,7 +42,8 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { redirect: '/en-CA' },
-    '/fr-CA': { prerender: false },
+    '/en-CA': { redirect: '/en-CA/officer-change' },
+    '/fr-CA': { prerender: false, redirect: '/fr-CA/officer-change' },
     '/fr-CA/**': { prerender: false }
   },
 
@@ -97,7 +109,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      version: `Person Roles UI v${process.env.npm_package_version || ''}`
+      version: `Person Roles UI v${process.env.npm_package_version || ''}`,
+      addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY
     }
   }
 })
