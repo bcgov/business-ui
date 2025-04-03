@@ -31,7 +31,8 @@ const props = withDefaults(defineProps<{
       postalCode: '',
       country: 'CA',
       locationDescription: ''
-    }
+    },
+    sameAsMailing: false
   })
 })
 
@@ -39,7 +40,9 @@ defineEmits<{
   cancel: []
 }>()
 
-const schema = z.object({})
+const defaultDeliveryAddress = { ...props.defaultState.deliveryAddress }
+
+const emptySchema = z.object({})
 
 const nameSchema = z.object({
   firstName: z.string().optional(),
@@ -61,7 +64,6 @@ const mailingSchema = z.object({
     t('validation.address.postalCode'),
     t('validation.address.country')
   )
-  // sameAsMailing: z.boolean().default(false)
 })
 
 const deliverySchema = z.object({
@@ -71,18 +73,17 @@ const deliverySchema = z.object({
     t('validation.address.region'),
     t('validation.address.postalCode'),
     t('validation.address.country')
-  )
+  ),
+  sameAsMailing: z.boolean().default(false)
 })
 
-type Schema = z.output<typeof schema>
 type NameSchema = z.output<typeof nameSchema>
 type RolesSchema = z.output<typeof rolesSchema>
 type MailingSchema = z.output<typeof mailingSchema>
 type DeliverySchema = z.output<typeof deliverySchema>
 
-const state = reactive<Partial<Schema & NameSchema & RolesSchema & MailingSchema & DeliverySchema>>(props.defaultState)
+const state = reactive<Partial<NameSchema & RolesSchema & MailingSchema & DeliverySchema>>(props.defaultState)
 
-const formRef = useTemplateRef<Form<Schema>>('officer-form')
 const nameFormRef = useTemplateRef<Form<NameSchema>>('name-form')
 const rolesFormRef = useTemplateRef<Form<RolesSchema>>('roles-form')
 const mailingAddressFormRef = useTemplateRef<Form<MailingSchema>>('mailing-address-form')
@@ -118,13 +119,36 @@ async function onError(event: FormErrorEvent) {
     element?.focus()
   }
 }
+
+watch(
+  () => state.sameAsMailing,
+  (v) => {
+    if (v) {
+      delete state.deliveryAddress
+      deliveryAddressFormRef.value?.clear()
+    } else {
+      // @ts-expect-error - type is partial but default defined correctly above in props/withDefaults
+      state.deliveryAddress = defaultDeliveryAddress
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => state.roles,
+  (v) => {
+    if (v && v.length) {
+      rolesFormRef.value?.validate({ silent: true })
+    }
+  }
+)
 </script>
 
 <template>
   <UForm
     ref="officer-form"
     :state
-    :schema
+    :schema="emptySchema"
     class="bg-white p-6 mx-auto"
     :class="{
       'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
@@ -235,31 +259,32 @@ async function onError(event: FormErrorEvent) {
               id="mailing-address"
               v-model="state.mailingAddress"
               schema-prefix="mailingAddress."
-              :form-ref="formRef"
+              :form-ref="mailingAddressFormRef"
             />
           </FormSection>
         </UForm>
 
         <UForm
-          v-if="state.deliveryAddress"
+          v-if="state.mailingAddress"
           ref="delivery-address-form"
           :state
-          :schema="deliverySchema"
+          :schema="state.sameAsMailing ? emptySchema : deliverySchema"
         >
           <FormSection
             :label="$t('label.deliveryAddress')"
             :invalid="formErrors.delivery"
           >
-            <!-- <UCheckbox
-            v-model="sameAsMailing"
-            :label="$t('label.sameAsMailAddress')"
-          /> -->
+            <UCheckbox
+              v-model="state.sameAsMailing"
+              :label="$t('label.sameAsMailAddress')"
+            />
 
             <FormAddress
+              v-if="state.deliveryAddress"
               id="delivery-address"
               v-model="state.deliveryAddress"
               schema-prefix="deliveryAddress."
-              :form-ref="formRef"
+              :form-ref="deliveryAddressFormRef"
             />
           </FormSection>
         </UForm>

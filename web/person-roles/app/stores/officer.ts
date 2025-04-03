@@ -31,7 +31,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
             region: 'BC',
             streetAdditional: '',
             locationDescription: ''
-          }
+          },
+          sameAsMailing: false
         },
         badges: []
       },
@@ -61,7 +62,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
             region: 'BC',
             streetAdditional: '',
             locationDescription: ''
-          }
+          },
+          sameAsMailing: true
         },
         badges: []
       },
@@ -92,7 +94,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
         postalCode: '',
         country: 'CA',
         locationDescription: ''
-      }
+      },
+      sameAsMailing: false
     }
   }
 

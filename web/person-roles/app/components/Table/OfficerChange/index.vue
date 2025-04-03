@@ -187,7 +187,7 @@ function cancelRowEdit() {
   editState.value = {} as OfficerTableEditState
 }
 
-function updateOfficers(data: Partial<OfficerTableState>, row: Row<OfficerTableState>, action: 'edit' | 'undo' | 'removed') {
+function updateOfficers(data: Partial<Officer>, row: Row<OfficerTableState>, action: 'edit' | 'undo' | 'removed') {
   const index = row.index
   const initialState = row.original.state
   const initialHistory = row.original.history
