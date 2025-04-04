@@ -66,7 +66,7 @@ export default {
     actions: 'Actions',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
-    changeAddress: 'Change Roles',
+    changeAddress: 'Change Address',
     undo: 'Undo'
   },
   validation: {

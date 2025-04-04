@@ -38,6 +38,7 @@ async function onFormSubmit(data: Partial<Officer>) {
 
     <FormOfficerChange
       v-if="officerStore.addingOfficer"
+      :title="$t('label.addOfficer')"
       @officer-change="onFormSubmit"
       @cancel="officerStore.addingOfficer = false"
     />

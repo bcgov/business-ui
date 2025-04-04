@@ -14,6 +14,23 @@ const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 const officerStore = useOfficerStore()
 const { officers, expanded, editState } = storeToRefs(useOfficerStore())
 
+const formTitle = computed(() => {
+  if (!editState.value.section) {
+    return ''
+  }
+
+  switch (editState.value.section) {
+  case 'address':
+    return t('label.changeAddress')
+  case 'roles':
+    return t('label.changeRoles')
+  case 'name':
+    return t('label.changeName')
+  default:
+    return ''
+  }
+})
+
 function isRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.actions.includes('removed')
 }
@@ -25,7 +42,7 @@ function getRowActions(row: Row<OfficerTableState>) {
       onSelect: () => officerStore.initOfficerEdit(row, 'name')
     },
     {
-      label: t('label.roles'),
+      label: t('label.changeRoles'),
       onSelect: () => officerStore.initOfficerEdit(row, 'roles')
     },
     {
@@ -211,6 +228,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       <FormOfficerChange
         :default-state="editState.data"
         :editing="true"
+        :title="formTitle"
         @cancel="officerStore.cancelOfficerEdit"
         @officer-change="officerStore.onOfficerEditSubmit($event, row)"
       />

@@ -9,7 +9,9 @@ defineProps<{
   <fieldset class="flex flex-col gap-6">
     <legend
       class="text-base text-bcGovGray-900 font-bold mb-4"
-      :class="{ 'text-red-600': invalid }"
+      :class="{
+        'text-red-600': invalid
+      }"
     >
       {{ label }}
     </legend>

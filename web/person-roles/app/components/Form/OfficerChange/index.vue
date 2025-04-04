@@ -8,6 +8,7 @@ const { t } = useI18n()
 const props = withDefaults(defineProps<{
   defaultState?: Partial<Officer>
   editing?: boolean
+  title: string
 }>(), {
   defaultState: () => ({
     firstName: '',
@@ -186,8 +187,8 @@ watch(
     @submit="onSubmit"
   >
     <div class="flex flex-col sm:flex-row gap-6">
-      <h2 class="w-1/4 font-bold text-bcGovGray-900 text-base">
-        {{ $t('label.addOfficer') }}
+      <h2 class="w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
+        {{ title }}
       </h2>
       <div class="flex flex-col gap-8 w-full">
         <UForm
@@ -304,6 +305,7 @@ watch(
           <FormSection
             :label="$t('label.deliveryAddress')"
             :invalid="formErrors.delivery"
+            :orientation="editing ? 'horizontal' : 'vertical'"
           >
             <FormAddress
               id="delivery-address"
@@ -323,6 +325,7 @@ watch(
           <FormSection
             :label="$t('label.mailingAddress')"
             :invalid="formErrors.mailing"
+            :orientation="editing ? 'horizontal' : 'vertical'"
           >
             <UCheckbox
               v-model="state.sameAsDelivery"
