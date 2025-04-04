@@ -16,6 +16,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           firstName: 'Officer 1 first',
           middleName: 'Officer 1 middle',
           lastName: 'Officer 1 last',
+          preferredName: '',
           roles: [OfficerRole.CEO],
           mailingAddress: {
             street: '260 Champ Ave',
@@ -35,7 +36,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
             streetAdditional: '',
             locationDescription: ''
           },
-          sameAsDelivery: false
+          sameAsDelivery: false,
+          hasPreferredName: false
         },
         badges: []
       },
@@ -47,6 +49,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           firstName: 'Officer 2 first',
           middleName: 'Officer 2 middle',
           lastName: 'Officer 2 last',
+          preferredName: 'Heisenberg',
           roles: [OfficerRole.CFO, OfficerRole.TREASURER],
           mailingAddress: {
             street: '260 Champ Ave',
@@ -66,7 +69,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
             streetAdditional: '',
             locationDescription: ''
           },
-          sameAsDelivery: true
+          sameAsDelivery: true,
+          hasPreferredName: true
         },
         badges: []
       },
@@ -79,6 +83,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       firstName: '',
       middleName: '',
       lastName: '',
+      preferredName: '',
       roles: [],
       mailingAddress: {
         street: '',
@@ -98,7 +103,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
         country: 'CA',
         locationDescription: ''
       },
-      sameAsDelivery: false
+      sameAsDelivery: false,
+      hasPreferredName: false
     }
   }
 

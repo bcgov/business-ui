@@ -23,6 +23,9 @@ export default {
       CHAIR: 'Chair'
     }
   },
+  help: {
+    preferredName: 'Example: William Smith may prefer to go by Bill Smith when with friends.'
+  },
   label: {
     address: 'Address',
     addressResidential: 'Residential Address',
@@ -57,6 +60,9 @@ export default {
     firstName: 'First Name',
     middleNameOpt: 'Middle Name (Optional)',
     lastName: 'Last Name',
+    preferredNameOpt: 'Preferred Name (Optional)',
+    preferredName: 'Preferred Name',
+    haspreferredName: 'This person has another name they prefer to use',
     actions: 'Actions'
   },
   validation: {

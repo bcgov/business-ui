@@ -32,10 +32,17 @@ const columns: TableColumn<OfficerTableState>[] = [
       const officer = row.original.state.officer
       const badges = row.original.state.badges
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
+      const preferredName = officer.preferredName
       const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
 
       return h('div', { class: containerClass }, [
         h('span', {}, name),
+        preferredName
+          ? h('div', { class: 'flex flex-col' }, [
+            h('i', { class: 'text-xs italic' }, t('label.preferredName')),
+            h('span', { class: 'text-xs' }, preferredName.toUpperCase())
+          ])
+          : null,
         badges.length
           ? h('ul', { class: 'flex flex-col gap-2' },
               badges.map(badge =>
@@ -106,9 +113,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'actions',
-    header: () => {
-      return h('span', { class: 'sr-only' }, t('label.actions'))
-    },
+    header: () => h('span', { class: 'sr-only' }, t('label.actions')),
     meta: {
       class: {
         td: 'pl-2 py-4 pr-6 ml-auto',

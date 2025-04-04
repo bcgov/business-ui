@@ -13,6 +13,7 @@ const props = withDefaults(defineProps<{
     firstName: '',
     middleName: '',
     lastName: '',
+    preferredName: '',
     roles: [],
     mailingAddress: {
       street: '',
@@ -32,7 +33,8 @@ const props = withDefaults(defineProps<{
       country: 'CA',
       locationDescription: ''
     },
-    sameAsDelivery: false
+    sameAsDelivery: false,
+    hasPreferredName: false
   })
 })
 
@@ -50,7 +52,9 @@ const nameSchema = z.object({
   middleName: z.string().optional(),
   lastName: z
     .string({ required_error: t('validation.fieldRequired') })
-    .min(2, { message: t('validation.minChars', { count: 2 }) })
+    .min(2, { message: t('validation.minChars', { count: 2 }) }),
+  preferredName: z.string().optional(),
+  hasPreferredName: z.boolean().default(false)
 })
 
 const rolesSchema = z.object({
@@ -191,6 +195,7 @@ watch(
           ref="name-form"
           :state
           :schema="nameSchema"
+          class="flex flex-col gap-6 w-full"
         >
           <FormSection
             :label="$t('label.name')"
@@ -235,6 +240,27 @@ watch(
                 />
               </UFormField>
             </div>
+
+            <UCheckbox
+              v-model="state.hasPreferredName"
+              :label="$t('label.haspreferredName')"
+              :ui="{ root: 'items-center' }"
+            />
+
+            <UFormField
+              v-if="state.hasPreferredName"
+              v-slot="{ error }"
+              name="preferredName"
+              class="grow flex-1"
+              :help="$t('help.preferredName')"
+            >
+              <ConnectInput
+                id="preferred-name"
+                v-model="state.preferredName"
+                :invalid="!!error"
+                :label="$t('label.preferredNameOpt')"
+              />
+            </UFormField>
           </FormSection>
         </UForm>
 
@@ -301,6 +327,7 @@ watch(
             <UCheckbox
               v-model="state.sameAsDelivery"
               :label="$t('label.sameAsDeliveryAddress')"
+              :ui="{ root: 'items-center' }"
             />
 
             <FormAddress
