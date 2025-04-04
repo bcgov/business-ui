@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
-
 const officerStore = useOfficerStore()
 
 const addOfficer = ref<boolean>(false)
 
-async function onFormSubmit(event: FormSubmitEvent<any>) {
-  officerStore.addNewOfficer(event.data)
+async function onFormSubmit(data: Partial<Officer>) {
+  officerStore.addNewOfficer(data as Officer)
   // console.info(event.data)
 }
 
@@ -37,7 +35,7 @@ async function onFormSubmit(event: FormSubmitEvent<any>) {
 
     <FormOfficerChange
       v-if="addOfficer"
-      @submit="onFormSubmit"
+      @officer-change="onFormSubmit"
       @cancel="addOfficer = false"
     />
 

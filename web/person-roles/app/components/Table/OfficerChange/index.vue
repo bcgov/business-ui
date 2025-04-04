@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { h } from 'vue'
-import type { FormSubmitEvent, TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@nuxt/ui'
 import type { Row } from '@tanstack/vue-table'
-import { isEqual } from 'lodash'
 
 const { t } = useI18n()
 
@@ -96,10 +95,10 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const mailingAddress = row.original.state.officer.mailingAddress
+      const sameAs = row.original.state.officer.sameAsMailing
       const deliveryAddress = row.original.state.officer.deliveryAddress
       const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
-      return h('div', { class: containerClass }, h(isEqual(mailingAddress, deliveryAddress)
+      return h('div', { class: containerClass }, h(sameAs
         ? h('span', {}, t('label.sameAsMailAddress'))
         : h(ConnectAddressDisplay, { address: deliveryAddress })
       ))
@@ -187,8 +186,8 @@ function cancelRowEdit() {
   editState.value = {} as OfficerTableEditState
 }
 
-async function onRowEditSubmit(event: FormSubmitEvent<any>, row: Row<OfficerTableState>) {
-  officerStore.updateOfficers(event.data, row, 'edit')
+async function onRowEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
+  officerStore.updateOfficers(data, row, 'edit')
 
   cancelRowEdit()
 }
@@ -239,7 +238,7 @@ function getRowActions(row: Row<OfficerTableState>) {
         :default-state="editState.data"
         :editing="true"
         @cancel="cancelRowEdit"
-        @submit.prevent="onRowEditSubmit($event, row)"
+        @officer-change="onRowEditSubmit($event, row)"
       />
     </template>
   </UTable>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormErrorEvent, Form } from '@nuxt/ui'
+import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import { UForm } from '#components'
 
@@ -36,8 +36,9 @@ const props = withDefaults(defineProps<{
   })
 })
 
-defineEmits<{
-  cancel: []
+const emit = defineEmits<{
+  'cancel': []
+  'officer-change': [Partial<Officer>]
 }>()
 
 const defaultDeliveryAddress = { ...props.defaultState.deliveryAddress } as ConnectAddress // default defined correctly
@@ -53,7 +54,19 @@ const nameSchema = z.object({
 })
 
 const rolesSchema = z.object({
-  roles: z.string().array().min(1, { message: t('validation.role.min') })
+  roles: z
+    .enum([
+      OfficerRole.ASSISTANT_SECRETARY,
+      OfficerRole.CEO,
+      OfficerRole.CFO,
+      OfficerRole.CHAIR,
+      OfficerRole.OTHER,
+      OfficerRole.PRESIDENT,
+      OfficerRole.SECRETARY,
+      OfficerRole.TREASURER,
+      OfficerRole.VP
+    ])
+    .array().min(1, { message: t('validation.role.min') })
 })
 
 const mailingSchema = z.object({
@@ -120,6 +133,17 @@ async function onError(event: FormErrorEvent) {
   }
 }
 
+function onSubmit(e: FormSubmitEvent<typeof state>) {
+  const data = e.data
+
+  if (data.sameAsMailing) {
+    data.deliveryAddress = data.mailingAddress
+  }
+
+  // TODO: cleanup type
+  emit('officer-change', data as Partial<Officer>)
+}
+
 watch(
   () => state.sameAsMailing,
   (v) => {
@@ -155,6 +179,7 @@ watch(
     }"
     :validate-on="['blur']"
     @error="onError"
+    @submit="onSubmit"
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h2 class="w-1/4 font-bold text-bcGovGray-900 text-base">
