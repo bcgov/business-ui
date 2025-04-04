@@ -31,7 +31,7 @@ const formTitle = computed(() => {
   }
 })
 
-function getOfficerTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
+function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   if (!actions.length) {
     return []
   }
@@ -116,7 +116,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       const officer = row.original.state.officer
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const preferredName = officer.preferredName
-      const badges = getOfficerTableBadges(row.original.state.actions)
+      const badges = getTableBadges(row.original.state.actions)
       const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
 
       return h('div', { class: containerClass }, [
