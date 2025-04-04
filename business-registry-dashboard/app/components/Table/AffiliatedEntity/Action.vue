@@ -96,7 +96,8 @@ const showAffiliationInvitationNewRequestButton = (item: Business): boolean => {
   return (
     isCurrentOrganization(invite.fromOrg.id) &&
     invite.status !== AffiliationInvitationStatus.Accepted &&
-    invite.type === AffiliationInvitationType.REQUEST
+    (invite.type === AffiliationInvitationType.REQUEST ||
+    invite.type === AffiliationInvitationType.EMAIL)
   )
 }
 
@@ -242,7 +243,7 @@ const isShowRemoveAsPrimaryAction = (item: Business): boolean => {
 }
 
 const showRemoveButton = (item: Business): boolean => {
-  return !isShowRemoveAsPrimaryAction(item) && !showAffiliationInvitationNewRequestButton(item)
+  return !isShowRemoveAsPrimaryAction(item)
 }
 
 const handleApprovedNameRequestRenew = async (item: Business): Promise<void> => {
