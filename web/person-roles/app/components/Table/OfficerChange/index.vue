@@ -21,7 +21,7 @@ function isRowRemoved(row: Row<OfficerTableState>) {
 const columns: TableColumn<OfficerTableState>[] = [
   {
     id: 'name',
-    header: 'Name',
+    header: t('label.name'),
     meta: {
       class: {
         td: 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal',
@@ -31,7 +31,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const officer = row.original.state.officer
       const badges = row.original.state.badges
-      const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`
+      const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
 
       return h('div', { class: containerClass }, [
@@ -53,7 +53,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'roles',
-    header: 'Roles',
+    header: t('label.roles'),
     meta: {
       class: {
         td: 'px-2 py-4'
@@ -74,7 +74,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'deliveryAddress',
-    header: 'Delivery Address',
+    header: t('label.deliveryAddress'),
     meta: {
       class: {
         td: 'px-2 py-4'
@@ -88,7 +88,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'mailingAddress',
-    header: 'Mailing Address',
+    header: t('label.mailingAddress'),
     meta: {
       class: {
         td: 'px-2 py-4'
@@ -106,6 +106,9 @@ const columns: TableColumn<OfficerTableState>[] = [
   },
   {
     id: 'actions',
+    header: () => {
+      return h('span', { class: 'sr-only' }, t('label.actions'))
+    },
     meta: {
       class: {
         td: 'pl-2 py-4 pr-6 ml-auto',

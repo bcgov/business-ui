@@ -56,7 +56,8 @@ export default {
     roles: 'Roles',
     firstName: 'First Name',
     middleNameOpt: 'Middle Name (Optional)',
-    lastName: 'Last Name'
+    lastName: 'Last Name',
+    actions: 'Actions'
   },
   validation: {
     required: 'Required',
