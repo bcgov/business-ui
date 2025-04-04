@@ -90,6 +90,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const address = row.original.state.officer.deliveryAddress
       const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+
       return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
     }
   },
@@ -105,6 +106,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       const sameAs = row.original.state.officer.sameAsDelivery
       const mailingAddress = row.original.state.officer.mailingAddress
       const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+
       return h('div', { class: containerClass }, h(sameAs
         ? h('span', {}, t('label.sameAsDeliveryAddress'))
         : h(ConnectAddressDisplay, { address: mailingAddress })
@@ -122,6 +124,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     },
     cell: ({ row }) => {
       const isRemoved = isRowRemoved(row)
+
       return h(
         'div',
         { class: 'flex justify-end' },
@@ -170,14 +173,17 @@ function initRowEdit(row: Row<OfficerTableState>, section: OfficerTableEditSecti
     name: {
       firstName: officer.firstName,
       middleName: officer.middleName,
-      lastName: officer.lastName
+      lastName: officer.lastName,
+      preferredName: officer.preferredName,
+      hasPreferredName: officer.hasPreferredName
     },
     roles: {
       roles: officer.roles
     },
     address: {
       mailingAddress: officer.mailingAddress,
-      deliveryAddress: officer.deliveryAddress
+      deliveryAddress: officer.deliveryAddress,
+      sameAsDelivery: officer.sameAsDelivery
     }
   }
 
@@ -203,22 +209,22 @@ async function onRowEditSubmit(data: Partial<Officer>, row: Row<OfficerTableStat
 function getRowActions(row: Row<OfficerTableState>) {
   const actions = [
     {
-      label: 'Change Legal Name',
+      label: t('label.changeName'),
       onSelect: () => initRowEdit(row, 'name')
     },
     {
-      label: 'Change Roles',
+      label: t('label.roles'),
       onSelect: () => initRowEdit(row, 'roles')
     },
     {
-      label: 'Change Address',
+      label: t('label.changeAddress'),
       onSelect: () => initRowEdit(row, 'address')
     }
   ]
 
   if (row.original.history.length) {
     actions.unshift({
-      label: 'Undo',
+      label: t('label.undo'),
       onSelect: () => officerStore.updateOfficers({}, row, 'undo')
     })
   }

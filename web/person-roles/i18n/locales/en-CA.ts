@@ -63,7 +63,11 @@ export default {
     preferredNameOpt: 'Preferred Name (Optional)',
     preferredName: 'Preferred Name',
     haspreferredName: 'This person has another name they prefer to use',
-    actions: 'Actions'
+    actions: 'Actions',
+    changeName: 'Change Name',
+    changeRoles: 'Change Roles',
+    changeAddress: 'Change Roles',
+    undo: 'Undo'
   },
   validation: {
     required: 'Required',
