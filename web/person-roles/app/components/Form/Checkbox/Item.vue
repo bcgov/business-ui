@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// https://reka-ui.com/examples/checkbox-group
 import { CheckboxIndicator, CheckboxRoot, type AcceptableValue } from 'reka-ui'
 
 defineProps<{
