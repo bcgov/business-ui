@@ -22,10 +22,16 @@ export function getOfficerTableBadges(initialBadges: BadgeProps[], key: OfficerT
     }
   }
 
+  // TODO: cleanup strategy
   const newBadge = badgeMap[key]
   const badgeExists = initialBadges.some(b => b.label === newBadge.label)
+  const isAdded = initialBadges.some(b => b.label === t('badge.added'))
 
-  if (badgeExists) {
+  if (key === 'removed' || key === 'added') {
+    return [newBadge]
+  }
+
+  if (badgeExists || isAdded) {
     return initialBadges
   }
 
