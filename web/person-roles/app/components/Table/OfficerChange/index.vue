@@ -18,6 +18,32 @@ function isRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.actions.includes('removed')
 }
 
+function getRowActions(row: Row<OfficerTableState>) {
+  const actions = [
+    {
+      label: t('label.changeName'),
+      onSelect: () => officerStore.initOfficerEdit(row, 'name')
+    },
+    {
+      label: t('label.roles'),
+      onSelect: () => officerStore.initOfficerEdit(row, 'roles')
+    },
+    {
+      label: t('label.changeAddress'),
+      onSelect: () => officerStore.initOfficerEdit(row, 'address')
+    }
+  ]
+
+  if (row.original.history.length) {
+    actions.unshift({
+      label: t('label.undo'),
+      onSelect: () => officerStore.updateOfficers({}, row, 'undo')
+    })
+  }
+
+  return actions
+}
+
 const columns: TableColumn<OfficerTableState>[] = [
   {
     id: 'name',
@@ -165,72 +191,6 @@ const columns: TableColumn<OfficerTableState>[] = [
     }
   }
 ]
-
-function initRowEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
-  const officer = JSON.parse(JSON.stringify(row.original.state.officer))
-
-  const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
-    name: {
-      firstName: officer.firstName,
-      middleName: officer.middleName,
-      lastName: officer.lastName,
-      preferredName: officer.preferredName,
-      hasPreferredName: officer.hasPreferredName
-    },
-    roles: {
-      roles: officer.roles
-    },
-    address: {
-      mailingAddress: officer.mailingAddress,
-      deliveryAddress: officer.deliveryAddress,
-      sameAsDelivery: officer.sameAsDelivery
-    }
-  }
-
-  editState.value = {
-    data: sectionMap[section],
-    section
-  }
-
-  expanded.value = { [row.index]: true }
-}
-
-function cancelRowEdit() {
-  expanded.value = undefined
-  editState.value = {} as OfficerTableEditState
-}
-
-async function onRowEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
-  officerStore.updateOfficers(data, row, 'edit')
-
-  cancelRowEdit()
-}
-
-function getRowActions(row: Row<OfficerTableState>) {
-  const actions = [
-    {
-      label: t('label.changeName'),
-      onSelect: () => initRowEdit(row, 'name')
-    },
-    {
-      label: t('label.roles'),
-      onSelect: () => initRowEdit(row, 'roles')
-    },
-    {
-      label: t('label.changeAddress'),
-      onSelect: () => initRowEdit(row, 'address')
-    }
-  ]
-
-  if (row.original.history.length) {
-    actions.unshift({
-      label: t('label.undo'),
-      onSelect: () => officerStore.updateOfficers({}, row, 'undo')
-    })
-  }
-
-  return actions
-}
 </script>
 
 <template>
@@ -251,8 +211,8 @@ function getRowActions(row: Row<OfficerTableState>) {
       <FormOfficerChange
         :default-state="editState.data"
         :editing="true"
-        @cancel="cancelRowEdit"
-        @officer-change="onRowEditSubmit($event, row)"
+        @cancel="officerStore.cancelOfficerEdit"
+        @officer-change="officerStore.onOfficerEditSubmit($event, row)"
       />
     </template>
   </UTable>

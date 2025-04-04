@@ -169,6 +169,46 @@ export const useOfficerStore = defineStore('officer-store', () => {
     ]
   }
 
+  function initOfficerEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
+    const officer = row.original.state.officer
+
+    const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+      name: {
+        firstName: officer.firstName,
+        middleName: officer.middleName,
+        lastName: officer.lastName,
+        preferredName: officer.preferredName,
+        hasPreferredName: officer.hasPreferredName
+      },
+      roles: {
+        roles: officer.roles
+      },
+      address: {
+        mailingAddress: officer.mailingAddress,
+        deliveryAddress: officer.deliveryAddress,
+        sameAsDelivery: officer.sameAsDelivery
+      }
+    }
+
+    editState.value = {
+      data: sectionMap[section],
+      section
+    }
+
+    expanded.value = { [row.index]: true }
+  }
+
+  function cancelOfficerEdit() {
+    expanded.value = undefined
+    editState.value = {} as OfficerTableEditState
+  }
+
+  async function onOfficerEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
+    updateOfficers(data, row, 'edit')
+
+    cancelOfficerEdit()
+  }
+
   function $reset() {
     sessionStorage.removeItem('officer-store')
   }
@@ -181,6 +221,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
     getNewOfficer,
     addNewOfficer,
     updateOfficers,
+    initOfficerEdit,
+    cancelOfficerEdit,
+    onOfficerEditSubmit,
     $reset
   }
 }
