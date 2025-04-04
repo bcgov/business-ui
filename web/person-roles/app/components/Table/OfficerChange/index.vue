@@ -237,5 +237,5 @@ const columns: TableColumn<OfficerTableState>[] = [
     </template>
   </UTable>
 
-  <pre>{{ officers }}</pre>
+  <!-- <pre>{{ officers }}</pre> -->
 </template>
