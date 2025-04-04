@@ -1,5 +1,3 @@
-import type { BadgeProps } from '@nuxt/ui'
-
 export interface Officer {
   firstName: string
   middleName: string
@@ -15,15 +13,10 @@ export interface Officer {
 export interface OfficerTableState {
   state: {
     officer: Officer
-    badges: BadgeProps[]
+    actions: OfficerFormAction[]
   }
   history: Array<{
     officer: Officer
-    badges: BadgeProps[]
+    actions: OfficerFormAction[]
   }>
 }
-
-// export interface OfficerTableRow {
-//   state: OfficerTableState
-//   history: OfficerTableState[]
-// }

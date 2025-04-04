@@ -15,7 +15,7 @@ const officerStore = useOfficerStore()
 const { officers, expanded, editState } = storeToRefs(useOfficerStore())
 
 function isRowRemoved(row: Row<OfficerTableState>) {
-  return row.original.state.badges.some(b => b.label === 'REMOVED')
+  return row.original.state.actions.includes('removed')
 }
 
 const columns: TableColumn<OfficerTableState>[] = [
@@ -30,9 +30,9 @@ const columns: TableColumn<OfficerTableState>[] = [
     },
     cell: ({ row }) => {
       const officer = row.original.state.officer
-      const badges = row.original.state.badges
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const preferredName = officer.preferredName
+      const badges = getOfficerTableBadges(row.original.state.actions)
       const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
 
       return h('div', { class: containerClass }, [
@@ -121,7 +121,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const isRemoved = row.original.state.badges.some(b => b.label === 'REMOVED')
+      const isRemoved = isRowRemoved(row)
       return h(
         'div',
         { class: 'flex justify-end' },

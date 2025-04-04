@@ -1,7 +1,13 @@
 import type { BadgeProps } from '@nuxt/ui'
 
-export function getOfficerTableBadges(initialBadges: BadgeProps[], key: OfficerTableBadgeKey) {
+export function getOfficerTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
+  if (!actions.length) {
+    return []
+  }
+
   const t = useNuxtApp().$i18n.t
+
+  const unique = [...new Set(actions)]
 
   const badgeMap: Record<OfficerTableBadgeKey, BadgeProps> = {
     name: {
@@ -22,18 +28,15 @@ export function getOfficerTableBadges(initialBadges: BadgeProps[], key: OfficerT
     }
   }
 
-  // TODO: cleanup strategy
-  const newBadge = badgeMap[key]
-  const badgeExists = initialBadges.some(b => b.label === newBadge.label)
-  const isAdded = initialBadges.some(b => b.label === t('badge.added'))
-
-  if (key === 'removed' || key === 'added') {
-    return [newBadge]
+  if (unique.includes('removed')) {
+    return [badgeMap['removed']]
   }
 
-  if (badgeExists || isAdded) {
-    return initialBadges
+  if (unique.includes('added')) {
+    return [badgeMap['added']]
   }
 
-  return [...initialBadges, newBadge]
+  const newBadges = unique.map(i => badgeMap[i])
+
+  return newBadges
 }

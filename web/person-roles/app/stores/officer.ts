@@ -39,7 +39,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           sameAsDelivery: false,
           hasPreferredName: false
         },
-        badges: []
+        actions: []
       },
       history: []
     },
@@ -72,7 +72,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           sameAsDelivery: true,
           hasPreferredName: true
         },
-        badges: []
+        actions: []
       },
       history: []
     }
@@ -109,10 +109,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   function addNewOfficer(v: Officer) {
-    const newState = {
+    const newState: OfficerTableState = {
       state: {
         officer: v,
-        badges: getOfficerTableBadges([], 'added')
+        actions: ['added']
       },
       history: []
     }
@@ -136,11 +136,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
     if (action === 'edit') {
       const newOfficer = merge({}, initialState.officer, data)
-      const newBadges = getOfficerTableBadges(initialState.badges, editState.value.section)
       newState = {
         state: {
           officer: newOfficer,
-          badges: newBadges
+          actions: [...initialState.actions, editState.value.section]
         },
         history: [...initialHistory, initialState]
       }
@@ -154,11 +153,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
         }
       }
     } else if (action === 'removed') {
-      const newBadges = getOfficerTableBadges(initialState.badges, 'removed')
       newState = {
         state: {
           officer: initialState.officer,
-          badges: newBadges
+          actions: [...initialState.actions, 'removed']
         },
         history: [...initialHistory, initialState]
       }
