@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{
       country: 'CA',
       locationDescription: ''
     },
-    sameAsMailing: false
+    sameAsDelivery: false
   })
 })
 
@@ -41,7 +41,7 @@ const emit = defineEmits<{
   'officer-change': [Partial<Officer>]
 }>()
 
-const defaultDeliveryAddress = { ...props.defaultState.deliveryAddress } as ConnectAddress // default defined correctly
+const defaultMailingAddress = { ...props.defaultState.mailingAddress } as ConnectAddress // TODO: confirm default defined correctly
 
 const emptySchema = z.object({})
 
@@ -76,7 +76,8 @@ const mailingSchema = z.object({
     t('validation.address.region'),
     t('validation.address.postalCode'),
     t('validation.address.country')
-  )
+  ),
+  sameAsDelivery: z.boolean().default(false)
 })
 
 const deliverySchema = z.object({
@@ -86,8 +87,7 @@ const deliverySchema = z.object({
     t('validation.address.region'),
     t('validation.address.postalCode'),
     t('validation.address.country')
-  ),
-  sameAsMailing: z.boolean().default(false)
+  )
 })
 
 type NameSchema = z.output<typeof nameSchema>
@@ -136,8 +136,8 @@ async function onError(event: FormErrorEvent) {
 function onSubmit(e: FormSubmitEvent<typeof state>) {
   const data = e.data
 
-  if (data.sameAsMailing) {
-    data.deliveryAddress = data.mailingAddress
+  if (data.sameAsDelivery) {
+    data.mailingAddress = data.deliveryAddress
   }
 
   // TODO: cleanup type
@@ -145,13 +145,13 @@ function onSubmit(e: FormSubmitEvent<typeof state>) {
 }
 
 watch(
-  () => state.sameAsMailing,
+  () => state.sameAsDelivery,
   (v) => {
     if (v) {
-      delete state.deliveryAddress
-      deliveryAddressFormRef.value?.clear()
+      delete state.mailingAddress
+      mailingAddressFormRef.value?.clear()
     } else {
-      state.deliveryAddress = defaultDeliveryAddress
+      state.mailingAddress = defaultMailingAddress
     }
   },
   { immediate: true }
@@ -270,45 +270,45 @@ watch(
         </UForm>
 
         <UForm
-          v-if="state.mailingAddress"
-          ref="mailing-address-form"
-          :state
-          :schema="mailingSchema"
-        >
-          <FormSection
-            :label="$t('label.mailingAddress')"
-            :invalid="formErrors.mailing"
-          >
-            <FormAddress
-              id="mailing-address"
-              v-model="state.mailingAddress"
-              schema-prefix="mailingAddress."
-              :form-ref="mailingAddressFormRef"
-            />
-          </FormSection>
-        </UForm>
-
-        <UForm
-          v-if="state.mailingAddress"
+          v-if="state.deliveryAddress"
           ref="delivery-address-form"
           :state
-          :schema="state.sameAsMailing ? emptySchema : deliverySchema"
+          :schema="deliverySchema"
         >
           <FormSection
             :label="$t('label.deliveryAddress')"
             :invalid="formErrors.delivery"
           >
-            <UCheckbox
-              v-model="state.sameAsMailing"
-              :label="$t('label.sameAsMailAddress')"
-            />
-
             <FormAddress
-              v-if="state.deliveryAddress"
               id="delivery-address"
               v-model="state.deliveryAddress"
               schema-prefix="deliveryAddress."
               :form-ref="deliveryAddressFormRef"
+            />
+          </FormSection>
+        </UForm>
+
+        <UForm
+          v-if="state.deliveryAddress"
+          ref="mailing-address-form"
+          :state
+          :schema="state.sameAsDelivery ? emptySchema : mailingSchema"
+        >
+          <FormSection
+            :label="$t('label.mailingAddress')"
+            :invalid="formErrors.mailing"
+          >
+            <UCheckbox
+              v-model="state.sameAsDelivery"
+              :label="$t('label.sameAsDeliveryAddress')"
+            />
+
+            <FormAddress
+              v-if="state.mailingAddress"
+              id="mailing-address"
+              v-model="state.mailingAddress"
+              schema-prefix="mailingAddress."
+              :form-ref="mailingAddressFormRef"
             />
           </FormSection>
         </UForm>

@@ -46,6 +46,7 @@ export default {
     mailingAddress: 'Mailing Address',
     deliveryAddress: 'Delivery Address',
     sameAsMailAddress: 'Same as Mailing Address',
+    sameAsDeliveryAddress: 'Same as Delivery Address',
     deliveryInstructions: 'Delivery Instructions',
     deliveryInstructionsOpt: 'Delivery Instructions (Optional)',
     locationDescription: 'Location Description',

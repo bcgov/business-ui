@@ -73,20 +73,6 @@ const columns: TableColumn<OfficerTableState>[] = [
     }
   },
   {
-    id: 'mailingAddress',
-    header: 'Mailing Address',
-    meta: {
-      class: {
-        td: 'px-2 py-4'
-      }
-    },
-    cell: ({ row }) => {
-      const address = row.original.state.officer.mailingAddress
-      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
-      return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
-    }
-  },
-  {
     id: 'deliveryAddress',
     header: 'Delivery Address',
     meta: {
@@ -95,12 +81,26 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const sameAs = row.original.state.officer.sameAsMailing
-      const deliveryAddress = row.original.state.officer.deliveryAddress
+      const address = row.original.state.officer.deliveryAddress
+      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+      return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
+    }
+  },
+  {
+    id: 'mailingAddress',
+    header: 'Mailing Address',
+    meta: {
+      class: {
+        td: 'px-2 py-4'
+      }
+    },
+    cell: ({ row }) => {
+      const sameAs = row.original.state.officer.sameAsDelivery
+      const mailingAddress = row.original.state.officer.mailingAddress
       const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
       return h('div', { class: containerClass }, h(sameAs
-        ? h('span', {}, t('label.sameAsMailAddress'))
-        : h(ConnectAddressDisplay, { address: deliveryAddress })
+        ? h('span', {}, t('label.sameAsDeliveryAddress'))
+        : h(ConnectAddressDisplay, { address: mailingAddress })
       ))
     }
   },

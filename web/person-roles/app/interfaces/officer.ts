@@ -7,7 +7,7 @@ export interface Officer {
   roles: OfficerRole[]
   mailingAddress: ConnectAddress
   deliveryAddress: ConnectAddress
-  sameAsMailing: boolean
+  sameAsDelivery: boolean
 }
 
 export interface OfficerTableState {

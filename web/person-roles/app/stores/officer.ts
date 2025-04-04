@@ -35,7 +35,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             streetAdditional: '',
             locationDescription: ''
           },
-          sameAsMailing: false
+          sameAsDelivery: false
         },
         badges: []
       },
@@ -66,7 +66,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             streetAdditional: '',
             locationDescription: ''
           },
-          sameAsMailing: true
+          sameAsDelivery: true
         },
         badges: []
       },
@@ -98,7 +98,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         country: 'CA',
         locationDescription: ''
       },
-      sameAsMailing: false
+      sameAsDelivery: false
     }
   }
 
