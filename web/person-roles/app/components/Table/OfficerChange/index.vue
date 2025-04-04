@@ -198,7 +198,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     v-model:expanded="expanded"
     :data="officers"
     :columns="columns"
-    class="flex-1 max-w-[945px] mx-auto"
+    class="flex-1 mx-auto"
     sticky
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',

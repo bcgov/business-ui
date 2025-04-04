@@ -1,11 +1,14 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const officerStore = useOfficerStore()
 
-const addOfficer = ref<boolean>(false)
+useHead({
+  title: t('page.officerChange.title')
+})
 
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)
-  // console.info(event.data)
+  officerStore.addingOfficer = false
 }
 
 // TODO: load from legal api
@@ -20,23 +23,23 @@ async function onFormSubmit(data: Partial<Officer>) {
 </script>
 
 <template>
-  <div class="py-10 space-y-10">
-    <h1>Officer Change</h1>
+  <div class="py-10 space-y-10 max-w-[945px] mx-auto">
+    <h1>{{ $t('page.officerChange.h1') }}</h1>
 
     <UButton
-      label="Add Officer"
+      :label="$t('label.addOfficer')"
       class="px-5 py-3"
       color="primary"
       icon="i-mdi-account-plus"
       variant="outline"
-      :disabled="addOfficer === true"
-      @click="addOfficer = true"
+      :disabled="officerStore.addingOfficer === true"
+      @click="officerStore.addingOfficer = true"
     />
 
     <FormOfficerChange
-      v-if="addOfficer"
+      v-if="officerStore.addingOfficer"
       @officer-change="onFormSubmit"
-      @cancel="addOfficer = false"
+      @cancel="officerStore.addingOfficer = false"
     />
 
     <TableOfficerChange />

@@ -92,6 +92,12 @@ export default {
       min: 'Choose at least one role'
     }
   },
+  page: {
+    officerChange: {
+      title: 'Officer Change - TBD',
+      h1: 'Officer Change'
+    }
+  },
   // components
   ConnectHeader: {
     title: 'BC Registries and Online Services'
