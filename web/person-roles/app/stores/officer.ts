@@ -9,6 +9,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const expanded = ref<ExpandedState | undefined>(undefined)
   const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
+  const disableActions = computed(() => {
+    return addingOfficer.value || !!expanded.value
+  })
+
   const officers = ref<OfficerTableState[]>([
     {
       state: {
@@ -218,6 +222,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     addingOfficer,
     expanded,
     editState,
+    disableActions,
     getNewOfficer,
     addNewOfficer,
     updateOfficers,

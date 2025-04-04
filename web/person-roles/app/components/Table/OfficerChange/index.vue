@@ -181,6 +181,7 @@ const columns: TableColumn<OfficerTableState>[] = [
                   variant: 'ghost',
                   label: isRemoved ? 'Undo' : 'Remove',
                   icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-delete',
+                  disabled: officerStore.disableActions,
                   class: 'px-4',
                   onClick: () => isRemoved
                     ? officerStore.updateOfficers({}, row, 'undo')
@@ -190,6 +191,7 @@ const columns: TableColumn<OfficerTableState>[] = [
                   ? null
                   : h(UDropdownMenu, {
                     items: getRowActions(row),
+                    disabled: officerStore.disableActions,
                     content: { align: 'end' }
                   }, {
                     default: () =>

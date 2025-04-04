@@ -32,7 +32,7 @@ async function onFormSubmit(data: Partial<Officer>) {
       color="primary"
       icon="i-mdi-account-plus"
       variant="outline"
-      :disabled="officerStore.addingOfficer === true"
+      :disabled="officerStore.disableActions"
       @click="officerStore.addingOfficer = true"
     />
 
