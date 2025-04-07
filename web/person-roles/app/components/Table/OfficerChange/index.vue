@@ -40,7 +40,7 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
 
   const unique = [...new Set(actions)]
 
-  const badgeMap: Record<OfficerTableBadgeKey, BadgeProps> = {
+  const badgeMap: Record<OfficerFormAction, BadgeProps> = {
     name: {
       label: t('badge.nameChanged')
     },
