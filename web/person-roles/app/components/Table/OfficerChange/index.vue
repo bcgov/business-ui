@@ -36,8 +36,6 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
     return []
   }
 
-  const t = useNuxtApp().$i18n.t
-
   const unique = [...new Set(actions)]
 
   const badgeMap: Record<OfficerFormAction, BadgeProps> = {
@@ -72,8 +70,18 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   return newBadges
 }
 
-function isRowRemoved(row: Row<OfficerTableState>) {
+function getIsRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.actions.includes('removed')
+}
+
+function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string, actionCell = false): string {
+  const expandedClass = (row.getIsExpanded() && row.index !== 0) ? 'border-t-6 border-bcGovGray-100' : ''
+  const removedClass = getIsRowRemoved(row) ? 'opacity-50' : ''
+
+  if (actionCell) {
+    return `${expandedClass} ${defaultClass}`
+  }
+  return `${expandedClass} ${removedClass} ${defaultClass}`
 }
 
 function getRowActions(row: Row<OfficerTableState>) {
@@ -108,7 +116,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.name'),
     meta: {
       class: {
-        td: 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal',
+        td: '',
         th: 'pl-6'
       }
     },
@@ -117,7 +125,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const preferredName = officer.preferredName
       const badges = getTableBadges(row.original.state.actions)
-      const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-2' : 'flex flex-col gap-2'
+      const containerClass = getCellContainerClass(row, 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal')
 
       return h('div', { class: containerClass }, [
         h('span', {}, name),
@@ -147,12 +155,12 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.roles'),
     meta: {
       class: {
-        td: 'px-2 py-4'
+        td: ''
       }
     },
     cell: ({ row }) => {
       const roles = row.original.state.officer.roles
-      const containerClass = isRowRemoved(row) ? 'opacity-50 flex flex-col gap-1' : 'flex flex-col gap-1'
+      const containerClass = getCellContainerClass(row, 'px-2 py-4 flex flex-col')
 
       return roles.length
         ? h('ul', { class: containerClass },
@@ -168,12 +176,12 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.deliveryAddress'),
     meta: {
       class: {
-        td: 'px-2 py-4 min-w-48 max-w-48'
+        td: ''
       }
     },
     cell: ({ row }) => {
       const address = row.original.state.officer.deliveryAddress
-      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48')
 
       return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
     }
@@ -183,13 +191,13 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.mailingAddress'),
     meta: {
       class: {
-        td: 'px-2 py-4 min-w-48 max-w-48'
+        td: ''
       }
     },
     cell: ({ row }) => {
       const sameAs = row.original.state.officer.sameAsDelivery
       const mailingAddress = row.original.state.officer.mailingAddress
-      const containerClass = isRowRemoved(row) ? 'opacity-50' : ''
+      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48')
 
       return h('div', { class: containerClass }, h(sameAs
         ? h('span', {}, t('label.sameAsDeliveryAddress'))
@@ -202,16 +210,17 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: () => h('span', { class: 'sr-only' }, t('label.actions')),
     meta: {
       class: {
-        td: 'pl-2 py-4 pr-6 ml-auto',
+        td: '',
         th: 'pr-6'
       }
     },
     cell: ({ row }) => {
-      const isRemoved = isRowRemoved(row)
+      const isRemoved = getIsRowRemoved(row)
+      const containerClass = getCellContainerClass(row, 'pl-2 py-4 pr-6 ml-auto flex justify-end', true)
 
       return h(
         'div',
-        { class: 'flex justify-end' },
+        { class: containerClass },
         [
           h(
             UButtonGroup,
@@ -220,7 +229,7 @@ const columns: TableColumn<OfficerTableState>[] = [
               default: () => [
                 h(UButton, {
                   variant: 'ghost',
-                  label: isRemoved ? 'Undo' : 'Remove',
+                  label: isRemoved ? t('label.undo') : t('label.remove'),
                   icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-delete',
                   disabled: officerStore.disableActions,
                   class: 'px-4',
@@ -240,7 +249,7 @@ const columns: TableColumn<OfficerTableState>[] = [
                         'variant': 'ghost',
                         'icon': 'i-mdi-caret-down',
                         'class': 'px-4',
-                        'aria-label': 'More Actions'
+                        'aria-label': t('label.moreActions')
                       })
                   })
               ]
@@ -269,6 +278,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     >
       <template #expanded="{ row }">
         <FormOfficerChange
+          :class="(row.index !== officers.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''"
           :default-state="editState.data"
           :editing="true"
           :title="formTitle"
