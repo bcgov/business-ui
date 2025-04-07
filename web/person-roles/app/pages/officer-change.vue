@@ -23,7 +23,7 @@ async function onFormSubmit(data: Partial<Officer>) {
 </script>
 
 <template>
-  <div class="py-10 space-y-10 max-w-[945px] overflow-hidden mx-auto">
+  <div class="py-10 space-y-10 mx-auto">
     <h1>{{ $t('page.officerChange.h1') }}</h1>
 
     <UButton

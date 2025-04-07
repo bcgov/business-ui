@@ -187,7 +187,7 @@ watch(
     @submit="onSubmit"
   >
     <div class="flex flex-col sm:flex-row gap-6">
-      <h2 class="w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
+      <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
         {{ title }}
       </h2>
       <div class="flex flex-col gap-8 w-full">

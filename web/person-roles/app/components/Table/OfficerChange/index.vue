@@ -254,29 +254,30 @@ const columns: TableColumn<OfficerTableState>[] = [
 </script>
 
 <template>
-  <UTable
-    v-model:expanded="expanded"
-    :data="officers"
-    :columns="columns"
-    class="flex-1 mx-auto"
-    sticky
-    :ui="{
-      root: 'bg-white rounded-sm ring ring-gray-200',
-      tbody: 'px-10',
-      th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-0 py-0 text-bcGovGray-700 align-top'
-    }"
-  >
-    <template #expanded="{ row }">
-      <FormOfficerChange
-        :default-state="editState.data"
-        :editing="true"
-        :title="formTitle"
-        @cancel="officerStore.cancelOfficerEdit"
-        @officer-change="officerStore.onOfficerEditSubmit($event, row)"
-      />
-    </template>
-  </UTable>
+  <div class="max-w-[calc(100dvw-2.25rem)] overflow-clip rounded-sm">
+    <UTable
+      v-model:expanded="expanded"
+      :data="officers"
+      :columns="columns"
+      sticky
+      :ui="{
+        root: 'bg-white rounded-sm ring ring-gray-200',
+        tbody: 'px-10',
+        th: 'bg-bcGovColor-gray2 px-2',
+        td: 'px-0 py-0 text-bcGovGray-700 align-top'
+      }"
+    >
+      <template #expanded="{ row }">
+        <FormOfficerChange
+          :default-state="editState.data"
+          :editing="true"
+          :title="formTitle"
+          @cancel="officerStore.cancelOfficerEdit"
+          @officer-change="officerStore.onOfficerEditSubmit($event, row)"
+        />
+      </template>
+    </UTable>
+  </div>
 
   <!-- <pre>{{ officers }}</pre> -->
 </template>
