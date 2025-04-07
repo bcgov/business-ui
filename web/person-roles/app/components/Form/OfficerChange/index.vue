@@ -276,6 +276,7 @@ watch(
           <FormSection
             :label="$t('label.roles')"
             :invalid="formErrors.roles"
+            error-id="roles-checkbox-error"
           >
             <UFormField
               v-slot="{ error }"
@@ -286,6 +287,7 @@ watch(
             >
               <div
                 v-if="error !== undefined"
+                id="roles-checkbox-error"
                 class="text-red-600 text-base mb-3"
               >
                 {{ error }}
