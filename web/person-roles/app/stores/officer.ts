@@ -1,5 +1,5 @@
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { merge } from 'lodash'
+import { merge, isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   // const t = useNuxtApp().$i18n.t
@@ -139,13 +139,22 @@ export const useOfficerStore = defineStore('officer-store', () => {
     let newState: OfficerTableState = {} as OfficerTableState
 
     if (action === 'edit') {
-      const newOfficer = merge({}, initialState.officer, data)
+      let newOfficer = merge({}, initialState.officer, data)
+      let newActions = [...initialState.actions, editState.value.section]
+      let newHistory = [...initialHistory, initialState]
+
+      if (isEqual(initialState.officer, newOfficer)) {
+        newOfficer = initialState.officer
+        newActions = initialState.actions
+        newHistory = initialHistory
+      }
+
       newState = {
         state: {
           officer: newOfficer,
-          actions: [...initialState.actions, editState.value.section]
+          actions: newActions
         },
-        history: [...initialHistory, initialState]
+        history: newHistory
       }
     } else if (action === 'undo') {
       const previousState = initialHistory[initialHistory.length - 1]
@@ -174,7 +183,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   function initOfficerEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
-    const officer = row.original.state.officer
+    const officer = JSON.parse(JSON.stringify(row.original.state.officer))
 
     const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
       name: {
