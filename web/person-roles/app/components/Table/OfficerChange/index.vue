@@ -125,7 +125,8 @@ const columns: TableColumn<OfficerTableState>[] = [
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const preferredName = officer.preferredName
       const badges = getTableBadges(row.original.state.actions)
-      const containerClass = getCellContainerClass(row, 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal')
+      const defaultCellClass = 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal flex flex-col gap-2'
+      const containerClass = getCellContainerClass(row, defaultCellClass)
 
       return h('div', { class: containerClass }, [
         h('span', {}, name),
