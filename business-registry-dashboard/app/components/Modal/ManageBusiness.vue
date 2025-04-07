@@ -180,7 +180,7 @@ onMounted(async () => {
           <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
             <UButton
               :label="$t('btn.close')"
-              class="ml-auto mr-2 px-3 py-2"
+              class="mx-auto px-3 py-2"
               @click="brdModal.close()"
             />
           </div>
