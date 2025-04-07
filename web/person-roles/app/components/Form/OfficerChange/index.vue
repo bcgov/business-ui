@@ -254,6 +254,8 @@ watch(
               name="preferredName"
               class="grow flex-1"
               :help="$t('help.preferredName')"
+              :description="$t('text.preferredNameDescription')"
+              :label="$t('label.preferredName')"
             >
               <ConnectInput
                 id="preferred-name"
