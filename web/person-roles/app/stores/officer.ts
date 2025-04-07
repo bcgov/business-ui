@@ -130,7 +130,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   function updateOfficers(
     data: Partial<Officer>,
     row: Row<OfficerTableState>,
-    action: 'edit' | 'undo' | 'removed' | 'add'
+    action: 'edit' | 'undo' | 'removed'
   ) {
     const index = row.index
     const initialState = row.original.state
