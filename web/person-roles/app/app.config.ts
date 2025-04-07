@@ -20,6 +20,11 @@ export default defineAppConfig({
       compoundVariants: [
         {
           color: 'primary',
+          variant: 'solid',
+          class: 'text-(--ui-bg) bg-(--ui-primary) hover:bg-(--ui-primary)/75 disabled:bg-(--ui-primary) aria-disabled:bg-(--ui-primary) focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--ui-primary)'
+        },
+        {
+          color: 'primary',
           variant: 'ghost',
           class: 'text-(--ui-primary) hover:bg-(--ui-primary)/10 active:bg-(--ui-primary)/25 focus:outline-none focus-visible:bg-(--ui-primary)/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent'
         }
