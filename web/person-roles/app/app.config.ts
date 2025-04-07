@@ -20,6 +20,11 @@ export default defineAppConfig({
       compoundVariants: [
         {
           color: 'primary',
+          variant: 'solid',
+          class: 'text-(--ui-bg) bg-(--ui-primary) hover:bg-(--ui-primary)/75 disabled:bg-(--ui-primary) aria-disabled:bg-(--ui-primary) focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-(--ui-primary)'
+        },
+        {
+          color: 'primary',
           variant: 'ghost',
           class: 'text-(--ui-primary) hover:bg-(--ui-primary)/10 active:bg-(--ui-primary)/25 focus:outline-none focus-visible:bg-(--ui-primary)/10 disabled:bg-transparent aria-disabled:bg-transparent dark:disabled:bg-transparent dark:aria-disabled:bg-transparent'
         }
@@ -51,11 +56,11 @@ export default defineAppConfig({
     formField: {
       slots: {
         root: '',
-        wrapper: '',
+        wrapper: 'space-y-1',
         labelWrapper: 'flex content-center items-center justify-between',
-        label: 'block font-medium text-(--ui-text)',
+        label: 'block font-bold text-base text-bcGovGray-900',
         container: 'mt-1 relative',
-        description: 'text-(--ui-text)',
+        description: 'text-(--ui-text) text-base text-bcGovColor-lightGray mb-4',
         error: 'pl-4.5 mt-1 text-(--ui-error) text-xs',
         hint: 'text-(--ui-text)',
         help: 'pl-4.5 mt-1 text-(--ui-text) text-xs'

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export default {
   badge: {
     rolesChanged: 'ROLES CHANGED',
@@ -70,6 +71,9 @@ export default {
     undo: 'Undo',
     remove: 'Remove',
     moreActions: 'More Actions'
+  },
+  text: {
+    preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.'
   },
   validation: {
     required: 'Required',
