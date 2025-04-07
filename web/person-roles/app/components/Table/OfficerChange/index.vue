@@ -168,7 +168,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.deliveryAddress'),
     meta: {
       class: {
-        td: 'px-2 py-4'
+        td: 'px-2 py-4 min-w-48 max-w-48'
       }
     },
     cell: ({ row }) => {
@@ -183,7 +183,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     header: t('label.mailingAddress'),
     meta: {
       class: {
-        td: 'px-2 py-4'
+        td: 'px-2 py-4 min-w-48 max-w-48'
       }
     },
     cell: ({ row }) => {

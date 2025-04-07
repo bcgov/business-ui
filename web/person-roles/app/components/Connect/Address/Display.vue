@@ -60,12 +60,12 @@ const getAddressDisplayParts = (
     >
       {{ addressLine }}
     </div>
-    <!-- <ConnectInfoBox
+    <ConnectInfoBox
       v-if="address.locationDescription"
       class="mt-2"
       :content="address.locationDescription"
       :title="useLocationDescLabel ? $t('label.locationDescription') : $t('label.deliveryInstructions')"
       data-testid="location-description"
-    /> -->
+    />
   </div>
 </template>
