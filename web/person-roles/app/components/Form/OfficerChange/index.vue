@@ -305,7 +305,6 @@ watch(
           <FormSection
             :label="$t('label.deliveryAddress')"
             :invalid="formErrors.delivery"
-            :orientation="editing ? 'horizontal' : 'vertical'"
           >
             <FormAddress
               id="delivery-address"
@@ -325,7 +324,6 @@ watch(
           <FormSection
             :label="$t('label.mailingAddress')"
             :invalid="formErrors.mailing"
-            :orientation="editing ? 'horizontal' : 'vertical'"
           >
             <UCheckbox
               v-model="state.sameAsDelivery"
