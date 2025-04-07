@@ -1,4 +1,11 @@
 export default {
+  badge: {
+    rolesChanged: 'ROLES CHANGED',
+    nameChanged: 'NAME CHANGED',
+    addressChanged: 'ADDRESS CHANGED',
+    added: 'ADDED',
+    removed: 'REMOVED'
+  },
   btn: {
     done: 'Done',
     cancel: 'Cancel'
@@ -15,6 +22,9 @@ export default {
       OTHER: 'Other Office(s)',
       CHAIR: 'Chair'
     }
+  },
+  help: {
+    preferredName: 'Example: William Smith may prefer to go by Bill Smith when with friends.'
   },
   label: {
     address: 'Address',
@@ -39,6 +49,7 @@ export default {
     mailingAddress: 'Mailing Address',
     deliveryAddress: 'Delivery Address',
     sameAsMailAddress: 'Same as Mailing Address',
+    sameAsDeliveryAddress: 'Same as Delivery Address',
     deliveryInstructions: 'Delivery Instructions',
     deliveryInstructionsOpt: 'Delivery Instructions (Optional)',
     locationDescription: 'Location Description',
@@ -48,7 +59,17 @@ export default {
     roles: 'Roles',
     firstName: 'First Name',
     middleNameOpt: 'Middle Name (Optional)',
-    lastName: 'Last Name'
+    lastName: 'Last Name',
+    preferredNameOpt: 'Preferred Name (Optional)',
+    preferredName: 'Preferred Name',
+    haspreferredName: 'This person has another name they prefer to use',
+    actions: 'Actions',
+    changeName: 'Change Name',
+    changeRoles: 'Change Roles',
+    changeAddress: 'Change Address',
+    undo: 'Undo',
+    remove: 'Remove',
+    moreActions: 'More Actions'
   },
   validation: {
     required: 'Required',
@@ -71,6 +92,12 @@ export default {
     },
     role: {
       min: 'Choose at least one role'
+    }
+  },
+  page: {
+    officerChange: {
+      title: 'Officer Change - TBD',
+      h1: 'Officer Change'
     }
   },
   // components
