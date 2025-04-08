@@ -1,3 +1,4 @@
+import type { ButtonProps } from '@nuxt/ui'
 import type { ConnectBtnControl } from '#imports'
 
 export const useButtonControl = () => {
@@ -13,7 +14,7 @@ export const useButtonControl = () => {
 
   function handleButtonLoading(reset: boolean, buttonGrp?: 'left' | 'right', buttonIndex?: number) {
     // set button control for loading / disabling buttons on submit or save or reset to default
-    const updateButtonGrp = (buttonArray: ConnectBtnControlItem[], grp: 'left' | 'right') => {
+    const updateButtonGrp = (buttonArray: ButtonProps[], grp: 'left' | 'right') => {
       for (const [index, element] of buttonArray.entries()) {
         if (reset) {
           element.disabled = false

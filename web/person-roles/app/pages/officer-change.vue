@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const officerStore = useOfficerStore()
+const feeStore = useConnectFeeStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 
 useHead({
@@ -10,6 +11,27 @@ useHead({
 definePageMeta({
   layout: 'form'
 })
+
+// TODO: get fee from pay api?
+// set empty fee
+feeStore.feeOptions.showServiceFees = false
+feeStore.fees = {
+  OFFICER_CHANGE: {
+    filingFees: 0,
+    filingType: 'Officer change fee',
+    filingTypeCode: 'OFFICER_CHANGE',
+    futureEffectiveFees: 0,
+    priorityFees: 0,
+    processingFees: 0,
+    serviceFees: 0,
+    tax: {
+      gst: 0,
+      pst: 0
+    },
+    total: 0,
+    waived: true
+  }
+}
 
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)

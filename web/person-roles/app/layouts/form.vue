@@ -11,8 +11,8 @@
         <div class="grow">
           <slot />
         </div>
-        <aside class="sticky bottom-0 z-10 w-full lg:static lg:mt-[96px] lg:w-[340px] lg:px-5">
-          <!-- <ConnectFeeWidget class="sticky lg:top-10" /> -->
+        <aside class="sticky bottom-0 z-10 w-full lg:static lg:mt-10 lg:w-[340px] lg:px-5">
+          <ConnectFeeWidget class="sticky lg:top-10" />
         </aside>
       </div>
     </main>
