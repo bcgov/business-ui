@@ -32,7 +32,11 @@ watch(
   { immediate: true }
 )
 
-/** Map details with effective date
+/**
+ * This function transforms alert details, handling two important cases:
+ * 1. For FUTURE_EFFECTIVE alerts: Converts the simple enum value to a complex object with date info
+ * 2. Preserves all other alert types unchanged
+ * The UI relies on this function to ensure future effective dates are properly formatted.
  * @param details details to map
  * @param row row to map details to
  * @returns mapped details with effective date

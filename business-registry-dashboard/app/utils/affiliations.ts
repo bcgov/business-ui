@@ -224,6 +224,11 @@ export const isChangeRequested = (item: Business) => {
   return item.draftStatus === EntityStates.CHANGE_REQUESTED
 }
 
+/**
+ * Determines what alert icons/messages to display for a business item
+ * @param item The business entity to check for alert conditions
+ * @returns Array of alert types to display
+ */
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
@@ -235,7 +240,7 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
       [CorpTypes.INCORPORATION_APPLICATION]: t('entityTypes.incorporationApplication'),
       [CorpTypes.AMALGAMATION_APPLICATION]: t('entityTypes.amalgamationApplication')
     }
-    const type = typeMap[item.corpType?.code] || t('entityTypes.incorporationApplication')
+    const type = typeMap[item.corpType?.code as keyof typeof typeMap] || t('entityTypes.incorporationApplication')
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
   }
   // Special case: Check for expired Name Requests for Continuation Applications
