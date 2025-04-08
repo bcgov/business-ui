@@ -57,6 +57,7 @@ export default {
     locationDescriptionOpt: 'Location Description (Optional)',
     addOfficer: 'Add Officer',
     name: 'Name',
+    legalName: 'Legal Name',
     roles: 'Roles',
     firstName: 'First Name',
     middleNameOpt: 'Middle Name (Optional)',
@@ -73,7 +74,8 @@ export default {
     moreActions: 'More Actions'
   },
   text: {
-    preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.'
+    preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',
+    noOfficers: 'There are currently no officers.'
   },
   validation: {
     required: 'Required',

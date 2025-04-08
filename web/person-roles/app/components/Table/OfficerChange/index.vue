@@ -287,6 +287,12 @@ const columns: TableColumn<OfficerTableState>[] = [
           @officer-change="officerStore.onOfficerEditSubmit($event, row)"
         />
       </template>
+
+      <template #empty>
+        <div class="text-bcGovGray-700 text-left text-base px-6">
+          {{ $t('text.noOfficers') }}
+        </div>
+      </template>
     </UTable>
   </div>
 
