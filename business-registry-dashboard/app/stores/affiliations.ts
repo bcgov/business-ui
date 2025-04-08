@@ -220,7 +220,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           url += `&status=${encodeURIComponent(affiliations.filters.status)}`
         }
         if (affiliations.filters.type) {
-          url += `&type=${encodeURIComponent(affiliations.filters.type)}`
+          // Map display names to corresponding type codes
+          const typeCode = DisplayNameToCorpType[affiliations.filters.type as keyof typeof DisplayNameToCorpType] || affiliations.filters.type
+          url += `&type=${encodeURIComponent(typeCode)}`
         }
       }
 
