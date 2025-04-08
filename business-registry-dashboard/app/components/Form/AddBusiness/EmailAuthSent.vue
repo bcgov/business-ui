@@ -14,10 +14,10 @@ defineProps<{
       <ConnectI18nBold translation-path="form.manageBusiness.emailSent.p1" :email="contactEmail" />
     </p>
     <p>{{ $t('form.manageBusiness.emailSent.p2') }}</p>
-    <div class="flex justify-center gap-2">
+    <div class="flex content-end items-end gap-2">
       <UButton
         :label="$t('btn.close')"
-        class="ml-auto mr-6 px-3 py-2"
+        class="ml-auto flex justify-self-end px-3 py-2"
         @click="brdModal.close()"
       />
     </div>
