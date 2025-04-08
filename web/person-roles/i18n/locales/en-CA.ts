@@ -9,7 +9,10 @@ export default {
   },
   btn: {
     done: 'Done',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    submit: 'Submit',
+    save: 'Save',
+    saveExit: 'Save and Resume Later'
   },
   enum: {
     officerRole: {
