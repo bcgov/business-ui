@@ -12,8 +12,8 @@
           <slot />
         </div>
 
-        <div class="shrink-0 lg:w-[300px] lg:sticky lg:mt-10">
-          <ConnectFeeWidget />
+        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10">
+          <ConnectFeeWidget class="sticky lg:top-10" />
         </div>
       </div>
     </main>

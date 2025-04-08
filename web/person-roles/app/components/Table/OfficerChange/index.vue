@@ -278,6 +278,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   >
     <template #expanded="{ row }">
       <FormOfficerChange
+        class="max-w-full"
         :class="(row.index !== officers.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''"
         :default-state="editState.data"
         :editing="true"
