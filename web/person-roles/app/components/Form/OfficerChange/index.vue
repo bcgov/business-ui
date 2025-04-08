@@ -199,7 +199,7 @@ watch(
           class="flex flex-col gap-6 w-full"
         >
           <FormSection
-            :label="$t('label.name')"
+            :label="$t('label.legalName')"
             :invalid="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">

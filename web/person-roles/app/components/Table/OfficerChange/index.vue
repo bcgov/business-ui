@@ -267,7 +267,7 @@ const columns: TableColumn<OfficerTableState>[] = [
   <div class="max-w-[calc(100dvw-2.25rem)] overflow-clip rounded-sm">
     <UTable
       v-model:expanded="expanded"
-      :data="[]"
+      :data="officers"
       :columns="columns"
       sticky
       :ui="{

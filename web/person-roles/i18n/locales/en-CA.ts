@@ -57,6 +57,7 @@ export default {
     locationDescriptionOpt: 'Location Description (Optional)',
     addOfficer: 'Add Officer',
     name: 'Name',
+    legalName: 'Legal Name',
     roles: 'Roles',
     firstName: 'First Name',
     middleNameOpt: 'Middle Name (Optional)',
