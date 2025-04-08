@@ -7,13 +7,14 @@
     <ConnectSystemBanner />
     <ConnectBreadcrumb />
     <main class="app-inner-container app-body">
-      <div class="flex flex-col lg:flex-row">
-        <div class="grow">
+      <div class="flex flex-col lg:flex-row lg:gap-6 grow">
+        <div class="grow max-w-full overflow-hidden">
           <slot />
         </div>
-        <aside class="sticky bottom-0 z-10 w-full lg:static lg:mt-10 lg:w-[340px] lg:px-5">
-          <ConnectFeeWidget class="sticky lg:top-10" />
-        </aside>
+
+        <div class="shrink-0 lg:w-[300px] lg:sticky lg:mt-10">
+          <ConnectFeeWidget />
+        </div>
       </div>
     </main>
     <ConnectButtonControl />

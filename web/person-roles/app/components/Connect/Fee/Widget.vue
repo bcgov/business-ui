@@ -83,7 +83,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
 <template>
   <div
     data-testid="fee-widget"
-    class="z-10 mr-5 w-full rounded bg-white shadow-md lg:mr-0 lg:w-[320px]"
+    class="z-10 rounded bg-white lg:shadow-sm"
   >
     <UButton
       :tabindex="isFoldable ? 0 : -1"

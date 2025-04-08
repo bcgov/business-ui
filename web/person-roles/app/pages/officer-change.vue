@@ -70,7 +70,7 @@ setButtonControl({
 </script>
 
 <template>
-  <div class="py-10 space-y-10 mx-auto">
+  <div class="py-10 space-y-10">
     <h1>{{ $t('page.officerChange.h1') }}</h1>
 
     <UButton
