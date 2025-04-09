@@ -3,10 +3,10 @@ import type { PropType } from 'vue'
 const { t } = useI18n()
 
 interface Message {
-  message: string
-  colour: string
-  priority: number
-  type?: string
+  message: string // The message to display
+  colour: string // The color class to apply
+  priority: number // Priority value (lower number = higher priority)
+  type?: string // Optional type identifier
 }
 
 const props = defineProps({
@@ -23,11 +23,14 @@ const props = defineProps({
   }
 })
 
+// Define message templates for each alert type with their priorities
+// IMPORTANT: The priority system is essential - lower numbers have higher priority
+// This means EXPIRED (priority 2) will override BADSTANDING (priority 4)
 const entityAlertMessages: Record<string, Message> = {
   [EntityAlertTypes.PROCESSING]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.PROCESSING}`),
     colour: 'text-blue-500',
-    priority: 7
+    priority: 7 // Lowest priority
   },
   [EntityAlertTypes.FROZEN]: {
     message: t(`entityAlertTypes.${EntityAlertTypes.FROZEN}`),
@@ -56,27 +59,31 @@ const entityAlertMessages: Record<string, Message> = {
   }
 }
 
+// Generate a message object from an alert detail
 const generateMessage = (status: string | { type: string, data: any }): Message | null => {
+  // Handle simple string alert types (e.g. BADSTANDING, FROZEN)
   if (typeof status === 'string') {
     return entityAlertMessages[status] || null
   }
 
-  // Handle EXPIRED case with dynamic type
+  // Handle complex alert types with data (e.g. EXPIRED, FUTURE_EFFECTIVE)
+  // EXPIRED alert - includes the type of entity that's expired
   if (status.type === EntityAlertTypes.EXPIRED) {
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`, status.data),
       colour: 'text-red-600',
-      priority: 2,
+      priority: 2, // High priority - will override BADSTANDING (priority 4)
       type: status.type
     }
   }
 
+  // FUTURE_EFFECTIVE alert - includes formatted date
   if (status.type === EntityAlertTypes.FUTURE_EFFECTIVE) {
     const effectiveDateFormatted = formatEffectiveDate(status.data.effectiveDate)
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.FUTURE_EFFECTIVE}`, { effectiveDate: effectiveDateFormatted }),
       colour: 'text-blue-500',
-      priority: 8,
+      priority: 8, // Lowest priority
       type: status.type
     }
   }
@@ -84,21 +91,55 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
   return null
 }
 
-const makeMessages = () => {
+// Compute alert messages with correct priorities
+const alertMessages = computed(() => {
+  // HIGHEST PRIORITY: Special case for expired registrations
+  // If we have an expired registration alert, ONLY show that message and ignore all others
+  const expiredRegistrationAlert = props.details.find(detail =>
+    typeof detail === 'object' &&
+    detail.type === EntityAlertTypes.EXPIRED &&
+    detail.data?.type === 'registration'
+  )
+
+  if (expiredRegistrationAlert) {
+    // Generate the message for the expired registration
+    const message = generateMessage(expiredRegistrationAlert)
+    return message ? [message] : []
+  }
+
+  // For all other cases, process all details and filter by priority
   const temp: Message[] = []
-  for (const detail of props.details) {
+
+  // This logic ensures EXPIRED alerts take precedence over BADSTANDING
+  // Check if we have any EXPIRED alert
+  const hasExpired = props.details.some(detail =>
+    (typeof detail === 'object' && detail.type === EntityAlertTypes.EXPIRED) ||
+    detail === EntityAlertTypes.EXPIRED
+  )
+
+  // If we have an EXPIRED alert, filter out BAD_STANDING
+  const filteredDetails = hasExpired
+    ? props.details.filter(detail =>
+      (typeof detail === 'object' && detail.type !== EntityAlertTypes.BADSTANDING) ||
+      detail !== EntityAlertTypes.BADSTANDING
+    )
+    : props.details
+
+  // Process each detail into a message
+  for (const detail of filteredDetails) {
     const message = generateMessage(detail)
     if (message !== null) {
       temp.push(message)
     }
   }
+  // Sort by priority (lower number = higher priority)
+  // This ensures the most important alert is first in the array
   return temp.sort((m1, m2) => m1.priority - m2.priority)
-}
+})
 
-const alertMessages = makeMessages()
-
+// Determine which icon to use for a message
 const getIconForMessage = (message: Message) => {
-  // Check if the message is future effective. If it is, return the information outline icon.
+  // FUTURE_EFFECTIVE uses information icon, others use the standard alert icon
   return message.type === EntityAlertTypes.FUTURE_EFFECTIVE
     ? 'i-mdi-information-outline'
     : props.icon

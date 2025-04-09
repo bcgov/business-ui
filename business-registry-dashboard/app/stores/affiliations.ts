@@ -36,7 +36,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const paginationLimitOptions = ref([
     { label: '50', value: 50 },
     { label: '100', value: 100 },
-    { label: '500', value: 500 }
+    { label: '200', value: 200 }
   ])
 
   // Flag for whether server-side filtering is enabled
@@ -220,7 +220,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           url += `&status=${encodeURIComponent(affiliations.filters.status)}`
         }
         if (affiliations.filters.type) {
-          url += `&type=${encodeURIComponent(affiliations.filters.type)}`
+          // Map display names to corresponding type codes
+          const typeCode = DisplayNameToCorpType[affiliations.filters.type as keyof typeof DisplayNameToCorpType] || affiliations.filters.type
+          url += `&type=${encodeURIComponent(typeCode)}`
         }
       }
 
