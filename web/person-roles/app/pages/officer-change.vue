@@ -2,6 +2,7 @@
 const { t } = useI18n()
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
+const detailsHeaderStore = useConnectDetailsHeaderStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 
 useHead({
@@ -32,6 +33,16 @@ feeStore.fees = {
     waived: true
   }
 }
+
+// TODO: set business details from business fetch
+detailsHeaderStore.title = { el: 'span', text: 'THE PIE CAFE LTD.' }
+detailsHeaderStore.subtitles = [{ text: 'BC Limited Company' }]
+detailsHeaderStore.sideDetails = [
+  { label: 'Business Number', value: '985561901BC0001' },
+  { label: 'Incorporation Number', value: 'BC1144637' },
+  { label: 'Email', value: 'thepiecafe@gmail.com' },
+  { label: 'Phone', value: '(778) 698-1406' }
+]
 
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)

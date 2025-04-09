@@ -78,7 +78,8 @@ export default {
     changeAddress: 'Change Address',
     undo: 'Undo',
     remove: 'Remove',
-    moreActions: 'More Actions'
+    moreActions: 'More Actions',
+    edit: 'Edit'
   },
   text: {
     preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',
@@ -109,7 +110,7 @@ export default {
   },
   page: {
     officerChange: {
-      title: 'Officer Change - TBD',
+      title: 'Officer Change - People Roles - BC Registries and Online Services',
       h1: 'Officer Change'
     }
   },
