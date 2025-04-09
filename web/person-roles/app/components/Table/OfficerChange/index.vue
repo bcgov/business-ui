@@ -75,13 +75,12 @@ function getIsRowRemoved(row: Row<OfficerTableState>) {
 }
 
 function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string, actionCell = false): string {
-  const expandedClass = (row.getIsExpanded() && row.index !== 0) ? 'border-t-6 border-bcGovGray-100' : ''
   const removedClass = getIsRowRemoved(row) ? 'opacity-50' : ''
 
   if (actionCell) {
-    return `${expandedClass} ${defaultClass}`
+    return defaultClass
   }
-  return `${expandedClass} ${removedClass} ${defaultClass}`
+  return `${removedClass} ${defaultClass}`
 }
 
 function getRowActions(row: Row<OfficerTableState>) {
@@ -273,7 +272,8 @@ const columns: TableColumn<OfficerTableState>[] = [
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-0 py-0 text-bcGovGray-700 align-top'
+      td: 'px-0 py-0 text-bcGovGray-700 align-top',
+      tr: 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-bcGovGray-100'
     }"
   >
     <template #expanded="{ row }">
