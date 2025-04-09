@@ -60,7 +60,7 @@ export default defineAppConfig({
         labelWrapper: 'flex content-center items-center justify-between',
         label: 'block font-bold text-base text-bcGovGray-900',
         container: 'mt-1 relative',
-        description: 'text-(--ui-text) text-base text-bcGovColor-lightGray mb-4',
+        description: 'text-(--ui-text) text-base text-bcGovColor-lightGray mb-4 whitespace-normal',
         error: 'pl-4.5 mt-1 text-(--ui-error) text-xs',
         hint: 'text-(--ui-text)',
         help: 'pl-4.5 mt-1 text-(--ui-text) text-xs'
