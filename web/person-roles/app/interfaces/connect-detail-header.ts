@@ -7,7 +7,7 @@ export interface ConnectDetailHeaderSideDetail {
       error: string
       validate: (val: string) => string
     }
-    action: Function
+    action: (...args: unknown[]) => unknown | Promise<unknown>
   }
 }
 
@@ -28,7 +28,7 @@ export interface ConnectDetailHeaderItem {
 }
 
 export interface ConnectDetailHeaderBtn {
-  action: Function
+  action: (...args: unknown[]) => unknown | Promise<unknown>
   label: string
   icon?: string
   loading?: boolean
