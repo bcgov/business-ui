@@ -177,7 +177,7 @@ watch(
     ref="officer-form"
     :state
     :schema="emptySchema"
-    class="bg-white p-6 mx-auto"
+    class="bg-white p-6"
     :class="{
       'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
       'rounded-sm ring ring-gray-300': !editing
