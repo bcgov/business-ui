@@ -1,86 +1,94 @@
+import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { merge, isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
-  // const t = useNuxtApp().$i18n.t
+  const t = useNuxtApp().$i18n.t
+  const modal = useModals()
+  const legalApi = useLegalApi()
+  const authApi = useAuthApi()
+  const detailsHeaderStore = useConnectDetailsHeaderStore()
 
+  const initializing = ref<boolean>(false)
   const addingOfficer = ref<boolean>(false)
 
   const expanded = ref<ExpandedState | undefined>(undefined)
   const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
-  const disableActions = computed(() => {
-    return addingOfficer.value || !!expanded.value
-  })
+  const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
-  const officers = ref<OfficerTableState[]>([
-    {
-      state: {
-        officer: {
-          firstName: 'Officer 1 first',
-          middleName: 'Officer 1 middle',
-          lastName: 'Officer 1 last',
-          preferredName: '',
-          roles: [OfficerRole.CEO],
-          mailingAddress: {
-            street: '260 Champ Ave',
-            city: 'Vancouver',
-            postalCode: 'G1J 4M6',
-            country: 'CA',
-            region: 'BC',
-            streetAdditional: '',
-            locationDescription: ''
-          },
-          deliveryAddress: {
-            street: '264 Champ Ave',
-            city: 'Vancouver',
-            postalCode: 'G1J 4M6',
-            country: 'CA',
-            region: 'BC',
-            streetAdditional: '',
-            locationDescription: ''
-          },
-          sameAsDelivery: false,
-          hasPreferredName: false
-        },
-        actions: []
-      },
-      history: []
-    },
-    {
-      state: {
-        officer: {
-          firstName: 'Officer 2 first',
-          middleName: 'Officer 2 middle',
-          lastName: 'Officer 2 last',
-          preferredName: 'Heisenberg',
-          roles: [OfficerRole.CFO, OfficerRole.TREASURER],
-          mailingAddress: {
-            street: '260 Champ Ave',
-            city: 'Vancouver',
-            postalCode: 'G1J 4M6',
-            country: 'CA',
-            region: 'BC',
-            streetAdditional: '',
-            locationDescription: ''
-          },
-          deliveryAddress: {
-            street: '260 Champ Ave',
-            city: 'Vancouver',
-            postalCode: 'G1J 4M6',
-            country: 'CA',
-            region: 'BC',
-            streetAdditional: '',
-            locationDescription: ''
-          },
-          sameAsDelivery: true,
-          hasPreferredName: true
-        },
-        actions: []
-      },
-      history: []
+  const initialOfficers = ref<Officer[]>([])
+  const officerTableState = ref<OfficerTableState[]>([])
+
+  async function initOfficerStore(businessId: string) {
+    try {
+      initializing.value = true
+      detailsHeaderStore.loading = true
+
+      const [authInfo, business, parties] = await Promise.all([
+        authApi.getAuthInfo(businessId),
+        legalApi.getBusiness(businessId, true),
+        legalApi.getParties(businessId, 'officer')
+      ])
+
+      // set masthead data
+      const contact = authInfo.contacts[0]
+      const ext = contact?.extension ?? contact?.phoneExtension
+      const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
+
+      detailsHeaderStore.title = { el: 'span', text: business.legalName }
+      detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
+      detailsHeaderStore.sideDetails = [
+        { label: t('label.businessNumber'), value: business.taxId ?? '' },
+        { label: t('label.incorporationNumber'), value: business.identifier },
+        { label: t('label.email'), value: contact?.email ?? '' },
+        { label: t('label.phone'), value: phoneLabel }
+      ]
+
+      // map officers
+      if (parties.length) {
+        const officers = parties.map((p) => {
+          const mailingAddress = formatAddressUi(p.mailingAddress)
+          const deliveryAddress = formatAddressUi(p.deliveryAddress)
+          const preferredName = '' // TODO: map preferred name - need in api
+
+          return {
+            firstName: p.officer.firstName ?? '',
+            middleName: p.officer.middleName ?? '',
+            lastName: p.officer.lastName ?? '',
+            preferredName, // TODO: map preferred name - need in api
+            roles: p.roles.map(r => r.roleType),
+            mailingAddress,
+            deliveryAddress,
+            sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
+            hasPreferredName: preferredName.length > 0
+          }
+        })
+
+        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
+        initialOfficers.value = officers
+        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
+        officerTableState.value = officers.map(o => ({
+            state: {
+              officer: o,
+              actions: []
+            },
+            history: []
+        }))
+      }
+    } catch (error) {
+      if (error instanceof FetchError) { // handle http error
+        const res = error.response
+        const status = res?.status
+        modal.openOfficerInitErrorModal(status)
+      } else {
+        modal.openOfficerInitErrorModal(undefined)
+      }
+    } finally {
+      detailsHeaderStore.loading = false
+      initializing.value = false
     }
-  ])
+  }
 
   function getNewOfficer(): Officer {
     return {
@@ -121,8 +129,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       history: []
     }
 
-    officers.value = [
-      ...officers.value,
+    officerTableState.value = [
+      ...officerTableState.value,
       newState
     ]
   }
@@ -175,10 +183,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
       }
     }
 
-    officers.value = [
-      ...officers.value.slice(0, index),
+    officerTableState.value = [
+      ...officerTableState.value.slice(0, index),
       newState,
-      ...officers.value.slice(index + 1)
+      ...officerTableState.value.slice(index + 1)
     ]
   }
 
@@ -227,11 +235,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   return {
-    officers,
+    officerTableState,
+    initializing,
     addingOfficer,
     expanded,
     editState,
     disableActions,
+    initOfficerStore,
     getNewOfficer,
     addNewOfficer,
     updateOfficers,

@@ -10,7 +10,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  addressComplete: [value: ConnectAddress]
+  addressComplete: [value: UiAddress]
 }>()
 
 const inputId = props.id + '-street'

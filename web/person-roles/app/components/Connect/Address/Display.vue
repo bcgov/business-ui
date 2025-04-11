@@ -1,12 +1,12 @@
 <script setup lang="ts">
 defineProps<{
-  address: Partial<ConnectAddress>
+  address: Partial<UiAddress>
   omitCountry?: boolean
   useLocationDescLabel?: boolean
 }>()
 
 const getAddressDisplayParts = (
-  address: Partial<ConnectAddress>,
+  address: Partial<UiAddress>,
   separateCity = false,
   addTextDecor = false,
   omitCountry = false

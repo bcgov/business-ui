@@ -1,9 +1,22 @@
+export interface UiAddress {
+  street: string
+  streetAdditional: string
+  city: string
+  region: string
+  postalCode: string
+  country: string
+  locationDescription: string
+  streetName?: string
+  streetNumber?: string
+  unitNumber?: string
+}
+
 /**
  * Interface to define a base address.
  * See:
  * https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/address.json
  */
-export interface Address {
+export interface ApiAddress {
   addressCity: string // max 40 chars
   addressCountry: string
   addressRegion?: string // max 2 chars
@@ -15,17 +28,17 @@ export interface Address {
 }
 
 /** Interface to define the joint base addresses. */
-export interface BaseAddressObj {
-  mailingAddress: Address
+export interface ApiBaseAddressObj {
+  mailingAddress: ApiAddress
   // Delivery Address is required for directors and offices.
   // Delivery Address is optional for completing party and incorporators.
-  deliveryAddress?: Address
+  deliveryAddress?: ApiAddress
 }
 
 /** Interface to define the incorporation addresses. */
 export interface IncorporationAddress {
-  registeredOffice: BaseAddressObj
+  registeredOffice: ApiBaseAddressObj
   // Records Address is required for BCOMPs.
   // Records Address may be optional for other app types.
-  recordsOffice?: BaseAddressObj
+  recordsOffice?: ApiBaseAddressObj
 }

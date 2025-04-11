@@ -6,5 +6,6 @@ export interface ContactPoint {
   email: string
   confirmEmail?: string
   phone: string
+  phoneExtension?: string
   extension?: number
 }
