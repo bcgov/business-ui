@@ -1,15 +1,12 @@
-import type { ButtonProps } from '@nuxt/ui'
-import { ModalOfficerError } from '#components'
+import { ModalOfficerInitializeError } from '#components'
 
 export const useModals = () => {
   const overlay = useOverlay()
 
-  async function openOfficerInitErrorModal(title: string, description: string, buttons: ButtonProps[]) {
-    const modal = overlay.create(ModalOfficerError, {
+  async function openOfficerInitErrorModal(status: number | undefined) {
+    const modal = overlay.create(ModalOfficerInitializeError, {
       props: {
-        title,
-        description,
-        buttons
+        status
       }
     })
 

@@ -1,5 +1,4 @@
 import { FetchError } from 'ofetch'
-import { StatusCodes } from 'http-status-codes'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { merge, isEqual } from 'lodash'
 
@@ -81,44 +80,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
       if (error instanceof FetchError) { // handle http error
         const res = error.response
         const status = res?.status
-
-        switch (status) {
-          case StatusCodes.NOT_FOUND:
-          case StatusCodes.BAD_REQUEST:
-            modal.openOfficerInitErrorModal(
-              t('error.getOfficerInfo.notFound.title'),
-              t('error.getOfficerInfo.notFound.description'), // TODO: redirect to dashboard
-              [{ label: t('btn.goToBRD'), size: 'xl', onClick: () => console.info('modal clicked') }]
-            )
-            break
-          case StatusCodes.FORBIDDEN:
-          case StatusCodes.UNAUTHORIZED:
-            modal.openOfficerInitErrorModal(
-              t('error.getOfficerInfo.unauthorized.title'),
-              t('error.getOfficerInfo.unauthorized.description'),
-              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
-            )
-            break
-          case StatusCodes.INTERNAL_SERVER_ERROR:
-            modal.openOfficerInitErrorModal(
-              t('error.getOfficerInfo.internal.title'),
-              t('error.getOfficerInfo.internal.description'),
-              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
-            )
-            break
-          default:
-            modal.openOfficerInitErrorModal(
-              t('error.getOfficerInfo.unknown.title'),
-              t('error.getOfficerInfo.unknown.description'),
-              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
-            )
-        }
+        modal.openOfficerInitErrorModal(status)
       } else {
-        modal.openOfficerInitErrorModal(
-          t('error.getOfficerInfo.unknown.title'),
-          t('error.getOfficerInfo.unknown.description'),
-          [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
-        )
+        modal.openOfficerInitErrorModal(undefined)
       }
     } finally {
       detailsHeaderStore.loading = false
