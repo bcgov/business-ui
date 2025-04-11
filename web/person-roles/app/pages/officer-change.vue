@@ -3,6 +3,7 @@ const { t } = useI18n()
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const detailsHeaderStore = useConnectDetailsHeaderStore()
+// const legalApi = useLegalApi()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 
 useHead({
@@ -70,14 +71,23 @@ setButtonControl({
 })
 
 // TODO: load from legal api
-// onMounted(async () => {
-//   const { $legalApi } = useNuxtApp()
+onMounted(async () => {
+  // const { $legalApi, $authApi } = useNuxtApp()
 
-//   // const res = await $legalApi('/businesses/BC0871274/filings').catch()
-//   const res = await $legalApi('/businesses/BC0871274/parties').catch()
+  //   // const res = await $legalApi('/businesses/BC0871274/filings').catch()
+  // const res = await $legalApi('/businesses/BC0871274/parties').catch()
+  // const res2 = await $legalApi('/businesses/BC0871274/addresses').catch()
+  // const res2 = await legalApi.getBusiness('BC0357453', true).catch()
+  // const res3 = await legalApi.getParties('BC0357453').catch()
+  // const res5 = await legalApi.getParties('BC0489906').catch()
+  // const res4 = await $authApi('/orgs/3879/affiliations').catch()
 
-//   console.log(res)
-// })
+  // console.log(res)
+  // console.log(res2)
+  // console.log(res3)
+  // // console.log(res4)
+  // console.log(res5)
+})
 </script>
 
 <template>
