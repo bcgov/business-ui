@@ -102,7 +102,11 @@ export default {
     undo: 'Undo',
     remove: 'Remove',
     moreActions: 'More Actions',
-    edit: 'Edit'
+    edit: 'Edit',
+    businessNumber: 'Business Number',
+    incorporationNumber: 'Incorporation Number',
+    email: 'Email',
+    phone: 'Phone'
   },
   text: {
     preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',

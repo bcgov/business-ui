@@ -40,10 +40,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
       detailsHeaderStore.title = { el: 'span', text: business.legalName }
       detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
       detailsHeaderStore.sideDetails = [
-        { label: 'Business Number', value: business.taxId ?? '' },
-        { label: 'Incorporation Number', value: business.identifier },
-        { label: 'Email', value: contact?.email ?? '' },
-        { label: 'Phone', value: phoneLabel }
+        { label: t('label.businessNumber'), value: business.taxId ?? '' },
+        { label: t('label.incorporationNumber'), value: business.identifier },
+        { label: t('label.email'), value: contact?.email ?? '' },
+        { label: t('label.phone'), value: phoneLabel }
       ]
 
       // map officers
