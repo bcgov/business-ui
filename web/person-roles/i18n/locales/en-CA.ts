@@ -35,7 +35,7 @@ export default {
   },
   error: {
     getOfficerInfo: {
-      restricted: {
+      unauthorized: {
         title: 'Access Restricted',
         /* eslint-disable-next-line */ // TODO: get eslint to ignore double quotes when translation string has single quote inside it
         description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
