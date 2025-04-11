@@ -4,6 +4,7 @@ const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
+const route = useRoute()
 
 useHead({
   title: t('page.officerChange.title')
@@ -63,8 +64,8 @@ setButtonControl({
 watch(
   () => accountStore.currentAccount.id,
   async () => {
-    // await officerStore.initOfficerStore('BC1239315')
-    await officerStore.initOfficerStore('BC1234567')
+    await officerStore.initOfficerStore(route.params.businessId as string) // 'BC1239315'
+    // await officerStore.initOfficerStore('BC1234567')
   },
   { immediate: true }
 )

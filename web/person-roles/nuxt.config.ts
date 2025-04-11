@@ -43,6 +43,7 @@ export default defineNuxtConfig({
   routeRules: {
     '/': { redirect: '/en-CA' },
     '/en-CA': { redirect: '/en-CA/officer-change' },
+    '/en-CA/officer-change': { redirect: '/en-CA/officer-change/undefined' },
     '/fr-CA': { prerender: false, redirect: '/fr-CA/officer-change' },
     '/fr-CA/**': { prerender: false }
   },
