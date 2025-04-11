@@ -12,7 +12,8 @@ export default {
     cancel: 'Cancel',
     submit: 'Submit',
     save: 'Save',
-    saveExit: 'Save and Resume Later'
+    saveExit: 'Save and Resume Later',
+    goToBRD: 'Go to Business Registry Dashboard'
   },
   currency: {
     cad: 'CAD',
@@ -30,6 +31,27 @@ export default {
       OTHER: 'Other Office(s)',
       CHAIR: 'Chair',
       Officer: 'Officer' // TODO: update when subtype/roles are defined in api
+    }
+  },
+  error: {
+    getOfficerInfo: {
+      restricted: {
+        title: 'Access Restricted',
+        /* eslint-disable-next-line */ // TODO: get eslint to ignore double quotes when translation string has single quote inside it
+        description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
+      },
+      notFound: {
+        title: 'Business Not Found',
+        description: 'This business can not be found or does not exist.'
+      },
+      internal: {
+        title: 'Internal Server Error',
+        description: 'Internal error, please try again later.'
+      },
+      unknown: {
+        title: 'Unknown Error',
+        description: 'Unknown error, please try again later.'
+      }
     }
   },
   help: {

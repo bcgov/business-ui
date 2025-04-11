@@ -12,7 +12,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 
 const officerStore = useOfficerStore()
-const { officerTableState, expanded, editState, loading } = storeToRefs(useOfficerStore())
+const { officerTableState, expanded, editState, initializing } = storeToRefs(useOfficerStore())
 
 const formTitle = computed(() => {
   if (!editState.value.section) {
@@ -267,7 +267,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     v-model:expanded="expanded"
     :data="officerTableState"
     :columns
-    :loading
+    :loading="initializing"
     sticky
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',

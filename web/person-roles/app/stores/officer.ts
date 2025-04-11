@@ -1,81 +1,129 @@
+import { FetchError } from 'ofetch'
+import { StatusCodes } from 'http-status-codes'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { merge, isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
-  // const t = useNuxtApp().$i18n.t
+  const t = useNuxtApp().$i18n.t
+  const modal = useModals()
   const legalApi = useLegalApi()
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  const loading = ref<boolean>(false)
+  const initializing = ref<boolean>(false)
   const addingOfficer = ref<boolean>(false)
 
   const expanded = ref<ExpandedState | undefined>(undefined)
   const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
 
-  const disableActions = computed(() => addingOfficer.value || !!expanded.value)
+  const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
   const initialOfficers = ref<Officer[]>([])
   const officerTableState = ref<OfficerTableState[]>([])
 
   async function initOfficerStore(businessId: string) {
-    loading.value = true
-    detailsHeaderStore.loading = true
+    try {
+      initializing.value = true
+      detailsHeaderStore.loading = true
 
-    const [authInfo, business, parties] = await Promise.all([
-      authApi.getAuthInfo(businessId),
-      legalApi.getBusiness('BC1239315', true),
-      legalApi.getParties('BC1239315', 'officer')
-    ])
+      const [authInfo, business, parties] = await Promise.all([
+        authApi.getAuthInfo(businessId),
+        legalApi.getBusiness('BC1239315', true),
+        legalApi.getParties('BC1239315', 'officer')
+      ])
 
-    // set masthead data
-    const contact = authInfo.contacts[0]
-    const ext = contact?.extension ?? contact?.phoneExtension
-    const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
+      // set masthead data
+      const contact = authInfo.contacts[0]
+      const ext = contact?.extension ?? contact?.phoneExtension
+      const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
 
-    detailsHeaderStore.title = { el: 'span', text: business.legalName }
-    detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-    detailsHeaderStore.sideDetails = [
-      { label: 'Business Number', value: business.taxId ?? '' },
-      { label: 'Incorporation Number', value: business.identifier },
-      { label: 'Email', value: contact?.email ?? '' },
-      { label: 'Phone', value: phoneLabel }
-    ]
+      detailsHeaderStore.title = { el: 'span', text: business.legalName }
+      detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
+      detailsHeaderStore.sideDetails = [
+        { label: 'Business Number', value: business.taxId ?? '' },
+        { label: 'Incorporation Number', value: business.identifier },
+        { label: 'Email', value: contact?.email ?? '' },
+        { label: 'Phone', value: phoneLabel }
+      ]
 
-    // map officers
-    if (parties.length) {
-      const officers = parties.map((p) => {
-        const mailingAddress = formatAddressUi(p.mailingAddress)
-        const deliveryAddress = formatAddressUi(p.deliveryAddress)
-        const preferredName = '' // TODO: map preferred name - need in api
+      // map officers
+      if (parties.length) {
+        const officers = parties.map((p) => {
+          const mailingAddress = formatAddressUi(p.mailingAddress)
+          const deliveryAddress = formatAddressUi(p.deliveryAddress)
+          const preferredName = '' // TODO: map preferred name - need in api
 
-        return {
-          firstName: p.officer.firstName ?? '',
-          middleName: p.officer.middleName ?? '',
-          lastName: p.officer.lastName ?? '',
-          preferredName, // TODO: map preferred name - need in api
-          roles: p.roles.map(r => r.roleType),
-          mailingAddress,
-          deliveryAddress,
-          sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
-          hasPreferredName: preferredName.length > 0
+          return {
+            firstName: p.officer.firstName ?? '',
+            middleName: p.officer.middleName ?? '',
+            lastName: p.officer.lastName ?? '',
+            preferredName, // TODO: map preferred name - need in api
+            roles: p.roles.map(r => r.roleType),
+            mailingAddress,
+            deliveryAddress,
+            sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
+            hasPreferredName: preferredName.length > 0
+          }
+        })
+
+        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
+        initialOfficers.value = officers
+        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
+        officerTableState.value = officers.map(o => ({
+            state: {
+              officer: o,
+              actions: []
+            },
+            history: []
+        }))
+      }
+    } catch (error) {
+      if (error instanceof FetchError) { // handle http error
+        const res = error.response
+        const status = res?.status
+
+        switch (status) {
+          case StatusCodes.NOT_FOUND:
+          case StatusCodes.BAD_REQUEST:
+            modal.openOfficerInitErrorModal(
+              t('error.getOfficerInfo.notFound.title'),
+              t('error.getOfficerInfo.notFound.description'), // TODO: redirect to dashboard
+              [{ label: t('btn.goToBRD'), size: 'xl', onClick: () => console.info('modal clicked') }]
+            )
+            break
+          case StatusCodes.FORBIDDEN:
+          case StatusCodes.UNAUTHORIZED:
+            modal.openOfficerInitErrorModal(
+              t('error.getOfficerInfo.unauthorized.title'),
+              t('error.getOfficerInfo.unauthorized.description'),
+              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
+            )
+            break
+          case StatusCodes.INTERNAL_SERVER_ERROR:
+            modal.openOfficerInitErrorModal(
+              t('error.getOfficerInfo.internal.title'),
+              t('error.getOfficerInfo.internal.description'),
+              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
+            )
+            break
+          default:
+            modal.openOfficerInitErrorModal(
+              t('error.getOfficerInfo.unknown.title'),
+              t('error.getOfficerInfo.unknown.description'),
+              [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
+            )
         }
-      })
-
-      // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
-      initialOfficers.value = officers
-      // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
-      officerTableState.value = officers.map(o => ({
-          state: {
-            officer: o,
-            actions: []
-          },
-          history: []
-      }))
+      } else {
+        modal.openOfficerInitErrorModal(
+          t('error.getOfficerInfo.unknown.title'),
+          t('error.getOfficerInfo.unknown.description'),
+          [{ label: t('btn.goToBRD'), onClick: () => console.info('modal clicked') }]
+        )
+      }
+    } finally {
+      detailsHeaderStore.loading = false
+      initializing.value = false
     }
-
-    detailsHeaderStore.loading = false
-    loading.value = false
   }
 
   function getNewOfficer(): Officer {
@@ -224,7 +272,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   return {
     officerTableState,
-    loading,
+    initializing,
     addingOfficer,
     expanded,
     editState,
