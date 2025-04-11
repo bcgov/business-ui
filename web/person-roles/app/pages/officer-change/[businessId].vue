@@ -65,7 +65,6 @@ watch(
   () => accountStore.currentAccount.id,
   async () => {
     await officerStore.initOfficerStore(route.params.businessId as string) // 'BC1239315'
-    // await officerStore.initOfficerStore('BC1234567')
   },
   { immediate: true }
 )
