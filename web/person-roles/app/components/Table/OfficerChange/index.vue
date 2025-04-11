@@ -12,7 +12,7 @@ const UDropdownMenu = resolveComponent('UDropdownMenu')
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 
 const officerStore = useOfficerStore()
-const { officers, expanded, editState } = storeToRefs(useOfficerStore())
+const { officerTableState, expanded, editState, loading } = storeToRefs(useOfficerStore())
 
 const formTitle = computed(() => {
   if (!editState.value.section) {
@@ -265,8 +265,9 @@ const columns: TableColumn<OfficerTableState>[] = [
 <template>
   <UTable
     v-model:expanded="expanded"
-    :data="officers"
-    :columns="columns"
+    :data="officerTableState"
+    :columns
+    :loading
     sticky
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',
@@ -279,7 +280,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     <template #expanded="{ row }">
       <FormOfficerChange
         class="max-w-full"
-        :class="(row.index !== officers.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''"
+        :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''"
         :default-state="editState.data"
         :editing="true"
         :title="formTitle"

@@ -28,7 +28,8 @@ export default {
       ASSISTANT_SECRETARY: 'Assistant Secretary',
       VP: 'Vice President',
       OTHER: 'Other Office(s)',
-      CHAIR: 'Chair'
+      CHAIR: 'Chair',
+      Officer: 'Officer' // TODO: update when subtype/roles are defined in api
     }
   },
   help: {

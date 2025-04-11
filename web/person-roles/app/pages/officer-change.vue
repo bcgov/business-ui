@@ -2,8 +2,8 @@
 const { t } = useI18n()
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
-const detailsHeaderStore = useConnectDetailsHeaderStore()
 // const legalApi = useLegalApi()
+// const authApi = useAuthApi()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 
 useHead({
@@ -35,16 +35,6 @@ feeStore.fees = {
   }
 }
 
-// TODO: set business details from business fetch
-detailsHeaderStore.title = { el: 'span', text: 'THE PIE CAFE LTD.' }
-detailsHeaderStore.subtitles = [{ text: 'BC Limited Company' }]
-detailsHeaderStore.sideDetails = [
-  { label: 'Business Number', value: '985561901BC0001' },
-  { label: 'Incorporation Number', value: 'BC1144637' },
-  { label: 'Email', value: 'thepiecafe@gmail.com' },
-  { label: 'Phone', value: '(778) 698-1406' }
-]
-
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)
   officerStore.addingOfficer = false
@@ -72,20 +62,26 @@ setButtonControl({
 
 // TODO: load from legal api
 onMounted(async () => {
-  // const { $legalApi, $authApi } = useNuxtApp()
+  // const { $authApi } = useNuxtApp()
+
+  // BC0489906
+  // BC0357453
+  // BC0146898
 
   //   // const res = await $legalApi('/businesses/BC0871274/filings').catch()
   // const res = await $legalApi('/businesses/BC0871274/parties').catch()
   // const res2 = await $legalApi('/businesses/BC0871274/addresses').catch()
-  // const res2 = await legalApi.getBusiness('BC0357453', true).catch()
-  // const res3 = await legalApi.getParties('BC0357453').catch()
-  // const res5 = await legalApi.getParties('BC0489906').catch()
+  // const res2 = await legalApi.getBusiness('BC1239315', true).catch()
+  // const res3 = await legalApi.getParties('BC1239315', 'officer').catch()
   // const res4 = await $authApi('/orgs/3879/affiliations').catch()
+  // const res5 = await authApi.getAuthInfo('BC1239315').catch()
+
+  await officerStore.initOfficerStore('BC1239315')
 
   // console.log(res)
   // console.log(res2)
   // console.log(res3)
-  // // console.log(res4)
+  // console.log(res4)
   // console.log(res5)
 })
 </script>

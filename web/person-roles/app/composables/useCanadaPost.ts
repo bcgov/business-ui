@@ -2,7 +2,7 @@
 
 export const useCanadaPost = () => {
   const activeAddressField = ref<string>()
-  const address = reactive<ConnectAddress>({
+  const address = reactive<UiAddress>({
     street: '',
     streetAdditional: '',
     city: '',
