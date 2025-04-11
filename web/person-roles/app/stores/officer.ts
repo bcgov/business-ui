@@ -28,8 +28,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       const [authInfo, business, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
-        legalApi.getBusiness('BC1239315', true),
-        legalApi.getParties('BC1239315', 'officer')
+        legalApi.getBusiness(businessId, true),
+        legalApi.getParties(businessId, 'officer')
       ])
 
       // set masthead data
