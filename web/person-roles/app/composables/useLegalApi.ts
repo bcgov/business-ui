@@ -42,8 +42,14 @@ export const useLegalApi = () => {
    * @param businessId the id of the business
    * @returns a promise to return the data
    */
-  async function getParties(businessId: string): Promise<unknown> {
-    return $legalApi(`businesses/${businessId}/parties?role=officer`)
+  async function getParties(businessId: string, roleType?: string): Promise<OrgPerson[]> {
+    const response = await $legalApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
+      query: {
+        role: roleType
+      }
+    })
+
+    return response.parties
   }
 
   return {

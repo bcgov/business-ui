@@ -44,7 +44,7 @@ const emit = defineEmits<{
   'officer-change': [Partial<Officer>]
 }>()
 
-const defaultMailingAddress = { ...props.defaultState.mailingAddress } as ConnectAddress // TODO: confirm default defined correctly
+const defaultMailingAddress = { ...props.defaultState.mailingAddress } as UiAddress // TODO: confirm default defined correctly
 
 const emptySchema = z.object({})
 

@@ -8,18 +8,18 @@ const props = defineProps<{
   schemaPrefix: string
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   formRef?: any
-  disabledFields?: Array<keyof ConnectAddress>
-  excludedFields?: Array<keyof ConnectAddress>
+  disabledFields?: Array<keyof UiAddress>
+  excludedFields?: Array<keyof UiAddress>
   // TODO: cleanup below strategies
   hideStreetHint?: boolean
   locationDescLabel?: boolean
   unitNumbRequired?: boolean
 }>()
 
-const state = defineModel<Partial<ConnectAddress>>({ required: true })
+const state = defineModel<Partial<UiAddress>>({ required: true })
 
-async function populateAddressComplete(e: ConnectAddress) {
-  const keys = Object.keys(e) as Array<keyof ConnectAddress>
+async function populateAddressComplete(e: UiAddress) {
+  const keys = Object.keys(e) as Array<keyof UiAddress>
   for (const key of keys) {
     if (
       !props.disabledFields?.includes(key)
