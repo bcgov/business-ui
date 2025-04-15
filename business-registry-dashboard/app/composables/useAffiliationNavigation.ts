@@ -4,6 +4,7 @@ export function useAffiliationNavigation () {
   const webUrl = getWebUrl()
   const accountStore = useConnectAccountStore()
   const currentAccountId = computed(() => accountStore.currentAccount.id)
+  const brdModal = useBrdModals()
 
   /** Navigation handler for business dashboard. */
   function goToDashboard (businessIdentifier: string) {
@@ -91,6 +92,11 @@ export function useAffiliationNavigation () {
         goToDashboard(businessIdentifier)
       }
     } else {
+      // Open special continuation in coop dialog to contact BC Registries
+      if (item.nameRequest?.entityTypeCd === CorpTypes.COOP) {
+        brdModal.openContinuationInCoopModal()
+        return
+      }
       goToCorpOnline()
     }
   }
@@ -117,6 +123,10 @@ export function useAffiliationNavigation () {
       }
       // temporarily show external icon for continue in
       if (nrRequestActionCd === NrRequestActionCodes.MOVE) {
+        // Since Coops are not in COLIN, we don't want to show the external icon
+        if (item.nameRequest?.entityTypeCd === CorpTypes.COOP) {
+          return false
+        }
         return !isSupportedContinuationInEntities(item)
       }
       // temporary show external icon for amalgamate for some entity types
