@@ -278,15 +278,16 @@ const columns: TableColumn<OfficerTableState>[] = [
     }"
   >
     <template #expanded="{ row }">
-      <FormOfficerChange
-        class="max-w-full"
-        :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''"
-        :default-state="editState.data"
-        :editing="true"
-        :title="formTitle"
-        @cancel="officerStore.cancelOfficerEdit"
-        @officer-change="officerStore.onOfficerEditSubmit($event, row)"
-      />
+      <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''">
+        <FormOfficerChange
+          class="max-w-full"
+          :default-state="editState.data"
+          :editing="true"
+          :title="formTitle"
+          @cancel="officerStore.cancelOfficerEdit"
+          @officer-change="officerStore.onOfficerEditSubmit($event, row)"
+        />
+      </div>
     </template>
 
     <template #empty>
