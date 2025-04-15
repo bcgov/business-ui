@@ -1,5 +1,5 @@
 // https://ui.nuxt.com/components/modal#control-programmatically
-import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusiness, ModalAuthEmailSent } from '#components'
+import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusiness, ModalAuthEmailSent, ModalCoopContinuationIn } from '#components'
 
 export const useBrdModals = () => {
   const modal = useModal()
@@ -54,6 +54,10 @@ export const useBrdModals = () => {
       },
       actions: [{ label: t('btn.close'), handler: () => close() }]
     })
+  }
+
+  function openContinuationInCoopModal () {
+    modal.open(ModalCoopContinuationIn)
   }
 
   function openInvalidFilingApplication (type: string) {
@@ -119,6 +123,7 @@ export const useBrdModals = () => {
     openManageBusiness,
     openMagicLinkModal,
     openAuthEmailSent,
+    openContinuationInCoopModal,
     close
   }
 }

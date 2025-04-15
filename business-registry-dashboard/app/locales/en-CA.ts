@@ -680,6 +680,10 @@ export default {
         businessSuccessToast: 'Business successfully removed from your list.',
         nameRequestSuccessToast: 'Name Request successfully removed from your list.'
       }
+    },
+    continuationInCoop: {
+      title: 'Steps to Continue In',
+      description: 'To complete this Continuation In, contact us at:'
     }
   },
   words: {

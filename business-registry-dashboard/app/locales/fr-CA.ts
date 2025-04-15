@@ -670,6 +670,10 @@ export default {
     index: {
       businessSuccessToast: 'Entreprise supprimée avec succès de votre liste.',
       nameRequestSuccessToast: 'Demande de nom supprimée avec succès de votre liste.'
+    },
+    continuationInCoop: {
+      title: 'Étapes pour Continuer',
+      description: 'Pour compléter cette Continuation, contactez-nous à:'
     }
   },
   words: {
