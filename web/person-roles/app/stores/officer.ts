@@ -57,7 +57,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             middleName: p.officer.middleName ?? '',
             lastName: p.officer.lastName ?? '',
             preferredName, // TODO: map preferred name - need in api
-            roles: p.roles.map(r => r.roleType),
+            roles: [], // TODO: map sub roles - need in api
             mailingAddress,
             deliveryAddress,
             sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
@@ -65,9 +65,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           }
         })
 
-        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
         initialOfficers.value = officers
-        // @ts-expect-error - // TODO: roletype not matching - update when roles are defined in api
         officerTableState.value = officers.map(o => ({
             state: {
               officer: o,
