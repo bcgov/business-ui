@@ -44,6 +44,25 @@ mockNuxtImport('useConnectLaunchdarklyStore', () => {
   )
 })
 
+// Mock the useBrdModals composable
+const mockOpenContinuationInCoopModal = vi.fn()
+mockNuxtImport('useBrdModals', () => {
+  return () => ({
+    openManageNameRequest: vi.fn(),
+    openManageNRError: vi.fn(),
+    openBusinessAddError: vi.fn(),
+    nameRequestActionError: vi.fn(),
+    openBusinessUnavailableError: vi.fn(),
+    openInvalidFilingApplication: vi.fn(),
+    openBusinessRemovalConfirmation: vi.fn(),
+    openManageBusiness: vi.fn(),
+    openMagicLinkModal: vi.fn(),
+    openAuthEmailSent: vi.fn(),
+    openContinuationInCoopModal: mockOpenContinuationInCoopModal,
+    close: vi.fn()
+  })
+})
+
 describe('useAffiliationNavigation', () => {
   let store: any
   beforeEach(() => {
@@ -281,6 +300,10 @@ describe('useAffiliationNavigation', () => {
   })
 
   describe('goToContinuationIn', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
+
     it('should navigate to goToDashboard when the entity is supported for continuation in', async () => {
       mockGetStoredFlag.mockReturnValue('C') // mock ld so isSupportedContinuationInEntities returns true
       const { goToContinuationIn } = useAffiliationNavigation()
@@ -294,6 +317,22 @@ describe('useAffiliationNavigation', () => {
         'https://business-dash.example.com/BC1234567?accountid=123',
         { external: true }
       )
+    })
+
+    it('should open the continuation in coop modal when the entity type is COOP', async () => {
+      const { goToContinuationIn } = useAffiliationNavigation()
+      const business: Business = {
+        corpType: { code: CorpTypes.CONTINUE_IN },
+        businessIdentifier: '456',
+        nameRequest: { entityTypeCd: CorpTypes.COOP } as any
+      }
+      const cb = vi.fn().mockResolvedValue('BC1234567')
+
+      await goToContinuationIn(business, cb)
+
+      expect(cb).not.toHaveBeenCalled() // cb shouldn't be called
+      expect(mockOpenContinuationInCoopModal).toHaveBeenCalledTimes(1)
+      expect(navigateToMock).not.toHaveBeenCalled()
     })
 
     it('should navigate to goToCorpOnline when the entity is not supported for continuation in', async () => {
