@@ -260,6 +260,13 @@ const columns: TableColumn<OfficerTableState>[] = [
     }
   }
 ]
+
+// apply border to top of table row if expanded except for 1st row
+const expandedTrClass = computed(() =>
+  (typeof expanded.value === 'object' && expanded.value !== null && expanded.value[0] === true)
+    ? ''
+    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-bcGovGray-100'
+)
 </script>
 
 <template>
@@ -274,7 +281,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       tbody: 'px-10',
       th: 'bg-bcGovColor-gray2 px-2',
       td: 'px-0 py-0 text-bcGovGray-700 align-top',
-      tr: 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-bcGovGray-100'
+      tr: expandedTrClass
     }"
   >
     <template #expanded="{ row }">
