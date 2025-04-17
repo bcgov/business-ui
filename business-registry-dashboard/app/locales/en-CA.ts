@@ -142,6 +142,16 @@ export default {
         value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
       }
     },
+    bcRegStaff: {
+      tollFree: {
+        title: 'Toll Free:',
+        value: '1-877-526-1526'
+      },
+      victoriaOffice: {
+        title: 'Victoria Office:',
+        value: '250-387-7848'
+      }
+    },
     bcRegModal: {
       title: 'If you need help managing a B.C. Business, contact the Business Registry Help Desk:',
       tollFree: {
