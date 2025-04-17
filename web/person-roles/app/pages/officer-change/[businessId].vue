@@ -72,7 +72,7 @@ watch(
 
 <template>
   <div class="py-10 space-y-10">
-    <h1>{{ $t('page.officerChange.h1') }}</h1>
+    <h1>{{ $t('page.officerChange.h1') }} Update</h1>
 
     <UButton
       :label="$t('label.addOfficer')"

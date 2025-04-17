@@ -1,0 +1,18 @@
+name: Test Deployment Status
+on:
+  deployment_status:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Print Deployment Status Information
+        run: |
+          echo "Deployment Status: ${{ github.event.deployment_status.state }}"
+          echo "Deployment URL: ${{ github.event.deployment_status.target_url }}"
+          echo "Deployment ID: ${{ github.event.deployment_status.id }}"
+          echo "Deployment Description: ${{ github.event.deployment_status.description }}"
+          echo "Deployment Environment: ${{ github.event.deployment_status.environment }}"
