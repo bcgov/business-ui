@@ -142,6 +142,16 @@ export default {
         value: 'Du Lundi au Vendredi, 8:30am - 4:30pm heure du Pacifique'
       }
     },
+    bcRegStaff: {
+      tollFree: {
+        title: 'Sans Frais:',
+        value: '1-877-526-1526'
+      },
+      victoriaOffice: {
+        title: 'Bureau de Victoria:',
+        value: '250-387-7848'
+      }
+    },
     bcRegModal: {
       title: "Si vous avez besoin d’aide pour gérer une entreprise en Colombie-Britannique, Entreprises, contactez le service d'assistance du registre des entreprises :",
       tollFree: {
