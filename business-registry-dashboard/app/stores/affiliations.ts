@@ -16,8 +16,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     filters: {
       businessName: '',
       businessNumber: '',
-      type: '',
-      status: ''
+      type: [] as string[],
+      status: [] as string[]
     },
     pagination: {
       page: 1,
@@ -216,13 +216,19 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         if (affiliations.filters.businessNumber) {
           url += `&identifier=${encodeURIComponent(affiliations.filters.businessNumber)}`
         }
-        if (affiliations.filters.status) {
-          url += `&status=${encodeURIComponent(affiliations.filters.status)}`
+        if (affiliations.filters.status.length > 0) {
+          // Join multiple statuses with commas for the API
+          // The API should interpret this as OR logic between values
+          url += `&status=${encodeURIComponent(affiliations.filters.status.join(','))}`
         }
-        if (affiliations.filters.type) {
-          // Map display names to corresponding type codes
-          const typeCode = DisplayNameToCorpType[affiliations.filters.type as keyof typeof DisplayNameToCorpType] || affiliations.filters.type
-          url += `&type=${encodeURIComponent(typeCode)}`
+        if (affiliations.filters.type.length > 0) {
+          // Join multiple types with commas for the API
+          // The API should interpret this as OR logic between values
+          const typeCodes = affiliations.filters.type.map((type) => {
+            // Map display names to corresponding type codes
+            return DisplayNameToCorpType[type as keyof typeof DisplayNameToCorpType] || type
+          })
+          url += `&type=${encodeURIComponent(typeCodes.join(','))}`
         }
       }
 
@@ -292,7 +298,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     async () => {
       await loadAffiliations()
     },
-    { debounce: 100, deep: true } // 100ms debounce time - wait for all changes to settle before calling API
+    { debounce: 1000, deep: true } // 1000ms debounce time - wait for all changes to settle before calling API
   )
 
   // Separate watch for immediately resetting page when limit changes
@@ -304,6 +310,18 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       // Reset to page 1 when limit changes to prevent accessing non-existent pages
       affiliations.pagination.page = 1
     }
+  )
+
+  // Reset to page 1 whenever any filter changes if server-side filtering is enabled
+  watch(
+    () => affiliations.filters,
+    () => {
+      // Reset to page 1 when any filter changes to prevent accessing non-existent pages
+      if (enableServerFiltering.value) {
+        affiliations.pagination.page = 1
+      }
+    },
+    { deep: true }
   )
 
   // Mark any new affiliation on the list.
@@ -338,8 +356,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   function resetFilters () {
     affiliations.filters.businessName = ''
     affiliations.filters.businessNumber = ''
-    affiliations.filters.type = ''
-    affiliations.filters.status = ''
+    affiliations.filters.type = []
+    affiliations.filters.status = []
   }
 
   // label required for columns type but overwritten in header slot, i18n not required
@@ -403,6 +421,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     ]
   }
 
+  // Returns filtered affiliations based on current filter criteria
   const filteredResults = computed(() => {
     // Skip client-side filtering if server-side filtering is enabled
     if (enableServerFiltering.value) {
@@ -411,6 +430,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
     let results = affiliations.results
 
+    // Filter by business name (case-insensitive partial match)
     if (affiliations.filters.businessName) {
       results = results.filter((result) => {
         const businessName = affiliationName(result)
@@ -418,6 +438,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       })
     }
 
+    // Filter by business number (case-insensitive partial match)
     if (affiliations.filters.businessNumber) {
       results = results.filter((result) => {
         const businessNumber = number(result)
@@ -425,17 +446,19 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       })
     }
 
-    if (affiliations.filters.type) {
+    // Filter by business type (exact match from selected options)
+    if (affiliations.filters.type.length > 0) {
       results = results.filter((result) => {
         const type = affiliationType(result)
-        return type.includes(affiliations.filters.type)
+        return affiliations.filters.type.includes(type)
       })
     }
 
-    if (affiliations.filters.status) {
+    // Filter by business status (exact match from selected options)
+    if (affiliations.filters.status.length > 0) {
       results = results.filter((result) => {
         const status = affiliationStatus(result)
-        return status.includes(affiliations.filters.status)
+        return affiliations.filters.status.includes(status)
       })
     }
 
@@ -453,7 +476,12 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   })
 
   const hasFilters = computed(() => {
-    return Object.values(affiliations.filters).some(value => value !== '')
+    return (
+      !!affiliations.filters.businessName ||
+      !!affiliations.filters.businessNumber ||
+      affiliations.filters.type.length > 0 ||
+      affiliations.filters.status.length > 0
+    )
   })
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {

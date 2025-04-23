@@ -574,7 +574,7 @@ describe('useAffiliationsStore', () => {
 
         await flushPromises()
 
-        affStore.affiliations.filters.type = 'Amalgamation Application'
+        affStore.affiliations.filters.type = ['Amalgamation Application']
 
         expect(affStore.filteredResults).toHaveLength(1)
         expect(affStore.filteredResults.every(item => affiliationType(item) === 'Amalgamation Application')).toEqual(true)
@@ -592,7 +592,7 @@ describe('useAffiliationsStore', () => {
 
         await flushPromises()
 
-        affStore.affiliations.filters.type = 'BC Limited Company'
+        affStore.affiliations.filters.type = ['BC Limited Company']
 
         expect(affStore.filteredResults).toHaveLength(3)
         expect(affStore.filteredResults.every(item => affiliationType(item) === 'BC Limited Company')).toEqual(true)
@@ -612,7 +612,7 @@ describe('useAffiliationsStore', () => {
 
         await flushPromises()
 
-        affStore.affiliations.filters.status = 'Draft'
+        affStore.affiliations.filters.status = ['Draft']
 
         expect(affStore.filteredResults).toHaveLength(2)
         expect(affStore.filteredResults.every(item => affiliationStatus(item) === 'Draft')).toEqual(true)
@@ -630,7 +630,7 @@ describe('useAffiliationsStore', () => {
 
         await flushPromises()
 
-        affStore.affiliations.filters.status = 'Historical'
+        affStore.affiliations.filters.status = ['Historical']
 
         expect(affStore.filteredResults).toHaveLength(2)
         expect(affStore.filteredResults.every(item => affiliationStatus(item) === 'Historical')).toEqual(true)
@@ -728,7 +728,7 @@ describe('useAffiliationsStore', () => {
 
         expect(affStore.hasFilters).toEqual(false)
 
-        affStore.affiliations.filters.type = 'test'
+        affStore.affiliations.filters.type = ['test']
 
         expect(affStore.hasFilters).toEqual(true)
       })
@@ -743,7 +743,7 @@ describe('useAffiliationsStore', () => {
 
         expect(affStore.hasFilters).toEqual(false)
 
-        affStore.affiliations.filters.status = 'test'
+        affStore.affiliations.filters.status = ['test']
 
         expect(affStore.hasFilters).toEqual(true)
       })
@@ -762,8 +762,8 @@ describe('useAffiliationsStore', () => {
 
         affStore.affiliations.filters.businessName = 'test'
         affStore.affiliations.filters.businessNumber = 'test'
-        affStore.affiliations.filters.type = 'test'
-        affStore.affiliations.filters.status = 'test'
+        affStore.affiliations.filters.type = ['test']
+        affStore.affiliations.filters.status = ['test']
 
         expect(affStore.hasFilters).toEqual(true)
 
