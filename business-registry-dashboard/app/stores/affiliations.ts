@@ -298,7 +298,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     async () => {
       await loadAffiliations()
     },
-    { debounce: 1000, deep: true } // 1000ms debounce time - wait for all changes to settle before calling API
+    { debounce: 400, deep: true } // 400ms debounce time - wait for all changes to settle before calling API
   )
 
   // Separate watch for immediately resetting page when limit changes

@@ -615,21 +615,21 @@ describe('useAffiliationsStore', () => {
 
         // Both types combined should return 2 results (1 Amalgamation Application + 1 BC Benefit Company)
         expect(affStore.filteredResults).toHaveLength(2)
-        
+
         // Verify that each result has one of the selected types
-        expect(affStore.filteredResults.every(item => 
-          affiliationType(item) === 'Amalgamation Application' || 
+        expect(affStore.filteredResults.every(item =>
+          affiliationType(item) === 'Amalgamation Application' ||
           affiliationType(item) === 'BC Benefit Company'
         )).toEqual(true)
-        
+
         // Count how many of each type we have
-        const amalgamationCount = affStore.filteredResults.filter(item => 
+        const amalgamationCount = affStore.filteredResults.filter(item =>
           affiliationType(item) === 'Amalgamation Application'
         ).length
-        const benefitCompanyCount = affStore.filteredResults.filter(item => 
+        const benefitCompanyCount = affStore.filteredResults.filter(item =>
           affiliationType(item) === 'BC Benefit Company'
         ).length
-        
+
         expect(amalgamationCount).toEqual(1)
         expect(benefitCompanyCount).toEqual(1)
       })
@@ -689,21 +689,21 @@ describe('useAffiliationsStore', () => {
 
         // Both statuses combined should return 4 results (2 Draft + 2 Historical)
         expect(affStore.filteredResults).toHaveLength(4)
-        
+
         // Verify that each result has one of the selected statuses
-        expect(affStore.filteredResults.every(item => 
-          affiliationStatus(item) === 'Draft' || 
+        expect(affStore.filteredResults.every(item =>
+          affiliationStatus(item) === 'Draft' ||
           affiliationStatus(item) === 'Historical'
         )).toEqual(true)
-        
+
         // Count how many of each status we have
-        const draftCount = affStore.filteredResults.filter(item => 
+        const draftCount = affStore.filteredResults.filter(item =>
           affiliationStatus(item) === 'Draft'
         ).length
-        const historicalCount = affStore.filteredResults.filter(item => 
+        const historicalCount = affStore.filteredResults.filter(item =>
           affiliationStatus(item) === 'Historical'
         ).length
-        
+
         expect(draftCount).toEqual(2)
         expect(historicalCount).toEqual(2)
       })
@@ -864,13 +864,13 @@ describe('useAffiliationsStore', () => {
 
         // Should only find BC Limited Companies with Historical status
         expect(affStore.filteredResults).toHaveLength(2)
-        
+
         // Verify that results match both filters
-        expect(affStore.filteredResults.every(item => 
-          affiliationType(item) === 'BC Limited Company' && 
+        expect(affStore.filteredResults.every(item =>
+          affiliationType(item) === 'BC Limited Company' &&
           affiliationStatus(item) === 'Historical'
         )).toEqual(true)
-        
+
         // Check specific identifiers to confirm we got the right entities
         expect(affStore.filteredResults[0]?.businessIdentifier).toEqual('BC0871227')
       })
