@@ -711,7 +711,8 @@ export default {
     remove: 'remove',
     Remove: 'Remove',
     added: 'added',
-    Added: 'Added'
+    Added: 'Added',
+    Multiple: 'Multiple'
   },
   page: {
     notFound: {

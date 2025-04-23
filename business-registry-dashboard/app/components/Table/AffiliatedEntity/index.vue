@@ -202,26 +202,37 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
         <TableColumnHeader
           :label="$t('labels.type')"
           :clear-button="{
-            show: affStore.affiliations.filters.type !== '',
+            show: affStore.affiliations.filters.type.length > 0,
             tooltip: $t('table.affiliation.filter.legalType.clear.tooltip'),
             aria: $t('table.affiliation.filter.legalType.clear.aria'),
             hideTooltip: true
           }"
-          @clear="affStore.affiliations.filters.type = ''"
+          @clear="affStore.affiliations.filters.type = []"
         >
           <USelectMenu
             v-model="affStore.affiliations.filters.type"
             :options="affStore.typeOptions"
             selected-icon="hidden"
+            multiple
             :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.legalType.aria', { filter: affStore.affiliations.filters.type || $t('words.none') })"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', {
+                  filter: affStore.affiliations.filters.type.length
+                    ? (affStore.affiliations.filters.type.length > 1
+                      ? $t('words.Multiple')
+                      : affStore.affiliations.filters.type[0])
+                    : $t('words.none')
+                })"
               >
-                {{ affStore.affiliations.filters.type !== '' ? affStore.affiliations.filters.type : $t('table.affiliation.filter.legalType.placeholder') }}
+                {{ affStore.affiliations.filters.type.length === 0
+                  ? $t('table.affiliation.filter.legalType.placeholder')
+                  : (affStore.affiliations.filters.type.length > 1
+                    ? $t('words.Multiple')
+                    : affStore.affiliations.filters.type[0]) }}
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
             </template>
@@ -245,26 +256,37 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
         <TableColumnHeader
           :label="$t('labels.status')"
           :clear-button="{
-            show: affStore.affiliations.filters.status !== '',
+            show: affStore.affiliations.filters.status.length > 0,
             tooltip: $t('table.affiliation.filter.busStates.clear.tooltip'),
             aria: $t('table.affiliation.filter.busStates.clear.aria'),
             hideTooltip: true
           }"
-          @clear="affStore.affiliations.filters.status = ''"
+          @clear="affStore.affiliations.filters.status = []"
         >
           <USelectMenu
             v-model="affStore.affiliations.filters.status"
             :options="affStore.statusOptions"
             selected-icon="hidden"
+            multiple
             :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.busStates.aria', { filter: affStore.affiliations.filters.status || $t('words.none') })"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', {
+                  filter: affStore.affiliations.filters.status.length
+                    ? (affStore.affiliations.filters.status.length > 1
+                      ? $t('words.Multiple')
+                      : affStore.affiliations.filters.status[0])
+                    : $t('words.none')
+                })"
               >
-                {{ affStore.affiliations.filters.status !== '' ? affStore.affiliations.filters.status : $t('table.affiliation.filter.busStates.placeholder') }}
+                {{ affStore.affiliations.filters.status.length === 0
+                  ? $t('table.affiliation.filter.busStates.placeholder')
+                  : (affStore.affiliations.filters.status.length > 1
+                    ? $t('words.Multiple')
+                    : affStore.affiliations.filters.status[0]) }}
                 <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
               </UButton>
             </template>
