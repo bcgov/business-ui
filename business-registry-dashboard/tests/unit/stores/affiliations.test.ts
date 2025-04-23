@@ -597,6 +597,42 @@ describe('useAffiliationsStore', () => {
         expect(affStore.filteredResults).toHaveLength(3)
         expect(affStore.filteredResults.every(item => affiliationType(item) === 'BC Limited Company')).toEqual(true)
       })
+
+      it('should filter with multiple types', async () => {
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
+
+        const affStore = useAffiliationsStore()
+        await affStore.loadAffiliations()
+
+        await flushPromises()
+
+        // Filter by both 'Amalgamation Application' and 'BC Benefit Company'
+        affStore.affiliations.filters.type = ['Amalgamation Application', 'BC Benefit Company']
+
+        // Both types combined should return 2 results (1 Amalgamation Application + 1 BC Benefit Company)
+        expect(affStore.filteredResults).toHaveLength(2)
+        
+        // Verify that each result has one of the selected types
+        expect(affStore.filteredResults.every(item => 
+          affiliationType(item) === 'Amalgamation Application' || 
+          affiliationType(item) === 'BC Benefit Company'
+        )).toEqual(true)
+        
+        // Count how many of each type we have
+        const amalgamationCount = affStore.filteredResults.filter(item => 
+          affiliationType(item) === 'Amalgamation Application'
+        ).length
+        const benefitCompanyCount = affStore.filteredResults.filter(item => 
+          affiliationType(item) === 'BC Benefit Company'
+        ).length
+        
+        expect(amalgamationCount).toEqual(1)
+        expect(benefitCompanyCount).toEqual(1)
+      })
     })
 
     describe('filter by status', () => {
@@ -634,6 +670,42 @@ describe('useAffiliationsStore', () => {
 
         expect(affStore.filteredResults).toHaveLength(2)
         expect(affStore.filteredResults.every(item => affiliationStatus(item) === 'Historical')).toEqual(true)
+      })
+
+      it('should filter with multiple statuses', async () => {
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
+
+        const affStore = useAffiliationsStore()
+        await affStore.loadAffiliations()
+
+        await flushPromises()
+
+        // Filter by both 'Draft' and 'Historical' statuses
+        affStore.affiliations.filters.status = ['Draft', 'Historical']
+
+        // Both statuses combined should return 4 results (2 Draft + 2 Historical)
+        expect(affStore.filteredResults).toHaveLength(4)
+        
+        // Verify that each result has one of the selected statuses
+        expect(affStore.filteredResults.every(item => 
+          affiliationStatus(item) === 'Draft' || 
+          affiliationStatus(item) === 'Historical'
+        )).toEqual(true)
+        
+        // Count how many of each status we have
+        const draftCount = affStore.filteredResults.filter(item => 
+          affiliationStatus(item) === 'Draft'
+        ).length
+        const historicalCount = affStore.filteredResults.filter(item => 
+          affiliationStatus(item) === 'Historical'
+        ).length
+        
+        expect(draftCount).toEqual(2)
+        expect(historicalCount).toEqual(2)
       })
     })
 
@@ -770,6 +842,37 @@ describe('useAffiliationsStore', () => {
         affStore.resetFilters()
 
         expect(affStore.hasFilters).toEqual(false)
+      })
+    })
+
+    describe('combining filters', () => {
+      it('should filter with both type and status filters applied', async () => {
+        mockAuthApi
+          .mockResolvedValueOnce(mockAffiliationResponse) // affiliations
+          .mockResolvedValueOnce({ // invitations
+            affiliationInvitations: []
+          })
+
+        const affStore = useAffiliationsStore()
+        await affStore.loadAffiliations()
+
+        await flushPromises()
+
+        // Apply both type and status filters
+        affStore.affiliations.filters.type = ['BC Limited Company']
+        affStore.affiliations.filters.status = ['Historical']
+
+        // Should only find BC Limited Companies with Historical status
+        expect(affStore.filteredResults).toHaveLength(2)
+        
+        // Verify that results match both filters
+        expect(affStore.filteredResults.every(item => 
+          affiliationType(item) === 'BC Limited Company' && 
+          affiliationStatus(item) === 'Historical'
+        )).toEqual(true)
+        
+        // Check specific identifiers to confirm we got the right entities
+        expect(affStore.filteredResults[0]?.businessIdentifier).toEqual('BC0871227')
       })
     })
   })
