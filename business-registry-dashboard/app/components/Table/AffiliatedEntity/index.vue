@@ -220,7 +220,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.legalType.aria', { filter: affStore.affiliations.filters.type.length ? (affStore.affiliations.filters.type.length > 1 ? $t('words.Multiple') : affStore.affiliations.filters.type[0]) : $t('words.none') })"
+                :aria-label="$t('table.affiliation.filter.legalType.aria', {
+                  filter: affStore.affiliations.filters.type.length
+                    ? (affStore.affiliations.filters.type.length > 1
+                      ? $t('words.Multiple')
+                      : affStore.affiliations.filters.type[0])
+                    : $t('words.none')
+                })"
               >
                 {{ affStore.affiliations.filters.type.length === 0
                   ? $t('table.affiliation.filter.legalType.placeholder')
@@ -268,7 +274,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
               <UButton
                 variant="select_menu_trigger"
                 class="flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.busStates.aria', { filter: affStore.affiliations.filters.status.length ? (affStore.affiliations.filters.status.length > 1 ? $t('words.Multiple') : affStore.affiliations.filters.status[0]) : $t('words.none') })"
+                :aria-label="$t('table.affiliation.filter.busStates.aria', {
+                  filter: affStore.affiliations.filters.status.length
+                    ? (affStore.affiliations.filters.status.length > 1
+                      ? $t('words.Multiple')
+                      : affStore.affiliations.filters.status[0])
+                    : $t('words.none')
+                })"
               >
                 {{ affStore.affiliations.filters.status.length === 0
                   ? $t('table.affiliation.filter.busStates.placeholder')
