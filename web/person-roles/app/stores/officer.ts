@@ -52,7 +52,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
           return {
             firstName: p.officer.firstName ?? '',
-            middleName: p.officer.middleName ?? '',
+            middleName: p.officer.middleInitial ?? '',
             lastName: p.officer.lastName ?? '',
             preferredName, // TODO: map preferred name - need in api
             roles: [], // TODO: map sub roles - need in api
