@@ -13,7 +13,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const addingOfficer = ref<boolean>(false)
 
   const expanded = ref<ExpandedState | undefined>(undefined)
-  const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
+  const editState = ref<Officer>({} as Officer)
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
@@ -133,6 +133,54 @@ export const useOfficerStore = defineStore('officer-store', () => {
     ]
   }
 
+  function getOfficerStateDiff(oldVal: Officer, newVal: Officer) {
+    const oldMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+      name: {
+        firstName: oldVal.firstName,
+        middleName: oldVal.middleName,
+        lastName: oldVal.lastName,
+        preferredName: oldVal.preferredName,
+        hasPreferredName: oldVal.hasPreferredName
+      },
+      roles: {
+        roles: oldVal.roles
+      },
+      address: {
+        mailingAddress: oldVal.mailingAddress,
+        deliveryAddress: oldVal.deliveryAddress,
+        sameAsDelivery: oldVal.sameAsDelivery
+      }
+    }
+    const newMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+      name: {
+        firstName: newVal.firstName,
+        middleName: newVal.middleName,
+        lastName: newVal.lastName,
+        preferredName: newVal.preferredName,
+        hasPreferredName: newVal.hasPreferredName
+      },
+      roles: {
+        roles: newVal.roles
+      },
+      address: {
+        mailingAddress: newVal.mailingAddress,
+        deliveryAddress: newVal.deliveryAddress,
+        sameAsDelivery: newVal.sameAsDelivery
+      }
+    }
+
+    const changedSections: OfficerTableEditSection[] = []
+
+    for (const section in oldMap) {
+      const s = section as OfficerTableEditSection
+      if (!isEqual(oldMap[s], newMap[s])) {
+        changedSections.push(s)
+      }
+    }
+
+    return changedSections
+  }
+
   function updateOfficers(
     data: Partial<Officer>,
     row: Row<OfficerTableState>,
@@ -146,7 +194,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
     if (action === 'edit') {
       let newOfficer = merge({}, initialState.officer, data)
-      let newActions = [...initialState.actions, editState.value.section]
+
+      const sectionDiffs = getOfficerStateDiff(initialState.officer, newOfficer)
+
+      let newActions = [...initialState.actions, ...sectionDiffs]
       let newHistory = [...initialHistory, initialState]
 
       if (isEqual(initialState.officer, newOfficer)) {
@@ -188,38 +239,15 @@ export const useOfficerStore = defineStore('officer-store', () => {
     ]
   }
 
-  function initOfficerEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
+  function initOfficerEdit(row: Row<OfficerTableState>) {
     const officer = JSON.parse(JSON.stringify(row.original.state.officer))
-
-    const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
-      name: {
-        firstName: officer.firstName,
-        middleName: officer.middleName,
-        lastName: officer.lastName,
-        preferredName: officer.preferredName,
-        hasPreferredName: officer.hasPreferredName
-      },
-      roles: {
-        roles: officer.roles
-      },
-      address: {
-        mailingAddress: officer.mailingAddress,
-        deliveryAddress: officer.deliveryAddress,
-        sameAsDelivery: officer.sameAsDelivery
-      }
-    }
-
-    editState.value = {
-      data: sectionMap[section],
-      section
-    }
-
+    editState.value = officer
     expanded.value = { [row.index]: true }
   }
 
   function cancelOfficerEdit() {
     expanded.value = undefined
-    editState.value = {} as OfficerTableEditState
+    editState.value = {} as Officer
   }
 
   async function onOfficerEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
