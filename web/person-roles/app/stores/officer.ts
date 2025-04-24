@@ -1,6 +1,6 @@
 import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { merge, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t
@@ -9,16 +9,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  const initializing = ref<boolean>(false)
-  const addingOfficer = ref<boolean>(false)
-
-  const expanded = ref<ExpandedState | undefined>(undefined)
-  const editState = ref<Officer>({} as Officer)
+  const initializing = ref<boolean>(false) // officer store loading state
+  const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
+  const initialOfficers = ref<Officer[]>([]) // officer state on page load
+  const officerTableState = ref<OfficerTableState[]>([]) // officer state displayed in table
+  const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
+  const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
-
-  const initialOfficers = ref<Officer[]>([])
-  const officerTableState = ref<OfficerTableState[]>([])
 
   async function initOfficerStore(businessId: string) {
     try {
@@ -182,7 +180,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   function updateOfficers(
-    data: Partial<Officer>,
+    data: Officer,
     row: Row<OfficerTableState>,
     action: 'edit' | 'undo' | 'removed'
   ) {
@@ -193,22 +191,20 @@ export const useOfficerStore = defineStore('officer-store', () => {
     let newState: OfficerTableState = {} as OfficerTableState
 
     if (action === 'edit') {
-      let newOfficer = merge({}, initialState.officer, data)
-
-      const sectionDiffs = getOfficerStateDiff(initialState.officer, newOfficer)
+      const sectionDiffs = getOfficerStateDiff(initialState.officer, data)
 
       let newActions = [...initialState.actions, ...sectionDiffs]
       let newHistory = [...initialHistory, initialState]
 
-      if (isEqual(initialState.officer, newOfficer)) {
-        newOfficer = initialState.officer
+      if (isEqual(initialState.officer, data)) {
+        data = initialState.officer
         newActions = initialState.actions
         newHistory = initialHistory
       }
 
       newState = {
         state: {
-          officer: newOfficer,
+          officer: data,
           actions: newActions
         },
         history: newHistory
@@ -250,7 +246,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState.value = {} as Officer
   }
 
-  async function onOfficerEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
+  async function onOfficerEditSubmit(data: Officer, row: Row<OfficerTableState>) {
     updateOfficers(data, row, 'edit')
 
     cancelOfficerEdit()

@@ -6,7 +6,7 @@ import { UForm } from '#components'
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
-  defaultState?: Partial<Officer>
+  defaultState?: Officer
   editing?: boolean
   title: string
 }>(), {
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'cancel': []
-  'officer-change': [Partial<Officer>]
+  'officer-change': [Officer]
 }>()
 
 const defaultMailingAddress = { ...props.defaultState.mailingAddress } as UiAddress // TODO: confirm default defined correctly
@@ -100,7 +100,7 @@ type RolesSchema = z.output<typeof rolesSchema>
 type MailingSchema = z.output<typeof mailingSchema>
 type DeliverySchema = z.output<typeof deliverySchema>
 
-const state = reactive<Partial<NameSchema & RolesSchema & MailingSchema & DeliverySchema>>(props.defaultState)
+const state = reactive<NameSchema & RolesSchema & MailingSchema & DeliverySchema>(props.defaultState)
 
 const nameFormRef = useTemplateRef<Form<NameSchema>>('name-form')
 const rolesFormRef = useTemplateRef<Form<RolesSchema>>('roles-form')
@@ -146,14 +146,14 @@ function onSubmit(e: FormSubmitEvent<typeof state>) {
   }
 
   // TODO: cleanup type
-  emit('officer-change', data as Partial<Officer>)
+  emit('officer-change', data as Officer)
 }
 
 watch(
   () => state.sameAsDelivery,
   (v) => {
     if (v) {
-      delete state.mailingAddress
+      state.mailingAddress = state.deliveryAddress
       mailingAddressFormRef.value?.clear()
     } else {
       state.mailingAddress = defaultMailingAddress
@@ -192,7 +192,6 @@ watch(
       </h2>
       <div class="flex flex-col gap-8 w-full">
         <UForm
-          v-if="state.firstName !== undefined"
           ref="name-form"
           :state
           :schema="nameSchema"
@@ -268,7 +267,6 @@ watch(
         </UForm>
 
         <UForm
-          v-if="state.roles !== undefined"
           ref="roles-form"
           :state
           :schema="rolesSchema"
@@ -301,7 +299,6 @@ watch(
         </UForm>
 
         <UForm
-          v-if="state.deliveryAddress"
           ref="delivery-address-form"
           :state
           :schema="deliverySchema"
@@ -320,7 +317,6 @@ watch(
         </UForm>
 
         <UForm
-          v-if="state.deliveryAddress"
           ref="mailing-address-form"
           :state
           :schema="state.sameAsDelivery ? emptySchema : mailingSchema"
@@ -336,7 +332,7 @@ watch(
             />
 
             <FormAddress
-              v-if="state.mailingAddress"
+              v-if="!state.sameAsDelivery"
               id="mailing-address"
               v-model="state.mailingAddress"
               schema-prefix="mailingAddress."
