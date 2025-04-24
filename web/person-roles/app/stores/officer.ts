@@ -116,21 +116,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
     }
   }
 
-  function addNewOfficer(v: Officer) {
-    const newState: OfficerTableState = {
-      state: {
-        officer: v,
-        actions: ['added']
-      },
-      history: []
-    }
-
-    officerTableState.value = [
-      ...officerTableState.value,
-      newState
-    ]
-  }
-
   function getOfficerStateDiff(oldVal: Officer, newVal: Officer) {
     const oldMap: Record<OfficerTableEditSection, Partial<Officer>> = {
       name: {
@@ -179,60 +164,90 @@ export const useOfficerStore = defineStore('officer-store', () => {
     return changedSections
   }
 
-  function updateOfficers(
-    data: Officer,
-    row: Row<OfficerTableState>,
-    action: 'edit' | 'undo' | 'removed'
+  function addNewOfficer(v: Officer) {
+    const newState: OfficerTableState = {
+      state: {
+        officer: v,
+        actions: ['added']
+      },
+      history: []
+    }
+
+    officerTableState.value = [
+      ...officerTableState.value,
+      newState
+    ]
+  }
+
+  function updateOfficerTable(
+    newState: OfficerTableState,
+    row: Row<OfficerTableState>
   ) {
     const index = row.index
-    const initialState = row.original.state
-    const initialHistory = row.original.history
-
-    let newState: OfficerTableState = {} as OfficerTableState
-
-    if (action === 'edit') {
-      const sectionDiffs = getOfficerStateDiff(initialState.officer, data)
-
-      let newActions = [...initialState.actions, ...sectionDiffs]
-      let newHistory = [...initialHistory, initialState]
-
-      if (isEqual(initialState.officer, data)) {
-        data = initialState.officer
-        newActions = initialState.actions
-        newHistory = initialHistory
-      }
-
-      newState = {
-        state: {
-          officer: data,
-          actions: newActions
-        },
-        history: newHistory
-      }
-    } else if (action === 'undo') {
-      const previousState = initialHistory[initialHistory.length - 1]
-      if (previousState) {
-        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
-        newState = {
-          state: previousState,
-          history: newHistory
-        }
-      }
-    } else if (action === 'removed') {
-      newState = {
-        state: {
-          officer: initialState.officer,
-          actions: [...initialState.actions, 'removed']
-        },
-        history: [...initialHistory, initialState]
-      }
-    }
 
     officerTableState.value = [
       ...officerTableState.value.slice(0, index),
       newState,
       ...officerTableState.value.slice(index + 1)
     ]
+  }
+
+  function removeOfficer(row: Row<OfficerTableState>) {
+    const initialState = row.original.state
+    const initialHistory = row.original.history
+
+    const newState = {
+      state: {
+        officer: initialState.officer,
+        actions: [...initialState.actions, 'removed' as OfficerFormAction]
+      },
+      history: [...initialHistory, initialState]
+    }
+
+    updateOfficerTable(newState, row)
+  }
+
+  function undoOfficer(row: Row<OfficerTableState>) {
+    const initialHistory = row.original.history
+
+    const previousState = initialHistory[initialHistory.length - 1]
+      if (previousState) {
+        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
+        const newState = {
+          state: previousState,
+          history: newHistory
+        }
+
+        updateOfficerTable(newState, row)
+      }
+  }
+
+  function editOfficer(data: Officer, row: Row<OfficerTableState>) {
+    const initialState = row.original.state
+    const initialHistory = row.original.history
+
+    let newState: OfficerTableState = {} as OfficerTableState
+
+    const sectionDiffs = getOfficerStateDiff(initialState.officer, data)
+
+    let newActions = [...initialState.actions, ...sectionDiffs]
+    let newHistory = [...initialHistory, initialState]
+
+    if (isEqual(initialState.officer, data)) {
+      data = initialState.officer
+      newActions = initialState.actions
+      newHistory = initialHistory
+    }
+
+    newState = {
+      state: {
+        officer: data,
+        actions: newActions
+      },
+      history: newHistory
+    }
+
+    updateOfficerTable(newState, row)
   }
 
   function initOfficerEdit(row: Row<OfficerTableState>) {
@@ -247,8 +262,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   }
 
   async function onOfficerEditSubmit(data: Officer, row: Row<OfficerTableState>) {
-    updateOfficers(data, row, 'edit')
-
+    editOfficer(data, row)
     cancelOfficerEdit()
   }
 
@@ -266,7 +280,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initOfficerStore,
     getNewOfficer,
     addNewOfficer,
-    updateOfficers,
+    editOfficer,
+    updateOfficerTable,
+    removeOfficer,
+    undoOfficer,
     initOfficerEdit,
     cancelOfficerEdit,
     onOfficerEditSubmit,

@@ -70,7 +70,7 @@ function getRowActions(row: Row<OfficerTableState>) {
   const actions = [
     {
       label: t('label.remove'),
-      onSelect: () => officerStore.updateOfficers({}, row, 'removed'),
+      onSelect: () => officerStore.removeOfficer(row),
       icon: 'i-mdi-delete'
     }
   ]
@@ -78,7 +78,7 @@ function getRowActions(row: Row<OfficerTableState>) {
   if (row.original.history.length) {
     actions.unshift({
       label: t('label.undo'),
-      onSelect: () => officerStore.updateOfficers({}, row, 'undo'),
+      onSelect: () => officerStore.undoOfficer(row),
       icon: 'i-mdi-undo'
     })
   }
@@ -211,7 +211,7 @@ const columns: TableColumn<OfficerTableState>[] = [
                   disabled: officerStore.disableActions,
                   class: 'px-4',
                   onClick: () => isRemoved
-                    ? officerStore.updateOfficers({}, row, 'undo')
+                    ? officerStore.undoOfficer(row)
                     : officerStore.initOfficerEdit(row)
                 }),
                 isRemoved
