@@ -241,9 +241,8 @@ watch(
               v-slot="{ error }"
               name="preferredName"
               class="grow flex-1"
-              :help="$t('help.preferredName')"
-              :description="$t('text.preferredNameDescription')"
               :label="$t('label.preferredName')"
+              :ui="{ label: 'mb-3.5' }"
             >
               <ConnectInput
                 id="preferred-name"

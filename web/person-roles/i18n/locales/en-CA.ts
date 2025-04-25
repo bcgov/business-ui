@@ -56,9 +56,6 @@ export default {
       }
     }
   },
-  help: {
-    preferredName: 'Example: William Smith may prefer to go by Bill Smith when with friends.'
-  },
   label: {
     address: 'Address',
     addressResidential: 'Residential Address',
@@ -121,7 +118,6 @@ export default {
     }
   },
   text: {
-    preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',
     noOfficers: 'There are currently no officers.'
   },
   validation: {
