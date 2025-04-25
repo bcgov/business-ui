@@ -162,7 +162,7 @@ export default {
         PLACEHOLDER: 'Placeholder (Replace Me)', // each project using the connect fee widget should change the placeholder filingTypeCode
         TEST: 'This is test entry',
         undefined: 'Item Fee',
-        OFFICER_CHANGE: 'Change of Officer'
+        OFFICER_CHANGE: 'Officer Change'
       }
     },
     paymentMethod: {
