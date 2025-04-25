@@ -4,7 +4,7 @@ import { isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t
-  const modal = useModals()
+  const modal = useModal()
   const legalApi = useLegalApi()
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()

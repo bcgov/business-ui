@@ -115,6 +115,15 @@ export default defineAppConfig({
         variant: 'bcGov'
       }
     },
+    modal: {
+      variants: {
+        fullscreen: {
+          false: {
+            content: 'max-w-2xl'
+          }
+        }
+      }
+    },
     select: {
       slots: {
         content: 'rounded-sm',

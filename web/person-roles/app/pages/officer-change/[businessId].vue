@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const rtc = useRuntimeConfig().public
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 const route = useRoute()
+const modal = useModal()
 
 useHead({
   title: t('page.officerChange.title')
@@ -24,6 +26,8 @@ definePageMeta({
     }
   }
 })
+
+const businessId = route.params.businessId as string
 
 // TODO: get fee from pay api?
 // set empty fee
@@ -59,6 +63,25 @@ async function submitFiling() {
   handleButtonLoading(true)
 }
 
+async function cancelFiling() {
+  if (officerStore.hasChanges) {
+    await modal.openBaseModal(
+      t('modal.unsavedChanges.title'),
+      t('modal.unsavedChanges.description'),
+      false,
+      [
+        { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
+        {
+          label: t('btn.exitWithoutSaving'),
+          size: 'xl',
+          to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+          external: true
+        }
+      ]
+    )
+  }
+}
+
 // TODO: Implement after API ready
 setButtonControl({
   leftButtons: [
@@ -66,7 +89,7 @@ setButtonControl({
     { onClick: () => console.info('save exit'), label: t('btn.saveExit'), variant: 'outline' }
   ],
   rightButtons: [
-    { onClick: () => console.info('cancel'), label: t('btn.cancel'), variant: 'outline' },
+    { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
@@ -75,12 +98,10 @@ setButtonControl({
 watch(
   () => accountStore.currentAccount.id,
   async () => {
-    await officerStore.initOfficerStore(route.params.businessId as string) // 'BC1239315'
+    await officerStore.initOfficerStore(businessId) // 'BC1239315'
   },
   { immediate: true }
 )
-
-watch(() => officerStore.hasChanges, v => console.log(v), { immediate: true })
 </script>
 
 <template>

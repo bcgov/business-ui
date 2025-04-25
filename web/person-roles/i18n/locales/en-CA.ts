@@ -13,7 +13,9 @@ export default {
     submit: 'Submit',
     save: 'Save',
     saveExit: 'Save and Resume Later',
-    goToBRD: 'Go to Business Registry Dashboard'
+    goToBRD: 'Go to Business Registry Dashboard',
+    keepEditing: 'Keep Editing',
+    exitWithoutSaving: 'Exit Without Saving'
   },
   currency: {
     cad: 'CAD',
@@ -109,6 +111,12 @@ export default {
     phone: 'Phone',
     change: 'Change',
     makeChanges: 'Make Changes'
+  },
+  modal: {
+    unsavedChanges: {
+      title: 'Unsaved changes',
+      description: 'You have unsaved changes. Are you sure you want to exit your filing?'
+    }
   },
   text: {
     preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',
