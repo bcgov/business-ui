@@ -125,6 +125,23 @@ watch(
   },
   { immediate: true }
 )
+
+// show browser error if unsaved changes
+function onBeforeUnload(event: BeforeUnloadEvent) {
+  if (officerStore.hasChanges) {
+    event.preventDefault()
+    // legacy browsers
+    event.returnValue = true
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', onBeforeUnload)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', onBeforeUnload)
+})
 </script>
 
 <template>
