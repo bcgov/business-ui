@@ -269,7 +269,7 @@ const expandedTrClass = computed(() =>
           :editing="true"
           :title="$t('label.makeChanges')"
           @cancel="officerStore.cancelOfficerEdit"
-          @officer-change="officerStore.onOfficerEditSubmit($event, row)"
+          @officer-change="officerStore.editOfficer($event, row)"
         />
       </div>
     </template>
