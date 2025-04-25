@@ -129,6 +129,10 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
   emit('officer-change', data as Officer)
 }
 
+// if user selects 'same as delivery' checkbox
+// set mailingAddress = deliveryAddress
+// clear any mailing address field form errors
+// else set mailing address to default state
 watch(
   () => state.sameAsDelivery,
   (v) => {
@@ -148,6 +152,8 @@ watch(
   { immediate: true }
 )
 
+// Clear roles validation error when selecting roles
+// 'blur' wont clear errors for this field
 watch(
   () => state.roles,
   (v) => {
