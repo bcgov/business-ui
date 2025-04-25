@@ -95,10 +95,33 @@ setButtonControl({
 })
 
 // init officers on mount and when account changes
+// update breadcrumbs when account changes
 watch(
   () => accountStore.currentAccount.id,
-  async () => {
-    await officerStore.initOfficerStore(businessId) // 'BC1239315'
+  async (id) => {
+    await officerStore.initOfficerStore(businessId)
+
+    setBreadcrumbs([
+      {
+        label: t('label.bcRegistriesDashboard'),
+        to: `${rtc.registryHomeUrl}dashboard`,
+        external: true
+      },
+      {
+        label: t('label.myBusinessRegistry'),
+        to: `${rtc.brdUrl}account/${id}`,
+        external: true
+      },
+      {
+        label: officerStore.activeBusiness.legalName,
+        to: `${rtc.businessDashboardUrl + businessId}`,
+        appendAccountId: true,
+        external: true
+      },
+      {
+        label: t('page.officerChange.h1')
+      }
+    ])
   },
   { immediate: true }
 )

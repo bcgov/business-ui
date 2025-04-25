@@ -9,6 +9,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
+  const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = ref<Officer[]>([]) // officer state on page load
@@ -35,6 +36,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
         legalApi.getBusiness(businessId, true),
         legalApi.getParties(businessId, 'officer')
       ])
+
+      activeBusiness.value = business
 
       // set masthead data
       const contact = authInfo.contacts[0]
@@ -325,12 +328,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
     officerTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
+    activeBusiness.value = {} as BusinessDataSlim
   }
 
   return {
     officerTableState,
     initializing,
     addingOfficer,
+    activeBusiness,
     expanded,
     editState,
     disableActions,

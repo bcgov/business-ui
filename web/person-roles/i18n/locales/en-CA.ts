@@ -110,7 +110,9 @@ export default {
     email: 'Email',
     phone: 'Phone',
     change: 'Change',
-    makeChanges: 'Make Changes'
+    makeChanges: 'Make Changes',
+    myBusinessRegistry: 'My Business Registry',
+    bcRegistriesDashboard: 'BC Registries Dashboard'
   },
   modal: {
     unsavedChanges: {
