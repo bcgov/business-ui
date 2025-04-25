@@ -56,6 +56,9 @@ export default {
       }
     }
   },
+  help: {
+    addressCannotBePOBox: 'Address cannot be a PO Box'
+  },
   label: {
     address: 'Address',
     addressResidential: 'Residential Address',
@@ -93,7 +96,7 @@ export default {
     lastName: 'Last Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     preferredName: 'Preferred Name',
-    haspreferredName: 'This person has another name they prefer to use',
+    haspreferredName: 'This person also has another name they prefer to use',
     actions: 'Actions',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',

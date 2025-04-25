@@ -285,6 +285,7 @@ watch(
             v-model="state.deliveryAddress"
             schema-prefix="deliveryAddress."
             :form-ref="formRef"
+            not-po-box
           />
         </FormSection>
 

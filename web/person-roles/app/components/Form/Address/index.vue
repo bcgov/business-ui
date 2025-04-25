@@ -14,6 +14,7 @@ const props = defineProps<{
   hideStreetHint?: boolean
   locationDescLabel?: boolean
   unitNumbRequired?: boolean
+  notPoBox?: boolean
 }>()
 
 const state = defineModel<Partial<UiAddress>>({ required: true })
@@ -53,6 +54,7 @@ async function populateAddressComplete(e: UiAddress) {
       :schema-prefix="schemaPrefix"
       :country="state.country"
       :disable-address-complete="false"
+      :not-po-box="notPoBox"
       @address-complete="populateAddressComplete"
     />
 

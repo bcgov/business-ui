@@ -21,7 +21,7 @@ const inputId = props.id + '-streetAdditional'
       v-model="model"
       :invalid="!!error"
       :disabled
-      :label="$t('label.line2')"
+      :label="$t('label.streetAdditional')"
     />
   </UFormField>
 </template>

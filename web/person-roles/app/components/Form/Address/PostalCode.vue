@@ -26,17 +26,18 @@ const inputId = props.id + '-postalCode'
       <ConnectInput
         :id="inputId"
         v-model.trim="model"
-        v-maska="country === 'CA' ? '@#@ #@#' : undefined"
+        v-maska="country === 'CA'
+          ? 'V#@ #@#'
+          : country === 'US'
+            ? '#####-####'
+            : undefined"
         required
         :invalid="!!error"
         :disabled
-        :label="country === 'CA'
-          ? $t('label.postalCode')
-          : country === 'US'
-            ? $t('label.zipCode')
-            : $t('label.code')
+        :label="country === 'US'
+          ? $t('label.zipCode')
+          : $t('label.postalCode')
         "
-        maxlength="12"
       />
     </template>
   </UFormField>
