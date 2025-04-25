@@ -68,6 +68,8 @@ watch(
   },
   { immediate: true }
 )
+
+watch(() => officerStore.hasChanges, v => console.log(v), { immediate: true })
 </script>
 
 <template>

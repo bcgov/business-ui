@@ -17,6 +17,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
+  const hasChanges = computed(() => {
+    const tableOfficers = officerTableState.value.map(state => state.state.officer)
+    const hasEdits = officerTableState.value.some(o => o.state.actions.length > 0)
+    const hasNew = tableOfficers.length !== initialOfficers.value.length
+    return hasEdits || hasNew
+  })
 
   async function initOfficerStore(businessId: string) {
     try {
@@ -64,8 +70,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           }
         })
 
-        // retain initial officer state before changes
-        initialOfficers.value = officers
+        initialOfficers.value = officers // retain initial officer state before changes
 
         // map officers data to display in table
         officerTableState.value = officers.map(o => ({
@@ -220,15 +225,23 @@ export const useOfficerStore = defineStore('officer-store', () => {
     const initialState = row.original.state
     const initialHistory = row.original.history
 
-    const newState = {
-      state: {
-        officer: initialState.officer,
-        actions: [...initialState.actions, 'removed' as OfficerFormAction]
-      },
-      history: [...initialHistory, initialState]
-    }
+    // delete newly added officer from table
+    if (initialState.actions.includes('added')) {
+      officerTableState.value = [
+        ...officerTableState.value.slice(0, row.index),
+        ...officerTableState.value.slice(row.index + 1)
+      ]
+    } else { // else add removed badge
+      const newState = {
+        state: {
+          officer: initialState.officer,
+          actions: [...initialState.actions, 'removed' as OfficerFormAction]
+        },
+        history: [...initialHistory, initialState]
+      }
 
-    updateOfficerTable(newState, row)
+      updateOfficerTable(newState, row)
+    }
   }
 
   /**
@@ -321,6 +334,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     expanded,
     editState,
     disableActions,
+    hasChanges,
     initOfficerStore,
     getNewOfficer,
     addNewOfficer,
