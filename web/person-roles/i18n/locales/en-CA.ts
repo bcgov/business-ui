@@ -123,7 +123,8 @@ export default {
   validation: {
     required: 'Required',
     fieldRequired: 'This field is required',
-    minChars: 'Minimum of {count} characters is required.',
+    minChars: 'Minimum 0 characters | Minimum 1 character | Minimum {count} characters', // 0/1 most likely will never be used but required for pluralization
+    maxChars: 'Maximum 0 characters | Maximum 1 character | Maximum {count} characters', // 0/1 most likely will never be used but required for pluralization
     address: {
       country: 'Please select a country',
       street: 'Please enter a street address',

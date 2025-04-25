@@ -44,13 +44,21 @@ const emit = defineEmits<{
   'officer-change': [Officer]
 }>()
 
+const addressSchema = z.object({
+  street: z.string().min(1, t('validation.fieldRequired')).max(50, t('validation.maxChars', { count: 50 })),
+  streetAdditional: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  city: z.string().min(1, t('validation.fieldRequired')).max(40, t('validation.maxChars', { count: 40 })),
+  region: z.string().min(1, t('validation.fieldRequired')).max(2, t('validation.maxChars', { count: 2 })),
+  postalCode: z.string().min(1, t('validation.fieldRequired')).max(15, t('validation.maxChars', { count: 15 })),
+  country: getRequiredNonEmptyString(t('validation.fieldRequired')),
+  locationDescription: z.string().max(80, t('validation.maxChars', { count: 80 })).optional()
+})
+
 const schema = z.object({
-  firstName: z.string().optional(),
-  middleName: z.string().optional(),
-  lastName: z
-    .string({ required_error: t('validation.fieldRequired') })
-    .min(2, { message: t('validation.minChars', { count: 2 }) }),
-  preferredName: z.string().optional(),
+  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
+  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
   hasPreferredName: z.boolean().default(false),
   roles: z
     .enum([
@@ -65,21 +73,9 @@ const schema = z.object({
       OfficerRole.VP
     ])
     .array().min(1, { message: t('validation.role.min') }),
-  mailingAddress: getRequiredAddress(
-    t('validation.address.street'),
-    t('validation.address.city'),
-    t('validation.address.region'),
-    t('validation.address.postalCode'),
-    t('validation.address.country')
-  ),
+  mailingAddress: addressSchema,
   sameAsDelivery: z.boolean().default(false),
-  deliveryAddress: getRequiredAddress(
-    t('validation.address.street'),
-    t('validation.address.city'),
-    t('validation.address.region'),
-    t('validation.address.postalCode'),
-    t('validation.address.country')
-  )
+  deliveryAddress: addressSchema
 })
 
 type Schema = z.output<typeof schema>
