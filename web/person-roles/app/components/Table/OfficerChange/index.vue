@@ -14,6 +14,7 @@ const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 const officerStore = useOfficerStore()
 const { officerTableState, expanded, editState, initializing } = storeToRefs(useOfficerStore())
 
+// returns a unique list of badge props to display in the table based on what actions were taken
 function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   if (!actions.length) {
     return []
@@ -53,10 +54,13 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   return newBadges
 }
 
+// used to apply 'removed' styling if the row was removed
 function getIsRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.actions.includes('removed')
 }
 
+// concatenates default class to apply to the <td>
+// necessary for styling as using the table meta <td> isnt enough
 function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string, actionCell = false): string {
   const removedClass = getIsRowRemoved(row) ? 'opacity-50' : ''
 
@@ -66,6 +70,7 @@ function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string
   return `${removedClass} ${defaultClass}`
 }
 
+// returns array of dropdown menu actions for the given row
 function getRowActions(row: Row<OfficerTableState>) {
   const actions = [
     {
