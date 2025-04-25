@@ -11,7 +11,18 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'form'
+  layout: 'form',
+  middleware: () => {
+    // redirect to reg home with return url if user unauthenticated
+    const { $keycloak, $config } = useNuxtApp()
+    if (!$keycloak.authenticated) {
+      const returnUrl = encodeURIComponent(window.location.href)
+      return navigateTo(
+        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
+        { external: true }
+      )
+    }
+  }
 })
 
 // TODO: get fee from pay api?
