@@ -158,6 +158,26 @@ watch(
     }
   }
 )
+
+// reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
+watch(
+  () => state.deliveryAddress,
+  () => {
+    if (state.sameAsDelivery) {
+      state.mailingAddress = {
+        street: '',
+        streetAdditional: '',
+        city: '',
+        region: '',
+        postalCode: '',
+        country: '',
+        locationDescription: ''
+      }
+      state.sameAsDelivery = false
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
