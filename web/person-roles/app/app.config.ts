@@ -129,7 +129,7 @@ export default defineAppConfig({
         content: 'rounded-sm',
         group: 'px-0 py-2',
         trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200 text-(--ui-text)', //  group-data-[state=open]:text-blue-500 group-data-focus:text-blue-500 // TODO: icon colour when focused
-        item: 'my-0.75 text-bcGovGray-900 before:rounded-none data-highlighted:text-blue-500 data-highlighted:before:bg-blue-50 data-[state=checked]:text-blue-500',
+        item: 'my-0.75 text-bcGovGray-900 before:rounded-none data-highlighted:text-blue-500 data-highlighted:before:bg-bcGovGray-100 data-[state=checked]:text-blue-500 data-[state=checked]:bg-blue-50',
         itemLeadingIcon: 'group-data-[state=checked]:text-blue-500 group-data-highlighted:text-blue-500 text-bcGovGray-900'
       },
       variants: {

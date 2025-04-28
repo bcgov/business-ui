@@ -22,6 +22,12 @@ const displayedCountryName = computed(() => {
   }
   return ''
 })
+
+const options = [
+  countries.find(c => c.alpha_2 === 'CA'),
+  countries.find(c => c.alpha_2 === 'US'),
+  ...countries
+]
 </script>
 
 <template>
@@ -33,7 +39,8 @@ const displayedCountryName = computed(() => {
       <USelect
         v-model="model"
         :data-testid="inputId"
-        :items="countries"
+        :items="options"
+        :selected-icon="' '"
         value-key="alpha_2"
         label-key="name"
         class="w-full"
@@ -44,7 +51,8 @@ const displayedCountryName = computed(() => {
         :ui="{
           base: error
             ? 'shadow-bcGovInputError focus:shadow-bcGovInputError data-[state=open]:shadow-bcGovInputError'
-            : ''
+            : '',
+          item: 'nth-2:border-b nth-2:border-bcGovGray-200'
         }"
         @change="$emit('change')"
       >
