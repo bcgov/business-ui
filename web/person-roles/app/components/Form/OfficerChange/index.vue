@@ -355,6 +355,7 @@ watch(
             schema-prefix="deliveryAddress."
             :form-ref="formRef"
             not-po-box
+            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
         </FormSection>
 
@@ -374,6 +375,7 @@ watch(
             v-model="state.mailingAddress"
             schema-prefix="mailingAddress."
             :form-ref="formRef"
+            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
         </FormSection>
 
