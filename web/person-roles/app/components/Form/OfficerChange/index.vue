@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
 const { t } = useI18n()
@@ -155,11 +156,19 @@ function onError(event: FormErrorEvent) {
 function onSubmit(e: FormSubmitEvent<Schema>) {
   const data = e.data
 
-  if (data.sameAsDelivery) {
-    data.mailingAddress = data.deliveryAddress
+  // reset has preferred name options if left blank
+  if (data.preferredName.trim().length === 0) {
+    data.preferredName = ''
+    data.hasPreferredName = false
   }
 
-  // TODO: cleanup type
+  if (data.sameAsDelivery) {
+    data.mailingAddress = data.deliveryAddress
+  } else if (isEqual(data.mailingAddress, data.deliveryAddress)) {
+    data.sameAsDelivery = true // set sameAsDelivery = true if both mailing and delivery are the same
+  }
+
+  // Officer and Schema type mismatch though the same object
   emit('officer-change', data as Officer)
 }
 
