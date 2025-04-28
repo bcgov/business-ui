@@ -135,12 +135,20 @@ const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CHAIR}`), value: OfficerRole.CHAIR }
 ]
 
-async function onError(event: FormErrorEvent) {
-  const elId = event?.errors?.[0]?.id
-  if (elId) {
-    const element = document.getElementById(elId)
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    element?.focus()
+function onError(event: FormErrorEvent) {
+  let element: unknown
+  const firstEl = event.errors[0]
+
+  if (firstEl?.name === 'roles') { // roles doesn't have an id, so get first button in role options container to apply focus
+    element = document.getElementById('officer-role-options').querySelector('button')
+  } else { // else query by input id
+    element = document.getElementById(firstEl?.id)
+  }
+  if (element) {
+    // using focus without setTimeout only works intermittently
+    setTimeout(() => {
+      element.focus()
+    }, 0)
   }
 }
 
@@ -218,7 +226,7 @@ watch(
     class="bg-white p-6"
     :class="{
       'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
-      'rounded-sm ring ring-gray-300': !editing
+      'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
     @error="onError"
@@ -247,6 +255,7 @@ watch(
                   v-model="state.firstName"
                   :invalid="!!error"
                   :label="$t('label.firstName')"
+                  autofocus
                 />
               </UFormField>
               <UFormField
@@ -320,6 +329,7 @@ watch(
               {{ error }}
             </div>
             <FormCheckboxGroup
+              id="officer-role-options"
               v-model="state.roles"
               :items="roles"
             />

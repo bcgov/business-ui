@@ -3,7 +3,8 @@ const model = defineModel<string>({ default: '' })
 
 const {
   maxlength = '1000',
-  country
+  country,
+  id
 } = defineProps<{
   id: string
   country?: string
@@ -31,6 +32,8 @@ const displayedRegionName = computed(() => {
   }
   return ''
 })
+
+const inputId = id + '-region'
 </script>
 
 <template>
@@ -41,6 +44,7 @@ const displayedRegionName = computed(() => {
     <template #default="{ error }">
       <USelect
         v-if="country === 'US' || country === 'CA'"
+        :id="inputId"
         v-model="model"
         :items="regions"
         :aria-label="country === 'CA' ? $t('label.province') : $t('label.state')"
@@ -84,7 +88,7 @@ const displayedRegionName = computed(() => {
       </USelect>
       <ConnectInput
         v-else
-        :id
+        :id="inputId"
         v-model="model"
         required
         :invalid="!!error"
