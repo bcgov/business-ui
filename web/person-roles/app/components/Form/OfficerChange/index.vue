@@ -48,10 +48,40 @@ const addressSchema = z.object({
   street: z.string().min(1, t('validation.fieldRequired')).max(50, t('validation.maxChars', { count: 50 })),
   streetAdditional: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
   city: z.string().min(1, t('validation.fieldRequired')).max(40, t('validation.maxChars', { count: 40 })),
-  region: z.string().min(1, t('validation.fieldRequired')).max(2, t('validation.maxChars', { count: 2 })),
+  region: z.string().optional(),
   postalCode: z.string().min(1, t('validation.fieldRequired')).max(15, t('validation.maxChars', { count: 15 })),
-  country: getRequiredNonEmptyString(t('validation.fieldRequired')),
+  country: z.string().min(1, t('validation.fieldRequired')),
   locationDescription: z.string().max(80, t('validation.maxChars', { count: 80 })).optional()
+}).superRefine((data, ctx) => {
+  // validate region based on country
+  // required if country is US or CA
+  // optional and max 2 characters if not US or CA
+  const country = data.country
+  const region = data.region
+
+  if (country === 'US' || country === 'CA') {
+    if (region.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('validation.fieldRequired'),
+        path: ['region']
+      })
+    } else if (region.length > 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('validation.maxChars', { count: 2 }),
+        path: ['region']
+      })
+    }
+  } else if (region.length > 2) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('validation.maxChars', { count: 2 }),
+      path: ['region']
+    })
+  }
+
+  return z.NEVER
 })
 
 const schema = z.object({

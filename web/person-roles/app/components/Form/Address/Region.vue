@@ -89,7 +89,7 @@ const displayedRegionName = computed(() => {
         required
         :invalid="!!error"
         :disabled
-        :label="$t('label.region')"
+        :label="$t('label.regionOpt')"
         :maxlength
       />
     </template>
