@@ -40,7 +40,6 @@ const options = [
         v-model="model"
         :data-testid="inputId"
         :items="options"
-        :selected-icon="' '"
         value-key="alpha_2"
         label-key="name"
         class="w-full"
@@ -52,7 +51,8 @@ const options = [
           base: error
             ? 'shadow-bcGovInputError focus:shadow-bcGovInputError data-[state=open]:shadow-bcGovInputError'
             : '',
-          item: 'nth-2:border-b nth-2:border-bcGovGray-200'
+          item: 'nth-2:border-b nth-2:border-bcGovGray-200',
+          itemTrailingIcon: 'hidden'
         }"
         @change="$emit('change')"
       >
