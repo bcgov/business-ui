@@ -142,7 +142,7 @@ export default defineAppConfig({
             leadingAvatarSize: '2xs',
             trailingIcon: 'size-5',
             label: 'p-1.5 text-xs gap-1.5',
-            item: 'py-1.5 px-4 text-sm gap-3',
+            item: 'py-3 px-4 text-sm gap-3',
             itemLeadingIcon: 'size-5',
             itemLeadingAvatarSize: '2xs',
             itemLeadingChip: 'size-5',

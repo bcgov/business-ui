@@ -33,7 +33,7 @@ watch(canadaPostAddress, (newAddress) => {
   <UFormField
     :name="schemaPrefix + 'street'"
     class="grow"
-    :help="notPoBox ? $t('help.addressCannotBePOBox') : ''"
+    :help="notPoBox ? $t('help.addressCannotBePOBox') : $t('help.addressCanBePOBox')"
   >
     <template #default="{ error }">
       <ConnectInput

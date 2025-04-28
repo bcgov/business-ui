@@ -57,7 +57,8 @@ export default {
     }
   },
   help: {
-    addressCannotBePOBox: 'Address cannot be a PO Box'
+    addressCannotBePOBox: 'Address cannot be a PO Box',
+    addressCanBePOBox: 'Street address, PO box, rural route, or general delivery address'
   },
   label: {
     address: 'Address',
