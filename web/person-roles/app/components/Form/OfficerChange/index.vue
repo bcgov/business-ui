@@ -61,20 +61,20 @@ const addressSchema = z.object({
   const region = data.region
 
   if (country === 'US' || country === 'CA') {
-    if (region.length === 0) {
+    if (region && region.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: t('validation.fieldRequired'),
         path: ['region']
       })
-    } else if (region.length > 2) {
+    } else if (region && region.length > 2) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: t('validation.maxChars', { count: 2 }),
         path: ['region']
       })
     }
-  } else if (region.length > 2) {
+  } else if (region && region.length > 2) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: t('validation.maxChars', { count: 2 }),
@@ -141,14 +141,14 @@ function onError(event: FormErrorEvent) {
   const firstEl = event.errors[0]
 
   if (firstEl?.name === 'roles') { // roles doesn't have an id, so get first button in role options container to apply focus
-    element = document.getElementById('officer-role-options').querySelector('button')
+    element = document.getElementById('officer-role-options')?.querySelector('button')
   } else { // else query by input id
-    element = document.getElementById(firstEl?.id)
+    element = document.getElementById(firstEl?.id as string)
   }
   if (element) {
     // using focus without setTimeout only works intermittently
     setTimeout(() => {
-      element.focus()
+      (element as HTMLElement).focus()
     }, 0)
   }
 }
@@ -157,7 +157,7 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
   const data = e.data
 
   // reset has preferred name options if left blank
-  if (data.preferredName.trim().length === 0) {
+  if (data.preferredName?.trim().length === 0) {
     data.preferredName = ''
     data.hasPreferredName = false
   }

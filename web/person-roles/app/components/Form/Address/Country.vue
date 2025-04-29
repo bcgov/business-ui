@@ -24,8 +24,8 @@ const displayedCountryName = computed(() => {
 })
 
 const options = [
-  countries.find(c => c.alpha_2 === 'CA'),
-  countries.find(c => c.alpha_2 === 'US'),
+  countries.find(c => c.alpha_2 === 'CA')!,
+  countries.find(c => c.alpha_2 === 'US')!,
   ...countries
 ]
 </script>
