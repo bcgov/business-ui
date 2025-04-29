@@ -1,6 +1,6 @@
 import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { merge, isEqual } from 'lodash'
+import { isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t
@@ -9,19 +9,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  const initializing = ref<boolean>(false)
-  const addingOfficer = ref<boolean>(false)
-
-  const expanded = ref<ExpandedState | undefined>(undefined)
-  const editState = ref<OfficerTableEditState>({} as OfficerTableEditState)
+  const initializing = ref<boolean>(false) // officer store loading state
+  const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
+  const initialOfficers = ref<Officer[]>([]) // officer state on page load
+  const officerTableState = ref<OfficerTableState[]>([]) // officer state displayed in table
+  const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
+  const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
-  const initialOfficers = ref<Officer[]>([])
-  const officerTableState = ref<OfficerTableState[]>([])
-
   async function initOfficerStore(businessId: string) {
     try {
+      $reset() // reset any previous state (ex: user switches accounts)
       initializing.value = true
       detailsHeaderStore.loading = true
 
@@ -54,7 +53,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
           return {
             firstName: p.officer.firstName ?? '',
-            middleName: p.officer.middleName ?? '',
+            middleName: p.officer.middleInitial ?? '',
             lastName: p.officer.lastName ?? '',
             preferredName, // TODO: map preferred name - need in api
             roles: [], // TODO: map sub roles - need in api
@@ -65,7 +64,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
           }
         })
 
+        // retain initial officer state before changes
         initialOfficers.value = officers
+
+        // map officers data to display in table
         officerTableState.value = officers.map(o => ({
             state: {
               officer: o,
@@ -88,6 +90,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
     }
   }
 
+  /**
+  *  Returns an empty officer object
+  *  @returns Officer
+  */
   function getNewOfficer(): Officer {
     return {
       firstName: '',
@@ -118,7 +124,65 @@ export const useOfficerStore = defineStore('officer-store', () => {
     }
   }
 
-  function addNewOfficer(v: Officer) {
+  /**
+  *  Returns an array of differences in officer state by section (name, roles, address)
+  *  @param {Officer} oldVal Previous Officer State
+  *  @param {Officer} newVal New Officer State
+  *  @returns {OfficerTableEditSection[]} ex: ['roles', 'address']
+  */
+  function getOfficerStateDiff(oldVal: Officer, newVal: Officer): OfficerTableEditSection[] {
+    const oldMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+      name: {
+        firstName: oldVal.firstName,
+        middleName: oldVal.middleName,
+        lastName: oldVal.lastName,
+        preferredName: oldVal.preferredName,
+        hasPreferredName: oldVal.hasPreferredName
+      },
+      roles: {
+        roles: oldVal.roles
+      },
+      address: {
+        mailingAddress: oldVal.mailingAddress,
+        deliveryAddress: oldVal.deliveryAddress,
+        sameAsDelivery: oldVal.sameAsDelivery
+      }
+    }
+    const newMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+      name: {
+        firstName: newVal.firstName,
+        middleName: newVal.middleName,
+        lastName: newVal.lastName,
+        preferredName: newVal.preferredName,
+        hasPreferredName: newVal.hasPreferredName
+      },
+      roles: {
+        roles: newVal.roles
+      },
+      address: {
+        mailingAddress: newVal.mailingAddress,
+        deliveryAddress: newVal.deliveryAddress,
+        sameAsDelivery: newVal.sameAsDelivery
+      }
+    }
+
+    const changedSections: OfficerTableEditSection[] = []
+
+    for (const section in oldMap) {
+      const s = section as OfficerTableEditSection
+      if (!isEqual(oldMap[s], newMap[s])) {
+        changedSections.push(s)
+      }
+    }
+
+    return changedSections
+  }
+
+  /**
+  *  Adds a 'net new' officer object to the table state
+  *  @param {Officer} v The new officer object
+  */
+  function addNewOfficer(v: Officer): void {
     const newState: OfficerTableState = {
       state: {
         officer: v,
@@ -133,53 +197,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
     ]
   }
 
-  function updateOfficers(
-    data: Partial<Officer>,
-    row: Row<OfficerTableState>,
-    action: 'edit' | 'undo' | 'removed'
-  ) {
+  /**
+  *  Updates the officer table state at the provided row
+  *  @param {OfficerTableState} newState The new officer object
+  *  @param {Row<OfficerTableState>} row The row to update with the new state
+  */
+  function updateOfficerTable(newState: OfficerTableState, row: Row<OfficerTableState>): void {
     const index = row.index
-    const initialState = row.original.state
-    const initialHistory = row.original.history
-
-    let newState: OfficerTableState = {} as OfficerTableState
-
-    if (action === 'edit') {
-      let newOfficer = merge({}, initialState.officer, data)
-      let newActions = [...initialState.actions, editState.value.section]
-      let newHistory = [...initialHistory, initialState]
-
-      if (isEqual(initialState.officer, newOfficer)) {
-        newOfficer = initialState.officer
-        newActions = initialState.actions
-        newHistory = initialHistory
-      }
-
-      newState = {
-        state: {
-          officer: newOfficer,
-          actions: newActions
-        },
-        history: newHistory
-      }
-    } else if (action === 'undo') {
-      const previousState = initialHistory[initialHistory.length - 1]
-      if (previousState) {
-        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
-        newState = {
-          state: previousState,
-          history: newHistory
-        }
-      }
-    } else if (action === 'removed') {
-      newState = {
-        state: {
-          officer: initialState.officer,
-          actions: [...initialState.actions, 'removed']
-        },
-        history: [...initialHistory, initialState]
-      }
-    }
 
     officerTableState.value = [
       ...officerTableState.value.slice(0, index),
@@ -188,48 +212,106 @@ export const useOfficerStore = defineStore('officer-store', () => {
     ]
   }
 
-  function initOfficerEdit(row: Row<OfficerTableState>, section: OfficerTableEditSection) {
-    const officer = JSON.parse(JSON.stringify(row.original.state.officer))
+  /**
+  *  Removes an officer from the table state
+  *  @param {Row<OfficerTableState>} row The row to remove
+  */
+  function removeOfficer(row: Row<OfficerTableState>): void {
+    const initialState = row.original.state
+    const initialHistory = row.original.history
 
-    const sectionMap: Record<OfficerTableEditSection, Partial<Officer>> = {
-      name: {
-        firstName: officer.firstName,
-        middleName: officer.middleName,
-        lastName: officer.lastName,
-        preferredName: officer.preferredName,
-        hasPreferredName: officer.hasPreferredName
+    const newState = {
+      state: {
+        officer: initialState.officer,
+        actions: [...initialState.actions, 'removed' as OfficerFormAction]
       },
-      roles: {
-        roles: officer.roles
-      },
-      address: {
-        mailingAddress: officer.mailingAddress,
-        deliveryAddress: officer.deliveryAddress,
-        sameAsDelivery: officer.sameAsDelivery
+      history: [...initialHistory, initialState]
+    }
+
+    updateOfficerTable(newState, row)
+  }
+
+  /**
+  *  Undoes the most recent change by resetting the officer's state
+  *  to the previous state in the history array at the given row
+  *  @param {Row<OfficerTableState>} row The row to undo
+  */
+  function undoOfficer(row: Row<OfficerTableState>): void {
+    const initialHistory = row.original.history
+    const previousState = initialHistory[initialHistory.length - 1]
+
+      if (previousState) {
+        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
+        const newState = {
+          state: previousState,
+          history: newHistory
+        }
+        updateOfficerTable(newState, row)
       }
-    }
-
-    editState.value = {
-      data: sectionMap[section],
-      section
-    }
-
-    expanded.value = { [row.index]: true }
   }
 
-  function cancelOfficerEdit() {
-    expanded.value = undefined
-    editState.value = {} as OfficerTableEditState
-  }
+  /**
+  * Edits the officer's data by comparing it with the initial state, if there are
+  * differences, it updates the table's history and actions accordingly. If no changes are made,
+  * it will retain the original state/actions/history.
+  *
+  * @param {Officer} data The new officer data to be applied to the row.
+  * @param {Row<OfficerTableState>} row The row to update the officer state.
+  */
+  function editOfficer(data: Officer, row: Row<OfficerTableState>): void {
+    const initialState = row.original.state
+    const initialHistory = row.original.history
 
-  async function onOfficerEditSubmit(data: Partial<Officer>, row: Row<OfficerTableState>) {
-    updateOfficers(data, row, 'edit')
+    // get any changed sections between new/old state
+    const sectionDiffs = getOfficerStateDiff(initialState.officer, data)
 
+    // return early if no changes made
+    if (!sectionDiffs.length) {
+      cancelOfficerEdit()
+      return
+    }
+
+    const newState = {
+      state: {
+        officer: data,
+        actions: [...initialState.actions, ...sectionDiffs]
+      },
+      history: [...initialHistory, initialState]
+    }
+
+    updateOfficerTable(newState, row)
     cancelOfficerEdit()
   }
 
+  /**
+  * Sets the forms default state and expands the appropriate row
+  * @param {Row<OfficerTableState>} row The row to edit.
+  */
+  function initOfficerEdit(row: Row<OfficerTableState>): void {
+    const officer = JSON.parse(JSON.stringify(row.original.state.officer))
+    editState.value = officer
+    expanded.value = { [row.index]: true }
+  }
+
+  /**
+  * Resets edit state and collapses table expansion
+  */
+  function cancelOfficerEdit(): void {
+    expanded.value = undefined
+    editState.value = {} as Officer
+  }
+
+  /**
+  * Resets Officer store to default state
+  */
   function $reset() {
     sessionStorage.removeItem('officer-store')
+    initializing.value = false
+    addingOfficer.value = false
+    initialOfficers.value = []
+    officerTableState.value = []
+    expanded.value = undefined
+    editState.value = {} as Officer
   }
 
   return {
@@ -242,10 +324,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initOfficerStore,
     getNewOfficer,
     addNewOfficer,
-    updateOfficers,
+    editOfficer,
+    updateOfficerTable,
+    removeOfficer,
+    undoOfficer,
     initOfficerEdit,
     cancelOfficerEdit,
-    onOfficerEditSubmit,
     $reset
   }
 }

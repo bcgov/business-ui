@@ -14,23 +14,7 @@ const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 const officerStore = useOfficerStore()
 const { officerTableState, expanded, editState, initializing } = storeToRefs(useOfficerStore())
 
-const formTitle = computed(() => {
-  if (!editState.value.section) {
-    return ''
-  }
-
-  switch (editState.value.section) {
-  case 'address':
-    return t('label.changeAddress')
-  case 'roles':
-    return t('label.changeRoles')
-  case 'name':
-    return t('label.changeName')
-  default:
-    return ''
-  }
-})
-
+// returns a unique list of badge props to display in the table based on what actions were taken
 function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   if (!actions.length) {
     return []
@@ -70,10 +54,13 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   return newBadges
 }
 
+// used to apply 'removed' styling if the row was removed
 function getIsRowRemoved(row: Row<OfficerTableState>) {
   return row.original.state.actions.includes('removed')
 }
 
+// concatenates default class to apply to the <td>
+// necessary for styling as using the table meta <td> isnt enough
 function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string, actionCell = false): string {
   const removedClass = getIsRowRemoved(row) ? 'opacity-50' : ''
 
@@ -83,26 +70,21 @@ function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string
   return `${removedClass} ${defaultClass}`
 }
 
+// returns array of dropdown menu actions for the given row
 function getRowActions(row: Row<OfficerTableState>) {
   const actions = [
     {
-      label: t('label.changeName'),
-      onSelect: () => officerStore.initOfficerEdit(row, 'name')
-    },
-    {
-      label: t('label.changeRoles'),
-      onSelect: () => officerStore.initOfficerEdit(row, 'roles')
-    },
-    {
-      label: t('label.changeAddress'),
-      onSelect: () => officerStore.initOfficerEdit(row, 'address')
+      label: t('label.remove'),
+      onSelect: () => officerStore.removeOfficer(row),
+      icon: 'i-mdi-delete'
     }
   ]
 
   if (row.original.history.length) {
     actions.unshift({
       label: t('label.undo'),
-      onSelect: () => officerStore.updateOfficers({}, row, 'undo')
+      onSelect: () => officerStore.undoOfficer(row),
+      icon: 'i-mdi-undo'
     })
   }
 
@@ -229,13 +211,13 @@ const columns: TableColumn<OfficerTableState>[] = [
               default: () => [
                 h(UButton, {
                   variant: 'ghost',
-                  label: isRemoved ? t('label.undo') : t('label.remove'),
-                  icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-delete',
+                  label: isRemoved ? t('label.undo') : t('label.change'),
+                  icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-pencil',
                   disabled: officerStore.disableActions,
                   class: 'px-4',
                   onClick: () => isRemoved
-                    ? officerStore.updateOfficers({}, row, 'undo')
-                    : officerStore.updateOfficers({}, row, 'removed')
+                    ? officerStore.undoOfficer(row)
+                    : officerStore.initOfficerEdit(row)
                 }),
                 isRemoved
                   ? null
@@ -288,11 +270,11 @@ const expandedTrClass = computed(() =>
       <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''">
         <FormOfficerChange
           class="max-w-full"
-          :default-state="editState.data"
+          :default-state="editState"
           :editing="true"
-          :title="formTitle"
+          :title="$t('label.makeChanges')"
           @cancel="officerStore.cancelOfficerEdit"
-          @officer-change="officerStore.onOfficerEditSubmit($event, row)"
+          @officer-change="officerStore.editOfficer($event, row)"
         />
       </div>
     </template>

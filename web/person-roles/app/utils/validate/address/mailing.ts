@@ -1,9 +1,6 @@
 import { z } from 'zod'
 
-export const optionalOrEmptyString = z
-  .string()
-  .optional()
-  .transform(e => (e === '' ? undefined : e))
+export const optionalOrEmptyString = z.string().optional()
 
 export const getRequiredNonEmptyString = (message: string) => z.string().refine(e => e.trim() !== '', message)
 

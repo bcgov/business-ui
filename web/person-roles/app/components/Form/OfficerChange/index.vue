@@ -6,7 +6,7 @@ import { UForm } from '#components'
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
-  defaultState?: Partial<Officer>
+  defaultState?: Officer
   editing?: boolean
   title: string
 }>(), {
@@ -41,24 +41,17 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'cancel': []
-  'officer-change': [Partial<Officer>]
+  'officer-change': [Officer]
 }>()
 
-const defaultMailingAddress = { ...props.defaultState.mailingAddress } as UiAddress // TODO: confirm default defined correctly
-
-const emptySchema = z.object({})
-
-const nameSchema = z.object({
+const schema = z.object({
   firstName: z.string().optional(),
   middleName: z.string().optional(),
   lastName: z
     .string({ required_error: t('validation.fieldRequired') })
     .min(2, { message: t('validation.minChars', { count: 2 }) }),
   preferredName: z.string().optional(),
-  hasPreferredName: z.boolean().default(false)
-})
-
-const rolesSchema = z.object({
+  hasPreferredName: z.boolean().default(false),
   roles: z
     .enum([
       OfficerRole.ASSISTANT_SECRETARY,
@@ -71,10 +64,7 @@ const rolesSchema = z.object({
       OfficerRole.TREASURER,
       OfficerRole.VP
     ])
-    .array().min(1, { message: t('validation.role.min') })
-})
-
-const mailingSchema = z.object({
+    .array().min(1, { message: t('validation.role.min') }),
   mailingAddress: getRequiredAddress(
     t('validation.address.street'),
     t('validation.address.city'),
@@ -82,10 +72,7 @@ const mailingSchema = z.object({
     t('validation.address.postalCode'),
     t('validation.address.country')
   ),
-  sameAsDelivery: z.boolean().default(false)
-})
-
-const deliverySchema = z.object({
+  sameAsDelivery: z.boolean().default(false),
   deliveryAddress: getRequiredAddress(
     t('validation.address.street'),
     t('validation.address.city'),
@@ -95,24 +82,18 @@ const deliverySchema = z.object({
   )
 })
 
-type NameSchema = z.output<typeof nameSchema>
-type RolesSchema = z.output<typeof rolesSchema>
-type MailingSchema = z.output<typeof mailingSchema>
-type DeliverySchema = z.output<typeof deliverySchema>
+type Schema = z.output<typeof schema>
+const state = reactive<Schema>(props.defaultState)
 
-const state = reactive<Partial<NameSchema & RolesSchema & MailingSchema & DeliverySchema>>(props.defaultState)
-
-const nameFormRef = useTemplateRef<Form<NameSchema>>('name-form')
-const rolesFormRef = useTemplateRef<Form<RolesSchema>>('roles-form')
-const mailingAddressFormRef = useTemplateRef<Form<MailingSchema>>('mailing-address-form')
-const deliveryAddressFormRef = useTemplateRef<Form<DeliverySchema>>('delivery-address-form')
+const formRef = useTemplateRef<Form<Schema>>('officer-form')
 
 const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
+  const errors = formRef.value?.getErrors()
   return {
-    name: !!nameFormRef.value?.getErrors().length,
-    roles: !!rolesFormRef.value?.getErrors().length,
-    mailing: !!mailingAddressFormRef.value?.getErrors().length,
-    delivery: !!deliveryAddressFormRef.value?.getErrors().length
+    name: !!errors?.some(e => e.name === 'lastName'),
+    roles: !!errors?.some(e => e.name === 'roles'),
+    mailing: !!errors?.some(e => e.name?.startsWith('mailingAddress')),
+    delivery: !!errors?.some(e => e.name?.startsWith('deliveryAddress'))
   }
 })
 
@@ -129,16 +110,15 @@ const roles = [
 ]
 
 async function onError(event: FormErrorEvent) {
-  const elId = event?.errors?.[0]?.id ?? event?.children?.[0]?.errors?.[0]?.id
+  const elId = event?.errors?.[0]?.id
   if (elId) {
     const element = document.getElementById(elId)
-    // element?.scrollIntoView({ behavior: 'smooth', block: 'center' }) // TODO: fix or remove smooth scroll
-    await new Promise(resolve => setTimeout(resolve, 100))
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     element?.focus()
   }
 }
 
-function onSubmit(e: FormSubmitEvent<typeof state>) {
+function onSubmit(e: FormSubmitEvent<Schema>) {
   const data = e.data
 
   if (data.sameAsDelivery) {
@@ -146,27 +126,39 @@ function onSubmit(e: FormSubmitEvent<typeof state>) {
   }
 
   // TODO: cleanup type
-  emit('officer-change', data as Partial<Officer>)
+  emit('officer-change', data as Officer)
 }
 
+// if user selects 'same as delivery' checkbox
+// set mailingAddress = deliveryAddress
+// clear any mailing address field form errors
+// else set mailing address to default state
 watch(
   () => state.sameAsDelivery,
   (v) => {
     if (v) {
-      delete state.mailingAddress
-      mailingAddressFormRef.value?.clear()
+      state.mailingAddress = state.deliveryAddress
+      const mailingFields = [
+        'mailingAddress.city',
+        'mailingAddress.region',
+        'mailingAddress.postalCode',
+        'mailingAddress.street'
+      ]
+      mailingFields.forEach(item => formRef.value?.clear(item))
     } else {
-      state.mailingAddress = defaultMailingAddress
+      state.mailingAddress = props.defaultState.mailingAddress
     }
   },
   { immediate: true }
 )
 
+// Clear roles validation error when selecting roles
+// 'blur' wont clear errors for this field
 watch(
   () => state.roles,
   (v) => {
     if (v && v.length) {
-      rolesFormRef.value?.validate({ silent: true })
+      formRef.value?.clear('roles')
     }
   }
 )
@@ -176,7 +168,7 @@ watch(
   <UForm
     ref="officer-form"
     :state
-    :schema="emptySchema"
+    :schema="schema"
     class="bg-white p-6"
     :class="{
       'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
@@ -191,11 +183,7 @@ watch(
         {{ title }}
       </h2>
       <div class="flex flex-col gap-8 w-full">
-        <UForm
-          v-if="state.firstName !== undefined"
-          ref="name-form"
-          :state
-          :schema="nameSchema"
+        <div
           class="flex flex-col gap-6 w-full"
         >
           <FormSection
@@ -265,85 +253,64 @@ watch(
               />
             </UFormField>
           </FormSection>
-        </UForm>
+        </div>
 
-        <UForm
-          v-if="state.roles !== undefined"
-          ref="roles-form"
-          :state
-          :schema="rolesSchema"
+        <FormSection
+          :label="$t('label.roles')"
+          :invalid="formErrors.roles"
+          error-id="roles-checkbox-error"
         >
-          <FormSection
-            :label="$t('label.roles')"
-            :invalid="formErrors.roles"
-            error-id="roles-checkbox-error"
+          <UFormField
+            v-slot="{ error }"
+            name="roles"
+            :ui="{
+              error: 'sr-only'
+            }"
           >
-            <UFormField
-              v-slot="{ error }"
-              name="roles"
-              :ui="{
-                error: 'sr-only'
-              }"
+            <div
+              v-if="error !== undefined"
+              id="roles-checkbox-error"
+              class="text-red-600 text-base mb-3"
             >
-              <div
-                v-if="error !== undefined"
-                id="roles-checkbox-error"
-                class="text-red-600 text-base mb-3"
-              >
-                {{ error }}
-              </div>
-              <FormCheckboxGroup
-                v-model="state.roles"
-                :items="roles"
-              />
-            </UFormField>
-          </FormSection>
-        </UForm>
+              {{ error }}
+            </div>
+            <FormCheckboxGroup
+              v-model="state.roles"
+              :items="roles"
+            />
+          </UFormField>
+        </FormSection>
 
-        <UForm
-          v-if="state.deliveryAddress"
-          ref="delivery-address-form"
-          :state
-          :schema="deliverySchema"
+        <FormSection
+          :label="$t('label.deliveryAddress')"
+          :invalid="formErrors.delivery"
         >
-          <FormSection
-            :label="$t('label.deliveryAddress')"
-            :invalid="formErrors.delivery"
-          >
-            <FormAddress
-              id="delivery-address"
-              v-model="state.deliveryAddress"
-              schema-prefix="deliveryAddress."
-              :form-ref="deliveryAddressFormRef"
-            />
-          </FormSection>
-        </UForm>
+          <FormAddress
+            id="delivery-address"
+            v-model="state.deliveryAddress"
+            schema-prefix="deliveryAddress."
+            :form-ref="formRef"
+          />
+        </FormSection>
 
-        <UForm
-          v-if="state.deliveryAddress"
-          ref="mailing-address-form"
-          :state
-          :schema="state.sameAsDelivery ? emptySchema : mailingSchema"
+        <FormSection
+          :label="$t('label.mailingAddress')"
+          :invalid="formErrors.mailing"
         >
-          <FormSection
-            :label="$t('label.mailingAddress')"
-            :invalid="formErrors.mailing"
-          >
-            <UCheckbox
-              v-model="state.sameAsDelivery"
-              :label="$t('label.sameAsDeliveryAddress')"
-              :ui="{ root: 'items-center' }"
-            />
+          <UCheckbox
+            v-model="state.sameAsDelivery"
+            :label="$t('label.sameAsDeliveryAddress')"
+            :ui="{ root: 'items-center' }"
+          />
 
-            <FormAddress
-              v-if="state.mailingAddress"
-              id="mailing-address"
-              v-model="state.mailingAddress"
-              schema-prefix="mailingAddress."
-              :form-ref="mailingAddressFormRef"
-            />
-          </FormSection>
-        </UForm>
+          <FormAddress
+            v-if="!state.sameAsDelivery"
+            id="mailing-address"
+            v-model="state.mailingAddress"
+            schema-prefix="mailingAddress."
+            :form-ref="formRef"
+          />
+        </FormSection>
 
         <div class="flex gap-6 justify-end">
           <UButton
