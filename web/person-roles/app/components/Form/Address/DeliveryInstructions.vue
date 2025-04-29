@@ -21,7 +21,7 @@ const inputId = props.id + '-deliveryInstructions'
       v-model="model"
       :invalid="!!error"
       :disabled
-      :label="$t('label.deliveryInstructions')"
+      :label="$t('label.deliveryInstructionsOpt')"
     />
   </UFormField>
 </template>

@@ -7,6 +7,7 @@ const props = defineProps<{
   schemaPrefix: string
   disabled?: boolean
   disableAddressComplete: boolean
+  notPoBox?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -32,6 +33,7 @@ watch(canadaPostAddress, (newAddress) => {
   <UFormField
     :name="schemaPrefix + 'street'"
     class="grow"
+    :help="notPoBox ? $t('help.addressCannotBePOBox') : $t('help.addressCanBePOBox')"
   >
     <template #default="{ error }">
       <ConnectInput
@@ -40,7 +42,7 @@ watch(canadaPostAddress, (newAddress) => {
         required
         :invalid="!!error"
         :disabled
-        :label="$t('label.line1')"
+        :label="$t('label.street')"
         @keypress.once="addressComplete(inputId)"
         @click="addressComplete(inputId)"
       />

@@ -112,7 +112,10 @@ export default defineNuxtConfig({
     public: {
       version: `Person Roles UI v${process.env.npm_package_version || ''}`,
       addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY,
-      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`
+      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
+      businessDashboardUrl: process.env.NUXT_BUSINESS_DASHBOARD_URL,
+      registryHomeUrl: process.env.NUXT_REGISTRY_HOME_URL,
+      brdUrl: process.env.NUXT_BUSINESS_REGISTRY_DASHBOARD_URL
     }
   }
 })

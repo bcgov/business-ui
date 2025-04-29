@@ -3,6 +3,8 @@ import { StatusCodes } from 'http-status-codes'
 
 const { t } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
+const rtc = useRuntimeConfig().public
+const accountStore = useConnectAccountStore()
 
 const props = defineProps<{
   status?: number
@@ -71,7 +73,7 @@ const description = props.status
             :label="$t('btn.goToBRD')"
             :block="isSmallScreen"
             size="xl"
-            @click="() => console.info('clicked')"
+            :to="`${rtc.brdUrl}account/${accountStore.currentAccount.id}`"
           />
         </div>
       </div>

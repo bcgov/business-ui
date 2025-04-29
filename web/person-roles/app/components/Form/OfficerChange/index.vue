@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
 const { t } = useI18n()
@@ -44,14 +45,52 @@ const emit = defineEmits<{
   'officer-change': [Officer]
 }>()
 
+const addressSchema = z.object({
+  street: z.string().min(1, t('validation.fieldRequired')).max(50, t('validation.maxChars', { count: 50 })),
+  streetAdditional: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  city: z.string().min(1, t('validation.fieldRequired')).max(40, t('validation.maxChars', { count: 40 })),
+  region: z.string().optional(),
+  postalCode: z.string().min(1, t('validation.fieldRequired')).max(15, t('validation.maxChars', { count: 15 })),
+  country: z.string().min(1, t('validation.fieldRequired')),
+  locationDescription: z.string().max(80, t('validation.maxChars', { count: 80 })).optional()
+}).superRefine((data, ctx) => {
+  // validate region based on country
+  // required if country is US or CA
+  // optional and max 2 characters if not US or CA
+  const country = data.country
+  const region = data.region
+
+  if (country === 'US' || country === 'CA') {
+    if (region && region.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('validation.fieldRequired'),
+        path: ['region']
+      })
+    } else if (region && region.length > 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t('validation.maxChars', { count: 2 }),
+        path: ['region']
+      })
+    }
+  } else if (region && region.length > 2) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('validation.maxChars', { count: 2 }),
+      path: ['region']
+    })
+  }
+
+  return z.NEVER
+})
+
 const schema = z.object({
-  firstName: z.string().optional(),
-  middleName: z.string().optional(),
-  lastName: z
-    .string({ required_error: t('validation.fieldRequired') })
-    .min(2, { message: t('validation.minChars', { count: 2 }) }),
-  preferredName: z.string().optional(),
-  hasPreferredName: z.boolean().default(false),
+  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
+  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  hasPreferredName: z.boolean(),
   roles: z
     .enum([
       OfficerRole.ASSISTANT_SECRETARY,
@@ -65,21 +104,9 @@ const schema = z.object({
       OfficerRole.VP
     ])
     .array().min(1, { message: t('validation.role.min') }),
-  mailingAddress: getRequiredAddress(
-    t('validation.address.street'),
-    t('validation.address.city'),
-    t('validation.address.region'),
-    t('validation.address.postalCode'),
-    t('validation.address.country')
-  ),
-  sameAsDelivery: z.boolean().default(false),
-  deliveryAddress: getRequiredAddress(
-    t('validation.address.street'),
-    t('validation.address.city'),
-    t('validation.address.region'),
-    t('validation.address.postalCode'),
-    t('validation.address.country')
-  )
+  mailingAddress: addressSchema,
+  sameAsDelivery: z.boolean(),
+  deliveryAddress: addressSchema
 })
 
 type Schema = z.output<typeof schema>
@@ -109,23 +136,39 @@ const roles = [
   { label: t(`enum.officerRole.${OfficerRole.CHAIR}`), value: OfficerRole.CHAIR }
 ]
 
-async function onError(event: FormErrorEvent) {
-  const elId = event?.errors?.[0]?.id
-  if (elId) {
-    const element = document.getElementById(elId)
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    element?.focus()
+function onError(event: FormErrorEvent) {
+  let element: unknown
+  const firstEl = event.errors[0]
+
+  if (firstEl?.name === 'roles') { // roles doesn't have an id, so get first button in role options container to apply focus
+    element = document.getElementById('officer-role-options')?.querySelector('button')
+  } else { // else query by input id
+    element = document.getElementById(firstEl?.id as string)
+  }
+  if (element) {
+    // using focus without setTimeout only works intermittently
+    setTimeout(() => {
+      (element as HTMLElement).focus()
+    }, 0)
   }
 }
 
 function onSubmit(e: FormSubmitEvent<Schema>) {
   const data = e.data
 
-  if (data.sameAsDelivery) {
-    data.mailingAddress = data.deliveryAddress
+  // reset has preferred name options if left blank
+  if (data.preferredName?.trim().length === 0) {
+    data.preferredName = ''
+    data.hasPreferredName = false
   }
 
-  // TODO: cleanup type
+  if (data.sameAsDelivery) {
+    data.mailingAddress = data.deliveryAddress
+  } else if (isEqual(data.mailingAddress, data.deliveryAddress)) {
+    data.sameAsDelivery = true // set sameAsDelivery = true if both mailing and delivery are the same
+  }
+
+  // Officer and Schema type mismatch though the same object
   emit('officer-change', data as Officer)
 }
 
@@ -162,6 +205,25 @@ watch(
     }
   }
 )
+
+// reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
+watch(
+  state.deliveryAddress,
+  () => {
+    if (state.sameAsDelivery) {
+      state.mailingAddress = {
+        street: '',
+        streetAdditional: '',
+        city: '',
+        region: '',
+        postalCode: '',
+        country: '',
+        locationDescription: ''
+      }
+      state.sameAsDelivery = false
+    }
+  }
+)
 </script>
 
 <template>
@@ -172,7 +234,7 @@ watch(
     class="bg-white p-6"
     :class="{
       'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
-      'rounded-sm ring ring-gray-300': !editing
+      'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
     @error="onError"
@@ -201,6 +263,7 @@ watch(
                   v-model="state.firstName"
                   :invalid="!!error"
                   :label="$t('label.firstName')"
+                  autofocus
                 />
               </UFormField>
               <UFormField
@@ -241,9 +304,8 @@ watch(
               v-slot="{ error }"
               name="preferredName"
               class="grow flex-1"
-              :help="$t('help.preferredName')"
-              :description="$t('text.preferredNameDescription')"
               :label="$t('label.preferredName')"
+              :ui="{ label: 'mb-3.5' }"
             >
               <ConnectInput
                 id="preferred-name"
@@ -275,6 +337,7 @@ watch(
               {{ error }}
             </div>
             <FormCheckboxGroup
+              id="officer-role-options"
               v-model="state.roles"
               :items="roles"
             />
@@ -290,6 +353,8 @@ watch(
             v-model="state.deliveryAddress"
             schema-prefix="deliveryAddress."
             :form-ref="formRef"
+            not-po-box
+            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
         </FormSection>
 
@@ -309,6 +374,7 @@ watch(
             v-model="state.mailingAddress"
             schema-prefix="mailingAddress."
             :form-ref="formRef"
+            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
         </FormSection>
 

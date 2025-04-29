@@ -16,7 +16,7 @@ const {
 <template>
   <UInput
     :id
-    v-model="model"
+    v-model.trim="model"
     :data-testid="id"
     placeholder=""
     :aria-required="required"

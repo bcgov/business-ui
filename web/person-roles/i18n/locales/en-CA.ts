@@ -13,7 +13,9 @@ export default {
     submit: 'Submit',
     save: 'Save',
     saveExit: 'Save and Resume Later',
-    goToBRD: 'Go to Business Registry Dashboard'
+    goToBRD: 'Go to Business Registry Dashboard',
+    keepEditing: 'Keep Editing',
+    exitWithoutSaving: 'Exit Without Saving'
   },
   currency: {
     cad: 'CAD',
@@ -55,7 +57,8 @@ export default {
     }
   },
   help: {
-    preferredName: 'Example: William Smith may prefer to go by Bill Smith when with friends.'
+    addressCannotBePOBox: 'Address cannot be a PO Box',
+    addressCanBePOBox: 'Street address, PO box, rural route, or general delivery address'
   },
   label: {
     address: 'Address',
@@ -94,7 +97,7 @@ export default {
     lastName: 'Last Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     preferredName: 'Preferred Name',
-    haspreferredName: 'This person has another name they prefer to use',
+    haspreferredName: 'This person also has another name they prefer to use',
     actions: 'Actions',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
@@ -108,16 +111,24 @@ export default {
     email: 'Email',
     phone: 'Phone',
     change: 'Change',
-    makeChanges: 'Make Changes'
+    makeChanges: 'Make Changes',
+    myBusinessRegistry: 'My Business Registry',
+    bcRegistriesDashboard: 'BC Registries Dashboard'
+  },
+  modal: {
+    unsavedChanges: {
+      title: 'Unsaved changes',
+      description: 'You have unsaved changes. Are you sure you want to exit your filing?'
+    }
   },
   text: {
-    preferredNameDescription: 'A preferred name is a name someone chooses to be called, which may be different from a legal or birth name. Enter names in English, French, or First Nations languages.',
     noOfficers: 'There are currently no officers.'
   },
   validation: {
     required: 'Required',
     fieldRequired: 'This field is required',
-    minChars: 'Minimum of {count} characters is required.',
+    minChars: 'Minimum 0 characters | Minimum 1 character | Minimum {count} characters', // 0/1 most likely will never be used but required for pluralization
+    maxChars: 'Maximum 0 characters | Maximum 1 character | Maximum {count} characters', // 0/1 most likely will never be used but required for pluralization
     address: {
       country: 'Please select a country',
       street: 'Please enter a street address',
@@ -162,7 +173,7 @@ export default {
         PLACEHOLDER: 'Placeholder (Replace Me)', // each project using the connect fee widget should change the placeholder filingTypeCode
         TEST: 'This is test entry',
         undefined: 'Item Fee',
-        OFFICER_CHANGE: 'Change of Officer'
+        OFFICER_CHANGE: 'Officer Change'
       }
     },
     paymentMethod: {
