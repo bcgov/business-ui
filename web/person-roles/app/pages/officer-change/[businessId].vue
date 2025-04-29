@@ -126,6 +126,7 @@ watch(
   { immediate: true }
 )
 
+// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
   if (officerStore.hasChanges) {
