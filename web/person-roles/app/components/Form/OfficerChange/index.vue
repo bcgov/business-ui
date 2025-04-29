@@ -90,7 +90,7 @@ const schema = z.object({
   middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
   preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
-  hasPreferredName: z.boolean().default(false),
+  hasPreferredName: z.boolean(),
   roles: z
     .enum([
       OfficerRole.ASSISTANT_SECRETARY,
@@ -105,7 +105,7 @@ const schema = z.object({
     ])
     .array().min(1, { message: t('validation.role.min') }),
   mailingAddress: addressSchema,
-  sameAsDelivery: z.boolean().default(false),
+  sameAsDelivery: z.boolean(),
   deliveryAddress: addressSchema
 })
 
@@ -208,7 +208,7 @@ watch(
 
 // reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
 watch(
-  () => state.deliveryAddress,
+  state.deliveryAddress,
   () => {
     if (state.sameAsDelivery) {
       state.mailingAddress = {
@@ -222,8 +222,7 @@ watch(
       }
       state.sameAsDelivery = false
     }
-  },
-  { deep: true }
+  }
 )
 </script>
 
