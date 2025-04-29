@@ -79,6 +79,13 @@ async function cancelFiling() {
         }
       ]
     )
+  } else {
+    await navigateTo(
+      `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+      {
+        external: true
+      }
+    )
   }
 }
 
