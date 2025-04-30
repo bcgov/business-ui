@@ -46,7 +46,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Flag for whether pagination is enabled
   const enablePagination = computed(() =>
-    ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
   )
 
   const newlyAddedIdentifier = ref<string>('')
@@ -217,18 +218,20 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           url += `&identifier=${encodeURIComponent(affiliations.filters.businessNumber)}`
         }
         if (affiliations.filters.status.length > 0) {
-          // Join multiple statuses with commas for the API
-          // The API should interpret this as OR logic between values
-          url += `&status=${encodeURIComponent(affiliations.filters.status.join(','))}`
+          // Add each status as a separate query parameter
+          // This will output: ?status=Active&status=Expired&status=Approved
+          affiliations.filters.status.forEach((status) => {
+            url += `&status=${encodeURIComponent(status)}`
+          })
         }
         if (affiliations.filters.type.length > 0) {
-          // Join multiple types with commas for the API
-          // The API should interpret this as OR logic between values
-          const typeCodes = affiliations.filters.type.map((type) => {
-            // Map display names to corresponding type codes
-            return DisplayNameToCorpType[type as keyof typeof DisplayNameToCorpType] || type
+          // Add each type as a separate query parameter
+          // This will output: ?type=BEN&type=CP&type=BC
+          affiliations.filters.type.forEach((type) => {
+            // Map display name to corresponding type code
+            const typeCode = DisplayNameToCorpType[type as keyof typeof DisplayNameToCorpType] || type
+            url += `&type=${encodeURIComponent(typeCode)}`
           })
-          url += `&type=${encodeURIComponent(typeCodes.join(','))}`
         }
       }
 
