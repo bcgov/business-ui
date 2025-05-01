@@ -34,16 +34,11 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
     }
   })
 
-  function updateUserContext () {
-    if (!ldClient.value) { return }
-
-    // Only update context if user is authenticated
-    if (!keycloak.isAuthenticated || !keycloak.kcUser?.keycloakGuid) {
-      console.info('Not updating LaunchDarkly context - user not authenticated')
-      return
-    }
-
+  // Create the user and org context objects for LaunchDarkly
+  function createLdContext () {
     const appName = useRuntimeConfig().public.appName
+
+    // Create user context
     const user = {
       key: keycloak.kcUser.keycloakGuid,
       firstName: keycloak.kcUser.firstName,
@@ -54,8 +49,10 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
       appSource: appName
     }
 
-    let org = { key: user.key, appSource: appName } // Default to user key if no account
+    // Default org to user key if no account
+    let org = { key: user.key, appSource: appName }
 
+    // Use account info if available
     if (accountStore.currentAccount.id) {
       org = {
         key: accountStore.currentAccount.id,
@@ -67,75 +64,44 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
       }
     }
 
-    const newContext = { kind: 'multi', org, user } as LDMultiKindContext
+    return { kind: 'multi', org, user } as LDMultiKindContext
+  }
+
+  function updateUserContext () {
+    if (!ldClient.value) { return }
+
+    // Create new context using shared function
+    const newContext = createLdContext()
     ldContext.value = newContext
 
     // Update the LaunchDarkly context
     ldClient.value.identify(newContext).then(() => {
       // Update flag values after context change
       ldFlagSet.value = ldClient.value?.allFlags() || {}
-      console.info('LaunchDarkly context updated successfully')
     }).catch((error) => {
       console.error('LaunchDarkly context update error:', error)
     })
   }
 
   function init () {
-    console.info('Initializing LaunchDarkly')
-    if (ldInitialized.value) {
-      console.info('LaunchDarkly already initialized.')
-      return
-    }
-
-    // Prevent multiple initialization attempts
-    if (isInitializing.value) {
-      console.info('LaunchDarkly initialization already in progress.')
+    if (ldInitialized.value || isInitializing.value) {
       return
     }
 
     // Skip initialization if user is not authenticated
     if (!keycloak.isAuthenticated || !keycloak.kcUser?.keycloakGuid) {
-      console.info('Not initializing LaunchDarkly - user not authenticated')
       return
     }
 
     isInitializing.value = true
-
     const ldClientId = useRuntimeConfig().public.ldClientId
     if (!ldClientId) {
-      console.info('No LaunchDarkly SDK variable set. Aborting LaunchDarkly setup.')
       isInitializing.value = false
       return
     }
 
-    const appName = useRuntimeConfig().public.appName
-
-    // Only initialize with authenticated user context
-    const user = {
-      key: keycloak.kcUser.keycloakGuid,
-      firstName: keycloak.kcUser.firstName,
-      lastName: keycloak.kcUser.lastName,
-      email: keycloak.kcUser.email || 'unknown@example.com', // Ensure email is never undefined
-      roles: keycloak.kcUser.roles,
-      loginSource: keycloak.kcUser.loginSource,
-      appSource: appName
-    }
-
-    // Default org to user key if no account selected
-    let org = { key: user.key, appSource: appName }
-
-    if (accountStore.currentAccount.id) {
-      org = {
-        key: accountStore.currentAccount.id,
-        accountType: accountStore.currentAccount.accountType,
-        accountStatus: accountStore.currentAccount.accountStatus,
-        type: accountStore.currentAccount.type,
-        label: accountStore.currentAccount.label,
-        appSource: appName
-      }
-    }
-
-    ldContext.value = { kind: 'multi', org, user }
+    // Create context using shared function
+    ldContext.value = createLdContext()
     const options: LDOptions = {
       streaming: false,
       useReport: false,
@@ -144,7 +110,6 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
 
     try {
       ldClient.value = initialize(ldClientId, ldContext.value, options)
-
       ldClient.value.on('initialized', () => {
         ldFlagSet.value = ldClient.value?.allFlags() || {}
         ldInitialized.value = true
@@ -168,9 +133,6 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
   }
 
   function getStoredFlag (name: string): any {
-    if (!ldInitialized.value) {
-      console.warn('Accessing LaunchDarkly stored flag, but LaunchDarkly is not initialized.')
-    }
     return ldFlagSet.value[name]
   }
 
@@ -182,14 +144,8 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
   }
 
   return {
-    ldClient,
-    ldContext,
-    ldFlagSet,
-    ldInitialized,
-    init,
     getFeatureFlag,
     getStoredFlag,
-    updateUserContext,
     $reset
   }
 })
