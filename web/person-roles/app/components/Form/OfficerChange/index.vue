@@ -174,17 +174,20 @@ watch(
   () => state.sameAsDelivery,
   (v) => {
     if (v) {
-      state.mailingAddress = state.deliveryAddress
-      const mailingFields = [
-        'mailingAddress.city',
-        'mailingAddress.region',
-        'mailingAddress.postalCode',
-        'mailingAddress.street'
-      ]
-      mailingFields.forEach(item => formRef.value?.clear(item))
+      state.mailingAddress = { ...state.deliveryAddress }
     } else {
       state.mailingAddress = { ...props.defaultState.mailingAddress }
     }
+
+    const mailingFields = [
+      'mailingAddress.country',
+      'mailingAddress.city',
+      'mailingAddress.region',
+      'mailingAddress.postalCode',
+      'mailingAddress.street'
+    ]
+
+    mailingFields.forEach(item => formRef.value?.clear(item))
   },
   { immediate: true }
 )
