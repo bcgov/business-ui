@@ -46,7 +46,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Flag for whether pagination is enabled
   const enablePagination = computed(() =>
-    ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+    true
+    // ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
   )
 
   const newlyAddedIdentifier = ref<string>('')
@@ -298,7 +299,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       () => enablePagination.value ? affiliations.pagination : null
     ],
     async () => {
-      await loadAffiliations()
+      // Prevent infinite loop when only one feature flag is enabled
+      const isLoading = affiliations.loading
+      if (!isLoading) {
+        await loadAffiliations()
+      }
     },
     { debounce: 400, deep: true } // 400ms debounce time - wait for all changes to settle before calling API
   )
