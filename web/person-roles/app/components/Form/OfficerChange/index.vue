@@ -60,24 +60,18 @@ const addressSchema = z.object({
   const country = data.country
   const region = data.region
 
-  if (country === 'US' || country === 'CA') {
-    if (region && region.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('validation.fieldRequired'),
-        path: ['region']
-      })
-    } else if (region && region.length > 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('validation.maxChars', { count: 2 }),
-        path: ['region']
-      })
-    }
-  } else if (region && region.length > 2) {
+  if (region && region.length > 2) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: t('validation.maxChars', { count: 2 }),
+      path: ['region']
+    })
+  }
+
+  if ((country === 'US' || country === 'CA') && region?.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('validation.fieldRequired'),
       path: ['region']
     })
   }
@@ -180,17 +174,20 @@ watch(
   () => state.sameAsDelivery,
   (v) => {
     if (v) {
-      state.mailingAddress = state.deliveryAddress
-      const mailingFields = [
-        'mailingAddress.city',
-        'mailingAddress.region',
-        'mailingAddress.postalCode',
-        'mailingAddress.street'
-      ]
-      mailingFields.forEach(item => formRef.value?.clear(item))
+      state.mailingAddress = { ...state.deliveryAddress }
     } else {
-      state.mailingAddress = props.defaultState.mailingAddress
+      state.mailingAddress = { ...props.defaultState.mailingAddress }
     }
+
+    const mailingFields = [
+      'mailingAddress.country',
+      'mailingAddress.city',
+      'mailingAddress.region',
+      'mailingAddress.postalCode',
+      'mailingAddress.street'
+    ]
+
+    mailingFields.forEach(item => formRef.value?.clear(item))
   },
   { immediate: true }
 )
