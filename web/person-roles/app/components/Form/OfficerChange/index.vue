@@ -60,24 +60,18 @@ const addressSchema = z.object({
   const country = data.country
   const region = data.region
 
-  if (country === 'US' || country === 'CA') {
-    if (region && region.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('validation.fieldRequired'),
-        path: ['region']
-      })
-    } else if (region && region.length > 2) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: t('validation.maxChars', { count: 2 }),
-        path: ['region']
-      })
-    }
-  } else if (region && region.length > 2) {
+  if (region && region.length > 2) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: t('validation.maxChars', { count: 2 }),
+      path: ['region']
+    })
+  }
+
+  if ((country === 'US' || country === 'CA') && region?.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: t('validation.fieldRequired'),
       path: ['region']
     })
   }
@@ -189,7 +183,7 @@ watch(
       ]
       mailingFields.forEach(item => formRef.value?.clear(item))
     } else {
-      state.mailingAddress = props.defaultState.mailingAddress
+      state.mailingAddress = { ...props.defaultState.mailingAddress }
     }
   },
   { immediate: true }
