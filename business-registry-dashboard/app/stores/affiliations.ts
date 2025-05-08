@@ -32,6 +32,21 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     error: false
   })
 
+  // Track if filters changed during loading
+  const filtersChangedDuringLoading = ref(false)
+  // Store the latest filter values
+  const latestFilters = reactive({
+    businessName: '',
+    businessNumber: ''
+  })
+
+  // Helper function to check if filters have minimum required characters
+  function hasMinimumFilterCharacters (filters: { businessName: string, businessNumber: string }): boolean {
+    return filters.businessName.length >= 2 ||
+           filters.businessNumber.length >= 2 ||
+           (filters.businessName.length === 0 && filters.businessNumber.length === 0)
+  }
+
   // Pagination limit options
   const paginationLimitOptions = ref([
     { label: '50', value: 50 },
@@ -284,6 +299,24 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       affiliations.error = true
     } finally {
       affiliations.loading = false
+
+      // Check if filters changed during loading and initiate a new search if needed
+      if (filtersChangedDuringLoading.value) {
+        filtersChangedDuringLoading.value = false
+
+        // Update the actual filters with the latest values
+        if (affiliations.filters.businessName !== latestFilters.businessName) {
+          affiliations.filters.businessName = latestFilters.businessName
+        }
+        if (affiliations.filters.businessNumber !== latestFilters.businessNumber) {
+          affiliations.filters.businessNumber = latestFilters.businessNumber
+        }
+
+        // Trigger a new search with the latest filters if they meet the minimum criteria
+        const hasMinimumCharacters = hasMinimumFilterCharacters(affiliations.filters)
+
+        if (hasMinimumCharacters) { loadAffiliations() }
+      }
     }
   }
 
@@ -332,9 +365,23 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       // Reset to page 1 when filter changes
       affiliations.pagination.page = 1
 
+      // Update the latest filter values
+      latestFilters.businessName = affiliations.filters.businessName
+      latestFilters.businessNumber = affiliations.filters.businessNumber
+
       // Only call loadAffiliations when server-side filtering is enabled
-      if (!affiliations.loading && enableServerFiltering.value) {
-        await loadAffiliations()
+      if (enableServerFiltering.value) {
+        // Only trigger search when there are at least 2 characters (or 0 to reset)
+        const hasMinimumCharacters = hasMinimumFilterCharacters(affiliations.filters)
+
+        if (hasMinimumCharacters) {
+          if (affiliations.loading) {
+            // Mark that filters changed during loading
+            filtersChangedDuringLoading.value = true
+          } else {
+            await loadAffiliations()
+          }
+        }
       }
     },
     { debounce: 400 } // 400ms debounce time - wait for user input to settle
