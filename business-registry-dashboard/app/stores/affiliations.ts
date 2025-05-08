@@ -184,8 +184,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function loadAffiliations (): Promise<void> {
-    // Only reset if server-side filtering/pagination is disabled
-    const shouldUseServerFeatures = enableServerFiltering.value && enablePagination.value
+    // Only reset if neither server-side filtering nor pagination are enabled
+    const shouldUseServerFeatures = enableServerFiltering.value || enablePagination.value
     if (!shouldUseServerFeatures) {
       resetAffiliations()
     }
@@ -287,20 +287,57 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  // Watch for changes to account, filters, or pagination with debounce
-  // This prevents multiple rapid successive API calls
-  // For example: when user is typing in the business name filter,
-  // the API is called with the final value after the user has stopped typing
-  watchDebounced(
+  // Watch for changes to account, feature flags, and pagination
+  watch(
     [
       () => accountStore.currentAccount.id,
-      () => enableServerFiltering.value ? affiliations.filters : null,
-      () => enablePagination.value ? affiliations.pagination : null
+      () => enableServerFiltering.value,
+      () => enablePagination.value,
+      () => affiliations.pagination
     ],
     async () => {
-      await loadAffiliations()
+      // Always call loadAffiliations for account and pagination changes
+      if (!affiliations.loading) {
+        await loadAffiliations()
+      }
     },
-    { debounce: 400, deep: true } // 400ms debounce time - wait for all changes to settle before calling API
+    { deep: true }
+  )
+
+  // Watch for changes to type and status filters
+  watch(
+    [
+      () => affiliations.filters.type,
+      () => affiliations.filters.status
+    ],
+    async () => {
+      // Reset to page 1 when filter changes
+      affiliations.pagination.page = 1
+
+      // Only call loadAffiliations when server-side filtering is enabled
+      if (!affiliations.loading && enableServerFiltering.value) {
+        await loadAffiliations()
+      }
+    }
+  )
+
+  // Watch for changes to text filters with debounce to prevent rapid API calls
+  // This is especially important for text input fields
+  watchDebounced(
+    [
+      () => affiliations.filters.businessName,
+      () => affiliations.filters.businessNumber
+    ],
+    async () => {
+      // Reset to page 1 when filter changes
+      affiliations.pagination.page = 1
+
+      // Only call loadAffiliations when server-side filtering is enabled
+      if (!affiliations.loading && enableServerFiltering.value) {
+        await loadAffiliations()
+      }
+    },
+    { debounce: 400 } // 400ms debounce time - wait for user input to settle
   )
 
   // Separate watch for immediately resetting page when limit changes
@@ -467,14 +504,41 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return results
   })
 
-  // create status filter options relevant to affiliations.results
+  // Store all available status options from the full unfiltered results
+  const allStatusOptions = ref<string[]>([])
+
+  // Store all available type options from the full unfiltered results
+  const allTypeOptions = ref<string[]>([])
+
+  // Update the available options when the full results are loaded
+  watch(
+    () => affiliations.results,
+    (results) => {
+      if (results.length > 0) {
+        // Only update if we have results and no filters are applied
+        if (!hasFilters.value) {
+          allStatusOptions.value = Array.from(new Set(results.map(affiliationStatus)))
+          allTypeOptions.value = Array.from(new Set(results.map(affiliationType)))
+        }
+      }
+    },
+    { immediate: true }
+  )
+
+  // create status filter options from stored all options
   const statusOptions = computed(() => {
-    return Array.from(new Set(affiliations.results.map(affiliationStatus)))
+    // Use all available statuses instead of just those in the current filtered results
+    return allStatusOptions.value.length > 0
+      ? allStatusOptions.value
+      : Array.from(new Set(affiliations.results.map(affiliationStatus)))
   })
 
-  // create type filter options relevant to affiliations.results
+  // create type filter options from stored all options
   const typeOptions = computed(() => {
-    return Array.from(new Set(affiliations.results.map(affiliationType)))
+    // Use all available types instead of just those in the current filtered results
+    return allTypeOptions.value.length > 0
+      ? allTypeOptions.value
+      : Array.from(new Set(affiliations.results.map(affiliationType)))
   })
 
   const hasFilters = computed(() => {
