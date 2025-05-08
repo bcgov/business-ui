@@ -42,7 +42,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Helper function to check if filters have minimum required characters
   function hasMinimumFilterCharacters (filters: { businessName: string, businessNumber: string }): boolean {
-    return filters.businessName.length >= 2 ||
+    return filters.businessName.length >= 3 ||
            filters.businessNumber.length >= 2 ||
            (filters.businessName.length === 0 && filters.businessNumber.length === 0)
   }
@@ -371,7 +371,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       // Only call loadAffiliations when server-side filtering is enabled
       if (enableServerFiltering.value) {
-        // Only trigger search when there are at least 2 characters (or 0 to reset)
+        // Only trigger search when there are at least 3 characters for business name
+        // 2 characters for business number
+        // or 0 characters for both to reset
         const hasMinimumCharacters = hasMinimumFilterCharacters(affiliations.filters)
 
         if (hasMinimumCharacters) {
