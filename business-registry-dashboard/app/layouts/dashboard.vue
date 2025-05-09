@@ -39,6 +39,15 @@ watch(() => route.params.orgId, (orgId) => {
   }
 }, { immediate: true }) // immediate: true ensures this runs on initial page load
 
+// Watch for changes to the current account and update the URL if needed
+watch(() => accountStore.currentAccount.id, (newAccountId) => {
+  // Only update URL if the account ID changed and doesn't match the current route's orgId parameter
+  if (newAccountId && newAccountId.toString() !== route.params.orgId) {
+    // Navigate to the account's URL, preserving the same page structure
+    navigateTo(`/account/${newAccountId}`, { replace: true })
+  }
+})
+
 onMounted(() => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
