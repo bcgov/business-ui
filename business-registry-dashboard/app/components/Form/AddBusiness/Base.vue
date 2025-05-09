@@ -125,7 +125,8 @@ async function handleEmailOption () {
       fromOrgId: Number(accountStore.currentAccount.id),
       businessIdentifier: props.identifier,
       // @ts-expect-error - toOrgId has to be null, as this is a bug on the backend
-      toOrgId: null
+      toOrgId: null,
+      type: 'EMAIL'
     }
 
     await $authApi('/affiliationInvitations', {
