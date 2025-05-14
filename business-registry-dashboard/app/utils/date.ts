@@ -6,8 +6,8 @@ import moment from 'moment-timezone'
 export function dateStringToDate (dateString: string) {
   // convert to date
   const date = new Date(dateString)
-  // @ts-ignore
-  if (isNaN(date)) { return null }
+  // Check if date is invalid
+  if (isNaN(date.getTime())) { return null }
   // return date offsetted by local timezone (otherwise it defaults to UTC at 12am)
   const localOffset = date.getTimezoneOffset()
   return moment(date).add(localOffset, 'm').toDate()
