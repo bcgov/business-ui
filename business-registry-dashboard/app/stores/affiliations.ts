@@ -37,7 +37,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // Store the latest filter values
   const latestFilters = reactive({
     businessName: '',
-    businessNumber: ''
+    businessNumber: '',
+    type: [] as string[],
+    status: [] as string[]
   })
 
   // Helper function to check if filters have minimum required characters
@@ -311,11 +313,20 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         if (affiliations.filters.businessNumber !== latestFilters.businessNumber) {
           affiliations.filters.businessNumber = latestFilters.businessNumber
         }
+        // Update type and status filters
+        if (JSON.stringify(affiliations.filters.type) !== JSON.stringify(latestFilters.type)) {
+          affiliations.filters.type = [...latestFilters.type]
+        }
+        if (JSON.stringify(affiliations.filters.status) !== JSON.stringify(latestFilters.status)) {
+          affiliations.filters.status = [...latestFilters.status]
+        }
 
         // Trigger a new search with the latest filters if they meet the minimum criteria
         const hasMinimumCharacters = hasMinimumFilterCharacters(affiliations.filters)
 
-        if (hasMinimumCharacters) { loadAffiliations() }
+        if (hasMinimumCharacters || latestFilters.type.length > 0 || latestFilters.status.length > 0) {
+          loadAffiliations()
+        }
       }
     }
   }
@@ -347,9 +358,16 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       // Reset to page 1 when filter changes
       affiliations.pagination.page = 1
 
+      // Update the latest filter values
+      latestFilters.type = [...affiliations.filters.type]
+      latestFilters.status = [...affiliations.filters.status]
+
       // Only call loadAffiliations when server-side filtering is enabled
       if (!affiliations.loading && enableServerFiltering.value) {
         await loadAffiliations()
+      } else if (affiliations.loading && enableServerFiltering.value) {
+        // Mark that filters changed during loading
+        filtersChangedDuringLoading.value = true
       }
     }
   )
