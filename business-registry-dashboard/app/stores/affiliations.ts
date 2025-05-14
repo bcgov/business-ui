@@ -314,10 +314,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           affiliations.filters.businessNumber = latestFilters.businessNumber
         }
         // Update type and status filters
-        if (JSON.stringify(affiliations.filters.type) !== JSON.stringify(latestFilters.type)) {
+        if (!isEqual(affiliations.filters.type, latestFilters.type)) {
           affiliations.filters.type = [...latestFilters.type]
         }
-        if (JSON.stringify(affiliations.filters.status) !== JSON.stringify(latestFilters.status)) {
+        if (!isEqual(affiliations.filters.status, latestFilters.status)) {
           affiliations.filters.status = [...latestFilters.status]
         }
 

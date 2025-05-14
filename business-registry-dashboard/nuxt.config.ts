@@ -22,7 +22,8 @@ export default defineNuxtConfig({
     '@nuxt/test-utils/module',
     '@nuxt/image',
     '@zadigetvoltaire/nuxt-gtm',
-    'nuxt-gtag'
+    'nuxt-gtag',
+    'nuxt-lodash'
   ],
 
   extends: ['@daxiom/nuxt-core-layer-test'],
