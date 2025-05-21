@@ -8,9 +8,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const { t, locale } = useI18n()
   const toast = useToast()
   const brdModal = useBrdModals()
-  const keycloak = reactive(useKeycloak())
   const ldStore = useConnectLaunchdarklyStore()
   const route = useRoute()
+
+  // Store authorizations locally
+  const authorizations = ref<Authorization>({} as Authorization)
 
   const affiliations = reactive({
     filters: {
@@ -95,7 +97,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function removeBusiness (payload: RemoveBusinessPayload) {
-    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : payload.orgIdentifier
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_REMOVE_BUSINESS)) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
     if ([
       CorpTypes.INCORPORATION_APPLICATION,
@@ -215,8 +217,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
-      // Use route param if staff, otherwise use current account
-      const orgId = (isStaffOrSbcStaff.value && route.params.orgId)
+      // Use route param if authorized (staff), otherwise use current account
+      const orgId = (IsAuthorized(AuthorizedActions.STAFF_LOAD_AFFILIATIONS) && route.params.orgId)
         ? route.params.orgId
         : accountStore.currentAccount.id
 
@@ -618,7 +620,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   })
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {
-    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_CREATE_AFFILIATION)) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations`, {
       method: 'POST',
       body: affiliation
@@ -626,31 +628,25 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-    const orgId = (route.params.orgId && isStaffOrSbcStaff.value) ? route.params.orgId : accountStore.currentAccount.id
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_CREATE_NR_AFFILIATION)) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations?newBusiness=true`, {
       method: 'POST',
       body: affiliation
     })
   }
 
-  const isStaffOrSbcStaff = computed<boolean>(() => { // TODO: move this into core layer along with a 'hasRoles' function
-    if (!$keycloak.authenticated) { return false }
-    const currentOrgIsStaff = [AccountType.STAFF, AccountType.SBC_STAFF].includes(accountStore.currentAccount?.accountType)
-    return currentOrgIsStaff || keycloak.kcUser.roles.includes(UserRole.Staff)
-  })
-
   async function handleManageBusinessOrNameRequest (
     searchType: 'reg' | 'namex',
     event: ManageNameRequestEvent | ManageBusinessEvent
   ) {
     if (searchType === 'reg' && 'identifier' in event) {
-      if (isStaffOrSbcStaff.value) {
+      if (IsAuthorized(AuthorizedActions.ADD_BUSINESS_SILENTLY)) {
         await addBusinessForStaffSilently(event.identifier)
       } else {
         brdModal.openManageBusiness(event)
       }
     } else if (searchType === 'namex' && 'nrNum' in event) {
-      if (isStaffOrSbcStaff.value) {
+      if (IsAuthorized(AuthorizedActions.ADD_NAME_REQUEST_SILENTLY)) {
         await addNameRequestForStaffSilently(event.nrNum)
       } else {
         brdModal.openManageNameRequest(event)
@@ -762,6 +758,12 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function getAuthorizations () {
+    const authResult = await authorizationsService.fetchAuthorizations(accountStore.currentAccount.id)
+    authorizations.value = authResult
+    return authResult
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -772,11 +774,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     removeAcceptedAffiliationInvitations,
     loadAffiliations,
     affiliations,
+    authorizations,
     resetAffiliations,
     visibleColumns,
     optionalColumns,
     selectedColumns,
-    isStaffOrSbcStaff,
     setColumns,
     filteredResults,
     statusOptions,
@@ -799,6 +801,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     newlyAddedIdentifier,
     paginationLimitOptions,
     enablePagination,
+    getAuthorizations,
     $reset
   }
 }
