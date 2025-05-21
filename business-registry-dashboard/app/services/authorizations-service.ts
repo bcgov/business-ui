@@ -10,6 +10,11 @@ export default class AuthorizationsService {
     return useNuxtApp().$authApi
   }
 
+  /**
+   * Fetches the authorizations for an organization.
+   * @param orgIdentifier - The identifier of the organization.
+   * @returns The authorizations for the organization.
+   */
   static async fetchAuthorizations (orgIdentifier: number | string): Promise<Authorization> {
     const response = await this.getAuthApi()<Authorization>(
       `/orgs/${orgIdentifier}/authorizations`
