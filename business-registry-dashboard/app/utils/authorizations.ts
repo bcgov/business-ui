@@ -54,8 +54,8 @@ function isSbcFieldOfficeStaff (): boolean {
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const BusinessRegistryStaffRoles = [
-  AuthorizedActions.ADD_BUSINESS_SILENTLY,
-  AuthorizedActions.ADD_NAME_REQUEST_SILENTLY,
+  AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION,
+  AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION,
   AuthorizedActions.RESTORE_REINSTATE_NOW,
   AuthorizedActions.STAFF_CREATE_AFFILIATION,
   AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,
@@ -81,8 +81,8 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const SbcFieldOfficeStaffRoles = [
-  AuthorizedActions.ADD_BUSINESS_SILENTLY,
-  AuthorizedActions.ADD_NAME_REQUEST_SILENTLY,
+  AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION,
+  AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION,
   AuthorizedActions.RESTORE_REINSTATE_NOW,
   AuthorizedActions.STAFF_CREATE_AFFILIATION,
   AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,

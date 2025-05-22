@@ -67,8 +67,8 @@ describe('Authorizations util', () => {
     it('should return true when user is SBC Field Office Staff with matching role action', () => {
       mockAffStore.authorizations.roles = [AuthorizationRoles.SBC_STAFF] as any
 
-      // ADD_BUSINESS_SILENTLY is in SbcFieldOfficeStaffRoles
-      const result = IsAuthorized(AuthorizedActions.ADD_BUSINESS_SILENTLY)
+      // ADD_BUSINESS_NO_AUTHENTICATION is in SbcFieldOfficeStaffRoles
+      const result = IsAuthorized(AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION)
 
       expect(result).toBe(true)
     })
