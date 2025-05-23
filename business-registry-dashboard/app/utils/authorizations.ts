@@ -54,14 +54,13 @@ function isSbcFieldOfficeStaff (): boolean {
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const BusinessRegistryStaffRoles = [
-  AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION,
-  AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION,
-  AuthorizedActions.RESTORE_REINSTATE_NOW,
+  AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
   AuthorizedActions.STAFF_CREATE_AFFILIATION,
   AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,
   AuthorizedActions.STAFF_DASHBOARD,
   AuthorizedActions.STAFF_LOAD_AFFILIATIONS,
-  AuthorizedActions.STAFF_REMOVE_BUSINESS
+  AuthorizedActions.STAFF_REMOVE_BUSINESS,
+  AuthorizedActions.STAFF_RESTORE_OR_REINSTATE
 ]
 
 /**
@@ -81,21 +80,17 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const SbcFieldOfficeStaffRoles = [
-  AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION,
-  AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION,
-  AuthorizedActions.RESTORE_REINSTATE_NOW,
+  AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
   AuthorizedActions.STAFF_CREATE_AFFILIATION,
   AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,
   AuthorizedActions.STAFF_DASHBOARD,
   AuthorizedActions.STAFF_LOAD_AFFILIATIONS,
-  AuthorizedActions.STAFF_REMOVE_BUSINESS
+  AuthorizedActions.STAFF_REMOVE_BUSINESS,
+  AuthorizedActions.STAFF_RESTORE_OR_REINSTATE
 ]
 
 /**
  * The roles if the user is none of the other types.
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
-const DefaultRoles = [
-  AuthorizedActions.REDIRECT_STEP_TO_RESTORE_PAGE,
-  AuthorizedActions.RESTORE_FORM
-]
+const DefaultRoles = [] as AuthorizedActions[]

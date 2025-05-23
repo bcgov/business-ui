@@ -1256,7 +1256,7 @@ describe('useAffiliationsStore', () => {
 
       // Override the mock for this test only
       vi.mocked(IsAuthorized).mockImplementation((action) => {
-        if (action === AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION) {
+        if (action === AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION) {
           return true // Always return true for this test
         }
         return false
@@ -1284,7 +1284,7 @@ describe('useAffiliationsStore', () => {
 
       // Override the mock for this test only
       vi.mocked(IsAuthorized).mockImplementation((action) => {
-        if (action === AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION) {
+        if (action === AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION) {
           return true // Always return true for this test
         }
         return false

@@ -135,7 +135,7 @@ export function useAffiliationNavigation () {
       }
       // temporarily show external icon for restore/reinstate for some entity types
       if (nrRequestActionCd === NrRequestActionCodes.RESTORE || nrRequestActionCd === NrRequestActionCodes.RENEW) {
-        if (IsAuthorized(AuthorizedActions.REDIRECT_STEP_TO_RESTORE_PAGE)) { return true }
+        if (!IsAuthorized(AuthorizedActions.STAFF_RESTORE_OR_REINSTATE)) { return true }
       }
       return false
     }

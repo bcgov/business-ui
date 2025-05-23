@@ -640,13 +640,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     event: ManageNameRequestEvent | ManageBusinessEvent
   ) {
     if (searchType === 'reg' && 'identifier' in event) {
-      if (IsAuthorized(AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION)) {
+      if (IsAuthorized(AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION)) {
         await addBusinessForStaffSilently(event.identifier)
       } else {
         brdModal.openManageBusiness(event)
       }
     } else if (searchType === 'namex' && 'nrNum' in event) {
-      if (IsAuthorized(AuthorizedActions.ADD_NAME_REQUEST_NO_AUTHENTICATION)) {
+      if (IsAuthorized(AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION)) {
         await addNameRequestForStaffSilently(event.nrNum)
       } else {
         brdModal.openManageNameRequest(event)

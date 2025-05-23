@@ -37,15 +37,6 @@ describe('Authorizations util', () => {
       expect(result).toBe(true)
     })
 
-    it('should return false when user is Business Registry Staff with non-matching role action', () => {
-      mockAffStore.authorizations.roles = [AuthorizationRoles.STAFF] as any
-
-      // RESTORE_FORM is not in BusinessRegistryStaffRoles, it's in DefaultRoles
-      const result = IsAuthorized(AuthorizedActions.RESTORE_FORM)
-
-      expect(result).toBe(false)
-    })
-
     it('should return false when user is Maximus Staff with any action', () => {
       mockAffStore.authorizations.roles = [AuthorizationRoles.MAXIMUS_STAFF] as any
 
@@ -67,26 +58,8 @@ describe('Authorizations util', () => {
     it('should return true when user is SBC Field Office Staff with matching role action', () => {
       mockAffStore.authorizations.roles = [AuthorizationRoles.SBC_STAFF] as any
 
-      // ADD_BUSINESS_NO_AUTHENTICATION is in SbcFieldOfficeStaffRoles
-      const result = IsAuthorized(AuthorizedActions.ADD_BUSINESS_NO_AUTHENTICATION)
-
-      expect(result).toBe(true)
-    })
-
-    it('should return false when user is SBC Field Office Staff with non-matching role action', () => {
-      mockAffStore.authorizations.roles = [AuthorizationRoles.SBC_STAFF] as any
-
-      // RESTORE_FORM is not in SbcFieldOfficeStaffRoles, it's in DefaultRoles
-      const result = IsAuthorized(AuthorizedActions.RESTORE_FORM)
-
-      expect(result).toBe(false)
-    })
-
-    it('should return true when user has no specific role but action is in DefaultRoles', () => {
-      mockAffStore.authorizations.roles = [AuthorizationRoles.VIEW] as any
-
-      // RESTORE_FORM is in DefaultRoles
-      const result = IsAuthorized(AuthorizedActions.RESTORE_FORM)
+      // ADD_ENTITY_NO_AUTHENTICATION is in SbcFieldOfficeStaffRoles
+      const result = IsAuthorized(AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION)
 
       expect(result).toBe(true)
     })

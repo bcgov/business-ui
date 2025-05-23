@@ -134,10 +134,10 @@ const disableTooltip = (item: Business): boolean => {
 }
 
 const getTooltipText = (item: Business): string => {
-  // For restore/renew cases if authorized (not staff)
+  // For restore/renew cases if not authorized (not staff)
   if (item.nameRequest?.requestActionCd &&
       item.nameRequest.requestActionCd === NrRequestActionCodes.RESTORE &&
-      IsAuthorized(AuthorizedActions.RESTORE_FORM)) {
+      !IsAuthorized(AuthorizedActions.STAFF_RESTORE_OR_REINSTATE)) {
     return t('tooltips.submitForms')
   }
 
@@ -162,7 +162,7 @@ const getNrRequestDescription = (item: Business): string => {
       return isOtherEntities(item) ? t('labels.downloadForm') : t('labels.registerNow')
     case NrRequestActionCodes.RESTORE:
     case NrRequestActionCodes.RENEW:
-      if (IsAuthorized(AuthorizedActions.RESTORE_REINSTATE_NOW)) {
+      if (IsAuthorized(AuthorizedActions.STAFF_RESTORE_OR_REINSTATE)) {
         return isForRestore(item) ? t('labels.restoreNow') : t('labels.reinstateNow')
       } else {
         return isForRestore(item) ? t('labels.stepsToRestore') : t('labels.stepsToReinstate')
@@ -251,8 +251,8 @@ const handleApprovedNameRequestRenew = async (item: Business): Promise<void> => 
   const corpNum = item.nameRequest?.corpNum
   if (!corpNum) { return } // Early return if no corpNum exists
 
-  // redirect to steps to restore page if authorized (non-staff)
-  if (IsAuthorized(AuthorizedActions.REDIRECT_STEP_TO_RESTORE_PAGE)) {
+  // redirect to steps to restore page if not authorized (non-staff)
+  if (!IsAuthorized(AuthorizedActions.STAFF_RESTORE_OR_REINSTATE)) {
     const stepsToRestoreURL = useRuntimeConfig().public.stepsToRestoreUrl
     navigateTo(stepsToRestoreURL as string, { open: { target: '_blank' } })
     return
