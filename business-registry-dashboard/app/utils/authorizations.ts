@@ -56,7 +56,6 @@ function isSbcFieldOfficeStaff (): boolean {
 const BusinessRegistryStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
   AuthorizedActions.STAFF_DASHBOARD,
-  AuthorizedActions.LOAD_AFFILIATIONS,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
   AuthorizedActions.RESTORE_OR_REINSTATE
 ]
@@ -80,7 +79,6 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
 const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
   AuthorizedActions.STAFF_DASHBOARD,
-  AuthorizedActions.LOAD_AFFILIATIONS,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
   AuthorizedActions.RESTORE_OR_REINSTATE
 ]

@@ -218,7 +218,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
       // Use route param if authorized (staff), otherwise use current account
-      const orgId = (IsAuthorized(AuthorizedActions.LOAD_AFFILIATIONS) && route.params.orgId)
+      const orgId = (IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION) && route.params.orgId)
         ? route.params.orgId
         : accountStore.currentAccount.id
 
