@@ -215,7 +215,7 @@ describe('useAffiliationsStore', () => {
     it('should use route param orgId when user is staff', async () => {
       // Override the mock for this test only
       vi.mocked(IsAuthorized).mockImplementation((action) => {
-        if (action === AuthorizedActions.STAFF_LOAD_AFFILIATIONS) {
+        if (action === AuthorizedActions.LOAD_AFFILIATIONS) {
           return true // Always return true for this test
         }
         return false

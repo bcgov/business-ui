@@ -97,7 +97,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function removeBusiness (payload: RemoveBusinessPayload) {
-    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_REMOVE_BUSINESS)) ? route.params.orgId : payload.orgIdentifier
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)) ? route.params.orgId : payload.orgIdentifier
     // If the business is a new IA, amalgamation, or registration then remove the business filing from legal-db
     if ([
       CorpTypes.INCORPORATION_APPLICATION,
@@ -218,7 +218,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
       // Use route param if authorized (staff), otherwise use current account
-      const orgId = (IsAuthorized(AuthorizedActions.STAFF_LOAD_AFFILIATIONS) && route.params.orgId)
+      const orgId = (IsAuthorized(AuthorizedActions.LOAD_AFFILIATIONS) && route.params.orgId)
         ? route.params.orgId
         : accountStore.currentAccount.id
 
@@ -620,7 +620,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   })
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {
-    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_CREATE_AFFILIATION)) ? route.params.orgId : accountStore.currentAccount.id
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations`, {
       method: 'POST',
       body: affiliation
@@ -628,7 +628,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
-    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.STAFF_CREATE_NR_AFFILIATION)) ? route.params.orgId : accountStore.currentAccount.id
+    const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)) ? route.params.orgId : accountStore.currentAccount.id
     return $authApi(`/orgs/${orgId}/affiliations?newBusiness=true`, {
       method: 'POST',
       body: affiliation

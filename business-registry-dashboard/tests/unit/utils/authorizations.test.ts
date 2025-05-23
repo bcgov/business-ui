@@ -31,8 +31,8 @@ describe('Authorizations util', () => {
     it('should return true when user is Business Registry Staff with matching role action', () => {
       mockAffStore.authorizations.roles = [AuthorizationRoles.STAFF] as any
 
-      // STAFF_CREATE_AFFILIATION is in BusinessRegistryStaffRoles
-      const result = IsAuthorized(AuthorizedActions.STAFF_CREATE_AFFILIATION)
+      // MANAGE_OTHER_ORGANIZATION is in BusinessRegistryStaffRoles
+      const result = IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)
 
       expect(result).toBe(true)
     })
@@ -99,7 +99,7 @@ describe('Authorizations util', () => {
       ] as any
 
       // This should check IsBusinessRegistryStaff first due to the switch statement order
-      const result = IsAuthorized(AuthorizedActions.STAFF_CREATE_AFFILIATION)
+      const result = IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)
 
       expect(result).toBe(true)
     })

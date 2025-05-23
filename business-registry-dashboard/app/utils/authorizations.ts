@@ -55,12 +55,10 @@ function isSbcFieldOfficeStaff (): boolean {
  */
 const BusinessRegistryStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.STAFF_CREATE_AFFILIATION,
-  AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,
   AuthorizedActions.STAFF_DASHBOARD,
-  AuthorizedActions.STAFF_LOAD_AFFILIATIONS,
-  AuthorizedActions.STAFF_REMOVE_BUSINESS,
-  AuthorizedActions.STAFF_RESTORE_OR_REINSTATE
+  AuthorizedActions.LOAD_AFFILIATIONS,
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.RESTORE_OR_REINSTATE
 ]
 
 /**
@@ -81,12 +79,10 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
  */
 const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.STAFF_CREATE_AFFILIATION,
-  AuthorizedActions.STAFF_CREATE_NR_AFFILIATION,
   AuthorizedActions.STAFF_DASHBOARD,
-  AuthorizedActions.STAFF_LOAD_AFFILIATIONS,
-  AuthorizedActions.STAFF_REMOVE_BUSINESS,
-  AuthorizedActions.STAFF_RESTORE_OR_REINSTATE
+  AuthorizedActions.LOAD_AFFILIATIONS,
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.RESTORE_OR_REINSTATE
 ]
 
 /**
