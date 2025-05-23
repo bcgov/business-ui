@@ -4,6 +4,15 @@ import { flushPromises } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 import { EntityStates } from '@bcrs-shared-components/enums'
 import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
+import { AuthorizedActions } from '~~/app/enums/authorized-actions'
+import { IsAuthorized } from '~~/app/utils/authorizations'
+
+// Mock the IsAuthorized function
+vi.mock('~~/app/utils/authorizations', () => ({
+  IsAuthorized: vi.fn().mockImplementation(() => {
+    return false
+  })
+}))
 
 let mockAuthenticated = true
 const mockAuthApi = vi.fn()
@@ -21,7 +30,7 @@ mockNuxtImport('useNuxtApp', () => {
   )
 })
 
-let mockKeycloakRoles: any[] = []
+const mockKeycloakRoles: any[] = []
 mockNuxtImport('useKeycloak', () => {
   return () => (
     {
@@ -204,6 +213,14 @@ describe('useAffiliationsStore', () => {
     })
 
     it('should use route param orgId when user is staff', async () => {
+      // Override the mock for this test only
+      vi.mocked(IsAuthorized).mockImplementation((action) => {
+        if (action === AuthorizedActions.MANAGE_OTHER_ORGANIZATION) {
+          return true // Always return true for this test
+        }
+        return false
+      })
+
       mockGetStoredFlag.mockImplementation((flag) => {
         if (flag === LDFlags.AffiliationInvitationRequestAccess) { return true } // set LDFlags.AffiliationInvitationRequestAccess = true - allow invitations fetch
         if (flag === LDFlags.EnableAffiliationsPagination) { return false }
@@ -1213,65 +1230,6 @@ describe('useAffiliationsStore', () => {
     })
   })
 
-  describe('isStaffOrSbcStaff', () => {
-    beforeEach(() => {
-      // reset before each test
-      mockAuthenticated = true
-      mockKeycloakRoles = []
-      store.currentAccount.accountType = 'basic'
-    })
-
-    it('should return false when the user is not authenticated', () => {
-      mockAuthenticated = false
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(false)
-    })
-
-    it('should return false when the user is authenticated but has no staff roles', () => {
-      mockAuthenticated = true
-      mockKeycloakRoles = [] // No roles
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(false)
-    })
-
-    it('should return true when the current organization is a staff account', () => {
-      store.currentAccount.accountType = 'STAFF'
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(true)
-    })
-
-    it('should return true when the current organization is an SBC_STAFF account', () => {
-      store.currentAccount.accountType = 'SBC_STAFF'
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(true)
-    })
-
-    it('should return true when the user has a Staff role', () => {
-      mockKeycloakRoles = ['staff']
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(true)
-    })
-
-    it('should return false when the user has no Staff role and the account is not a staff account', () => {
-      mockKeycloakRoles = []
-      store.currentAccount.accountType = 'basic'
-
-      const affStore = useAffiliationsStore()
-
-      expect(affStore.isStaffOrSbcStaff).toBe(false)
-    })
-  })
-
   describe('handleManageBusinessOrNameRequest', () => {
     let affStore: any
 
@@ -1293,9 +1251,16 @@ describe('useAffiliationsStore', () => {
       expect(mockOpenManageBusiness).toHaveBeenCalled()
     })
 
-    it('should call addBusinessForStaffSilently when isStaffOrSbcStaff is true', async () => {
+    it('should call addBusinessForStaffSilently when authorized', async () => {
       mockAuthApi.mockResolvedValue({ status: 200 })
-      store.currentAccount.accountType = 'SBC_STAFF'
+
+      // Override the mock for this test only
+      vi.mocked(IsAuthorized).mockImplementation((action) => {
+        if (action === AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION) {
+          return true // Always return true for this test
+        }
+        return false
+      })
 
       const event: ManageBusinessEvent = {
         bn: '123',
@@ -1314,9 +1279,16 @@ describe('useAffiliationsStore', () => {
       expect(mockAddToast).toHaveBeenCalledOnce()
     })
 
-    it('should call addNameRequestForStaffSilently when isStaffOrSbcStaff is true', async () => {
+    it('should call addNameRequestForStaffSilently when authorized', async () => {
       mockAuthApi.mockResolvedValue({ status: 200 })
-      store.currentAccount.accountType = 'SBC_STAFF'
+
+      // Override the mock for this test only
+      vi.mocked(IsAuthorized).mockImplementation((action) => {
+        if (action === AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION) {
+          return true // Always return true for this test
+        }
+        return false
+      })
 
       const event = { names: ['test'], nrNum: 'NR123' }
 

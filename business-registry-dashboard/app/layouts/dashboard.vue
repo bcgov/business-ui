@@ -1,13 +1,14 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
+const affiliationsStore = useAffiliationsStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
 const route = useRoute()
 
-// Create a computed property to determine if we should show staff text
+// Create a computed property to determine if we should show staff dashboard text based on authorization
 const showStaffText = computed(() => {
-  return accountStore.isStaffOrSbcStaff &&
+  return IsAuthorized(AuthorizedActions.STAFF_DASHBOARD) &&
          (!route.params.orgId || route.params.orgId === accountStore.currentAccount.id.toString())
 })
 
@@ -48,7 +49,7 @@ watch(() => accountStore.currentAccount.id, (newAccountId) => {
   }
 })
 
-onMounted(() => {
+onMounted(async () => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
     const registryHomeURL = config.registryHomeURL
@@ -63,6 +64,11 @@ onMounted(() => {
       accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
     const accountId = accountStore.currentAccount.id
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
+  }
+
+  // Load authorizations for the current account
+  if (accountStore.currentAccount?.id && isAuthenticated.value) {
+    await affiliationsStore.getAuthorizations()
   }
 })
 </script>
@@ -91,7 +97,7 @@ onMounted(() => {
                 icon="i-mdi-domain"
                 size="bcGov"
                 class="w-full"
-                :to="`${config.nrURL}${(accountStore.isStaffOrSbcStaff && route.params.orgId)
+                :to="`${config.nrURL}${(IsAuthorized(AuthorizedActions.STAFF_DASHBOARD) && route.params.orgId)
                   ? route.params.orgId
                   : accountStore.currentAccount.id.toString()}`"
               />
