@@ -47,7 +47,7 @@ async function createBusinessRecord (business: Business): Promise<string> {
   const continuationInTypes = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
   const supportedIaRegTypes = ldStore.getStoredFlag(LDFlags.IaSupportedEntitiesBrd)?.split(' ') || []
 
-  // Check if name request approoved status has changed by refreshing its details
+  // Check if name request approved status has changed by refreshing its details
   if (business.nameRequest?.nrNumber) {
     try {
       const refreshedNR = await fetchNameRequest(business.nameRequest.nrNumber, business.nameRequest.applicantPhone as string, business.nameRequest.applicantEmail as string)
