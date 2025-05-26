@@ -186,6 +186,10 @@ export default {
       title: '{type} Invalide',
       description: 'Vous ne pouvez pas ouvrir cette application car la Demande de Nom associée a expiré. Veuillez soumettre une nouvelle Demande de Nom et une {type}.'
     },
+    invalidNameRequest: {
+      title: 'Demande de Nom Invalide',
+      description: 'Le statut de cette demande de nom a changé. Veuillez rafraîchir le tableau et réessayer.'
+    },
     magicLinkUnauthorized: {
       title: 'Impossible De Gérer L\'entreprise',
       description: 'Le compte qui a demandé l\'autorisation ne correspond pas à votre compte actuel. Veuillez vous connecter avec le compte qui a initié la demande.'
