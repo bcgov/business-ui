@@ -196,6 +196,10 @@ export default {
       title: 'Invalid {type}',
       description: 'You cannot open this application because the associated Name Request has expired. Please submit a new Name Request and {type}.'
     },
+    invalidNameRequest: {
+      title: 'Invalid Name Request',
+      description: 'The status of this name request has changed. Please refresh the table.'
+    },
     magicLinkUnauthorized: {
       title: 'Unable to Manage Business',
       description: 'The account that requested authorisation does not match your current account. Please log in as the account that initiated the request.'

@@ -70,6 +70,19 @@ export const useBrdModals = () => {
     })
   }
 
+  function openInvalidNameRequest () {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.invalidNameRequest.title'),
+        description: t('error.invalidNameRequest.description')
+      },
+      actions: [
+        { label: t('btn.close'), variant: 'outline', handler: () => close() },
+        { label: t('btn.refreshTable'), handler: () => { useAffiliationsStore().loadAffiliations(); close() } }
+      ]
+    })
+  }
+
   function openBusinessUnavailableError (action: string) {
     let title: string
     let description: string
@@ -119,6 +132,7 @@ export const useBrdModals = () => {
     nameRequestActionError,
     openBusinessUnavailableError,
     openInvalidFilingApplication,
+    openInvalidNameRequest,
     openBusinessRemovalConfirmation,
     openManageBusiness,
     openMagicLinkModal,

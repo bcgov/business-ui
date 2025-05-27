@@ -47,6 +47,21 @@ async function createBusinessRecord (business: Business): Promise<string> {
   const continuationInTypes = ldStore.getStoredFlag(LDFlags.SupportedContinuationInEntities)?.split(' ') || []
   const supportedIaRegTypes = ldStore.getStoredFlag(LDFlags.IaSupportedEntitiesBrd)?.split(' ') || []
 
+  // Check if name request approved status has changed by refreshing its details
+  if (business.nameRequest?.nrNumber) {
+    try {
+      const refreshedNR = await fetchNameRequest(business.nameRequest.nrNumber, business.nameRequest.applicantPhone as string, business.nameRequest.applicantEmail as string)
+      if (refreshedNR.state !== NrState.APPROVED) {
+        // Name request status is not approved, cannot create business
+        brdModal.openInvalidNameRequest()
+        return ''
+      }
+    } catch (error) {
+      console.warn('Could not refresh name request details:', error)
+      // Continue with creation attempt - the business dashboard ui will handle any conflicts
+    }
+  }
+
   let filingResponse: BusinessResponse | null = null
   let payload = null
   // If Incorporation or Registration
