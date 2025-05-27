@@ -198,7 +198,7 @@ export default {
     },
     invalidNameRequest: {
       title: 'Invalid Name Request',
-      description: 'The status of this name request has changed. Please refresh the table and try again.'
+      description: 'The status of this name request has changed. Please refresh the table.'
     },
     magicLinkUnauthorized: {
       title: 'Unable to Manage Business',

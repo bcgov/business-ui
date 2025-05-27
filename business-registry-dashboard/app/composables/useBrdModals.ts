@@ -77,7 +77,7 @@ export const useBrdModals = () => {
         description: t('error.invalidNameRequest.description')
       },
       actions: [
-        { label: t('btn.close'), handler: () => close() },
+        { label: t('btn.close'), variant: 'outline', handler: () => close() },
         { label: t('btn.refreshTable'), handler: () => { useAffiliationsStore().loadAffiliations(); close() } }
       ]
     })

@@ -188,7 +188,7 @@ export default {
     },
     invalidNameRequest: {
       title: 'Demande de Nom Invalide',
-      description: 'Le statut de cette demande de nom a changé. Veuillez rafraîchir le tableau et réessayer.'
+      description: 'Le statut de cette demande de nom a changé. Veuillez rafraîchir le tableau.'
     },
     magicLinkUnauthorized: {
       title: 'Impossible De Gérer L\'entreprise',
