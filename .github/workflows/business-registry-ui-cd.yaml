@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "business-registry-dashboard/**"
+      - "web/business-registry-dashboard/**"
   workflow_dispatch:
     inputs:
       target:
@@ -24,7 +24,7 @@ jobs:
     with:
       target: ${{ inputs.target }}
       app_name: "business-registry-ui"
-      working_directory: "./business-registry-dashboard"
+      working_directory: "./web/business-registry-dashboard"
     secrets:
       WORKLOAD_IDENTIFY_POOLS_PROVIDER: ${{ secrets.WORKLOAD_IDENTIFY_POOLS_PROVIDER }}
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
