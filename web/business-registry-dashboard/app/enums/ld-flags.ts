@@ -25,6 +25,5 @@ export enum LDFlags {
   SentryEnable = 'sentry-enable',
   SupportedAmalgamationEntities = 'supported-amalgamation-entities',
   SupportedContinuationInEntities = 'supported-continuation-in-entities',
-  SupportRestorationEntities = 'supported-restoration-entities',
-  UseSearchEndpointToLoadAffiliations = 'use-search-endpoint-to-load-affiliations'
+  SupportRestorationEntities = 'supported-restoration-entities'
 }

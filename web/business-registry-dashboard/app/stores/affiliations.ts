@@ -68,11 +68,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
   )
 
-  // Flag for whether the search endpoint is used to load affiliations
-  const useSearchEndpoint = computed(() =>
-    ldStore.getStoredFlag(LDFlags.UseSearchEndpointToLoadAffiliations) || false
-  )
-
   const newlyAddedIdentifier = ref<string>('')
 
   function removeAffiliation (orgIdentifier: number, incorporationNumber: string, passcodeResetEmail?: string, resetPasscode?: boolean) {
@@ -230,7 +225,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (!orgId) { return }
 
       // Build the query URL with filters and pagination if enabled
-      let url = useSearchEndpoint.value ? `/orgs/${orgId}/affiliations/search?mapping=true` : `/orgs/${orgId}/affiliations?new=true`
+      let url = enablePagination.value ? `/orgs/${orgId}/affiliations/search?mapping=true` : `/orgs/${orgId}/affiliations?new=true`
 
       // Add filters if server-side filtering is enabled
       if (enableServerFiltering.value) {
