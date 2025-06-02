@@ -225,6 +225,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (!orgId) { return }
 
       // Build the query URL with filters and pagination if enabled
+      // Search endpoint is used if pagination is enabled as pagination will be on the new route workflow
       let url = enablePagination.value ? `/orgs/${orgId}/affiliations/search?mapping=true` : `/orgs/${orgId}/affiliations?new=true`
 
       // Add filters if server-side filtering is enabled
