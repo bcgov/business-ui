@@ -11,9 +11,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const ldStore = useConnectLaunchdarklyStore()
   const route = useRoute()
 
-  // Store authorizations locally
-  const authorizations = ref<Authorization>({} as Authorization)
-
   const affiliations = reactive({
     filters: {
       businessName: '',
@@ -759,12 +756,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  async function getAuthorizations () {
-    const authResult = await authorizationsService.fetchAuthorizations(accountStore.currentAccount.id)
-    authorizations.value = authResult
-    return authResult
-  }
-
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -775,7 +766,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     removeAcceptedAffiliationInvitations,
     loadAffiliations,
     affiliations,
-    authorizations,
     resetAffiliations,
     visibleColumns,
     optionalColumns,
@@ -802,7 +792,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     newlyAddedIdentifier,
     paginationLimitOptions,
     enablePagination,
-    getAuthorizations,
     $reset
   }
 }
