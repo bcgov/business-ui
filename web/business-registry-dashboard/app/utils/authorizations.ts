@@ -81,7 +81,9 @@ const BusinessRegistryStaffRoles = [
  * The roles if the user is Maximus Staff.
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
-const MaximusStaffRoles = [] as AuthorizedActions[]
+const MaximusStaffRoles = [
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION
+]
 
 /**
  * The roles if the user is Contact Centre Staff.
