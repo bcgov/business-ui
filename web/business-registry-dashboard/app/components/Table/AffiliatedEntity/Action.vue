@@ -41,6 +41,31 @@ const emit = defineEmits<{
 const invalidStatuses = [AffiliationInvitationStatus.Pending, AffiliationInvitationStatus.Expired, AffiliationInvitationStatus.Failed]
 const isButtonActionProcessing = ref(false)
 
+/**
+ * Check authorization for primary action based on type
+ * Returns true if authorized, false and shows error modal if not authorized
+ */
+const checkPrimaryActionAuthorization = (item: Business): boolean => {
+  let requiredAction: AuthorizedActions
+
+  if (isTemporaryBusiness(item)) {
+    requiredAction = AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES
+  } else if (isNameRequest(item)) {
+    requiredAction = AuthorizedActions.HANDLE_NAME_REQUESTS
+  } else if (isSocieties(item)) {
+    requiredAction = AuthorizedActions.HANDLE_SOCIETIES
+  } else {
+    requiredAction = AuthorizedActions.HANDLE_BUSINESSES
+  }
+
+  if (!IsAuthorized(requiredAction)) {
+    brdModal.openNotAuthorized()
+    return false
+  }
+
+  return true
+}
+
 /** Create a business record in LEAR. */
 async function createBusinessRecord (business: Business): Promise<string> {
   const amalgamationTypes = ldStore.getStoredFlag(LDFlags.SupportedAmalgamationEntities)?.split(' ') || []
@@ -393,6 +418,8 @@ const primaryAction = async (item: Business): Promise<void> => {
   if (isShowRemoveAsPrimaryAction(item)) {
     await removeAffiliationOrInvitation(item)
   } else {
+    // Check authorization first - this handles the error modal if not authorized
+    if (!checkPrimaryActionAuthorization(item)) { return }
     redirect(item)
   }
 }

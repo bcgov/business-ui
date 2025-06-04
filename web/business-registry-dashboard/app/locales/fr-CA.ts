@@ -206,6 +206,10 @@ export default {
       title: 'Demande de nom indisponible ou problèmes de lien',
       description: "Confirmez que vous n'avez pas déjà utilisé ce nom pour une autre entreprise. Si le nom n'a pas été utilisé, veuillez vérifier dans quelques minutes la dernière mise à jour, car le système est peut-être encore en cours de traitement.",
       description2: "Assurez-vous d'avoir saisi le lien correctement, car des erreurs dans le lien peuvent provoquer l'apparition de ce message."
+    },
+    notAuthorized: {
+      title: 'Non Autorisé',
+      description: 'Vous n\'êtes pas autorisé à effectuer cette action.'
     }
   },
   entityTypes: {

@@ -2,6 +2,11 @@ import { describe, expect, it, vi, afterEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
 
+// Mock the IsAuthorized function to return true
+mockNuxtImport('IsAuthorized', () => {
+  return vi.fn().mockReturnValue(true)
+})
+
 mockNuxtImport('useKeycloak', () => {
   return () => (
     {

@@ -216,6 +216,10 @@ export default {
       title: 'Name Request unavailable or link issues',
       description: "Confirm that you haven't already used this name for another business. If the name has not been used, please check back in a few minutes for the latest update, as the system may still be processing.",
       description2: 'Make sure you entered the link correctly, as errors in the link may cause this message to appear.'
+    },
+    notAuthorized: {
+      title: 'Not Authorized',
+      description: 'You are not authorized to do this action.'
     }
   },
   entityTypes: {

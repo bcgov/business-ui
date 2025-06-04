@@ -72,9 +72,14 @@ function isPublicUser (): boolean {
  */
 const BusinessRegistryStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
+  AuthorizedActions.HANDLE_BUSINESSES,
+  AuthorizedActions.HANDLE_NAME_REQUESTS,
+  AuthorizedActions.HANDLE_SOCIETIES,
+  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
   AuthorizedActions.STAFF_DASHBOARD,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
-  AuthorizedActions.RESTORATION_REINSTATEMENT_FILING
+  AuthorizedActions.RESTORATION_REINSTATEMENT_FILING,
+  AuthorizedActions.SEARCH_BUSINESSES
 ]
 
 /**
@@ -82,14 +87,25 @@ const BusinessRegistryStaffRoles = [
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const MaximusStaffRoles = [
-  AuthorizedActions.MANAGE_OTHER_ORGANIZATION
+  AuthorizedActions.HANDLE_BUSINESSES,
+  AuthorizedActions.HANDLE_NAME_REQUESTS,
+  AuthorizedActions.HANDLE_SOCIETIES,
+  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.SEARCH_BUSINESSES
 ]
 
 /**
  * The roles if the user is Contact Centre Staff.
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
-const ContactCentreStaffRoles = [] as AuthorizedActions[]
+const ContactCentreStaffRoles = [
+  AuthorizedActions.HANDLE_BUSINESSES,
+  AuthorizedActions.HANDLE_NAME_REQUESTS,
+  AuthorizedActions.HANDLE_SOCIETIES,
+  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
+  AuthorizedActions.SEARCH_BUSINESSES
+]
 
 /**
  * The roles if the user is SBC Field Office Staff (aka SBC Staff Tier 2).
@@ -97,12 +113,23 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
  */
 const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
+  AuthorizedActions.HANDLE_BUSINESSES,
+  AuthorizedActions.HANDLE_NAME_REQUESTS,
+  AuthorizedActions.HANDLE_SOCIETIES,
+  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
   AuthorizedActions.STAFF_DASHBOARD,
-  AuthorizedActions.MANAGE_OTHER_ORGANIZATION
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.SEARCH_BUSINESSES
 ]
 
 /**
  * The authorized actions if user is Public User.
  * Ultimately we won't need this array and we'll just fetch these.
  */
-const PublicUserActions = [] as AuthorizedActions[]
+const PublicUserActions = [
+  AuthorizedActions.HANDLE_BUSINESSES,
+  AuthorizedActions.HANDLE_NAME_REQUESTS,
+  AuthorizedActions.HANDLE_SOCIETIES,
+  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
+  AuthorizedActions.SEARCH_BUSINESSES
+]

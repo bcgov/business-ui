@@ -104,6 +104,16 @@ export const useBrdModals = () => {
     })
   }
 
+  function openNotAuthorized () {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.notAuthorized.title'),
+        description: t('error.notAuthorized.description')
+      },
+      actions: [{ label: t('btn.close'), handler: () => close() }]
+    })
+  }
+
   function openBusinessRemovalConfirmation (removeBusinessPayload: RemoveBusinessPayload) {
     const type = removeBusinessPayload.business.corpType.code
     if (type === CorpTypes.COOP) {
@@ -138,6 +148,7 @@ export const useBrdModals = () => {
     openMagicLinkModal,
     openAuthEmailSent,
     openContinuationInCoopModal,
+    openNotAuthorized,
     close
   }
 }
