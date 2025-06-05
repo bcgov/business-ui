@@ -237,9 +237,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           // Add each status as a separate query parameter
           // This will output: ?status=Active&status=Expired&status=Approved
           affiliations.filters.status.forEach((status) => {
-            // Special case for awaiting review to map to NE since it's already defined in Namex
+            // Special cases for awaiting review, refund requested, and conditional to map to correct values being passed to the API
             if (status === EntityStateStatus.AWAITING_REVIEW) {
               status = NrState.NE
+            } else if (status === NrDisplayStates.REFUND_REQUESTED) {
+              status = NrState.REFUND_REQUESTED
+            } else if (status === NrDisplayStates.CONDITIONAL) {
+              status = NrState.CONDITIONAL
             }
             url += `&status=${encodeURIComponent(status)}`
           })
