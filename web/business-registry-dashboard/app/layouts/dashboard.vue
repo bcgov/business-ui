@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const accountStore = useConnectAccountStore()
-const affiliationsStore = useAffiliationsStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
 const route = useRoute()
@@ -49,7 +48,7 @@ watch(() => accountStore.currentAccount.id, (newAccountId) => {
   }
 })
 
-onMounted(async () => {
+onMounted(() => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
     const registryHomeURL = config.registryHomeURL
@@ -64,11 +63,6 @@ onMounted(async () => {
       accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
     const accountId = accountStore.currentAccount.id
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
-  }
-
-  // Load authorizations for the current account
-  if (accountStore.currentAccount?.id && isAuthenticated.value) {
-    await affiliationsStore.getAuthorizations()
   }
 })
 </script>

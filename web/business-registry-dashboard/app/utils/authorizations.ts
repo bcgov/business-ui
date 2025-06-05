@@ -9,44 +9,61 @@ export function IsAuthorized (action: AuthorizedActions): boolean {
     case isMaximusStaff(): return MaximusStaffRoles.includes(action)
     case isContactCentreStaff(): return ContactCentreStaffRoles.includes(action)
     case isSbcFieldOfficeStaff(): return SbcFieldOfficeStaffRoles.includes(action)
-    default: return DefaultRoles.includes(action)
+    case isPublicUser(): return PublicUserActions.includes(action)
+    default: return false
   }
 }
 
 /**
  * Whether the user is Business Registry Staff.
- * Ultimately we won't need this function and we'll just check auth roles for everything.
+ * Ultimately we won't need this function and we'll just fetch permissions.
  */
 function isBusinessRegistryStaff (): boolean {
-  const affStore = useAffiliationsStore()
-  return affStore.authorizations?.roles?.includes(AuthorizationRoles.STAFF) || false
+  const keycloak = reactive(useKeycloak())
+  return keycloak?.kcUser?.roles?.includes(AuthorizationRoles.STAFF) || false
 }
 
 /**
  * Whether the user is Maximus Staff.
- * Ultimately we won't need this function and we'll just check auth roles for everything.
+ * Ultimately we won't need this function and we'll just fetch permissions.
  */
 function isMaximusStaff (): boolean {
-  const affStore = useAffiliationsStore()
-  return affStore.authorizations?.roles?.includes(AuthorizationRoles.MAXIMUS_STAFF) || false
+  const keycloak = reactive(useKeycloak())
+  return keycloak?.kcUser?.roles?.includes(AuthorizationRoles.MAXIMUS_STAFF) || false
 }
 
 /**
  * Whether the user is Contact Centre Staff.
- * Ultimately we won't need this function and we'll just check auth roles for everything.
+ * Ultimately we won't need this function and we'll just fetch permissions.
  */
 function isContactCentreStaff (): boolean {
-  const affStore = useAffiliationsStore()
-  return affStore.authorizations?.roles?.includes(AuthorizationRoles.CONTACT_CENTRE_STAFF) || false
+  const keycloak = reactive(useKeycloak())
+  return keycloak?.kcUser?.roles?.includes(AuthorizationRoles.CONTACT_CENTRE_STAFF) || false
 }
 
 /**
  * Whether the user is SBC Field Office Staff.
- * Ultimately we won't need this function and we'll just check auth roles for everything.
+ * Ultimately we won't need this function and we'll just fetch permissions.
  */
 function isSbcFieldOfficeStaff (): boolean {
-  const affStore = useAffiliationsStore()
-  return affStore.authorizations?.roles?.includes(AuthorizationRoles.SBC_STAFF) || false
+  const keycloak = reactive(useKeycloak())
+  return keycloak?.kcUser?.roles?.includes(AuthorizationRoles.SBC_STAFF) || false
+}
+
+/**
+ * Whether the user is Public User.
+ * Ultimately we won't need this function and we'll just fetch permissions.
+ */
+function isPublicUser (): boolean {
+  const keycloak = reactive(useKeycloak())
+  // need to check other functions since some accounts have overlapping roles
+  return (
+    !isBusinessRegistryStaff() &&
+    !isMaximusStaff() &&
+    !isContactCentreStaff() &&
+    !isSbcFieldOfficeStaff() &&
+    keycloak?.kcUser?.roles?.includes(AuthorizationRoles.PUBLIC_USER)
+  )
 }
 
 /**
@@ -55,22 +72,40 @@ function isSbcFieldOfficeStaff (): boolean {
  */
 const BusinessRegistryStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.STAFF_DASHBOARD,
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
-  AuthorizedActions.RESTORE_OR_REINSTATE
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESTORATION_REINSTATEMENT_FILING,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_BUSINESS_NR,
+  AuthorizedActions.STAFF_DASHBOARD
 ]
 
 /**
  * The roles if the user is Maximus Staff.
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
-const MaximusStaffRoles = [] as AuthorizedActions[]
+const MaximusStaffRoles = [
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
+  AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_BUSINESS_NR
+]
 
 /**
  * The roles if the user is Contact Centre Staff.
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
-const ContactCentreStaffRoles = [] as AuthorizedActions[]
+const ContactCentreStaffRoles = [
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_BUSINESS_NR
+]
 
 /**
  * The roles if the user is SBC Field Office Staff (aka SBC Staff Tier 2).
@@ -78,13 +113,23 @@ const ContactCentreStaffRoles = [] as AuthorizedActions[]
  */
 const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.STAFF_DASHBOARD,
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
-  AuthorizedActions.RESTORE_OR_REINSTATE
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_BUSINESS_NR,
+  AuthorizedActions.STAFF_DASHBOARD
 ]
 
 /**
- * The roles if the user is none of the other types.
- * Ultimately we won't need this list and we'll just check auth roles for everything.
+ * The authorized actions if user is Public User.
+ * Ultimately we won't need this array and we'll just fetch these.
  */
-const DefaultRoles = [] as AuthorizedActions[]
+const PublicUserActions = [
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_BUSINESS_NR
+]
