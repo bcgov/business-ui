@@ -72,14 +72,14 @@ function isPublicUser (): boolean {
  */
 const BusinessRegistryStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.HANDLE_BUSINESSES,
-  AuthorizedActions.HANDLE_NAME_REQUESTS,
-  AuthorizedActions.HANDLE_SOCIETIES,
-  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
-  AuthorizedActions.STAFF_DASHBOARD,
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
+  AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESTORATION_REINSTATEMENT_FILING,
-  AuthorizedActions.SEARCH_BUSINESSES
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_ENTITIES,
+  AuthorizedActions.STAFF_DASHBOARD
 ]
 
 /**
@@ -87,12 +87,12 @@ const BusinessRegistryStaffRoles = [
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const MaximusStaffRoles = [
-  AuthorizedActions.HANDLE_BUSINESSES,
-  AuthorizedActions.HANDLE_NAME_REQUESTS,
-  AuthorizedActions.HANDLE_SOCIETIES,
-  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
-  AuthorizedActions.SEARCH_BUSINESSES
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_ENTITIES
 ]
 
 /**
@@ -100,11 +100,11 @@ const MaximusStaffRoles = [
  * Ultimately we won't need this list and we'll just check auth roles for everything.
  */
 const ContactCentreStaffRoles = [
-  AuthorizedActions.HANDLE_BUSINESSES,
-  AuthorizedActions.HANDLE_NAME_REQUESTS,
-  AuthorizedActions.HANDLE_SOCIETIES,
-  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
-  AuthorizedActions.SEARCH_BUSINESSES
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_ENTITIES
 ]
 
 /**
@@ -113,13 +113,13 @@ const ContactCentreStaffRoles = [
  */
 const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION,
-  AuthorizedActions.HANDLE_BUSINESSES,
-  AuthorizedActions.HANDLE_NAME_REQUESTS,
-  AuthorizedActions.HANDLE_SOCIETIES,
-  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
-  AuthorizedActions.STAFF_DASHBOARD,
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
-  AuthorizedActions.SEARCH_BUSINESSES
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_ENTITIES,
+  AuthorizedActions.STAFF_DASHBOARD
 ]
 
 /**
@@ -127,9 +127,9 @@ const SbcFieldOfficeStaffRoles = [
  * Ultimately we won't need this array and we'll just fetch these.
  */
 const PublicUserActions = [
-  AuthorizedActions.HANDLE_BUSINESSES,
-  AuthorizedActions.HANDLE_NAME_REQUESTS,
-  AuthorizedActions.HANDLE_SOCIETIES,
-  AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES,
-  AuthorizedActions.SEARCH_BUSINESSES
+  AuthorizedActions.MANAGE_BUSINESS,
+  AuthorizedActions.MANAGE_NR,
+  AuthorizedActions.MANAGE_SOCIETY,
+  AuthorizedActions.RESUME_DRAFT,
+  AuthorizedActions.SEARCH_ENTITIES
 ]

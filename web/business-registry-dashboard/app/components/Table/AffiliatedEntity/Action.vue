@@ -49,13 +49,13 @@ const checkPrimaryActionAuthorization = (item: Business): boolean => {
   let requiredAction: AuthorizedActions
 
   if (isTemporaryBusiness(item)) {
-    requiredAction = AuthorizedActions.HANDLE_TEMPORARY_BUSINESSES
+    requiredAction = AuthorizedActions.RESUME_DRAFT
   } else if (isNameRequest(item)) {
-    requiredAction = AuthorizedActions.HANDLE_NAME_REQUESTS
+    requiredAction = AuthorizedActions.MANAGE_NR
   } else if (isSocieties(item)) {
-    requiredAction = AuthorizedActions.HANDLE_SOCIETIES
+    requiredAction = AuthorizedActions.MANAGE_SOCIETY
   } else {
-    requiredAction = AuthorizedActions.HANDLE_BUSINESSES
+    requiredAction = AuthorizedActions.MANAGE_BUSINESS
   }
 
   if (!IsAuthorized(requiredAction)) {
