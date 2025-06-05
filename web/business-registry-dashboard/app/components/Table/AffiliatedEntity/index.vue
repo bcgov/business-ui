@@ -444,8 +444,8 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       <!-- end table cell slots -->
     </UTable>
 
-    <!-- Pagination controls - only show when enabled and there are results -->
-    <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0">
+    <!-- Pagination controls - only show when enabled, there are results, and data has finished loading -->
+    <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0 && !affStore.affiliations.loading">
       <!-- Divider to separate table from pagination controls -->
       <hr class="w-full border-t border-bcGovGray-300">
 
