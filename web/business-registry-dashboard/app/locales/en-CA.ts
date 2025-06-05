@@ -217,7 +217,7 @@ export default {
       description: "Confirm that you haven't already used this name for another business. If the name has not been used, please check back in a few minutes for the latest update, as the system may still be processing.",
       description2: 'Make sure you entered the link correctly, as errors in the link may cause this message to appear.'
     },
-    notAuthorized: {
+    accessRestricted: {
       title: 'Access Restricted',
       description: 'You don’t have permission to access this feature. If you have an administrator, contact them for help. Otherwise, contact BC Registries for support.'
     }

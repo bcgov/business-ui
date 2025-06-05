@@ -104,11 +104,11 @@ export const useBrdModals = () => {
     })
   }
 
-  function openNotAuthorized () {
+  function openAccessRestricted () {
     modal.open(ModalBase, {
       error: {
-        title: t('error.notAuthorized.title'),
-        description: t('error.notAuthorized.description')
+        title: t('error.accessRestricted.title'),
+        description: t('error.accessRestricted.description')
       },
       actions: [{ label: t('btn.close'), handler: () => close() }]
     })
@@ -148,7 +148,7 @@ export const useBrdModals = () => {
     openMagicLinkModal,
     openAuthEmailSent,
     openContinuationInCoopModal,
-    openNotAuthorized,
+    openAccessRestricted,
     close
   }
 }

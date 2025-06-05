@@ -59,7 +59,7 @@ const checkPrimaryActionAuthorization = (item: Business): boolean => {
   }
 
   if (!IsAuthorized(requiredAction)) {
-    brdModal.openNotAuthorized()
+    brdModal.openAccessRestricted()
     return false
   }
 
