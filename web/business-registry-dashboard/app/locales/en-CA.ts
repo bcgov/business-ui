@@ -218,8 +218,8 @@ export default {
       description2: 'Make sure you entered the link correctly, as errors in the link may cause this message to appear.'
     },
     notAuthorized: {
-      title: 'Not Authorized',
-      description: 'You are not authorized to do this action.'
+      title: 'Access Restricted',
+      description: 'You don’t have permission to access this feature. If you have an administrator, contact them for help. Otherwise, contact BC Registries for support.'
     }
   },
   entityTypes: {

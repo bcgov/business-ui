@@ -208,8 +208,8 @@ export default {
       description2: "Assurez-vous d'avoir saisi le lien correctement, car des erreurs dans le lien peuvent provoquer l'apparition de ce message."
     },
     notAuthorized: {
-      title: 'Non Autorisé',
-      description: 'Vous n\'êtes pas autorisé à effectuer cette action.'
+      title: 'Accès Restreint',
+      description: 'Vous n\'avez pas l\'autorisation d\'accéder à cette fonctionnalité. Si vous avez un administrateur, contactez-le pour obtenir de l\'aide. Sinon, contactez BC Registries pour obtenir de l\'aide.'
     }
   },
   entityTypes: {
