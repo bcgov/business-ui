@@ -78,7 +78,7 @@ const BusinessRegistryStaffRoles = [
   AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESTORATION_REINSTATEMENT_FILING,
   AuthorizedActions.RESUME_DRAFT,
-  AuthorizedActions.SEARCH_ENTITIES,
+  AuthorizedActions.SEARCH_BUSINESS_NR,
   AuthorizedActions.STAFF_DASHBOARD
 ]
 
@@ -92,7 +92,7 @@ const MaximusStaffRoles = [
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
   AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESUME_DRAFT,
-  AuthorizedActions.SEARCH_ENTITIES
+  AuthorizedActions.SEARCH_BUSINESS_NR
 ]
 
 /**
@@ -104,7 +104,7 @@ const ContactCentreStaffRoles = [
   AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESUME_DRAFT,
-  AuthorizedActions.SEARCH_ENTITIES
+  AuthorizedActions.SEARCH_BUSINESS_NR
 ]
 
 /**
@@ -118,7 +118,7 @@ const SbcFieldOfficeStaffRoles = [
   AuthorizedActions.MANAGE_OTHER_ORGANIZATION,
   AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESUME_DRAFT,
-  AuthorizedActions.SEARCH_ENTITIES,
+  AuthorizedActions.SEARCH_BUSINESS_NR,
   AuthorizedActions.STAFF_DASHBOARD
 ]
 
@@ -131,5 +131,5 @@ const PublicUserActions = [
   AuthorizedActions.MANAGE_NR,
   AuthorizedActions.MANAGE_SOCIETY,
   AuthorizedActions.RESUME_DRAFT,
-  AuthorizedActions.SEARCH_ENTITIES
+  AuthorizedActions.SEARCH_BUSINESS_NR
 ]

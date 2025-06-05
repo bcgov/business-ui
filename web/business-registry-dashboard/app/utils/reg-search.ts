@@ -1,6 +1,6 @@
 export async function regSearch (queryStr: string): Promise<RegSearchResult[]> {
   // Check authorization before proceeding
-  if (!IsAuthorized(AuthorizedActions.SEARCH_ENTITIES)) {
+  if (!IsAuthorized(AuthorizedActions.SEARCH_BUSINESS_NR)) {
     throw new Error('Not authorized to search businesses')
   }
 
