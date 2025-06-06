@@ -247,7 +247,10 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 <span>{{ option }}</span>
               </div>
               <!-- Add divider before specific options to separate groups -->
-              <template v-if="option === FilterTypes.NAME_REQUEST || option === FilterTypes.INCORPORATION_APPLICATION">
+              <template
+                v-if="affStore.enablePagination &&
+                  (option === FilterTypes.NAME_REQUEST || option === FilterTypes.INCORPORATION_APPLICATION)"
+              >
                 <div
                   data-divider
                   class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
@@ -308,7 +311,12 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 <span>{{ option }}</span>
               </div>
               <!-- Add divider before specific options to separate groups -->
-              <template v-if="option === NrDisplayStates.APPROVED || option === EntityStateStatus.WITHDRAWN || option === EntityStateStatus.PAID">
+              <template
+                v-if="affStore.enablePagination &&
+                  (option === NrDisplayStates.APPROVED ||
+                    option === EntityStateStatus.WITHDRAWN ||
+                    option === EntityStateStatus.PAID)"
+              >
                 <div
                   data-divider
                   class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
