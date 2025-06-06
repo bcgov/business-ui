@@ -214,12 +214,12 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.typeOptions"
             selected-icon="hidden"
             multiple
-            :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[210px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
-                class="flex-1 justify-between text-gray-700"
+                class="w-full min-w-[210px] flex-1 justify-between text-gray-700"
                 :aria-label="$t('table.affiliation.filter.legalType.aria', {
                   filter: affStore.affiliations.filters.type.length
                     ? (affStore.affiliations.filters.type.length > 1
@@ -246,6 +246,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 />
                 <span>{{ option }}</span>
               </div>
+              <!-- Add divider before specific options to separate groups -->
+              <template v-if="option === FilterTypes.NAME_REQUEST || option === FilterTypes.INCORPORATION_APPLICATION">
+                <div
+                  data-divider
+                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
+                />
+              </template>
             </template>
           </USelectMenu>
         </TableColumnHeader>
@@ -268,12 +275,12 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.statusOptions"
             selected-icon="hidden"
             multiple
-            :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[150px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
-                class="flex-1 justify-between text-gray-700"
+                class="w-full min-w-[150px] flex-1 justify-between text-gray-700"
                 :aria-label="$t('table.affiliation.filter.busStates.aria', {
                   filter: affStore.affiliations.filters.status.length
                     ? (affStore.affiliations.filters.status.length > 1
@@ -300,6 +307,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 />
                 <span>{{ option }}</span>
               </div>
+              <!-- Add divider before specific options to separate groups -->
+              <template v-if="option === NrDisplayStates.APPROVED || option === EntityStateStatus.WITHDRAWN || option === EntityStateStatus.PAID">
+                <div
+                  data-divider
+                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
+                />
+              </template>
             </template>
           </USelectMenu>
         </TableColumnHeader>

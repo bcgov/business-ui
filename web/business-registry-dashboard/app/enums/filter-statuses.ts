@@ -1,18 +1,17 @@
 export const STATUS_FILTER_OPTIONS = [
   EntityStateStatus.ACTIVE,
-  NrDisplayStates.APPROVED,
-  NrDisplayStates.CANCELLED,
-  NrDisplayStates.REFUND_REQUESTED,
-  EntityStateStatus.CHANGE_REQUESTED,
-  NrDisplayStates.CONDITIONAL,
-  NrDisplayStates.CONSUMED,
   NrDisplayStates.DRAFT,
-  NrDisplayStates.EXPIRED,
   EntityStateStatus.HISTORICAL,
-  EntityStateStatus.PAID,
-  EntityStateStatus.PENDING,
+  NrDisplayStates.APPROVED,
   EntityStateStatus.AWAITING_REVIEW,
-  NrDisplayStates.PROCESSING,
+  NrDisplayStates.CONDITIONAL,
+  NrDisplayStates.EXPIRED,
+  NrDisplayStates.CONSUMED,
+  EntityStateStatus.WITHDRAWN,
+  EntityStateStatus.CHANGE_REQUESTED,
   NrDisplayStates.REJECTED,
-  EntityStateStatus.WITHDRAWN
+  EntityStateStatus.PAID,
+  NrDisplayStates.PROCESSING,
+  NrDisplayStates.CANCELLED,
+  NrDisplayStates.REFUND_REQUESTED
 ]

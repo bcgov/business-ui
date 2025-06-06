@@ -237,13 +237,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           // Add each status as a separate query parameter
           // This will output: ?status=Active&status=Expired&status=Approved
           affiliations.filters.status.forEach((status) => {
-            // Special cases for awaiting review, refund requested, and conditional to map to correct values being passed to the API
+            // Special cases for awaiting review, refund requested, conditional, and change requested to map to correct values being passed to the API
             if (status === EntityStateStatus.AWAITING_REVIEW) {
               status = NrState.NE
             } else if (status === NrDisplayStates.REFUND_REQUESTED) {
               status = NrState.REFUND_REQUESTED
             } else if (status === NrDisplayStates.CONDITIONAL) {
               status = NrState.CONDITIONAL
+            } else if (status === EntityStateStatus.CHANGE_REQUESTED) {
+              status = EntityStates.CHANGE_REQUESTED
             }
             url += `&status=${encodeURIComponent(status)}`
           })
@@ -603,7 +605,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // If pagination is enabled, use the status and type filter options from the enum
   // Otherwise, create status and type filter options from stored all options
   const statusOptions = computed(() => {
-    if (enablePagination.value) {
+    if (!enablePagination.value) {
       return STATUS_FILTER_OPTIONS
     }
     // Use all available statuses instead of just those in the current filtered results
@@ -615,7 +617,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // If pagination is enabled, use the type filter options from the enum
   // Otherwise, create type filter options from stored all options
   const typeOptions = computed(() => {
-    if (enablePagination.value) {
+    if (!enablePagination.value) {
       return TYPE_FILTER_OPTIONS
     }
     // Use all available types instead of just those in the current filtered results
