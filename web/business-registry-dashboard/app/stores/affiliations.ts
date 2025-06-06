@@ -605,7 +605,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // If pagination is enabled, use the status and type filter options from the enum
   // Otherwise, create status and type filter options from stored all options
   const statusOptions = computed(() => {
-    if (!enablePagination.value) {
+    if (enablePagination.value) {
       return STATUS_FILTER_OPTIONS
     }
     // Use all available statuses instead of just those in the current filtered results
@@ -617,7 +617,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   // If pagination is enabled, use the type filter options from the enum
   // Otherwise, create type filter options from stored all options
   const typeOptions = computed(() => {
-    if (!enablePagination.value) {
+    if (enablePagination.value) {
       return TYPE_FILTER_OPTIONS
     }
     // Use all available types instead of just those in the current filtered results
