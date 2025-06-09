@@ -172,6 +172,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busName.placeholder')"
             :aria-label="$t('table.affiliation.filter.busName.aria')"
+            :disabled="affStore.affiliations.loading"
           />
         </TableColumnHeader>
       </template>
@@ -193,6 +194,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
             :aria-label="$t('table.affiliation.filter.busNumber.aria')"
+            :disabled="affStore.affiliations.loading"
           />
         </TableColumnHeader>
       </template>
@@ -214,6 +216,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.typeOptions"
             selected-icon="hidden"
             multiple
+            :disabled="affStore.affiliations.loading"
             :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[210px]' }"
           >
             <template #default="{ open }">
@@ -278,6 +281,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.statusOptions"
             selected-icon="hidden"
             multiple
+            :disabled="affStore.affiliations.loading"
             :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[150px]' }"
           >
             <template #default="{ open }">
@@ -466,8 +470,8 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       <!-- end table cell slots -->
     </UTable>
 
-    <!-- Pagination controls - only show when enabled, there are results, and data has finished loading -->
-    <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0 && !affStore.affiliations.loading">
+    <!-- Pagination controls - only show when enabled and there are results, disable when loading -->
+    <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0">
       <!-- Divider to separate table from pagination controls -->
       <hr class="w-full border-t border-bcGovGray-300">
 
@@ -479,6 +483,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.paginationLimitOptions"
             option-attribute="label"
             value-attribute="value"
+            :disabled="affStore.affiliations.loading"
             :ui="{ base: 'h-[42px]', trigger: 'flex items-center h-[42px]' }"
           />
         </div>
@@ -496,6 +501,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :total="affStore.affiliations.totalResults"
             :page-count="affStore.affiliations.pagination.limit"
             :max="6"
+            :disabled="affStore.affiliations.loading"
           />
         </div>
       </div>
