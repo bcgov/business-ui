@@ -1,3 +1,4 @@
+/** Order of the statuses here is important for the filter. Please don't change the order or alphabetize. */
 export const STATUS_FILTER_OPTIONS = [
   EntityStateStatus.ACTIVE,
   NrDisplayStates.DRAFT,

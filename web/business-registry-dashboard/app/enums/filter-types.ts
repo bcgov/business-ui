@@ -14,6 +14,7 @@ export enum FilterTypes {
   REGISTRATION = 'Registration'
 }
 
+/** Order of the types here is important for the filter. Please don't change the order or alphabetize. */
 export const TYPE_FILTER_OPTIONS = [
   FilterTypes.BC_SOLE_PROPRIETORSHIP,
   FilterTypes.BC_LIMITED_COMPANY,
