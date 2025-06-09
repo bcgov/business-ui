@@ -172,6 +172,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busName.placeholder')"
             :aria-label="$t('table.affiliation.filter.busName.aria')"
+            :disabled="affStore.affiliations.loading"
           />
         </TableColumnHeader>
       </template>
@@ -193,6 +194,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
             :aria-label="$t('table.affiliation.filter.busNumber.aria')"
+            :disabled="affStore.affiliations.loading"
           />
         </TableColumnHeader>
       </template>
@@ -214,12 +216,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.typeOptions"
             selected-icon="hidden"
             multiple
-            :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+            :disabled="affStore.affiliations.loading"
+            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[210px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
-                class="flex-1 justify-between text-gray-700"
+                class="w-full min-w-[210px] flex-1 justify-between text-gray-700"
                 :aria-label="$t('table.affiliation.filter.legalType.aria', {
                   filter: affStore.affiliations.filters.type.length
                     ? (affStore.affiliations.filters.type.length > 1
@@ -246,6 +249,16 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 />
                 <span>{{ option }}</span>
               </div>
+              <!-- Add divider before specific options to separate groups -->
+              <template
+                v-if="affStore.enablePagination &&
+                  (option === FilterTypes.NAME_REQUEST || option === FilterTypes.INCORPORATION_APPLICATION)"
+              >
+                <div
+                  data-divider
+                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
+                />
+              </template>
             </template>
           </USelectMenu>
         </TableColumnHeader>
@@ -268,12 +281,13 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.statusOptions"
             selected-icon="hidden"
             multiple
-            :ui="{ trigger: 'flex items-center w-full h-[42px]' }"
+            :disabled="affStore.affiliations.loading"
+            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[150px]' }"
           >
             <template #default="{ open }">
               <UButton
                 variant="select_menu_trigger"
-                class="flex-1 justify-between text-gray-700"
+                class="w-full min-w-[150px] flex-1 justify-between text-gray-700"
                 :aria-label="$t('table.affiliation.filter.busStates.aria', {
                   filter: affStore.affiliations.filters.status.length
                     ? (affStore.affiliations.filters.status.length > 1
@@ -300,6 +314,18 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
                 />
                 <span>{{ option }}</span>
               </div>
+              <!-- Add divider before specific options to separate groups -->
+              <template
+                v-if="affStore.enablePagination &&
+                  (option === NrDisplayStates.APPROVED ||
+                    option === EntityStateStatus.WITHDRAWN ||
+                    option === EntityStateStatus.PAID)"
+              >
+                <div
+                  data-divider
+                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
+                />
+              </template>
             </template>
           </USelectMenu>
         </TableColumnHeader>
@@ -444,7 +470,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       <!-- end table cell slots -->
     </UTable>
 
-    <!-- Pagination controls - only show when enabled and there are results -->
+    <!-- Pagination controls - only show when enabled and there are results, disable when loading -->
     <div v-if="affStore.enablePagination && affStore.affiliations.totalResults > 0">
       <!-- Divider to separate table from pagination controls -->
       <hr class="w-full border-t border-bcGovGray-300">
@@ -457,6 +483,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :options="affStore.paginationLimitOptions"
             option-attribute="label"
             value-attribute="value"
+            :disabled="affStore.affiliations.loading"
             :ui="{ base: 'h-[42px]', trigger: 'flex items-center h-[42px]' }"
           />
         </div>
@@ -474,6 +501,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             :total="affStore.affiliations.totalResults"
             :page-count="affStore.affiliations.pagination.limit"
             :max="6"
+            :disabled="affStore.affiliations.loading"
           />
         </div>
       </div>
