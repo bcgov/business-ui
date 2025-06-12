@@ -303,6 +303,7 @@ export default {
       },
       legend: 'You must be authorized to manage this business.',
       legendMultiple: 'You must be authorized to manage this business. You can be authorized in one of the following ways:',
+      chooseOption: 'Choose one of the options below:',
       authOption: {
         passcode: {
           accordianLabel: {
