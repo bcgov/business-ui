@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import type { AccordionItem } from '#ui/types'
+import type { FetchError } from 'ofetch'
+
+interface AuthOption {
+  slot: string
+  label: string
+}
+
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
@@ -10,7 +16,7 @@ const toast = useToast()
 const { t } = useI18n()
 
 const props = defineProps<{
-  authOptions: AccordionItem[]
+  authOptions: AuthOption[]
   contactEmail: string
   identifier: string
   accounts: Array<{branchName: string, name: string, uuid: string }>
@@ -31,14 +37,14 @@ const emit = defineEmits<{
 }>()
 
 const formRef = ref()
-const accordianRef = ref()
 const noOptionAlert = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const formState = reactive<{
   partner: { name: string | undefined, certify: boolean | undefined },
   passcode: string | undefined,
   delegation: { account: { name: string, branchName?: string, uuid: string } | undefined, message: string | undefined },
-  options: number
+  options: number,
+  selectedOption: string | undefined
 }>({
   partner: {
     name: undefined,
@@ -49,22 +55,20 @@ const formState = reactive<{
     account: undefined,
     message: undefined
   },
-  options: 0
+  options: 0,
+  selectedOption: undefined
 })
 
-const openAuthOption = computed<AccordionItem | null>(() => {
-  const buttonRefs = accordianRef.value?.buttonRefs
-  if (buttonRefs && buttonRefs.length > 0) {
-    formState.options = buttonRefs.length
-    const openIndex = buttonRefs.findIndex((item: { open: boolean, close: any }) => item.open === true)
-    return props.authOptions[openIndex] ?? null
-  } else {
-    return null
+const openAuthOption = computed<AuthOption | null>(() => {
+  formState.options = props.authOptions.length
+  if (formState.selectedOption) {
+    return props.authOptions.find(option => option.slot === formState.selectedOption) ?? null
   }
+  return null
 })
 
 const formSchema = computed(() => {
-  const openOption = openAuthOption.value?.slot // open accordian
+  const openOption = openAuthOption.value?.slot // selected auth option
 
   if (openOption === 'passcode-option') { // return passcode schema if passcode is the open option
     return z.object({
@@ -207,18 +211,24 @@ async function submitManageRequest () {
   loading.value = false
 }
 
-watch(openAuthOption, () => {
-  noOptionAlert.value = false // reset no option alert if open option changes
-  formRef.value?.clear() // clear form errors if open option changes
+watch(() => formState.selectedOption, () => {
+  noOptionAlert.value = false // reset no option alert if selected option changes
+  formRef.value?.clear() // clear form errors if selected option changes
 
-  // reset form state if open option changes
+  // reset form state if selected option changes
   formState.passcode = undefined
   formState.delegation.message = undefined
   formState.delegation.account = undefined
   formState.partner.name = undefined
   formState.partner.certify = undefined
-  formState.options = 0
 })
+
+// Auto-select the option when there's only one
+watch(() => props.authOptions, (newOptions) => {
+  if (newOptions.length === 1 && !formState.selectedOption) {
+    formState.selectedOption = newOptions[0]?.slot
+  }
+}, { immediate: true })
 </script>
 <template>
   <UForm
@@ -230,191 +240,190 @@ watch(openAuthOption, () => {
     @error="handleFormErrorEvent"
   >
     <fieldset class="space-y-4">
-      <legend class="text-bcGovColor-midGray">
-        {{ formState.options >= 2
-          ? $t('form.manageBusiness.legendMultiple')
-          : $t('form.manageBusiness.legend') }}
+      <legend class="text-bcGovColor-darkGray">
+        <div>{{ $t('form.manageBusiness.legend') }}</div>
+        <div v-if="formState.options >= 2" class="mt-1">
+          {{ $t('form.manageBusiness.chooseOption') }}
+        </div>
       </legend>
 
-      <UAccordion
-        ref="accordianRef"
-        :items="authOptions"
-        :ui="{
-          wrapper: 'w-full flex flex-col divide-y divide-gray-300 border-y border-gray-300',
-          default: {
-            variant: 'accordian_trigger',
-          }
-        }"
+      <!-- Radio button options -->
+      <div
+        :class="[
+          'space-y-4',
+          { 'border-l-4 border-red-500 pl-4': !formState.selectedOption && noOptionAlert }
+        ]"
       >
-        <!-- accordian button -->
-        <!-- TODO: add aria-describedby property to give instructions on using the given option??? -->
-        <template #default="{ item, open }">
-          <UButton
-            variant="accordian_trigger"
-            data-testid="auth-option-button"
-            class="pl-0"
-          >
+        <div
+          v-for="(option, index) in authOptions"
+          :key="option.slot"
+          :class="authOptions.length > 1 ? 'space-y-4 pl-2' : 'space-y-4'"
+        >
+          <label v-if="authOptions.length > 1" class="flex cursor-pointer items-start space-x-3">
+            <input
+              v-model="formState.selectedOption"
+              :value="option.slot"
+              type="radio"
+              class="custom-radio mt-1 size-4"
+            >
             <span
-              class="text-left text-base"
-              :class="{ 'font-semibold text-bcGovColor-darkGray': open, 'font-normal text-blue-500': !open }"
+              :class="[
+                'text-base text-bcGovColor-darkGray',
+                formState.selectedOption === option.slot ? 'font-bold' : 'font-normal'
+              ]"
             >
-              {{ item.label }}
+              {{ option.label }}
             </span>
+          </label>
 
-            <template #trailing>
-              <UIcon
-                name="i-heroicons-chevron-down-20-solid"
-                class="ms-auto size-5 shrink-0 transition-transform duration-200"
-                :class="[open && 'rotate-180', open ? 'text-bcGovColor-darkGray' : 'text-blue-500']"
-              />
-            </template>
-          </UButton>
-        </template>
-
-        <!-- passcode option slot -->
-        <template #passcode-option>
-          <UFormGroup
-            :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
-            name="passcode"
-            data-testid="formgroup-passcode-input"
-          >
-            <UInput
-              v-model="formState.passcode"
-              :placeholder="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default')"
-              :aria-label="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default')"
-              :variant="handleFormInputVariant('passcode', formRef?.errors)"
-              :maxlength="businessDetails.isCoop ? 9 : 15"
-            />
-          </UFormGroup>
-        </template>
-
-        <!-- firm option slot -->
-        <template #firm-option>
-          <div class="space-y-4 pb-4">
-            <UFormGroup
-              data-testid="formgroup-firm-input"
-              name="partner.name"
-              :help="$t('form.manageBusiness.authOption.firm.fields.name.help')"
-            >
-              <UInput
-                v-model="formState.partner.name"
-                :placeholder="$t('form.manageBusiness.authOption.firm.fields.name.placeholder')"
-                :aria-label="$t('form.manageBusiness.authOption.firm.fields.name.arialabel')"
-                :variant="handleFormInputVariant('partner.name', formRef?.errors)"
-              />
-            </UFormGroup>
-
-            <UFormGroup
-              name="partner.certify"
-              data-testid="formgroup-firm-checkbox"
-            >
-              <UCheckbox v-model="formState.partner.certify">
-                <template #label>
-                  <span
-                    class="text-sm"
-                    :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
-                  >
-                    <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
-                  </span>
-                </template>
-              </UCheckbox>
-            </UFormGroup>
+          <!-- For single option, show just the label without radio button -->
+          <div v-else class="text-base font-bold text-bcGovColor-darkGray">
+            {{ option.label }}
           </div>
-        </template>
 
-        <!-- email option slot -->
-        <template #email-option>
-          <div data-testid="formgroup-email" class="text-base text-bcGovColor-midGray">
-            <div>
-              {{ props.isCorpOrBenOrCoop
-                ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
-                : businessDetails.isFirm
-                  ? $t('form.manageBusiness.authOption.email.sentTo.firm')
-                  : $t('form.manageBusiness.authOption.email.sentTo.default') }}
-            </div>
-            <br>
-            <div><b>{{ contactEmail }}</b></div>
-            <br>
-            <div class="mb-4 mr-1 mt-1">
-              {{ $t('form.manageBusiness.authOption.email.instructions') }}
-            </div>
-            <!-- On hold for form.
-            <span v-if="props.isCorpOrBenOrCoop">
-              {{ $t('form.manageBusiness.authOption.email.update') }}
-              <a
-                href=" "
-                target="_blank"
-                class="text-blue-500 underline"
-              >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
-              </a>
-              <UIcon
-                name="i-mdi-open-in-new"
-                class="mr-2 size-5 text-bcGovColor-activeBlue"
-              />
-            </span> -->
-          </div>
-        </template>
-
-        <!-- delegation option slot -->
-        <template #delegation-option>
-          <div class="-mt-4 space-y-4 py-6 text-base">
-            <UFormGroup
-              data-testid="formgroup-delegation-account"
-              name="delegation.account"
-              :ui="{ label: { base: 'block pt-3 pb-1 font-normal text-gray-700 dark:text-gray-200' } }"
-            >
-              <USelectMenu
-                v-model="formState.delegation.account"
-                :options="accounts"
-                option-attribute="name"
-                :ui="{
-                  trigger: 'flex items-center w-full h-[42px]'
-                }"
+          <!-- Show content when this option is selected -->
+          <div v-if="formState.selectedOption === option.slot" :class="authOptions.length > 1 ? 'ml-7 space-y-4' : 'space-y-4'">
+            <!-- passcode option content -->
+            <div v-if="option.slot === 'passcode-option'">
+              <UFormGroup
+                :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
+                name="passcode"
+                data-testid="formgroup-passcode-input"
               >
-                <template #default="{ open }">
-                  <UButton
-                    data-testid="delegation-select-menu"
-                    variant="select_menu_trigger"
-                    class="mb-6 flex-1 justify-between py-7 text-gray-700"
-                    :aria-label="t('form.manageBusiness.authOption.delegation.fields.account.arialabel', { account: formState.delegation.account?.name ?? $t('words.none') })"
-                  >
-                    {{ delegationLabel }}
+                <UInput
+                  v-model="formState.passcode"
+                  :placeholder="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default')"
+                  :aria-label="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default')"
+                  :variant="handleFormInputVariant('passcode', formRef?.errors)"
+                  :maxlength="businessDetails.isCoop ? 9 : 15"
+                />
+              </UFormGroup>
+            </div>
 
-                    <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-                  </UButton>
-                </template>
-                <template #option="{ option }">
-                  <span v-if="option.branchName">
-                    {{ option.name }} - {{ option.branchName }}
-                  </span>
-                  <span v-else>
-                    {{ option.name }}
-                  </span>
-                </template>
-              </USelectMenu>
-            </UFormGroup>
-            <UFormGroup
-              data-testid="formgroup-delegation-message"
-              name="delegation.message"
-              :ui="{ label: { base: 'block py-5 font-normal text-gray-700 dark:text-gray-200' } }"
-            >
-              <UTextarea
-                v-model.trim="formState.delegation.message"
-                :placeholder="$t('form.manageBusiness.authOption.delegation.fields.message.placeholder')"
-                maxlength="400"
-                :ui="{
-                  placeholder: 'placeholder-gray-700',
-                  color: {
-                    white: {
-                      outline: 'shadow-sm bg-gray-100 text-gray-900 pt-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
-                    }}
-                }"
-              />
-            </UFormGroup>
-            <span class="px-3 py-6 text-xs font-normal text-gray-700 dark:text-gray-200">{{ $t('form.manageBusiness.authOption.delegation.fields.message.label') }}</span>
+            <!-- firm option content -->
+            <div v-if="option.slot === 'firm-option'" class="space-y-4 pb-4">
+              <UFormGroup
+                data-testid="formgroup-firm-input"
+                name="partner.name"
+                :help="$t('form.manageBusiness.authOption.firm.fields.name.help')"
+              >
+                <UInput
+                  v-model="formState.partner.name"
+                  :placeholder="$t('form.manageBusiness.authOption.firm.fields.name.placeholder')"
+                  :aria-label="$t('form.manageBusiness.authOption.firm.fields.name.arialabel')"
+                  :variant="handleFormInputVariant('partner.name', formRef?.errors)"
+                />
+              </UFormGroup>
+
+              <UFormGroup
+                name="partner.certify"
+                data-testid="formgroup-firm-checkbox"
+              >
+                <UCheckbox v-model="formState.partner.certify">
+                  <template #label>
+                    <span
+                      class="text-sm"
+                      :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
+                    >
+                      <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                    </span>
+                  </template>
+                </UCheckbox>
+              </UFormGroup>
+            </div>
+
+            <!-- email option content -->
+            <div v-if="option.slot === 'email-option'" data-testid="formgroup-email" class="space-y-4 text-base text-bcGovColor-midGray">
+              <div>
+                {{ props.isCorpOrBenOrCoop
+                  ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
+                  : businessDetails.isFirm
+                    ? $t('form.manageBusiness.authOption.email.sentTo.firm')
+                    : $t('form.manageBusiness.authOption.email.sentTo.default') }}
+              </div>
+              <div><b>{{ contactEmail }}</b></div>
+              <div class="mb-4 mr-1 mt-1">
+                {{ $t('form.manageBusiness.authOption.email.instructions') }}
+              </div>
+              <!-- On hold for form.
+              <span v-if="props.isCorpOrBenOrCoop">
+                {{ $t('form.manageBusiness.authOption.email.update') }}
+                <a
+                  href=" "
+                  target="_blank"
+                  class="text-blue-500 underline"
+                >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
+                </a>
+                <UIcon
+                  name="i-mdi-open-in-new"
+                  class="mr-2 size-5 text-bcGovColor-activeBlue"
+                />
+              </span> -->
+            </div>
+
+            <!-- delegation option content -->
+            <div v-if="option.slot === 'delegation-option'" class="text-base">
+              <UFormGroup
+                data-testid="formgroup-delegation-account"
+                name="delegation.account"
+                class="pb-6"
+              >
+                <USelectMenu
+                  v-model="formState.delegation.account"
+                  :options="accounts"
+                  option-attribute="name"
+                  :ui="{
+                    trigger: 'flex items-center w-full'
+                  }"
+                >
+                  <template #default="{ open }">
+                    <UButton
+                      data-testid="delegation-select-menu"
+                      variant="select_menu_trigger"
+                      class="flex-1 justify-between text-gray-700"
+                      :aria-label="t('form.manageBusiness.authOption.delegation.fields.account.arialabel', { account: formState.delegation.account?.name ?? $t('words.none') })"
+                    >
+                      {{ delegationLabel }}
+
+                      <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
+                    </UButton>
+                  </template>
+                  <template #option="{ option: selectOption }">
+                    <span v-if="selectOption.branchName">
+                      {{ selectOption.name }} - {{ selectOption.branchName }}
+                    </span>
+                    <span v-else>
+                      {{ selectOption.name }}
+                    </span>
+                  </template>
+                </USelectMenu>
+              </UFormGroup>
+              <UFormGroup
+                data-testid="formgroup-delegation-message"
+                name="delegation.message"
+                :ui="{ label: { base: 'block py-5 font-normal text-gray-700 dark:text-gray-200' } }"
+              >
+                <UTextarea
+                  v-model.trim="formState.delegation.message"
+                  :placeholder="$t('form.manageBusiness.authOption.delegation.fields.message.placeholder')"
+                  maxlength="400"
+                  :ui="{
+                    placeholder: 'placeholder-gray-700',
+                    color: {
+                      white: {
+                        outline: 'shadow-sm bg-gray-100 text-gray-900 pt-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500',
+                      }}
+                  }"
+                />
+              </UFormGroup>
+              <span class="px-3 py-6 text-xs font-normal text-gray-700 dark:text-gray-200">{{ $t('form.manageBusiness.authOption.delegation.fields.message.label') }}</span>
+            </div>
           </div>
-        </template>
-      </UAccordion>
+
+          <!-- Add divider between options (except after the last one) -->
+          <hr v-if="index < authOptions.length - 1" class="border-gray-300">
+        </div>
+      </div>
     </fieldset>
 
     <!-- TODO: make this accessible? -->
@@ -449,3 +458,31 @@ watch(openAuthOption, () => {
     </div>
   </UForm>
 </template>
+
+<style>
+/*
+ * Custom radio button styling - overriding default browser appearance
+ * The default browser radio buttons didn't match the design needed.
+ * We needed blue borders and custom checked state (blue dot)
+ * Using appearance: none removes native styling so we can apply our custom design.
+ */
+.custom-radio {
+  appearance: none;
+  border: 2px solid theme('colors.bcGovColor.activeBlue');
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-radio:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: theme('colors.bcGovColor.activeBlue');
+}
+</style>

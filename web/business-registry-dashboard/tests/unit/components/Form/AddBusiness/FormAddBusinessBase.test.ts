@@ -38,7 +38,13 @@ describe('<FormAddBusinessBase />', () => {
     await form.trigger('submit.prevent')
     await flushPromises()
   }
-  const findAuthOptionButton = () => wrapper.find('[data-testid="auth-option-button"]')
+  const findRadioButton = (value: string) => wrapper.find(`input[type="radio"][value="${value}"]`)
+  const selectAuthOption = async (value: string) => {
+    const radio = findRadioButton(value)
+    await radio.setValue(value)
+    await radio.trigger('change')
+    await flushPromises()
+  }
   const findFormGroup = (groupid: string) => wrapper.find(`[data-testid="formgroup-${groupid}"]`)
 
   afterEach(() => {
@@ -72,11 +78,10 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(3) // cancel/submit/passcode
+      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
 
-      // should have passcode button
-      const passcodeButton = buttons.find(button => button.text() === 'Passcode Button Label')
-      expect(passcodeButton).toBeTruthy()
+      // should have passcode label (no radio button for single option)
+      expect(wrapper.text()).toContain('Passcode Button Label')
     })
 
     it('should display firm option', async () => {
@@ -86,11 +91,10 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(3) // cancel/submit/firm
+      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
 
-      // should have firm button
-      const firmButton = buttons.find(button => button.text() === 'Firm Button Label')
-      expect(firmButton).toBeTruthy()
+      // should have firm label (no radio button for single option)
+      expect(wrapper.text()).toContain('Firm Button Label')
     })
 
     it('should display email option', async () => {
@@ -100,11 +104,10 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(3) // cancel/submit/email
+      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
 
-      // should have email button
-      const emailButton = buttons.find(button => button.text() === 'Email Button Label')
-      expect(emailButton).toBeTruthy()
+      // should have email label (no radio button for single option)
+      expect(wrapper.text()).toContain('Email Button Label')
     })
 
     it('should display delegation option', async () => {
@@ -114,11 +117,10 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(4) // cancel/submit/delegation/account select dropdown
+      expect(buttons).toHaveLength(3) // cancel/submit/account select dropdown (single option auto-selected, no radio shown)
 
-      // should have delegation button
-      const delButton = buttons.find(button => button.text() === 'Delegation Button Label')
-      expect(delButton).toBeTruthy()
+      // should have delegation label (no radio button for single option)
+      expect(wrapper.text()).toContain('Delegation Button Label')
     })
 
     it('should display multiple options', async () => {
@@ -132,14 +134,17 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(5) // cancel/submit/passcode/firm/email
+      expect(buttons).toHaveLength(2) // cancel/submit (radio buttons are inputs, not buttons)
 
-      const passcodeButton = buttons.find(button => button.text() === 'Passcode Button Label')
-      const firmButton = buttons.find(button => button.text() === 'Firm Button Label')
-      const emailButton = buttons.find(button => button.text() === 'Email Button Label')
-      expect(passcodeButton).toBeTruthy()
-      expect(firmButton).toBeTruthy()
-      expect(emailButton).toBeTruthy()
+      // should have radio buttons for multiple options
+      expect(findRadioButton('passcode-option').exists()).toBe(true)
+      expect(findRadioButton('firm-option').exists()).toBe(true)
+      expect(findRadioButton('email-option').exists()).toBe(true)
+
+      // should have option labels
+      expect(wrapper.text()).toContain('Passcode Button Label')
+      expect(wrapper.text()).toContain('Firm Button Label')
+      expect(wrapper.text()).toContain('Email Button Label')
     })
   })
 
@@ -164,7 +169,7 @@ describe('<FormAddBusinessBase />', () => {
       expect(findNoOptionAlert().text()).toContain(enI18n.global.t('form.manageBusiness.noOptionAlert'))
     })
 
-    it('should hide the alert if shown after opening an auth option (accordian item)', async () => {
+    it('should hide the alert if shown after selecting an auth option', async () => {
       const props = {
         ...testProps,
         authOptions: [
@@ -183,7 +188,7 @@ describe('<FormAddBusinessBase />', () => {
       expect(findNoOptionAlert().exists()).toBe(true) // should show alert
       expect(findNoOptionAlert().text()).toContain(enI18n.global.t('form.manageBusiness.noOptionAlert'))
 
-      await findAuthOptionButton().trigger('click') // open an accordian item
+      await selectAuthOption('passcode-option') // select a radio option
 
       expect(findNoOptionAlert().exists()).toBe(false) // alert should now be hidden
     })
@@ -203,8 +208,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open passcode option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('passcode-input').exists()).toBe(true)
           expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
@@ -248,8 +252,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open passcode option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('passcode-input').exists()).toBe(true)
           expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.default'))
@@ -298,8 +301,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open passcode option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('firm-input').exists()).toBe(true)
           expect(findFormGroup('firm-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.help'))
@@ -330,8 +332,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open firm option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('firm-checkbox').exists()).toBe(true)
 
@@ -364,8 +365,7 @@ describe('<FormAddBusinessBase />', () => {
         }
         wrapper = await mountComp(props)
 
-        // Open email option
-        await findAuthOptionButton().trigger('click')
+        // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
         expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop'))
@@ -384,8 +384,7 @@ describe('<FormAddBusinessBase />', () => {
         }
         wrapper = await mountComp(props)
 
-        // Open email option
-        await findAuthOptionButton().trigger('click')
+        // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
         expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.firm'))
@@ -400,8 +399,7 @@ describe('<FormAddBusinessBase />', () => {
         }
         wrapper = await mountComp(props)
 
-        // Open email option
-        await findAuthOptionButton().trigger('click')
+        // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
         expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.default'))
@@ -423,8 +421,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open delegation option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('delegation-account').exists()).toBe(true)
 
@@ -461,8 +458,7 @@ describe('<FormAddBusinessBase />', () => {
           }
           wrapper = await mountComp(props)
 
-          // Open firm option
-          await findAuthOptionButton().trigger('click')
+          // Option is auto-selected for single option
 
           expect(findFormGroup('delegation-message').exists()).toBe(true)
 
