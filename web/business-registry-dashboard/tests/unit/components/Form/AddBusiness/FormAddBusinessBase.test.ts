@@ -140,7 +140,7 @@ describe('<FormAddBusinessBase />', () => {
       expect(findRadioButton('passcode-option').exists()).toBe(true)
       expect(findRadioButton('firm-option').exists()).toBe(true)
       expect(findRadioButton('email-option').exists()).toBe(true)
-      
+
       // should have option labels
       expect(wrapper.text()).toContain('Passcode Button Label')
       expect(wrapper.text()).toContain('Firm Button Label')
