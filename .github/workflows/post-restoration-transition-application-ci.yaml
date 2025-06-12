@@ -1,4 +1,4 @@
-name: Business People UI CI
+name: Post Restoration Transition Application UI CI
 
 on:
   pull_request:
