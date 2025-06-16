@@ -498,14 +498,14 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           </span>
           <div class="flex items-center gap-2">
             <UButton
-              icon="i-mdi-chevron-left"
+              icon="i-heroicons-chevron-left-20-solid"
               :disabled="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading"
               variant="outline"
               size="sm"
               @click="affStore.goToPreviousPage()"
             />
             <UButton
-              icon="i-mdi-chevron-right"
+              icon="i-heroicons-chevron-right-20-solid"
               :disabled="!affStore.affiliations.hasMore || affStore.affiliations.loading"
               variant="outline"
               size="sm"
