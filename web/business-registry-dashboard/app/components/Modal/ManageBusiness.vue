@@ -151,7 +151,7 @@ onMounted(async () => {
 
       <div
         v-else-if="authOptions.length === 0"
-        class="flex flex-col gap-4  border-t border-gray-300 pt-3"
+        class="flex flex-col gap-4"
       >
         <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p>
         <!-- On hold for email form

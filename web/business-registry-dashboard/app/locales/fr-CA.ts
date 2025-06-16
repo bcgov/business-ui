@@ -293,6 +293,7 @@ export default {
       },
       legend: 'Vous devez être autorisé à gérer cette entreprise.',
       legendMultiple: "Vous devez être autorisé à gérer cette entreprise. Vous pouvez être autorisé de l'une des façons suivantes:",
+      chooseOption: 'Choisissez une des options ci-dessous:',
       authOption: {
         passcode: {
           accordianLabel: {
