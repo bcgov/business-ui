@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
+const ldStore = useConnectLaunchdarklyStore()
 
 onMounted(async () => {
   await affStore.loadAffiliations()
@@ -53,7 +54,10 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
   <SbcPageSectionCard>
     <template #header-left>
       <h2 class="text-base font-normal">
-        <ConnectI18nBold translation-path="labels.myList" :count="affStore.affiliations.count" />
+        <template v-if="ldStore.ldInitialized">
+          <ConnectI18nBold v-if="!affStore.enablePagination" translation-path="labels.myList" :count="affStore.affiliations.count" />
+          <ConnectI18nBold v-else translation-path="labels.myListWithPagination" />
+        </template>
       </h2>
     </template>
     <!-- columns to show dropdown -->
@@ -490,19 +494,24 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
 
         <div class="flex items-center">
           <span class="mr-4 text-sm text-bcGovColor-midGray">
-            {{ $t('pagination.showing', {
-              start: ((affStore.affiliations.pagination.page - 1) * affStore.affiliations.pagination.limit) + 1,
-              end: Math.min(affStore.affiliations.pagination.page * affStore.affiliations.pagination.limit, affStore.affiliations.totalResults),
-              total: affStore.affiliations.totalResults
-            }) }}
+            {{ $t('pagination.page', { page: affStore.affiliations.pagination.page }) }}
           </span>
-          <UPagination
-            v-model="affStore.affiliations.pagination.page"
-            :total="affStore.affiliations.totalResults"
-            :page-count="affStore.affiliations.pagination.limit"
-            :max="6"
-            :disabled="affStore.affiliations.loading"
-          />
+          <div class="flex items-center gap-2">
+            <UButton
+              icon="i-mdi-chevron-left"
+              :disabled="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading"
+              variant="outline"
+              size="sm"
+              @click="affStore.goToPreviousPage()"
+            />
+            <UButton
+              icon="i-mdi-chevron-right"
+              :disabled="!affStore.affiliations.hasMore || affStore.affiliations.loading"
+              variant="outline"
+              size="sm"
+              @click="affStore.goToNextPage()"
+            />
+          </div>
         </div>
       </div>
     </div>

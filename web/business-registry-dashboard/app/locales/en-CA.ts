@@ -526,6 +526,7 @@ export default {
     type: 'Type',
     actions: 'Actions',
     myList: '{boldStart}My List{boldEnd} ({count})',
+    myListWithPagination: '{boldStart}My List{boldEnd}',
     amalgamateNow: 'Amalgamate Now',
     alterNow: 'Alter Now',
     changeNameNow: 'Change Name Now',
@@ -904,6 +905,7 @@ export default {
   },
   pagination: {
     itemsPerPage: 'Items per page',
-    showing: 'Showing {start} to {end} of {total} items'
+    showing: 'Showing {start} to {end} of {total} items',
+    page: 'Page {page}'
   }
 }

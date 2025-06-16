@@ -150,6 +150,7 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
     init,
     getFeatureFlag,
     getStoredFlag,
+    ldInitialized: readonly(ldInitialized),
     $reset
   }
 })

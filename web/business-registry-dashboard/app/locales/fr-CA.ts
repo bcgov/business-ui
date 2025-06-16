@@ -516,6 +516,7 @@ export default {
     type: 'Taper',
     actions: 'Actions',
     myList: '{boldStart}Ma liste{boldEnd} ({count})',
+    myListWithPagination: '{boldStart}Ma liste{boldEnd}',
     amalgamateNow: 'Fusionner Maintenant',
     alterNow: 'Modifier Maintenant',
     changeNameNow: 'Changer de Nom Maintenant',
@@ -894,6 +895,7 @@ export default {
   },
   pagination: {
     itemsPerPage: 'Éléments par page',
-    showing: 'Affichage de {start} à {end} sur {total} éléments'
+    showing: 'Affichage de {start} à {end} sur {total} éléments',
+    page: 'Page {page}'
   }
 }

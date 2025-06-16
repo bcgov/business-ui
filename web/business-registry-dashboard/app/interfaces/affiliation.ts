@@ -93,6 +93,8 @@ export interface NameRequestResponse {
 
 export interface AffiliationsResponse {
   entities: AffiliationResponse[]
+  hasMore?: boolean
+  totalResults?: number
 }
 
 export interface AffiliationFilterParams {
