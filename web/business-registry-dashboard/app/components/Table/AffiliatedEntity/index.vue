@@ -33,6 +33,15 @@ watch(
   { immediate: true }
 )
 
+// Computed properties for pagination button states
+const isPreviousDisabled = computed(() =>
+  affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading
+)
+
+const isNextDisabled = computed(() =>
+  !affStore.affiliations.hasMore || affStore.affiliations.loading
+)
+
 /**
  * This function transforms alert details, handling two important cases:
  * 1. For FUTURE_EFFECTIVE alerts: Converts the simple enum value to a complex object with date info
@@ -499,17 +508,17 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <div class="flex items-center gap-2">
             <UButton
               icon="i-heroicons-chevron-left-20-solid"
-              :disabled="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading"
-              :variant="(affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading) ? 'soft' : 'outline'"
-              :class="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading ? 'text-gray-400' : ''"
+              :disabled="isPreviousDisabled"
+              :variant="isPreviousDisabled ? 'soft' : 'outline'"
+              :class="isPreviousDisabled ? 'text-gray-400' : ''"
               size="sm"
               @click="affStore.goToPreviousPage()"
             />
             <UButton
               icon="i-heroicons-chevron-right-20-solid"
-              :disabled="!affStore.affiliations.hasMore || affStore.affiliations.loading"
-              :variant="(!affStore.affiliations.hasMore || affStore.affiliations.loading) ? 'soft' : 'outline'"
-              :class="!affStore.affiliations.hasMore || affStore.affiliations.loading ? 'text-gray-400' : ''"
+              :disabled="isNextDisabled"
+              :variant="isNextDisabled ? 'soft' : 'outline'"
+              :class="isNextDisabled ? 'text-gray-400' : ''"
               size="sm"
               @click="affStore.goToNextPage()"
             />
