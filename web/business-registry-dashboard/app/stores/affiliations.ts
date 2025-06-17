@@ -28,6 +28,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     results: [] as Business[],
     count: 0,
     totalResults: 0,
+    hasMore: false,
     error: false
   })
 
@@ -271,7 +272,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         }
       }
 
-      const response = await $authApi<{ entities: AffiliationResponse[], totalResults?: number }>(url)
+      const response = await $authApi<{ entities: AffiliationResponse[], totalResults?: number, hasMore?: boolean }>(url)
 
       let affiliatedEntities: Business[] = []
 
@@ -297,14 +298,17 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           highlightNewAffiliation()
         }
 
-        // Set total results if pagination is enabled and the server returns it
-        if (enablePagination.value && response.totalResults) {
-          affiliations.totalResults = response.totalResults
+        // Set total results and hasMore if pagination is enabled and the api returns it
+        if (enablePagination.value) {
+          affiliations.totalResults = response.totalResults || affiliations.count
+          affiliations.hasMore = response.hasMore || false
         } else {
           affiliations.totalResults = affiliations.count
+          affiliations.hasMore = false
         }
       } else {
         affiliations.totalResults = 0
+        affiliations.hasMore = false
       }
     } catch (error) {
       logFetchError(error, 'Error retrieving businesses')
@@ -341,13 +345,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  // Watch for changes to account, feature flags, and pagination
+  // Watch for changes to account, feature flags, and pagination page
   watch(
     [
       () => accountStore.currentAccount.id,
       () => enableServerFiltering.value,
       () => enablePagination.value,
-      () => affiliations.pagination
+      () => affiliations.pagination.page
     ],
     async () => {
       // Always call loadAffiliations for account and pagination changes
@@ -356,6 +360,19 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       }
     },
     { deep: true }
+  )
+
+  // Watch for changes to pagination limit.
+  watch(
+    () => affiliations.pagination.limit,
+    async () => {
+      // Reset to page 1 when limit changes
+      affiliations.pagination.page = 1
+      // call loadAffiliations when limit changes on page 1
+      if (!affiliations.loading) {
+        await loadAffiliations()
+      }
+    }
   )
 
   // Watch for changes to type and status filters
@@ -774,6 +791,19 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  // Navigation functions for hasMore-based pagination
+  function goToNextPage () {
+    if (affiliations.hasMore && !affiliations.loading) {
+      affiliations.pagination.page += 1
+    }
+  }
+
+  function goToPreviousPage () {
+    if (affiliations.pagination.page > 1 && !affiliations.loading) {
+      affiliations.pagination.page -= 1
+    }
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -810,6 +840,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     newlyAddedIdentifier,
     paginationLimitOptions,
     enablePagination,
+    goToNextPage,
+    goToPreviousPage,
     $reset
   }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
+const ldStore = useConnectLaunchdarklyStore()
 
 onMounted(async () => {
   await affStore.loadAffiliations()
@@ -32,6 +33,15 @@ watch(
   { immediate: true }
 )
 
+// Computed properties for pagination button states
+const isPreviousDisabled = computed(() =>
+  affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading
+)
+
+const isNextDisabled = computed(() =>
+  !affStore.affiliations.hasMore || affStore.affiliations.loading
+)
+
 /**
  * This function transforms alert details, handling two important cases:
  * 1. For FUTURE_EFFECTIVE alerts: Converts the simple enum value to a complex object with date info
@@ -53,7 +63,10 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
   <SbcPageSectionCard>
     <template #header-left>
       <h2 class="text-base font-normal">
-        <ConnectI18nBold translation-path="labels.myList" :count="affStore.affiliations.count" />
+        <template v-if="ldStore.ldInitialized">
+          <ConnectI18nBold v-if="!affStore.enablePagination" translation-path="labels.myList" :count="affStore.affiliations.count" />
+          <ConnectI18nBold v-else translation-path="labels.myListWithPagination" />
+        </template>
       </h2>
     </template>
     <!-- columns to show dropdown -->
@@ -490,19 +503,26 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
 
         <div class="flex items-center">
           <span class="mr-4 text-sm text-bcGovColor-midGray">
-            {{ $t('pagination.showing', {
-              start: ((affStore.affiliations.pagination.page - 1) * affStore.affiliations.pagination.limit) + 1,
-              end: Math.min(affStore.affiliations.pagination.page * affStore.affiliations.pagination.limit, affStore.affiliations.totalResults),
-              total: affStore.affiliations.totalResults
-            }) }}
+            {{ $t('pagination.page', { page: affStore.affiliations.pagination.page }) }}
           </span>
-          <UPagination
-            v-model="affStore.affiliations.pagination.page"
-            :total="affStore.affiliations.totalResults"
-            :page-count="affStore.affiliations.pagination.limit"
-            :max="6"
-            :disabled="affStore.affiliations.loading"
-          />
+          <div class="flex items-center gap-2">
+            <UButton
+              icon="i-heroicons-chevron-left-20-solid"
+              :disabled="isPreviousDisabled"
+              :variant="isPreviousDisabled ? 'soft' : 'outline'"
+              :class="isPreviousDisabled ? 'text-gray-400' : ''"
+              size="sm"
+              @click="affStore.goToPreviousPage()"
+            />
+            <UButton
+              icon="i-heroicons-chevron-right-20-solid"
+              :disabled="isNextDisabled"
+              :variant="isNextDisabled ? 'soft' : 'outline'"
+              :class="isNextDisabled ? 'text-gray-400' : ''"
+              size="sm"
+              @click="affStore.goToNextPage()"
+            />
+          </div>
         </div>
       </div>
     </div>
