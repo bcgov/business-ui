@@ -500,14 +500,16 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             <UButton
               icon="i-heroicons-chevron-left-20-solid"
               :disabled="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading"
-              variant="outline"
+              :variant="(affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading) ? 'soft' : 'outline'"
+              :class="affStore.affiliations.pagination.page === 1 || affStore.affiliations.loading ? 'text-gray-400' : ''"
               size="sm"
               @click="affStore.goToPreviousPage()"
             />
             <UButton
               icon="i-heroicons-chevron-right-20-solid"
               :disabled="!affStore.affiliations.hasMore || affStore.affiliations.loading"
-              variant="outline"
+              :variant="(!affStore.affiliations.hasMore || affStore.affiliations.loading) ? 'soft' : 'outline'"
+              :class="!affStore.affiliations.hasMore || affStore.affiliations.loading ? 'text-gray-400' : ''"
               size="sm"
               @click="affStore.goToNextPage()"
             />
