@@ -224,7 +224,7 @@ describe('business utils', () => {
 
     it('should create a draft filing for an amalgamation application', async () => {
       const mockResponse = { filing: { business: { identifier: 'BC1234567' } } }
-      
+
       // Mock the $legalApi call to succeed
       mockLegalApi.mockResolvedValue(mockResponse)
       // Ensure the flag is off so it uses legalApiUrl
