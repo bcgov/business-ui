@@ -19,6 +19,25 @@ mockNuxtImport('useConnectLaunchdarklyStore', () => {
   )
 })
 
+// Mock useConnectAccountStore for the legal-api plugin
+mockNuxtImport('useConnectAccountStore', () => {
+  return () => ({
+    currentAccount: {
+      id: '12345'
+    }
+  })
+})
+
+// Mock useNuxtApp to provide the plugins
+const mockLegalApi = vi.fn()
+const mockAuthApi = vi.fn()
+mockNuxtImport('useNuxtApp', () => {
+  return () => ({
+    $legalApi: mockLegalApi,
+    $authApi: mockAuthApi
+  })
+})
+
 describe('business utils', () => {
   describe('determineDisplayName', () => {
     it('should return the legal name when alternate names are disabled', () => {
@@ -193,7 +212,7 @@ describe('business utils', () => {
 
   describe('createNamedBusiness', () => {
     afterEach(() => {
-      vi.unstubAllGlobals()
+      vi.clearAllMocks()
     })
 
     it('should throw an error if nameRequest is missing', async () => {
@@ -205,8 +224,11 @@ describe('business utils', () => {
 
     it('should create a draft filing for an amalgamation application', async () => {
       const mockResponse = { filing: { business: { identifier: 'BC1234567' } } }
-      const _fetch = vi.fn().mockResolvedValue(mockResponse)
-      vi.stubGlobal('$fetch', _fetch)
+      
+      // Mock the $legalApi call to succeed
+      mockLegalApi.mockResolvedValue(mockResponse)
+      // Ensure the flag is off so it uses legalApiUrl
+      mockGetStoredFlag.mockReturnValue(false)
 
       const business = {
         corpType: { code: CorpTypes.BC_COMPANY },
@@ -215,9 +237,8 @@ describe('business utils', () => {
 
       const response = await createNamedBusiness({ filingType: FilingTypes.AMALGAMATION_APPLICATION, business })
 
-      expect(_fetch).toHaveBeenCalledWith(expect.stringContaining('/businesses?draft=true'), expect.objectContaining({
+      expect(mockLegalApi).toHaveBeenCalledWith('/businesses?draft=true', expect.objectContaining({
         method: 'POST',
-        headers: { 'App-Name': 'Business Registry Dashboard', Authorization: 'Bearer 123' },
         body: expect.objectContaining({
           filing: expect.objectContaining({
             amalgamationApplication: expect.objectContaining({
@@ -233,31 +254,32 @@ describe('business utils', () => {
     })
 
     it('should attempt to delete affiliation if draft creation fails', async () => {
-      const _fetch = vi.fn()
-      vi.stubGlobal('$fetch', _fetch)
+      // Mock the $legalApi call to return undefined (simulating failure)
+      mockLegalApi.mockResolvedValue(undefined)
+      mockAuthApi.mockResolvedValue({})
+      // Ensure the flag is off so it uses legalApiUrl
+      mockGetStoredFlag.mockReturnValue(false)
 
       const business = {
         businessIdentifier: 'BC1234567',
         corpType: { code: CorpTypes.BC_COMPANY },
-        nameRequest: { legalType: CorpTypes.BC_COMPANY, nrNumber: 'NR1234567' }
+        nameRequest: { legalType: CorpTypes.BC_COMPANY, nrNumber: 'BC1234567' }
       } as Business
 
       const response = await createNamedBusiness({ filingType: FilingTypes.AMALGAMATION_APPLICATION, business })
 
-      expect(_fetch).toHaveBeenCalledTimes(2)
-
-      const secondCallArgs = _fetch.mock.calls[1]
-
-      expect(secondCallArgs[0]).toContain('/orgs/undefined/affiliations/BC1234567')
-      expect(secondCallArgs[1]).toMatchObject({
+      // Verify both API calls were made
+      expect(mockLegalApi).toHaveBeenCalledWith('/businesses?draft=true', expect.any(Object))
+      expect(mockAuthApi).toHaveBeenCalledWith('/orgs/12345/affiliations/BC1234567', expect.objectContaining({
         method: 'DELETE',
-        headers: { Authorization: expect.stringContaining('Bearer') },
         body: expect.objectContaining({
           data: expect.objectContaining({
-            logDeleteDraft: true
+            logDeleteDraft: true,
+            passcodeResetEmail: undefined,
+            resetPasscode: false
           })
         })
-      })
+      }))
       expect(response).toEqual({ errorMsg: 'Cannot add business due to some technical reasons' })
     })
   })
