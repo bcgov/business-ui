@@ -32,21 +32,21 @@ export default defineNuxtPlugin(() => {
         headers.push(['App-Name', appName])
         if (useBusinessApiKey && config.public.businessApiKey) {
           headers.push(['Account-Id', accountStore.currentAccount.id])
-          headers.push(['X-Apikey', config.public.businessApiKey])
+          headers.push(['X-Apikey', config.public.businessApiKey as string])
         }
       } else if (headers instanceof Headers) {
         headers.set('Authorization', `Bearer ${$keycloak.token}`)
         headers.set('App-Name', appName)
         if (useBusinessApiKey && config.public.businessApiKey) {
           headers.set('Account-Id', accountStore.currentAccount.id)
-          headers.set('X-Apikey', config.public.businessApiKey)
+          headers.set('X-Apikey', config.public.businessApiKey as string)
         }
       } else {
         headers.Authorization = `Bearer ${$keycloak.token}`
         headers['App-Name'] = appName
         if (useBusinessApiKey && config.public.businessApiKey) {
           headers['Account-Id'] = accountStore.currentAccount.id
-          headers['X-Apikey'] = config.public.businessApiKey
+          headers['X-Apikey'] = config.public.businessApiKey as string
         }
       }
     }
