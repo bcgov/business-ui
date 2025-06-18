@@ -142,6 +142,8 @@ export default defineNuxtConfig({
       businessDashUrl: process.env.NUXT_BUSINESS_DASH_URL,
       corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL,
       legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
+      businessApiGwUrl: `${process.env.NUXT_BUSINESS_API_GW_URL}${process.env.NUXT_BUSINESS_API_VERSION_2}`,
+      businessApiKey: process.env.NUXT_BUSINESS_API_KEY,
       regSearchApiUrl: `${process.env.NUXT_REGISTRIES_SEARCH_API_URL}${process.env.NUXT_REGISTRIES_SEARCH_API_VERSION}`,
       xApiKey: process.env.NUXT_X_API_KEY,
       namexApiUrl: `${process.env.NUXT_NAMEX_API_URL}${process.env.NUXT_NAMEX_API_VERSION}`,

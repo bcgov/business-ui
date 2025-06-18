@@ -241,19 +241,10 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
     }
   }
 
-  const keycloak = useKeycloak()
-  const token = await keycloak.getToken()
-  const legalApiUrl = useRuntimeConfig().public.legalApiUrl
-  const authApiUrl = useRuntimeConfig().public.authApiURL
+  const { $authApi, $legalApi } = useNuxtApp()
 
-  // create an affiliation between implicit org and requested business
-  // const response = await BusinessService.createDraftFiling(filingBody)
-  const response = await $fetch(`${legalApiUrl}/businesses?draft=true`, {
+  const response = await $legalApi('/businesses?draft=true', {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'App-Name': useRuntimeConfig().public.appName
-    },
     body: filingBody
   })
   // if (response?.status >= 200 && response?.status < 300) {
@@ -264,13 +255,9 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
   // delete the created affiliation if the update failed for avoiding orphan records
   // unable to do this from backend, since it causes a circular dependency
   const incorporationNumber = business.businessIdentifier
-  // await OrgService.removeAffiliation(Number(currentAccountId), incorporationNumber, undefined, false)
-  await $fetch(`${authApiUrl}/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
+
+  await $authApi(`/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
     method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'App-Name': useRuntimeConfig().public.appName
-    },
     body: { data: { passcodeResetEmail: undefined, resetPasscode: false, logDeleteDraft: true } }
   })
 
