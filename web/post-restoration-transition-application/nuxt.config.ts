@@ -25,7 +25,6 @@ export default defineNuxtConfig({
   ],
 
   modules: [
-    '@pinia/nuxt',
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
     'nuxt-lodash'
