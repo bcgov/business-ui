@@ -12,7 +12,7 @@ defaults:
     working-directory: "./web/post-restoration-transition-application"
 
 jobs:
-  business-people-cd:
+  post-restoration-transition-application-cd:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
       app_name: "post-restoration-transition-application-filing"

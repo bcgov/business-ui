@@ -1,4 +1,4 @@
-# Code of Conduct - Person Roles UI
+# Code of Conduct - Post Restoration Transition Application UI
 
 ## Our Pledge
 
