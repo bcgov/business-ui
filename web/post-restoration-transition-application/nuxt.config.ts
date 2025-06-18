@@ -25,14 +25,15 @@ export default defineNuxtConfig({
   ],
 
   modules: [
+    '@pinia/nuxt',
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
     'nuxt-lodash'
   ],
 
   extends: [
-    '@sbc-connect/nuxt-core-layer-beta',
-    'github:bcgov/business-ui/web/person-roles'
+    'github:bcgov/business-ui/web/person-roles',
+    ['@sbc-connect/nuxt-core-layer-beta', { install: true }]
   ],
 
   router: {
