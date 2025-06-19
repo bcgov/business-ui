@@ -1,9 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const rtc = useRuntimeConfig().public
 const accountStore = useConnectAccountStore()
-const ptraStore = usePostRestorationTransitionApplicationStore()
 
 useHead({
   title: t('page.postRestorationTransitionApplication.title')
@@ -28,39 +26,6 @@ definePageMeta({
 
 const businessId = route.params.businessId as string
 
-const businessName = computed(() => {
-  const alternateName = ptraStore.activeBusiness?.alternateNames?.length > 0
-    ? ptraStore.activeBusiness?.alternateNames[0]?.name
-    : t('label.noName')
-
-  return ptraStore.activeBusiness?.legalName || alternateName || t('label.noName')
-})
-
-const updateBreadcrumbs = () => {
-  setBreadcrumbs([
-    {
-      label: t('label.bcRegistriesDashboard'),
-      to: `${rtc.registryHomeUrl}dashboard`,
-      external: true
-    },
-    {
-      label: t('label.myBusinessRegistry'),
-      to: `${rtc.brdUrl}account/${businessId}`,
-      appendAccountId: true,
-      external: true
-    },
-    {
-      label: businessName.value,
-      to: `${rtc.businessDashboardUrl + businessId}`,
-      appendAccountId: true,
-      external: true
-    },
-    {
-      label: t('page.postRestorationTransitionApplication.h1')
-    }
-  ])
-}
-
 const postRestorationTransitionApplicationStore = usePostRestorationTransitionApplicationStore()
 postRestorationTransitionApplicationStore.init(businessId)
 
@@ -83,10 +48,6 @@ feeStore.fees = {
     waived: true
   }
 }
-
-watch(businessName, () => {
-  updateBreadcrumbs()
-}, { immediate: true })
 </script>
 
 <template>
