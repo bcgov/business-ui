@@ -5,5 +5,8 @@ export default {
       title: 'Post Restoration Transition Application',
       h1: 'Post Restoration Transition Application'
     }
+  },
+  label: {
+    noName: 'undefined'
   }
 }
