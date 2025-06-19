@@ -1,4 +1,5 @@
-export const usePostRestorationTransitionApplicationStore = defineStore('post-restoration-transition-application-store', () => {
+export const usePostRestorationTransitionApplicationStore
+  = defineStore('post-restoration-transition-application-store', () => {
   const t = useNuxtApp().$i18n.t
   const legalApi = useLegalApi()
   const authApi = useAuthApi()

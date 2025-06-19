@@ -92,8 +92,8 @@ watch(businessName, () => {
 <template>
   <div class="py-10">
     <!--    This examples showcase import and reuse section control form the person-roles layer -->
-    test <br />
-    todo: add content here when the sections are added <br />
+    test <br>
+    todo: add content here when the sections are added <br>
     {{ accountStore.currentAccount }}
   </div>
 </template>
