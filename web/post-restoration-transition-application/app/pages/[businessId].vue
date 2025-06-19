@@ -55,10 +55,31 @@ feeStore.fees = {
     waived: true
   }
 }
+
+const sectionErrors = ref({
+  reviewAndConfirm: false
+})
 </script>
 
 <template>
   <div class="py-10 space-y-5">
+    <h1>{{ $t('page.postRestorationTransitionApplication.h1') }}</h1>
+
+    <FormSection
+      :title="$t('page.sections.reviewAndConfirm.title')"
+    >
+      <FormSubSection
+        title="subsection 1"
+      >
+        <!--        :invalid="sectionErrors.reviewAndConfirm"-->
+        <p class="text-sm">
+          {{ $t('page.sections.reviewAndConfirm.description') }}
+        </p>
+
+        <TATable>
+        </TATable>
+      </FormSubSection>
+    </FormSection>
     <div>
       <h2>{{ $t("transitionApplication.subtitle.documentDelivery") }}</h2>
       <p>{{ $t("text.documentDelivery") }}</p>

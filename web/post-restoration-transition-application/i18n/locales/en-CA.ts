@@ -4,7 +4,7 @@
 export default {
   transitionApplication: {
     // Ordered by how they appear on the page
-    title: 'Post Restoration Transition Application',
+    title: 'Transition Application',
     subtitle: {
       documentDelivery: '2. Document Delivery',
       courtOrder: '3. Court Order and Plan of Arrangement',
