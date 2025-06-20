@@ -220,6 +220,10 @@ export default {
     accessRestricted: {
       title: 'Access Restricted',
       description: 'You don’t have permission to access this feature. If you have an administrator, contact them for help. Otherwise, contact BC Registries for support.'
+    },
+    noSubscription: {
+      title: 'Incomplete Account',
+      description: 'Please complete your account creation and then try again.'
     }
   },
   entityTypes: {

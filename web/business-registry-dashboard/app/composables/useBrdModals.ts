@@ -70,6 +70,25 @@ export const useBrdModals = () => {
     })
   }
 
+  function openNoSubscriptionModal () {
+    const config = useRuntimeConfig().public
+    const accountStore = useConnectAccountStore()
+
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.noSubscription.title'),
+        description: t('error.noSubscription.description')
+      },
+      actions: [{
+        label: t('btn.close'),
+        handler: () => close()
+      }],
+      onModalClosed: () => {
+        window.location.href = `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`
+      }
+    } as any)
+  }
+
   function openInvalidNameRequest () {
     modal.open(ModalBase, {
       error: {
@@ -149,6 +168,7 @@ export const useBrdModals = () => {
     openAuthEmailSent,
     openContinuationInCoopModal,
     openAccessRestricted,
+    openNoSubscriptionModal,
     close
   }
 }

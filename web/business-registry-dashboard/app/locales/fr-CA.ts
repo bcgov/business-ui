@@ -210,6 +210,10 @@ export default {
     accessRestricted: {
       title: 'Accès Restreint',
       description: 'Vous n\'avez pas l\'autorisation d\'accéder à cette fonctionnalité. Si vous avez un administrateur, contactez-le pour obtenir de l\'aide. Sinon, contactez BC Registries pour obtenir de l\'aide.'
+    },
+    noSubscription: {
+      title: 'Compte Incomplet',
+      description: 'Veuillez compléter la création de votre compte et réessayer.'
     }
   },
   entityTypes: {
