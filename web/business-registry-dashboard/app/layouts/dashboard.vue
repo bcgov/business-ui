@@ -4,6 +4,8 @@ const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
 const route = useRoute()
+const brdModal = useBrdModals()
+const affStore = useAffiliationsStore()
 
 // Create a computed property to determine if we should show staff dashboard text based on authorization
 const showStaffText = computed(() => {
@@ -48,7 +50,7 @@ watch(() => accountStore.currentAccount.id, (newAccountId) => {
   }
 })
 
-onMounted(() => {
+onMounted(async () => {
   // Redirect unauthenticated users to login page with current URL as redirect target
   if (!isAuthenticated.value) {
     const registryHomeURL = config.registryHomeURL
@@ -63,6 +65,12 @@ onMounted(() => {
       accountStore.currentAccount.accountStatus !== AccountStatus.ACTIVE) {
     const accountId = accountStore.currentAccount.id
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
+  }
+
+  // Load and check if the current account has an active subscription to the business registry dashboard
+  await affStore.loadSubscriptionStatus()
+  if (!affStore.isSubscribed) {
+    brdModal.openNoSubscriptionModal()
   }
 })
 </script>

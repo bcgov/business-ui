@@ -1,22 +1,16 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { HelpTextSection } from '#components'
 import { enI18n } from '~~/tests/mocks/i18n'
 import DashboardLayout from '~/layouts/dashboard.vue'
 
-const mockAccountStore = {
-  currentAccount: {
-    id: '123'
-  }
+// Mock the BRD modals
+const mockBrdModals = {
+  openNoSubscriptionModal: vi.fn()
 }
 
-// Mock the store
-vi.mock('#imports', async () => {
-  const actual = await vi.importActual('#imports')
-  return {
-    ...actual,
-    useConnectAccountStore: () => mockAccountStore
-  }
+mockNuxtImport('useBrdModals', () => {
+  return () => mockBrdModals
 })
 
 describe('Dashboard Layout', () => {

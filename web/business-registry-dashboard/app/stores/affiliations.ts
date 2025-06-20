@@ -32,6 +32,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     error: false
   })
 
+  const isSubscribed = ref(false)
+
   // Track if filters changed during loading
   const filtersChangedDuringLoading = ref(false)
   // Store the latest filter values
@@ -804,6 +806,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function loadSubscriptionStatus () {
+    const hasActiveSubscription = await hasActiveBusinessRegistryDashboardSubscription(accountStore.currentAccount.id)
+    isSubscribed.value = hasActiveSubscription
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -842,6 +849,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     enablePagination,
     goToNextPage,
     goToPreviousPage,
+    isSubscribed,
+    loadSubscriptionStatus,
     $reset
   }
 }

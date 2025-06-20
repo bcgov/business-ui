@@ -58,6 +58,11 @@ export function useMagicLinkProcessing () {
    */
   const processMagicLink = async (config: MagicLinkConfig) => {
     try {
+      // Check if the current account has an active subscription to BRD. If not, stop processing
+      if (!affStore.isSubscribed) {
+        return
+      }
+
       isLoading.value = true
       // Extract query parameters from the URL
       const { nr, email, phone } = route.query as { nr: string, email: string, phone: string }
