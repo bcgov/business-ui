@@ -56,9 +56,12 @@ describe('<FormAddBusinessBase />', () => {
     expect(wrapper).toBeTruthy()
     expect(wrapper.find('legend').text()).toBe(enI18n.global.t('form.manageBusiness.legend'))
 
-    const cancelButton = wrapper.find('button[type="button"]')
-    expect(cancelButton.exists()).toBe(true)
-    expect(cancelButton.text()).toBe(enI18n.global.t('btn.cancel'))
+    const buttons = findAllButtons()
+    expect(buttons.length).toBeGreaterThanOrEqual(3) // help button + cancel + submit
+
+    const cancelButton = wrapper.findAll('button[type="button"]').find(btn => btn.text() === enI18n.global.t('btn.cancel'))
+    expect(cancelButton).toBeTruthy()
+    expect(cancelButton?.text()).toBe(enI18n.global.t('btn.cancel'))
 
     const submitButton = wrapper.find('button[type="submit"]')
     expect(submitButton.exists()).toBe(true)
@@ -68,7 +71,7 @@ describe('<FormAddBusinessBase />', () => {
   describe('Accordian options', () => {
     it('should display no options when auth options is empty', async () => {
       wrapper = await mountComp()
-      expect(findAllButtons()).toHaveLength(2) // should only have cancel and submit buttons
+      expect(findAllButtons()).toHaveLength(3) // help button + cancel + submit buttons
     })
 
     it('should display passcode option', async () => {
@@ -78,7 +81,7 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
+      expect(buttons).toHaveLength(3) // help button + cancel + submit (single option auto-selected, no radio shown)
 
       // should have passcode label (no radio button for single option)
       expect(wrapper.text()).toContain('Passcode Button Label')
@@ -91,7 +94,7 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
+      expect(buttons).toHaveLength(3) // help button + cancel + submit (single option auto-selected, no radio shown)
 
       // should have firm label (no radio button for single option)
       expect(wrapper.text()).toContain('Firm Button Label')
@@ -104,7 +107,7 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(2) // cancel/submit (single option auto-selected, no radio shown)
+      expect(buttons).toHaveLength(3) // help button + cancel + submit (single option auto-selected, no radio shown)
 
       // should have email label (no radio button for single option)
       expect(wrapper.text()).toContain('Email Button Label')
@@ -117,7 +120,7 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(3) // cancel/submit/account select dropdown (single option auto-selected, no radio shown)
+      expect(buttons).toHaveLength(4) // help button + cancel + submit + account select dropdown (single option auto-selected, no radio shown)
 
       // should have delegation label (no radio button for single option)
       expect(wrapper.text()).toContain('Delegation Button Label')
@@ -134,7 +137,7 @@ describe('<FormAddBusinessBase />', () => {
       }
       wrapper = await mountComp(props)
       const buttons = findAllButtons()
-      expect(buttons).toHaveLength(2) // cancel/submit (radio buttons are inputs, not buttons)
+      expect(buttons).toHaveLength(3) // help button + cancel + submit (radio buttons are inputs, not buttons)
 
       // should have radio buttons for multiple options
       expect(findRadioButton('passcode-option').exists()).toBe(true)
@@ -434,11 +437,17 @@ describe('<FormAddBusinessBase />', () => {
           await selectMenu.trigger('click') // open menu
 
           const options = wrapper.findAll('li')
-          expect(options).toHaveLength(2) // should have 2 options based off 2 accounts
-          expect(options[0]?.text()).toContain('name1 - branch1') // should combine branch name on option if exists
-          expect(options[1]?.text()).toContain('name2') // no branch name so name only in option
+          expect(options.length).toBeGreaterThanOrEqual(2) // should have at least 2 options based off 2 accounts
 
-          await options[0]?.trigger('click') // click first option
+          // Find the account options specifically
+          const accountOptions = options.filter(option =>
+            option.text().includes('name1') || option.text().includes('name2')
+          )
+          expect(accountOptions).toHaveLength(2)
+          expect(accountOptions[0]?.text()).toContain('name1 - branch1') // should combine branch name on option if exists
+          expect(accountOptions[1]?.text()).toContain('name2') // no branch name so name only in option
+
+          await accountOptions[0]?.trigger('click') // click first account option
 
           expect(selectMenu.text()).toContain('name1 - branch1')
           expect(selectMenu.attributes('aria-label')).toEqual('Select an account: current selection, name1')

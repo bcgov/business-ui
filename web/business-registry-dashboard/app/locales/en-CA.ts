@@ -310,7 +310,7 @@ export default {
       chooseOption: 'Choose one of the options below:',
       authOption: {
         passcode: {
-          accordianLabel: {
+          radioLabel: {
             default: 'Use the business password',
             coopOrBen: 'Use the business passcode'
           },
@@ -343,7 +343,7 @@ export default {
           }
         },
         firm: {
-          accordianLabel: {
+          radioLabel: {
             default: 'Use the name of a proprietor or partner'
           },
           fields: {
@@ -363,11 +363,13 @@ export default {
           }
         },
         email: {
-          accordianLabel: {
+          radioLabel: {
             default: 'Confirm authorization using your email address',
             firm: 'Confirm authorization using your business email address',
-            corpOrBenOrCoop: 'Confirm authorization using your registered office email address'
+            corpOrBenOrCoop: 'Confirm authorization using your registered office email address',
+            coop: 'Confirm authorization using your registered office email address'
           },
+          coopSubtext: '(If you forgot or don\'t have a business passcode)',
           sentTo: {
             default: 'An email will be sent to the contact email of the business:',
             firm: 'An email will be sent to the business contact email of the business:',
@@ -377,7 +379,7 @@ export default {
           update: 'To update this email, download and submit this'
         },
         delegation: {
-          accordianLabel: {
+          radioLabel: {
             default: 'Request authorization from an account managing this business'
           },
           fields: {

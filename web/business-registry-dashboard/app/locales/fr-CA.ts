@@ -300,7 +300,7 @@ export default {
       chooseOption: 'Choisissez une des options ci-dessous:',
       authOption: {
         passcode: {
-          accordianLabel: {
+          radioLabel: {
             default: "Utiliser le mot de passe de l'entreprise",
             coopOrBen: "Utiliser le code d'accès de l'entreprise"
           },
@@ -333,7 +333,7 @@ export default {
           }
         },
         firm: {
-          accordianLabel: {
+          radioLabel: {
             default: "Utiliser le nom d'un propriétaire ou d'un partenaire"
           },
           fields: {
@@ -353,11 +353,13 @@ export default {
           }
         },
         email: {
-          accordianLabel: {
+          radioLabel: {
             default: "Confirmer l'autorisation en utilisant votre adresse e-mail",
             firm: "Confirmer l'autorisation en utilisant l'adresse e-mail de votre entreprise",
-            corpOrBenOrCoop: "Confirmez la permission en utilisant l'adresse courriel de votre siège social"
+            corpOrBenOrCoop: "Confirmez la permission en utilisant l'adresse courriel de votre siège social",
+            coop: "Confirmez la permission en utilisant l'adresse courriel de votre siège social"
           },
+          coopSubtext: '(Si vous avez oublié ou n\'avez pas de code d\'entreprise)',
           sentTo: {
             default: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
             firm: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
@@ -367,7 +369,7 @@ export default {
           update: 'Pour mettre à jour ce courriel, téléchargez et soumettez ceci'
         },
         delegation: {
-          accordianLabel: {
+          radioLabel: {
             default: "Demander l'autorisation d'un compte gérant l'entreprise"
           },
           fields: {
