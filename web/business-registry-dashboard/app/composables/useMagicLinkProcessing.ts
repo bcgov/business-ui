@@ -58,10 +58,8 @@ export function useMagicLinkProcessing () {
    */
   const processMagicLink = async (config: MagicLinkConfig) => {
     try {
-      // Check if the current account has an active subscription before processing
-      const affStore = useAffiliationsStore()
+      // Check if the current account has an active subscription to BRD. If not, stop processing
       if (!affStore.isSubscribed) {
-        // Stop processing if the account does not have an active subscription
         return
       }
 
