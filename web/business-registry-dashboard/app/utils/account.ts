@@ -23,8 +23,11 @@ export async function hasActiveBusinessRegistryDashboardSubscription (orgId: num
     const products = await $authApi<string>(`/orgs/${orgId}/products`)
     const parsedProducts = JSON.parse(products) as OrgProduct[]
 
+    // Code for the Business Registry Dashboard product
+    const BUSINESS_PRODUCT_CODE = 'BUSINESS'
+
     // Find the BUSINESS product (BRD)
-    const businessProduct = parsedProducts.find(parsedProduct => parsedProduct.code === 'BUSINESS')
+    const businessProduct = parsedProducts.find(parsedProduct => parsedProduct.code === BUSINESS_PRODUCT_CODE)
 
     // If no business product is found, return false
     if (!businessProduct) {
