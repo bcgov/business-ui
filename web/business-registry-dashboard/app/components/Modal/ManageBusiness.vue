@@ -58,33 +58,35 @@ const authOptions = computed<AccordionItem[]>(() => {
   if (showPasscodeOption.value) {
     options.push({
       label: (businessDetails.value.isCoop || businessDetails.value.isBenefit)
-        ? t('form.manageBusiness.authOption.passcode.accordianLabel.coopOrBen')
-        : t('form.manageBusiness.authOption.passcode.accordianLabel.default'),
+        ? t('form.manageBusiness.authOption.passcode.radioLabel.coopOrBen')
+        : t('form.manageBusiness.authOption.passcode.radioLabel.default'),
       slot: 'passcode-option'
     })
   }
 
   if (businessDetails.value.isFirm) {
     options.push({
-      label: t('form.manageBusiness.authOption.firm.accordianLabel.default'),
+      label: t('form.manageBusiness.authOption.firm.radioLabel.default'),
       slot: 'firm-option'
     })
   }
 
   if (showEmailOption.value) {
     options.push({
-      label: isCorpOrBenOrCoop.value
-        ? t('form.manageBusiness.authOption.email.accordianLabel.corpOrBenOrCoop')
-        : businessDetails.value.isFirm && contactEmail.value !== ''
-          ? t('form.manageBusiness.authOption.email.accordianLabel.firm')
-          : t('form.manageBusiness.authOption.email.accordianLabel.default'),
+      label: businessDetails.value.isCoop
+        ? t('form.manageBusiness.authOption.email.radioLabel.coop')
+        : isCorpOrBenOrCoop.value
+          ? t('form.manageBusiness.authOption.email.radioLabel.corpOrBenOrCoop')
+          : businessDetails.value.isFirm && contactEmail.value !== ''
+            ? t('form.manageBusiness.authOption.email.radioLabel.firm')
+            : t('form.manageBusiness.authOption.email.radioLabel.default'),
       slot: 'email-option'
     })
   }
 
   if (affiliatedAccounts.value.length > 0 && (ldStore.getStoredFlag(LDFlags.EnableAffiliationDelegation) || false)) {
     options.push({
-      label: t('form.manageBusiness.authOption.delegation.accordianLabel.default'),
+      label: t('form.manageBusiness.authOption.delegation.radioLabel.default'),
       slot: 'delegation-option'
     })
   }

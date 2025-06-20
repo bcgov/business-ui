@@ -266,19 +266,33 @@ watch(() => props.authOptions, (newOptions) => {
               type="radio"
               class="custom-radio mt-1 size-4"
             >
-            <span
-              :class="[
-                'text-base text-bcGovColor-darkGray',
-                formState.selectedOption === option.slot ? 'font-bold' : 'font-normal'
-              ]"
-            >
-              {{ option.label }}
-            </span>
+            <div class="flex flex-col">
+              <span
+                :class="[
+                  'text-base text-bcGovColor-darkGray',
+                  formState.selectedOption === option.slot ? 'font-bold' : 'font-normal'
+                ]"
+              >
+                {{ option.label }}
+              </span>
+              <span
+                v-if="option.slot === 'email-option' && businessDetails.isCoop"
+                class="mt-1 text-sm text-bcGovColor-midGray"
+              >
+                {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}
+              </span>
+            </div>
           </label>
 
           <!-- For single option, show just the label without radio button -->
           <div v-else class="text-base font-bold text-bcGovColor-darkGray">
             {{ option.label }}
+            <div
+              v-if="option.slot === 'email-option' && businessDetails.isCoop"
+              class="mt-1 text-sm font-normal text-bcGovColor-midGray"
+            >
+              {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}
+            </div>
           </div>
 
           <!-- Show content when this option is selected -->
@@ -346,19 +360,19 @@ watch(() => props.authOptions, (newOptions) => {
                 {{ $t('form.manageBusiness.authOption.email.instructions') }}
               </div>
               <!-- On hold for form.
-              <span v-if="props.isCorpOrBenOrCoop">
+              <div class="mt-3">
                 {{ $t('form.manageBusiness.authOption.email.update') }}
                 <a
-                  href=" "
+                  href=""
                   target="_blank"
                   class="text-blue-500 underline"
                 >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
                 </a>
                 <UIcon
                   name="i-mdi-open-in-new"
-                  class="mr-2 size-5 text-bcGovColor-activeBlue"
+                  class="ml-1 size-4 text-bcGovColor-activeBlue"
                 />
-              </span> -->
+              </div> -->
             </div>
 
             <!-- delegation option content -->
@@ -436,8 +450,8 @@ watch(() => props.authOptions, (newOptions) => {
       :description="$t('form.manageBusiness.noOptionAlert')"
     />
 
-    <div class="pt-8">
-      <div v-if="props.isCorpOrBenOrCoop" class="place-content-start justify-start">
+    <div class="pt-6">
+      <div class="place-content-start justify-start">
         <HelpBusinessContact />
       </div>
       <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
