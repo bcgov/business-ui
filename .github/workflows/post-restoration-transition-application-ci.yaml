@@ -1,0 +1,22 @@
+name: Post Restoration Transition Application UI CI
+
+on:
+  pull_request:
+    paths:
+      - "web/post-restoration-transition-application/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: "./web/post-restoration-transition-application"
+
+jobs:
+  post-restoration-transition-application-cd:
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
+    with:
+      app_name: "post-restoration-transition-application-filing"
+      working_directory: "./web/post-restoration-transition-application"
+      codecov_flag: "postrestorationtransitionapplication"
+      node_version: 24
+      pnpm_version: 10.0.0
