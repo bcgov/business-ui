@@ -24,7 +24,7 @@ export async function hasActiveBusinessRegistryDashboardSubscription (orgId: num
     const parsedProducts = JSON.parse(products) as OrgProduct[]
 
     // Find the BUSINESS product (BRD)
-    const businessProduct = parsedProducts.find(parsedProduct => parsedProduct.code === OrgProductCodes.BUSINESS)
+    const businessProduct = parsedProducts.find(parsedProduct => parsedProduct.code === 'BUSINESS')
 
     // If no business product is found, return false
     if (!businessProduct) {
