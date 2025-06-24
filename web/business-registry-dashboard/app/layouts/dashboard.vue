@@ -69,7 +69,7 @@ onMounted(async () => {
 
   // Load and check if the current account has an active subscription to the business registry dashboard
   await affStore.loadSubscriptionStatus()
-  if (!affStore.isSubscribed) {
+  if (affStore.isSubscribed !== true) {
     brdModal.openNoSubscriptionModal()
   }
 })

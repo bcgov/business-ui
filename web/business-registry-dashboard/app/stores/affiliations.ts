@@ -32,7 +32,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     error: false
   })
 
-  const isSubscribed = ref(false)
+  const isSubscribed = ref<boolean | null>(null)
 
   // Track if filters changed during loading
   const filtersChangedDuringLoading = ref(false)
@@ -826,8 +826,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function loadSubscriptionStatus () {
-    const hasActiveSubscription = await hasActiveBusinessRegistryDashboardSubscription(accountStore.currentAccount.id)
-    isSubscribed.value = hasActiveSubscription
+    // Only make the API call if subscription status hasn't been loaded yet
+    if (isSubscribed.value === null) {
+      const hasActiveSubscription = await hasActiveBusinessRegistryDashboardSubscription(accountStore.currentAccount.id)
+      isSubscribed.value = hasActiveSubscription
+    }
   }
 
   function $reset () {
