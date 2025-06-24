@@ -32,7 +32,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     error: false
   })
 
-  const isSubscribed = ref(false)
+  const isSubscribed = ref<boolean | null>(null)
 
   // Track if filters changed during loading
   const filtersChangedDuringLoading = ref(false)
@@ -347,16 +347,26 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
-  // Watch for changes to account, feature flags, and pagination page
+  // Watch for account changes - reset page and load
+  watch(
+    () => accountStore.currentAccount.id,
+    async () => {
+      // Reset to page 1 when account changes
+      affiliations.pagination.page = 1
+      if (!affiliations.loading) {
+        await loadAffiliations()
+      }
+    },
+    { immediate: true }
+  )
+
+  // Watch for feature flag changes
   watch(
     [
-      () => accountStore.currentAccount.id,
       () => enableServerFiltering.value,
-      () => enablePagination.value,
-      () => affiliations.pagination.page
+      () => enablePagination.value
     ],
     async () => {
-      // Always call loadAffiliations for account and pagination changes
       if (!affiliations.loading) {
         await loadAffiliations()
       }
@@ -364,13 +374,22 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     { deep: true }
   )
 
-  // Watch for changes to pagination limit.
+  // Watch for pagination page changes (excluding account changes)
+  watch(
+    () => affiliations.pagination.page,
+    async () => {
+      if (!affiliations.loading) {
+        await loadAffiliations()
+      }
+    }
+  )
+
+  // Watch for pagination limit changes
   watch(
     () => affiliations.pagination.limit,
     async () => {
       // Reset to page 1 when limit changes
       affiliations.pagination.page = 1
-      // call loadAffiliations when limit changes on page 1
       if (!affiliations.loading) {
         await loadAffiliations()
       }
@@ -807,8 +826,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function loadSubscriptionStatus () {
-    const hasActiveSubscription = await hasActiveBusinessRegistryDashboardSubscription(accountStore.currentAccount.id)
-    isSubscribed.value = hasActiveSubscription
+    // Only make the API call if subscription status hasn't been loaded yet
+    if (isSubscribed.value === null) {
+      const hasActiveSubscription = await hasActiveBusinessRegistryDashboardSubscription(accountStore.currentAccount.id)
+      isSubscribed.value = hasActiveSubscription
+    }
   }
 
   function $reset () {
