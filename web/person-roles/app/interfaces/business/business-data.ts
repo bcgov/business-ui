@@ -19,7 +19,7 @@ export interface BusinessDataSlim {
 
 export interface BusinessData extends BusinessDataSlim {
   cacheId?: number
-  allowedActions: AllowedActions[]
+  allowedActions: AllowedActions
   arMaxDate: IsoDatePacific
   arMinDate: IsoDatePacific
   associationType?: AssociationType | null

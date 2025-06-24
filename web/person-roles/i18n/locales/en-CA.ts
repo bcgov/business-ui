@@ -119,6 +119,10 @@ export default {
     unsavedChanges: {
       title: 'Unsaved changes',
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'
+    },
+    filingNotAllowed: {
+      title: 'Filing not available',
+      description: 'This filing is not available for this business type.'
     }
   },
   text: {

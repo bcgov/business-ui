@@ -58,24 +58,30 @@ async function onFormSubmit(data: Partial<Officer>) {
 
 // TODO: Implement after API ready
 async function submitFiling() {
-  console.info('submit')
-
-  const payload = {
-    relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-  }
-
-  handleButtonLoading(false, 'right', 1)
-
   try {
+    handleButtonLoading(false, 'right', 1)
+
+    const payload = {
+      relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+    }
+
+    // submit filing
     const res = await postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
-    // TODO: remove log
+    // TODO: remove log before prod
     console.info('POST RESPONSE: ', res)
+    // navigate to business dashboard if filing does *not* fail
+    await navigateTo(
+      `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+      {
+        external: true
+      }
+    )
   } catch (e) {
     console.error(e)
+  } finally {
+    // await sleep(1000)
+    handleButtonLoading(true)
   }
-
-  // await sleep(1000)
-  handleButtonLoading(true)
 }
 
 async function cancelFiling() {

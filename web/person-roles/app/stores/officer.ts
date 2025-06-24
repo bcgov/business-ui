@@ -2,6 +2,7 @@ import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
 import type { OfficerRoleObj } from '~/interfaces/officer'
+import { validateBusinessAllowedFilings } from '~/utils/business'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t
@@ -12,7 +13,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   // let initialOfficersRaw: OrgPerson[] = [] // raw officer response on page load/parties fetch
 
-  const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
+  const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
@@ -36,15 +37,21 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       const [authInfo, business, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
-        legalApi.getBusiness(businessId, true),
+        legalApi.getBusiness(businessId),
         legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
+      // validate business is allowed to complete this filing type
+      const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
+      if (!isFilingAllowed) {
+        modal.openOfficerFilingNotAllowedModal()
+        return
+      }
+
       // initialOfficersRaw = parties
 
-      activeBusiness.value = business
-
       // set masthead data
+      activeBusiness.value = business
       const contact = authInfo.contacts[0]
       const ext = contact?.extension ?? contact?.phoneExtension
       const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
@@ -348,7 +355,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     officerTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
-    activeBusiness.value = {} as BusinessDataSlim
+    activeBusiness.value = {} as BusinessData
 
     initialOfficers.value = []
     // initialOfficersRaw = []

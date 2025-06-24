@@ -1,5 +1,9 @@
 import type { ModalButtonProps } from '~/interfaces'
-import { ModalOfficerInitializeError, ModalBase } from '#components'
+import {
+  ModalBase,
+  ModalOfficerInitializeError,
+  ModalOfficerFilingNotAllowed
+} from '#components'
 
 export const useModal = () => {
   const overlay = useOverlay()
@@ -10,6 +14,12 @@ export const useModal = () => {
         status
       }
     })
+
+    await modal.open()
+  }
+
+  async function openOfficerFilingNotAllowedModal() {
+    const modal = overlay.create(ModalOfficerFilingNotAllowed)
 
     await modal.open()
   }
@@ -31,6 +41,7 @@ export const useModal = () => {
 
   return {
     openOfficerInitErrorModal,
+    openOfficerFilingNotAllowedModal,
     openBaseModal
   }
 }
