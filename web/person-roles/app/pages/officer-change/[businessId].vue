@@ -51,6 +51,18 @@ feeStore.fees = {
   }
 }
 
+// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
+// show browser error if unsaved changes
+function onBeforeUnload(event: BeforeUnloadEvent) {
+  if (officerStore.hasChanges) {
+    event.preventDefault()
+    // legacy browsers
+    event.returnValue = true
+  }
+}
+
+const { revoke: revokeBeforeUnloadEvent } = useWindowEventListener('beforeunload', onBeforeUnload)
+
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)
   officerStore.addingOfficer = false
@@ -67,6 +79,7 @@ async function submitFiling() {
 
     // submit filing
     const res = await postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    revokeBeforeUnloadEvent()
     // TODO: remove log before prod
     console.info('POST RESPONSE: ', res)
     // navigate to business dashboard if filing does *not* fail
@@ -154,24 +167,6 @@ watch(
   },
   { immediate: true }
 )
-
-// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
-// show browser error if unsaved changes
-function onBeforeUnload(event: BeforeUnloadEvent) {
-  if (officerStore.hasChanges) {
-    event.preventDefault()
-    // legacy browsers
-    event.returnValue = true
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('beforeunload', onBeforeUnload)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', onBeforeUnload)
-})
 </script>
 
 <template>
