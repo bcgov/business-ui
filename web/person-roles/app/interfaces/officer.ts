@@ -1,9 +1,17 @@
+export interface OfficerRoleObj {
+  roleType: OfficerRole
+  appointmentDate: string // YYYY-MM-DD
+  cessationDate?: string | null
+  roleClass?: string
+}
+
 export interface Officer {
+  id?: string
   firstName: string
   middleName: string
   lastName: string
   preferredName?: string
-  roles: OfficerRole[]
+  roles: OfficerRoleObj[]
   mailingAddress: UiAddress
   deliveryAddress: UiAddress
   sameAsDelivery: boolean
