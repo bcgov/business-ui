@@ -141,13 +141,14 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const roles = row.original.state.officer.roles
+      const allRoles = row.original.state.officer.roles
+      const displayedRoles = allRoles.filter(r => r.cessationDate === null)
       const containerClass = getCellContainerClass(row, 'px-2 py-4 flex flex-col')
 
-      return roles.length
+      return displayedRoles.length
         ? h('ul', { class: containerClass },
-            roles.map(role =>
-              h('li', {}, t(`enum.officerRole.${role}`))
+            displayedRoles.map(role =>
+              h('li', {}, t(`enum.officerRole.${role.roleType}`))
             )
         )
         : null
