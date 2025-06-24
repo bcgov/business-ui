@@ -10,6 +10,11 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: []
+    },
+    // Add cache control headers for better cache management
+    routeRules: {
+      '/_nuxt/**': { headers: { 'Cache-Control': 'max-age=31536000, immutable' } },
+      '/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' } }
     }
   },
 
@@ -163,11 +168,20 @@ export default defineNuxtConfig({
     },
     optimizeDeps: { // optimize immediately instead of after visiting page, prevents page reload in dev when initially visiting a page with these deps
       include: ['zod', 'uuid', 'vitest']
+    },
+    // Add version to build for cache busting
+    define: {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
     }
   },
 
   build: {
     transpile: ['@vuepic/vue-datepicker']
+  },
+
+  // Ensure proper cache busting for assets
+  experimental: {
+    payloadExtraction: false
   },
 
   piniaPersistedstate: {
