@@ -115,7 +115,8 @@ export default defineNuxtConfig({
       legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
       businessDashboardUrl: process.env.NUXT_BUSINESS_DASHBOARD_URL,
       registryHomeUrl: process.env.NUXT_REGISTRY_HOME_URL,
-      brdUrl: process.env.NUXT_BUSINESS_REGISTRY_DASHBOARD_URL
+      brdUrl: process.env.NUXT_BUSINESS_REGISTRY_DASHBOARD_URL,
+      xApiKey: process.env.NUXT_X_APIKEY
     }
   }
 })
