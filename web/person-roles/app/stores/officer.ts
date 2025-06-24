@@ -37,7 +37,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const [authInfo, business, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
         legalApi.getBusiness(businessId, true),
-        legalApi.getParties(businessId, 'officer')
+        legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
       // initialOfficersRaw = parties
@@ -66,34 +66,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
           const id = p.officer.id ? String(p.officer.id) : undefined
           const preferredName = p.officer.alternateName ?? ''
 
-          // TODO: implement when api fixed
-          // const roles: Role[] = p.roles.map(role => ({
-          //   roleType: role.roleType,
-          //   roleClass: 'OFFICER',
-          //   appointmentDate: role.appointmentDate,
-          //   cessationDate: role.cessationDate ?? null
-          // }))
-
-          const roles: OfficerRoleObj[] = [
-            {
-              roleType: OfficerRole.CEO,
-              roleClass: 'OFFICER',
-              appointmentDate: '2022-10-10',
-              cessationDate: null
-            },
-            {
-              roleType: OfficerRole.CHAIR,
-              roleClass: 'OFFICER',
-              appointmentDate: '2022-10-10',
-              cessationDate: null
-            },
-            {
-              roleType: OfficerRole.VP,
-              roleClass: 'OFFICER',
-              appointmentDate: '2022-10-10',
-              cessationDate: null
-            }
-          ]
+          // map api roles to ui roles, filter roles that end up with an undefined type
+          const roles: OfficerRoleObj[] = p.roles.map(role => ({
+            roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType!.toLowerCase()],
+            roleClass: 'OFFICER',
+            appointmentDate: role.appointmentDate,
+            cessationDate: role.cessationDate ?? null
+          })).filter(role => role.roleType !== undefined) as OfficerRoleObj[]
 
           return {
             id,
