@@ -7,6 +7,7 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 const route = useRoute()
 const modal = useModal()
+const { postFiling } = useLegalApi()
 
 useHead({
   title: t('page.officerChange.title')
@@ -58,8 +59,22 @@ async function onFormSubmit(data: Partial<Officer>) {
 // TODO: Implement after API ready
 async function submitFiling() {
   console.info('submit')
+
+  const payload = {
+    relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+  }
+
   handleButtonLoading(false, 'right', 1)
-  await sleep(1000)
+
+  try {
+    const res = await postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    // TODO: remove log
+    console.info('POST RESPONSE: ', res)
+  } catch (e) {
+    console.error(e)
+  }
+
+  // await sleep(1000)
   handleButtonLoading(true)
 }
 
@@ -112,7 +127,8 @@ watch(
       {
         label: t('label.bcRegistriesDashboard'),
         to: `${rtc.registryHomeUrl}dashboard`,
-        external: true
+        external: true,
+        appendAccountId: true
       },
       {
         label: t('label.myBusinessRegistry'),
