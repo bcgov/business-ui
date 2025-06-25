@@ -28,3 +28,27 @@ export interface OfficerTableState {
     actions: OfficerFormAction[]
   }>
 }
+
+export interface OfficerRolePayload {
+  appointmentDate: string // isodate
+  cessationDate: string | null // isodate
+  roleClass?: 'OFFICER'
+  roleType: RoleType
+}
+
+export interface OfficerRelationshipPayload {
+  deliveryAddress: ApiAddress
+  mailingAddress?: ApiAddress
+  roles: OfficerRolePayload[]
+  entity: {
+    alternateName: string
+    familyName: string
+    givenName: string
+    identifier?: string
+    middleInitial: string
+  }
+}
+
+export interface OfficerPayload {
+  relationships: OfficerRelationshipPayload[]
+}

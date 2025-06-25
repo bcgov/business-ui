@@ -15,16 +15,19 @@ export const useLegalApi = () => {
 
   // TODO: update return type
   /**
-   * Submits a new filing.
-   * @param businessId the identifier of the business
-   * @param filingId the id of the filing
-   * @returns a promise to delete the filing
-   */
-  async function postFiling(
+   * Submits a new filing to the Legal API.
+   * This function is generic and will return a typed response
+   * based on the filing name and payload provided.
+   * @param business The business object.
+   * @param filingName The name of the filing.
+   * @param payload The data payload for the specific filing type.
+   * @returns A promise that resolves to the full API response, including the filing payload.
+  */
+  async function postFiling<T extends string, P>(
     business: BusinessData | BusinessDataSlim,
-    filingName: string,
-    payload: unknown
-  ): Promise<unknown> {
+    filingName: T,
+    payload: P
+  ): Promise<FilingPostResponse & { filing: { [K in T]: P } }> {
     const filingBody = {
       filing: {
         header: {

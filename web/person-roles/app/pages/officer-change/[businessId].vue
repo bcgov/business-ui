@@ -68,7 +68,6 @@ async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addingOfficer = false
 }
 
-// TODO: Implement after API ready
 async function submitFiling() {
   try {
     handleButtonLoading(false, 'right', 1)
