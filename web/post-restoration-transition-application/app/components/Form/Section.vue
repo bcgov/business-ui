@@ -1,9 +1,3 @@
-<script lang="ts">
-export default {
-  name: 'FormSection'
-}
-</script>
-
 <script setup lang="ts">
 defineProps<{
   title: string

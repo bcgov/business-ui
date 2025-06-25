@@ -1,23 +1,11 @@
-export interface OfficeAddress {
-  addressCity: string
-  addressCountry: string
-  addressRegion: string
-  addressType: string
-  deliveryInstructions: string
-  id: number
-  postalCode: string
-  streetAddress: string
-  streetAddressAdditional: string
-}
-
 export interface AddressesResponse {
   recordsOffice: {
-    deliveryAddress: OfficeAddress
-    mailingAddress: OfficeAddress
+    deliveryAddress: ApiAddress
+    mailingAddress: ApiAddress
   }
   registeredOffice: {
-    deliveryAddress: OfficeAddress
-    mailingAddress: OfficeAddress
+    deliveryAddress: ApiAddress
+    mailingAddress: ApiAddress
   }
 }
 
