@@ -132,7 +132,7 @@ const directorsColumns = ref([
     cell: ({ row }) => {
       const directorRole = row.original.roles.find((role: Role) => role.roleType === 'Director')
       const fromDate = fromIsoToUsDateFormat(directorRole.appointmentDate)
-      const toDate = fromIsoToUsDateFormat(row.original.endDate) || t('label.current')
+      const toDate = fromIsoToUsDateFormat(directorRole.cessationDate) || t('label.current')
       return h(
         'div',
         { class: 'text-left text-wrap' },
