@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // we are also extending person-roles i18n lang files
 // Use alphabetical unless otherwise noted
 export default {

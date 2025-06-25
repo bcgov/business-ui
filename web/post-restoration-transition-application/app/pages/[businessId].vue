@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-const accountStore = useConnectAccountStore()
+// const accountStore = useConnectAccountStore()
 
 useHead({
   title: t('transitionApplication.title')
