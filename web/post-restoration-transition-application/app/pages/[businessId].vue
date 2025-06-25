@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import type { Office } from '~/interfaces/addresses'
+
 const { t } = useI18n()
 
 // const accountStore = useConnectAccountStore()
@@ -24,6 +27,8 @@ definePageMeta({
   }
 })
 
+const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
+
 const businessId = route.params.businessId as string
 
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -31,7 +36,9 @@ filingStore.init(businessId)
 const {
   compPartyEmail,
   courtOrderNumber,
+  directors,
   folio,
+  offices,
   planOfArrangement,
   regOfficeEmail
 } = storeToRefs(filingStore)
@@ -59,25 +66,78 @@ feeStore.fees = {
 const sectionErrors = ref({
   reviewAndConfirm: false
 })
+
+// Define table columns
+const officesColumns = ref([
+  {
+    accessorKey: 'officeType',
+    header: t('page.subSections.officeAddresses.dataList.headers.officeType'),
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        t(`page.subSections.officeAddresses.dataList.officeTypes.${row.original.officeType}`)
+      )
+    }
+  },
+  {
+    accessorKey: 'mailingAddress',
+    header: t('page.subSections.officeAddresses.dataList.headers.mailingAddress'),
+    cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.mailingAddress }) }
+  },
+  {
+    accessorKey: 'deliveryAddress',
+    header: t('page.subSections.officeAddresses.dataList.headers.deliveryAddress'),
+    cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.deliveryAddress }) }
+  }
+])
+const directorsColumns = ref([])
 </script>
 
 <template>
   <div class="py-10 space-y-5">
-    <h1>{{ $t('page.postRestorationTransitionApplication.h1') }}</h1>
-
+    <div>
+      <h1 class="mb-2">
+        {{ $t('page.postRestorationTransitionApplication.h1') }}
+      </h1>
+      <p class="text-2xl">
+        {{ $t('page.postRestorationTransitionApplication.titleDescription') }}
+      </p>
+    </div>
     <FormSection
       :title="$t('page.sections.reviewAndConfirm.title')"
+      :description="$t('page.sections.reviewAndConfirm.description')"
+      icon="df"
+      :has-errors="sectionErrors.reviewAndConfirm"
     >
       <FormSubSection
-        title="subsection 1"
+        icon="i-mdi-domain"
+        :title="$t('page.subSections.officeAddresses.title')"
       >
-        <!--        :invalid="sectionErrors.reviewAndConfirm"-->
-        <p class="text-sm">
-          {{ $t('page.sections.reviewAndConfirm.description') }}
-        </p>
+        <FormDataList
+          :data="offices"
+          :columns="officesColumns"
+        />
+        <InfoBox
+          icon="icon"
+          title="title 123"
+          text="text 123"
+        />
+      </FormSubSection>
 
-        <TATable>
-        </TATable>
+      <FormSubSection
+        icon="i-mdi-account-multiple-plus"
+        :title="$t('page.subSections.currentDirectors.title')"
+      >
+        <FormDataList
+          :data="directors"
+          :columns="directorsColumns"
+        />
+        <InfoBox
+          icon="icon"
+          title="title 123"
+          text="text 123"
+        />
       </FormSubSection>
     </FormSection>
     <div>

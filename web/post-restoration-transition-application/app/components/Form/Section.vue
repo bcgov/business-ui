@@ -5,18 +5,24 @@ export default {
 </script>
 
 <script setup lang="ts">
-title: string
 defineProps<{
-  description: string | undefined
-  icon: string | undefined
+  title: string
+  hasErrors: boolean
+  description?: string
+  icon?: string
 }>()
 </script>
 
 <template>
   <section :aria-labelledby="title">
-    <h2 class="text-lg font-semibold">
+    <h2 class="text-base">
       {{ title }}
     </h2>
+    <p>
+      {{ description }}
+    </p>
+    <!-- This slot will accept any HTML/components -->
+    <slot />
   </section>
 </template>
 

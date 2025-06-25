@@ -1,7 +1,9 @@
+import { useLegalApi2 } from '~/composables/useLegalApi'
+
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
   const t = useNuxtApp().$i18n.t
-  const legalApi = useLegalApi()
+  const legalApi = useLegalApi2()
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
@@ -10,6 +12,9 @@ export const usePostRestorationTransitionApplicationStore
   const courtOrderNumber = ref<string | undefined>(undefined)
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
+
+  const offices = ref<Office[]>([])
+  const directors = ref<OrgPerson[]>([])
 
   const businessName = computed(() => {
     const alternateName = activeBusiness.value?.alternateNames?.length > 0
@@ -47,12 +52,32 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
-    const [authInfo, business] = await Promise.all([
+    const [authInfo, business, apiAddresses, apiDirectors] = await Promise.all([
       authApi.getAuthInfo(businessId),
-      legalApi.getBusiness(businessId, true)
+      legalApi.getBusiness(businessId, true),
+      legalApi.getAddresses(businessId),
+      legalApi.getParties(businessId, 'director')
     ])
 
     activeBusiness.value = business
+    directors.value = apiDirectors
+
+    // reset offices so when pushing they are not duplicated (on refresh and similar)
+    offices.value = []
+    if (apiAddresses?.registeredOffice) {
+      offices.value.push({
+        officeType: 'registeredOffice',
+        deliveryAddress: formatAddressUi(apiAddresses.registeredOffice.deliveryAddress),
+        mailingAddress: formatAddressUi(apiAddresses.registeredOffice.mailingAddress)
+      })
+    }
+    if (apiAddresses.recordsOffice) {
+      offices.value.push({
+        officeType: 'recordsOffice',
+        deliveryAddress: formatAddressUi(apiAddresses.recordsOffice.deliveryAddress),
+        mailingAddress: formatAddressUi(apiAddresses.recordsOffice.mailingAddress)
+      })
+    }
 
     // set masthead data
     const contact = authInfo.contacts[0]
@@ -77,7 +102,9 @@ export const usePostRestorationTransitionApplicationStore
     activeBusiness,
     compPartyEmail,
     courtOrderNumber,
+    directors,
     folio,
+    offices,
     planOfArrangement,
     regOfficeEmail,
     init
