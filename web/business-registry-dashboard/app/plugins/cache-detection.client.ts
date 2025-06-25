@@ -5,7 +5,7 @@
  */
 function getAppVersion (): string {
   const runtimeConfig = useRuntimeConfig()
-  return runtimeConfig.public?.version?.split(' v')[1] || ''
+  return runtimeConfig.public.version as string
 }
 
 /**
@@ -31,9 +31,6 @@ function checkVersionAndReload () {
 }
 
 export default defineNuxtPlugin(() => {
-  // Only run on client side
-  if (import.meta.server) { return }
-
   console.log('Cache detection plugin loaded. Checking version and reloading.')
 
   // Check version immediately when plugin runs
