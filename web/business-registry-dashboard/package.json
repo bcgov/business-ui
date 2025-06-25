@@ -6,9 +6,7 @@
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
-    "build:clean": "rm -rf .nuxt .output dist && nuxt generate",
     "dev": "nuxt dev --port 3000",
-    "dev:no-cache": "nuxt dev --port 3000 --no-ssr",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -18,8 +16,7 @@
     "test:unit": "vitest --dir tests/unit",
     "test:unit:cov": "vitest run --dir tests/unit --coverage",
     "test:e2e": "npx playwright test",
-    "test:e2e:ui": "npx playwright test --ui",
-    "cache:clear": "rm -rf .nuxt .output dist node_modules/.cache && echo 'Cache cleared'"
+    "test:e2e:ui": "npx playwright test --ui"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.1",

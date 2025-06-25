@@ -1,25 +1,46 @@
 // Client-side cache detection and management
-import { checkVersionAndReload, APP_VERSION } from '~/utils/cache-buster'
+
+/**
+ * Get the current app version from runtime config
+ */
+function getAppVersion (): string {
+  const runtimeConfig = useRuntimeConfig()
+  return runtimeConfig.public?.version?.split(' v')[1] || ''
+}
+
+/**
+ * Force reload the page if version mismatch detected
+ */
+function checkVersionAndReload () {
+  // Store the current version in localStorage
+  const STORAGE_KEY = 'brd_app_version'
+  const currentVersion = getAppVersion()
+  const storedVersion = localStorage.getItem(STORAGE_KEY)
+
+  if (storedVersion && storedVersion !== currentVersion) {
+    console.warn(`Version mismatch detected! Stored: ${storedVersion}, Current: ${currentVersion}`)
+    // Clear localStorage/sessionStorage caches
+    localStorage.removeItem(STORAGE_KEY)
+    // Force reload without cache
+    window.location.reload()
+    return true
+  }
+
+  localStorage.setItem(STORAGE_KEY, currentVersion)
+  return false
+}
 
 export default defineNuxtPlugin(() => {
   // Only run on client side
   if (import.meta.server) { return }
 
-  // Check version on app load
-  onMounted(() => {
-    checkVersionAndReload()
+  console.log('Cache detection plugin loaded. Checking version and reloading.')
 
-    // Log current version for debugging
-    console.info(`BRD Version: ${APP_VERSION}`)
+  // Check version immediately when plugin runs
+  checkVersionAndReload()
 
-    // Add version to global for debugging
-    if (typeof window !== 'undefined') {
-      ;(window as any).__BRD_VERSION__ = APP_VERSION
-    }
-  })
+  const currentVersion = getAppVersion()
 
-  // Add warning for development
-  if (import.meta.dev) {
-    console.warn('Development mode: Cache detection enabled')
-  }
+  // Log current version for debugging
+  console.info(`BRD Version: ${currentVersion}`)
 })
