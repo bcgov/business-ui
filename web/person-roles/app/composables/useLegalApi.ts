@@ -13,7 +13,6 @@ export const useLegalApi = () => {
     return $legalApi(`businesses/${businessId}/filings/${filingId}`)
   }
 
-  // TODO: update return type
   /**
    * Submits a new filing to the Legal API.
    * This function is generic and will return a typed response
