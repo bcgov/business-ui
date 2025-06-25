@@ -12,18 +12,6 @@
       ],
       "headers" : [
         {
-          "source": "**/*.@(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico)",
-          "headers" : [
-            { "key" : "Access-Control-Allow-Origin", "value" : "*" },
-            { "key" : "X-Frame-Options", "value" : "DENY" },
-            { "key" : "X-Content-Type-Options", "value" : "nosniff" },
-            { "key" : "X-XSS-Protection", "value" : "1; mode=block" },
-            { "key": "Cache-Control", "value": "public, max-age=31536000, immutable"},
-            { "key": "Referrer-Policy", "value": "no-referrer" },
-            { "key": "Strict-Transport-Security", "value": "max-age=31536000;" }
-          ]
-        },
-        {
           "source": "**",
           "headers" : [
             { "key" : "Access-Control-Allow-Origin", "value" : "*" },
@@ -36,7 +24,6 @@
             },
             { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate"},
             { "key": "Pragma", "value": "no-cache"},
-            { "key": "Expires", "value": "0"},
             { "key": "Referrer-Policy", "value": "no-referrer" },
             { "key": "Feature-Policy", "value": "microphone 'self'" },
             { "key": "Strict-Transport-Security", "value": "max-age=31536000;" }
