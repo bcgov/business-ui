@@ -15,12 +15,17 @@ defineProps<{
 
 <template>
   <section :aria-labelledby="title">
-    <h2 class="text-base">
-      {{ title }}
-    </h2>
-    <p>
-      {{ description }}
-    </p>
+    <div>
+      <h2
+        class="text-base"
+        :class="hasErrors ? 'text-outcomes-error' : ''"
+      >
+        {{ title }}
+      </h2>
+      <p v-if="description">
+        {{ description }}
+      </p>
+    </div>
     <!-- This slot will accept any HTML/components -->
     <slot />
   </section>

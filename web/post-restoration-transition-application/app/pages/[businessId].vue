@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
+import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 
 const { t } = useI18n()
 
@@ -88,7 +89,12 @@ const officesColumns = ref([
   {
     accessorKey: 'deliveryAddress',
     header: t('label.deliveryAddress'),
-    cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.deliveryAddress }) }
+    cell: ({ row }) => {
+      if (areUiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
+        return t('label.sameAsMailingAddress')
+      }
+      return h(ConnectAddressDisplay, { address: row.original.deliveryAddress })
+    }
   }
 ])
 const directorsColumns = ref([
@@ -114,6 +120,9 @@ const directorsColumns = ref([
     accessorKey: 'deliveryAddress',
     header: t('label.deliveryAddress'),
     cell: ({ row }) => {
+      if (areApiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
+        return t('label.sameAsMailingAddress')
+      }
       return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.deliveryAddress) })
     }
   },
@@ -160,6 +169,7 @@ const directorsColumns = ref([
       :description="$t('text.reviewAndConfirmDescription')"
       icon="df"
       :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
     >
       <FormSubSection
         icon="i-mdi-domain"

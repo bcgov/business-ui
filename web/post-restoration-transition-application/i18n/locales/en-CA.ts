@@ -30,6 +30,7 @@ export default {
     planOfArrangement: 'Plan of Arrangement',
     recordsOffice: 'Records Office',
     registeredOffice: 'Registered Office',
+    sameAsMailingAddress: 'Same as Mailing Address',
     to: 'to'
   },
   text: {
