@@ -15,5 +15,5 @@ export interface AuthInformation {
   modified: string // datetime
   name: string
   passCodeClaimed: boolean
-  // folioNumber?: string // include?
+  folioNumber?: string
 }

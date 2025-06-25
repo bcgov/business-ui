@@ -58,8 +58,8 @@ export const usePostRestorationTransitionApplicationStore
     const contact = authInfo.contacts[0]
     const ext = contact?.extension ?? contact?.phoneExtension
     const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
-    // TODO: determine if this is the right email (no email is stored in lear)
     regOfficeEmail.value = contact?.email
+    folio.value = authInfo.folioNumber
 
     detailsHeaderStore.title = { el: 'span', text: business.legalName }
     detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
