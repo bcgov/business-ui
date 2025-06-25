@@ -12,21 +12,21 @@ function getAppVersion (): string {
  * Force reload the page if version mismatch detected
  */
 function checkVersionAndReload () {
-  // Store the current version in localStorage
+  // Store the current version in sessionStorage
   const STORAGE_KEY = 'brd_app_version'
   const currentVersion = getAppVersion()
-  const storedVersion = localStorage.getItem(STORAGE_KEY)
+  const storedVersion = sessionStorage.getItem(STORAGE_KEY)
 
   if (storedVersion && storedVersion !== currentVersion) {
     console.warn(`Version mismatch detected! Stored: ${storedVersion}, Current: ${currentVersion}`)
-    // Clear localStorage/sessionStorage caches
-    localStorage.removeItem(STORAGE_KEY)
+    // Clear sessionStorage caches
+    sessionStorage.removeItem(STORAGE_KEY)
     // Force reload without cache
     window.location.reload()
     return true
   }
 
-  localStorage.setItem(STORAGE_KEY, currentVersion)
+  sessionStorage.setItem(STORAGE_KEY, currentVersion)
   return false
 }
 
