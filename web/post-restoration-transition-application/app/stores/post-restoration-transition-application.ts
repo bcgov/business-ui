@@ -5,6 +5,11 @@ export const usePostRestorationTransitionApplicationStore
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
+  const regOfficeEmail = ref<string | undefined>(undefined)
+  const compPartyEmail = ref<string | undefined>(undefined)
+  const courtOrderNumber = ref<string | undefined>(undefined)
+  const planOfArrangement = ref<boolean>(false)
+  const folio = ref<string | undefined>(undefined)
 
   const businessName = computed(() => {
     const alternateName = activeBusiness.value?.alternateNames?.length > 0
@@ -36,7 +41,7 @@ export const usePostRestorationTransitionApplicationStore
         external: true
       },
       {
-        label: t('page.postRestorationTransitionApplication.h1')
+        label: t('transitionApplication.title')
       }
     ])
   }
@@ -53,6 +58,8 @@ export const usePostRestorationTransitionApplicationStore
     const contact = authInfo.contacts[0]
     const ext = contact?.extension ?? contact?.phoneExtension
     const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
+    regOfficeEmail.value = contact?.email
+    folio.value = authInfo.folioNumber
 
     detailsHeaderStore.title = { el: 'span', text: business.legalName }
     detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
@@ -68,6 +75,11 @@ export const usePostRestorationTransitionApplicationStore
 
   return {
     activeBusiness,
+    compPartyEmail,
+    courtOrderNumber,
+    folio,
+    planOfArrangement,
+    regOfficeEmail,
     init
   }
 })
