@@ -1,8 +1,6 @@
 import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
-import type { OfficerRoleObj } from '~/interfaces/officer'
-import { validateBusinessAllowedFilings } from '~/utils/business'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t

@@ -9,7 +9,7 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 const route = useRoute()
 const modal = useModal()
-const { postFiling } = useLegalApi()
+const legalApi = useLegalApi()
 
 useHead({
   title: t('page.officerChange.title')
@@ -79,12 +79,12 @@ async function submitFiling() {
     }
 
     // submit filing
-    const res = await postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    const res = await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
     revokeBeforeUnloadEvent()
     // TODO: remove log before prod
     console.info('POST RESPONSE: ', res)
     // navigate to business dashboard if filing does *not* fail
-    await navigateTo(
+    return navigateTo(
       `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
       {
         external: true
@@ -138,6 +138,8 @@ setButtonControl({
   ],
   rightButtons: [
     { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+    // onClick expects return type as void, submitFiling returns navigateTo
+    // @ts-expect-error - return instead of await so navigation is executed immediately === better loading UX
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
