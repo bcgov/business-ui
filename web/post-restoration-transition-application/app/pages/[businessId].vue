@@ -134,7 +134,7 @@ const directorsColumns = ref([
   {
     accessorKey: 'action',
     header: '',
-    cell: ({ row }) => {
+    cell: () => {
       return h(
         'div',
         { class: 'text-left font-bold text-bgGovColor-midGray' },
