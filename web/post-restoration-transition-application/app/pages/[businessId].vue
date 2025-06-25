@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { h, resolveComponent } from 'vue'
-import type { Office } from '~/interfaces/addresses'
+import { fromIsoToUsDateFormat } from '~/utils/uidate'
 
 const { t } = useI18n()
 
@@ -71,72 +71,127 @@ const sectionErrors = ref({
 const officesColumns = ref([
   {
     accessorKey: 'officeType',
-    header: t('page.subSections.officeAddresses.dataList.headers.officeType'),
+    header: t('label.office'),
     cell: ({ row }) => {
       return h(
         'div',
         { class: 'text-left font-bold text-bgGovColor-midGray' },
-        t(`page.subSections.officeAddresses.dataList.officeTypes.${row.original.officeType}`)
+        t(`label.${row.original.officeType}`)
       )
     }
   },
   {
     accessorKey: 'mailingAddress',
-    header: t('page.subSections.officeAddresses.dataList.headers.mailingAddress'),
+    header: t('label.mailingAddress'),
     cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.mailingAddress }) }
   },
   {
     accessorKey: 'deliveryAddress',
-    header: t('page.subSections.officeAddresses.dataList.headers.deliveryAddress'),
+    header: t('label.deliveryAddress'),
     cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.deliveryAddress }) }
   }
 ])
-const directorsColumns = ref([])
+const directorsColumns = ref([
+  {
+    accessorKey: 'officer',
+    header: t('label.name'),
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        `${row.original.officer.firstName} ${row.original.officer.lastName}`
+      )
+    }
+  },
+  {
+    accessorKey: 'mailingAddress',
+    header: t('label.mailingAddress'),
+    cell: ({ row }) => {
+      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.mailingAddress) })
+    }
+  },
+  {
+    accessorKey: 'deliveryAddress',
+    header: t('label.deliveryAddress'),
+    cell: ({ row }) => {
+      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.deliveryAddress) })
+    }
+  },
+  {
+    accessorKey: 'startDate',
+    header: t('label.effectiveDates'),
+    cell: ({ row }) => {
+      const directorRole = row.original.roles.find((role: Role) => role.roleType === 'Director')
+      const fromDate = fromIsoToUsDateFormat(directorRole.appointmentDate)
+      const toDate = fromIsoToUsDateFormat(row.original.endDate) || t('label.current')
+      return h(
+        'div',
+        { class: 'text-left text-wrap' },
+        `${fromDate} ${t('label.to')} ${toDate}`
+      )
+    }
+  },
+  {
+    accessorKey: 'action',
+    header: '',
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        'TODO: ADD CHANGE LINK HERE'
+      )
+    }
+  }
+])
 </script>
 
 <template>
-  <div class="py-10 space-y-5">
+  <div class="py-10 space-y-10">
     <div>
       <h1 class="mb-2">
-        {{ $t('page.postRestorationTransitionApplication.h1') }}
+        {{ $t('transitionApplication.title') }}
       </h1>
       <p class="text-2xl">
-        {{ $t('page.postRestorationTransitionApplication.titleDescription') }}
+        {{ $t('text.transitionYourBusiness') }}
       </p>
     </div>
     <FormSection
-      :title="$t('page.sections.reviewAndConfirm.title')"
-      :description="$t('page.sections.reviewAndConfirm.description')"
+      :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
+      :description="$t('text.reviewAndConfirmDescription')"
       icon="df"
       :has-errors="sectionErrors.reviewAndConfirm"
     >
       <FormSubSection
         icon="i-mdi-domain"
-        :title="$t('page.subSections.officeAddresses.title')"
+        :title="$t('label.officeAddresses')"
       >
         <FormDataList
           :data="offices"
           :columns="officesColumns"
+          class="m-6"
         />
         <InfoBox
-          icon="icon"
-          title="title 123"
-          text="text 123"
+          icon="i-mdi-information-outline"
+          :title="$t('text.needChange')"
+          :text="$t('text.goToMainFileAddressChange')"
+          class="m-6"
         />
       </FormSubSection>
 
       <FormSubSection
         icon="i-mdi-account-multiple-plus"
-        :title="$t('page.subSections.currentDirectors.title')"
+        :title="$t('label.currentDirectors')"
       >
         <FormDataList
           :data="directors"
           :columns="directorsColumns"
+          class="m-6"
         />
         <InfoBox
-          icon="icon"
-          title="title 123"
-          text="text 123"
+          icon="i-mdi-information-outline"
+          :title="$t('text.needOtherChange')"
+          :text="$t('text.deleteAndFileDirectorChange')"
+          class="m-6"
         />
       </FormSubSection>
     </FormSection>
