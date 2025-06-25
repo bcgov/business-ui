@@ -2,7 +2,8 @@ import type { ModalButtonProps } from '~/interfaces'
 import {
   ModalBase,
   ModalOfficerInitializeError,
-  ModalOfficerFilingNotAllowed
+  ModalOfficerFilingNotAllowed,
+  ModalOfficerSubmitError
 } from '#components'
 
 export const useModal = () => {
@@ -20,6 +21,17 @@ export const useModal = () => {
 
   async function openOfficerFilingNotAllowedModal() {
     const modal = overlay.create(ModalOfficerFilingNotAllowed)
+
+    await modal.open()
+  }
+
+  async function openOfficerSubmitErrorModal(status: number | undefined) {
+    const modal = overlay.create(ModalOfficerSubmitError, {
+      props: {
+        status,
+        i18nPrefix: 'error.submitFiling'
+      }
+    })
 
     await modal.open()
   }
@@ -42,6 +54,7 @@ export const useModal = () => {
   return {
     openOfficerInitErrorModal,
     openOfficerFilingNotAllowedModal,
+    openOfficerSubmitErrorModal,
     openBaseModal
   }
 }

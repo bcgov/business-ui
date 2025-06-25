@@ -15,7 +15,28 @@ export default {
     saveExit: 'Save and Resume Later',
     goToBRD: 'Go to Business Registry Dashboard',
     keepEditing: 'Keep Editing',
-    exitWithoutSaving: 'Exit Without Saving'
+    exitWithoutSaving: 'Exit Without Saving',
+    close: 'Close'
+  },
+  contactInfo: {
+    bcros: {
+      tollFree: {
+        title: 'Toll Free:',
+        value: '1-877-370-1033'
+      },
+      victoriaOffice: {
+        title: 'Victoria Office:',
+        value: '1-250-370-1033'
+      },
+      email: {
+        title: 'Email:',
+        value: "BCRegistries{'@'}gov.bc.ca"
+      },
+      hours: {
+        title: 'Hours of Operation:',
+        value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
+      }
+    }
   },
   currency: {
     cad: 'CAD',
@@ -39,7 +60,6 @@ export default {
     getOfficerInfo: {
       unauthorized: {
         title: 'Access Restricted',
-        /* eslint-disable-next-line */ // TODO: get eslint to ignore double quotes when translation string has single quote inside it
         description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
       },
       notFound: {
@@ -53,6 +73,36 @@ export default {
       unknown: {
         title: 'Unknown Error',
         description: 'Unknown error, please try again later.'
+      }
+    },
+    submitFiling: {
+      400: {
+        title: 'Invalid Submission',
+        description: 'There was an issue with the data submitted. Please review the form and try again.'
+      },
+      401: {
+        title: 'Permission Denied',
+        description: 'You do not have permission to perform this action for this business.'
+      },
+      403: {
+        title: 'Permission Denied',
+        description: 'You do not have permission to perform this action for this business.'
+      },
+      404: {
+        title: 'Business Not Found',
+        description: 'This business could not be found in our records.'
+      },
+      422: {
+        title: 'Invalid Submission',
+        description: 'There was an issue with the data submitted. Please review the form and try again.'
+      },
+      500: {
+        title: 'An Error Occurred',
+        description: "We couldn't complete your request due to an internal error. Please try again later."
+      },
+      undefined: {
+        title: 'Unknown Error',
+        description: 'An unknown error occured, please try again later.'
       }
     }
   },
@@ -126,7 +176,8 @@ export default {
     }
   },
   text: {
-    noOfficers: 'There are currently no officers.'
+    noOfficers: 'There are currently no officers.',
+    ifIssuePersistsContactUs: 'If this issue persists, please contact us.'
   },
   validation: {
     required: 'Required',

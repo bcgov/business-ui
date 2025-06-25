@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
+
 const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const officerStore = useOfficerStore()
@@ -88,8 +90,14 @@ async function submitFiling() {
         external: true
       }
     )
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    logFetchError(error, 'Error submitting officer filing')
+
+    const statusCode = error instanceof FetchError
+      ? error.response?.status
+      : undefined
+
+    modal.openOfficerSubmitErrorModal(statusCode)
   } finally {
     // await sleep(1000)
     handleButtonLoading(true)
