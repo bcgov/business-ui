@@ -54,7 +54,7 @@ async function globalSetup() {
   await page.waitForURL(baseUrl + '**')
 
   // save auth state and close browser
-  await page.context().storageState({ path: `tests/e2e/.auth/bcsc-user.json` })
+  await page.context().storageState({ path: 'tests/e2e/.auth/bcsc-user.json' })
   await browser.close()
 }
 
