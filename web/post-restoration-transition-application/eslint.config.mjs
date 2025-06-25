@@ -19,6 +19,7 @@ export default withNuxt({
     'no-trailing-spaces': 'error',
     'no-multiple-empty-lines': 'error',
     'nuxt/nuxt-config-keys-order': 'off',
+    'vue/max-attributes-per-line': ['error', { singleline: { max: 2 }, multiline: { max: 1 } }],
     'vue/multi-word-component-names': 'off',
     'vue/use-v-on-exact': 'off',
     'vue/array-bracket-spacing': 'warn',
