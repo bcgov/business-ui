@@ -141,13 +141,16 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const roles = row.original.state.officer.roles
+      const isRemoved = row.original.state.actions.includes('removed')
+      const allRoles = row.original.state.officer.roles
+      const activeRoles = allRoles.filter(r => r.cessationDate === null)
+      const displayedRoles = isRemoved ? allRoles : activeRoles
       const containerClass = getCellContainerClass(row, 'px-2 py-4 flex flex-col')
 
-      return roles.length
+      return displayedRoles.length
         ? h('ul', { class: containerClass },
-            roles.map(role =>
-              h('li', {}, t(`enum.officerRole.${role}`))
+            displayedRoles.map(role =>
+              h('li', {}, t(`enum.officerRole.${role.roleType}`))
             )
         )
         : null
@@ -163,7 +166,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     },
     cell: ({ row }) => {
       const address = row.original.state.officer.deliveryAddress
-      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48')
+      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
 
       return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
     }
@@ -179,7 +182,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const sameAs = row.original.state.officer.sameAsDelivery
       const mailingAddress = row.original.state.officer.mailingAddress
-      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48')
+      const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
 
       return h('div', { class: containerClass }, h(sameAs
         ? h('span', {}, t('label.sameAsDeliveryAddress'))
