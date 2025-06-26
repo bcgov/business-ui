@@ -28,9 +28,39 @@ export type FilingBusiness = Pick<BusinessData,
   'legalType'
 >
 
-export interface FilingPostResponse {
-  filing: {
-    header: FilingHeader
-    business: FilingBusiness
-  }
+export interface FilingBaseData {
+  header: FilingHeader
+  business: FilingBusiness
 }
+
+export type FilingWithPayload<T extends string, P> = FilingBaseData & {
+  [K in T]: P // K is the filingName, P is the payload type
+}
+
+// export interface FilingPostResponse {
+//   filing: FilingBaseData
+// }
+
+export interface FilingPostResponse<T extends string, P> {
+  filing: FilingWithPayload<T, P>
+}
+
+export interface FilingPutResponse<T extends string, P> {
+  filing: FilingWithPayload<T, P>
+  errors: Array<unknown>
+}
+
+export interface FilingGetByIdResponse<T extends string, P> {
+  filing: FilingWithPayload<T, P>
+  filingLink: string // url
+  isFutureEffective: boolean
+  withdrawalPending: boolean
+  commentsCount: number
+  commentsLink: string // url
+  displayLedger: boolean
+  documentsLink: string // url
+}
+
+// export type FilingPostResponse<T extends string, P> = FilingBaseData & {
+//   [K in T]: P // K is the filingName, P is the payload type
+// }
