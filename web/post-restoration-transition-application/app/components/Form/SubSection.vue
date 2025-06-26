@@ -7,7 +7,7 @@ export default {
 <script setup lang="ts">
 defineProps<{
   title: string
-  icon?: { type: string | undefined, optional: true }
+  icon?: string
 }>()
 </script>
 
