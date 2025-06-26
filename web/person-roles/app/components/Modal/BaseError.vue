@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import type { ModalButtonProps } from '~/interfaces'
+import { FetchError } from 'ofetch'
 
 // https://vue-i18n.intlify.dev/api/composition.html#te-key-locale
 const { t, te } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
 
 const {
-  status,
+  error,
   i18nPrefix,
   buttons = [
     { label: useNuxtApp().$i18n.t('btn.close'), shouldClose: true }
   ]
 } = defineProps<{
-  status?: number
+  error?: unknown
   i18nPrefix: string
   buttons?: ModalButtonProps[]
 }>()
 defineEmits<{ close: [] }>()
+
+const status = error instanceof FetchError
+  ? error.response?.status
+  : undefined
 
 const titleKey = `${i18nPrefix}.${status}.title`
 const descKey = `${i18nPrefix}.${status}.description`

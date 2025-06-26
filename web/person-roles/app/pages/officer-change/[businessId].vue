@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-
 const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
@@ -107,12 +105,8 @@ async function submitFiling() {
       { external: true }
     )
   } catch (error) {
-    const statusCode = error instanceof FetchError
-      ? error.response?.status
-      : undefined
-
     modal.openBaseErrorModal(
-      statusCode,
+      error,
       'error.submitFiling'
     )
   } finally {
@@ -186,12 +180,8 @@ async function saveFiling(resumeLater = false) {
       )
     }
   } catch (error) {
-    const statusCode = error instanceof FetchError
-      ? error.response?.status
-      : undefined
-
     modal.openBaseErrorModal(
-      statusCode,
+      error,
       'error.submitFiling'
     )
   } finally {

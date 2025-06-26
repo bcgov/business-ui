@@ -1,4 +1,3 @@
-import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
 
@@ -51,11 +50,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
             draftState = data?.filing.changeOfOfficers || []
           }
         } catch (error) {
-          const statusCode = error instanceof FetchError
-            ? error.response?.status
-            : undefined
           modal.openBaseErrorModal(
-            statusCode,
+            error,
             'error.getDraftFiling',
             [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           )
@@ -195,12 +191,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
           history: []
       }))
     } catch (error) {
-      const statusCode = error instanceof FetchError
-        ? error.response?.status
-        : undefined
-
       modal.openBaseErrorModal(
-        statusCode,
+        error,
         'error.initOfficerStore',
         [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
       )
