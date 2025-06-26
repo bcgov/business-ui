@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { h, resolveComponent } from 'vue'
+import { fromIsoToUsDateFormat } from '~/utils/uidate'
+import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
+
 const { t } = useI18n()
 
 // const accountStore = useConnectAccountStore()
@@ -24,6 +28,8 @@ definePageMeta({
   }
 })
 
+const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
+
 const businessId = route.params.businessId as string
 
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -31,7 +37,9 @@ filingStore.init(businessId)
 const {
   compPartyEmail,
   courtOrderNumber,
+  directors,
   folio,
+  offices,
   planOfArrangement,
   regOfficeEmail
 } = storeToRefs(filingStore)
@@ -55,10 +63,148 @@ feeStore.fees = {
     waived: true
   }
 }
+
+const sectionErrors = ref({
+  reviewAndConfirm: false
+})
+
+// Define table columns
+const officesColumns = ref([
+  {
+    accessorKey: 'officeType',
+    header: t('label.office'),
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        t(`label.${row.original.officeType}`)
+      )
+    }
+  },
+  {
+    accessorKey: 'mailingAddress',
+    header: t('label.mailingAddress'),
+    cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.mailingAddress }) }
+  },
+  {
+    accessorKey: 'deliveryAddress',
+    header: t('label.deliveryAddress'),
+    cell: ({ row }) => {
+      if (areUiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
+        return t('label.sameAsMailingAddress')
+      }
+      return h(ConnectAddressDisplay, { address: row.original.deliveryAddress })
+    }
+  }
+])
+const directorsColumns = ref([
+  {
+    accessorKey: 'officer',
+    header: t('label.name'),
+    cell: ({ row }) => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        `${row.original.officer.firstName} ${row.original.officer.lastName}`
+      )
+    }
+  },
+  {
+    accessorKey: 'mailingAddress',
+    header: t('label.mailingAddress'),
+    cell: ({ row }) => {
+      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.mailingAddress) })
+    }
+  },
+  {
+    accessorKey: 'deliveryAddress',
+    header: t('label.deliveryAddress'),
+    cell: ({ row }) => {
+      if (areApiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
+        return t('label.sameAsMailingAddress')
+      }
+      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.deliveryAddress) })
+    }
+  },
+  {
+    accessorKey: 'startDate',
+    header: t('label.effectiveDates'),
+    cell: ({ row }) => {
+      const directorRole = row.original.roles.find((role: Role) => role.roleType === 'Director')
+      const fromDate = fromIsoToUsDateFormat(directorRole.appointmentDate)
+      const toDate = fromIsoToUsDateFormat(directorRole.cessationDate) || t('label.current')
+      return h(
+        'div',
+        { class: 'text-left text-wrap' },
+        `${fromDate} ${t('label.to')} ${toDate}`
+      )
+    }
+  },
+  {
+    accessorKey: 'action',
+    header: '',
+    cell: () => {
+      return h(
+        'div',
+        { class: 'text-left font-bold text-bgGovColor-midGray' },
+        'TODO: ADD CHANGE LINK HERE'
+      )
+    }
+  }
+])
 </script>
 
 <template>
-  <div class="py-10 space-y-5">
+  <div class="py-10 space-y-10">
+    <div>
+      <h1 class="mb-2">
+        {{ $t('transitionApplication.title') }}
+      </h1>
+      <p class="text-2xl">
+        {{ $t('text.transitionYourBusiness') }}
+      </p>
+    </div>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
+      :description="$t('text.reviewAndConfirmDescription')"
+      icon="df"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        icon="i-mdi-domain"
+        :title="$t('label.officeAddresses')"
+      >
+        <FormDataList
+          :data="offices"
+          :columns="officesColumns"
+          class="m-6"
+        />
+        <InfoBox
+          icon="i-mdi-information-outline"
+          :title="$t('text.needChange')"
+          :text="$t('text.goToMainFileAddressChange')"
+          class="m-6"
+        />
+      </FormSubSection>
+
+      <FormSubSection
+        icon="i-mdi-account-multiple-plus"
+        :title="$t('label.currentDirectors')"
+      >
+        <FormDataList
+          :data="directors"
+          :columns="directorsColumns"
+          class="m-6"
+        />
+        <InfoBox
+          icon="i-mdi-information-outline"
+          :title="$t('text.needOtherChange')"
+          :text="$t('text.deleteAndFileDirectorChange')"
+          class="m-6"
+        />
+      </FormSubSection>
+    </FormSection>
     <div>
       <h2>{{ $t("transitionApplication.subtitle.documentDelivery") }}</h2>
       <p>{{ $t("text.documentDelivery") }}</p>
