@@ -81,8 +81,8 @@ export default {
         description: 'This draft filing could not be found or does not exist.'
       },
       undefined: {
-        title: 'Unknown Error',
-        description: 'An unknown error occured, please try again later.'
+        title: 'Draft Filing Not Found',
+        description: 'This draft filing could not be found or does not exist.'
       }
     },
     submitFiling: {
