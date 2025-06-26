@@ -222,8 +222,8 @@ export default {
       description: 'You don’t have permission to access this feature. If you have an administrator, contact them for help. Otherwise, contact BC Registries for support.'
     },
     noSubscription: {
-      title: 'Incomplete Account',
-      description: 'Please complete your account creation and then try again.'
+      title: 'Account Setup Incomplete',
+      description: 'Finish setting up your account. Make sure that you have added the Business Registry product to your account and then try your link again.'
     }
   },
   entityTypes: {
