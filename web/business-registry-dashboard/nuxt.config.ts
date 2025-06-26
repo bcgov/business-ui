@@ -170,6 +170,11 @@ export default defineNuxtConfig({
     transpile: ['@vuepic/vue-datepicker']
   },
 
+  // Ensure proper cache busting for assets
+  experimental: {
+    payloadExtraction: false
+  },
+
   piniaPersistedstate: {
     storage: 'sessionStorage'
   },
