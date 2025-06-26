@@ -182,7 +182,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         //     history: []
         //   }
         // })
-        // return early if no draft state
+        // return early if draft state
         return
       }
 
