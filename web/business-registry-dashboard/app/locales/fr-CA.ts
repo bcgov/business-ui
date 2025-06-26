@@ -212,8 +212,8 @@ export default {
       description: 'Vous n\'avez pas l\'autorisation d\'accéder à cette fonctionnalité. Si vous avez un administrateur, contactez-le pour obtenir de l\'aide. Sinon, contactez BC Registries pour obtenir de l\'aide.'
     },
     noSubscription: {
-      title: 'Compte Incomplet',
-      description: 'Veuillez compléter la création de votre compte et réessayer.'
+      title: 'Création de Compte Incomplète',
+      description: 'Terminez la création de votre compte. Assurez-vous d\'avoir ajouté le produit Business Registry à votre compte et réessayez votre lien.'
     }
   },
   entityTypes: {
