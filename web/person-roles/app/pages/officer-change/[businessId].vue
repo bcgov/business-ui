@@ -66,30 +66,45 @@ function onBeforeUnload(event: BeforeUnloadEvent) {
 
 const { revoke: revokeBeforeUnloadEvent } = useWindowEventListener('beforeunload', onBeforeUnload)
 
+// add new officer to table state
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)
   officerStore.addingOfficer = false
 }
 
+// submit final filing
 async function submitFiling() {
   try {
+    // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
+    // format payload
     const payload = {
       relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
     }
 
-    // submit filing
-    const res = await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    // pull draft id from url or mark as undefined
+    const draftId = (urlParams.draft as string) ?? undefined
+
+    // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
+    if (draftId) {
+      await legalApi.saveOrUpdateDraftFiling(
+        officerStore.activeBusiness,
+        'changeOfOfficers',
+        payload,
+        true,
+        draftId
+      )
+    } else {
+      // submit as normal if no draft id
+      await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    }
+    // remove window beforeUnload event to prevent navigation block
     revokeBeforeUnloadEvent()
-    // TODO: remove log before prod
-    console.info('POST RESPONSE: ', res)
     // navigate to business dashboard if filing does *not* fail
     await navigateTo(
       `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-      {
-        external: true
-      }
+      { external: true }
     )
   } catch (error) {
     const statusCode = error instanceof FetchError
@@ -101,7 +116,6 @@ async function submitFiling() {
       'error.submitFiling'
     )
   } finally {
-    // await sleep(1000)
     handleButtonLoading(true)
   }
 }
@@ -125,9 +139,7 @@ async function cancelFiling() {
   } else {
     await navigateTo(
       `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-      {
-        external: true
-      }
+      { external: true }
     )
   }
 }
@@ -136,15 +148,22 @@ async function cancelFiling() {
 // REMOVED NANCY
 async function saveFiling(resumeLater = false) {
   try {
-    handleButtonLoading(false, 'left', 0)
+    // set appropriate button loading state
+    if (resumeLater) {
+      handleButtonLoading(false, 'left', 1)
+    } else {
+      handleButtonLoading(false, 'left', 0)
+    }
 
+    // TODO: decide if we can use the table state as the draft filing instead of formatting it
     // const payload = {
     //   relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
     // }
 
+    // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
 
-    // submit filing
+    // save filing as draft
     const res = await legalApi.saveOrUpdateDraftFiling(
       officerStore.activeBusiness,
       'changeOfOfficers',
@@ -152,23 +171,21 @@ async function saveFiling(resumeLater = false) {
       false,
       draftId
     )
-    // TODO: remove log before prod
-    console.info('RESPONSE: ', res)
 
+    // update url with filing id
+    // required if it's the first time 'save draft' was clicked
+    // if page refreshes, the correct data will be reloaded
     urlParams.draft = String(res.filing.header.filingId)
 
+    // if resume later, navigate back to business dashboard
     if (resumeLater) {
       revokeBeforeUnloadEvent()
       await navigateTo(
         `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-        {
-          external: true
-        }
+        { external: true }
       )
     }
   } catch (error) {
-    logFetchError(error, 'Error submitting officer filing')
-
     const statusCode = error instanceof FetchError
       ? error.response?.status
       : undefined
@@ -178,25 +195,12 @@ async function saveFiling(resumeLater = false) {
       'error.submitFiling'
     )
   } finally {
-    // await sleep(2000)
     handleButtonLoading(true)
   }
 }
 
-// TODO: Implement after API ready
-setButtonControl({
-  leftButtons: [
-    { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-    { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
-  ],
-  rightButtons: [
-    { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-    { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
-  ]
-})
-
 // init officers on mount and when account changes
-// update breadcrumbs when account changes
+// update breadcrumbs and bottom buttons when account changes
 watch(
   () => accountStore.currentAccount.id,
   async (id) => {
@@ -225,6 +229,17 @@ watch(
         label: t('page.officerChange.h1')
       }
     ])
+
+    setButtonControl({
+      leftButtons: [
+        { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+        { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+      ],
+      rightButtons: [
+        { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+        { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+      ]
+    })
   },
   { immediate: true }
 )

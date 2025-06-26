@@ -23,8 +23,6 @@ const descKey = `${i18nPrefix}.${status}.description`
 
 const title = te(titleKey) ? t(titleKey) : t(`${i18nPrefix}.undefined.title`)
 const description = te(descKey) ? t(descKey) : t(`${i18nPrefix}.undefined.description`)
-
-// draft=199222
 </script>
 
 <template>
