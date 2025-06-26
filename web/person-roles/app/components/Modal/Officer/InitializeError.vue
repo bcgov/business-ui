@@ -44,7 +44,7 @@ const description = props.status
 
 <template>
   <UModal
-    id="officer-error-modal"
+    id="officer-init-error-modal"
     overlay
     :title
     :description
@@ -60,10 +60,7 @@ const description = props.status
           role="alert"
           class="flex flex-col gap-6"
         >
-          <h2
-            id="session-expired-dialog-title"
-            class="text-2xl font-semibold text-bcGovColor-darkGray"
-          >
+          <h2 class="text-2xl font-semibold text-bcGovColor-darkGray">
             {{ title }}
           </h2>
           <p>{{ description }}</p>

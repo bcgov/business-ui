@@ -1,9 +1,17 @@
+export interface OfficerRoleObj {
+  roleType: OfficerRole
+  appointmentDate: string // YYYY-MM-DD
+  cessationDate?: string | null
+  roleClass?: string
+}
+
 export interface Officer {
+  id?: string
   firstName: string
   middleName: string
   lastName: string
   preferredName?: string
-  roles: OfficerRole[]
+  roles: OfficerRoleObj[]
   mailingAddress: UiAddress
   deliveryAddress: UiAddress
   sameAsDelivery: boolean
@@ -19,4 +27,28 @@ export interface OfficerTableState {
     officer: Officer
     actions: OfficerFormAction[]
   }>
+}
+
+export interface OfficerRolePayload {
+  appointmentDate: string // isodate
+  cessationDate: string | null // isodate
+  roleClass?: 'OFFICER'
+  roleType: RoleType
+}
+
+export interface OfficerRelationshipPayload {
+  deliveryAddress: ApiAddress
+  mailingAddress?: ApiAddress
+  roles: OfficerRolePayload[]
+  entity: {
+    alternateName: string
+    familyName: string
+    givenName: string
+    identifier?: string
+    middleInitial: string
+  }
+}
+
+export interface OfficerPayload {
+  relationships: OfficerRelationshipPayload[]
 }

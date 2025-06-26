@@ -6,6 +6,7 @@ export interface ApiPerson {
   firstName?: string // required when partyType="person"
   middleName?: string
   middleInitial?: string
+  alternateName?: string
   lastName?: string // required when partyType="person"
   organizationName?: string // required when partyType="organization"
   email?: string

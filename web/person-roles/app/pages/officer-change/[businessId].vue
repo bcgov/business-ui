@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
+
 const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const officerStore = useOfficerStore()
@@ -7,6 +9,7 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading } = useButtonControl()
 const route = useRoute()
 const modal = useModal()
+const legalApi = useLegalApi()
 
 useHead({
   title: t('page.officerChange.title')
@@ -50,17 +53,55 @@ feeStore.fees = {
   }
 }
 
+// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
+// show browser error if unsaved changes
+function onBeforeUnload(event: BeforeUnloadEvent) {
+  if (officerStore.hasChanges) {
+    event.preventDefault()
+    // legacy browsers
+    event.returnValue = true
+  }
+}
+
+const { revoke: revokeBeforeUnloadEvent } = useWindowEventListener('beforeunload', onBeforeUnload)
+
 async function onFormSubmit(data: Partial<Officer>) {
   officerStore.addNewOfficer(data as Officer)
   officerStore.addingOfficer = false
 }
 
-// TODO: Implement after API ready
 async function submitFiling() {
-  console.info('submit')
-  handleButtonLoading(false, 'right', 1)
-  await sleep(1000)
-  handleButtonLoading(true)
+  try {
+    handleButtonLoading(false, 'right', 1)
+
+    const payload = {
+      relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+    }
+
+    // submit filing
+    const res = await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+    revokeBeforeUnloadEvent()
+    // TODO: remove log before prod
+    console.info('POST RESPONSE: ', res)
+    // navigate to business dashboard if filing does *not* fail
+    return navigateTo(
+      `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+      {
+        external: true
+      }
+    )
+  } catch (error) {
+    logFetchError(error, 'Error submitting officer filing')
+
+    const statusCode = error instanceof FetchError
+      ? error.response?.status
+      : undefined
+
+    modal.openOfficerSubmitErrorModal(statusCode)
+  } finally {
+    // await sleep(1000)
+    handleButtonLoading(true)
+  }
 }
 
 async function cancelFiling() {
@@ -97,6 +138,8 @@ setButtonControl({
   ],
   rightButtons: [
     { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+    // onClick expects return type as void, submitFiling returns navigateTo
+    // @ts-expect-error - return instead of await so navigation is executed immediately === better loading UX
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
@@ -112,7 +155,8 @@ watch(
       {
         label: t('label.bcRegistriesDashboard'),
         to: `${rtc.registryHomeUrl}dashboard`,
-        external: true
+        external: true,
+        appendAccountId: true
       },
       {
         label: t('label.myBusinessRegistry'),
@@ -132,24 +176,6 @@ watch(
   },
   { immediate: true }
 )
-
-// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
-// show browser error if unsaved changes
-function onBeforeUnload(event: BeforeUnloadEvent) {
-  if (officerStore.hasChanges) {
-    event.preventDefault()
-    // legacy browsers
-    event.returnValue = true
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('beforeunload', onBeforeUnload)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', onBeforeUnload)
-})
 </script>
 
 <template>

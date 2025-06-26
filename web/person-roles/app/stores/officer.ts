@@ -9,10 +9,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const authApi = useAuthApi()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
+  // let initialOfficersRaw: OrgPerson[] = [] // raw officer response on page load/parties fetch
+
+  const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
-  const initialOfficers = ref<Officer[]>([]) // officer state on page load
+  const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
   const officerTableState = ref<OfficerTableState[]>([]) // officer state displayed in table
   const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
   const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
@@ -33,13 +35,21 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       const [authInfo, business, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
-        legalApi.getBusiness(businessId, true),
-        legalApi.getParties(businessId, 'officer')
+        legalApi.getBusiness(businessId),
+        legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
-      activeBusiness.value = business
+      // validate business is allowed to complete this filing type
+      const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
+      if (!isFilingAllowed) {
+        modal.openOfficerFilingNotAllowedModal()
+        return
+      }
+
+      // initialOfficersRaw = parties
 
       // set masthead data
+      activeBusiness.value = business
       const contact = authInfo.contacts[0]
       const ext = contact?.extension ?? contact?.phoneExtension
       const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
@@ -58,14 +68,24 @@ export const useOfficerStore = defineStore('officer-store', () => {
         const officers = parties.map((p) => {
           const mailingAddress = formatAddressUi(p.mailingAddress)
           const deliveryAddress = formatAddressUi(p.deliveryAddress)
-          const preferredName = '' // TODO: map preferred name - need in api
+          const id = p.officer.id ? String(p.officer.id) : undefined
+          const preferredName = p.officer.alternateName ?? ''
+
+          // map api roles to ui roles, filter roles that end up with an undefined type
+          const roles: OfficerRoleObj[] = p.roles.map(role => ({
+            roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType!.toLowerCase()],
+            roleClass: 'OFFICER',
+            appointmentDate: role.appointmentDate,
+            cessationDate: role.cessationDate ?? null
+          })).filter(role => role.roleType !== undefined) as OfficerRoleObj[]
 
           return {
+            id,
             firstName: p.officer.firstName ?? '',
             middleName: p.officer.middleInitial ?? '',
             lastName: p.officer.lastName ?? '',
-            preferredName, // TODO: map preferred name - need in api
-            roles: [], // TODO: map sub roles - need in api
+            preferredName,
+            roles,
             mailingAddress,
             deliveryAddress,
             sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
@@ -85,13 +105,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
         }))
       }
     } catch (error) {
-      if (error instanceof FetchError) { // handle http error
-        const res = error.response
-        const status = res?.status
-        modal.openOfficerInitErrorModal(status)
-      } else {
-        modal.openOfficerInitErrorModal(undefined)
-      }
+      const statusCode = error instanceof FetchError
+        ? error.response?.status
+        : undefined
+
+        modal.openOfficerInitErrorModal(statusCode)
     } finally {
       detailsHeaderStore.loading = false
       initializing.value = false
@@ -234,10 +252,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
         ...officerTableState.value.slice(0, row.index),
         ...officerTableState.value.slice(row.index + 1)
       ]
-    } else { // else add removed badge
+    } else { // else add removed badge and add cessation date to roles
+      const todayUtc = getToday()
+      const officerToRemove = initialState.officer
+
+      const ceasedRoles: OfficerRoleObj[] = officerToRemove.roles.map(role => ({
+          ...role,
+          cessationDate: todayUtc
+      }))
+
       const newState = {
         state: {
-          officer: initialState.officer,
+          officer: { ...officerToRemove, roles: ceasedRoles },
           actions: [...initialState.actions, 'removed' as OfficerFormAction]
         },
         history: [...initialHistory, initialState]
@@ -324,11 +350,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
     sessionStorage.removeItem('officer-store')
     initializing.value = false
     addingOfficer.value = false
-    initialOfficers.value = []
     officerTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
-    activeBusiness.value = {} as BusinessDataSlim
+    activeBusiness.value = {} as BusinessData
+
+    initialOfficers.value = []
+    // initialOfficersRaw = []
   }
 
   return {
@@ -340,6 +368,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState,
     disableActions,
     hasChanges,
+    initialOfficers,
     initOfficerStore,
     getNewOfficer,
     addNewOfficer,

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
+import type { AcceptableValue } from 'reka-ui'
 import { z } from 'zod'
 import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
 const { t } = useI18n()
+const officerStore = useOfficerStore()
 
 const props = withDefaults(defineProps<{
   defaultState?: Officer
@@ -12,6 +14,7 @@ const props = withDefaults(defineProps<{
   title: string
 }>(), {
   defaultState: () => ({
+    id: undefined,
     firstName: '',
     middleName: '',
     lastName: '',
@@ -79,14 +82,9 @@ const addressSchema = z.object({
   return z.NEVER
 })
 
-const schema = z.object({
-  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
-  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
-  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
-  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
-  hasPreferredName: z.boolean(),
-  roles: z
-    .enum([
+const roleSchema = z.object({
+  roleType: z.enum(
+    [
       OfficerRole.ASSISTANT_SECRETARY,
       OfficerRole.CEO,
       OfficerRole.CFO,
@@ -96,11 +94,36 @@ const schema = z.object({
       OfficerRole.SECRETARY,
       OfficerRole.TREASURER,
       OfficerRole.VP
-    ])
-    .array().min(1, { message: t('validation.role.min') }),
+    ]
+  ),
+  roleClass: z.string().optional(),
+  appointmentDate: z.string(),
+  cessationDate: z.string().nullable().optional()
+})
+
+const schema = z.object({
+  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
+  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  hasPreferredName: z.boolean(),
   mailingAddress: addressSchema,
   sameAsDelivery: z.boolean(),
-  deliveryAddress: addressSchema
+  deliveryAddress: addressSchema,
+  roles: z
+    .array(roleSchema)
+    .min(1, { message: t('validation.role.min') })
+    .superRefine((data, ctx) => {
+      const hasActiveRole = data.some(r => r.cessationDate === null)
+
+      if (!hasActiveRole) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('validation.role.min')
+        })
+      }
+      return z.NEVER
+    })
 })
 
 type Schema = z.output<typeof schema>
@@ -118,7 +141,7 @@ const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, d
   }
 })
 
-const roles = [
+const roleOptions = [
   { label: t(`enum.officerRole.${OfficerRole.CEO}`), value: OfficerRole.CEO },
   { label: t(`enum.officerRole.${OfficerRole.TREASURER}`), value: OfficerRole.TREASURER },
   { label: t(`enum.officerRole.${OfficerRole.CFO}`), value: OfficerRole.CFO },
@@ -129,6 +152,56 @@ const roles = [
   { label: t(`enum.officerRole.${OfficerRole.OTHER}`), value: OfficerRole.OTHER },
   { label: t(`enum.officerRole.${OfficerRole.CHAIR}`), value: OfficerRole.CHAIR }
 ]
+
+const selectedRoles = computed<string[]>(() => {
+  return state.roles
+    .filter(role => role.cessationDate === null)
+    .map(role => role.roleType)
+})
+
+function handleRoleChange(newRoles: AcceptableValue[]) {
+  const todayUtc = getToday()
+  const before = selectedRoles.value
+  const after = newRoles as string[]
+
+  const addedRoles = after.filter(role => !before.includes(role))
+  const removedRoles = before.filter(role => !after.includes(role))
+
+  const existingRoleMap = new Map(officerStore.initialOfficers
+    .find(o => o.id === props.defaultState.id)?.roles
+    .map(r => [r.roleType, r]))
+
+  addedRoles.forEach((role) => {
+    const existingRole = existingRoleMap.get(role as OfficerRole)
+
+    if (existingRole !== undefined) {
+      const roleObj = state.roles.find(r => r.roleType === role)
+      if (roleObj) {
+        roleObj.cessationDate = null
+      }
+    } else {
+      state.roles.push({
+        roleType: role as OfficerRole,
+        roleClass: 'OFFICER',
+        appointmentDate: todayUtc,
+        cessationDate: null
+      })
+    }
+  })
+
+  removedRoles.forEach((role) => {
+    const roleObj = state.roles.find(r => r.roleType === role)
+    const existingRole = existingRoleMap.get(role as OfficerRole)
+
+    if (existingRole !== undefined) {
+      if (roleObj) {
+        roleObj.cessationDate = todayUtc
+      }
+    } else {
+      state.roles = state.roles.filter(r => r.roleType !== role)
+    }
+  })
+}
 
 function onError(event: FormErrorEvent) {
   let element: unknown
@@ -197,10 +270,11 @@ watch(
 watch(
   () => state.roles,
   (v) => {
-    if (v && v.length) {
+    if (v) {
       formRef.value?.clear('roles')
     }
-  }
+  },
+  { deep: true }
 )
 
 // reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
@@ -335,8 +409,9 @@ watch(
             </div>
             <FormCheckboxGroup
               id="officer-role-options"
-              v-model="state.roles"
-              :items="roles"
+              :items="roleOptions"
+              :model-value="selectedRoles"
+              @update:model-value="handleRoleChange"
             />
           </UFormField>
         </FormSection>
