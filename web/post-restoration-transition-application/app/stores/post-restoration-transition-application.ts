@@ -56,7 +56,7 @@ export const usePostRestorationTransitionApplicationStore
       authApi.getAuthInfo(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
-      legalApi.getParties(businessId, 'director')
+      legalApi.getParties(businessId, { type: 'director' })
     ])
 
     activeBusiness.value = business
