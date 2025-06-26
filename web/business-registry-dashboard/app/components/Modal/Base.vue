@@ -61,15 +61,14 @@ onMounted(async () => {
         </div>
       </template>
       <slot>
-        <div v-if="error" class="-mb-4 -mt-12 flex flex-col items-center gap-4">
+        <div v-if="error" class="-mb-4 -mt-12 flex flex-col gap-4">
           <div class="relative w-full">
-            <div class="flex justify-center">
-              <UIcon name="i-mdi-alert-circle-outline" class="size-8 text-red-500" />
-            </div>
+            <h2 class="flex pb-4 text-xl font-semibold">
+              {{ error.title }}
+            </h2>
             <UButton
               v-if="!title"
               ref="closeButtonRef"
-              :ui="{ icon: { base: 'shrink-0 scale-150' } }"
               icon="i-mdi-close"
               color="primary"
               :aria-label="$t('btn.close')"
@@ -79,9 +78,6 @@ onMounted(async () => {
               @click="modalModel = false"
             />
           </div>
-          <h2 class="text-xl font-semibold">
-            {{ error.title }}
-          </h2>
           <p>{{ error.description }}</p>
           <p v-if="error.description2">
             {{ error.description2 }}
@@ -91,7 +87,7 @@ onMounted(async () => {
       </slot>
       <template v-if="actions !== undefined || $slots.footer" #footer>
         <slot name="footer">
-          <div v-if="actions !== undefined" class="flex flex-wrap items-center justify-center gap-4">
+          <div v-if="actions !== undefined" class="flex flex-wrap items-center justify-center gap-4 pt-2">
             <UButton
               v-for="(action, index) in actions"
               :key="index"
