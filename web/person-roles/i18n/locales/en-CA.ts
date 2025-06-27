@@ -57,22 +57,32 @@ export default {
     }
   },
   error: {
-    getOfficerInfo: {
-      unauthorized: {
+    initOfficerStore: {
+      401: {
         title: 'Access Restricted',
         description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
       },
-      notFound: {
+      404: {
         title: 'Business Not Found',
         description: 'This business can not be found or does not exist.'
       },
-      internal: {
+      500: {
         title: 'Internal Server Error',
         description: 'Internal error, please try again later.'
       },
-      unknown: {
+      undefined: {
         title: 'Unknown Error',
-        description: 'Unknown error, please try again later.'
+        description: 'An unknown error occured while loading this business, please try again later.'
+      }
+    },
+    getDraftFiling: {
+      404: {
+        title: 'Draft Filing Not Found',
+        description: 'This draft filing could not be found or does not exist.'
+      },
+      undefined: {
+        title: 'Draft Filing Not Found',
+        description: 'This draft filing could not be found or does not exist.'
       }
     },
     submitFiling: {
@@ -102,7 +112,13 @@ export default {
       },
       undefined: {
         title: 'Unknown Error',
-        description: 'An unknown error occured, please try again later.'
+        description: 'An unknown error occured while trying to submit this filing, please try again later.'
+      }
+    },
+    filingNotAllowed: {
+      undefined: {
+        title: 'Filing not available',
+        description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
       }
     }
   },
@@ -169,10 +185,6 @@ export default {
     unsavedChanges: {
       title: 'Unsaved changes',
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'
-    },
-    filingNotAllowed: {
-      title: 'Filing not available',
-      description: 'This filing is not available for this business type.'
     }
   },
   text: {

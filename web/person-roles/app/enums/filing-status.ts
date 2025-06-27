@@ -13,5 +13,6 @@ export enum FilingStatus {
   APPROVED = 'APPROVED',
   AWAITING_REVIEW = 'AWAITING_REVIEW',
   CHANGE_REQUESTED = 'CHANGE_REQUESTED',
-  REJECTED = 'REJECTED'
+  REJECTED = 'REJECTED',
+  NEW = 'NEW' // used for Todo List items only (ie, not yet a filing)
 }

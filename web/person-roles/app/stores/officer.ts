@@ -1,12 +1,13 @@
-import { FetchError } from 'ofetch'
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const t = useNuxtApp().$i18n.t
+  const rtc = useRuntimeConfig().public
   const modal = useModal()
   const legalApi = useLegalApi()
   const authApi = useAuthApi()
+  const accountStore = useConnectAccountStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
   // let initialOfficersRaw: OrgPerson[] = [] // raw officer response on page load/parties fetch
@@ -27,29 +28,69 @@ export const useOfficerStore = defineStore('officer-store', () => {
     return hasEdits || hasNew
   })
 
-  async function initOfficerStore(businessId: string) {
+  async function initOfficerStore(businessId: string, draftId?: string) {
     try {
-      $reset() // reset any previous state (ex: user switches accounts)
+      // reset any previous state (ex: user switches accounts) and init loading state
+      $reset()
       initializing.value = true
       detailsHeaderStore.loading = true
 
-      const [authInfo, business, parties] = await Promise.all([
-        authApi.getAuthInfo(businessId),
+      // if filing ID provided, get and validate the filing structure, return early if invalid
+      let draftState: OfficerTableState[] = []
+      if (draftId) {
+        try {
+          const { isValid, data } = await legalApi.getAndValidateDraftFiling<'changeOfOfficers', OfficerTableState[]>(
+            businessId,
+            draftId,
+            'changeOfOfficers'
+          )
+          if (!isValid) {
+            throw new Error('Draft filing invalid')
+          } else {
+            draftState = data?.filing.changeOfOfficers || []
+          }
+        } catch (error) {
+          modal.openBaseErrorModal(
+            error,
+            'error.getDraftFiling',
+            [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+          )
+          return
+        }
+      }
+
+      // get full business data
+      // get business pending tasks
+      const [business, hasPendingTasks] = await Promise.all([
         legalApi.getBusiness(businessId),
-        legalApi.getParties(businessId, { classType: 'officer' })
+        legalApi.hasPendingTasks(businessId)
       ])
 
-      // validate business is allowed to complete this filing type
+      // set business ref
+      activeBusiness.value = business
+
+      // if ***NO*** filing ID provided validate business is allowed to complete this filing type
+      // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
-      if (!isFilingAllowed) {
-        modal.openOfficerFilingNotAllowedModal()
+      if ((!isFilingAllowed || hasPendingTasks) && !draftId) {
+        modal.openBaseErrorModal(
+          undefined,
+          'error.filingNotAllowed',
+          [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+        )
         return
       }
+
+      // get business auth info for masthead and filing paylaod
+      // load current business officers
+      const [authInfo, parties] = await Promise.all([
+        authApi.getAuthInfo(businessId),
+        legalApi.getParties(businessId, { classType: 'officer' })
+      ])
 
       // initialOfficersRaw = parties
 
       // set masthead data
-      activeBusiness.value = business
       const contact = authInfo.contacts[0]
       const ext = contact?.extension ?? contact?.phoneExtension
       const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
@@ -63,53 +104,57 @@ export const useOfficerStore = defineStore('officer-store', () => {
         { label: t('label.phone'), value: phoneLabel }
       ]
 
-      // map officers
-      if (parties.length) {
-        const officers = parties.map((p) => {
-          const mailingAddress = formatAddressUi(p.mailingAddress)
-          const deliveryAddress = formatAddressUi(p.deliveryAddress)
-          const id = p.officer.id ? String(p.officer.id) : undefined
-          const preferredName = p.officer.alternateName ?? ''
+      // map current officers
+      const officers = parties.map((p) => {
+        const mailingAddress = formatAddressUi(p.mailingAddress)
+        const deliveryAddress = formatAddressUi(p.deliveryAddress)
+        const id = p.officer.id ? String(p.officer.id) : undefined
+        const preferredName = p.officer.alternateName ?? ''
 
-          // map api roles to ui roles, filter roles that end up with an undefined type
-          const roles: OfficerRoleObj[] = p.roles.map(role => ({
-            roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType!.toLowerCase()],
-            roleClass: 'OFFICER',
-            appointmentDate: role.appointmentDate,
-            cessationDate: role.cessationDate ?? null
-          })).filter(role => role.roleType !== undefined) as OfficerRoleObj[]
+        // map api roles to ui roles, filter roles that end up with an undefined type
+        const roles: OfficerRoleObj[] = p.roles.map(role => ({
+          roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType!.toLowerCase()],
+          roleClass: 'OFFICER',
+          appointmentDate: role.appointmentDate,
+          cessationDate: role.cessationDate ?? null
+        })).filter(role => role.roleType !== undefined) as OfficerRoleObj[]
 
-          return {
-            id,
-            firstName: p.officer.firstName ?? '',
-            middleName: p.officer.middleInitial ?? '',
-            lastName: p.officer.lastName ?? '',
-            preferredName,
-            roles,
-            mailingAddress,
-            deliveryAddress,
-            sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
-            hasPreferredName: preferredName.length > 0
-          }
-        })
+        return {
+          id,
+          firstName: p.officer.firstName ?? '',
+          middleName: p.officer.middleInitial ?? '',
+          lastName: p.officer.lastName ?? '',
+          preferredName,
+          roles,
+          mailingAddress,
+          deliveryAddress,
+          sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
+          hasPreferredName: preferredName.length > 0
+        }
+      })
 
-        initialOfficers.value = officers // retain initial officer state before changes
+      initialOfficers.value = officers // retain initial officer state before changes
 
-        // map officers data to display in table
-        officerTableState.value = officers.map(o => ({
-            state: {
-              officer: o,
-              actions: []
-            },
-            history: []
-        }))
+      // set table to returned draft state if exists
+      if (draftId && draftState.length) {
+        officerTableState.value = draftState
+        return
       }
-    } catch (error) {
-      const statusCode = error instanceof FetchError
-        ? error.response?.status
-        : undefined
 
-        modal.openOfficerInitErrorModal(statusCode)
+      // map intitial officers data to display in table if no draft officers
+      officerTableState.value = officers.map(o => ({
+          state: {
+            officer: o,
+            actions: []
+          },
+          history: []
+      }))
+    } catch (error) {
+      modal.openBaseErrorModal(
+        error,
+        'error.initOfficerStore',
+        [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+      )
     } finally {
       detailsHeaderStore.loading = false
       initializing.value = false
