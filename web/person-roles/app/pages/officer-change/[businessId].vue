@@ -231,8 +231,13 @@ watch(
 </script>
 
 <template>
-  <div class="py-10 space-y-10">
-    <h1>{{ $t('page.officerChange.h1') }}</h1>
+  <div class="py-10 space-y-8">
+    <div>
+      <h1>{{ $t('page.officerChange.h1') }}</h1>
+      <p class="mt-2">
+        {{ $t('text.trackOfficers') }}
+      </p>
+    </div>
 
     <UButton
       :label="$t('label.addOfficer')"

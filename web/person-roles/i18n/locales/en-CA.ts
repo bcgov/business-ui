@@ -189,7 +189,8 @@ export default {
   },
   text: {
     noOfficers: 'There are currently no officers.',
-    ifIssuePersistsContactUs: 'If this issue persists, please contact us.'
+    ifIssuePersistsContactUs: 'If this issue persists, please contact us.',
+    trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.'
   },
   validation: {
     required: 'Required',

@@ -282,9 +282,7 @@ watch(
         {{ title }}
       </h2>
       <div class="flex flex-col gap-9 w-full">
-        <div
-          class="flex flex-col gap-6 w-full"
-        >
+        <div class="flex flex-col gap-9 w-full">
           <FormSection
             :label="$t('label.legalName')"
             :invalid="formErrors.name"
@@ -318,6 +316,7 @@ watch(
               v-model="state.hasPreferredName"
               :label="$t('label.haspreferredName')"
               :ui="{ root: 'items-center' }"
+              class="-mt-2"
             />
 
             <UFormField
@@ -347,6 +346,7 @@ watch(
           :label="$t('label.roles')"
           :invalid="formErrors.roles"
           error-id="roles-checkbox-error"
+          :class="state.hasPreferredName ? '-mt-5' : ''"
         >
           <UFormField
             v-slot="{ error }"
@@ -405,7 +405,7 @@ watch(
           />
         </FormSection>
 
-        <div class="flex gap-6 justify-end">
+        <div class="flex gap-6 justify-end -mt-5">
           <UButton
             :label="$t('btn.done')"
             type="submit"
