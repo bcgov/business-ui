@@ -135,50 +135,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       initialOfficers.value = officers // retain initial officer state before changes
 
+      // set table to returned draft state if exists
       if (draftId && draftState.length) {
         officerTableState.value = draftState
-        // TODO: can we use table state as draft data?
-        // TODO: it would save the extra mapping below and preserve the undo state
-
-        // draftRelationships.map((o, i) => {
-        //   const mailingAddress = formatAddressUi(o.mailingAddress)
-        //   const deliveryAddress = formatAddressUi(o.deliveryAddress)
-        //   const id = o.entity.identifier ? String(o.entity.identifier) : undefined
-        //   const preferredName = o.entity.alternateName ?? ''
-
-        //   // map api roles to ui roles, filter roles that end up with an undefined type
-        //   const roles: OfficerRoleObj[] = o.roles.map(role => ({
-        //     roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType!.toLowerCase()],
-        //     roleClass: 'OFFICER',
-        //     appointmentDate: role.appointmentDate,
-        //     cessationDate: role.cessationDate ?? null
-        //   })).filter(role => role.roleType !== undefined) as OfficerRoleObj[]
-
-        //   const officer: Officer = {
-        //     id,
-        //     firstName: o.entity.givenName ?? '',
-        //     middleName: o.entity.middleInitial ?? '',
-        //     lastName: o.entity.familyName ?? '',
-        //     preferredName,
-        //     roles,
-        //     mailingAddress,
-        //     deliveryAddress,
-        //     sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
-        //     hasPreferredName: preferredName.length > 0
-        //   }
-
-        //   const isRemoved = officer.roles.some(r => r.cessationDate !== null)
-        //   const actions = isRemoved ? ['removed'] : getOfficerStateDiff(officers[i] as Officer, officer)
-
-        //   return {
-        //     state: {
-        //       officer,
-        //       actions
-        //     },
-        //     history: []
-        //   }
-        // })
-        // return early if draft state
         return
       }
 

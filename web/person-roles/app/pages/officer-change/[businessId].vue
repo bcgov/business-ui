@@ -149,11 +149,6 @@ async function saveFiling(resumeLater = false) {
       handleButtonLoading(false, 'left', 0)
     }
 
-    // TODO: decide if we can use the table state as the draft filing instead of formatting it
-    // const payload = {
-    //   relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    // }
-
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
 
