@@ -81,8 +81,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
         return
       }
 
-      // get business auth info for masthead and filing paylaod
-      // load current business officers
+      // get business auth info for masthead
+      // get current business officers
       const [authInfo, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
         legalApi.getParties(businessId, { classType: 'officer' })
