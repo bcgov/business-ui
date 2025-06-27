@@ -100,10 +100,10 @@ const formRef = useTemplateRef<Form<Schema>>('officer-form')
 const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
   const errors = formRef.value?.getErrors()
   return {
-    name: !!errors?.some(e => e.name === 'lastName'),
-    roles: !!errors?.some(e => e.name === 'roles'),
-    mailing: !!errors?.some(e => e.name?.startsWith('mailingAddress')),
-    delivery: !!errors?.some(e => e.name?.startsWith('deliveryAddress'))
+    name: errors?.find(e => e.name === 'lastName'),
+    roles: errors?.find(e => e.name === 'roles'),
+    mailing: errors?.find(e => e.name?.startsWith('mailingAddress')),
+    delivery: errors?.find(e => e.name?.startsWith('deliveryAddress'))
   }
 })
 
@@ -285,7 +285,7 @@ watch(
         <div class="flex flex-col gap-9 w-full">
           <FormSection
             :label="$t('label.legalName')"
-            :invalid="formErrors.name"
+            :error="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
               <FormFieldInput
@@ -344,24 +344,14 @@ watch(
 
         <FormSection
           :label="$t('label.roles')"
-          :invalid="formErrors.roles"
-          error-id="roles-checkbox-error"
+          :error="formErrors.roles"
+          :show-error-msg="true"
           :class="state.hasPreferredName ? '-mt-5' : ''"
         >
           <UFormField
-            v-slot="{ error }"
             name="roles"
-            :ui="{
-              error: 'sr-only'
-            }"
+            :ui="{ error: 'sr-only' }"
           >
-            <div
-              v-if="error !== undefined"
-              id="roles-checkbox-error"
-              class="text-red-600 text-base mb-3"
-            >
-              {{ error }}
-            </div>
             <FormCheckboxGroup
               id="officer-role-options"
               :items="roleOptions"
@@ -373,7 +363,7 @@ watch(
 
         <FormSection
           :label="$t('label.deliveryAddress')"
-          :invalid="formErrors.delivery"
+          :error="formErrors.delivery"
         >
           <FormAddress
             id="delivery-address"
@@ -387,7 +377,7 @@ watch(
 
         <FormSection
           :label="$t('label.mailingAddress')"
-          :invalid="formErrors.mailing"
+          :error="formErrors.mailing"
         >
           <UCheckbox
             v-model="state.sameAsDelivery"
