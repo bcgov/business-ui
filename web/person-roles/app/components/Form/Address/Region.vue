@@ -12,6 +12,7 @@ const {
   disabled?: boolean
   required?: boolean
   maxlength?: string
+  help?: string
 }>()
 
 const regions = computed(() => {
@@ -95,6 +96,10 @@ const inputId = id + '-region'
         :disabled
         :label="$t('label.regionOpt')"
         :maxlength
+      />
+      <div
+        v-if="!help && !error"
+        class="h-4 mt-1"
       />
     </template>
   </UFormField>

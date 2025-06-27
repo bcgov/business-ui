@@ -18,27 +18,20 @@ const inputId = props.id + '-postalCode'
 </script>
 
 <template>
-  <UFormField
+  <FormFieldInput
+    v-model="model"
     :name="schemaPrefix + 'postalCode'"
-    class="grow flex-1"
-  >
-    <template #default="{ error }">
-      <ConnectInput
-        :id="inputId"
-        v-model.trim="model"
-        v-maska="country === 'CA'
-          ? 'V#@ #@#'
-          : country === 'US'
-            ? '#####-####'
-            : undefined"
-        required
-        :invalid="!!error"
-        :disabled
-        :label="country === 'US'
-          ? $t('label.zipCode')
-          : $t('label.postalCode')
-        "
-      />
-    </template>
-  </UFormField>
+    :input-id="inputId"
+    :disabled
+    required
+    :label="country === 'US'
+      ? $t('label.zipCode')
+      : $t('label.postalCode')
+    "
+    :mask="country === 'CA'
+      ? 'V#@ #@#'
+      : country === 'US'
+        ? '#####-####'
+        : undefined"
+  />
 </template>

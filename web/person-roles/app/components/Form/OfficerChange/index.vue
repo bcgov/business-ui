@@ -48,40 +48,6 @@ const emit = defineEmits<{
   'officer-change': [Officer]
 }>()
 
-const addressSchema = z.object({
-  street: z.string().min(1, t('validation.fieldRequired')).max(50, t('validation.maxChars', { count: 50 })),
-  streetAdditional: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
-  city: z.string().min(1, t('validation.fieldRequired')).max(40, t('validation.maxChars', { count: 40 })),
-  region: z.string().optional(),
-  postalCode: z.string().min(1, t('validation.fieldRequired')).max(15, t('validation.maxChars', { count: 15 })),
-  country: z.string().min(1, t('validation.fieldRequired')),
-  locationDescription: z.string().max(80, t('validation.maxChars', { count: 80 })).optional()
-}).superRefine((data, ctx) => {
-  // validate region based on country
-  // required if country is US or CA
-  // optional and max 2 characters if not US or CA
-  const country = data.country
-  const region = data.region
-
-  if (region && region.length > 2) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('validation.maxChars', { count: 2 }),
-      path: ['region']
-    })
-  }
-
-  if ((country === 'US' || country === 'CA') && region?.length === 0) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('validation.fieldRequired'),
-      path: ['region']
-    })
-  }
-
-  return z.NEVER
-})
-
 const roleSchema = z.object({
   roleType: z.enum(
     [
@@ -107,9 +73,9 @@ const schema = z.object({
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
   preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
   hasPreferredName: z.boolean(),
-  mailingAddress: addressSchema,
+  mailingAddress: getMailingAddressSchema(),
   sameAsDelivery: z.boolean(),
-  deliveryAddress: addressSchema,
+  deliveryAddress: getDeliveryAddressSchema(),
   roles: z
     .array(roleSchema)
     .min(1, { message: t('validation.role.min') })
@@ -315,7 +281,7 @@ watch(
       <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
         {{ title }}
       </h2>
-      <div class="flex flex-col gap-8 w-full">
+      <div class="flex flex-col gap-9 w-full">
         <div
           class="flex flex-col gap-6 w-full"
         >
@@ -324,44 +290,28 @@ watch(
             :invalid="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
-              <UFormField
-                v-slot="{ error }"
+              <FormFieldInput
+                v-model="state.firstName"
                 name="firstName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="first-name"
-                  v-model="state.firstName"
-                  :invalid="!!error"
-                  :label="$t('label.firstName')"
-                  autofocus
-                />
-              </UFormField>
-              <UFormField
-                v-slot="{ error }"
+                input-id="first-name"
+                :label="$t('label.firstName')"
+                autofocus
+              />
+
+              <FormFieldInput
+                v-model="state.middleName"
                 name="middleName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="middle-name"
-                  v-model="state.middleName"
-                  :invalid="!!error"
-                  :label="$t('label.middleNameOpt')"
-                />
-              </UFormField>
-              <UFormField
-                v-slot="{ error }"
+                input-id="middle-name"
+                :label="$t('label.middleNameOpt')"
+              />
+
+              <FormFieldInput
+                v-model="state.lastName"
                 name="lastName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="last-name"
-                  v-model="state.lastName"
-                  required
-                  :invalid="!!error"
-                  :label="$t('label.lastName')"
-                />
-              </UFormField>
+                input-id="last-name"
+                required
+                :label="$t('label.lastName')"
+              />
             </div>
 
             <UCheckbox
@@ -372,18 +322,23 @@ watch(
 
             <UFormField
               v-if="state.hasPreferredName"
-              v-slot="{ error }"
               name="preferredName"
               class="grow flex-1"
               :label="$t('label.preferredName')"
               :ui="{ label: 'mb-3.5' }"
             >
-              <ConnectInput
-                id="preferred-name"
-                v-model="state.preferredName"
-                :invalid="!!error"
-                :label="$t('label.preferredNameOpt')"
-              />
+              <template #default="{ error }">
+                <ConnectInput
+                  id="preferred-name"
+                  v-model="state.preferredName"
+                  :invalid="!!error"
+                  :label="$t('label.preferredNameOpt')"
+                />
+                <div
+                  v-if="!error"
+                  class="h-4 mt-1"
+                />
+              </template>
             </UFormField>
           </FormSection>
         </div>

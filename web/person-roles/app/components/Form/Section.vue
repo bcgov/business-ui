@@ -16,7 +16,7 @@ const legendId = useId()
   >
     <legend
       :id="legendId"
-      class="text-base text-bcGovGray-900 font-bold mb-4"
+      class="text-base text-bcGovGray-900 font-bold mb-6"
       :class="{
         'text-red-600': invalid
       }"

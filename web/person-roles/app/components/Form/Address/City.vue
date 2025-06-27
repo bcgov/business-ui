@@ -11,19 +11,12 @@ const inputId = props.id + '-city'
 </script>
 
 <template>
-  <UFormField
+  <FormFieldInput
+    v-model="model"
     :name="schemaPrefix + 'city'"
-    class="grow flex-1"
-  >
-    <template #default="{ error }">
-      <ConnectInput
-        :id="inputId"
-        v-model="model"
-        required
-        :invalid="!!error"
-        :disabled
-        :label="$t('label.city')"
-      />
-    </template>
-  </UFormField>
+    :input-id="inputId"
+    required
+    :label="$t('label.city')"
+    :disabled
+  />
 </template>
