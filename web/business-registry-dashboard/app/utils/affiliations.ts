@@ -301,7 +301,7 @@ export const isNumberedIncorporationApplication = (item: Business): boolean => {
 // /** Returns the identifier of the affiliation. */
 export const number = (business: Business): string => {
   if (isTemporaryBusiness(business) || isNameRequest(business)) {
-    return business.nameRequest?.nrNumber || business.nrNumber || ''
+    return business.nameRequest?.nrNumber || ''
   }
   return business.businessIdentifier
 }

@@ -284,7 +284,7 @@ true  )
             console.log("in responses entities nameRequest", entity.nrNumber)
             const nr = resp.nameRequest
             if (!entity.nrNumber && nr.nrNum) {
-              entity.nrNumber = "test"
+              entity.nrNumber = entity.nrNumber || nr.nrNum
             }
             entity.nameRequest = buildNameRequestObject(nr)
           }
