@@ -60,11 +60,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   // Flag for whether server-side filtering is enabled
   const enableServerFiltering = computed(() =>
-true  )
+    ldStore.getStoredFlag(LDFlags.EnableAffiliationsServerFiltering) || false
+  )
 
   // Flag for whether pagination is enabled
   const enablePagination = computed(() =>
-true  )
+    ldStore.getStoredFlag(LDFlags.EnableAffiliationsPagination) || false
+  )
 
   const newlyAddedIdentifier = ref<string>('')
 
@@ -277,11 +279,9 @@ true  )
       let affiliatedEntities: Business[] = []
 
       if (response.entities.length > 0) {
-        console.log("in responses entities", response.entities)
         response.entities.forEach((resp) => {
           const entity: Business = buildBusinessObject(resp)
           if (resp.nameRequest) {
-            console.log("in responses entities nameRequest", entity.nrNumber)
             const nr = resp.nameRequest
             if (!entity.nrNumber && nr.nrNum) {
               entity.nrNumber = entity.nrNumber || nr.nrNum
