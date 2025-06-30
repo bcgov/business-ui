@@ -1,4 +1,4 @@
-name: Post Restoration Transition Application UI CI
+name: Standalone Transition UI CI
 
 on:
   pull_request:
@@ -12,10 +12,10 @@ defaults:
     working-directory: "./web/post-restoration-transition-application"
 
 jobs:
-  post-restoration-transition-application-cd:
+  standalone-transition-ui-ci:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
-      app_name: "post-restoration-transition-application-filing"
+      app_name: "standalone-transition-ui"
       working_directory: "./web/post-restoration-transition-application"
       codecov_flag: "postrestorationtransitionapplication"
       node_version: 24
