@@ -76,8 +76,8 @@ async function createBusinessRecord (business: Business): Promise<string> {
   if (business.nameRequest?.nrNumber) {
     try {
       const refreshedNR = await fetchNameRequest(business.nameRequest.nrNumber, business.nameRequest.applicantPhone as string, business.nameRequest.applicantEmail as string)
-      if (refreshedNR.state !== NrState.APPROVED) {
-        // Name request status is not approved, cannot create business
+      if (refreshedNR.state !== NrState.APPROVED && refreshedNR.state !== NrState.CONDITIONAL && refreshedNR.state !== NrState.CONDITION) {
+        // Name request status is not approved or conditional, cannot create business
         brdModal.openInvalidNameRequest()
         return ''
       }
