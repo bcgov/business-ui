@@ -4,6 +4,8 @@ import type { ConnectBtnControl } from '#imports'
 const buttonControl = computed(() => useRoute().meta.buttonControl as ConnectBtnControl)
 const leftButtons = computed(() => buttonControl.value?.leftButtons || [])
 const rightButtons = computed(() => buttonControl.value?.rightButtons || [])
+const leftAlertText = computed(() => buttonControl.value?.leftAlertText || undefined)
+const rightAlertText = computed(() => buttonControl.value?.rightAlertText || undefined)
 </script>
 
 <template>
@@ -14,7 +16,7 @@ const rightButtons = computed(() => buttonControl.value?.rightButtons || [])
     <div class="app-inner-container">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <div class="flex justify-center gap-4 md:justify-start">
+          <div class="flex justify-center items-center gap-4 md:justify-start">
             <UButton
               v-for="(button, i) in leftButtons"
               :key="'left-button-' + i"
@@ -22,10 +24,24 @@ const rightButtons = computed(() => buttonControl.value?.rightButtons || [])
               v-bind="button"
               data-testid="button-control-left-button"
             />
+            <p
+              v-if="leftAlertText"
+              class="text-red-600"
+              role="alert"
+            >
+              {{ leftAlertText }}
+            </p>
           </div>
         </div>
         <div>
-          <div class="flex justify-center gap-4 md:justify-end">
+          <div class="flex justify-center items-center gap-4 md:justify-end">
+            <p
+              v-if="rightAlertText"
+              class="text-red-600"
+              role="alert"
+            >
+              {{ rightAlertText }}
+            </p>
             <UButton
               v-for="(button, i) in rightButtons"
               :key="'right-button-' + i"

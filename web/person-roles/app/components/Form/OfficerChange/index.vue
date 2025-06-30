@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
+const na = useNuxtApp()
 const { t } = useI18n()
 const officerStore = useOfficerStore()
 
@@ -261,6 +262,25 @@ watch(
     }
   }
 )
+
+// handle unfinished task warnings
+const unfinishedTaskMsg = ref('')
+na.hook('app:officer-form:incomplete', async (payload) => {
+  unfinishedTaskMsg.value = ''
+  await nextTick()
+  unfinishedTaskMsg.value = payload.message
+  await nextTick()
+  const el = document.getElementById('btn-officer-form-done')
+  if (el) {
+    el.focus()
+  }
+})
+
+function clearUnfinishedTaskMsg() {
+  if (unfinishedTaskMsg.value) {
+    unfinishedTaskMsg.value = ''
+  }
+}
 </script>
 
 <template>
@@ -276,6 +296,8 @@ watch(
     :validate-on="['blur']"
     @error="onError"
     @submit="onSubmit"
+    @click="clearUnfinishedTaskMsg"
+    @keyup.tab="clearUnfinishedTaskMsg"
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
@@ -395,19 +417,28 @@ watch(
           />
         </FormSection>
 
-        <div class="flex gap-6 justify-end -mt-5">
-          <UButton
-            :label="$t('btn.done')"
-            type="submit"
-            class="font-bold"
-            size="xl"
-          />
-          <UButton
-            :label="$t('btn.cancel')"
-            variant="outline"
-            size="xl"
-            @click="$emit('cancel')"
-          />
+        <div class="flex sm:flex-row flex-col gap-4 justify-end sm:items-center -mt-5">
+          <p
+            class="text-red-600 text-base"
+            role="alert"
+          >
+            {{ unfinishedTaskMsg }}
+          </p>
+          <div class="flex gap-6 justify-end">
+            <UButton
+              id="btn-officer-form-done"
+              :label="$t('btn.done')"
+              type="submit"
+              class="font-bold"
+              size="xl"
+            />
+            <UButton
+              :label="$t('btn.cancel')"
+              variant="outline"
+              size="xl"
+              @click="$emit('cancel')"
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,8 @@ import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
 
 export const useOfficerStore = defineStore('officer-store', () => {
-  const t = useNuxtApp().$i18n.t
+  const na = useNuxtApp()
+  const t = na.$i18n.t
   const rtc = useRuntimeConfig().public
   const modal = useModal()
   const legalApi = useLegalApi()
@@ -17,12 +18,19 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
   const officerTableState = ref<OfficerTableState[]>([]) // officer state displayed in table
+  const officerDraftTableState = shallowRef<OfficerTableState[]>([]) // officer state saved as draft
   const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
   const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
   const hasChanges = computed(() => {
     const tableOfficers = officerTableState.value.map(state => state.state.officer)
+    const tableOfficersDraft = officerDraftTableState.value.map(state => state.state.officer)
+
+    if (tableOfficersDraft.length) {
+      return !isEqual(tableOfficers, tableOfficersDraft)
+    }
+
     const hasEdits = officerTableState.value.some(o => o.state.actions.length > 0)
     const hasNew = tableOfficers.length !== initialOfficers.value.length
     return hasEdits || hasNew
@@ -138,6 +146,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // set table to returned draft state if exists
       if (draftId && draftState.length) {
         officerTableState.value = draftState
+        officerDraftTableState.value = draftState
         return
       }
 
@@ -254,6 +263,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
   *  @param {Officer} v The new officer object
   */
   function addNewOfficer(v: Officer): void {
+    // set address to empty fields if not fully entered
+    const addressSchema = getDeliveryAddressSchema()
+    const isMailingValid = (addressSchema.safeParse(v.mailingAddress)).success
+    if (!isMailingValid) {
+      v.mailingAddress = getNewOfficer().mailingAddress
+    }
+
     const newState: OfficerTableState = {
       state: {
         officer: v,
@@ -358,6 +374,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
       return
     }
 
+    // set address to empty fields if not fully entered
+    const addressSchema = getDeliveryAddressSchema()
+    const isMailingValid = (addressSchema.safeParse(data.mailingAddress)).success
+    if (!isMailingValid) {
+      data.mailingAddress = getNewOfficer().mailingAddress
+    }
+
     const newState = {
       state: {
         officer: data,
@@ -388,6 +411,20 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState.value = {} as Officer
   }
 
+  async function checkHasActiveTask(opt: 'save' | 'submit' | 'change') {
+    if (addingOfficer.value || !isEmpty(editState.value)) {
+      await na.callHook('app:officer-form:incomplete', {
+        message: opt === 'save'
+          ? t('text.finishTaskBeforeSave')
+          : opt === 'submit'
+            ? t('text.finishTaskBeforeSubmit')
+            : t('text.finishTaskBeforeOtherChanges')
+      })
+      return true
+    }
+    return false
+  }
+
   /**
   * Resets Officer store to default state
   */
@@ -396,6 +433,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initializing.value = false
     addingOfficer.value = false
     officerTableState.value = []
+    officerDraftTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
     activeBusiness.value = {} as BusinessData
@@ -406,6 +444,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   return {
     officerTableState,
+    officerDraftTableState,
     initializing,
     addingOfficer,
     activeBusiness,
@@ -423,6 +462,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     undoOfficer,
     initOfficerEdit,
     cancelOfficerEdit,
+    checkHasActiveTask,
     $reset
   }
 }

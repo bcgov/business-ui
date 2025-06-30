@@ -14,6 +14,13 @@ const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 const officerStore = useOfficerStore()
 const { officerTableState, expanded, editState, initializing } = storeToRefs(useOfficerStore())
 
+const emit = defineEmits<{
+  'table-action': []
+}>()
+
+const preventDropdownCloseAutoFocus = ref(false)
+const addressSchema = getDeliveryAddressSchema()
+
 // returns a unique list of badge props to display in the table based on what actions were taken
 function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
   if (!actions.length) {
@@ -75,7 +82,15 @@ function getRowActions(row: Row<OfficerTableState>) {
   const actions = [
     {
       label: t('label.remove'),
-      onSelect: () => officerStore.removeOfficer(row),
+      onSelect: async () => {
+        emit('table-action')
+        const hasActiveTask = await officerStore.checkHasActiveTask('change')
+        if (hasActiveTask) {
+          preventDropdownCloseAutoFocus.value = true
+          return
+        }
+        officerStore.removeOfficer(row)
+      },
       icon: 'i-mdi-delete'
     }
   ]
@@ -83,7 +98,15 @@ function getRowActions(row: Row<OfficerTableState>) {
   if (row.original.history.length) {
     actions.unshift({
       label: t('label.undo'),
-      onSelect: () => officerStore.undoOfficer(row),
+      onSelect: async () => {
+        emit('table-action')
+        const hasActiveTask = await officerStore.checkHasActiveTask('change')
+        if (hasActiveTask) {
+          preventDropdownCloseAutoFocus.value = true
+          return
+        }
+        officerStore.undoOfficer(row)
+      },
       icon: 'i-mdi-undo'
     })
   }
@@ -113,7 +136,7 @@ const columns: TableColumn<OfficerTableState>[] = [
         h('span', {}, name),
         preferredName
           ? h('div', { class: 'flex flex-col' }, [
-            h('i', { class: 'text-xs italic' }, t('label.preferredName')),
+            h('i', { class: 'text-xs italic font-normal' }, t('label.preferredNameColon')),
             h('span', { class: 'text-xs' }, preferredName.toUpperCase())
           ])
           : null,
@@ -184,9 +207,14 @@ const columns: TableColumn<OfficerTableState>[] = [
       const mailingAddress = row.original.state.officer.mailingAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
 
-      return h('div', { class: containerClass }, h(sameAs
-        ? h('span', {}, t('label.sameAsDeliveryAddress'))
-        : h(ConnectAddressDisplay, { address: mailingAddress })
+      // only display mailing address if fully entered
+      const isValidAddress = (addressSchema.safeParse(mailingAddress)).success
+
+      return h('div', { class: containerClass }, h(!isValidAddress
+        ? h('span', {}, t('label.notEntered'))
+        : sameAs
+          ? h('span', {}, t('label.sameAsDeliveryAddress'))
+          : h(ConnectAddressDisplay, { address: mailingAddress })
       ))
     }
   },
@@ -216,18 +244,35 @@ const columns: TableColumn<OfficerTableState>[] = [
                   variant: 'ghost',
                   label: isRemoved ? t('label.undo') : t('label.change'),
                   icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-pencil',
-                  disabled: officerStore.disableActions,
                   class: 'px-4',
-                  onClick: () => isRemoved
-                    ? officerStore.undoOfficer(row)
-                    : officerStore.initOfficerEdit(row)
+                  onClick: async () => {
+                    const hasActiveTask = await officerStore.checkHasActiveTask('change')
+                    if (hasActiveTask) {
+                      return
+                    }
+                    if (isRemoved) {
+                      officerStore.undoOfficer(row)
+                    } else {
+                      officerStore.initOfficerEdit(row)
+                    }
+                    emit('table-action')
+                  }
                 }),
                 isRemoved
                   ? null
                   : h(UDropdownMenu, {
                     items: getRowActions(row),
-                    disabled: officerStore.disableActions,
-                    content: { align: 'end' }
+                    content: {
+                      align: 'end',
+                      // required to prevent refocusing on dropdown trigger
+                      // when the focus has moved to the form when the user has an unfinished task
+                      onCloseAutoFocus: (e) => {
+                        if (preventDropdownCloseAutoFocus.value) {
+                          e.preventDefault()
+                          preventDropdownCloseAutoFocus.value = false
+                        }
+                      }
+                    }
                   }, {
                     default: () =>
                       h(UButton, {
