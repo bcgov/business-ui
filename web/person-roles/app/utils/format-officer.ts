@@ -17,7 +17,7 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
 )
 
 export function formatOfficerPayload(newState: OfficerTableState[]) {
-  const addressSchema = getDeliveryAddressSchema()
+  const addressSchema = getRequiredAddressSchema()
 
   const payload = newState.map((s) => {
     const officer = s.state.officer

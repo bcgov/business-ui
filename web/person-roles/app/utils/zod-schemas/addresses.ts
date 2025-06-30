@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-export function getDeliveryAddressSchema() {
+export function getRequiredAddressSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
@@ -38,7 +38,7 @@ export function getDeliveryAddressSchema() {
   })
 }
 
-export function getMailingAddressSchema() {
+export function getNotRequiredAddressSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({

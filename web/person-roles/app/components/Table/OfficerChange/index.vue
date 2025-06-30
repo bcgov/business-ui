@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const preventDropdownCloseAutoFocus = ref(false)
-const addressSchema = getDeliveryAddressSchema()
+const addressSchema = getRequiredAddressSchema()
 
 // returns a unique list of badge props to display in the table based on what actions were taken
 function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {

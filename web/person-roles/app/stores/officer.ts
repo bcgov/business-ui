@@ -264,7 +264,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   */
   function addNewOfficer(v: Officer): void {
     // set address to empty fields if not fully entered
-    const addressSchema = getDeliveryAddressSchema()
+    const addressSchema = getRequiredAddressSchema()
     const isMailingValid = (addressSchema.safeParse(v.mailingAddress)).success
     if (!isMailingValid) {
       v.mailingAddress = getNewOfficer().mailingAddress
@@ -375,7 +375,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     }
 
     // set address to empty fields if not fully entered
-    const addressSchema = getDeliveryAddressSchema()
+    const addressSchema = getRequiredAddressSchema()
     const isMailingValid = (addressSchema.safeParse(data.mailingAddress)).success
     if (!isMailingValid) {
       data.mailingAddress = getNewOfficer().mailingAddress

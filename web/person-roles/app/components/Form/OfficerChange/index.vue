@@ -74,9 +74,9 @@ const schema = z.object({
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
   preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
   hasPreferredName: z.boolean(),
-  mailingAddress: getMailingAddressSchema(),
+  mailingAddress: getNotRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
-  deliveryAddress: getDeliveryAddressSchema(),
+  deliveryAddress: getRequiredAddressSchema(),
   roles: z
     .array(roleSchema)
     .min(1, { message: t('validation.role.min') })
