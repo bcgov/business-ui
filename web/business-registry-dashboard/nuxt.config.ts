@@ -3,6 +3,16 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
+  app: {
+    head: {
+      meta: [
+        { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
+        { 'http-equiv': 'Pragma', content: 'no-cache' },
+        { 'http-equiv': 'Expires', content: '0' }
+      ]
+    }
+  },
+
   future: {
     compatibilityVersion: 4
   },
@@ -10,6 +20,16 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: []
+    },
+    // Add aggressive no-cache for all routes
+    routeRules: {
+      '/**': { 
+        headers: { 
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        } 
+      }
     }
   },
 
