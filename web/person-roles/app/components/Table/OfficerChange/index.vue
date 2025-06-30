@@ -136,8 +136,8 @@ const columns: TableColumn<OfficerTableState>[] = [
         h('span', {}, name),
         preferredName
           ? h('div', { class: 'flex flex-col' }, [
-            h('i', { class: 'text-xs italic font-normal' }, t('label.preferredNameColon')),
-            h('span', { class: 'text-xs' }, preferredName.toUpperCase())
+            h('i', { class: 'text-sm italic font-normal' }, t('label.preferredNameColon')),
+            h('span', { class: 'text-sm' }, preferredName.toUpperCase())
           ])
           : null,
         badges.length
@@ -310,7 +310,7 @@ const expandedTrClass = computed(() =>
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-0 py-0 text-bcGovGray-700 align-top',
+      td: 'px-0 py-0 text-bcGovGray-900 align-top',
       tr: expandedTrClass
     }"
   >
