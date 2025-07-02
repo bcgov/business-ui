@@ -166,11 +166,14 @@ async function cancelFiling() {
   }
 }
 
-async function saveFiling(resumeLater = false) {
-  // prevent save if there is a form currently open
-  const hasActiveTask = await officerStore.checkHasActiveTask('save')
-  if (hasActiveTask) {
-    return
+async function saveFiling(resumeLater = false, disableActiveTaskCheck = false) {
+  // disable active task check for saving filing on session timeout
+  if (!disableActiveTaskCheck) {
+    // prevent save if there is a form currently open
+    const hasActiveTask = await officerStore.checkHasActiveTask('save')
+    if (hasActiveTask) {
+      return
+    }
   }
 
   // prevent save if there are no changes
@@ -266,6 +269,12 @@ watch(
         { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
         { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
       ]
+    })
+
+    // save filing before user logged out when session expires
+    setOnBeforeSessionExpired(async () => {
+      revokeBeforeUnloadEvent()
+      await saveFiling(false, true)
     })
   },
   { immediate: true }
