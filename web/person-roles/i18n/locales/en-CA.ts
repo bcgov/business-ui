@@ -195,8 +195,8 @@ export default {
     trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
     finishTaskBeforeSubmit: 'Finish this task before submitting.',
     finishTaskBeforeSave: 'Finish this task before saving.',
-    noChangesToSave: 'There a no changes to save.',
-    noChangesToSubmit: 'There a no changes to submit.',
+    noChangesToSave: 'There are no changes to save.',
+    noChangesToSubmit: 'There are no changes to submit.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.'
   },
   validation: {
