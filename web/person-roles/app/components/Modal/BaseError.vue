@@ -18,7 +18,7 @@ const {
 }>()
 defineEmits<{ close: [] }>()
 
-const status = error instanceof FetchError // isFetchError(error)
+const status = error instanceof FetchError
   ? error.response?.status
   : undefined
 
