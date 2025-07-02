@@ -27,7 +27,8 @@ const displayLegalName = computed(() => {
       <template #label>
         <div class="flex flex-col text-base space-y-2">
           <div :class="{ 'text-red-500': hasError }">
-            <p><span class="font-bold">{{ displayLegalName }}</span> {{ $t('text.certifiesItHasRelevantKnowledge', { legalName: displayLegalName }) }}</p>
+            <span>{{ displayLegalName-5 }}</span>
+            <p>{{ $t('text.certifiesItHasRelevantKnowledge', { legalName: displayLegalName }) }}</p>
           </div>
           <div>
             <span class="font-bold">{{ $t('label.date') }}: </span>{{ nowAsIsoDate() }}
