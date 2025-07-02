@@ -15,6 +15,8 @@ export const usePostRestorationTransitionApplicationStore
 
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
+  const legalName = ref<string | undefined>(undefined)
+  const certifiedByLegalName = ref<boolean | undefined>(false)
 
   const businessName = computed(() => {
     const alternateName = activeBusiness.value?.alternateNames?.length > 0
@@ -100,10 +102,12 @@ export const usePostRestorationTransitionApplicationStore
 
   return {
     activeBusiness,
+    certifiedByLegalName,
     compPartyEmail,
     courtOrderNumber,
     directors,
     folio,
+    legalName,
     offices,
     planOfArrangement,
     regOfficeEmail,

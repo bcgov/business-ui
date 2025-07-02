@@ -35,10 +35,12 @@ const businessId = route.params.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
+  certifiedByLegalName,
   compPartyEmail,
   courtOrderNumber,
   directors,
   folio,
+  legalName,
   offices,
   planOfArrangement,
   regOfficeEmail
@@ -65,7 +67,8 @@ feeStore.fees = {
 }
 
 const sectionErrors = ref({
-  reviewAndConfirm: false
+  reviewAndConfirm: false,
+  certify: false
 })
 
 // Define table columns
@@ -167,7 +170,6 @@ const directorsColumns = ref([
     <FormSection
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
-      icon="df"
       :has-errors="sectionErrors.reviewAndConfirm"
       class="space-y-6"
     >
@@ -255,6 +257,34 @@ const directorsColumns = ref([
         </ConnectFormSection>
       </div>
     </div>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.certify')"
+      :description="$t('text.certifySectionDescription')"
+      :has-errors="sectionErrors.certify"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class=" space-y-6 p-6"
+      >
+        <ConnectFormSection
+          :title="$t('label.legalName')"
+        >
+          <ConnectFormInput
+            v-model="legalName"
+            :name="'documentDelivery.completingPartyEmail'"
+            :label="$t('label.legalName')"
+            :placeholder="$t('text.legalNameOfAuthorizedPerson')"
+          />
+        </ConnectFormSection>
+        <ConnectFormSection title=" ">
+          <FormCertify
+            v-model="certifiedByLegalName"
+            :legal-name="legalName"
+          />
+        </ConnectFormSection>
+      </FormSubSection>
+    </FormSection>
     <!-- NB: needed so that the tw classes are loaded -->
     <!-- <main class="app-inner-container app-body">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">
