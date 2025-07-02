@@ -53,7 +53,8 @@ export function formatOfficerPayload(newState: OfficerTableState[]) {
     const isValidAddress = (addressSchema.safeParse(officer.mailingAddress)).success
 
     if (isValidAddress) {
-      p['mailingAddress'] = {
+      // @ts-expect-error - mailing address doesnt exist on entity // TODO: fix entity object type
+      p.mailingAddress = {
         streetAddress: officer.mailingAddress.street,
         streetAddressAdditional: officer.mailingAddress.streetAdditional,
         addressCity: officer.mailingAddress.city,

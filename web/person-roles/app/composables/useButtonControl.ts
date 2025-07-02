@@ -34,8 +34,10 @@ export const useButtonControl = () => {
 
   async function setAlertText(reset: boolean, grp?: 'left' | 'right', text?: string) {
     // clear existing text
-    route.meta.buttonControl.leftAlertText = undefined
-    route.meta.buttonControl.rightAlertText = undefined
+    if (route.meta.buttonControl) {
+      route.meta.buttonControl.leftAlertText = undefined
+      route.meta.buttonControl.rightAlertText = undefined
+    }
 
     // only continue if not resetting
     if (!reset) {
@@ -43,8 +45,10 @@ export const useButtonControl = () => {
       // allows screenreader alert for the same content if set multiple times
       await nextTick()
       // set content
-      route.meta.buttonControl.leftAlertText = (grp === 'left') ? text : undefined
-      route.meta.buttonControl.rightAlertText = (grp === 'right') ? text : undefined
+      if (route.meta.buttonControl) {
+        route.meta.buttonControl.leftAlertText = (grp === 'left') ? text : undefined
+        route.meta.buttonControl.rightAlertText = (grp === 'right') ? text : undefined
+      }
     }
   }
 

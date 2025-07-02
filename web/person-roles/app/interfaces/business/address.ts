@@ -17,7 +17,7 @@ export interface UiAddress {
  * https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/address.json
  */
 export interface ApiAddress {
-  id: number
+  id?: number
   addressCity: string // max 40 chars
   addressCountry: string
   addressRegion?: string // max 2 chars

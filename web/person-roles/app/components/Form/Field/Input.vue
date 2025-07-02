@@ -5,7 +5,7 @@ defineProps<{
   name: string
   label: string
   help?: string
-  inputId?: string
+  inputId: string
   required?: boolean
   autofocus?: boolean
   mask?: string

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
+import type { FormErrorEvent, Form, FormSubmitEvent, FormError } from '@nuxt/ui'
 import type { AcceptableValue } from 'reka-ui'
 import { z } from 'zod'
 import { isEqual } from 'lodash'
@@ -69,10 +69,10 @@ const roleSchema = z.object({
 })
 
 const schema = z.object({
-  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
-  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
+  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
-  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
   mailingAddress: getNotRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
@@ -98,7 +98,12 @@ const state = reactive<Schema>(props.defaultState)
 
 const formRef = useTemplateRef<Form<Schema>>('officer-form')
 
-const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
+const formErrors = computed<{
+  name: FormError<string> | undefined
+  roles: FormError<string> | undefined
+  mailing: FormError<string> | undefined
+  delivery: FormError<string> | undefined
+}>(() => {
   const errors = formRef.value?.getErrors()
   return {
     name: errors?.find(e => e.name === 'lastName'),
@@ -291,7 +296,7 @@ function clearUnfinishedTaskMsg() {
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
+      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined),
       'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"

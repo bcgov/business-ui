@@ -2,7 +2,7 @@ export interface CompletingParty {
   firstName: string
   middleName?: string
   lastName: string
-  mailingAddress: Address
+  mailingAddress: ApiAddress
   email?: string
   phone?: string
 }

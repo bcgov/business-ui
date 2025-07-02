@@ -266,7 +266,7 @@ const columns: TableColumn<OfficerTableState>[] = [
                       align: 'end',
                       // required to prevent refocusing on dropdown trigger
                       // when the focus has moved to the form when the user has an unfinished task
-                      onCloseAutoFocus: (e) => {
+                      onCloseAutoFocus: (e: Event) => {
                         if (preventDropdownCloseAutoFocus.value) {
                           e.preventDefault()
                           preventDropdownCloseAutoFocus.value = false
