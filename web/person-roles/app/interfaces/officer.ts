@@ -10,7 +10,7 @@ export interface Officer {
   firstName: string
   middleName: string
   lastName: string
-  preferredName?: string
+  preferredName: string
   roles: OfficerRoleObj[]
   mailingAddress: UiAddress
   deliveryAddress: UiAddress

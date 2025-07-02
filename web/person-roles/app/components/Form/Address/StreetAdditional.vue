@@ -11,17 +11,11 @@ const inputId = props.id + '-streetAdditional'
 </script>
 
 <template>
-  <UFormField
-    v-slot="{ error }"
+  <FormFieldInput
+    v-model="model"
     :name="schemaPrefix + 'streetAdditional'"
-    class="grow"
-  >
-    <ConnectInput
-      :id="inputId"
-      v-model="model"
-      :invalid="!!error"
-      :disabled
-      :label="$t('label.streetAdditional')"
-    />
-  </UFormField>
+    :input-id="inputId"
+    :label="$t('label.streetAdditional')"
+    :disabled
+  />
 </template>

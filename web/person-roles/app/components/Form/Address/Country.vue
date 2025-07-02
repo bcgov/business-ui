@@ -7,6 +7,7 @@ const props = defineProps<{
   id: string
   schemaPrefix: string
   disabled?: boolean
+  help?: string
 }>()
 
 defineEmits<{
@@ -33,6 +34,7 @@ const options = [
 <template>
   <UFormField
     :name="schemaPrefix + 'country'"
+    :help
     class="grow"
   >
     <template #default="{ error }">
@@ -83,6 +85,10 @@ const options = [
           </div>
         </template>
       </USelect>
+      <div
+        v-if="!help && !error"
+        class="h-4 mt-1"
+      />
     </template>
   </UFormField>
 </template>

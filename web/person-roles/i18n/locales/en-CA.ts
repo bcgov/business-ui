@@ -163,6 +163,7 @@ export default {
     lastName: 'Last Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     preferredName: 'Preferred Name',
+    preferredNameColon: 'Preferred Name:',
     haspreferredName: 'This person also has another name they prefer to use',
     actions: 'Actions',
     changeName: 'Change Name',
@@ -179,7 +180,8 @@ export default {
     change: 'Change',
     makeChanges: 'Make Changes',
     myBusinessRegistry: 'My Business Registry',
-    bcRegistriesDashboard: 'BC Registries Dashboard'
+    bcRegistriesDashboard: 'BC Registries Dashboard',
+    notEntered: 'Not Entered'
   },
   modal: {
     unsavedChanges: {
@@ -189,7 +191,13 @@ export default {
   },
   text: {
     noOfficers: 'There are currently no officers.',
-    ifIssuePersistsContactUs: 'If this issue persists, please contact us.'
+    ifIssuePersistsContactUs: 'If this issue persists, please contact us.',
+    trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
+    finishTaskBeforeSubmit: 'Finish this task before submitting.',
+    finishTaskBeforeSave: 'Finish this task before saving.',
+    noChangesToSave: 'There a no changes to save.',
+    noChangesToSubmit: 'There a no changes to submit.',
+    finishTaskBeforeOtherChanges: 'Finish this task before making other changes.'
   },
   validation: {
     required: 'Required',

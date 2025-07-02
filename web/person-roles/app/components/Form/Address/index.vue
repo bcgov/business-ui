@@ -40,7 +40,7 @@ async function populateAddressComplete(e: UiAddress) {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-2">
     <FormAddressCountry
       :id
       v-model="state.country"

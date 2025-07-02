@@ -7,21 +7,15 @@ const props = defineProps<{
   disabled?: boolean
 }>()
 
-const inputId = props.id + '-deliveryInstructions'
+const inputId = props.id + '-locationDescription'
 </script>
 
 <template>
-  <UFormField
-    v-slot="{ error }"
-    :name="schemaPrefix + 'deliveryInstructions'"
-    class="grow"
-  >
-    <ConnectTextarea
-      :id="inputId"
-      v-model="model"
-      :invalid="!!error"
-      :disabled
-      :label="$t('label.deliveryInstructionsOpt')"
-    />
-  </UFormField>
+  <FormFieldTextarea
+    v-model="model"
+    :input-id="inputId"
+    :name="schemaPrefix + 'locationDescription'"
+    :disabled
+    :label="$t('label.deliveryInstructionsOpt')"
+  />
 </template>

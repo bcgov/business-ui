@@ -17,6 +17,8 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
 )
 
 export function formatOfficerPayload(newState: OfficerTableState[]) {
+  const addressSchema = getRequiredAddressSchema()
+
   const payload = newState.map((s) => {
     const officer = s.state.officer
 
@@ -27,22 +29,13 @@ export function formatOfficerPayload(newState: OfficerTableState[]) {
       }
     })
 
-    return {
+    const p = {
       entity: {
         identifier: officer.id,
         givenName: officer.firstName,
         familyName: officer.lastName,
         alternateName: officer.preferredName,
         middleInitial: officer.middleName
-      },
-      mailingAddress: {
-        streetAddress: officer.mailingAddress.street,
-        streetAddressAdditional: officer.mailingAddress.streetAdditional,
-        addressCity: officer.mailingAddress.city,
-        addressCountry: officer.mailingAddress.country,
-        addressRegion: officer.mailingAddress.region,
-        postalCode: officer.mailingAddress.postalCode,
-        deliveryInstructions: officer.mailingAddress.locationDescription
       },
       deliveryAddress: {
         streetAddress: officer.deliveryAddress.street,
@@ -55,6 +48,24 @@ export function formatOfficerPayload(newState: OfficerTableState[]) {
       },
       roles
     }
+
+    // only submit mailing address if fully entered
+    const isValidAddress = (addressSchema.safeParse(officer.mailingAddress)).success
+
+    if (isValidAddress) {
+      // @ts-expect-error - mailing address doesnt exist on entity // TODO: fix entity object type
+      p.mailingAddress = {
+        streetAddress: officer.mailingAddress.street,
+        streetAddressAdditional: officer.mailingAddress.streetAdditional,
+        addressCity: officer.mailingAddress.city,
+        addressCountry: officer.mailingAddress.country,
+        addressRegion: officer.mailingAddress.region,
+        postalCode: officer.mailingAddress.postalCode,
+        deliveryInstructions: officer.mailingAddress.locationDescription
+      }
+    }
+
+    return p
   })
 
   return payload

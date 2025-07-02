@@ -32,9 +32,30 @@ export const useButtonControl = () => {
     updateButtonGrp(buttonControl.rightButtons, 'right')
   }
 
+  async function setAlertText(reset: boolean, grp?: 'left' | 'right', text?: string) {
+    // clear existing text
+    if (route.meta.buttonControl) {
+      route.meta.buttonControl.leftAlertText = undefined
+      route.meta.buttonControl.rightAlertText = undefined
+    }
+
+    // only continue if not resetting
+    if (!reset) {
+      // required for dom to clear existing content
+      // allows screenreader alert for the same content if set multiple times
+      await nextTick()
+      // set content
+      if (route.meta.buttonControl) {
+        route.meta.buttonControl.leftAlertText = (grp === 'left') ? text : undefined
+        route.meta.buttonControl.rightAlertText = (grp === 'right') ? text : undefined
+      }
+    }
+  }
+
   return {
     getButtonControl,
     setButtonControl,
-    handleButtonLoading
+    handleButtonLoading,
+    setAlertText
   }
 }

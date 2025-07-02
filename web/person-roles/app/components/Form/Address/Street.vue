@@ -30,22 +30,15 @@ watch(canadaPostAddress, (newAddress) => {
 </script>
 
 <template>
-  <UFormField
+  <FormFieldInput
+    v-model="model"
+    :input-id="inputId"
     :name="schemaPrefix + 'street'"
-    class="grow"
     :help="notPoBox ? $t('help.addressCannotBePOBox') : $t('help.addressCanBePOBox')"
-  >
-    <template #default="{ error }">
-      <ConnectInput
-        :id="inputId"
-        v-model="model"
-        required
-        :invalid="!!error"
-        :disabled
-        :label="$t('label.street')"
-        @keypress.once="addressComplete(inputId)"
-        @click="addressComplete(inputId)"
-      />
-    </template>
-  </UFormField>
+    :label="$t('label.street')"
+    required
+    :disabled
+    @keypress.once="addressComplete(inputId)"
+    @click="addressComplete(inputId)"
+  />
 </template>

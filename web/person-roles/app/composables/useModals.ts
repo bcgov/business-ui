@@ -22,10 +22,10 @@ export const useModal = () => {
     return modal
   }
 
-  async function openBaseErrorModal(status: number | undefined, i18nPrefix: string, buttons?: ModalButtonProps[]) {
+  async function openBaseErrorModal(error: unknown, i18nPrefix: string, buttons?: ModalButtonProps[]) {
     const modal = overlay.create(ModalBaseError, {
       props: {
-        status,
+        error,
         i18nPrefix,
         buttons
       }

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { FormErrorEvent, Form, FormSubmitEvent } from '@nuxt/ui'
+import type { FormErrorEvent, Form, FormSubmitEvent, FormError } from '@nuxt/ui'
 import type { AcceptableValue } from 'reka-ui'
 import { z } from 'zod'
 import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
+const na = useNuxtApp()
 const { t } = useI18n()
 const officerStore = useOfficerStore()
 
@@ -48,40 +49,6 @@ const emit = defineEmits<{
   'officer-change': [Officer]
 }>()
 
-const addressSchema = z.object({
-  street: z.string().min(1, t('validation.fieldRequired')).max(50, t('validation.maxChars', { count: 50 })),
-  streetAdditional: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
-  city: z.string().min(1, t('validation.fieldRequired')).max(40, t('validation.maxChars', { count: 40 })),
-  region: z.string().optional(),
-  postalCode: z.string().min(1, t('validation.fieldRequired')).max(15, t('validation.maxChars', { count: 15 })),
-  country: z.string().min(1, t('validation.fieldRequired')),
-  locationDescription: z.string().max(80, t('validation.maxChars', { count: 80 })).optional()
-}).superRefine((data, ctx) => {
-  // validate region based on country
-  // required if country is US or CA
-  // optional and max 2 characters if not US or CA
-  const country = data.country
-  const region = data.region
-
-  if (region && region.length > 2) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('validation.maxChars', { count: 2 }),
-      path: ['region']
-    })
-  }
-
-  if ((country === 'US' || country === 'CA') && region?.length === 0) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: t('validation.fieldRequired'),
-      path: ['region']
-    })
-  }
-
-  return z.NEVER
-})
-
 const roleSchema = z.object({
   roleType: z.enum(
     [
@@ -102,14 +69,14 @@ const roleSchema = z.object({
 })
 
 const schema = z.object({
-  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
-  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).optional(),
+  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
+  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
-  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).optional(),
+  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
-  mailingAddress: addressSchema,
+  mailingAddress: getNotRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
-  deliveryAddress: addressSchema,
+  deliveryAddress: getRequiredAddressSchema(),
   roles: z
     .array(roleSchema)
     .min(1, { message: t('validation.role.min') })
@@ -131,13 +98,18 @@ const state = reactive<Schema>(props.defaultState)
 
 const formRef = useTemplateRef<Form<Schema>>('officer-form')
 
-const formErrors = computed<{ name: boolean, roles: boolean, mailing: boolean, delivery: boolean }>(() => {
+const formErrors = computed<{
+  name: FormError<string> | undefined
+  roles: FormError<string> | undefined
+  mailing: FormError<string> | undefined
+  delivery: FormError<string> | undefined
+}>(() => {
   const errors = formRef.value?.getErrors()
   return {
-    name: !!errors?.some(e => e.name === 'lastName'),
-    roles: !!errors?.some(e => e.name === 'roles'),
-    mailing: !!errors?.some(e => e.name?.startsWith('mailingAddress')),
-    delivery: !!errors?.some(e => e.name?.startsWith('deliveryAddress'))
+    name: errors?.find(e => e.name === 'lastName'),
+    roles: errors?.find(e => e.name === 'roles'),
+    mailing: errors?.find(e => e.name?.startsWith('mailingAddress')),
+    delivery: errors?.find(e => e.name?.startsWith('deliveryAddress'))
   }
 })
 
@@ -279,7 +251,7 @@ watch(
 
 // reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
 watch(
-  state.deliveryAddress,
+  () => state.deliveryAddress,
   () => {
     if (state.sameAsDelivery) {
       state.mailingAddress = {
@@ -293,8 +265,28 @@ watch(
       }
       state.sameAsDelivery = false
     }
-  }
+  },
+  { deep: true }
 )
+
+// handle unfinished task warnings
+const unfinishedTaskMsg = ref('')
+na.hook('app:officer-form:incomplete', async (payload) => {
+  unfinishedTaskMsg.value = ''
+  await nextTick()
+  unfinishedTaskMsg.value = payload.message
+  await nextTick()
+  const el = document.getElementById('btn-officer-form-done')
+  if (el) {
+    el.focus()
+  }
+})
+
+function clearUnfinishedTaskMsg() {
+  if (unfinishedTaskMsg.value) {
+    unfinishedTaskMsg.value = ''
+  }
+}
 </script>
 
 <template>
@@ -304,109 +296,90 @@ watch(
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v === true),
+      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined),
       'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
     @error="onError"
     @submit="onSubmit"
+    @click="clearUnfinishedTaskMsg"
+    @keyup.tab="clearUnfinishedTaskMsg"
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
         {{ title }}
       </h2>
-      <div class="flex flex-col gap-8 w-full">
-        <div
-          class="flex flex-col gap-6 w-full"
-        >
+      <div class="flex flex-col gap-9 w-full">
+        <div class="flex flex-col gap-9 w-full">
           <FormSection
             :label="$t('label.legalName')"
-            :invalid="formErrors.name"
+            :error="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
-              <UFormField
-                v-slot="{ error }"
+              <FormFieldInput
+                v-model="state.firstName"
                 name="firstName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="first-name"
-                  v-model="state.firstName"
-                  :invalid="!!error"
-                  :label="$t('label.firstName')"
-                  autofocus
-                />
-              </UFormField>
-              <UFormField
-                v-slot="{ error }"
+                input-id="first-name"
+                :label="$t('label.firstName')"
+                autofocus
+              />
+
+              <FormFieldInput
+                v-model="state.middleName"
                 name="middleName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="middle-name"
-                  v-model="state.middleName"
-                  :invalid="!!error"
-                  :label="$t('label.middleNameOpt')"
-                />
-              </UFormField>
-              <UFormField
-                v-slot="{ error }"
+                input-id="middle-name"
+                :label="$t('label.middleNameOpt')"
+              />
+
+              <FormFieldInput
+                v-model="state.lastName"
                 name="lastName"
-                class="grow flex-1"
-              >
-                <ConnectInput
-                  id="last-name"
-                  v-model="state.lastName"
-                  required
-                  :invalid="!!error"
-                  :label="$t('label.lastName')"
-                />
-              </UFormField>
+                input-id="last-name"
+                required
+                :label="$t('label.lastName')"
+              />
             </div>
 
             <UCheckbox
               v-model="state.hasPreferredName"
               :label="$t('label.haspreferredName')"
               :ui="{ root: 'items-center' }"
+              class="-mt-2"
             />
 
             <UFormField
               v-if="state.hasPreferredName"
-              v-slot="{ error }"
               name="preferredName"
               class="grow flex-1"
               :label="$t('label.preferredName')"
               :ui="{ label: 'mb-3.5' }"
             >
-              <ConnectInput
-                id="preferred-name"
-                v-model="state.preferredName"
-                :invalid="!!error"
-                :label="$t('label.preferredNameOpt')"
-              />
+              <template #default="{ error }">
+                <ConnectInput
+                  id="preferred-name"
+                  v-model="state.preferredName"
+                  :invalid="!!error"
+                  :label="$t('label.preferredNameOpt')"
+                />
+                <div
+                  v-if="!error"
+                  class="h-4 mt-1"
+                />
+              </template>
             </UFormField>
           </FormSection>
         </div>
 
         <FormSection
           :label="$t('label.roles')"
-          :invalid="formErrors.roles"
-          error-id="roles-checkbox-error"
+          :error="formErrors.roles"
+          :show-error-msg="true"
+          :class="state.hasPreferredName ? '-mt-5' : ''"
         >
           <UFormField
-            v-slot="{ error }"
             name="roles"
-            :ui="{
-              error: 'sr-only'
-            }"
+            :ui="{ error: 'sr-only' }"
           >
-            <div
-              v-if="error !== undefined"
-              id="roles-checkbox-error"
-              class="text-red-600 text-base mb-3"
-            >
-              {{ error }}
-            </div>
             <FormCheckboxGroup
               id="officer-role-options"
               :items="roleOptions"
@@ -418,7 +391,7 @@ watch(
 
         <FormSection
           :label="$t('label.deliveryAddress')"
-          :invalid="formErrors.delivery"
+          :error="formErrors.delivery"
         >
           <FormAddress
             id="delivery-address"
@@ -432,7 +405,7 @@ watch(
 
         <FormSection
           :label="$t('label.mailingAddress')"
-          :invalid="formErrors.mailing"
+          :error="formErrors.mailing"
         >
           <UCheckbox
             v-model="state.sameAsDelivery"
@@ -450,19 +423,28 @@ watch(
           />
         </FormSection>
 
-        <div class="flex gap-6 justify-end">
-          <UButton
-            :label="$t('btn.done')"
-            type="submit"
-            class="font-bold"
-            size="xl"
-          />
-          <UButton
-            :label="$t('btn.cancel')"
-            variant="outline"
-            size="xl"
-            @click="$emit('cancel')"
-          />
+        <div class="flex sm:flex-row flex-col gap-4 justify-end sm:items-center -mt-5">
+          <p
+            class="text-red-600 text-base"
+            role="alert"
+          >
+            {{ unfinishedTaskMsg }}
+          </p>
+          <div class="flex gap-6 justify-end">
+            <UButton
+              id="btn-officer-form-done"
+              :label="$t('btn.done')"
+              type="submit"
+              class="font-bold"
+              size="xl"
+            />
+            <UButton
+              :label="$t('btn.cancel')"
+              variant="outline"
+              size="xl"
+              @click="$emit('cancel')"
+            />
+          </div>
         </div>
       </div>
     </div>

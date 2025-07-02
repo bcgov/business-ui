@@ -6,7 +6,7 @@ const route = useRoute()
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
-const { setButtonControl, handleButtonLoading } = useButtonControl()
+const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
 const modal = useModal()
 const legalApi = useLegalApi()
 
@@ -30,6 +30,9 @@ definePageMeta({
 })
 
 const businessId = route.params.businessId as string
+const businessDashboardUrlWithBusinessAndAccount = computed(() =>
+  `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
+)
 
 // TODO: get fee from pay api?
 // set empty fee
@@ -65,14 +68,35 @@ function onBeforeUnload(event: BeforeUnloadEvent) {
 const { revoke: revokeBeforeUnloadEvent } = useWindowEventListener('beforeunload', onBeforeUnload)
 
 // add new officer to table state
-async function onFormSubmit(data: Partial<Officer>) {
-  officerStore.addNewOfficer(data as Officer)
+async function onFormSubmit(data: Officer) {
+  officerStore.addNewOfficer(data)
   officerStore.addingOfficer = false
+}
+
+async function onAddOfficerClick() {
+  const hasActiveTask = await officerStore.checkHasActiveTask('change')
+  if (hasActiveTask) {
+    return
+  }
+  officerStore.addingOfficer = true
+  // reset any alert text in button control component
+  await setAlertText(true)
 }
 
 // submit final filing
 async function submitFiling() {
   try {
+    // prevent submit if there is a form currently open
+    const hasActiveTask = await officerStore.checkHasActiveTask('submit')
+    if (hasActiveTask) {
+      return
+    }
+
+    // prevent submit if there are no changes
+    if (!officerStore.hasChanges && !officerStore.officerDraftTableState.length) {
+      setAlertText(false, 'right', t('text.noChangesToSubmit'))
+      return
+    }
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
@@ -101,7 +125,7 @@ async function submitFiling() {
     revokeBeforeUnloadEvent()
     // navigate to business dashboard if filing does *not* fail
     await navigateTo(
-      `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+      businessDashboardUrlWithBusinessAndAccount.value,
       { external: true }
     )
   } catch (error) {
@@ -125,22 +149,36 @@ async function cancelFiling() {
         {
           label: t('btn.exitWithoutSaving'),
           size: 'xl',
-          to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-          external: true
+          onClick: async () => {
+            revokeBeforeUnloadEvent()
+            await navigateTo(businessDashboardUrlWithBusinessAndAccount.value, {
+              external: true
+            })
+          }
         }
       ]
     )
   } else {
     await navigateTo(
-      `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+      businessDashboardUrlWithBusinessAndAccount.value,
       { external: true }
     )
   }
 }
 
-// FILING ID: 199208
-// REMOVED NANCY
 async function saveFiling(resumeLater = false) {
+  // prevent save if there is a form currently open
+  const hasActiveTask = await officerStore.checkHasActiveTask('save')
+  if (hasActiveTask) {
+    return
+  }
+
+  // prevent save if there are no changes
+  if (!officerStore.hasChanges) {
+    setAlertText(false, 'left', t('text.noChangesToSave'))
+    return
+  }
+
   try {
     // set appropriate button loading state
     if (resumeLater) {
@@ -151,15 +189,19 @@ async function saveFiling(resumeLater = false) {
 
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
+    const payload = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // save filing as draft
     const res = await legalApi.saveOrUpdateDraftFiling(
       officerStore.activeBusiness,
       'changeOfOfficers',
-      JSON.parse(JSON.stringify(officerStore.officerTableState)),
+      payload,
       false,
       draftId
     )
+
+    // update saved draft state to track changes
+    officerStore.officerDraftTableState = payload
 
     // update url with filing id
     // required if it's the first time 'save draft' was clicked
@@ -170,7 +212,7 @@ async function saveFiling(resumeLater = false) {
     if (resumeLater) {
       revokeBeforeUnloadEvent()
       await navigateTo(
-        `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+        businessDashboardUrlWithBusinessAndAccount.value,
         { external: true }
       )
     }
@@ -231,8 +273,13 @@ watch(
 </script>
 
 <template>
-  <div class="py-10 space-y-10">
-    <h1>{{ $t('page.officerChange.h1') }}</h1>
+  <div class="py-10 space-y-8">
+    <div>
+      <h1>{{ $t('page.officerChange.h1') }}</h1>
+      <p class="mt-2">
+        {{ $t('text.trackOfficers') }}
+      </p>
+    </div>
 
     <UButton
       :label="$t('label.addOfficer')"
@@ -240,8 +287,8 @@ watch(
       color="primary"
       icon="i-mdi-account-plus"
       variant="outline"
-      :disabled="officerStore.disableActions"
-      @click="officerStore.addingOfficer = true"
+      :disabled="officerStore.initializing"
+      @click="onAddOfficerClick"
     />
 
     <FormOfficerChange
@@ -251,6 +298,6 @@ watch(
       @cancel="officerStore.addingOfficer = false"
     />
 
-    <TableOfficerChange />
+    <TableOfficerChange @table-action="setAlertText(true)" />
   </div>
 </template>

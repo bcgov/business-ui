@@ -1,27 +1,41 @@
 <script setup lang="ts">
+import type { FormError } from '@nuxt/ui'
+
 defineProps<{
   label: string
-  invalid: boolean
-  errorId?: string
+  error?: FormError
+  showErrorMsg?: boolean
 }>()
 
-const legendId = useId()
+const baseId = useId()
+const legendId = baseId + '-legend'
+const errorId = baseId + '-error'
 </script>
 
 <template>
   <fieldset
     class="flex flex-col gap-6"
-    :aria-invalid="invalid"
-    :aria-labelledby="`${legendId} ${errorId}`"
+    :aria-invalid="!!error"
+    :aria-labelledby="showErrorMsg ? `${legendId} ${errorId}` : `${legendId}`"
   >
     <legend
-      :id="legendId"
-      class="text-base text-bcGovGray-900 font-bold mb-4"
+      class="text-base text-bcGovGray-900 font-bold mb-6"
       :class="{
-        'text-red-600': invalid
+        'text-red-600': !!error
       }"
     >
-      {{ label }}
+      <div class="flex gap-4">
+        <span :id="legendId">{{ label }}</span>
+        <span
+          v-if="!!error"
+          :id="errorId"
+          class="font-normal"
+          :class="showErrorMsg ? '' : 'sr-only'"
+          aria-hidden="true"
+        >
+          {{ error.message }}
+        </span>
+      </div>
     </legend>
 
     <slot />

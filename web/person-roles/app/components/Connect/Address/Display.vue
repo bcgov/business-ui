@@ -64,7 +64,8 @@ const getAddressDisplayParts = (
       v-if="address.locationDescription"
       class="mt-2"
       :content="address.locationDescription"
-      :title="useLocationDescLabel ? $t('label.locationDescription') : $t('label.deliveryInstructions')"
+      :title="useLocationDescLabel ? `${$t('label.locationDescription')}:` : `${$t('label.deliveryInstructions')}:`"
+      :title-class="'text-sm font-normal italic tracking-wider'"
       data-testid="location-description"
     />
   </div>
