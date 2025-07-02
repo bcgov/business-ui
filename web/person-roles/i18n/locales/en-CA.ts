@@ -181,7 +181,8 @@ export default {
     makeChanges: 'Make Changes',
     myBusinessRegistry: 'My Business Registry',
     bcRegistriesDashboard: 'BC Registries Dashboard',
-    notEntered: 'Not Entered'
+    notEntered: 'Not Entered',
+    notAvailable: 'Not Available'
   },
   modal: {
     unsavedChanges: {

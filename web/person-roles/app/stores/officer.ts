@@ -100,15 +100,15 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // set masthead data
       const contact = authInfo.contacts[0]
-      const ext = contact?.extension ?? contact?.phoneExtension
-      const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
+      const ext = contact?.extension || contact?.phoneExtension
+      const phoneLabel = ext ? `${contact?.phone || ''} Ext: ${ext}` : contact?.phone || t('label.notAvailable')
 
       detailsHeaderStore.title = { el: 'span', text: business.legalName }
       detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
       detailsHeaderStore.sideDetails = [
-        { label: t('label.businessNumber'), value: business.taxId ?? '' },
+        { label: t('label.businessNumber'), value: business.taxId ?? t('label.notAvailable') },
         { label: t('label.incorporationNumber'), value: business.identifier },
-        { label: t('label.email'), value: contact?.email ?? '' },
+        { label: t('label.email'), value: contact?.email || t('label.notAvailable') },
         { label: t('label.phone'), value: phoneLabel }
       ]
 
