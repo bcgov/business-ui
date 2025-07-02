@@ -69,9 +69,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // get full business data
       // get business pending tasks
-      const [business, hasPendingTasks] = await Promise.all([
+      const [business, pendingTask] = await Promise.all([
         legalApi.getBusiness(businessId),
-        legalApi.hasPendingTasks(businessId)
+        legalApi.getPendingTask(businessId, 'filing')
       ])
 
       // set business ref
@@ -80,7 +80,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
       // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
-      if ((!isFilingAllowed || hasPendingTasks) && !draftId) {
+      if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         modal.openBaseErrorModal(
           undefined,
           'error.filingNotAllowed',
@@ -411,7 +411,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState.value = {} as Officer
   }
 
-  async function checkHasActiveTask(opt: 'save' | 'submit' | 'change') {
+  async function checkHasActiveForm(opt: 'save' | 'submit' | 'change') {
     if (addingOfficer.value || !isEmpty(editState.value)) {
       await na.callHook('app:officer-form:incomplete', {
         message: opt === 'save'
@@ -462,7 +462,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     undoOfficer,
     initOfficerEdit,
     cancelOfficerEdit,
-    checkHasActiveTask,
+    checkHasActiveForm,
     $reset
   }
 }

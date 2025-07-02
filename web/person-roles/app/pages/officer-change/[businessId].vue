@@ -74,8 +74,8 @@ async function onFormSubmit(data: Officer) {
 }
 
 async function onAddOfficerClick() {
-  const hasActiveTask = await officerStore.checkHasActiveTask('change')
-  if (hasActiveTask) {
+  const hasActiveForm = await officerStore.checkHasActiveForm('change')
+  if (hasActiveForm) {
     return
   }
   officerStore.addingOfficer = true
@@ -87,8 +87,8 @@ async function onAddOfficerClick() {
 async function submitFiling() {
   try {
     // prevent submit if there is a form currently open
-    const hasActiveTask = await officerStore.checkHasActiveTask('submit')
-    if (hasActiveTask) {
+    const hasActiveForm = await officerStore.checkHasActiveForm('submit')
+    if (hasActiveForm) {
       return
     }
 
@@ -99,6 +99,8 @@ async function submitFiling() {
     }
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
+
+    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
 
     // format payload
     const payload = {
@@ -170,8 +172,8 @@ async function saveFiling(resumeLater = false, disableActiveTaskCheck = false) {
   // disable active task check for saving filing on session timeout
   if (!disableActiveTaskCheck) {
     // prevent save if there is a form currently open
-    const hasActiveTask = await officerStore.checkHasActiveTask('save')
-    if (hasActiveTask) {
+    const hasActiveForm = await officerStore.checkHasActiveForm('save')
+    if (hasActiveForm) {
       return
     }
   }
