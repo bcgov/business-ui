@@ -8,7 +8,7 @@ defineProps<{
 <template>
   <div
     data-testid="form-section"
-    :class="['px-4 md:px-10', error ? 'border-l-2 border-red-600' : '']"
+    :class="[error ? 'border-l-2 border-red-600' : '']"
   >
     <div class="flex flex-col sm:flex-row">
       <div v-if="title" class="w-[200px] lg:w-[320px]">

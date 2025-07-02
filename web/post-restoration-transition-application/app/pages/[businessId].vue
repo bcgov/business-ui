@@ -207,10 +207,16 @@ const directorsColumns = ref([
         />
       </FormSubSection>
     </FormSection>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.documentDelivery") }}</h2>
-      <p>{{ $t("text.documentDelivery") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+    <FormSection
+      :title="$t('transitionApplication.subtitle.documentDelivery')"
+      :description="$t('text.documentDelivery')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.registeredOffice')">
           {{ regOfficeEmail }}
         </ConnectFormSection>
@@ -222,12 +228,18 @@ const directorsColumns = ref([
             :help="$t('text.completingPartyEmail')"
           />
         </ConnectFormSection>
-      </div>
-    </div>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.courtOrder") }}</h2>
-      <p>{{ $t("text.courtOrder") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.courtOrder')"
+      :description="$t('text.courtOrder')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.courtOrderNumber')">
           <ConnectFormInput
             v-model="courtOrderNumber"
@@ -242,12 +254,18 @@ const directorsColumns = ref([
             :ui="{ base: 'cursor-pointer mt-1', label: 'cursor-pointer', wrapper: 'w-fit' }"
           />
         </ConnectFormSection>
-      </div>
-    </div>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.folio") }}</h2>
-      <p>{{ $t("text.folioOrReferenceNumber") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.folio')"
+      :description="$t('text.folioOrReferenceNumber')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.folioOrReferenceNumber')">
           <ConnectFormInput
             v-model="folio"
@@ -255,8 +273,8 @@ const directorsColumns = ref([
             :label="$t('label.folioOrReferenceNumberOptional')"
           />
         </ConnectFormSection>
-      </div>
-    </div>
+      </FormSubSection>
+    </FormSection>
     <FormSection
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
@@ -265,7 +283,7 @@ const directorsColumns = ref([
     >
       <FormSubSection
         title=""
-        class=" space-y-6 p-6"
+        class="space-y-6 p-6"
       >
         <ConnectFormSection
           :title="$t('label.legalName')"
