@@ -183,7 +183,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         invite.status === AffiliationInvitationStatus.Pending
         const isAccepted = invite.status === AffiliationInvitationStatus.Accepted
         const business = affiliatedEntities.find(
-          business => business.businessIdentifier === invite.entity.businessIdentifier)
+          business => business.businessIdentifier === (invite.entity?.businessIdentifier ?? invite.businessIdentifier))
         if (business && (isToOrgAndPending || isFromOrg)) {
           business.affiliationInvites = (business.affiliationInvites || []).concat([invite])
         } else if (!business && isFromOrg && !isAccepted) {

@@ -125,6 +125,7 @@ export interface AffiliationInviteInfo {
   fromOrg: OrgNameAndId
   toOrg?: OrgNameAndId
   recipientEmail?: string
+  businessIdentifier?: string
 }
 
 export interface AffiliatedAccounts {
