@@ -182,6 +182,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         const isToOrgAndPending = invite.toOrg?.id === currentAccountId &&
         invite.status === AffiliationInvitationStatus.Pending
         const isAccepted = invite.status === AffiliationInvitationStatus.Accepted
+        // If entity is null, use the businessIdentifier from the invite
+        // This is a workaround for the fact that the api might return null for entity
         const business = affiliatedEntities.find(
           business => business.businessIdentifier === (invite.entity?.businessIdentifier ?? invite.businessIdentifier))
         if (business && (isToOrgAndPending || isFromOrg)) {
