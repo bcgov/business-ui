@@ -27,8 +27,8 @@ export interface TaskTodo {
   specialResolution?: unknown
 }
 
-type FilingTask = { filing: TaskTodo }
-type TodoTask = { todo: TaskTodo }
+export type FilingTask = { filing: TaskTodo }
+export type TodoTask = { todo: TaskTodo }
 
 export interface TaskItem {
   enabled: boolean

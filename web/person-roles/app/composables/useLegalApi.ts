@@ -42,22 +42,29 @@ export const useLegalApi = () => {
    * @param task the task to try and return (filing or todo)
    * @returns The first found TaskItem if it exists or undefined
   */
-  async function getPendingTask(businessId: string, task: 'filing' | 'todo'): Promise<TaskItem | undefined> {
+  async function getPendingTask(businessId: string, task: 'filing'): Promise<FilingTask | undefined> // return FilingTask if task arg === 'filing'
+  async function getPendingTask(businessId: string, task: 'todo'): Promise<TodoTask | undefined> // return TodoTask if task arg === 'todo'
+  async function getPendingTask(
+    businessId: string,
+    task: 'filing' | 'todo'
+  ): Promise<FilingTask | TodoTask | undefined> {
     const res = await getTasks(businessId)
     // return the pending filing if it exists
     if (task === 'filing') {
-      return res.tasks.find((task) => {
+      const taskItem = res.tasks.find((task) => {
         if ('filing' in task.task) {
           return task.task.filing.header.status !== FilingStatus.NEW
         }
       })
+      return taskItem?.task
     }
     // else try to return pending todo item
-    return res.tasks.find((task) => {
+    const taskItem = res.tasks.find((task) => {
       if ('todo' in task.task) {
         return task.task.todo.header.status === FilingStatus.NEW // TODO: confirm this is how you get active todos
       }
     })
+    return taskItem?.task
   }
 
   /**

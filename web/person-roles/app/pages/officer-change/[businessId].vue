@@ -100,15 +100,26 @@ async function submitFiling() {
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
+    // pull draft id from url or mark as undefined
+    const draftId = (urlParams.draft as string) ?? undefined
+
+    // check if the business has a pending filing before submit
     const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
+      // TODO: how granular do we want to be with our error messages?
+      // we check pending tasks on page mount
+      // this will only occur if a pending task has been created after the initial page mount
+      modal.openBaseErrorModal(
+        undefined,
+        'error.pendingTaskOnSaveOrSubmit'
+      )
+      return
+    }
 
     // format payload
     const payload = {
       relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
     }
-
-    // pull draft id from url or mark as undefined
-    const draftId = (urlParams.draft as string) ?? undefined
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
@@ -168,9 +179,9 @@ async function cancelFiling() {
   }
 }
 
-async function saveFiling(resumeLater = false, disableActiveTaskCheck = false) {
+async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   // disable active task check for saving filing on session timeout
-  if (!disableActiveTaskCheck) {
+  if (!disableActiveFormCheck) {
     // prevent save if there is a form currently open
     const hasActiveForm = await officerStore.checkHasActiveForm('save')
     if (hasActiveForm) {
@@ -195,6 +206,19 @@ async function saveFiling(resumeLater = false, disableActiveTaskCheck = false) {
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
     const payload = JSON.parse(JSON.stringify(officerStore.officerTableState))
+
+    // check if the business has a pending filing before submit
+    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
+      // TODO: how granular do we want to be with our error messages?
+      // we check pending tasks on page mount
+      // this will only occur if a pending task has been created after the initial page mount
+      modal.openBaseErrorModal(
+        undefined,
+        'error.pendingTaskOnSaveOrSubmit'
+      )
+      return
+    }
 
     // save filing as draft
     const res = await legalApi.saveOrUpdateDraftFiling(

@@ -120,6 +120,12 @@ export default {
         title: 'Filing not available',
         description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
       }
+    },
+    pendingTaskOnSaveOrSubmit: {
+      undefined: {
+        title: 'Unable to submit filing',
+        description: 'Another draft filing already exists. Please complete it before creating a new filing.'
+      }
     }
   },
   help: {
