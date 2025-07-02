@@ -1,0 +1,32 @@
+name:  Standalone Transition UI CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "web/post-restoration-transition-application/**"
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deploy To"
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - sandbox
+        - prod
+
+jobs:
+  standalone-transition-ui-cd:
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
+    with:
+      target: ${{ inputs.target }}
+      app_name: "standalone-transition-ui"
+      working_directory: "./web/post-restoration-transition-application"
+      node_version: 24
+      pnpm_version: 10.0.0
+    secrets:
+      WORKLOAD_IDENTIFY_POOLS_PROVIDER: ${{ secrets.WORKLOAD_IDENTIFY_POOLS_PROVIDER }}
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
