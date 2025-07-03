@@ -115,6 +115,15 @@ export default defineAppConfig({
         variant: 'bcGov'
       }
     },
+    link: {
+      base: 'focus-visible:outline-primary underline text-bcGovColor-activeBlue',
+      variants: {
+        active: {
+          true: 'text-bcGovColor-activeBlue',
+          false: 'text-bcGovColor-activeBlue'
+        }
+      }
+    },
     modal: {
       variants: {
         fullscreen: {

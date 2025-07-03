@@ -286,18 +286,19 @@ const directorsColumns = ref([
         class="p-6"
       >
         <p><span class="font-bold">{{ $t('text.companyProvisionsHeading') }}</span></p>
-        <i18n-t keypath="text.companyProvisionsText" tag="p">
+        <i18n-t keypath="text.companyProvisionsText" tag="p" class="mb-4">
           <template #businessCorporationsAct>
             <em>{{ $t('label.businessCorporationsAct') }}</em>
           </template>
         </i18n-t>
         <ULink
           :to="preexistingCompanyProvisions"
-          class="underline"
           external
           target="_blank"
+          active-class="text-bcGovColor-activeBlue"
+          inactive-class="text-bcGovColor-activeBlue"
         >
-          {{ 'text.companyProvisionsPreexistingURL' }}
+          {{ $t('text.companyProvisionsURL') }}
         </ULink>
       </FormSubSection>
     </FormSection>
