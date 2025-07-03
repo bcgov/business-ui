@@ -265,8 +265,7 @@ watch(
       }
       state.sameAsDelivery = false
     }
-  },
-  { deep: true }
+  }
 )
 
 // handle unfinished task warnings
