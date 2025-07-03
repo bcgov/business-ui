@@ -10,7 +10,7 @@ export default {
       documentDelivery: '2. Document Delivery',
       courtOrder: '3. Court Order and Plan of Arrangement',
       folio: '4. Folio or Reference Number',
-
+      companyProvisions: '5. Pre-existing Company Provisions',
       certify: '6. Certify'
     }
   },
