@@ -37,18 +37,34 @@ export const useLegalApi = () => {
   }
 
   /**
-   * Checks if the specified business has any pending tasks.
+   * Checks if the specified business has a specific pending task.
    * @param businessId the business identifier (aka entity inc no)
-   * @returns True if there are any non-NEW tasks, else False
+   * @param task the task to try and return (filing or todo)
+   * @returns The first found TaskItem if it exists or undefined
   */
-  async function hasPendingTasks(businessId: string): Promise<boolean> {
+  async function getPendingTask(businessId: string, task: 'filing'): Promise<FilingTask | undefined> // return FilingTask if task arg === 'filing'
+  async function getPendingTask(businessId: string, task: 'todo'): Promise<TodoTask | undefined> // return TodoTask if task arg === 'todo'
+  async function getPendingTask(
+    businessId: string,
+    task: 'filing' | 'todo'
+  ): Promise<FilingTask | TodoTask | undefined> {
     const res = await getTasks(businessId)
-    return res.tasks.some((task) => {
-      if ('filing' in task.task) {
-        return task.task.filing.header.status !== FilingStatus.NEW
+    // return the pending filing if it exists
+    if (task === 'filing') {
+      const taskItem = res.tasks.find((task) => {
+        if ('filing' in task.task) {
+          return task.task.filing.header.status !== FilingStatus.NEW
+        }
+      })
+      return taskItem?.task
+    }
+    // else try to return pending todo item
+    const taskItem = res.tasks.find((task) => {
+      if ('todo' in task.task) {
+        return task.task.todo.header.status === FilingStatus.NEW // TODO: confirm this is how you get active todos
       }
-      return false
     })
+    return taskItem?.task
   }
 
   /**
@@ -243,7 +259,7 @@ export const useLegalApi = () => {
     getBusiness,
     getParties,
     getTasks,
-    hasPendingTasks,
+    getPendingTask,
     getAndValidateDraftFiling
   }
 }

@@ -84,8 +84,8 @@ function getRowActions(row: Row<OfficerTableState>) {
       label: t('label.remove'),
       onSelect: async () => {
         emit('table-action')
-        const hasActiveTask = await officerStore.checkHasActiveTask('change')
-        if (hasActiveTask) {
+        const hasActiveForm = await officerStore.checkHasActiveForm('change')
+        if (hasActiveForm) {
           preventDropdownCloseAutoFocus.value = true
           return
         }
@@ -100,8 +100,8 @@ function getRowActions(row: Row<OfficerTableState>) {
       label: t('label.undo'),
       onSelect: async () => {
         emit('table-action')
-        const hasActiveTask = await officerStore.checkHasActiveTask('change')
-        if (hasActiveTask) {
+        const hasActiveForm = await officerStore.checkHasActiveForm('change')
+        if (hasActiveForm) {
           preventDropdownCloseAutoFocus.value = true
           return
         }
@@ -246,8 +246,8 @@ const columns: TableColumn<OfficerTableState>[] = [
                   icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-pencil',
                   class: 'px-4',
                   onClick: async () => {
-                    const hasActiveTask = await officerStore.checkHasActiveTask('change')
-                    if (hasActiveTask) {
+                    const hasActiveForm = await officerStore.checkHasActiveForm('change')
+                    if (hasActiveForm) {
                       return
                     }
                     if (isRemoved) {

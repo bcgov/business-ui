@@ -120,6 +120,12 @@ export default {
         title: 'Filing not available',
         description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
       }
+    },
+    pendingTaskOnSaveOrSubmit: {
+      undefined: {
+        title: 'Unable to submit filing',
+        description: 'Another draft filing already exists. Please complete it before creating a new filing.'
+      }
     }
   },
   help: {
@@ -181,7 +187,8 @@ export default {
     makeChanges: 'Make Changes',
     myBusinessRegistry: 'My Business Registry',
     bcRegistriesDashboard: 'BC Registries Dashboard',
-    notEntered: 'Not Entered'
+    notEntered: 'Not Entered',
+    notAvailable: 'Not Available'
   },
   modal: {
     unsavedChanges: {
@@ -195,8 +202,8 @@ export default {
     trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
     finishTaskBeforeSubmit: 'Finish this task before submitting.',
     finishTaskBeforeSave: 'Finish this task before saving.',
-    noChangesToSave: 'There a no changes to save.',
-    noChangesToSubmit: 'There a no changes to submit.',
+    noChangesToSave: 'There are no changes to save.',
+    noChangesToSubmit: 'There are no changes to submit.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.'
   },
   validation: {

@@ -69,9 +69,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // get full business data
       // get business pending tasks
-      const [business, hasPendingTasks] = await Promise.all([
+      const [business, pendingTask] = await Promise.all([
         legalApi.getBusiness(businessId),
-        legalApi.hasPendingTasks(businessId)
+        legalApi.getPendingTask(businessId, 'filing')
       ])
 
       // set business ref
@@ -80,7 +80,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
       // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
-      if ((!isFilingAllowed || hasPendingTasks) && !draftId) {
+      if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         modal.openBaseErrorModal(
           undefined,
           'error.filingNotAllowed',
@@ -100,15 +100,15 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // set masthead data
       const contact = authInfo.contacts[0]
-      const ext = contact?.extension ?? contact?.phoneExtension
-      const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
+      const ext = contact?.extension || contact?.phoneExtension
+      const phoneLabel = ext ? `${contact?.phone || ''} Ext: ${ext}` : contact?.phone || t('label.notAvailable')
 
       detailsHeaderStore.title = { el: 'span', text: business.legalName }
       detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
       detailsHeaderStore.sideDetails = [
-        { label: t('label.businessNumber'), value: business.taxId ?? '' },
+        { label: t('label.businessNumber'), value: business.taxId ?? t('label.notAvailable') },
         { label: t('label.incorporationNumber'), value: business.identifier },
-        { label: t('label.email'), value: contact?.email ?? '' },
+        { label: t('label.email'), value: contact?.email || t('label.notAvailable') },
         { label: t('label.phone'), value: phoneLabel }
       ]
 
@@ -411,7 +411,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState.value = {} as Officer
   }
 
-  async function checkHasActiveTask(opt: 'save' | 'submit' | 'change') {
+  async function checkHasActiveForm(opt: 'save' | 'submit' | 'change') {
     if (addingOfficer.value || !isEmpty(editState.value)) {
       await na.callHook('app:officer-form:incomplete', {
         message: opt === 'save'
@@ -462,7 +462,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     undoOfficer,
     initOfficerEdit,
     cancelOfficerEdit,
-    checkHasActiveTask,
+    checkHasActiveForm,
     $reset
   }
 }

@@ -251,7 +251,7 @@ watch(
 
 // reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
 watch(
-  () => state.deliveryAddress,
+  state.deliveryAddress,
   () => {
     if (state.sameAsDelivery) {
       state.mailingAddress = {
@@ -265,8 +265,7 @@ watch(
       }
       state.sameAsDelivery = false
     }
-  },
-  { deep: true }
+  }
 )
 
 // handle unfinished task warnings
