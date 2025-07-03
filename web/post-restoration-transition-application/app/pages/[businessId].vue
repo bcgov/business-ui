@@ -3,9 +3,9 @@ import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 
-const { t } = useI18n()
-
-// const accountStore = useConnectAccountStore()
+const t = useNuxtApp().$i18n.t
+const rtc = useRuntimeConfig().public
+const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions
 
 useHead({
   title: t('transitionApplication.title')
@@ -273,6 +273,31 @@ const directorsColumns = ref([
             :label="$t('label.folioOrReferenceNumberOptional')"
           />
         </ConnectFormSection>
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.companyProvisions')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="p-6"
+      >
+        <p><span class="font-bold">{{ $t('text.companyProvisionsHeading') }}</span></p>
+        <i18n-t keypath="text.companyProvisionsText" tag="p">
+          <template #businessCorporationsAct>
+            <em>{{ $t('label.businessCorporationsAct') }}</em>
+          </template>
+        </i18n-t>
+        <ULink
+          :to="preexistingCompanyProvisions"
+          class="underline"
+          external
+          target="_blank"
+        >
+          {{ 'text.companyProvisionsPreexistingURL' }}
+        </ULink>
       </FormSubSection>
     </FormSection>
     <FormSection
