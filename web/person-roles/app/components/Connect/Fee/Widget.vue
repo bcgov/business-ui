@@ -211,7 +211,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
             sideOffset: -1
           }"
           :ui="{
-            base: 'rounded-none px-4 py-2 w-full',
+            base: 'rounded-none px-4 py-2 w-full focus-visible:ring-2 focus-visible:ring-blue-500',
             content: 'rounded-t-none',
             trailingIcon: 'ml-auto',
             itemTrailingIcon: 'hidden'
