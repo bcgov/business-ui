@@ -117,13 +117,11 @@ async function submitFiling() {
     }
 
     // format payload
-    const payload = {
-      relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    }
+    const payload = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling(
+      await legalApi.saveOrUpdateDraftFiling<'changeOfOfficers', OfficerPayload>(
         officerStore.activeBusiness,
         'changeOfOfficers',
         payload,
@@ -132,7 +130,11 @@ async function submitFiling() {
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+      await legalApi.postFiling<'changeOfOfficers', OfficerPayload>(
+        officerStore.activeBusiness,
+        'changeOfOfficers',
+        payload
+      )
     }
     // remove window beforeUnload event to prevent navigation block
     revokeBeforeUnloadEvent()
@@ -306,11 +308,11 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  const res = await feeStore.getFee('CC', 'NOCOI')
-  await feeStore.initAlternatePaymentMethod()
-  console.log(res)
-})
+// onMounted(async () => {
+//   const res = await feeStore.getFee('CC', 'NOCOI')
+//   await feeStore.initAlternatePaymentMethod()
+//   console.log(res)
+// })
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-export interface FilingHeader {
+export interface FilingHeaderResponse {
   accountId: number
   affectedFilings: Array<unknown>
   availableOnPaperOnly: boolean
@@ -19,7 +19,16 @@ export interface FilingHeader {
   paymentToken: string
   status: FilingStatus
   submitter: string
+  paymentMethod?: ConnectPaymentMethod
 }
+
+export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
+  'name' |
+  'certifiedBy' |
+  'accountId' |
+  'date' |
+  'paymentMethod'
+>
 
 export type FilingBusiness = Pick<BusinessData,
   'identifier' |
@@ -29,12 +38,25 @@ export type FilingBusiness = Pick<BusinessData,
 >
 
 export interface FilingBaseData {
-  header: FilingHeader
+  header: FilingHeaderResponse
+  business: FilingBusiness
+}
+
+export interface FilingSubmissionBaseData {
+  header: FilingHeaderSubmission
   business: FilingBusiness
 }
 
 export type FilingWithPayload<T extends string, P> = FilingBaseData & {
   [K in T]: P // K is the filingName, P is the payload type
+}
+
+export type FilingSubmissionWithPayload<T extends string, P> = FilingSubmissionBaseData & {
+  [K in T]: P
+}
+
+export interface FilingSubmissionBody<T extends string, P> {
+  filing: FilingSubmissionWithPayload<T, P>
 }
 
 export interface FilingPostResponse<T extends string, P> {

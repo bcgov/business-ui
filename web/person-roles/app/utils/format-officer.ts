@@ -16,7 +16,7 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
   ROLE_RELATIONSHIPS.map(([uiValue, apiValue]) => [apiValue.toLowerCase(), uiValue])
 )
 
-export function formatOfficerPayload(newState: OfficerTableState[]) {
+export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayload {
   const addressSchema = getRequiredAddressSchema()
 
   const payload = newState.map((s) => {
@@ -68,5 +68,5 @@ export function formatOfficerPayload(newState: OfficerTableState[]) {
     return p
   })
 
-  return payload
+  return { relationships: payload } as OfficerPayload // TODO: fix roles return type
 }
