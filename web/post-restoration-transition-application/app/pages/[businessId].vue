@@ -35,10 +35,12 @@ const businessId = route.params.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
+  certifiedByLegalName,
   compPartyEmail,
   courtOrderNumber,
   directors,
   folio,
+  legalName,
   offices,
   planOfArrangement,
   regOfficeEmail
@@ -65,7 +67,8 @@ feeStore.fees = {
 }
 
 const sectionErrors = ref({
-  reviewAndConfirm: false
+  reviewAndConfirm: false,
+  certify: false
 })
 
 // Define table columns
@@ -167,7 +170,6 @@ const directorsColumns = ref([
     <FormSection
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
-      icon="df"
       :has-errors="sectionErrors.reviewAndConfirm"
       class="space-y-6"
     >
@@ -205,10 +207,16 @@ const directorsColumns = ref([
         />
       </FormSubSection>
     </FormSection>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.documentDelivery") }}</h2>
-      <p>{{ $t("text.documentDelivery") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+    <FormSection
+      :title="$t('transitionApplication.subtitle.documentDelivery')"
+      :description="$t('text.documentDelivery')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.registeredOffice')">
           {{ regOfficeEmail }}
         </ConnectFormSection>
@@ -220,12 +228,18 @@ const directorsColumns = ref([
             :help="$t('text.completingPartyEmail')"
           />
         </ConnectFormSection>
-      </div>
-    </div>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.courtOrder") }}</h2>
-      <p>{{ $t("text.courtOrder") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.courtOrder')"
+      :description="$t('text.courtOrder')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.courtOrderNumber')">
           <ConnectFormInput
             v-model="courtOrderNumber"
@@ -240,12 +254,18 @@ const directorsColumns = ref([
             :ui="{ base: 'cursor-pointer mt-1', label: 'cursor-pointer', wrapper: 'w-fit' }"
           />
         </ConnectFormSection>
-      </div>
-    </div>
-    <div>
-      <h2>{{ $t("transitionApplication.subtitle.folio") }}</h2>
-      <p>{{ $t("text.folioOrReferenceNumber") }}</p>
-      <div class="bg-white py-5 mt-5 space-y-4 rounded">
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.folio')"
+      :description="$t('text.folioOrReferenceNumber')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
         <ConnectFormSection :title="$t('label.folioOrReferenceNumber')">
           <ConnectFormInput
             v-model="folio"
@@ -253,8 +273,36 @@ const directorsColumns = ref([
             :label="$t('label.folioOrReferenceNumberOptional')"
           />
         </ConnectFormSection>
-      </div>
-    </div>
+      </FormSubSection>
+    </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.certify')"
+      :description="$t('text.certifySectionDescription')"
+      :has-errors="sectionErrors.certify"
+      class="space-y-6"
+    >
+      <FormSubSection
+        title=""
+        class="space-y-6 p-6"
+      >
+        <ConnectFormSection
+          :title="$t('label.legalName')"
+        >
+          <ConnectFormInput
+            v-model="legalName"
+            :name="'documentDelivery.completingPartyEmail'"
+            :label="$t('label.legalName')"
+            :placeholder="$t('text.legalNameOfAuthorizedPerson')"
+          />
+        </ConnectFormSection>
+        <ConnectFormSection title=" ">
+          <FormCertify
+            v-model="certifiedByLegalName"
+            :legal-name="legalName"
+          />
+        </ConnectFormSection>
+      </FormSubSection>
+    </FormSection>
     <!-- NB: needed so that the tw classes are loaded -->
     <!-- <main class="app-inner-container app-body">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">

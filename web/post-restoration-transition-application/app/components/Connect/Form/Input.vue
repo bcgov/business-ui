@@ -14,6 +14,7 @@ defineProps({
       :id="name"
       v-model="model"
       :label
+      :aria-placeholder="placeholder"
     />
   </UFormField>
 </template>
