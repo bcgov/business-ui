@@ -285,8 +285,14 @@ const directorsColumns = ref([
         title=""
         class="p-6"
       >
-        <p><span class="font-bold">{{ $t('text.companyProvisionsHeading') }}</span></p>
-        <i18n-t keypath="text.companyProvisionsText" tag="p" class="mb-4">
+        <p class="font-bold">
+          {{ $t('text.companyProvisionsHeading') }}
+        </p>
+        <i18n-t
+          keypath="text.companyProvisionsText"
+          tag="p"
+          class="mb-4"
+        >
           <template #businessCorporationsAct>
             <em>{{ $t('label.businessCorporationsAct') }}</em>
           </template>
