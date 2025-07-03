@@ -305,6 +305,12 @@ watch(
   },
   { immediate: true }
 )
+
+onMounted(async () => {
+  const res = await feeStore.getFee('CC', 'NOCOI')
+  await feeStore.initAlternatePaymentMethod()
+  console.log(res)
+})
 </script>
 
 <template>

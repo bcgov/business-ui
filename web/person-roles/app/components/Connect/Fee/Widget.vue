@@ -202,7 +202,6 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
             </b>
           </p>
         </div>
-        <!-- TODO: add alternate payment method select -->
         <USelect
           v-if="allowAlternatePaymentMethod && allowedPaymentMethods.length > 1"
           v-model="userSelectedPaymentMethod"
