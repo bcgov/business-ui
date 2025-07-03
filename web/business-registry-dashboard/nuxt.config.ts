@@ -21,13 +21,20 @@ export default defineNuxtConfig({
     prerender: {
       routes: []
     },
-    // Add aggressive no-cache for all routes
+    // Selective caching: no-cache for HTML pages, allow caching for static assets
     routeRules: {
+      // HTML pages should never be cached to ensure fresh content
       '/**': {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           Pragma: 'no-cache',
           Expires: '0'
+        }
+      },
+      // Static assets can be cached aggressively (handled by build hash changes)
+      '/_nuxt/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable'
         }
       }
     }
