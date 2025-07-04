@@ -5,13 +5,10 @@ import { setActivePinia, createPinia } from 'pinia'
 import { EntityStates } from '@bcrs-shared-components/enums'
 import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 import { AuthorizedActions } from '~~/app/enums/authorized-actions'
-import { IsAuthorized } from '~~/app/utils/authorizations'
 
-// Mock the IsAuthorized function
-vi.mock('~~/app/utils/authorizations', () => ({
-  IsAuthorized: vi.fn().mockImplementation(() => {
-    return false
-  })
+// Mock the IsAuthorized function 
+vi.mock('~~/app/utils/isAuthorized', () => ({
+  IsAuthorized: vi.fn().mockReturnValue(false)
 }))
 
 let mockAuthenticated = true
