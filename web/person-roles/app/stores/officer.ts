@@ -60,7 +60,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         } catch (error) {
           modal.openBaseErrorModal(
             error,
-            'error.getDraftFiling',
+            'modal.error.getDraftFiling',
             [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           )
           return
@@ -83,7 +83,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         modal.openBaseErrorModal(
           undefined,
-          'error.filingNotAllowed',
+          'modal.error.filingNotAllowed',
           [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
         )
         return
@@ -161,7 +161,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     } catch (error) {
       modal.openBaseErrorModal(
         error,
-        'error.initOfficerStore',
+        'modal.error.initOfficerStore',
         [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
       )
     } finally {

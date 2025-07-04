@@ -56,78 +56,6 @@ export default {
       Officer: 'Officer' // TODO: update when subtype/roles are defined in api
     }
   },
-  error: {
-    initOfficerStore: {
-      401: {
-        title: 'Access Restricted',
-        description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
-      },
-      404: {
-        title: 'Business Not Found',
-        description: 'This business can not be found or does not exist.'
-      },
-      500: {
-        title: 'Internal Server Error',
-        description: 'Internal error, please try again later.'
-      },
-      undefined: {
-        title: 'Unknown Error',
-        description: 'An unknown error occured while loading this business, please try again later.'
-      }
-    },
-    getDraftFiling: {
-      404: {
-        title: 'Draft Filing Not Found',
-        description: 'This draft filing could not be found or does not exist.'
-      },
-      undefined: {
-        title: 'Draft Filing Not Found',
-        description: 'This draft filing could not be found or does not exist.'
-      }
-    },
-    submitFiling: {
-      400: {
-        title: 'Invalid Submission',
-        description: 'There was an issue with the data submitted. Please review the form and try again.'
-      },
-      401: {
-        title: 'Permission Denied',
-        description: 'You do not have permission to perform this action for this business.'
-      },
-      403: {
-        title: 'Permission Denied',
-        description: 'You do not have permission to perform this action for this business.'
-      },
-      404: {
-        title: 'Business Not Found',
-        description: 'This business could not be found in our records.'
-      },
-      422: {
-        title: 'Invalid Submission',
-        description: 'There was an issue with the data submitted. Please review the form and try again.'
-      },
-      500: {
-        title: 'An Error Occurred',
-        description: "We couldn't complete your request due to an internal error. Please try again later."
-      },
-      undefined: {
-        title: 'Unknown Error',
-        description: 'An unknown error occured while trying to submit this filing, please try again later.'
-      }
-    },
-    filingNotAllowed: {
-      undefined: {
-        title: 'Filing not available',
-        description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
-      }
-    },
-    pendingTaskOnSaveOrSubmit: {
-      undefined: {
-        title: 'Unable to submit filing',
-        description: 'Another draft filing already exists. Please complete it before creating a new filing.'
-      }
-    }
-  },
   help: {
     addressCannotBePOBox: 'Address cannot be a PO Box',
     addressCanBePOBox: 'Street address, PO box, rural route, or general delivery address'
@@ -191,6 +119,78 @@ export default {
     notAvailable: 'Not Available'
   },
   modal: {
+    error: {
+      initOfficerStore: {
+        401: {
+          title: 'Access Restricted',
+          description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
+        },
+        404: {
+          title: 'Business Not Found',
+          description: 'This business can not be found or does not exist.'
+        },
+        500: {
+          title: 'Internal Server Error',
+          description: 'Internal error, please try again later.'
+        },
+        undefined: {
+          title: 'Unknown Error',
+          description: 'An unknown error occured while loading this business, please try again later.'
+        }
+      },
+      getDraftFiling: {
+        404: {
+          title: 'Draft Filing Not Found',
+          description: 'This draft filing could not be found or does not exist.'
+        },
+        undefined: {
+          title: 'Draft Filing Not Found',
+          description: 'This draft filing could not be found or does not exist.'
+        }
+      },
+      submitFiling: {
+        400: {
+          title: 'Invalid Submission',
+          description: 'There was an issue with the data submitted. Please review the form and try again.'
+        },
+        401: {
+          title: 'Permission Denied',
+          description: 'You do not have permission to perform this action for this business.'
+        },
+        403: {
+          title: 'Permission Denied',
+          description: 'You do not have permission to perform this action for this business.'
+        },
+        404: {
+          title: 'Business Not Found',
+          description: 'This business could not be found in our records.'
+        },
+        422: {
+          title: 'Invalid Submission',
+          description: 'There was an issue with the data submitted. Please review the form and try again.'
+        },
+        500: {
+          title: 'An Error Occurred',
+          description: "We couldn't complete your request due to an internal error. Please try again later."
+        },
+        undefined: {
+          title: 'Unknown Error',
+          description: 'An unknown error occured while trying to submit this filing, please try again later.'
+        }
+      },
+      filingNotAllowed: {
+        undefined: {
+          title: 'Filing not available',
+          description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
+        }
+      },
+      pendingTaskOnSaveOrSubmit: {
+        undefined: {
+          title: 'Unable to submit filing',
+          description: 'Another draft filing already exists. Please complete it before creating a new filing.'
+        }
+      }
+    },
     unsavedChanges: {
       title: 'Unsaved changes',
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'

@@ -111,7 +111,7 @@ async function submitFiling() {
       // this will only occur if a pending task has been created after the initial page mount
       modal.openBaseErrorModal(
         undefined,
-        'error.pendingTaskOnSaveOrSubmit'
+        'modal.error.pendingTaskOnSaveOrSubmit'
       )
       return
     }
@@ -146,7 +146,7 @@ async function submitFiling() {
   } catch (error) {
     modal.openBaseErrorModal(
       error,
-      'error.submitFiling'
+      'modal.error.submitFiling'
     )
   } finally {
     handleButtonLoading(true)
@@ -217,7 +217,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       // this will only occur if a pending task has been created after the initial page mount
       modal.openBaseErrorModal(
         undefined,
-        'error.pendingTaskOnSaveOrSubmit'
+        'modal.error.pendingTaskOnSaveOrSubmit'
       )
       return
     }
@@ -250,7 +250,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   } catch (error) {
     modal.openBaseErrorModal(
       error,
-      'error.submitFiling'
+      'modal.error.submitFiling'
     )
   } finally {
     handleButtonLoading(true)
@@ -307,13 +307,6 @@ watch(
   },
   { immediate: true }
 )
-
-onMounted(async () => {
-  useModal().openBaseErrorModal(undefined, 'modal.padConfirmationPeriod')
-  // const res = await feeStore.getFee('CC', 'NOCOI')
-  // await feeStore.initAlternatePaymentMethod()
-  // console.log(res)
-})
 </script>
 
 <template>
