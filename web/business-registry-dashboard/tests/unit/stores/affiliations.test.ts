@@ -6,7 +6,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 import { mockAffiliationResponse } from '~~/tests/mocks/mockedData'
 import { AuthorizedActions } from '~~/app/enums/authorized-actions'
 
-// Mock the IsAuthorized function 
+// Mock the IsAuthorized function
 vi.mock('~~/app/utils/isAuthorized', () => ({
   IsAuthorized: vi.fn().mockReturnValue(false)
 }))
