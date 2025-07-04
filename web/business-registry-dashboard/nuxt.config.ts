@@ -18,16 +18,16 @@ export default defineNuxtConfig({
     // Static assets: cache aggressively since they have content hashes
     '/**/*.js': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
     '/**/*.css': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-    '/**/*.@(png|jpg|jpeg|gif|svg|ico|webp|avif|woff|woff2|ttf|eot)': { 
-      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } 
+    '/**/*.@(png|jpg|jpeg|gif|svg|ico|webp|avif|woff|woff2|ttf|eot)': {
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
     },
     // HTML pages: no cache to ensure fresh content
-    '/**': { 
-      headers: { 
+    '/**': {
+      headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      } 
+        Pragma: 'no-cache',
+        Expires: '0'
+      }
     }
   },
 
