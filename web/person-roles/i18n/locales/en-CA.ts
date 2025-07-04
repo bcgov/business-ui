@@ -16,7 +16,10 @@ export default {
     goToBRD: 'Go to Business Registry Dashboard',
     keepEditing: 'Keep Editing',
     exitWithoutSaving: 'Exit Without Saving',
-    close: 'Close'
+    close: 'Close',
+    goBack: 'Go Back',
+    refreshPage: 'Refresh Page',
+    goToMyBusinessRegistry: 'Go to My Business Registry'
   },
   contactInfo: {
     bcros: {
@@ -123,11 +126,15 @@ export default {
       initOfficerStore: {
         401: {
           title: 'Access Restricted',
-          description: "You don't have permission to access this business. Go to your Business Registry Dashboard to request access to this business."
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        403: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
         },
         404: {
-          title: 'Business Not Found',
-          description: 'This business can not be found or does not exist.'
+          title: 'Page not found',
+          description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
         },
         500: {
           title: 'Internal Server Error',
@@ -139,13 +146,9 @@ export default {
         }
       },
       getDraftFiling: {
-        404: {
-          title: 'Draft Filing Not Found',
-          description: 'This draft filing could not be found or does not exist.'
-        },
         undefined: {
-          title: 'Draft Filing Not Found',
-          description: 'This draft filing could not be found or does not exist.'
+          title: 'Page not found',
+          description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
         }
       },
       submitFiling: {
@@ -180,8 +183,8 @@ export default {
       },
       filingNotAllowed: {
         undefined: {
-          title: 'Filing not available',
-          description: 'This filing is currently not available. Please ensure this business is allowed to submit a Change of Officers filing and that this business has no pending tasks.'
+          title: 'Page not available',
+          description: 'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
         }
       },
       pendingTaskOnSaveOrSubmit: {
