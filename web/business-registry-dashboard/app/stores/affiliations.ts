@@ -34,6 +34,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   const isSubscribed = ref<boolean | null>(null)
 
+  const authorizedActions = ref<AuthorizedActions[]>([])
+
   // Track if filters changed during loading
   const filtersChangedDuringLoading = ref(false)
   // Store the latest filter values
@@ -835,6 +837,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function loadAuthorizedActions () {
+    const actions = await $legalApi<{ authorizedPermissions: AuthorizedActions[] }>('/permissions')
+    authorizedActions.value = actions.authorizedPermissions
+  }
+
   function $reset () {
     resetAffiliations()
     resetFilters()
@@ -855,6 +862,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     typeOptions,
     hasFilters,
     resetFilters,
+    authorizedActions,
     createNRAffiliation,
     createAffiliation,
     handleManageBusinessOrNameRequest,
@@ -875,6 +883,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     goToPreviousPage,
     isSubscribed,
     loadSubscriptionStatus,
+    loadAuthorizedActions,
     $reset
   }
 }
