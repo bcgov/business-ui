@@ -19,6 +19,9 @@ export default defineVitestConfig({
         'services/**',
         'plugins/**',
         'stores/**'
+      ],
+      exclude: [
+        'utils/**/index.ts'
       ]
     },
     environmentOptions: {
