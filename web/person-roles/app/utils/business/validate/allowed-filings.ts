@@ -8,7 +8,11 @@
  * @returns {boolean} True if the filing is allowed for the business, otherwise false.
  */
 export function validateBusinessAllowedFilings(business: BusinessData, filingName: string) {
-  const allowedFilings = business.allowedActions.filing.filingTypes
-  const isAllowed = allowedFilings.some(f => f.name === filingName)
-  return isAllowed
+  try {
+    const allowedFilings = business.allowedActions.filing.filingTypes
+    const isAllowed = allowedFilings.some(f => f.name === filingName)
+    return isAllowed
+  } catch {
+    return false
+  }
 }
