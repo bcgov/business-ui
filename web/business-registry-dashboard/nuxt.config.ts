@@ -3,16 +3,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
-  app: {
-    head: {
-      meta: [
-        { 'http-equiv': 'Cache-Control', content: 'no-cache, no-store, must-revalidate' },
-        { 'http-equiv': 'Pragma', content: 'no-cache' },
-        { 'http-equiv': 'Expires', content: '0' }
-      ]
-    }
-  },
-
   future: {
     compatibilityVersion: 4
   },
@@ -20,28 +10,25 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: []
-    },
-    // Selective caching: no-cache for HTML pages, allow caching for static assets
-    routeRules: {
-      // HTML pages should never be cached to ensure fresh content
-      '/**': {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          Pragma: 'no-cache',
-          Expires: '0'
-        }
-      },
-      // Static assets can be cached aggressively (handled by build hash changes)
-      '/_nuxt/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable'
-        }
-      }
     }
   },
 
   routeRules: {
-    '/en-CA': { redirect: '/' }
+    '/en-CA': { redirect: '/' },
+    // Static assets: cache aggressively since they have content hashes
+    '/**/*.js': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    '/**/*.css': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    '/**/*.@(png|jpg|jpeg|gif|svg|ico|webp|avif|woff|woff2|ttf|eot)': { 
+      headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } 
+    },
+    // HTML pages: no cache to ensure fresh content
+    '/**': { 
+      headers: { 
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      } 
+    }
   },
 
   modules: [
