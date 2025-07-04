@@ -3,9 +3,9 @@ import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 
-const { t } = useI18n()
-
-// const accountStore = useConnectAccountStore()
+const t = useNuxtApp().$i18n.t
+const rtc = useRuntimeConfig().public
+const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions
 
 useHead({
   title: t('transitionApplication.title')
@@ -171,47 +171,49 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      class="space-y-6"
+      class="space-y-4"
     >
-      <FormSubSection
-        icon="i-mdi-domain"
-        :title="$t('label.officeAddresses')"
-      >
-        <FormDataList
-          :data="offices"
-          :columns="officesColumns"
-          class="m-6"
-        />
-        <InfoBox
-          icon="i-mdi-information-outline"
-          :title="$t('text.needChange')"
-          :text="$t('text.goToMainFileAddressChange')"
-          class="m-6"
-        />
-      </FormSubSection>
+      <div class="space-y-6">
+        <FormSubSection
+          icon="i-mdi-domain"
+          :title="$t('label.officeAddresses')"
+        >
+          <FormDataList
+            :data="offices"
+            :columns="officesColumns"
+            class="m-6"
+          />
+          <InfoBox
+            icon="i-mdi-information-outline"
+            :title="$t('text.needChange')"
+            :text="$t('text.goToMainFileAddressChange')"
+            class="m-6"
+          />
+        </FormSubSection>
 
-      <FormSubSection
-        icon="i-mdi-account-multiple-plus"
-        :title="$t('label.currentDirectors')"
-      >
-        <FormDataList
-          :data="directors"
-          :columns="directorsColumns"
-          class="m-6"
-        />
-        <InfoBox
-          icon="i-mdi-information-outline"
-          :title="$t('text.needOtherChange')"
-          :text="$t('text.deleteAndFileDirectorChange')"
-          class="m-6"
-        />
-      </FormSubSection>
+        <FormSubSection
+          icon="i-mdi-account-multiple-plus"
+          :title="$t('label.currentDirectors')"
+        >
+          <FormDataList
+            :data="directors"
+            :columns="directorsColumns"
+            class="m-6"
+          />
+          <InfoBox
+            icon="i-mdi-information-outline"
+            :title="$t('text.needOtherChange')"
+            :text="$t('text.deleteAndFileDirectorChange')"
+            class="m-6"
+          />
+        </FormSubSection>
+      </div>
     </FormSection>
     <FormSection
       :title="$t('transitionApplication.subtitle.documentDelivery')"
       :description="$t('text.documentDelivery')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      class="space-y-6"
+      class="space-y-4"
     >
       <FormSubSection
         title=""
@@ -234,7 +236,7 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.courtOrder')"
       :description="$t('text.courtOrder')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      class="space-y-6"
+      class="space-y-4"
     >
       <FormSubSection
         title=""
@@ -260,7 +262,7 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.folio')"
       :description="$t('text.folioOrReferenceNumber')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      class="space-y-6"
+      class="space-y-4"
     >
       <FormSubSection
         title=""
@@ -276,10 +278,41 @@ const directorsColumns = ref([
       </FormSubSection>
     </FormSection>
     <FormSection
+      :title="$t('transitionApplication.subtitle.companyProvisions')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+    >
+      <FormSubSection
+        title=""
+        class="p-6"
+      >
+        <p class="font-bold">
+          {{ $t('text.companyProvisionsHeading') }}
+        </p>
+        <i18n-t
+          keypath="text.companyProvisionsText"
+          tag="p"
+          class="mb-4"
+        >
+          <template #businessCorporationsAct>
+            <em>{{ $t('label.businessCorporationsAct') }}</em>
+          </template>
+        </i18n-t>
+        <ULink
+          :to="preexistingCompanyProvisions"
+          external
+          target="_blank"
+          active-class="text-bcGovColor-activeBlue"
+          inactive-class="text-bcGovColor-activeBlue"
+        >
+          {{ $t('text.companyProvisionsURL') }}
+        </ULink>
+      </FormSubSection>
+    </FormSection>
+    <FormSection
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
       :has-errors="sectionErrors.certify"
-      class="space-y-6"
+      class="space-y-4"
     >
       <FormSubSection
         title=""
