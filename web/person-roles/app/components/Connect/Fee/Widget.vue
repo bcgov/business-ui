@@ -12,12 +12,11 @@ const {
   totalPriorityFees,
   totalProcessingFees,
   totalGst,
-  totalPst
-  // TODO: add alternate payment method
-  // userSelectedPaymentMethod,
-  // allowedPaymentMethods,
-  // userPaymentAccount,
-  // allowAlternatePaymentMethod
+  totalPst,
+  userSelectedPaymentMethod,
+  allowedPaymentMethods,
+  userPaymentAccount,
+  allowAlternatePaymentMethod
 } = storeToRefs(useConnectFeeStore())
 
 const isPlaceholderActive = ref(false)
@@ -203,50 +202,29 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
             </b>
           </p>
         </div>
-        <!-- TODO: add alternate payment method select -->
-        <!-- <USelectMenu
+        <USelect
           v-if="allowAlternatePaymentMethod && allowedPaymentMethods.length > 1"
-          v-slot="{ open }"
           v-model="userSelectedPaymentMethod"
-          :options="allowedPaymentMethods"
-          value-attribute="value"
-          :ui-menu="{
-            option: {
-              base: 'cursor-pointer',
-              size: 'text-xs'
-            },
-            base: '-mt-1',
-            rounded: 'rounded-b'
+          :items="allowedPaymentMethods"
+          variant="none"
+          :content="{
+            sideOffset: -1
           }"
           :ui="{
-            variants: {
-              size: { lg: 'h-min' },
-              color: {
-                gray: {
-                  outline: 'bg-white ring-0 hover:bg-gray-200 hover:border-gray-600 focus:border-none focus:ring-0'
-                }
-              }
-            }
+            base: 'rounded-none px-4 py-2 w-full focus-visible:ring-2 focus-visible:ring-blue-500',
+            content: 'rounded-t-none',
+            trailingIcon: 'ml-auto',
+            itemTrailingIcon: 'hidden'
           }"
         >
-          <button
-            class="flex w-full items-center justify-between gap-4 py-2 pl-4 pr-2 text-left hover:bg-gray-100"
-          >
-            <span class="text-xs">
-              {{
-                $t(`ConnectFeeWidget.payingWith.${userSelectedPaymentMethod}`, {
-                  account: userPaymentAccount?.cfsAccount?.bankAccountNumber }
-                )
-              }}
-            </span>
-
-            <UIcon
-              name="i-mdi-caret-down"
-              class="size-5 text-blue-500 transition-transform"
-              :class="[open && 'rotate-180']"
-            />
-          </button>
-        </USelectMenu> -->
+          <span class="text-xs text-left">
+            {{
+              $t(`ConnectFeeWidget.payingWith.${userSelectedPaymentMethod}`, {
+                account: userPaymentAccount?.cfsAccount?.bankAccountNumber }
+              )
+            }}
+          </span>
+        </USelect>
       </div>
     </ConnectTransitionCollapse>
   </div>

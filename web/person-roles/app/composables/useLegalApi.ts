@@ -3,29 +3,36 @@ export const useLegalApi = () => {
   const { kcUser } = useKeycloak()
   const accountId = useConnectAccountStore().currentAccount.id
 
-  // function createFilingPayload<T extends string, P>(
-  //   business: BusinessData | BusinessDataSlim,
-  //   filingName: T,
-  //   payload: P
-  // ): { filing: FilingPostResponse<T, P> } {
-  //   return {
-  //     filing: {
-  //       header: {
-  //         name: filingName,
-  //         certifiedBy: kcUser.value.fullName,
-  //         accountId: accountId,
-  //         date: getToday()
-  //       },
-  //       business: {
-  //         identifier: business.identifier,
-  //         foundingDate: business.foundingDate,
-  //         legalName: business.legalName,
-  //         legalType: business.legalType
-  //       },
-  //       [filingName]: payload
-  //     }
-  //   }
-  // }
+  function createFilingPayload<T extends string, P>(
+    business: BusinessData | BusinessDataSlim,
+    filingName: T,
+    payload: P
+  ): FilingSubmissionBody<T, P> {
+    const base = {
+      header: {
+        name: filingName,
+        certifiedBy: kcUser.value.fullName,
+        accountId: accountId,
+        date: getToday()
+        // TODO: should we always include payment method?
+        // paymentMethod: useConnectFeeStore().userSelectedPaymentMethod || undefined
+      },
+      business: {
+        identifier: business.identifier,
+        foundingDate: business.foundingDate,
+        legalName: business.legalName,
+        legalType: business.legalType
+      }
+    }
+    const filingData = { [filingName]: payload }
+    return {
+      filing: Object.assign(
+          {},
+          base,
+          filingData as { [K in T]: P }
+        )
+    }
+  }
 
   /**
    * Fetches business tasks list.
@@ -117,23 +124,7 @@ export const useLegalApi = () => {
     filingName: T,
     payload: P
   ): Promise<FilingPostResponse<T, P>> {
-    const filingBody = {
-      filing: {
-        header: {
-          name: filingName,
-          certifiedBy: kcUser.value.fullName,
-          accountId: accountId,
-          date: getToday()
-        },
-        business: {
-          identifier: business.identifier,
-          foundingDate: business.foundingDate,
-          legalName: business.legalName,
-          legalType: business.legalType
-        },
-        [filingName]: payload
-      }
-    }
+    const filingBody = createFilingPayload(business, filingName, payload)
 
     return $legalApi(`businesses/${business.identifier}/filings`,
       {
@@ -178,23 +169,7 @@ export const useLegalApi = () => {
     isSubmission = false,
     filingId?: string | number
   ): Promise<FilingPutResponse<T, P> | FilingPostResponse<T, P>> {
-    const filingBody = {
-      filing: {
-        header: {
-          name: filingName,
-          certifiedBy: kcUser.value.fullName,
-          accountId: accountId,
-          date: getToday()
-        },
-        business: {
-          identifier: business.identifier,
-          foundingDate: business.foundingDate,
-          legalName: business.legalName,
-          legalType: business.legalType
-        },
-        [filingName]: payload
-      }
-    }
+    const filingBody = createFilingPayload(business, filingName, payload)
 
     const url = filingId
       ? `businesses/${business.identifier}/filings/${filingId}`

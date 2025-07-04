@@ -111,19 +111,17 @@ async function submitFiling() {
       // this will only occur if a pending task has been created after the initial page mount
       modal.openBaseErrorModal(
         undefined,
-        'error.pendingTaskOnSaveOrSubmit'
+        'modal.error.pendingTaskOnSaveOrSubmit'
       )
       return
     }
 
     // format payload
-    const payload = {
-      relationships: formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    }
+    const payload = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling(
+      await legalApi.saveOrUpdateDraftFiling<'changeOfOfficers', OfficerPayload>(
         officerStore.activeBusiness,
         'changeOfOfficers',
         payload,
@@ -132,7 +130,11 @@ async function submitFiling() {
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling(officerStore.activeBusiness, 'changeOfOfficers', payload)
+      await legalApi.postFiling<'changeOfOfficers', OfficerPayload>(
+        officerStore.activeBusiness,
+        'changeOfOfficers',
+        payload
+      )
     }
     // remove window beforeUnload event to prevent navigation block
     revokeBeforeUnloadEvent()
@@ -144,7 +146,7 @@ async function submitFiling() {
   } catch (error) {
     modal.openBaseErrorModal(
       error,
-      'error.submitFiling'
+      'modal.error.submitFiling'
     )
   } finally {
     handleButtonLoading(true)
@@ -215,7 +217,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       // this will only occur if a pending task has been created after the initial page mount
       modal.openBaseErrorModal(
         undefined,
-        'error.pendingTaskOnSaveOrSubmit'
+        'modal.error.pendingTaskOnSaveOrSubmit'
       )
       return
     }
@@ -248,7 +250,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   } catch (error) {
     modal.openBaseErrorModal(
       error,
-      'error.submitFiling'
+      'modal.error.submitFiling'
     )
   } finally {
     handleButtonLoading(true)

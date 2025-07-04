@@ -115,7 +115,7 @@ export const useConnectFeeStore = defineStore('connect/fee', () => {
 
   // alternate payment option stuff
   const PAD_PENDING_STATES = [ConnectPayCfsStatus.PENDING, ConnectPayCfsStatus.PENDING_PAD_ACTIVATION]
-  const userPaymentAccount = ref<ConnectPayAccount>({} as ConnectPayAccount)
+  const userPaymentAccount = shallowRef<ConnectPayAccount>({} as ConnectPayAccount)
   const userSelectedPaymentMethod = ref<ConnectPaymentMethod>(ConnectPaymentMethod.DIRECT_PAY)
   const allowAlternatePaymentMethod = ref<boolean>(false)
   const allowedPaymentMethods = ref<{ label: string, value: ConnectPaymentMethod }[]>([])
@@ -127,12 +127,7 @@ export const useConnectFeeStore = defineStore('connect/fee', () => {
       userSelectedPaymentMethod.value = ConnectPaymentMethod.DIRECT_PAY
       // show modal for user
       console.warn('User in pad confirmation period')
-      // TODO: add modal
-      // useStrrModals().openErrorModal(
-      //   t('modal.padConfirmationPeriod.title'),
-      //   t('modal.padConfirmationPeriod.content'),
-      //   false
-      // )
+      useModal().openBaseErrorModal(undefined, 'modal.padConfirmationPeriod')
     }
   })
 
