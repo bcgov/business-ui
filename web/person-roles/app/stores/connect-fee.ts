@@ -127,12 +127,7 @@ export const useConnectFeeStore = defineStore('connect/fee', () => {
       userSelectedPaymentMethod.value = ConnectPaymentMethod.DIRECT_PAY
       // show modal for user
       console.warn('User in pad confirmation period')
-      // TODO: add modal
-      // useStrrModals().openErrorModal(
-      //   t('modal.padConfirmationPeriod.title'),
-      //   t('modal.padConfirmationPeriod.content'),
-      //   false
-      // )
+      useModal().openBaseErrorModal(undefined, 'modal.padConfirmationPeriod')
     }
   })
 

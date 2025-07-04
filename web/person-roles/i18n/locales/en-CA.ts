@@ -194,6 +194,12 @@ export default {
     unsavedChanges: {
       title: 'Unsaved changes',
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'
+    },
+    padConfirmationPeriod: {
+      undefined: {
+        title: 'PAD Account in Confirmation Period',
+        description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
+      }
     }
   },
   text: {
