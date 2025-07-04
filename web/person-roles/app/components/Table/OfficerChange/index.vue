@@ -97,7 +97,8 @@ function getRowActions(row: Row<OfficerTableState>) {
 
   if (row.original.history.length) {
     actions.unshift({
-      label: t('label.undo'),
+      label: t('label.change'),
+      icon: 'i-mdi-pencil',
       onSelect: async () => {
         emit('table-action')
         const hasActiveForm = await officerStore.checkHasActiveForm('change')
@@ -105,9 +106,8 @@ function getRowActions(row: Row<OfficerTableState>) {
           preventDropdownCloseAutoFocus.value = true
           return
         }
-        officerStore.undoOfficer(row)
-      },
-      icon: 'i-mdi-undo'
+        officerStore.initOfficerEdit(row)
+      }
     })
   }
 
@@ -229,6 +229,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     },
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
+      const hasHistory = row.original.history.length
       const containerClass = getCellContainerClass(row, 'pl-2 py-4 pr-6 ml-auto flex justify-end', true)
 
       return h(
@@ -242,15 +243,15 @@ const columns: TableColumn<OfficerTableState>[] = [
               default: () => [
                 h(UButton, {
                   variant: 'ghost',
-                  label: isRemoved ? t('label.undo') : t('label.change'),
-                  icon: isRemoved ? 'i-mdi-undo' : 'i-mdi-pencil',
+                  label: (isRemoved || hasHistory) ? t('label.undo') : t('label.change'),
+                  icon: (isRemoved || hasHistory) ? 'i-mdi-undo' : 'i-mdi-pencil',
                   class: 'px-4',
                   onClick: async () => {
                     const hasActiveForm = await officerStore.checkHasActiveForm('change')
                     if (hasActiveForm) {
                       return
                     }
-                    if (isRemoved) {
+                    if (isRemoved || hasHistory) {
                       officerStore.undoOfficer(row)
                     } else {
                       officerStore.initOfficerEdit(row)
