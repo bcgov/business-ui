@@ -351,6 +351,7 @@ describe('useOfficerStore', () => {
       store.initialOfficers = [{ firstName: 'Test' }] as unknown as Officer[]
       store.officerTableState = [{ state: {} }] as unknown as OfficerTableState[]
       store.activeBusiness = { legalName: 'Test Inc' } as unknown as BusinessData
+      store.folioNumber = '123'
 
       store.$reset()
 
@@ -358,6 +359,7 @@ describe('useOfficerStore', () => {
       expect(store.initialOfficers).toEqual([])
       expect(store.officerTableState).toEqual([])
       expect(store.activeBusiness).toEqual({})
+      expect(store.folioNumber).toEqual('')
     })
   })
 

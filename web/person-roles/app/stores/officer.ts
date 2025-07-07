@@ -56,7 +56,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             throw new Error('Draft filing invalid')
           } else {
             draftState = data?.filing.changeOfOfficers || []
-            folioNumber.value = data?.filing.header.folioNumber || ''
+            folioNumber.value = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
           modal.openBaseErrorModal(
@@ -379,8 +379,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
     expanded.value = undefined
     editState.value = {} as Officer
     activeBusiness.value = {} as BusinessData
-
     initialOfficers.value = []
+    folioNumber.value = ''
   }
 
   return {
