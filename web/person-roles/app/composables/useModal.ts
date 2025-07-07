@@ -1,4 +1,3 @@
-import type { ModalButtonProps } from '~/interfaces'
 import {
   ModalBase,
   ModalBaseError
@@ -18,8 +17,6 @@ export const useModal = () => {
     })
 
     await modal.open()
-
-    return modal
   }
 
   async function openBaseErrorModal(error: unknown, i18nPrefix: string, buttons?: ModalButtonProps[]) {
@@ -32,8 +29,6 @@ export const useModal = () => {
     })
 
     await modal.open()
-
-    return modal
   }
 
   return {

@@ -65,7 +65,7 @@ function onBeforeUnload(event: BeforeUnloadEvent) {
   }
 }
 
-const { revoke: revokeBeforeUnloadEvent } = useWindowEventListener('beforeunload', onBeforeUnload)
+const revokeBeforeUnloadEvent = useEventListener(window, 'beforeunload', onBeforeUnload)
 
 // add new officer to table state
 async function onFormSubmit(data: Officer) {
