@@ -70,3 +70,91 @@ export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayl
 
   return { relationships: payload } as OfficerPayload // TODO: fix roles return type
 }
+
+/**
+*  Returns an empty officer object
+*  @returns Officer
+*/
+export function getNewOfficer(): Officer {
+  return {
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    preferredName: '',
+    roles: [],
+    mailingAddress: {
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: 'CA',
+      locationDescription: ''
+    },
+    deliveryAddress: {
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: 'CA',
+      locationDescription: ''
+    },
+    sameAsDelivery: false,
+    hasPreferredName: false
+  }
+}
+
+/**
+*  Returns an array of differences in officer state by section (name, roles, address)
+*  @param {Officer} oldVal Previous Officer State
+*  @param {Officer} newVal New Officer State
+*  @returns {OfficerTableEditSection[]} ex: ['roles', 'address']
+*/
+export function getOfficerStateDiff(oldVal: Officer, newVal: Officer): OfficerTableEditSection[] {
+  const oldMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+    name: {
+      firstName: oldVal.firstName,
+      middleName: oldVal.middleName,
+      lastName: oldVal.lastName,
+      preferredName: oldVal.preferredName,
+      hasPreferredName: oldVal.hasPreferredName
+    },
+    roles: {
+      roles: oldVal.roles
+    },
+    address: {
+      mailingAddress: oldVal.mailingAddress,
+      deliveryAddress: oldVal.deliveryAddress,
+      sameAsDelivery: oldVal.sameAsDelivery
+    }
+  }
+  const newMap: Record<OfficerTableEditSection, Partial<Officer>> = {
+    name: {
+      firstName: newVal.firstName,
+      middleName: newVal.middleName,
+      lastName: newVal.lastName,
+      preferredName: newVal.preferredName,
+      hasPreferredName: newVal.hasPreferredName
+    },
+    roles: {
+      roles: newVal.roles
+    },
+    address: {
+      mailingAddress: newVal.mailingAddress,
+      deliveryAddress: newVal.deliveryAddress,
+      sameAsDelivery: newVal.sameAsDelivery
+    }
+  }
+
+  const changedSections: OfficerTableEditSection[] = []
+
+  for (const section in oldMap) {
+    const s = section as OfficerTableEditSection
+    if (!isEqual(oldMap[s], newMap[s])) {
+      changedSections.push(s)
+    }
+  }
+
+  return changedSections
+}
