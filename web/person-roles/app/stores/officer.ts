@@ -1,5 +1,6 @@
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'lodash'
+import { FetchError } from 'ofetch'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
@@ -61,7 +62,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
           modal.openBaseErrorModal(
             error,
             'modal.error.getDraftFiling',
-            [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+            [
+              {
+                label: t('btn.goBack'),
+                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+                variant: 'outline'
+              },
+              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            ]
           )
           return
         }
@@ -84,7 +92,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
         modal.openBaseErrorModal(
           undefined,
           'modal.error.filingNotAllowed',
-          [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+          [
+            {
+              label: t('btn.goBack'),
+              to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+              variant: 'outline'
+            },
+            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+          ]
         )
         return
       }
@@ -159,10 +174,23 @@ export const useOfficerStore = defineStore('officer-store', () => {
           history: []
       }))
     } catch (error) {
+      const status = error instanceof FetchError
+        ? error.response?.status
+        : undefined
+      const isUnauthorized = status && [401, 403].includes(status)
       modal.openBaseErrorModal(
         error,
         'modal.error.initOfficerStore',
-        [{ label: t('btn.goToBRD'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+        isUnauthorized
+          ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+          : [
+              {
+                label: t('btn.goBack'),
+                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+                variant: 'outline'
+              },
+              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            ]
       )
     } finally {
       detailsHeaderStore.loading = false
@@ -340,14 +368,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
   *  @param {Row<OfficerTableState>} row The row to undo
   */
   function undoOfficer(row: Row<OfficerTableState>): void {
+    // undo all edits, can use commented code to undo individual edits if required
     const initialHistory = row.original.history
-    const previousState = initialHistory[initialHistory.length - 1]
+    // leaving this in for now, could use this instead to undo each individual action
+    // const previousState = initialHistory[initialHistory.length - 1]
+    const previousState = initialHistory[0]
 
       if (previousState) {
-        const newHistory = initialHistory.slice(0, initialHistory.length - 1)
+        // same here
+        // const newHistory = initialHistory.slice(0, initialHistory.length - 1)
         const newState = {
           state: previousState,
-          history: newHistory
+          history: [] // newHistory
         }
         updateOfficerTable(newState, row)
       }
