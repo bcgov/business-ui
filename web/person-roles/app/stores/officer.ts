@@ -12,8 +12,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const accountStore = useConnectAccountStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  // let initialOfficersRaw: OrgPerson[] = [] // raw officer response on page load/parties fetch
-
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
@@ -111,8 +109,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
         legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
-      // initialOfficersRaw = parties
-
       // set masthead data
       const contact = authInfo.contacts[0]
       const ext = contact?.extension || contact?.phoneExtension
@@ -196,94 +192,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
       detailsHeaderStore.loading = false
       initializing.value = false
     }
-  }
-
-  /**
-  *  Returns an empty officer object
-  *  @returns Officer
-  */
-  function getNewOfficer(): Officer {
-    return {
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      preferredName: '',
-      roles: [],
-      mailingAddress: {
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      deliveryAddress: {
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      sameAsDelivery: false,
-      hasPreferredName: false
-    }
-  }
-
-  /**
-  *  Returns an array of differences in officer state by section (name, roles, address)
-  *  @param {Officer} oldVal Previous Officer State
-  *  @param {Officer} newVal New Officer State
-  *  @returns {OfficerTableEditSection[]} ex: ['roles', 'address']
-  */
-  function getOfficerStateDiff(oldVal: Officer, newVal: Officer): OfficerTableEditSection[] {
-    const oldMap: Record<OfficerTableEditSection, Partial<Officer>> = {
-      name: {
-        firstName: oldVal.firstName,
-        middleName: oldVal.middleName,
-        lastName: oldVal.lastName,
-        preferredName: oldVal.preferredName,
-        hasPreferredName: oldVal.hasPreferredName
-      },
-      roles: {
-        roles: oldVal.roles
-      },
-      address: {
-        mailingAddress: oldVal.mailingAddress,
-        deliveryAddress: oldVal.deliveryAddress,
-        sameAsDelivery: oldVal.sameAsDelivery
-      }
-    }
-    const newMap: Record<OfficerTableEditSection, Partial<Officer>> = {
-      name: {
-        firstName: newVal.firstName,
-        middleName: newVal.middleName,
-        lastName: newVal.lastName,
-        preferredName: newVal.preferredName,
-        hasPreferredName: newVal.hasPreferredName
-      },
-      roles: {
-        roles: newVal.roles
-      },
-      address: {
-        mailingAddress: newVal.mailingAddress,
-        deliveryAddress: newVal.deliveryAddress,
-        sameAsDelivery: newVal.sameAsDelivery
-      }
-    }
-
-    const changedSections: OfficerTableEditSection[] = []
-
-    for (const section in oldMap) {
-      const s = section as OfficerTableEditSection
-      if (!isEqual(oldMap[s], newMap[s])) {
-        changedSections.push(s)
-      }
-    }
-
-    return changedSections
   }
 
   /**
@@ -471,7 +379,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
     activeBusiness.value = {} as BusinessData
 
     initialOfficers.value = []
-    // initialOfficersRaw = []
   }
 
   return {
@@ -486,7 +393,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
     hasChanges,
     initialOfficers,
     initOfficerStore,
-    getNewOfficer,
     addNewOfficer,
     editOfficer,
     updateOfficerTable,
@@ -497,6 +403,4 @@ export const useOfficerStore = defineStore('officer-store', () => {
     checkHasActiveForm,
     $reset
   }
-}
-// { persist: true }
-) // set has viewed in session storage to persist across page refreshes
+})

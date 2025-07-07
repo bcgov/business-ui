@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest'
 
-describe('Officer formatter utils', () => {
+describe('officer-helpers utils', () => {
   describe('UI_ROLE_TO_API_ROLE_MAP', () => {
     test('should correctly map enum ui values to string api values', () => {
       expect(UI_ROLE_TO_API_ROLE_MAP[OfficerRole.CEO]).toBe('CEO')
@@ -104,6 +104,85 @@ describe('Officer formatter utils', () => {
       expect(result.relationships).toHaveLength(2)
       expect(result.relationships[0]!.entity.givenName).toBe('Test')
       expect(result.relationships[1]!.entity.givenName).toBe('Another')
+    })
+  })
+
+  describe('getNewOfficer', () => {
+    test('should return a valid Officer object with correct default values', () => {
+      const newOfficer = getNewOfficer()
+
+      expect(newOfficer).toBeTypeOf('object')
+      expect(newOfficer.firstName).toBe('')
+      expect(newOfficer.lastName).toBe('')
+      expect(newOfficer.roles).toEqual([])
+      expect(newOfficer.sameAsDelivery).toBe(false)
+
+      expect(newOfficer.deliveryAddress.country).toBe('CA')
+      expect(newOfficer.deliveryAddress.street).toBe('')
+      expect(newOfficer.mailingAddress.country).toBe('CA')
+    })
+  })
+
+  describe('getOfficerStateDiff', () => {
+    const baseOfficer: Officer = getNewOfficer()
+    baseOfficer.id = '1'
+    baseOfficer.firstName = 'Carol'
+    baseOfficer.lastName = 'Pilbasian'
+    baseOfficer.roles = [{ roleType: 'CEO' }] as OfficerRoleObj[]
+
+    test('should return an empty array when there are no differences', () => {
+      const identicalOfficer = JSON.parse(JSON.stringify(baseOfficer))
+      const diff = getOfficerStateDiff(baseOfficer, identicalOfficer)
+      expect(diff).toEqual([])
+    })
+
+    test('should detect a change in the "name" section', () => {
+      const modifiedOfficer = { ...baseOfficer, firstName: 'Caroline' }
+      const diff = getOfficerStateDiff(baseOfficer, modifiedOfficer)
+
+      expect(diff).toHaveLength(1)
+      expect(diff).toContain('name')
+    })
+
+    test('should detect a change in the "roles" section', () => {
+      const modifiedOfficer = { ...baseOfficer, roles: [{ roleType: 'President' }] } as unknown as Officer
+      const diff = getOfficerStateDiff(baseOfficer, modifiedOfficer)
+
+      expect(diff).toHaveLength(1)
+      expect(diff).toContain('roles')
+    })
+
+    test('should detect a change in the "address" section', () => {
+      const modifiedOfficer = {
+        ...baseOfficer,
+        deliveryAddress: { ...baseOfficer.deliveryAddress, street: '123 New Street' }
+      }
+      const diff = getOfficerStateDiff(baseOfficer, modifiedOfficer)
+
+      expect(diff).toHaveLength(1)
+      expect(diff).toContain('address')
+    })
+
+    test('should detect multiple changes across different sections', () => {
+      const modifiedOfficer = {
+        ...baseOfficer,
+        lastName: 'New-Lastname',
+        roles: [...baseOfficer.roles, { roleType: 'CFO' }] as OfficerRoleObj[]
+      }
+      const diff = getOfficerStateDiff(baseOfficer, modifiedOfficer)
+
+      expect(diff).toHaveLength(2)
+      expect(diff).toContain('name')
+      expect(diff).toContain('roles')
+    })
+
+    test('should not detect a change when values are identical', () => {
+      const officerWithNewRoleArray = {
+        ...baseOfficer,
+        roles: [{ roleType: 'CEO' }] as OfficerRoleObj[]
+      }
+      const diff = getOfficerStateDiff(baseOfficer, officerWithNewRoleArray)
+      expect(diff).toEqual([])
     })
   })
 })
