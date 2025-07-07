@@ -16,10 +16,10 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
   ROLE_RELATIONSHIPS.map(([uiValue, apiValue]) => [apiValue.toLowerCase(), uiValue])
 )
 
-export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayload {
+export function formatOfficerPayload(newState: OfficerTableState[]): ChangeOfOfficersPayload {
   const addressSchema = getRequiredAddressSchema()
 
-  const payload = newState.map((s) => {
+  const data = newState.map((s) => {
     const officer = s.state.officer
 
     const roles = officer.roles.map((r) => {
@@ -29,7 +29,7 @@ export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayl
       }
     })
 
-    const p = {
+    const o = {
       entity: {
         identifier: officer.id,
         givenName: officer.firstName,
@@ -54,7 +54,7 @@ export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayl
 
     if (isValidAddress) {
       // @ts-expect-error - mailing address doesnt exist on entity // TODO: fix entity object type
-      p.mailingAddress = {
+      o.mailingAddress = {
         streetAddress: officer.mailingAddress.street,
         streetAddressAdditional: officer.mailingAddress.streetAdditional,
         addressCity: officer.mailingAddress.city,
@@ -65,10 +65,14 @@ export function formatOfficerPayload(newState: OfficerTableState[]): OfficerPayl
       }
     }
 
-    return p
+    return o
   })
 
-  return { relationships: payload } as OfficerPayload // TODO: fix roles return type
+  return {
+    changeOfOfficers: {
+      relationships: data
+    }
+  } as ChangeOfOfficersPayload // TODO: fix roles return type
 }
 
 /**

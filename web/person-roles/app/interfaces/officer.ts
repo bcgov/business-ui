@@ -52,3 +52,9 @@ export interface OfficerRelationshipPayload {
 export interface OfficerPayload {
   relationships: OfficerRelationshipPayload[]
 }
+
+export interface ChangeOfOfficersPayload {
+  changeOfOfficers: {
+    relationships: OfficerRelationshipPayload[]
+  }
+}

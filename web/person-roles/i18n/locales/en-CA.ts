@@ -119,7 +119,9 @@ export default {
     myBusinessRegistry: 'My Business Registry',
     bcRegistriesDashboard: 'BC Registries Dashboard',
     notEntered: 'Not Entered',
-    notAvailable: 'Not Available'
+    notAvailable: 'Not Available',
+    folioNumber: 'Folio Number',
+    folioNumberOpt: 'Folio Number (Optional)'
   },
   modal: {
     error: {

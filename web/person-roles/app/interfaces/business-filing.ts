@@ -20,6 +20,8 @@ export interface FilingHeaderResponse {
   status: FilingStatus
   submitter: string
   paymentMethod?: ConnectPaymentMethod
+  folioNumber?: string
+  type?: FilingHeaderType
 }
 
 export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
@@ -27,7 +29,9 @@ export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
   'certifiedBy' |
   'accountId' |
   'date' |
-  'paymentMethod'
+  'paymentMethod' |
+  'folioNumber' |
+  'type'
 >
 
 export type FilingBusiness = Pick<BusinessData,
@@ -55,21 +59,21 @@ export type FilingSubmissionWithPayload<T extends string, P> = FilingSubmissionB
   [K in T]: P
 }
 
-export interface FilingSubmissionBody<T extends string, P> {
-  filing: FilingSubmissionWithPayload<T, P>
+export interface FilingSubmissionBody<F extends Record<string, unknown>> {
+  filing: FilingSubmissionBaseData & F
 }
 
-export interface FilingPostResponse<T extends string, P> {
-  filing: FilingWithPayload<T, P>
+export interface FilingPostResponse<F extends Record<string, unknown>> {
+  filing: FilingBaseData & F
 }
 
-export interface FilingPutResponse<T extends string, P> {
-  filing: FilingWithPayload<T, P>
+export interface FilingPutResponse<F extends Record<string, unknown>> {
+  filing: FilingBaseData & F
   errors: Array<unknown>
 }
 
-export interface FilingGetByIdResponse<T extends string, P> {
-  filing: FilingWithPayload<T, P>
+export interface FilingGetByIdResponse<F> {
+  filing: FilingBaseData & F
   filingLink: string // url
   isFutureEffective: boolean
   withdrawalPending: boolean
