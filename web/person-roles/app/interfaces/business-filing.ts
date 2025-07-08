@@ -51,14 +51,6 @@ export interface FilingSubmissionBaseData {
   business: FilingBusiness
 }
 
-export type FilingWithPayload<T extends string, P> = FilingBaseData & {
-  [K in T]: P // K is the filingName, P is the payload type
-}
-
-export type FilingSubmissionWithPayload<T extends string, P> = FilingSubmissionBaseData & {
-  [K in T]: P
-}
-
 export interface FilingSubmissionBody<F extends Record<string, unknown>> {
   filing: FilingSubmissionBaseData & F
 }
