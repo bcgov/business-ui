@@ -176,18 +176,19 @@ function handleRoleChange(newRoles: AcceptableValue[]) {
 }
 
 function onError(event: FormErrorEvent) {
-  let element: unknown
+  let element: HTMLElement | null = null
   const firstEl = event.errors[0]
 
-  if (firstEl?.name === 'roles') { // roles doesn't have an id, so get first button in role options container to apply focus
-    element = document.getElementById('officer-role-options')?.querySelector('button')
-  } else { // else query by input id
-    element = document.getElementById(firstEl?.id as string)
+  if (firstEl?.name === 'roles') {
+    element = document.getElementById('officer-role-options')?.querySelector('button') ?? null
+  } else if (firstEl?.id) {
+    element = document.getElementById(firstEl.id)
   }
+
   if (element) {
-    // using focus without setTimeout only works intermittently
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     setTimeout(() => {
-      (element as HTMLElement).focus()
+      element.focus({ preventScroll: true })
     }, 0)
   }
 }
@@ -277,7 +278,8 @@ na.hook('app:officer-form:incomplete', async (payload) => {
   await nextTick()
   const el = document.getElementById('btn-officer-form-done')
   if (el) {
-    el.focus()
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    el.focus({ preventScroll: true })
   }
 })
 

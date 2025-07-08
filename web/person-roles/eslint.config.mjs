@@ -15,7 +15,7 @@ export default withNuxt({
     ],
     'allow-parens': 'off',
     'curly': 'error',
-    'import/order': 'error',
+    'import/no-duplicates': 'error',
     'no-trailing-spaces': 'error',
     'no-multiple-empty-lines': 'error',
     'nuxt/nuxt-config-keys-order': 'off',
