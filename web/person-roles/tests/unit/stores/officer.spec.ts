@@ -60,7 +60,6 @@ describe('useOfficerStore', () => {
     expect(store.addingOfficer).toBe(false)
     expect(store.officerTableState).toEqual([])
     expect(store.initialOfficers).toEqual([])
-    expect(store.hasChanges).toBe(false)
   })
 
   describe('initOfficerStore', () => {
@@ -207,141 +206,228 @@ describe('useOfficerStore', () => {
   })
 
   describe('Actions and State Changes', () => {
-    test('addNewOfficer adds a new officer to the table state', () => {
-      // mock the address validation to succeed
-      // @ts-expect-error - safeParse return type requires data object
-      vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
-      const newOfficer = { firstName: 'Test' } as Officer
+    describe('addNewOfficer', () => {
+      test('adds a new officer to the table state', () => {
+        // mock the address validation to succeed
+        // @ts-expect-error - safeParse return type requires data object
+        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
+        const newOfficer = { firstName: 'Test' } as Officer
 
-      // add officer
-      store.addNewOfficer(newOfficer)
+        // add officer
+        store.addNewOfficer(newOfficer)
 
-      // assert
-      expect(store.officerTableState).toHaveLength(1)
-      expect(store.officerTableState[0]!.state.officer.firstName).toBe('Test')
-      expect(store.officerTableState[0]!.state.actions).toContain('added')
+        // assert
+        expect(store.officerTableState).toHaveLength(1)
+        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Test')
+        expect(store.officerTableState[0]!.state.actions).toContain('added')
+      })
+
+      test('resets mailing address if validation fails', () => {
+        // mock the address validation to FAIL
+        // @ts-expect-error - safeParse return type requires data object
+        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: false }) })
+        const newOfficer = { firstName: 'Test', mailingAddress: { street: 'invalid' } } as Officer
+
+        // add officer
+        store.addNewOfficer(newOfficer)
+
+        // assert
+        expect(store.officerTableState).toHaveLength(1)
+        // mailing address should be reset to empty string
+        expect(store.officerTableState[0]!.state.officer.mailingAddress.street).toBe('')
+      })
     })
 
-    test('addNewOfficer resets mailing address if validation fails', () => {
-      // mock the address validation to FAIL
-      // @ts-expect-error - safeParse return type requires data object
-      vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: false }) })
-      const newOfficer = { firstName: 'Test', mailingAddress: { street: 'invalid' } } as Officer
+    describe('removeOfficer', () => {
+      test('marks an existing officer as removed', () => {
+        const existingOfficer = { id: '1', firstName: 'Carol', roles: [{ roleType: 'CEO', cessationDate: null }] }
+        const row = {
+          index: 0,
+          original: { state: { officer: existingOfficer, actions: [] }, history: [] }
+        } as unknown as Row<OfficerTableState>
+        store.officerTableState = [row.original]
 
-      // add officer
-      store.addNewOfficer(newOfficer)
+        store.removeOfficer(row)
 
-      // assert
-      expect(store.officerTableState).toHaveLength(1)
-      // mailing address should be reset to empty string
-      expect(store.officerTableState[0]!.state.officer.mailingAddress.street).toBe('')
+        expect(store.officerTableState[0]!.state.actions).toContain('removed')
+        expect(store.officerTableState[0]!.state!.officer!.roles[0]!.cessationDate).toBeDefined()
+      })
+
+      test('deletes a newly added officer from the table', () => {
+        const newOfficer = { firstName: 'Temp' }
+        const row = {
+          index: 0,
+          original: { state: { officer: newOfficer, actions: ['added'] }, history: [] }
+        } as unknown as Row<OfficerTableState>
+        store.officerTableState = [row.original]
+
+        store.removeOfficer(row)
+
+        expect(store.officerTableState).toHaveLength(0)
+      })
     })
 
-    test('removeOfficer marks an existing officer as removed', () => {
-      const existingOfficer = { id: '1', firstName: 'Carol', roles: [{ roleType: 'CEO', cessationDate: null }] }
-      const row = {
-        index: 0,
-        original: { state: { officer: existingOfficer, actions: [] }, history: [] }
-      } as unknown as Row<OfficerTableState>
-      store.officerTableState = [row.original]
+    describe('undoOfficer', () => {
+      test('reverts an officer to its previous state', () => {
+        const originalState = { officer: { firstName: 'Original' }, actions: [] }
+        const editedState = { officer: { firstName: 'Edited' }, actions: ['name'] }
+        const row = {
+          index: 0,
+          original: { state: editedState, history: [originalState] }
+        } as unknown as Row<OfficerTableState>
+        store.officerTableState = [row.original]
 
-      store.removeOfficer(row)
+        store.undoOfficer(row)
 
-      expect(store.officerTableState[0]!.state.actions).toContain('removed')
-      expect(store.officerTableState[0]!.state!.officer!.roles[0]!.cessationDate).toBeDefined()
+        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Original')
+        expect(store.officerTableState[0]!.history).toEqual([]) // history is cleared
+      })
     })
 
-    test('removeOfficer deletes a newly added officer from the table', () => {
-      const newOfficer = { firstName: 'Temp' }
-      const row = {
-        index: 0,
-        original: { state: { officer: newOfficer, actions: ['added'] }, history: [] }
-      } as unknown as Row<OfficerTableState>
-      store.officerTableState = [row.original]
+    describe('editOfficer', () => {
+      test('updates an officer and their actions', () => {
+        // mock the address validation to succeed
+        // @ts-expect-error - safeParse return type requires data object
+        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
+        const originalOfficer = { id: '1', firstName: 'Carol' } as Officer
+        const row = { index: 0, original: { state: { officer: originalOfficer, actions: [] }, history: [] } }
+        store.officerTableState = [row.original]
+        const newData = { ...originalOfficer, firstName: 'Caroline' }
 
-      store.removeOfficer(row)
+        store.editOfficer(newData, row as unknown as Row<OfficerTableState>)
 
-      expect(store.officerTableState).toHaveLength(0)
+        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Caroline')
+        expect(store.officerTableState[0]!.state.actions).toContain('name')
+        expect(store.officerTableState[0]!.history).toHaveLength(1)
+      })
     })
 
-    test('undoOfficer reverts an officer to its previous state', () => {
-      const originalState = { officer: { firstName: 'Original' }, actions: [] }
-      const editedState = { officer: { firstName: 'Edited' }, actions: ['name'] }
-      const row = {
-        index: 0,
-        original: { state: editedState, history: [originalState] }
-      } as unknown as Row<OfficerTableState>
-      store.officerTableState = [row.original]
+    describe('initOfficerEdit', () => {
+      test('sets the editState and expands the row', () => {
+        const officer = { firstName: 'Carol' } as Officer
+        const row = { index: 1, original: { state: { officer, actions: [] }, history: [] } }
 
-      store.undoOfficer(row)
+        store.initOfficerEdit(row as unknown as Row<OfficerTableState>)
 
-      expect(store.officerTableState[0]!.state.officer.firstName).toBe('Original')
-      expect(store.officerTableState[0]!.history).toEqual([]) // history is cleared
+        expect(store.editState.firstName).toBe('Carol')
+        expect(store.expanded).toEqual({ 1: true })
+      })
     })
 
-    test('editOfficer updates an officer and their actions', () => {
-      // mock the address validation to succeed
-      // @ts-expect-error - safeParse return type requires data object
-      vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
-      const originalOfficer = { id: '1', firstName: 'Carol' } as Officer
-      const row = { index: 0, original: { state: { officer: originalOfficer, actions: [] }, history: [] } }
-      store.officerTableState = [row.original]
-      const newData = { ...originalOfficer, firstName: 'Caroline' }
+    describe('cancelOfficerEdit', () => {
+      test('resets the editState and expanded state', () => {
+        store.editState = { firstName: 'Editing' } as Officer
+        store.expanded = { 0: true }
 
-      store.editOfficer(newData, row as unknown as Row<OfficerTableState>)
+        store.cancelOfficerEdit()
 
-      expect(store.officerTableState[0]!.state.officer.firstName).toBe('Caroline')
-      expect(store.officerTableState[0]!.state.actions).toContain('name')
-      expect(store.officerTableState[0]!.history).toHaveLength(1)
+        expect(store.editState).toEqual({})
+        expect(store.expanded).toBeUndefined()
+      })
     })
 
-    test('initOfficerEdit sets the editState and expands the row', () => {
-      const officer = { firstName: 'Carol' } as Officer
-      const row = { index: 1, original: { state: { officer, actions: [] }, history: [] } }
+    describe('checkHasActiveForm', () => {
+      test('should return true and call hook if adding an officer', async () => {
+        store.addingOfficer = true
 
-      store.initOfficerEdit(row as unknown as Row<OfficerTableState>)
+        const result = await store.checkHasActiveForm('submit')
 
-      expect(store.editState.firstName).toBe('Carol')
-      expect(store.expanded).toEqual({ 1: true })
+        expect(result).toBe(true)
+        expect(mockNuxtAppHook).toHaveBeenCalledOnce()
+        expect(mockNuxtAppHook).toHaveBeenCalledWith('app:officer-form:incomplete', expect.any(Object))
+      })
+
+      test('should return true and call hook if editing an officer', async () => {
+        store.editState = { id: '123' } as Officer
+
+        const result = await store.checkHasActiveForm('save')
+
+        expect(result).toBe(true)
+        expect(mockNuxtAppHook).toHaveBeenCalledOnce()
+      })
+
+      test('should return false and not call hook if no form is active', async () => {
+        store.addingOfficer = false
+        store.editState = {} as Officer
+
+        const result = await store.checkHasActiveForm('change')
+
+        expect(result).toBe(false)
+        expect(mockNuxtAppHook).not.toHaveBeenCalled()
+      })
     })
 
-    test('cancelOfficerEdit resets the editState and expanded state', () => {
-      store.editState = { firstName: 'Editing' } as Officer
-      store.expanded = { 0: true }
+    describe('checkHasChanges', () => {
+      const initialOfficer = { id: '1', firstName: 'Initial' } as Officer
+      const draftOfficer = { id: '1', firstName: 'Draft Version' } as Officer
+      const editedOfficer = { id: '1', firstName: 'Edited Version' } as Officer
 
-      store.cancelOfficerEdit()
+      const createTableState = (officer: Officer): OfficerTableState => ({
+        state: { officer, actions: [] },
+        history: []
+      })
 
-      expect(store.editState).toEqual({})
-      expect(store.expanded).toBeUndefined()
-    })
+      beforeEach(() => {
+        store.initialOfficers = [{ ...initialOfficer }]
+        store.officerTableState = [createTableState({ ...initialOfficer })]
+        store.officerDraftTableState = []
+      })
 
-    test('checkHasActiveForm should return true and call hook if adding an officer', async () => {
-      store.addingOfficer = true
+      describe('when "when" is "submit"', () => {
+        test('should return false if table state is identical to initial state', () => {
+          expect(store.checkHasChanges('submit')).toBe(false)
+        })
 
-      const result = await store.checkHasActiveForm('submit')
+        test('should return true if table state is different from initial state', () => {
+          store.officerTableState = [createTableState(editedOfficer)]
+          expect(store.checkHasChanges('submit')).toBe(true)
+        })
 
-      expect(result).toBe(true)
-      expect(mockNuxtAppHook).toHaveBeenCalledOnce()
-      expect(mockNuxtAppHook).toHaveBeenCalledWith('app:officer-form:incomplete', expect.any(Object))
-    })
+        test('should return true even if table state matches draft state (but differs from initial)', () => {
+          store.officerDraftTableState = [createTableState(draftOfficer)]
+          store.officerTableState = [createTableState(draftOfficer)]
+          // The check should ignore the draft and compare to initial, so this is a change.
+          expect(store.checkHasChanges('submit')).toBe(true)
+        })
 
-    test('checkHasActiveForm should return true and call hook if editing an officer', async () => {
-      store.editState = { id: '123' } as Officer
+        test('should return true when an officer is added', () => {
+          const newOfficer = { id: '2', firstName: 'New' } as Officer
+          store.officerTableState.push(createTableState(newOfficer))
+          expect(store.checkHasChanges('submit')).toBe(true)
+        })
+      })
 
-      const result = await store.checkHasActiveForm('save')
+      describe('when "when" is "save"', () => {
+        test('should return false if table state is identical to initial state', () => {
+          expect(store.checkHasChanges('save')).toBe(false)
+        })
 
-      expect(result).toBe(true)
-      expect(mockNuxtAppHook).toHaveBeenCalledOnce()
-    })
+        test('should return true if no draft exists and table state differs from initial', () => {
+          store.officerTableState = [createTableState(editedOfficer)]
+          expect(store.checkHasChanges('save')).toBe(true)
+        })
 
-    test('checkHasActiveForm should return false and not call hook if no form is active', async () => {
-      store.addingOfficer = false
-      store.editState = {} as Officer
+        describe('and a draft exists', () => {
+          beforeEach(() => {
+            store.officerDraftTableState = [createTableState(draftOfficer)]
+          })
 
-      const result = await store.checkHasActiveForm('change')
+          test('should return false if table state is identical to draft state', () => {
+            store.officerTableState = [createTableState(draftOfficer)]
+            expect(store.checkHasChanges('save')).toBe(false)
+          })
 
-      expect(result).toBe(false)
-      expect(mockNuxtAppHook).not.toHaveBeenCalled()
+          test('should return true if table state is different from draft state', () => {
+            store.officerTableState = [createTableState(editedOfficer)]
+            expect(store.checkHasChanges('save')).toBe(true)
+          })
+
+          test('should return false if table state is reverted back to initial state', () => {
+            store.officerTableState = [createTableState({ ...initialOfficer })]
+            expect(store.checkHasChanges('save')).toBe(false)
+          })
+        })
+      })
     })
   })
 
@@ -364,28 +450,6 @@ describe('useOfficerStore', () => {
   })
 
   describe('Computed Properties', () => {
-    describe('hasChanges', () => {
-      test('should be true if an officer has been edited', () => {
-        store.officerTableState = [{ state: { actions: ['name'] } }] as unknown as OfficerTableState[]
-        expect(store.hasChanges).toBe(true)
-      })
-
-      test('should be true if an officer has been added', () => {
-        store.initialOfficers = []
-        store.officerTableState = [{ state: { actions: ['added'] } }] as unknown as OfficerTableState[]
-        expect(store.hasChanges).toBe(true)
-      })
-
-      test('should be true if table state differs from draft state', () => {
-        const officer = { firstName: 'Carol' }
-        store.officerDraftTableState = [{ state: { officer, actions: [] } }] as unknown as OfficerTableState[]
-        store.officerTableState = [
-          { state: { officer: { ...officer, firstName: 'Caroline' }, actions: ['name'] } }
-        ] as unknown as OfficerTableState[]
-        expect(store.hasChanges).toBe(true)
-      })
-    })
-
     describe('disableActions', () => {
       test('should be true if adding an officer', () => {
         store.addingOfficer = true
