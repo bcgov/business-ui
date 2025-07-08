@@ -7,7 +7,8 @@ test.describe('Example', () => {
 
   test('Passes', async ({ page }) => {
     await page.goto('./')
-    await expect(page.getByText('TBD')).toBeVisible()
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText('Officer Change').first()).toBeVisible()
     await scanA11y(page)
   })
 })

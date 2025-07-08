@@ -50,6 +50,12 @@ async function globalSetup() {
   await page.getByLabel('Email or username').fill(username)
   await page.getByLabel('Password').fill(password)
   await page.getByRole('button', { name: 'Continue' }).click()
+  // necessary after sign in change
+  const agreeToTerms = page.getByText('I agree to the BC Login')
+  if (agreeToTerms) {
+    await agreeToTerms.click()
+    await page.getByRole('button', { name: 'Continue' }).click()
+  }
 
   // should be redirected back to baseUrl after successful login
   await page.waitForURL(baseUrl + '**')
