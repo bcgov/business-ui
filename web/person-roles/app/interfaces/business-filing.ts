@@ -25,20 +25,20 @@ export interface FilingHeaderResponse {
 }
 
 export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
-  'name' |
-  'certifiedBy' |
-  'accountId' |
-  'date' |
-  'paymentMethod' |
-  'folioNumber' |
-  'type'
+  'name'
+  | 'certifiedBy'
+  | 'accountId'
+  | 'date'
+  | 'paymentMethod'
+  | 'folioNumber'
+  | 'type'
 >
 
 export type FilingBusiness = Pick<BusinessData,
-  'identifier' |
-  'foundingDate' |
-  'legalName' |
-  'legalType'
+  'identifier'
+  | 'foundingDate'
+  | 'legalName'
+  | 'legalType'
 >
 
 export interface FilingBaseData {
