@@ -29,6 +29,56 @@ describe('useLegalApi', () => {
     vi.setSystemTime(mockDate)
   })
 
+  describe('createFilingPayload', () => {
+    const business = {
+      identifier: 'BC123',
+      foundingDate: '2022-01-01T12:00:00Z',
+      legalName: 'Test Inc',
+      legalType: 'BC'
+    } as BusinessData
+
+    test('should construct a valid payload for a single filing type', () => {
+      const filingName = 'changeOfOfficers'
+      const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
+
+      const result = legalApi.createFilingPayload(business, filingName, { [filingName]: payload })
+
+      expect(result).toHaveProperty('filing')
+      const filing = result.filing
+
+      expect(filing.header.name).toBe('changeOfOfficers')
+      expect(filing.header.certifiedBy).toBe('Test User')
+      expect(filing.header.accountId).toBe(123)
+      expect(filing.header.type).toBe(FilingHeaderType.LEGAL)
+
+      expect(filing.business.identifier).toBe(business.identifier)
+      expect(filing.business.foundingDate).toBe(business.foundingDate)
+      expect(filing.business.legalName).toBe(business.legalName)
+      expect(filing.business.legalType).toBe(business.legalType)
+
+      // filing data
+      expect(filing).toHaveProperty('changeOfOfficers')
+      expect(filing.changeOfOfficers).toEqual(payload)
+    })
+
+    test('should construct a valid payload for multiple filing types', () => {
+      const filings = {
+        changeOfOfficers: { relationships: [{ entity: { givenName: 'Officer' } }] },
+        changeOfAddress: { deliveryAddress: { street: '123 Main' } }
+      }
+
+      const result = legalApi.createFilingPayload(business, 'changeOfOfficers', filings)
+      const filing = result.filing
+
+      expect(filing.header.name).toBe('changeOfOfficers')
+
+      // filing data
+      expect(filing).toHaveProperty('changeOfOfficers')
+      expect(filing).toHaveProperty('changeOfAddress')
+      expect(filing.changeOfAddress.deliveryAddress.street).toBe('123 Main')
+    })
+  })
+
   describe('getBusiness', () => {
     test('should fetch full business data by default', async () => {
       const businessId = 'BC123'
@@ -66,10 +116,15 @@ describe('useLegalApi', () => {
       const business = {
         identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
       } as BusinessData
-      const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
+      const payload = legalApi.createFilingPayload(
+        business,
+        'changeOfOfficers',
+        { changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] } }
+      )
+
       mockLegalApi.mockResolvedValue({ filing: { header: { name: 'changeOfOfficers' } } })
 
-      await legalApi.postFiling(business, 'changeOfOfficers', payload)
+      await legalApi.postFiling(business.identifier, payload)
 
       expect(mockLegalApi).toHaveBeenCalledOnce()
       expect(mockLegalApi).toHaveBeenCalledWith(
@@ -83,25 +138,32 @@ describe('useLegalApi', () => {
       const sentBody = mockLegalApi.mock.calls[0][1].body
       expect(sentBody.filing.header.name).toBe('changeOfOfficers')
       expect(sentBody.filing.business.identifier).toBe('BC123')
-      expect(sentBody.filing.changeOfOfficers).toEqual(payload)
+      expect(sentBody.filing.changeOfOfficers).toEqual({ relationships: [{ entity: { givenName: 'Test' } }] })
     })
   })
 
   describe('saveOrUpdateDraftFiling', () => {
-    const business = { identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC' }
-    const payload = { data: 'test' }
+    const business = {
+      identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
+    } as BusinessData
+
+    const payload = legalApi.createFilingPayload(
+      business,
+      'changeOfOfficers',
+      { data: 'test' }
+    )
 
     test('should make a POST request to create a new draft', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      // @ts-expect-error - business not full type
-      await legalApi.saveOrUpdateDraftFiling(business, 'changeOfOfficers', payload, false)
+      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings`,
         expect.objectContaining({
           method: 'POST',
-          query: { draft: true }
+          query: { draft: true },
+          body: expect.any(Object)
         })
       )
     })
@@ -110,14 +172,14 @@ describe('useLegalApi', () => {
       const filingId = 999
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      // @ts-expect-error - business not full type
-      await legalApi.saveOrUpdateDraftFiling(business, 'changeOfOfficers', payload, false, filingId)
+      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false, filingId)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings/${filingId}`,
         expect.objectContaining({
           method: 'PUT',
-          query: { draft: true }
+          query: { draft: true },
+          body: expect.any(Object)
         })
       )
     })
@@ -125,14 +187,14 @@ describe('useLegalApi', () => {
     test('should submit a final filing (not a draft) when isSubmission is true', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      // @ts-expect-error - business not full type
-      await legalApi.saveOrUpdateDraftFiling(business, 'changeOfOfficers', payload, true)
+      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, true)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings`,
         expect.objectContaining({
           method: 'POST',
-          query: undefined // The draft query param should be undefined
+          query: undefined, // The draft query param should be undefined
+          body: expect.any(Object)
         })
       )
     })
@@ -140,14 +202,12 @@ describe('useLegalApi', () => {
     test('should build the filing body correctly', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      // @ts-expect-error - business not full type
-      await legalApi.saveOrUpdateDraftFiling(business, 'changeOfOfficers', payload, false)
+      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
 
       // @ts-expect-error - mockLegalApi.mock.calls may be undefined
       const sentBody = mockLegalApi.mock.calls[0][1].body
       expect(sentBody.filing.header.name).toBe('changeOfOfficers')
       expect(sentBody.filing.business.identifier).toBe('BC123')
-      expect(sentBody.filing.changeOfOfficers).toEqual(payload)
     })
   })
 

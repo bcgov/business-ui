@@ -20,6 +20,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const officerDraftTableState = shallowRef<OfficerTableState[]>([]) // officer state saved as draft
   const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
   const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
+  const folioNumber = ref<string>('')
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
   const hasChanges = computed(() => {
@@ -46,7 +47,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       let draftState: OfficerTableState[] = []
       if (draftId) {
         try {
-          const { isValid, data } = await legalApi.getAndValidateDraftFiling<'changeOfOfficers', OfficerTableState[]>(
+          const { isValid, data } = await legalApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
             businessId,
             draftId,
             'changeOfOfficers'
@@ -55,6 +56,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             throw new Error('Draft filing invalid')
           } else {
             draftState = data?.filing.changeOfOfficers || []
+            folioNumber.value = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
           modal.openBaseErrorModal(
@@ -377,8 +379,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
     expanded.value = undefined
     editState.value = {} as Officer
     activeBusiness.value = {} as BusinessData
-
     initialOfficers.value = []
+    folioNumber.value = ''
   }
 
   return {
@@ -392,6 +394,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     disableActions,
     hasChanges,
     initialOfficers,
+    folioNumber,
     initOfficerStore,
     addNewOfficer,
     editOfficer,

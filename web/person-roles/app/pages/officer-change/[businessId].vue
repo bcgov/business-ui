@@ -117,22 +117,28 @@ async function submitFiling() {
     }
 
     // format payload
-    const payload = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+    const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
+      officerStore.activeBusiness,
+      'changeOfOfficers',
+      officerData
+    )
+    // add folio number // TODO: validation?
+    payload.filing.header.folioNumber = officerStore.folioNumber
+    payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling<'changeOfOfficers', OfficerPayload>(
-        officerStore.activeBusiness,
-        'changeOfOfficers',
+      await legalApi.saveOrUpdateDraftFiling(
+        officerStore.activeBusiness.identifier,
         payload,
         true,
         draftId
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling<'changeOfOfficers', OfficerPayload>(
-        officerStore.activeBusiness,
-        'changeOfOfficers',
+      await legalApi.postFiling(
+        officerStore.activeBusiness.identifier,
         payload
       )
     }
@@ -207,7 +213,6 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
-    const payload = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // check if the business has a pending filing before submit
     const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
@@ -222,17 +227,30 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       return
     }
 
-    // save filing as draft
-    const res = await legalApi.saveOrUpdateDraftFiling(
+    // save table state
+    const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
+
+    // create filing payload
+    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
       officerStore.activeBusiness,
       'changeOfOfficers',
+      { changeOfOfficers: officerTableSnapshot }
+    )
+
+    // add folio number // TODO: validation?
+    payload.filing.header.folioNumber = officerStore.folioNumber
+    payload.filing.header.type = FilingHeaderType.NON_LEGAL
+
+    // save filing as draft
+    const res = await legalApi.saveOrUpdateDraftFiling(
+      officerStore.activeBusiness.identifier,
       payload,
       false,
       draftId
     )
 
     // update saved draft state to track changes
-    officerStore.officerDraftTableState = payload
+    officerStore.officerDraftTableState = officerTableSnapshot
 
     // update url with filing id
     // required if it's the first time 'save draft' was clicked
@@ -316,6 +334,16 @@ watch(
       <p class="mt-2">
         {{ $t('text.trackOfficers') }}
       </p>
+    </div>
+
+    <div class="bg-white p-6 flex flex-col gap-4 rounded">
+      <!-- TODO: update with correct design/validation -->
+      <span class="text-lg text-bcGovGray-900 font-bold">Temp Folio input</span>
+      <ConnectInput
+        id="folio-number"
+        v-model="officerStore.folioNumber"
+        :label="$t('label.folioNumberOpt')"
+      />
     </div>
 
     <UButton

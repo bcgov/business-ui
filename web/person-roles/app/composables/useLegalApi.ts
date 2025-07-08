@@ -3,34 +3,28 @@ export const useLegalApi = () => {
   const { kcUser } = useKeycloak()
   const accountId = useConnectAccountStore().currentAccount.id
 
-  function createFilingPayload<T extends string, P>(
+  function createFilingPayload<F extends Record<string, unknown>>(
     business: BusinessData | BusinessDataSlim,
-    filingName: T,
-    payload: P
-  ): FilingSubmissionBody<T, P> {
-    const base = {
-      header: {
-        name: filingName,
-        certifiedBy: kcUser.value.fullName,
-        accountId: accountId,
-        date: getToday()
-        // TODO: should we always include payment method?
-        // paymentMethod: useConnectFeeStore().userSelectedPaymentMethod || undefined
-      },
-      business: {
-        identifier: business.identifier,
-        foundingDate: business.foundingDate,
-        legalName: business.legalName,
-        legalType: business.legalType
-      }
-    }
-    const filingData = { [filingName]: payload }
+    filingName: string,
+    filings: F
+  ): FilingSubmissionBody<F> {
     return {
-      filing: Object.assign(
-          {},
-          base,
-          filingData as { [K in T]: P }
-        )
+      filing: {
+        header: {
+          name: filingName,
+          certifiedBy: kcUser.value.fullName,
+          accountId,
+          date: getToday(),
+          type: FilingHeaderType.LEGAL
+        },
+        business: {
+          identifier: business.identifier,
+          foundingDate: business.foundingDate,
+          legalName: business.legalName,
+          legalType: business.legalType
+        },
+        ...filings
+      }
     }
   }
 
@@ -80,10 +74,10 @@ export const useLegalApi = () => {
    * @param filingId the id of the filing
    * @returns a promise to return the filing
    */
-  async function getFilingById<T extends string, P>(
+  async function getFilingById<F extends Record<string, unknown>>(
     businessId: string,
     filingId: number | string
-  ): Promise<FilingGetByIdResponse<T, P>> {
+  ): Promise<FilingGetByIdResponse<F>> {
     return $legalApi(`businesses/${businessId}/filings/${filingId}`)
   }
 
@@ -95,13 +89,13 @@ export const useLegalApi = () => {
    * @param filingName The name of the filing to validate for.
    * @returns A promise that resolves the draft filing response and if the filing is of the expected type.
   */
-  async function getAndValidateDraftFiling<T extends string, P>(
+  async function getAndValidateDraftFiling<F extends Record<string, unknown>>(
     businessId: string,
     draftId: number | string,
-    filingName: T
-  ): Promise<{ isValid: boolean, data: FilingGetByIdResponse<T, P> | null }> {
-      const response = await getFilingById(businessId, draftId)
-      const isValid = isValidDraft<T, P>(filingName, response)
+    filingName: string
+  ): Promise<{ isValid: boolean, data: FilingGetByIdResponse<F> | null }> {
+      const response = await getFilingById<F>(businessId, draftId)
+      const isValid = isValidDraft<F>(filingName, response)
 
       if (!isValid) {
         return { isValid, data: null }
@@ -113,23 +107,18 @@ export const useLegalApi = () => {
   /**
    * Submits a new filing to the Legal API.
    * This function is generic and will return a typed response
-   * based on the filing name and payload provided.
-   * @param business The business object.
-   * @param filingName The name of the filing.
-   * @param payload The data payload for the specific filing type.
+   * @param identifier The business identifier object.
+   * @param body The data payload for the filing creation.
    * @returns A promise that resolves to the full API response, including the filing payload.
   */
-  async function postFiling<T extends string, P>(
-    business: BusinessData | BusinessDataSlim,
-    filingName: T,
-    payload: P
-  ): Promise<FilingPostResponse<T, P>> {
-    const filingBody = createFilingPayload(business, filingName, payload)
-
-    return $legalApi(`businesses/${business.identifier}/filings`,
+  async function postFiling<F extends Record<string, unknown>>(
+    identifier: string,
+    body: FilingSubmissionBody<F>
+  ): Promise<FilingPostResponse<F>> {
+    return $legalApi(`businesses/${identifier}/filings`,
       {
         method: 'POST',
-        body: filingBody
+        body
       }
     )
   }
@@ -138,49 +127,43 @@ export const useLegalApi = () => {
     * Creates a new filing (POST) or updates an existing one (PUT).
     * This function handles both draft saves and final submissions based on the `isSubmission` flag.
     *
-    * @param business - The business object.
-    * @param filingName - The name of the filing.
-    * @param payload - The data payload for the specific filing type.
+    * @param identifier The business identifier object.
+    * @param body The data payload for the filing creation.
     * @param isSubmission - If false, the filing is saved as draft. If true, it is submitted as final.
     * @param filingId - The filing Id to submit the PUT request against. Will submit a POST request if undefined.
     *
     * @returns A promise that resolves the API response.
   */
-  // will return Promise<FilingPutResponse<T, P> if filingId is provided
-  async function saveOrUpdateDraftFiling<T extends string, P>(
-    business: BusinessData | BusinessDataSlim,
-    filingName: T,
-    payload: P,
+  // will return Promise<FilingPutResponse<F> if filingId is provided
+  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
     isSubmission: boolean,
     filingId: string | number
-  ): Promise<FilingPutResponse<T, P>>
-  // will return Promise<FilingPostResponse<T, P> if no filingId is provided
-  async function saveOrUpdateDraftFiling<T extends string, P>(
-    business: BusinessData | BusinessDataSlim,
-    filingName: T,
-    payload: P,
+  ): Promise<FilingPutResponse<F>>
+  // will return Promise<FilingPostResponse<F> if no filingId is provided
+  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
     isSubmission: boolean,
-  ): Promise<FilingPostResponse<T, P>>
+  ): Promise<FilingPostResponse<F>>
   // main function
-  async function saveOrUpdateDraftFiling<T extends string, P>(
-    business: BusinessData | BusinessDataSlim,
-    filingName: T,
-    payload: P,
+  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
     isSubmission = false,
     filingId?: string | number
-  ): Promise<FilingPutResponse<T, P> | FilingPostResponse<T, P>> {
-    const filingBody = createFilingPayload(business, filingName, payload)
-
+  ): Promise<FilingPutResponse<F> | FilingPostResponse<F>> {
     const url = filingId
-      ? `businesses/${business.identifier}/filings/${filingId}`
-      : `businesses/${business.identifier}/filings`
+      ? `businesses/${identifier}/filings/${filingId}`
+      : `businesses/${identifier}/filings`
     const method = filingId ? 'PUT' : 'POST'
     const query = isSubmission ? undefined : { draft: true }
 
     return $legalApi(url,
       {
         method,
-        body: filingBody,
+        body,
         query
       }
     )
@@ -235,6 +218,7 @@ export const useLegalApi = () => {
     getParties,
     getTasks,
     getPendingTask,
-    getAndValidateDraftFiling
+    getAndValidateDraftFiling,
+    createFilingPayload
   }
 }

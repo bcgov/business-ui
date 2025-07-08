@@ -54,7 +54,7 @@ describe('officer-helpers utils', () => {
     ] as unknown as OfficerTableState[]
 
     test('should format the payload correctly', () => {
-      const result = formatOfficerPayload(baseState)
+      const result = formatOfficerPayload(baseState).changeOfOfficers
       const officerPayload = result.relationships[0]
 
       expect(result.relationships).toHaveLength(1)
@@ -63,14 +63,14 @@ describe('officer-helpers utils', () => {
     })
 
     test('should correctly map roleTypes', () => {
-      const result = formatOfficerPayload(baseState)
+      const result = formatOfficerPayload(baseState).changeOfOfficers
       const officerRoles = result.relationships[0]!.roles
 
       expect(officerRoles[0]!.roleType).toBe('Vice President')
     })
 
     test('should NOT include mailingAddress if it is incomplete', () => {
-      const result = formatOfficerPayload(baseState)
+      const result = formatOfficerPayload(baseState).changeOfOfficers
       const officerPayload = result.relationships[0]
 
       expect(officerPayload).not.toHaveProperty('mailingAddress')
@@ -85,7 +85,7 @@ describe('officer-helpers utils', () => {
         { state: { officer: modifiedOfficer, actions: [] }, history: [] }
       ]
 
-      const result = formatOfficerPayload(modifiedState)
+      const result = formatOfficerPayload(modifiedState).changeOfOfficers
       const officerPayload = result.relationships[0]
 
       expect(officerPayload).toHaveProperty('mailingAddress')
@@ -99,7 +99,7 @@ describe('officer-helpers utils', () => {
         { state: { officer: secondOfficer, actions: [] }, history: [] }
       ] as unknown as OfficerTableState[]
 
-      const result = formatOfficerPayload(multiState)
+      const result = formatOfficerPayload(multiState).changeOfOfficers
 
       expect(result.relationships).toHaveLength(2)
       expect(result.relationships[0]!.entity.givenName).toBe('Test')
