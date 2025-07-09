@@ -27,8 +27,6 @@ export default defineNuxtPlugin(() => {
       const accountStore = useConnectAccountStore()
       // Set up headers
       const headers = options.headers ||= {}
-      console.log('Account ID:', accountStore.currentAccount.id)
-      console.log('x-apikey:', config.public.businessApiKey)
       if (Array.isArray(headers)) {
         headers.push(['Authorization', `Bearer ${$keycloak.token}`])
         headers.push(['App-Name', appName])
@@ -36,7 +34,6 @@ export default defineNuxtPlugin(() => {
           headers.push(['Account-Id', accountStore.currentAccount.id])
           headers.push(['X-Apikey', config.public.businessApiKey as string])
         }
-        console.log('headers 1:', headers)
       } else if (headers instanceof Headers) {
         headers.set('Authorization', `Bearer ${$keycloak.token}`)
         headers.set('App-Name', appName)
@@ -44,7 +41,6 @@ export default defineNuxtPlugin(() => {
           headers.set('Account-Id', accountStore.currentAccount.id)
           headers.set('X-Apikey', config.public.businessApiKey as string)
         }
-        console.log('headers 2:', headers)
       } else {
         headers.Authorization = `Bearer ${$keycloak.token}`
         headers['App-Name'] = appName
@@ -52,7 +48,6 @@ export default defineNuxtPlugin(() => {
           headers['Account-Id'] = accountStore.currentAccount.id
           headers['X-Apikey'] = config.public.businessApiKey as string
         }
-        console.log('headers 3:', headers)
       }
     }
   })
