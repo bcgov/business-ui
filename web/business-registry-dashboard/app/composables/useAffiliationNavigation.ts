@@ -5,6 +5,7 @@ export function useAffiliationNavigation () {
   const accountStore = useConnectAccountStore()
   const currentAccountId = computed(() => accountStore.currentAccount.id)
   const brdModal = useBrdModals()
+  const route = useRoute()
 
   /** Navigation handler for business dashboard. */
   function goToDashboard (businessIdentifier: string) {
@@ -22,7 +23,10 @@ export function useAffiliationNavigation () {
         sessionStorage.setItem('BCREG-emailAddress', nameRequest.applicantEmail)
         sessionStorage.setItem('BCREG-phoneNumber', nameRequest.applicantPhone)
       }
-      return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}?accountid=${currentAccountId.value}`), { external: true })
+      const orgId = (IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION) && route.params.orgId)
+        ? route.params.orgId
+        : accountStore.currentAccount.id
+      return navigateTo(decodeURIComponent(`${webUrl.getNameRequestUrl()}nr/${nameRequest.id}?accountid=${orgId}`), { external: true })
     } else {
       console.log('handle no name request case')
     }

@@ -72,9 +72,6 @@ onMounted(async () => {
   if (affStore.isSubscribed !== true) {
     brdModal.openNoSubscriptionModal()
   }
-
-  // Load authorized actions
-  await affStore.loadAuthorizedActions()
 })
 </script>
 <template>

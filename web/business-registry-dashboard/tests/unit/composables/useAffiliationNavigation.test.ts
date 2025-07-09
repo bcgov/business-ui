@@ -14,6 +14,21 @@ mockNuxtImport('useNuxtApp', () => {
   )
 })
 
+// Mock useI18n to prevent "Must be called at the top of a setup function" error
+mockNuxtImport('useI18n', () => {
+  return () => ({
+    t: vi.fn((key: string) => key),
+    locale: { value: 'en-CA' }
+  })
+})
+
+// Mock useToast to prevent any additional errors from affiliations store
+mockNuxtImport('useToast', () => {
+  return () => ({
+    add: vi.fn()
+  })
+})
+
 const { navigateToMock } = vi.hoisted(() => ({ navigateToMock: vi.fn() }))
 mockNuxtImport('navigateTo', () => navigateToMock)
 
