@@ -5,6 +5,7 @@ export const usePostRestorationTransitionApplicationStore
   const t = useNuxtApp().$i18n.t
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
+  const feeStore = useConnectFeeStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const regOfficeEmail = ref<string | undefined>(undefined)
@@ -60,6 +61,12 @@ export const usePostRestorationTransitionApplicationStore
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
     ])
+    // FUTURE: error handling on fees
+    const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
+    feeStore.feeOptions.showServiceFees = true
+    if (transitionFees) {
+      feeStore.addReplaceFee(transitionFees)
+    }
 
     activeBusiness.value = business
     directors.value = apiDirectors
