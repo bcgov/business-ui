@@ -3,6 +3,8 @@ defineProps<{
   title: string
   text?: string
   icon?: string
+  titleClass?: string
+  textClass?: string
 }>()
 </script>
 
@@ -21,9 +23,9 @@ defineProps<{
     </slot>
     <ConnectInfoBox
       :title="title"
-      title-class="text-base"
+      :title-class="titleClass"
       :content="text"
-      content-class="text-base"
+      :content-class="textClass"
     />
   </div>
 </template>

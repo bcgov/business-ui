@@ -7,6 +7,7 @@ export const usePostRestorationTransitionApplicationStore
   const authApi = useAuthApi()
   const feeStore = useConnectFeeStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
+  const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const regOfficeEmail = ref<string | undefined>(undefined)
   const compPartyEmail = ref<string | undefined>(undefined)
@@ -104,6 +105,11 @@ export const usePostRestorationTransitionApplicationStore
       { label: t('label.phone'), value: phoneLabel }
     ]
 
+    // if user is client, autopopulate legalName
+    if (!isStaffOrSbcStaff.value) {
+      legalName.value = userFullName.value
+    }
+
     await _updateBreadcrumbs(businessId)
   }
 
@@ -114,6 +120,7 @@ export const usePostRestorationTransitionApplicationStore
     courtOrderNumber,
     directors,
     folio,
+    isStaffOrSbcStaff,
     legalName,
     offices,
     planOfArrangement,
