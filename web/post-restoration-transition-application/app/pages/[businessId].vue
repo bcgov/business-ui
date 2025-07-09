@@ -69,8 +69,7 @@ const officesColumns = ref([
     accessorKey: 'mailingAddress',
     header: t('label.mailingAddress'),
     cell: ({ row }) => {
-      return h(ConnectAddressDisplay,
-        { address: row.original.mailingAddress })
+      return h(ConnectAddressDisplay, { address: row.original.mailingAddress })
     }
   },
   {

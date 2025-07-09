@@ -3,13 +3,11 @@
 import { nowAsIsoDate } from '~/utils/uidate'
 
 const certified = defineModel<boolean>()
-const props = defineProps<{
+defineProps<{
   legalName: string | undefined
   isDisabled?: boolean | undefined
   hasError?: boolean | undefined
 }>()
-
-const t = useNuxtApp().$i18n.t
 </script>
 
 <template>
