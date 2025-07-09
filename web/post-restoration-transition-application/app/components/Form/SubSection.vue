@@ -13,7 +13,7 @@ defineProps<{
 
 <template>
   <section
-    :aria-labelledby="title"
+    :aria-label="title"
     class="bg-bcGovColor-white pb-6"
   >
     <slot name="title">

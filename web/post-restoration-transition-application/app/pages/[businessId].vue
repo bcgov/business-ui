@@ -5,7 +5,7 @@ import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
-const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions
+const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
 
 useHead({
   title: t('transitionApplication.title')
@@ -45,26 +45,6 @@ const {
   planOfArrangement,
   regOfficeEmail
 } = storeToRefs(filingStore)
-
-const feeStore = useConnectFeeStore()
-feeStore.feeOptions.showServiceFees = true
-feeStore.fees = {
-  OFFICER_CHANGE: {
-    filingFees: 10,
-    filingType: 'Officer change fee',
-    filingTypeCode: 'OFFICER_CHANGE',
-    futureEffectiveFees: 0,
-    priorityFees: 0,
-    processingFees: 0,
-    serviceFees: 0,
-    tax: {
-      gst: 0,
-      pst: 0
-    },
-    total: 0,
-    waived: true
-  }
-}
 
 const sectionErrors = ref({
   reviewAndConfirm: false,
@@ -227,7 +207,6 @@ const directorsColumns = ref([
             v-model="compPartyEmail"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
-            :help="$t('text.completingPartyEmail')"
           />
         </ConnectFormSection>
       </FormSubSection>

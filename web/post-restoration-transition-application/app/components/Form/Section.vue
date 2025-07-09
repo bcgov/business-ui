@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <section :aria-labelledby="title">
+  <section :aria-label="title">
     <div>
       <h2
         class="text-base"

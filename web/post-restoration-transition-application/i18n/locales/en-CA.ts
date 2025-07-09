@@ -59,5 +59,12 @@ export default {
     planOfArrangement: 'This filing is pursuant to a Plan of Arrangement',
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
     transitionYourBusiness: 'Transition your business so that it operates under the new Business Corporations Act.'
+  },
+  ConnectFeeWidget: {
+    feeSummary: {
+      itemLabels: {
+        TRANP: 'Post Restoration Transition Application'
+      }
+    }
   }
 }
