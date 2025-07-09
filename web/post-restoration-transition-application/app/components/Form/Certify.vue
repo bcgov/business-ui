@@ -10,10 +10,6 @@ const props = defineProps<{
 }>()
 
 const t = useNuxtApp().$i18n.t
-
-const displayLegalName = computed(() => {
-  return props.legalName || t('text.legalNameCertifyPlaceHolder')
-})
 </script>
 
 <template>
@@ -27,16 +23,27 @@ const displayLegalName = computed(() => {
       <template #label>
         <div class="flex flex-col text-base space-y-2">
           <div :class="{ 'text-red-500': hasError }">
-            <p>
-              <span class="font-bold">{{ displayLegalName }}</span>
-              {{ $t('text.certifiesItHasRelevantKnowledge', { legalName: displayLegalName }) }}
-            </p>
+            <slot name="certifyText">
+              <i18n-t
+                keypath="text.certifiesItHasRelevantKnowledgeClient"
+                tag="p"
+                class="mt-[-2px]"
+              >
+                <template #legalName>
+                  <strong>{{ legalName }}</strong>
+                </template>
+              </i18n-t>
+            </slot>
           </div>
           <div>
-            <span class="font-bold">{{ $t('label.date') }}: </span>{{ nowAsIsoDate() }}
+            <slot name="certifyDate">
+              <span class="font-bold">{{ $t('label.date') }}: </span>{{ nowAsIsoDate() }}
+            </slot>
           </div>
           <div>
-            <span class="font-bold">{{ $t('label.note') }}: </span>{{ $t('text.itIsAnOffenceToMakeFalseStatement') }}
+            <slot name="certifyNote">
+              <span class="font-bold">{{ $t('label.note') }}: </span>{{ $t('text.itIsAnOffenceToMakeFalseStatement') }}
+            </slot>
           </div>
         </div>
       </template>

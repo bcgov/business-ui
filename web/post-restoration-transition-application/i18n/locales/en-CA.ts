@@ -40,8 +40,9 @@ export default {
     to: 'to'
   },
   text: {
-    certifiesItHasRelevantKnowledge: 'certifies that they have relevant knowledge of the business and are authorized to make this filing.',
-    certifySectionDescription: 'Confirm the legal name of the person authorized to complete and submit this post-restoration transition application.',
+    certifiesItHasRelevantKnowledgeStaff: '{legalName} certifies that they have relevant knowledge of the business and are authorized to make this filing.',
+    certifiesItHasRelevantKnowledgeClient: 'I, {legalName} certify that I have relevant knowledge of the business and am authorized to make this filing.',
+    certifySectionDescription: 'Confirm the legal name of the person authorized to complete and submit this post restoration transition application.',
     companyProvisionsHeading: 'The Pre-existing Company Provisions apply to this company.',
     companyProvisionsText: 'The regulations under the {businessCorporationsAct} contain provisions that apply to a pre-existing company.',
     companyProvisionsURL: 'Read the Pre-existing Company Provisions',
@@ -57,7 +58,7 @@ export default {
     needChange: 'Need to make changes?',
     needOtherChange: 'Need to make other changes?',
     planOfArrangement: 'This filing is pursuant to a Plan of Arrangement',
-    reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
+    reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your application.',
     transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
   },
   ConnectFeeWidget: {

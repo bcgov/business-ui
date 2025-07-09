@@ -40,6 +40,7 @@ const {
   courtOrderNumber,
   directors,
   folio,
+  isStaffOrSbcStaff,
   legalName,
   offices,
   planOfArrangement,
@@ -138,6 +139,10 @@ const directorsColumns = ref([
     }
   }
 ])
+
+const displayLegalName = computed(() => {
+  return legalName.value || t('text.legalNameCertifyPlaceHolder')
+})
 </script>
 
 <template>
@@ -329,8 +334,20 @@ const directorsColumns = ref([
         <ConnectFormSection title=" ">
           <FormCertify
             v-model="certifiedByLegalName"
-            :legal-name="legalName"
-          />
+            :legal-name="displayLegalName || $t('text.legalNameCertifyPlaceHolder')"
+          >
+            <template v-if="isStaffOrSbcStaff" #certifyText>
+              <i18n-t
+                keypath="text.certifiesItHasRelevantKnowledgeStaff"
+                tag="p"
+                class="mt-[-2px]"
+              >
+                <template #legalName>
+                  <strong>{{ displayLegalName }}</strong>
+                </template>
+              </i18n-t>
+            </template>
+          </FormCertify>
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
