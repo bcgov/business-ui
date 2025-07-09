@@ -67,7 +67,10 @@ const officesColumns = ref([
   {
     accessorKey: 'mailingAddress',
     header: t('label.mailingAddress'),
-    cell: ({ row }) => { return h(ConnectAddressDisplay, { address: row.original.mailingAddress }) }
+    cell: ({ row }) => {
+      return h(ConnectAddressDisplay,
+        { address: row.original.mailingAddress })
+    }
   },
   {
     accessorKey: 'deliveryAddress',
@@ -130,7 +133,7 @@ const directorsColumns = ref([
       return h(
         'div',
         { class: 'text-left font-bold text-bgGovColor-midGray' },
-        'TODO: ADD CHANGE LINK HERE'
+        'TODO: ADD CHANGE LINK'
       )
     }
   }
@@ -139,14 +142,20 @@ const directorsColumns = ref([
 
 <template>
   <div class="py-10 space-y-10">
-    <div>
+    <section>
       <h1 class="mb-2">
         {{ $t('transitionApplication.title') }}
       </h1>
-      <p class="text-2xl">
-        {{ $t('text.transitionYourBusiness') }}
-      </p>
-    </div>
+      <i18n-t
+        keypath="text.transitionYourBusiness"
+        tag="p"
+        class="mb-4 text-[18px]"
+      >
+        <template #businessCorporationsAct>
+          <em>{{ $t('label.businessCorporationsAct') }}</em>
+        </template>
+      </i18n-t>
+    </section>
     <FormSection
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
@@ -162,12 +171,17 @@ const directorsColumns = ref([
             :data="offices"
             :columns="officesColumns"
             class="m-6"
+            :ui="{
+              th: 'text-[14px] text-left text-bcGovColor-midGray p-4',
+              td: 'border-t-1 border-bcGovColor-hairlinesOnWhite text-[14px] whitespace-nowrap p-4 text-gray-500'
+            }"
           />
           <InfoBox
             icon="i-mdi-information-outline"
             :title="$t('text.needChange')"
             :text="$t('text.goToMainFileAddressChange')"
-            class="m-6"
+            class="pl-6 pr-6 text-[14px]"
+            title-class="text-[14px]"
           />
         </FormSubSection>
 
@@ -179,12 +193,17 @@ const directorsColumns = ref([
             :data="directors"
             :columns="directorsColumns"
             class="m-6"
+            :ui="{
+              th: 'text-[14px] text-left text-bcGovColor-midGray p-4',
+              td: 'border-t-1 border-bcGovColor-hairlinesOnWhite text-[14px] whitespace-nowrap p-4 text-gray-500'
+            }"
           />
           <InfoBox
             icon="i-mdi-information-outline"
             :title="$t('text.needOtherChange')"
             :text="$t('text.deleteAndFileDirectorChange')"
-            class="m-6"
+            class="pl-6 pr-6 text-[14px]"
+            title-class="text-[14px]"
           />
         </FormSubSection>
       </div>

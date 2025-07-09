@@ -47,7 +47,7 @@ export default {
     companyProvisionsURL: 'Read the Pre-existing Company Provisions',
     completingPartyEmail: 'The email of the person submitting this record.',
     courtOrder: 'If this filing is pursuant to a court order, enter the court order number. If this filing is pursuant to a plan of arrangement, enter the court order number and select the Plan of Arrangement checkbox.',
-    deleteAndFileDirectorChange: 'Delete this application and file a director change.',
+    deleteAndFileDirectorChange: 'Go the the main page of this business and file a director change.',
     documentDelivery: 'Copies of the transition documents will be sent to the email addresses listed below.',
     folioOrReferenceNumber: 'This is meant for your own tracking purposes and will appear on your receipt.',
     goToMainFileAddressChange: 'Go to main page of this business and file an address change.',
@@ -58,7 +58,7 @@ export default {
     needOtherChange: 'Need to make other changes?',
     planOfArrangement: 'This filing is pursuant to a Plan of Arrangement',
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
-    transitionYourBusiness: 'Transition your business so that it operates under the new Business Corporations Act.'
+    transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
   },
   ConnectFeeWidget: {
     feeSummary: {
