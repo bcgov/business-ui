@@ -269,6 +269,16 @@ watch(
   }
 )
 
+// reset preferred name field if user unselects checkbox
+watch(
+  () => state.hasPreferredName,
+  (v) => {
+    if (!v) {
+      state.preferredName = ''
+    }
+  }
+)
+
 // handle unfinished task warnings
 const unfinishedTaskMsg = ref('')
 na.hook('app:officer-form:incomplete', async (payload) => {

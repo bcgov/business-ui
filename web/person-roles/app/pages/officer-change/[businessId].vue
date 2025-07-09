@@ -58,7 +58,7 @@ feeStore.fees = {
 // TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
-  if (officerStore.hasChanges) {
+  if (officerStore.checkHasChanges('save')) {
     event.preventDefault()
     // legacy browsers
     event.returnValue = true
@@ -93,10 +93,11 @@ async function submitFiling() {
     }
 
     // prevent submit if there are no changes
-    if (!officerStore.hasChanges && !officerStore.officerDraftTableState.length) {
+    if (!officerStore.checkHasChanges('submit')) {
       setAlertText(false, 'right', t('text.noChangesToSubmit'))
       return
     }
+
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
@@ -160,7 +161,7 @@ async function submitFiling() {
 }
 
 async function cancelFiling() {
-  if (officerStore.hasChanges) {
+  if (officerStore.checkHasChanges('save')) {
     await modal.openBaseModal(
       t('modal.unsavedChanges.title'),
       t('modal.unsavedChanges.description'),
@@ -198,7 +199,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 
   // prevent save if there are no changes
-  if (!officerStore.hasChanges) {
+  if (!officerStore.checkHasChanges('save')) {
     setAlertText(false, 'left', t('text.noChangesToSave'))
     return
   }

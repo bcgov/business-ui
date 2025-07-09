@@ -23,18 +23,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const folioNumber = ref<string>('')
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
-  const hasChanges = computed(() => {
-    const tableOfficers = officerTableState.value.map(state => state.state.officer)
-    const tableOfficersDraft = officerDraftTableState.value.map(state => state.state.officer)
-
-    if (tableOfficersDraft.length) {
-      return !isEqual(tableOfficers, tableOfficersDraft)
-    }
-
-    const hasEdits = officerTableState.value.some(o => o.state.actions.length > 0)
-    const hasNew = tableOfficers.length !== initialOfficers.value.length
-    return hasEdits || hasNew
-  })
 
   async function initOfficerStore(businessId: string, draftId?: string) {
     try {
@@ -367,6 +355,26 @@ export const useOfficerStore = defineStore('officer-store', () => {
     return false
   }
 
+  function checkHasChanges(when: 'save' | 'submit'): boolean {
+    const tableState: OfficerTableState[] = JSON.parse(JSON.stringify(officerTableState.value))
+    const tableOfficers = tableState.map(state => state.state.officer)
+    const currentOfficers = JSON.parse(JSON.stringify(initialOfficers.value))
+    // check if the table state is different from the initial (current) officers
+    if (when === 'save') {
+      if (isEqual(tableOfficers, currentOfficers)) {
+        return false
+      }
+      const draftState: OfficerTableState[] = JSON.parse(JSON.stringify(officerDraftTableState.value))
+      const draftOfficers = draftState.map(state => state.state.officer)
+      // when saving, check if theres draft state saved already and if so compare to the table state
+      if (draftOfficers.length > 0) {
+        return !isEqual(tableOfficers, draftOfficers)
+      }
+    }
+    // if no draft has been saved yet, compare against the original state.
+    return !isEqual(tableOfficers, currentOfficers)
+  }
+
   /**
   * Resets Officer store to default state
   */
@@ -392,7 +400,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
     expanded,
     editState,
     disableActions,
-    hasChanges,
     initialOfficers,
     folioNumber,
     initOfficerStore,
@@ -404,6 +411,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initOfficerEdit,
     cancelOfficerEdit,
     checkHasActiveForm,
+    checkHasChanges,
     $reset
   }
 })
