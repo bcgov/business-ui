@@ -61,7 +61,7 @@ export const usePostRestorationTransitionApplicationStore
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
     ])
-    // FUTURE: error handling on fees
+    // FUTURE: error handling on fees #29114
     const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
     feeStore.feeOptions.showServiceFees = true
     if (transitionFees) {

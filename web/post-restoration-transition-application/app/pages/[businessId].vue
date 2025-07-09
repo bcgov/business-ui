@@ -151,8 +151,6 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      :label="''"
-      :invalid="false"
       class="space-y-4"
     >
       <div class="space-y-6">
@@ -195,8 +193,6 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.documentDelivery')"
       :description="$t('text.documentDelivery')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      :label="''"
-      :invalid="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -219,8 +215,6 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.courtOrder')"
       :description="$t('text.courtOrder')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      :label="''"
-      :invalid="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -247,8 +241,6 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.folio')"
       :description="$t('text.folioOrReferenceNumber')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      :label="''"
-      :invalid="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -267,8 +259,6 @@ const directorsColumns = ref([
     <FormSection
       :title="$t('transitionApplication.subtitle.companyProvisions')"
       :has-errors="sectionErrors.reviewAndConfirm"
-      :label="''"
-      :invalid="false"
     >
       <FormSubSection
         title=""
@@ -301,8 +291,6 @@ const directorsColumns = ref([
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
       :has-errors="sectionErrors.certify"
-      :label="''"
-      :invalid="false"
       class="space-y-4"
     >
       <FormSubSection
