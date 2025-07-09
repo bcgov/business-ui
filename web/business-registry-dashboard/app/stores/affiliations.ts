@@ -219,8 +219,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       affiliations.loading = true
       affiliations.error = false
 
-      // Load authorized actions
-      await loadAuthorizedActions()
+      // Load authorized actions if not already loaded
+      if (authorizedActions.value.length === 0) {
+        await loadAuthorizedActions()
+      }
 
       if (!accountStore.currentAccount.id || !$keycloak.authenticated) { return }
 
