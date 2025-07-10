@@ -162,6 +162,9 @@ describe('useAffiliationsStore', () => {
   let store: any
 
   beforeEach(() => {
+    // Reset mocks first
+    vi.clearAllMocks()
+
     const pinia = createPinia()
     setActivePinia(pinia)
     store = useConnectAccountStore()
@@ -175,11 +178,13 @@ describe('useAffiliationsStore', () => {
       urlpath: '',
       urlorigin: ''
     }
+
+    // Set up default mock for loadAuthorizedActions for all tests - after clearing mocks
+    mockLegalApi.mockResolvedValue({ authorizedPermissions: [] })
   })
 
   afterEach(() => {
     vi.unstubAllGlobals()
-    vi.clearAllMocks()
     vi.resetAllMocks()
     mockAuthenticated = true
     mockRoute.params = {} // Reset route params after each test
@@ -345,11 +350,11 @@ describe('useAffiliationsStore', () => {
     })
     mockAuthApi
       .mockResolvedValueOnce(mockEntities) // affiliations for first call
-      .mockResolvedValueOnce({ // invitations for first call
+      .mockResolvedValueOnce({ // invitations for first call - handleAffiliationInvitations
         affiliationInvitations: []
       })
       .mockResolvedValueOnce(mockEntities) // affiliations for second call
-      .mockResolvedValueOnce({ // invitations for second call
+      .mockResolvedValueOnce({ // invitations for second call - handleAffiliationInvitations
         affiliationInvitations: []
       })
 
