@@ -22,6 +22,7 @@
   "dependencies": {
     "@sbc-connect/nuxt-core-layer-beta": "^0.0.5",
     "@vue/compiler-sfc": "^3.5.16",
+    "currency-symbol-map": "^5.1.0",
     "http-status-codes": "^2.3.0",
     "nuxt": "3.16.1"
   },

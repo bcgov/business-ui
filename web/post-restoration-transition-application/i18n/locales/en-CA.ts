@@ -37,7 +37,8 @@ export default {
     recordsOffice: 'Records Office',
     registeredOffice: 'Registered Office',
     sameAsMailingAddress: 'Same as Mailing Address',
-    to: 'to'
+    to: 'to',
+    change: 'Change'
   },
   text: {
     certifiesItHasRelevantKnowledgeStaff: '{legalName} certifies that they have relevant knowledge of the business and are authorized to make this filing.',
@@ -66,6 +67,25 @@ export default {
       itemLabels: {
         TRANP: 'Post Restoration Transition Application'
       }
+    }
+  },
+  shares: {
+    columns: {
+      name: 'Name of Share Class or Series',
+      max_num: 'Max. Number of Shares',
+      par_value: 'Par Value',
+      par_value_currency: 'Currency',
+      rights_restrictions: 'Special Rights or Restrictions'
+    },
+    rights_restrictions: {
+      yes: 'Yes',
+      no: 'No'
+    },
+    actions: {
+      addSeries: 'Add Series',
+      moveUp: 'Move Up',
+      moveDown: 'Move Down',
+      delete: 'Delete'
     }
   }
 }

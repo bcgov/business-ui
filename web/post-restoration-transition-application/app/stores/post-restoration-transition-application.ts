@@ -5,6 +5,7 @@ export const usePostRestorationTransitionApplicationStore
   const t = useNuxtApp().$i18n.t
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
+  const connectApi = useConnectApi()
   const feeStore = useConnectFeeStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
@@ -18,6 +19,7 @@ export const usePostRestorationTransitionApplicationStore
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
+  const shareClasses = ref<Share[]>([])
   const certifiedByLegalName = ref<boolean | undefined>(false)
 
   const businessName = computed(() => {
@@ -56,8 +58,9 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
-    const [authInfo, business, apiAddresses, apiDirectors] = await Promise.all([
+    const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
       authApi.getAuthInfo(businessId),
+      connectApi.getShareClasses(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
@@ -71,6 +74,7 @@ export const usePostRestorationTransitionApplicationStore
 
     activeBusiness.value = business
     directors.value = apiDirectors
+    shareClasses.value = shareClassesResponse.shareClasses
 
     // reset offices so when pushing they are not duplicated (on refresh and similar)
     offices.value = []
@@ -123,6 +127,7 @@ export const usePostRestorationTransitionApplicationStore
     isStaffOrSbcStaff,
     legalName,
     offices,
+    shareClasses,
     planOfArrangement,
     regOfficeEmail,
     init
