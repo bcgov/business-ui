@@ -45,7 +45,19 @@ export default {
     save: 'Save',
     sameAsMailingAddress: 'Same as Mailing Address',
     to: 'to',
-    change: 'Change'
+    change: 'Change',
+    shareColumnName: 'Name of Share Class or Series',
+    shareColumnMaxNum: 'Max. Number of Shares',
+    shareColumnParValue: 'Par Value',
+    shareColumnParValueCurrency: 'Currency',
+    shareColumnRightsRestrictions: 'Special Rights or Restrictions',
+    shareColumnActions: 'Actions',
+    yes: 'Yes',
+    no: 'No',
+    addSeries: 'Add Series',
+    moveUp: 'Move Up',
+    moveDown: 'Move Down',
+    delete: 'Delete'
   },
   text: {
     articlesDescription: 'The date of a resolution or court order to alter the company’s share structure. This includes changes to the special rights or restrictions on a class or series of shares.',
@@ -78,25 +90,6 @@ export default {
       itemLabels: {
         TRANP: 'Post Restoration Transition Application'
       }
-    }
-  },
-  shares: {
-    columns: {
-      name: 'Name of Share Class or Series',
-      max_num: 'Max. Number of Shares',
-      par_value: 'Par Value',
-      par_value_currency: 'Currency',
-      rights_restrictions: 'Special Rights or Restrictions'
-    },
-    rights_restrictions: {
-      yes: 'Yes',
-      no: 'No'
-    },
-    actions: {
-      addSeries: 'Add Series',
-      moveUp: 'Move Up',
-      moveDown: 'Move Down',
-      delete: 'Delete'
     }
   }
 }
