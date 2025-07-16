@@ -25,7 +25,7 @@ const flattenData = (data: Share[]) => {
 const columns = [
     {
         accessorKey: 'name',
-        header: t('shares.columns.name'),
+        header: t('label.shareColumnName'),
         meta:{
           class: {
             td: 'font-bold'
@@ -34,7 +34,7 @@ const columns = [
     },
     {
         accessorKey: 'maxNumberOfShares',
-        header: t('shares.columns.max_num'),
+        header: t('label.shareColumnMaxNum'),
         meta:{
           class: {
             th: 'w-[140px] text-right',
@@ -44,7 +44,7 @@ const columns = [
     },
     {
         accessorKey: 'parValue',
-        header: t('shares.columns.par_value'),
+        header: t('label.shareColumnParValue'),
         meta:{
           class: {
             th: 'mr-8 w-[100px] text-right',
@@ -60,7 +60,7 @@ const columns = [
     },
     {
         accessorKey: 'currency',
-        header: t('shares.columns.par_value_currency'),
+        header: t('label.shareColumnParValueCurrency'),
         meta:{
           class: {
             th: 'w-[100px]',
@@ -70,9 +70,9 @@ const columns = [
     },
     {
         accessorKey: 'hasRightsOrRestrictions',
-        header: t('shares.columns.rights_restrictions'),
+        header: t('label.shareColumnRightsRestrictions'),
         cell: ({ row }) => {
-            return row.original.hasRightsOrRestrictions ? t('shares.rights_restrictions.yes') : t('shares.rights_restrictions.no')
+            return row.original.hasRightsOrRestrictions ? t('label.yes') : t('label.no')
         },
         meta:{
           class: {
@@ -96,28 +96,28 @@ const getDropdownActions = (row: Row<Share>) => {
   console.log(row)
     return [
         {
-            label: t('shares.actions.addSeries'),
+            label: t('label.addSeries'),
             onClick: () => {
                 console.log('Add Series', row)
             },
             disabled: !row.original.hasRightsOrRestrictions
         },
         {
-            label: t('shares.actions.moveUp'),
+            label: t('label.moveUp'),
             onClick: () => {
                 console.log('Move Up', row)
             },
             disabled: row.index === 0
         },
         {
-            label: t('shares.actions.moveDown'),
+            label: t('label.moveDown'),
             onClick: () => {
                 console.log('Move Down', row)
             },
             disabled: row.index === shareClasses.value.length - 1
         },
         {
-            label: t('shares.actions.delete'),
+            label: t('label.delete'),
             onClick: () => {
                 console.log('Delete', row)
             }
