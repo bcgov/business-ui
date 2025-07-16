@@ -60,8 +60,8 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
-    const [/*authInfo, */shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
-      //authApi.getAuthInfo(businessId),
+    const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
+      authApi.getAuthInfo(businessId),
       connectApi.getShareClasses(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
