@@ -5,6 +5,7 @@ const t = useNuxtApp().$i18n.t
 const title = "Shares"
 
 const filingStore = usePostRestorationTransitionApplicationStore()
+const setShareClasses = filingStore.setShareClasses
 const {
   shareClasses
 } = storeToRefs(filingStore)
@@ -93,7 +94,6 @@ const columns = [
 ]
 
 const getDropdownActions = (row: Row<Share>) => {
-  console.log(row)
     return [
         {
             label: t('shares.actions.addSeries'),
@@ -105,24 +105,43 @@ const getDropdownActions = (row: Row<Share>) => {
         {
             label: t('shares.actions.moveUp'),
             onClick: () => {
-                console.log('Move Up', row)
+              moveShare(row.index, true)
             },
             disabled: row.index === 0
         },
         {
             label: t('shares.actions.moveDown'),
             onClick: () => {
-                console.log('Move Down', row)
+              moveShare(row.index, false)
             },
             disabled: row.index === shareClasses.value.length - 1
         },
         {
             label: t('shares.actions.delete'),
             onClick: () => {
-                console.log('Delete', row)
+                deleteShare(row.index)
             }
         }
     ]
+}
+
+const moveShare = (index: number, moveUp: boolean) => {
+  if (moveUp && index === 0) return;
+  if (!moveUp && index === shareClasses.value.length - 1) return;
+
+  const newIndex = moveUp ? index - 1 : index + 1;
+  // Swap elements using splice for reactivity
+  const arr = shareClasses.value
+  const temp = arr[index]
+  const oldPriority = temp.priority
+  temp.priority = arr[newIndex].priority
+  arr[newIndex].priority = oldPriority
+  arr.splice(index, 1)
+  arr.splice(newIndex, 0, temp)
+}
+
+const deleteShare = (index: number) => {
+  shareClasses.value.splice(index, 1)
 }
 
 </script>
