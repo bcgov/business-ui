@@ -19,6 +19,6 @@ export const DisplayNameToCorpType: Record<string, string> = {
   'Incorporation Application': CorpTypes.INCORPORATION_APPLICATION,
   'Amalgamation Application': CorpTypes.AMALGAMATION_APPLICATION,
   Registration: CorpTypes.REGISTRATION,
-  'Continuation Application': CorpTypes.CONTINUE_IN,
+  'Continuation Application': CorpTypes.CONTINUATION_IN,
   'Extraprovincial Company': CorpTypeCd.EXTRA_PRO_A
 }
