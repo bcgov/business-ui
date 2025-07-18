@@ -1,25 +1,3 @@
-<template>
-  <div :class="{ 'bcros-date-picker__err': error }" class="bcros-date-picker">
-    <VueDatePicker
-      v-model="selectedDate"
-      :action-row="{ showCancel: false, showNow: false, showPreview: false, showSelect: false }"
-      :day-names="['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']"
-      :enable-time-picker="false"
-      :max-date="maxDate || ''"
-      :min-date="minDate || ''"
-      :month-change-on-scroll="false"
-      :week-start="0"
-      auto-apply
-      calendar-cell-class-name="bcros-date-picker__calendar__day"
-      calendar-class-name="bcros-date-picker__calendar"
-      data-cy="date-picker"
-      format="yyyy-MM-dd"
-      hide-offset-dates
-      inline
-    />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import { type Ref, ref, watch } from 'vue'
 import VueDatePicker from '@vuepic/vue-datepicker'
@@ -48,6 +26,28 @@ watch(() => props.setMinDate, (val) => {
   minDate.value = val || null
 })
 </script>
+
+<template>
+  <div :class="{ 'bcros-date-picker__err': error }" class="bcros-date-picker">
+    <VueDatePicker
+      v-model="selectedDate"
+      :action-row="{ showCancel: false, showNow: false, showPreview: false, showSelect: false }"
+      :day-names="['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']"
+      :enable-time-picker="false"
+      :max-date="maxDate || ''"
+      :min-date="minDate || ''"
+      :month-change-on-scroll="false"
+      :week-start="0"
+      auto-apply
+      calendar-cell-class-name="bcros-date-picker__calendar__day"
+      calendar-class-name="bcros-date-picker__calendar"
+      data-cy="date-picker"
+      format="yyyy-MM-dd"
+      hide-offset-dates
+      inline
+    />
+  </div>
+</template>
 
 <style lang="scss">
 @use '@vuepic/vue-datepicker/dist/main.css';
