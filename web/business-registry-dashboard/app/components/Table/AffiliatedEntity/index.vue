@@ -224,56 +224,19 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           }"
           @clear="affStore.affiliations.filters.type = []"
         >
-          <USelectMenu
+          <MultiSelectTypeAhead
             v-model="affStore.affiliations.filters.type"
             :options="affStore.typeOptions"
-            selected-icon="hidden"
-            multiple
+            :placeholder="$t('table.affiliation.filter.legalType.placeholder')"
             :disabled="affStore.affiliations.loading"
-            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[210px]' }"
-          >
-            <template #default="{ open }">
-              <UButton
-                variant="select_menu_trigger"
-                class="w-full min-w-[210px] flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.legalType.aria', {
-                  filter: affStore.affiliations.filters.type.length
-                    ? (affStore.affiliations.filters.type.length > 1
-                      ? $t('words.Multiple')
-                      : affStore.affiliations.filters.type[0])
-                    : $t('words.none')
-                })"
-              >
-                {{ affStore.affiliations.filters.type.length === 0
-                  ? $t('table.affiliation.filter.legalType.placeholder')
-                  : (affStore.affiliations.filters.type.length > 1
-                    ? $t('words.Multiple')
-                    : affStore.affiliations.filters.type[0]) }}
-                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-              </UButton>
-            </template>
-
-            <template #option="{ option, selected }">
-              <div class="flex cursor-pointer items-center gap-2 pb-1">
-                <UCheckbox
-                  :model-value="selected"
-                  :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
-                  class="pointer-events-none"
-                />
-                <span>{{ option }}</span>
-              </div>
-              <!-- Add divider before specific options to separate groups -->
-              <template
-                v-if="affStore.enablePagination &&
-                  (option === FilterTypes.NAME_REQUEST || option === FilterTypes.INCORPORATION_APPLICATION)"
-              >
-                <div
-                  data-divider
-                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
-                />
-              </template>
-            </template>
-          </USelectMenu>
+            :label="$t('table.affiliation.filter.legalType.aria', {
+              filter: affStore.affiliations.filters.type.length
+                ? (affStore.affiliations.filters.type.length > 1
+                  ? $t('words.Multiple')
+                  : affStore.affiliations.filters.type[0])
+                : $t('words.none')
+            })"
+          />
         </TableColumnHeader>
       </template>
 
@@ -289,58 +252,19 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           }"
           @clear="affStore.affiliations.filters.status = []"
         >
-          <USelectMenu
+          <MultiSelectTypeAhead
             v-model="affStore.affiliations.filters.status"
             :options="affStore.statusOptions"
-            selected-icon="hidden"
-            multiple
+            :placeholder="$t('table.affiliation.filter.busStates.placeholder')"
             :disabled="affStore.affiliations.loading"
-            :ui="{ trigger: 'flex items-center w-full h-[42px] min-w-[150px]' }"
-          >
-            <template #default="{ open }">
-              <UButton
-                variant="select_menu_trigger"
-                class="w-full min-w-[150px] flex-1 justify-between text-gray-700"
-                :aria-label="$t('table.affiliation.filter.busStates.aria', {
-                  filter: affStore.affiliations.filters.status.length
-                    ? (affStore.affiliations.filters.status.length > 1
-                      ? $t('words.Multiple')
-                      : affStore.affiliations.filters.status[0])
-                    : $t('words.none')
-                })"
-              >
-                {{ affStore.affiliations.filters.status.length === 0
-                  ? $t('table.affiliation.filter.busStates.placeholder')
-                  : (affStore.affiliations.filters.status.length > 1
-                    ? $t('words.Multiple')
-                    : affStore.affiliations.filters.status[0]) }}
-                <UIcon name="i-mdi-caret-down" class="size-5 text-gray-700 transition-transform" :class="[open && 'rotate-180']" />
-              </UButton>
-            </template>
-
-            <template #option="{ option, selected }">
-              <div class="flex cursor-pointer items-center gap-2 pb-1">
-                <UCheckbox
-                  :model-value="selected"
-                  :aria-label="$t('btn.colsToShow.checkbox.aria', { column: option })"
-                  class="pointer-events-none"
-                />
-                <span>{{ option }}</span>
-              </div>
-              <!-- Add divider before specific options to separate groups -->
-              <template
-                v-if="affStore.enablePagination &&
-                  (option === NrDisplayStates.APPROVED ||
-                    option === EntityStateStatus.WITHDRAWN ||
-                    option === EntityStateStatus.PAID)"
-              >
-                <div
-                  data-divider
-                  class="absolute right-0 w-full cursor-pointer border-t border-bcGovGray-300 py-5"
-                />
-              </template>
-            </template>
-          </USelectMenu>
+            :label="$t('table.affiliation.filter.busStates.aria', {
+              filter: affStore.affiliations.filters.status.length
+                ? (affStore.affiliations.filters.status.length > 1
+                  ? $t('words.Multiple')
+                  : affStore.affiliations.filters.status[0])
+                : $t('words.none')
+            })"
+          />
         </TableColumnHeader>
       </template>
 
