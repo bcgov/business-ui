@@ -1,4 +1,5 @@
 import { useLegalApi2 } from '~/composables/useLegalApi'
+import { type Articles, EmptyArticles } from '~/interfaces/articles'
 
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
@@ -9,6 +10,7 @@ export const usePostRestorationTransitionApplicationStore
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
+  const articles = ref<Articles>(EmptyArticles())
   const regOfficeEmail = ref<string | undefined>(undefined)
   const compPartyEmail = ref<string | undefined>(undefined)
   const courtOrderNumber = ref<string | undefined>(undefined)
@@ -72,6 +74,11 @@ export const usePostRestorationTransitionApplicationStore
     activeBusiness.value = business
     directors.value = apiDirectors
 
+    const resolutions = await legalApi.getResolutions(businessId)
+    if (resolutions.resolutions?.length > 0) {
+      articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
+    }
+
     // reset offices so when pushing they are not duplicated (on refresh and similar)
     offices.value = []
     if (apiAddresses?.registeredOffice) {
@@ -115,6 +122,7 @@ export const usePostRestorationTransitionApplicationStore
 
   return {
     activeBusiness,
+    articles,
     certifiedByLegalName,
     compPartyEmail,
     courtOrderNumber,
