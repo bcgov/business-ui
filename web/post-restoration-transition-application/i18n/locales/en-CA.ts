@@ -18,6 +18,7 @@ export default {
     businessCorporationsAct: 'Business Corporations Act',
     completingParty: 'Completing Party',
     courtOrderNumber: 'Court Order Number',
+    courtOrderNumberOptional: 'Court Order Number (Optional)',
     current: 'current',
     currentDirectors: 'Current Directors',
     date: 'Date',
