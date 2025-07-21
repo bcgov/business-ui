@@ -22,6 +22,7 @@ export default {
     completingParty: 'Completing Party',
     courtOrderDate: 'Court Order Date',
     courtOrderNumber: 'Court Order Number',
+    courtOrderNumberOptional: 'Court Order Number (Optional)',
     current: 'current',
     currentDirectors: 'Current Directors',
     date: 'Date',

@@ -158,6 +158,9 @@ const removeDateHandler = () => {
 </script>
 
 <template>
+  <!-- NB: this is temporary so that tw pulls in needed classes for extended comps -->
+  <!-- z-10 lg:shadow-sm bg-midnightBlue-900 divide-bcGovGray-300 justify-between -->
+  <!-- border-b border-t border-bcGovGray-300 border-gray-300 ml-[5px] -->
   <div class="py-10 space-y-10">
     <section>
       <h1 class="mb-2">
@@ -335,7 +338,7 @@ const removeDateHandler = () => {
           <ConnectFormInput
             v-model="courtOrderNumber"
             :name="'courtOrder.number'"
-            :label="$t('label.courtOrderNumber')"
+            :label="$t('label.courtOrderNumberOptional')"
           />
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.planOfArrangement')">

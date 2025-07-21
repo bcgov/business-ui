@@ -9,7 +9,11 @@ defineProps({
 </script>
 
 <template>
-  <UFormField :name :help>
+  <UFormField
+    :name
+    :help
+    class="pb-[22px]"
+  >
     <ConnectInput
       :id="name"
       v-model="model"
