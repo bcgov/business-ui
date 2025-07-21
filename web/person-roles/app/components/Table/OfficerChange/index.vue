@@ -79,9 +79,15 @@ function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string
 
 // returns array of dropdown menu actions for the given row
 function getRowActions(row: Row<OfficerTableState>) {
+  const uiProp = {
+    item: 'text-primary',
+    itemLeadingIcon: 'text-primary'
+  }
+
   const actions = [
     {
       label: t('label.remove'),
+      ui: uiProp,
       onSelect: async () => {
         emit('table-action')
         const hasActiveForm = await officerStore.checkHasActiveForm('change')
@@ -99,6 +105,7 @@ function getRowActions(row: Row<OfficerTableState>) {
     actions.unshift({
       label: t('label.change'),
       icon: 'i-mdi-pencil',
+      ui: uiProp,
       onSelect: async () => {
         emit('table-action')
         const hasActiveForm = await officerStore.checkHasActiveForm('change')
@@ -279,7 +286,10 @@ const columns: TableColumn<OfficerTableState>[] = [
                       h(UButton, {
                         'variant': 'ghost',
                         'icon': 'i-mdi-caret-down',
-                        'class': 'px-4',
+                        'class': 'px-4 data-[state=open]:bg-(--ui-primary)/25 group',
+                        'ui': {
+                          leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
+                        },
                         'aria-label': t('label.moreActions')
                       })
                   })
