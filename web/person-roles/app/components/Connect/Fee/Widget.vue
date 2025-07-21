@@ -105,7 +105,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
     </UButton>
     <ConnectTransitionCollapse>
       <div v-if="!folded">
-        <div class="divide-y divide-bcGovGray-300 px-4 pt-1 text-sm">
+        <div class="divide-y divide-bcGovGray-300 px-3 pt-1 text-sm">
           <div
             v-for="feeItem in feeItems"
             :key="feeItem.filingTypeCode"
@@ -192,7 +192,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
           />
         </div>
         <div class="flex flex-row items-end justify-between border-t border-gray-300 p-3">
-          <p class="mb-1 font-bold">
+          <p class="mb-1 font-bold text-sm">
             {{ $t("ConnectFeeWidget.feeSummary.total") }}
           </p>
           <p class="flex items-end text-sm text-bcGovGray-700">
