@@ -38,7 +38,20 @@ export default {
     recordsOffice: 'Records Office',
     registeredOffice: 'Registered Office',
     sameAsMailingAddress: 'Same as Mailing Address',
-    to: 'to'
+    to: 'to',
+    change: 'Change',
+    shareColumnName: 'Name of Share Class or Series',
+    shareColumnMaxNum: 'Max. Number of Shares',
+    shareColumnParValue: 'Par Value',
+    shareColumnParValueCurrency: 'Currency',
+    shareColumnRightsRestrictions: 'Special Rights or Restrictions',
+    shareColumnActions: 'Actions',
+    yes: 'Yes',
+    no: 'No',
+    addSeries: 'Add Series',
+    moveUp: 'Move Up',
+    moveDown: 'Move Down',
+    delete: 'Delete'
   },
   text: {
     certifiesItHasRelevantKnowledgeStaff: '{legalName} certifies that they have relevant knowledge of the business and are authorized to make this filing.',
@@ -60,7 +73,7 @@ export default {
     needOtherChange: 'Need to make other changes?',
     planOfArrangement: 'This filing is pursuant to a Plan of Arrangement',
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your application.',
-    transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
+    transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.',
   },
   ConnectFeeWidget: {
     feeSummary: {
