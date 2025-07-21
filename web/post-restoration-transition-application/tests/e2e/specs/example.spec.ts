@@ -7,7 +7,7 @@ test.describe('Example', () => {
 
   test('Passes', async ({ page }) => {
     await page.goto('./')
-    await expect(page.getByText('TBD')).toBeVisible()
+    await expect(page.getByText('Post Restoration Transition Application')).toBeVisible()
     await scanA11y(page)
   })
 })

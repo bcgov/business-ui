@@ -49,10 +49,14 @@ async function globalSetup() {
   await page.getByLabel('Email or username').fill(username)
   await page.getByLabel('Password').fill(password)
   await page.getByRole('button', { name: 'Continue' }).click()
+  await page.waitForURL('**/login/username')
+  await page.getByText('I agree to the BC Login Service Terms of Use').click()
+  await page.getByRole('button', { name: 'Continue' }).click()
 
   // should be redirected back to baseUrl after successful login
-  await page.waitForURL(baseUrl + '**')
-
+  await page.waitForURL((url) => {
+    return url.toString().startsWith(baseUrl)
+  })
   // save auth state and close browser
   await page.context().storageState({ path: `tests/e2e/.auth/bcsc-user.json` })
   await browser.close()
