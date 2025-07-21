@@ -54,7 +54,7 @@ async function globalSetup() {
   await page.getByRole('button', { name: 'Continue' }).click()
 
   // should be redirected back to baseUrl after successful login
-  await page.waitForURL(url => {
+  await page.waitForURL((url) => {
     return url.toString().startsWith(baseUrl)
   })
   // save auth state and close browser

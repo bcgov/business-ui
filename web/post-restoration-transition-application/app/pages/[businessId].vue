@@ -236,7 +236,7 @@ const removeDateHandler = () => {
             class="m-6 text-base"
           >
             <template #title="{ error }">
-              <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''" >
+              <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''">
                 {{ $t('label.resolutionOr') }}<br>
                 {{ $t('label.courtOrderDate') }}
               </p>
