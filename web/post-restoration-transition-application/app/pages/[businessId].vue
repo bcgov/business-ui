@@ -35,6 +35,7 @@ const businessId = route.params.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
+  articles,
   certifiedByLegalName,
   compPartyEmail,
   courtOrderNumber,
@@ -142,6 +143,18 @@ const directorsColumns = ref([
 const displayLegalName = computed(() => {
   return legalName.value || t('text.legalNameCertifyPlaceHolder')
 })
+
+const showDateInputBox = ref(false)
+const showPreviousResolutions = ref(false)
+const showPreviousResolutionsDateLabel = computed(() => {
+  return showPreviousResolutions.value
+    ? t('text.previousResolutionsHide')
+    : t('text.previousResolutionsShow')
+})
+
+const removeDateHandler = () => {
+  articles.value.currentDate = undefined
+}
 </script>
 
 <template>
@@ -212,6 +225,80 @@ const displayLegalName = computed(() => {
             class="pl-6 pr-6 text-[14px]"
             title-class="text-[14px]"
           />
+        </FormSubSection>
+
+        <FormSubSection
+          icon="i-mdi-handshake"
+          :title="$t('label.articles')"
+        >
+          <ConnectFormSection
+            :title="$t('label.resolutionOrCourtOrderDate')"
+            class="m-6 text-base"
+          >
+            <template #title="{ error }">
+              <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''" >
+                {{ $t('label.resolutionOr') }}<br>
+                {{ $t('label.courtOrderDate') }}
+              </p>
+            </template>
+            <template #default>
+              <div class="flex flex-col space-y-4">
+                <p>{{ $t('text.articlesDescription') }}</p>
+                <div>
+                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6">
+                    <p>{{ fromIsoToUsDateFormat(articles?.currentDate) }}</p>
+                    <UButton
+                      icon="i-mdi-delete"
+                      :label="$t('label.remove')"
+                      :padded="false"
+                      variant="ghost"
+                      class="rounded text-base p-0 gap-1"
+                      @click="removeDateHandler"
+                    />
+                  </div>
+                  <div v-else-if="showDateInputBox">
+                    <FormDateInputWithButtons
+                      id="articlesCurrentDate"
+                      v-model="articles.currentDate"
+                      name="articles-current-date"
+                      :label="$t('text.articlesDate')"
+                      @save="showDateInputBox=false"
+                      @cancel="showDateInputBox=false"
+                    />
+                  </div>
+                  <div v-else>
+                    <UButton
+                      icon="i-mdi-add"
+                      :label="$t('label.addADate')"
+                      :padded="false"
+                      variant="outline"
+                      class="rounded text-base pt-[11px] pb-[11px]"
+                      @click="showDateInputBox=true"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <!-- todo: when validations come in, add error info box here -->
+                </div>
+                <div v-if="articles?.resolutionDates?.length">
+                  <UButton
+                    :label="showPreviousResolutionsDateLabel"
+                    variant="link"
+                    class="pr-0 pl-0 text-base"
+                    @click="showPreviousResolutions=!showPreviousResolutions"
+                  />
+                  <div v-if="showPreviousResolutions">
+                    <p
+                      v-for="(resolutionDate, i) in articles?.resolutionDates"
+                      :key="i"
+                    >
+                      {{ resolutionDate }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </ConnectFormSection>
         </FormSubSection>
       </div>
     </FormSection>
@@ -329,7 +416,7 @@ const displayLegalName = computed(() => {
           <ConnectFormInput
             v-model="legalName"
             :name="'documentDelivery.completingPartyEmail'"
-            :label="$t('label.legalName')"
+            :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
           />
         </ConnectFormSection>
