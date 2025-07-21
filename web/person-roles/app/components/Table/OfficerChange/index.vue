@@ -171,15 +171,33 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
+      const roleOrder = [
+        'CEO',
+        'CFO',
+        'PRESIDENT',
+        'VICE_PRESIDENT',
+        'VP',
+        'CHAIR',
+        'TREASURER',
+        'SECRETARY',
+        'ASSISTANT_SECRETARY',
+        'OTHER'
+      ]
+      const roleOrderMap = new Map(roleOrder.map((role, index) => [role, index]))
       const isRemoved = row.original.state.actions.includes('removed')
       const allRoles = row.original.state.officer.roles
       const activeRoles = allRoles.filter(r => r.cessationDate === null)
       const displayedRoles = isRemoved ? allRoles : activeRoles
+      const sortedRoles = [...displayedRoles].sort((a, b) => {
+        const indexA = roleOrderMap.get(a.roleType) ?? Infinity
+        const indexB = roleOrderMap.get(b.roleType) ?? Infinity
+        return indexA - indexB
+      })
       const containerClass = getCellContainerClass(row, 'px-2 py-4 flex flex-col')
 
-      return displayedRoles.length
+      return sortedRoles.length
         ? h('ul', { class: containerClass },
-            displayedRoles.map(role =>
+            sortedRoles.map(role =>
               h('li', {}, t(`enum.officerRole.${role.roleType}`))
             )
         )
