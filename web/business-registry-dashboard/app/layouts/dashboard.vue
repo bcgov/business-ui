@@ -13,6 +13,11 @@ const showStaffText = computed(() => {
          (!route.params.orgId || route.params.orgId === accountStore.currentAccount.id.toString())
 })
 
+// Show staff breadcrumbs if user is authorized
+const showStaffBreadcrumb = computed(() => {
+  return IsAuthorized(AuthorizedActions.STAFF_BREADCRUMBS)
+})
+
 useHead({
   title: showStaffText.value ? t('page.home.titleStaff') : t('page.home.title')
 })
@@ -21,10 +26,10 @@ useHead({
 watchEffect(() => {
   setBreadcrumbs([
     {
-      to: showStaffText.value
+      to: showStaffBreadcrumb.value
         ? `${config.authWebUrl}/staff/dashboard/active`
         : `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
-      label: showStaffText.value ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
+      label: showStaffBreadcrumb.value ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
     },
     { label: showStaffText.value ? t('page.home.h1Staff') : t('page.home.h1') }
   ])
