@@ -191,7 +191,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
             :show-fee-value="isPlaceholderActive"
           />
         </div>
-        <div class="flex flex-row items-end justify-between border-y border-gray-300 p-3">
+        <div class="flex flex-row items-end justify-between border-t border-gray-300 p-3">
           <p class="mb-1 font-bold">
             {{ $t("ConnectFeeWidget.feeSummary.total") }}
           </p>
