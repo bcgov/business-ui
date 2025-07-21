@@ -23,9 +23,6 @@ importers:
       nuxt:
         specifier: 3.16.1
         version: 3.16.1(@parcel/watcher@2.5.1)(@types/node@22.15.32)(db0@0.3.2)(eslint@9.29.0(jiti@2.4.2))(ioredis@5.6.1)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.43.0)(sass-embedded@1.89.2)(terser@5.43.0)(typescript@5.8.3)(vite@6.3.5(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(sass-embedded@1.89.2)(terser@5.43.0)(yaml@2.8.0))(yaml@2.8.0)
-      pinia-plugin-persistedstate:
-        specifier: 4.2.0
-        version: 4.2.0(@pinia/nuxt@0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))))(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3)))
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.1
@@ -4394,11 +4391,11 @@ packages:
     resolution: {integrity: sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==}
     engines: {node: '>=12'}
 
-  pinia-plugin-persistedstate@4.2.0:
-    resolution: {integrity: sha512-3buhA7ac+ssbOIx3VRCC8oHkoFwhDM9oHRCjo7nj+O8WUqnW+jRqh7eYT5eS/DNa3H28zp3dYf/nd/Vc8zj8eQ==}
+  pinia-plugin-persistedstate@4.3.0:
+    resolution: {integrity: sha512-x9wxpHj6iFDj5ITQJ3rj6+KesEqyRk/vqcE3WE+VGfetleV9Zufqwa9qJ6AkA5wmRSQEp7BTA1us/MDVTRHFFw==}
     peerDependencies:
-      '@pinia/nuxt': '>=0.9.0'
-      pinia: '>=2.3.0'
+      '@pinia/nuxt': '>=0.10.0'
+      pinia: '>=3.0.0'
     peerDependenciesMeta:
       '@pinia/nuxt':
         optional: true
@@ -7665,7 +7662,7 @@ snapshots:
       launchdarkly-vue-client-sdk: 2.4.1(vue@3.5.17(typescript@5.8.3))
       maska: 3.1.1
       pinia: 2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))
-      pinia-plugin-persistedstate: 4.2.0(@pinia/nuxt@0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))))(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3)))
+      pinia-plugin-persistedstate: 4.3.0(@pinia/nuxt@0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))))(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3)))
       zod: 3.25.67
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -11066,7 +11063,7 @@ snapshots:
 
   picomatch@4.0.2: {}
 
-  pinia-plugin-persistedstate@4.2.0(@pinia/nuxt@0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))))(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))):
+  pinia-plugin-persistedstate@4.3.0(@pinia/nuxt@0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))))(magicast@0.3.5)(pinia@2.3.1(typescript@5.8.3)(vue@3.5.17(typescript@5.8.3))):
     dependencies:
       '@nuxt/kit': 3.17.5(magicast@0.3.5)
       deep-pick-omit: 1.2.1
