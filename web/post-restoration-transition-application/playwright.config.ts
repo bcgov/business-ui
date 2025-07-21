@@ -20,8 +20,9 @@ const devicesToTest = [
 ] satisfies Array<string | typeof devices[string]>
 
 export default defineConfig<ConfigOptions>({
-  globalSetup: './tests/e2e/setup', // setup when booting test runner
-  testDir: './tests/e2e',
+  // globalSetup: './tests/e2e/setup', // setup when booting test runner
+  testDir: './tests/e2e/specs',
+  testMatch: ['**/specs/**/*.spec.ts'],
   testIgnore: ['./tests/e2e/test-utils/**'],
   reporter: 'line',
   // Fail the build on CI if you accidentally left test.only in the source code.
