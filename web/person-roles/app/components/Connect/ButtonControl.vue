@@ -10,7 +10,7 @@ const rightAlertText = computed(() => buttonControl.value?.rightAlertText || und
 
 <template>
   <div
-    class="bg-white py-10"
+    class="bg-white py-8"
     data-testid="button-control"
   >
     <div class="app-inner-container">
