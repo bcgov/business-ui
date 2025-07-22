@@ -202,7 +202,7 @@ const addedShare = () => {
       :ui="{
         label: 'align-top'
       }"
-      aria-label="add share"
+      :aria-label="$t('label.addShare')"
       @click="addShare()"
     />
     <SharesAddEdit
@@ -249,7 +249,7 @@ const addedShare = () => {
           color="primary"
           class="inline-block mr-0 px-3"
           variant="ghost"
-          aria-label="change"
+          :aria-label="$t('label.change')"
           :ui="{
             label: 'align-top'
           }"
@@ -262,7 +262,7 @@ const addedShare = () => {
           color="primary"
           class="inline-block mr-0 px-3"
           variant="ghost"
-          aria-label="undo"
+          :aria-label="$t('label.undo')"
           @click="toggleShareExpanded(row)"
         />
         <USeparator orientation="vertical" class="h-6 inline-block" />
@@ -272,7 +272,7 @@ const addedShare = () => {
             color="primary"
             variant="ghost"
             class="inline-block"
-            aria-label="actions"
+            :aria-label="$t('label.actions')"
           />
         </UDropdownMenu>
       </template>

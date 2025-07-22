@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import currencySymbolMap from 'currency-symbol-map/map'
-import type * as z from 'zod'
+import type { ZodError } from 'zod'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -68,7 +68,7 @@ const hasMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : 'fals
 const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? 'false' : t('label.noMax'))
 const hasParValue = ref<string>(shareValues.value.hasParValue ? '' : 'false')
 const hasNoParValue = ref<string>(shareValues.value.hasParValue ? 'false' : t('label.noPar'))
-const errors = ref<z.ZodError[]>([])
+const errors = ref<ZodError[]>([])
 
 const shareName = ref<string>(
   shareValues?.value?.name.substring(0,
@@ -76,25 +76,25 @@ const shareName = ref<string>(
   || ''
 )
 
-const clickMaxShares = () => {
+const maxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = true
   hasMaxShares.value = ''
   hasNoMaxShares.value = 'false'
 }
 
-const clickNoMaxShares = () => {
+const noMaxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = false
   hasMaxShares.value = 'false'
   hasNoMaxShares.value = t('label.noMax')
 }
 
-const clickParValue = () => {
+const parValueChangeHandler = () => {
   shareValues.value.hasParValue = true
   hasParValue.value = ''
   hasNoParValue.value = 'false'
 }
 
-const clickNoParValue = () => {
+const noParValueChangeHandler = () => {
   shareValues.value.hasParValue = false
   hasParValue.value = 'false'
   hasNoParValue.value = t('label.noPar')
@@ -156,20 +156,10 @@ const cleanData = () => {
   if (shareValues.value.hasParValue === false) {
     shareValues.value.currency = null
     shareValues.value.parValue = null
-  } else {
-    const val: number = parseInt(shareValues.value.parValue) || 0
-    if (val == shareValues.value.parValue) {
-      shareValues.value.parValue = val
-    }
   }
 
   if (shareValues.value.hasMaximumShares === false) {
     shareValues.value.maxNumberOfShares = null
-  } else {
-    const val: number = parseInt(shareValues.value.maxNumberOfShares) || 0
-    if (val == shareValues.value.maxNumberOfShares) {
-      shareValues.value.maxNumberOfShares = val
-    }
   }
 }
 </script>
@@ -210,7 +200,7 @@ const cleanData = () => {
             :ui="{
               container: 'text-base h-[56px]'
             }"
-            @change="clickMaxShares()"
+            @change="maxSharesChangeHandler()"
           />
           <UFormField :error="errors.maxNumberOfShares">
             <UInput
@@ -225,7 +215,7 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoMaxShares"
             :items="[$t('label.noMax')]"
-            @change="clickNoMaxShares()"
+            @change="noMaxSharesChangeHandler()"
           />
         </div>
 
@@ -239,7 +229,7 @@ const cleanData = () => {
             :ui="{
               container: 'text-base h-[56px]'
             }"
-            @change="clickParValue()"
+            @change="parValueChangeHandler()"
           />
           <div class="flex flex-auto">
             <UFormField :error="errors?.parValue" class="mr-2 w-[50%]">
@@ -270,7 +260,7 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoParValue"
             :items="[$t('label.noPar')]"
-            @change="clickNoParValue()"
+            @change="noParValueChangeHandler()"
           />
         </div>
 
