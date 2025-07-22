@@ -6,7 +6,6 @@ export const usePostRestorationTransitionApplicationStore
   const t = useNuxtApp().$i18n.t
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
-  const connectApi = useConnectApi()
   const feeStore = useConnectFeeStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
@@ -22,6 +21,7 @@ export const usePostRestorationTransitionApplicationStore
   const directors = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
   const shareClasses = ref<Share[]>([])
+  const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
 
   const businessName = computed(() => {
@@ -62,7 +62,7 @@ export const usePostRestorationTransitionApplicationStore
   async function init(businessId: string) {
     const [/*authInfo, */shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
       //authApi.getAuthInfo(businessId),
-      connectApi.getShareClasses(businessId),
+      legalApi.getShareClasses(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
@@ -124,10 +124,6 @@ export const usePostRestorationTransitionApplicationStore
     await _updateBreadcrumbs(businessId)
   }
 
-  const setShareClasses = (newValue: Share[]) => {
-    shareClasses.value = newValue
-  }
-
   return {
     activeBusiness,
     articles,
@@ -143,6 +139,6 @@ export const usePostRestorationTransitionApplicationStore
     planOfArrangement,
     regOfficeEmail,
     init,
-    setShareClasses
+    editingShareIndex
   }
 })

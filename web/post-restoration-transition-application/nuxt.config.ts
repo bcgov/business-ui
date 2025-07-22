@@ -116,8 +116,6 @@ export default defineNuxtConfig({
       addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY,
       legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
       businessDashboardUrl: process.env.NUXT_BUSINESS_DASHBOARD_URL,
-      connectApiUrl: `${process.env.NUXT_CONNECT_API}${process.env.NUXT_CONNECT_API_VERSION}`,
-      connectApiKey: process.env.NUXT_CONNECT_API_KEY,
       registryHomeUrl: process.env.NUXT_REGISTRY_HOME_URL,
       brdUrl: process.env.NUXT_BUSINESS_REGISTRY_DASHBOARD_URL
     }

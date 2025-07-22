@@ -2,13 +2,17 @@
 import getSymbolFromCurrency from 'currency-symbol-map'
 
 const t = useNuxtApp().$i18n.t
-const title = "Shares"
+const anyExpanded = ref(false)
+const addingShare = ref(false)
 
 const filingStore = usePostRestorationTransitionApplicationStore()
-const setShareClasses = filingStore.setShareClasses
 const {
-  shareClasses
+  shareClasses,
+  editingShareIndex
 } = storeToRefs(filingStore)
+
+const addedIndexes = ref<number[]>([])
+const editedIndexes = ref<number[]>([])
 
 const flattenData = (data: Share[]) => {
     const flatData: Series[] = []
@@ -125,6 +129,26 @@ const getDropdownActions = (row: Row<Share>) => {
     ]
 }
 
+const toggleShareExpanded = (row: Row<Series>) => {
+
+  if (addingShare.value) {
+    return
+  }
+
+  if (anyExpanded.value && editingShareIndex.value !== row.index) {
+    return
+  }
+
+  anyExpanded.value = true
+  if (row.getIsExpanded()) {
+    anyExpanded.value = false
+    editingShareIndex.value = -1
+  }else{
+    editingShareIndex.value = row.index
+  }
+  row.toggleExpanded()
+}
+
 const moveShare = (index: number, moveUp: boolean) => {
   if (moveUp && index === 0) return;
   if (!moveUp && index === shareClasses.value.length - 1) return;
@@ -144,10 +168,45 @@ const deleteShare = (index: number) => {
   shareClasses.value.splice(index, 1)
 }
 
+const addShare = () => {
+  if (addingShare.value === true || anyExpanded.value === true) {
+    return
+  }
+  addingShare.value = true
+}
+
+const updated = (row: Row<Series>) => {
+  editedIndexes.value.push(row.index)
+  toggleShareExpanded(row)
+}
+
+const addedShare = () => {
+  addedIndexes.value.push(shareClasses.value.length - 1)
+  addingShare.value = false
+}
+
+
 </script>
 
 <template>
-    <h1>{{ title }}</h1>
+  <div>
+    <p>{{ $t('text.sharesDescription') }}</p>
+    <UButton
+      icon="i-mdi-plus"
+      :label="$t('label.addShare')"
+      color="primary"
+      class="inline-block my-4 px-5 py-3"
+      variant="outline"
+      :ui="{
+        label: 'align-top'
+      }"
+      aria-label="add share"
+      @click="addShare()"
+    />
+    <SharesAddEdit
+      @cancel="addingShare = false"
+      @done="addedShare"
+      v-show="addingShare" />
     <UTable
       :data="flattenData(shareClasses)"
       :columns="columns"
@@ -158,17 +217,38 @@ const deleteShare = (index: number) => {
       }"
       class="flex-1"
     >
-    <template #name-cell="{ row }">
+      <template #name-cell="{ row }">
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
+        <div>
+          <UBadge color="primary" class="rounded-sm" v-if="addedIndexes.includes(row.index)">{{ t('label.added') }}</UBadge>
+        </div>
+        <div>
+          <UBadge color="primary" class="rounded-sm" v-if="editedIndexes.includes(row.index)">{{ t('label.edited') }}</UBadge>
+        </div>
       </template>
       <template #actions-cell="{ row }">
         <UButton
           icon="i-mdi-pencil"
           :label="$t('label.change')"
           color="primary"
+          v-if="true"
           class="inline-block mr-0 px-3"
           variant="ghost"
           aria-label="change"
+          :ui="{
+            label: 'align-top'
+          }"
+          @click="toggleShareExpanded(row)"
+        />
+        <UButton
+          icon="i-mdi-undo"
+          :label="$t('label.undo')"
+          color="primary"
+          v-else
+          class="inline-block mr-0 px-3"
+          variant="ghost"
+          aria-label="undo"
+          @click="toggleShareExpanded(row)"
         />
         <USeparator orientation="vertical" class="h-6 inline-block" />
         <UDropdownMenu :items="getDropdownActions(row)">
@@ -179,7 +259,14 @@ const deleteShare = (index: number) => {
             class="inline-block"
             aria-label="actions"
           />
-      </UDropdownMenu>
+        </UDropdownMenu>
+      </template>
+      <template #expanded="{ row }">
+        <SharesAddEdit
+          @cancel="toggleShareExpanded(row)"
+          @done="updated(row)"
+        />
       </template>
     </UTable>
+  </div>
 </template>

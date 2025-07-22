@@ -11,7 +11,8 @@ export default {
       courtOrder: '3. Court Order and Plan of Arrangement',
       folio: '4. Folio or Reference Number',
       companyProvisions: '5. Pre-existing Company Provisions',
-      certify: '6. Certify'
+      certify: '6. Certify',
+      shares: '7. Share Structure'
     }
   },
   label: {
@@ -57,7 +58,23 @@ export default {
     addSeries: 'Add Series',
     moveUp: 'Move Up',
     moveDown: 'Move Down',
-    delete: 'Delete'
+    delete: 'Delete',
+    add: 'Add',
+    edit: 'Edit',
+    addShare: 'Add Share Class',
+    shareClass: 'Share Class',
+    shareClassName: 'Class Name [Shares]',
+    shares: 'Shares',
+    maximumNumberOfShares: 'Maximum Number of Shares',
+    noMax: 'No Maximum',
+    noPar: "No Par Value",
+    parValue: 'Par Value',
+    currency: 'Currency',
+    hasRightsOrRestrictions: 'This share class has special rights or restrictions',
+    done: "Done",
+    cancel: "Cancel",
+    added: "Added",
+    edited: "Edited"
   },
   text: {
     articlesDescription: 'The date of a resolution or court order to alter the company’s share structure. This includes changes to the special rights or restrictions on a class or series of shares.',
@@ -83,7 +100,12 @@ export default {
     previousResolutionsHide: 'Hide previous resolutions or court Order dates',
     previousResolutionsShow: 'Show previous resolutions or court Order dates',
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
-    transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
+    transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.',
+    sharesTitle: 'Share Structure',
+    sharesDescription: 'To make changes to a class or series of shares with special rights or restrictions, you must have passed a resolution or have a court order. Only enter changes related to a single resolution or court order date. ',
+    helperText:{
+      shareClassName: 'Only enter the class name. The word “shares” will be added automatically.'
+    }
   },
   ConnectFeeWidget: {
     feeSummary: {

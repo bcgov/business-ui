@@ -445,7 +445,8 @@ const removeDateHandler = () => {
       :has-errors="sectionErrors.reviewAndConfirm"
     >
       <FormSubSection
-        title=""
+        :title="$t('text.sharesTitle')"
+        icon="i-mdi-sitemap"
         class="space-y-6 p-6"
       >
         <Shares />
