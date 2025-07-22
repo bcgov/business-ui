@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import currencySymbolMap from 'currency-symbol-map/map'
-import { isElementAccessExpression } from 'typescript'
-import * as z from 'zod'
+import type * as z from 'zod'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -11,15 +10,15 @@ const {
 } = storeToRefs(filingStore)
 
 const emit = defineEmits(['cancel', 'done'])
-const SHARES_TEXT = " Shares"
+const SHARES_TEXT = ' Shares'
 
 const resetData = () => {
   if (editingShareIndex.value !== -1) {
-    shareValues.value =
-    JSON.parse(
-      JSON.stringify(
-        shareClasses?.value?.[editingShareIndex.value]
-    ))
+    shareValues.value
+      = JSON.parse(
+        JSON.stringify(
+          shareClasses?.value?.[editingShareIndex.value]
+        ))
     shareName.value = shareValues?.value?.name.substring(0, shareValues?.value?.name?.length - SHARES_TEXT.length)
   } else {
     shareValues.value = {
@@ -31,7 +30,7 @@ const resetData = () => {
       hasRightsOrRestrictions: false,
       maxNumberOfShares: null,
       parValue: null,
-      priority: shareClasses.value.length+1,
+      priority: shareClasses.value.length + 1,
       series: []
     }
     shareName.value = ''
@@ -48,19 +47,19 @@ watch(shareClasses, resetData, { deep: true })
 const shareValues = ref<Share>(
   JSON.parse(
     JSON.stringify(
-      shareClasses?.value?.[editingShareIndex.value] ||
-      {
-        id: null,
-        name: '',
-        currency: '',
-        hasMaximumShares: false,
-        hasParValue: false,
-        hasRightsOrRestrictions: false,
-        maxNumberOfShares: null,
-        parValue: null,
-        priority: shareClasses.value.length+1,
-        series: []
-      }
+      shareClasses?.value?.[editingShareIndex.value]
+      || {
+          id: null,
+          name: '',
+          currency: '',
+          hasMaximumShares: false,
+          hasParValue: false,
+          hasRightsOrRestrictions: false,
+          maxNumberOfShares: null,
+          parValue: null,
+          priority: shareClasses.value.length + 1,
+          series: []
+        }
     )
   )
 )
@@ -71,8 +70,11 @@ const hasParValue = ref<string>(shareValues.value.hasParValue ? '' : 'false')
 const hasNoParValue = ref<string>(shareValues.value.hasParValue ? 'false' : t('label.noPar'))
 const errors = ref<z.ZodError[]>([])
 
-const shareName = ref<string>(shareValues?.value?.name.substring(0,
-  shareValues?.value?.name?.length - SHARES_TEXT.length) || '')
+const shareName = ref<string>(
+  shareValues?.value?.name.substring(0,
+                                     shareValues?.value?.name?.length - SHARES_TEXT.length)
+                                   || ''
+)
 
 const clickMaxShares = () => {
   shareValues.value.hasMaximumShares = true
@@ -108,85 +110,83 @@ const hasChanges = () => {
 
 const cancel = () => {
   // TODO: stop cancel when saving
-  if (hasChanges()){
+  if (hasChanges()) {
     emit('cancel')
-  }else{
+  } else {
     resetData()
     emit('cancel')
-  }    
+  }
 }
 
 const done = () => {
-  if (hasChanges()){
+  if (hasChanges()) {
     shareValues.value.name = shareName.value
     cleanData()
     const validationResults = seriesSchema.safeParse(shareValues.value)
-    const names = shareClasses.value.map((share) => share.name.toLowerCase())
-    if (names.includes((shareName.value + SHARES_TEXT).toLowerCase())){
+    const names = shareClasses.value.map(share => share.name.toLowerCase())
+    if (names.includes((shareName.value + SHARES_TEXT).toLowerCase())) {
       errors.value = []
       errors.value['name'] = 'Share name already exists'
       return
     }
-    if (!validationResults.success){
+    if (!validationResults.success) {
       errors.value = []
-      for (const error of validationResults.error.errors){
-        if (error.path?.length > 0){
+      for (const error of validationResults.error.errors) {
+        if (error.path?.length > 0) {
           errors.value[error.path[0]] = error.message
         }
       }
       return
     }
     shareValues.value.name = shareName.value + SHARES_TEXT
-    if (editingShareIndex.value !== -1){
+    if (editingShareIndex.value !== -1) {
       shareClasses.value[editingShareIndex.value] = shareValues.value
-    }else{
+    } else {
       shareClasses.value.push(shareValues.value)
     }
     resetData()
     emit('done')
-  }else{
-    //no changes to save
+  } else {
+    // no changes to save
     emit('cancel')
-  }   
+  }
 }
 
 const cleanData = () => {
-  if (shareValues.value.hasParValue === false){
+  if (shareValues.value.hasParValue === false) {
     shareValues.value.currency = null
     shareValues.value.parValue = null
-  }else{
-    let val: number = parseInt(shareValues.value.parValue) || 0
-    if (val == shareValues.value.parValue){
+  } else {
+    const val: number = parseInt(shareValues.value.parValue) || 0
+    if (val == shareValues.value.parValue) {
       shareValues.value.parValue = val
     }
   }
 
-  if (shareValues.value.hasMaximumShares === false){
+  if (shareValues.value.hasMaximumShares === false) {
     shareValues.value.maxNumberOfShares = null
-  }else{
-    let val: number = parseInt(shareValues.value.maxNumberOfShares) || 0
-    if (val == shareValues.value.maxNumberOfShares){
+  } else {
+    const val: number = parseInt(shareValues.value.maxNumberOfShares) || 0
+    if (val == shareValues.value.maxNumberOfShares) {
       shareValues.value.maxNumberOfShares = val
     }
   }
 }
-
 </script>
 
 <template>
   <div>
     <div class="flex">
       <div class="font-bold inline-flex text-sm flex-1">
-        {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }} 
+        {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
         {{ $t('label.shareClass') }}
       </div>
 
       <div class="inline-block ml-6 flex-auto space-y-6">
-
         <UFormField :error="errors?.name">
           <UInput
-            :placeholder="$t('label.shareClassName')"
             v-model="shareName"
+            :placeholder="$t('label.shareClassName')"
             class="w-full"
           >
             <template #trailing>
@@ -196,64 +196,70 @@ const cleanData = () => {
             </template>
           </UInput>
         </UFormField>
-        <div class="text-sm text-gray-500 -mt-6 ml-4">{{ $t('text.helperText.shareClassName') }}</div>
+        <div class="text-sm text-gray-500 -mt-6 ml-4">
+          {{ $t('text.helperText.shareClassName') }}
+        </div>
 
-        <hr class="border-bcGovGray-300" />
+        <hr class="border-bcGovGray-300">
 
         <div class="flex">
-          <URadioGroup 
+          <URadioGroup
+            v-model="hasMaxShares"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
               container: 'text-base h-[56px]'
             }"
             @change="clickMaxShares()"
-            v-model="hasMaxShares"
           />
           <UFormField :error="errors.maxNumberOfShares">
             <UInput
+              v-model="shareValues.maxNumberOfShares"
               :placeholder="$t('label.maximumNumberOfShares')"
               type="number"
-              v-model="shareValues.maxNumberOfShares"
               class="flex-auto"
             />
           </UFormField>
         </div>
         <div>
-          <URadioGroup 
+          <URadioGroup
+            v-model="hasNoMaxShares"
             :items="[$t('label.noMax')]"
             @change="clickNoMaxShares()"
-            v-model="hasNoMaxShares"
           />
         </div>
 
-        <hr class="border-bcGovGray-300" />
+        <hr class="border-bcGovGray-300">
 
         <div class="flex">
-          <URadioGroup 
+          <URadioGroup
+            v-model="hasParValue"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
               container: 'text-base h-[56px]'
             }"
             @change="clickParValue()"
-            v-model="hasParValue"
           />
           <div class="flex flex-auto">
             <UFormField :error="errors?.parValue" class="mr-2 w-[50%]">
               <UInput
+                v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
                 type="number"
-                v-model="shareValues.parValue"
               />
             </UFormField>
-            <UFormField :error="errors?.currency" class="h-full w-[50%]" :ui="{
-              root: 'h-11 max-h-11',
-              content: 'h-12 max-h-12'
-            }">
+            <UFormField
+              :error="errors?.currency"
+              class="h-full w-[50%]"
+              :ui="{
+                root: 'h-11 max-h-11',
+                content: 'h-12 max-h-12'
+              }"
+            >
               <USelect
-                :placeholder="$t('label.currency')"
                 v-model="shareValues.currency"
+                :placeholder="$t('label.currency')"
                 :items="currencies"
                 class="h-[56px] w-full"
               />
@@ -261,20 +267,19 @@ const cleanData = () => {
           </div>
         </div>
         <div>
-          <URadioGroup 
+          <URadioGroup
+            v-model="hasNoParValue"
             :items="[$t('label.noPar')]"
             @change="clickNoParValue()"
-            v-model="hasNoParValue"
           />
         </div>
 
-        <hr class="border-bcGovGray-300" />
+        <hr class="border-bcGovGray-300">
 
         <UCheckbox
-          :label="$t('label.hasRightsOrRestrictions')"
           v-model="shareValues.hasRightsOrRestrictions"
+          :label="$t('label.hasRightsOrRestrictions')"
         />
-
       </div>
     </div>
     <div class="flex justify-end space-x-2">

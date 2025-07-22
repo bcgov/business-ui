@@ -1,4 +1,4 @@
-import * as z from "zod"; 
+import * as z from 'zod'
 
 export interface Series {
     id: number | null // can be null when adding
@@ -9,7 +9,7 @@ export interface Series {
     hasRightsOrRestrictions: boolean
     maxNumberOfShares: number | null
     parValue: number | null
-    priority: number,
+    priority: number
 }
 
 export interface Share extends Series {
@@ -24,8 +24,8 @@ export const seriesSchema = z.object({
     hasRightsOrRestrictions: z.boolean(),
     maxNumberOfShares: z.number().nullable(),
     parValue: z.number().nullable(),
-    priority: z.number(),
-}).superRefine( (input, ctx) => {
+    priority: z.number()
+}).superRefine((input, ctx) => {
   let goodStanding = true
     if (input.hasMaximumShares) {
         goodStanding = goodStanding && input.maxNumberOfShares !== null
@@ -61,5 +61,5 @@ export const seriesSchema = z.object({
 })
 
 export const shareSchema = z.object({
-    series: z.array(seriesSchema).optional(),
+    series: z.array(seriesSchema).optional()
 })

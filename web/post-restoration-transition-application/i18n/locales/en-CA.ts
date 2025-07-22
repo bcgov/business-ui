@@ -67,14 +67,14 @@ export default {
     shares: 'Shares',
     maximumNumberOfShares: 'Maximum Number of Shares',
     noMax: 'No Maximum',
-    noPar: "No Par Value",
+    noPar: 'No Par Value',
     parValue: 'Par Value',
     currency: 'Currency',
     hasRightsOrRestrictions: 'This share class has special rights or restrictions',
-    done: "Done",
-    cancel: "Cancel",
-    added: "Added",
-    edited: "Edited"
+    done: 'Done',
+    cancel: 'Cancel',
+    added: 'Added',
+    edited: 'Edited'
   },
   text: {
     articlesDescription: 'The date of a resolution or court order to alter the company’s share structure. This includes changes to the special rights or restrictions on a class or series of shares.',
@@ -103,7 +103,7 @@ export default {
     transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.',
     sharesTitle: 'Share Structure',
     sharesDescription: 'To make changes to a class or series of shares with special rights or restrictions, you must have passed a resolution or have a court order. Only enter changes related to a single resolution or court order date. ',
-    helperText:{
+    helperText: {
       shareClassName: 'Only enter the class name. The word “shares” will be added automatically.'
     }
   },

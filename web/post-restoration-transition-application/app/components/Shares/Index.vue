@@ -15,122 +15,122 @@ const addedIndexes = ref<number[]>([])
 const editedIndexes = ref<number[]>([])
 
 const flattenData = (data: Share[]) => {
-    const flatData: Series[] = []
-    data.sort((a, b) => a.priority - b.priority)
-    data.forEach((share) => {
-        flatData.push(share)
-        if (share.series && share.series.length > 0) {
-          share.series.sort((a, b) => a.priority - b.priority)
-          flatData.push(...flattenData(share.series))
-        }
-    })
-    return flatData
+  const flatData: Series[] = []
+  data.sort((a, b) => a.priority - b.priority)
+  data.forEach((share) => {
+    flatData.push(share)
+    if (share.series && share.series.length > 0) {
+      share.series.sort((a, b) => a.priority - b.priority)
+      flatData.push(...flattenData(share.series))
+    }
+  })
+  return flatData
 }
 
 const columns = [
-    {
-        accessorKey: 'name',
-        header: t('label.shareColumnName'),
-        meta:{
-          class: {
-            td: 'font-bold'
-          }
-        }
-    },
-    {
-        accessorKey: 'maxNumberOfShares',
-        header: t('label.shareColumnMaxNum'),
-        meta:{
-          class: {
-            th: 'w-[140px] text-right',
-            td: 'w-[140px] text-right'
-          }
-        }
-    },
-    {
-        accessorKey: 'parValue',
-        header: t('label.shareColumnParValue'),
-        meta:{
-          class: {
-            th: 'mr-8 w-[100px] text-right',
-            td: 'w-[100px] text-right'
-          }
-        },
-        cell: ({ row }) => {
-            const symbol = getSymbolFromCurrency(row.original.currency) || ""
-            const parValue = row.original.parValue || ""
-            
-            return `${symbol}${parValue}`
-        }
-    },
-    {
-        accessorKey: 'currency',
-        header: t('label.shareColumnParValueCurrency'),
-        meta:{
-          class: {
-            th: 'w-[100px]',
-            td: 'w-[100px]'
-          }
-        }
-    },
-    {
-        accessorKey: 'hasRightsOrRestrictions',
-        header: t('label.shareColumnRightsRestrictions'),
-        cell: ({ row }) => {
-            return row.original.hasRightsOrRestrictions ? t('label.yes') : t('label.no')
-        },
-        meta:{
-          class: {
-            th: 'w-[115px]',
-            td: 'w-[115px]'
-          }
-        }
-    },
-    {
-        id: 'actions',
-        meta:{
-          class: {
-            th: 'w-[160px] text-right',
-            td: 'w-[160px] text-right'
-          }
-        }
+  {
+    accessorKey: 'name',
+    header: t('label.shareColumnName'),
+    meta: {
+      class: {
+        td: 'font-bold'
+      }
     }
+  },
+  {
+    accessorKey: 'maxNumberOfShares',
+    header: t('label.shareColumnMaxNum'),
+    meta: {
+      class: {
+        th: 'w-[140px] text-right',
+        td: 'w-[140px] text-right'
+      }
+    }
+  },
+  {
+    accessorKey: 'parValue',
+    header: t('label.shareColumnParValue'),
+    meta: {
+      class: {
+        th: 'mr-8 w-[100px] text-right',
+        td: 'w-[100px] text-right'
+      }
+    },
+    cell: ({ row }) => {
+      const symbol = getSymbolFromCurrency(row.original.currency) || ''
+      const parValue = row.original.parValue || ''
+
+      return `${symbol}${parValue}`
+    }
+  },
+  {
+    accessorKey: 'currency',
+    header: t('label.shareColumnParValueCurrency'),
+    meta: {
+      class: {
+        th: 'w-[100px]',
+        td: 'w-[100px]'
+      }
+    }
+  },
+  {
+    accessorKey: 'hasRightsOrRestrictions',
+    header: t('label.shareColumnRightsRestrictions'),
+    cell: ({ row }) => {
+      return row.original.hasRightsOrRestrictions ? t('label.yes') : t('label.no')
+    },
+    meta: {
+      class: {
+        th: 'w-[115px]',
+        td: 'w-[115px]'
+      }
+    }
+  },
+  {
+    id: 'actions',
+    meta: {
+      class: {
+        th: 'w-[160px] text-right',
+        td: 'w-[160px] text-right'
+      }
+    }
+  }
 ]
 
 const getDropdownActions = (row: Row<Share>) => {
-    return [
-        {
-            label: t('label.addSeries'),
-            onClick: () => {
-                console.log('Add Series', row)
-            },
-            disabled: !row.original.hasRightsOrRestrictions
-        },
-        {
-            label: t('label.moveUp'),
-            onClick: () => {
-              moveShare(row.index, true)
-            },
-            disabled: row.index === 0
-        },
-        {
-            label: t('label.moveDown'),
-            onClick: () => {
-              moveShare(row.index, false)
-            },
-            disabled: row.index === shareClasses.value.length - 1
-        },
-        {
-            label: t('label.delete'),
-            onClick: () => {
-                deleteShare(row.index)
-            }
-        }
-    ]
+  return [
+    {
+      label: t('label.addSeries'),
+      onClick: () => {
+        // eslint-disable-next-line no-console
+        console.log('Add Series', row)
+      },
+      disabled: !row.original.hasRightsOrRestrictions
+    },
+    {
+      label: t('label.moveUp'),
+      onClick: () => {
+        moveShare(row.index, true)
+      },
+      disabled: row.index === 0
+    },
+    {
+      label: t('label.moveDown'),
+      onClick: () => {
+        moveShare(row.index, false)
+      },
+      disabled: row.index === shareClasses.value.length - 1
+    },
+    {
+      label: t('label.delete'),
+      onClick: () => {
+        deleteShare(row.index)
+      }
+    }
+  ]
 }
 
 const toggleShareExpanded = (row: Row<Series>) => {
-
   if (addingShare.value) {
     return
   }
@@ -143,17 +143,21 @@ const toggleShareExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
     editingShareIndex.value = -1
-  }else{
+  } else {
     editingShareIndex.value = row.index
   }
   row.toggleExpanded()
 }
 
 const moveShare = (index: number, moveUp: boolean) => {
-  if (moveUp && index === 0) return;
-  if (!moveUp && index === shareClasses.value.length - 1) return;
+  if (moveUp && index === 0) {
+    return
+  }
+  if (!moveUp && index === shareClasses.value.length - 1) {
+    return
+  }
 
-  const newIndex = moveUp ? index - 1 : index + 1;
+  const newIndex = moveUp ? index - 1 : index + 1
   // Swap elements using splice for reactivity
   const arr = shareClasses.value
   const temp = arr[index]
@@ -184,8 +188,6 @@ const addedShare = () => {
   addedIndexes.value.push(shareClasses.value.length - 1)
   addingShare.value = false
 }
-
-
 </script>
 
 <template>
@@ -204,34 +206,47 @@ const addedShare = () => {
       @click="addShare()"
     />
     <SharesAddEdit
+      v-show="addingShare"
       @cancel="addingShare = false"
       @done="addedShare"
-      v-show="addingShare" />
+    />
     <UTable
       :data="flattenData(shareClasses)"
       :columns="columns"
       :ui="{
         thead: 'rounded-t-md',
         th: 'border-r-1 border-r-white p-4',
-        td: 'p-4 text-sm text-black whitespace-nowrap [&:has([role=checkbox])]:pe-0',
+        td: 'p-4 text-sm text-black whitespace-nowrap [&:has([role=checkbox])]:pe-0'
       }"
       class="flex-1"
     >
       <template #name-cell="{ row }">
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
         <div>
-          <UBadge color="primary" class="rounded-sm" v-if="addedIndexes.includes(row.index)">{{ t('label.added') }}</UBadge>
+          <UBadge
+            v-if="addedIndexes.includes(row.index)"
+            color="primary"
+            class="rounded-sm"
+          >
+            {{ t('label.added') }}
+          </UBadge>
         </div>
         <div>
-          <UBadge color="primary" class="rounded-sm" v-if="editedIndexes.includes(row.index)">{{ t('label.edited') }}</UBadge>
+          <UBadge
+            v-if="editedIndexes.includes(row.index)"
+            color="primary"
+            class="rounded-sm"
+          >
+            {{ t('label.edited') }}
+          </UBadge>
         </div>
       </template>
       <template #actions-cell="{ row }">
         <UButton
+          v-if="true"
           icon="i-mdi-pencil"
           :label="$t('label.change')"
           color="primary"
-          v-if="true"
           class="inline-block mr-0 px-3"
           variant="ghost"
           aria-label="change"
@@ -241,10 +256,10 @@ const addedShare = () => {
           @click="toggleShareExpanded(row)"
         />
         <UButton
+          v-else
           icon="i-mdi-undo"
           :label="$t('label.undo')"
           color="primary"
-          v-else
           class="inline-block mr-0 px-3"
           variant="ghost"
           aria-label="undo"
