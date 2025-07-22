@@ -18,7 +18,7 @@ const {
     :id
     v-model.trim="model"
     :data-testid="id"
-    placeholder=""
+    placeholder="&nbsp;"
     :aria-required="required"
     :disabled
     :maxlength

@@ -234,10 +234,10 @@ body {
 
   /* floating labels */
   .floating-label-input {
-    @apply pointer-events-none absolute left-0 top-3 text-bcGovGray-900 transition-all motion-reduce:transition-none duration-100 text-xs font-medium px-2.5 peer-focus:top-1 peer-focus:text-xs peer-placeholder-shown:text-sm peer-placeholder-shown:top-1/2 -translate-y-1/2 peer-focus:text-blue-500;
+    @apply pointer-events-none absolute left-0 top-3 text-bcGovGray-900 transition-all motion-reduce:transition-none duration-200 text-xs font-medium px-2.5 peer-focus:top-1 peer-focus:text-xs peer-placeholder-shown:text-sm peer-placeholder-shown:top-1/2 -translate-y-1/2 peer-focus:text-blue-500;
   }
   
   .floating-label-textarea {
-    @apply pointer-events-none absolute left-0 top-1 text-bcGovGray-900 text-xs font-medium px-2.5 transition-all peer-focus:top-1 peer-focus:text-xs peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:translate-none peer-focus:text-blue-500;
+    @apply pointer-events-none absolute left-0 top-1 text-bcGovGray-900 text-xs font-medium px-2.5 transition-all duration-200 peer-focus:top-1 peer-focus:text-xs peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:translate-none peer-focus:text-blue-500;
   }
 }

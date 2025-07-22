@@ -62,14 +62,15 @@ const options = [
           <div class="relative px-2.5 pb-2 pt-6 w-full">
             <span
               aria-hidden="true"
-              class="absolute left-0 px-2.5 text-sm transition-all"
               :class="[
                 !modelValue
                   ? 'top-1/2 -translate-y-1/2'
                   : 'top-1 -translate-y-none text-xs',
                 error
                   ? 'text-red-600'
-                  : ''
+                  : '',
+                'absolute left-0 px-2.5 text-sm transition-all',
+                'group-data-[state=open]:text-blue-500 group-focus:text-blue-500'
               ]"
             >
               {{ $t('label.country') }}
