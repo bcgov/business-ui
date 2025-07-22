@@ -48,7 +48,7 @@ const shareValues = ref<Share>(
   JSON.parse(
     JSON.stringify(
       shareClasses?.value?.[editingShareIndex.value]
-      || {
+        || {
           id: null,
           name: '',
           currency: '',
@@ -73,7 +73,7 @@ const errors = ref<z.ZodError[]>([])
 const shareName = ref<string>(
   shareValues?.value?.name.substring(0,
                                      shareValues?.value?.name?.length - SHARES_TEXT.length)
-                                   || ''
+  || ''
 )
 
 const clickMaxShares = () => {
