@@ -13,17 +13,27 @@ const showStaffText = computed(() => {
          (!route.params.orgId || route.params.orgId === accountStore.currentAccount.id.toString())
 })
 
+// Show staff breadcrumbs if user is authorized
+const showStaffBreadcrumb = computed(() => {
+  return IsAuthorized(AuthorizedActions.STAFF_BREADCRUMBS)
+})
+
 useHead({
   title: showStaffText.value ? t('page.home.titleStaff') : t('page.home.title')
 })
 
-setBreadcrumbs([
-  {
-    to: `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
-    label: showStaffText.value ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
-  },
-  { label: showStaffText.value ? t('page.home.h1Staff') : t('page.home.h1') }
-])
+// Make breadcrumbs reactive to showStaffText changes
+watchEffect(() => {
+  setBreadcrumbs([
+    {
+      to: showStaffBreadcrumb.value
+        ? `${config.authWebUrl}/staff/dashboard/active`
+        : `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`,
+      label: showStaffBreadcrumb.value ? t('labels.bcRegStaffDashboard') : t('labels.bcRegDashboard')
+    },
+    { label: showStaffText.value ? t('page.home.h1Staff') : t('page.home.h1') }
+  ])
+})
 
 // Watch for changes to the orgId route parameter
 watch(() => route.params.orgId, (orgId) => {
