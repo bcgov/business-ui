@@ -16,11 +16,13 @@ export const usePostRestorationTransitionApplicationStore
   const courtOrderNumber = ref<string | undefined>(undefined)
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
+  const modifiedShareIndexes = ref<number[]>([])
 
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
   const shareClasses = ref<Share[]>([])
+  const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
   const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
 
@@ -76,7 +78,8 @@ export const usePostRestorationTransitionApplicationStore
 
     activeBusiness.value = business
     directors.value = apiDirectors
-    shareClasses.value = shareClassesResponse.shareClasses
+    shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
+    ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
     const resolutions = await legalApi.getResolutions(businessId)
     if (resolutions.resolutions?.length > 0) {
@@ -124,6 +127,16 @@ export const usePostRestorationTransitionApplicationStore
     await _updateBreadcrumbs(businessId)
   }
 
+  const shareWithSpecialRightsModified = computed(() => {
+    for (const index of modifiedShareIndexes.value) {
+      if (shareClasses.value[index]?.hasRightsOrRestrictions
+          || ORIGINAL_SHARE_CLASSES.value[index]?.hasRightsOrRestrictions) {
+        return true
+      }
+    }
+    return false
+  })
+
   return {
     activeBusiness,
     articles,
@@ -139,6 +152,9 @@ export const usePostRestorationTransitionApplicationStore
     planOfArrangement,
     regOfficeEmail,
     init,
-    editingShareIndex
+    editingShareIndex,
+    modifiedShareIndexes,
+    shareWithSpecialRightsModified,
+    ORIGINAL_SHARE_CLASSES
   }
 })

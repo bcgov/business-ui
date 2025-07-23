@@ -17,6 +17,7 @@ export default {
   },
   label: {
     add: 'Add',
+    addADate: 'Add a Date',
     added: 'Added',
     addSeries: 'Add Series',
     addShare: 'Add Share Class',
@@ -32,6 +33,7 @@ export default {
     currentDirectors: 'Current Directors',
     date: 'Date',
     delete: 'Delete',
+    deleted: 'Deleted',
     deliveryAddress: 'Delivery Address',
     done: 'Done',
     edit: 'Edit',

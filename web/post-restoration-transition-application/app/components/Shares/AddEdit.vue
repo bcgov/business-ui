@@ -13,6 +13,7 @@ const emit = defineEmits(['cancel', 'done'])
 const SHARES_TEXT = ' Shares'
 
 const resetData = () => {
+  errors.value = []
   if (editingShareIndex.value !== -1) {
     shareValues.value
       = JSON.parse(
@@ -22,14 +23,14 @@ const resetData = () => {
     shareName.value = shareValues?.value?.name.substring(0, shareValues?.value?.name?.length - SHARES_TEXT.length)
   } else {
     shareValues.value = {
-      id: null,
+      id: undefined,
       name: '',
       currency: '',
       hasMaximumShares: false,
       hasParValue: false,
       hasRightsOrRestrictions: false,
-      maxNumberOfShares: null,
-      parValue: null,
+      maxNumberOfShares: undefined,
+      parValue: undefined,
       priority: shareClasses.value.length + 1,
       series: []
     }
@@ -49,14 +50,14 @@ const shareValues = ref<Share>(
     JSON.stringify(
       shareClasses?.value?.[editingShareIndex.value]
         || {
-          id: null,
+          id: undefined,
           name: '',
           currency: '',
           hasMaximumShares: false,
           hasParValue: false,
           hasRightsOrRestrictions: false,
-          maxNumberOfShares: null,
-          parValue: null,
+          maxNumberOfShares: undefined,
+          parValue: undefined,
           priority: shareClasses.value.length + 1,
           series: []
         }
@@ -123,7 +124,8 @@ const done = () => {
     shareValues.value.name = shareName.value
     cleanData()
     const validationResults = seriesSchema.safeParse(shareValues.value)
-    const names = shareClasses.value.map(share => share.name.toLowerCase())
+    const otherShareClasses = shareClasses.value.filter((_, index) => index !== editingShareIndex.value)
+    const names = otherShareClasses.map(share => share.name.toLowerCase())
     if (names.includes((shareName.value + SHARES_TEXT).toLowerCase())) {
       errors.value = []
       errors.value['name'] = 'Share name already exists'
@@ -154,12 +156,12 @@ const done = () => {
 
 const cleanData = () => {
   if (shareValues.value.hasParValue === false) {
-    shareValues.value.currency = null
-    shareValues.value.parValue = null
+    shareValues.value.currency = undefined
+    shareValues.value.parValue = undefined
   }
 
   if (shareValues.value.hasMaximumShares === false) {
-    shareValues.value.maxNumberOfShares = null
+    shareValues.value.maxNumberOfShares = undefined
   }
 }
 </script>

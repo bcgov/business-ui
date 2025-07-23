@@ -1,15 +1,16 @@
 import * as z from 'zod'
 
 export interface Series {
-    id: number | undefined // can be undefined when adding
+    id?: number // can be undefined when adding
     name: string
-    currency: string | undefined
+    currency?: string
     hasMaximumShares: boolean
     hasParValue: boolean
     hasRightsOrRestrictions: boolean
-    maxNumberOfShares: number | undefined
-    parValue: number | undefined
+    maxNumberOfShares?: number
+    parValue?: number
     priority: number
+    removed?: boolean
 }
 
 export interface Share extends Series {

@@ -8,7 +8,9 @@ const addingShare = ref(false)
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
-  editingShareIndex
+  editingShareIndex,
+  modifiedShareIndexes,
+  ORIGINAL_SHARE_CLASSES
 } = storeToRefs(filingStore)
 
 const addedIndexes = ref<number[]>([])
@@ -97,6 +99,14 @@ const columns = [
   }
 ]
 
+const tableMeta = {
+  class: {
+    tr: (row: Row<Share>) => {
+      return row.original.removed ? 'text-bcGovColor-lightGray' : ''
+    }
+  }
+}
+
 const getDropdownActions = (row: Row<Share>) => {
   return [
     {
@@ -169,7 +179,15 @@ const moveShare = (index: number, moveUp: boolean) => {
 }
 
 const deleteShare = (index: number) => {
-  shareClasses.value.splice(index, 1)
+  shareClasses.value[index].removed = true
+  if (!modifiedShareIndexes.value.includes(index)) {
+    modifiedShareIndexes.value.push(index)
+  }
+}
+
+const undoDelete = (index: number) => {
+  delete shareClasses.value[index].removed
+  modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== index)
 }
 
 const addShare = () => {
@@ -180,12 +198,26 @@ const addShare = () => {
 }
 
 const updated = (row: Row<Series>) => {
-  editedIndexes.value.push(row.index)
+  const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[row.index])
+  const current = JSON.stringify(shareClasses.value[row.index])
+
+  if (original !== current) {
+    if (!modifiedShareIndexes.value.includes(row.index)) {
+      modifiedShareIndexes.value.push(row.index)
+    }
+    editedIndexes.value.push(row.index)
+  } else {
+    modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== row.index)
+    editedIndexes.value = editedIndexes.value.filter(i => i !== row.index)
+  }
   toggleShareExpanded(row)
 }
 
 const addedShare = () => {
   addedIndexes.value.push(shareClasses.value.length - 1)
+  if (!modifiedShareIndexes.value.includes(shareClasses.value.length - 1)) {
+    modifiedShareIndexes.value.push(shareClasses.value.length - 1)
+  }
   addingShare.value = false
 }
 </script>
@@ -219,6 +251,7 @@ const addedShare = () => {
         td: 'p-4 text-sm text-black whitespace-nowrap [&:has([role=checkbox])]:pe-0'
       }"
       class="flex-1"
+      :meta="tableMeta"
     >
       <template #name-cell="{ row }">
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
@@ -240,10 +273,18 @@ const addedShare = () => {
             {{ t('label.edited') }}
           </UBadge>
         </div>
+        <div>
+          <UBadge
+            v-if="row.original.removed"
+            class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"
+          >
+            {{ t('label.deleted') }}
+          </UBadge>
+        </div>
       </template>
       <template #actions-cell="{ row }">
         <UButton
-          v-if="true"
+          v-if="!row.original.removed"
           icon="i-mdi-pencil"
           :label="$t('label.change')"
           color="primary"
@@ -263,10 +304,14 @@ const addedShare = () => {
           class="inline-block mr-0 px-3"
           variant="ghost"
           :aria-label="$t('label.undo')"
-          @click="toggleShareExpanded(row)"
+          @click="undoDelete(row.index)"
         />
-        <USeparator orientation="vertical" class="h-6 inline-block" />
-        <UDropdownMenu :items="getDropdownActions(row)">
+        <USeparator
+          v-if="!row.original.removed"
+          orientation="vertical"
+          class="h-6 inline-block"
+        />
+        <UDropdownMenu v-if="!row.original.removed" :items="getDropdownActions(row)">
           <UButton
             icon="i-mdi-chevron-down"
             color="primary"
