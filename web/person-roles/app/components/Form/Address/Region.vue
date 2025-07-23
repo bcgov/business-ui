@@ -71,7 +71,9 @@ const inputId = id + '-region'
                   : 'top-1 -translate-y-none text-xs',
                 error
                   ? 'text-red-600'
-                  : ''
+                  : '',
+                'absolute left-0 px-2.5 text-sm transition-all',
+                'group-data-[state=open]:text-blue-500 group-focus:text-blue-500'
               ]"
             >
               {{ country === 'CA' ? $t('label.province') : $t('label.state') }}

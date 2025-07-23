@@ -79,9 +79,15 @@ function getCellContainerClass(row: Row<OfficerTableState>, defaultClass: string
 
 // returns array of dropdown menu actions for the given row
 function getRowActions(row: Row<OfficerTableState>) {
+  const uiProp = {
+    item: 'text-primary',
+    itemLeadingIcon: 'text-primary'
+  }
+
   const actions = [
     {
       label: t('label.remove'),
+      ui: uiProp,
       onSelect: async () => {
         emit('table-action')
         const hasActiveForm = await officerStore.checkHasActiveForm('change')
@@ -99,6 +105,7 @@ function getRowActions(row: Row<OfficerTableState>) {
     actions.unshift({
       label: t('label.change'),
       icon: 'i-mdi-pencil',
+      ui: uiProp,
       onSelect: async () => {
         emit('table-action')
         const hasActiveForm = await officerStore.checkHasActiveForm('change')
@@ -164,15 +171,33 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
+      const roleOrder = [
+        'CEO',
+        'CFO',
+        'PRESIDENT',
+        'VICE_PRESIDENT',
+        'VP',
+        'CHAIR',
+        'TREASURER',
+        'SECRETARY',
+        'ASSISTANT_SECRETARY',
+        'OTHER'
+      ]
+      const roleOrderMap = new Map(roleOrder.map((role, index) => [role, index]))
       const isRemoved = row.original.state.actions.includes('removed')
       const allRoles = row.original.state.officer.roles
       const activeRoles = allRoles.filter(r => r.cessationDate === null)
       const displayedRoles = isRemoved ? allRoles : activeRoles
+      const sortedRoles = [...displayedRoles].sort((a, b) => {
+        const indexA = roleOrderMap.get(a.roleType) ?? Infinity
+        const indexB = roleOrderMap.get(b.roleType) ?? Infinity
+        return indexA - indexB
+      })
       const containerClass = getCellContainerClass(row, 'px-2 py-4 flex flex-col')
 
-      return displayedRoles.length
+      return sortedRoles.length
         ? h('ul', { class: containerClass },
-            displayedRoles.map(role =>
+            sortedRoles.map(role =>
               h('li', {}, t(`enum.officerRole.${role.roleType}`))
             )
         )
@@ -279,7 +304,10 @@ const columns: TableColumn<OfficerTableState>[] = [
                       h(UButton, {
                         'variant': 'ghost',
                         'icon': 'i-mdi-caret-down',
-                        'class': 'px-4',
+                        'class': 'px-4 data-[state=open]:bg-(--ui-primary)/25 group',
+                        'ui': {
+                          leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
+                        },
                         'aria-label': t('label.moreActions')
                       })
                   })

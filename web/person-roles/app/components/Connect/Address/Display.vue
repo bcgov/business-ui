@@ -52,21 +52,25 @@ const getAddressDisplayParts = (
 </script>
 
 <template>
-  <div data-testid="address-display">
-    <div
-      v-for="addressLine, i in getAddressDisplayParts(address, false, true, omitCountry)"
-      :key="addressLine + i"
-      data-testid="address-line"
-    >
-      {{ addressLine }}
+  <div
+    data-testid="address-display"
+    class="flex flex-col gap-2"
+  >
+    <div>
+      <div
+        v-for="addressLine, i in getAddressDisplayParts(address, false, true, omitCountry)"
+        :key="addressLine + i"
+        data-testid="address-line"
+      >
+        {{ addressLine }}
+      </div>
     </div>
-    <ConnectInfoBox
+    <span
       v-if="address.locationDescription"
-      class="mt-2"
-      :content="address.locationDescription"
-      :title="useLocationDescLabel ? `${$t('label.locationDescription')}:` : `${$t('label.deliveryInstructions')}:`"
-      :title-class="'text-sm font-normal italic tracking-wider'"
       data-testid="location-description"
-    />
+      class="italic"
+    >
+      {{ address.locationDescription }}
+    </span>
   </div>
 </template>
