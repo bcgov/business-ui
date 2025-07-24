@@ -4,6 +4,8 @@ import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusi
 export const useBrdModals = () => {
   const modal = useModal()
   const { t } = useI18n()
+  const config = useRuntimeConfig().public
+  const accountStore = useConnectAccountStore()
 
   function openManageNameRequest (nr: { names: string[], nrNum: string }) {
     modal.open(ModalManageNameRequest, {
@@ -83,6 +85,48 @@ export const useBrdModals = () => {
         label: t('btn.close'),
         handler: () => close()
       }],
+      onModalClosed: () => {
+        window.location.href = `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`
+      }
+    } as any)
+  }
+
+  function openAdminAccountSetupIncomplete () {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.adminAccountSetupIncomplete.title'),
+        description: t('error.adminAccountSetupIncomplete.description')
+      },
+      actions: [
+        { label: t('btn.close'), variant: 'outline', handler: () => close() },
+        {
+          label: t('btn.accountSetup'),
+          handler: () => {
+            window.location.href = `${config.authWebUrl}/account/${accountStore.currentAccount.id}/settings/account-info`
+          }
+        }
+      ],
+      onModalClosed: () => {
+        window.location.href = `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`
+      }
+    } as any)
+  }
+
+  function openNonAdminAccountSetupIncomplete () {
+    modal.open(ModalBase, {
+      error: {
+        title: t('error.nonAdminAccountSetupIncomplete.title'),
+        description: t('error.nonAdminAccountSetupIncomplete.description')
+      },
+      actions: [
+        { label: t('btn.close'), variant: 'outline', handler: () => close() },
+        {
+          label: t('btn.accountSetup'),
+          handler: () => {
+            window.location.href = `${config.authWebUrl}/account/${accountStore.currentAccount.id}/settings/account-info`
+          }
+        }
+      ],
       onModalClosed: () => {
         window.location.href = `${config.registryHomeURL}dashboard?accountid=${accountStore.currentAccount.id}`
       }
@@ -169,6 +213,8 @@ export const useBrdModals = () => {
     openContinuationInCoopModal,
     openAccessRestricted,
     openNoSubscriptionModal,
+    openAdminAccountSetupIncomplete,
+    openNonAdminAccountSetupIncomplete,
     close
   }
 }

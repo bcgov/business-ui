@@ -92,6 +92,7 @@ export default {
     accept: 'Accept',
     decline: 'Decline',
     close: 'Close',
+    accountSetup: 'Account Setup',
     openHelpDocs: 'Read the Overview',
     downloadReceipt: 'Download Receipt',
     downloadReport: 'Download Report',
@@ -224,6 +225,14 @@ export default {
     noSubscription: {
       title: 'Account Setup Incomplete',
       description: 'Finish setting up your account. Make sure that you have added the Business Registry product to your account and then try your link again.'
+    },
+    adminAccountSetupIncomplete: {
+      title: 'Account Setup Incomplete',
+      description: 'Finish setting up your account and make sure the Business Registry product is added to your account before trying the link again.'
+    },
+    nonAdminAccountSetupIncomplete: {
+      title: 'Account Setup Incomplete',
+      description: 'Ask your administrator to finish setting up your account and to make sure the Business Registry product has been added before trying the link again.'
     }
   },
   entityTypes: {

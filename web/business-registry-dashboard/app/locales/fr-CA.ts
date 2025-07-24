@@ -92,6 +92,7 @@ export default {
     accept: 'Accepter',
     decline: 'Déclin',
     close: 'Fermer',
+    accountSetup: 'Configuration du Compte',
     openHelpDocs: "Lire la Vue d'Ensemble",
     downloadReceipt: 'Télécharger le Reçu',
     downloadReport: 'Télécharger le Rapport',
@@ -214,6 +215,14 @@ export default {
     noSubscription: {
       title: 'Création de Compte Incomplète',
       description: 'Terminez la création de votre compte. Assurez-vous d\'avoir ajouté le produit Business Registry à votre compte et réessayez votre lien.'
+    },
+    adminAccountSetupIncomplete: {
+      title: 'Création de Compte Incomplète',
+      description: 'Finissez la création de votre compte et assurez-vous que le produit Business Registry est ajouté à votre compte avant d\'essayer le lien à nouveau.'
+    },
+    nonAdminAccountSetupIncomplete: {
+      title: 'Création de Compte Incomplète',
+      description: 'Demandez à votre administrateur de finire la création de votre compte et de s\'assurer que le produit Business Registry a été ajouté avant d\'essayer le lien à nouveau.'
     }
   },
   entityTypes: {

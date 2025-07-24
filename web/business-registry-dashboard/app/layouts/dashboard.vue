@@ -4,8 +4,7 @@ const accountStore = useConnectAccountStore()
 const config = useRuntimeConfig().public
 const { isAuthenticated } = useKeycloak()
 const route = useRoute()
-const brdModal = useBrdModals()
-const affStore = useAffiliationsStore()
+const { validateAccountStatus } = useAccountValidation()
 
 // Create a computed property to determine if we should show staff dashboard text based on authorization
 const showStaffText = computed(() => {
@@ -77,11 +76,9 @@ onMounted(async () => {
     window.location.href = `${config.authWebUrl}/account/${accountId}/settings/account-info`
   }
 
-  // Load and check if the current account has an active subscription to the business registry dashboard
-  await affStore.loadSubscriptionStatus()
-  if (affStore.isSubscribed !== true) {
-    brdModal.openNoSubscriptionModal()
-  }
+  // Validate account status and handle the scenarios of incomplete account setups
+  // show modal if account is not complete
+  await validateAccountStatus()
 })
 </script>
 <template>
