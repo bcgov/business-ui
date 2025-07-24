@@ -28,6 +28,7 @@ export function useMagicLinkProcessing () {
   const affNav = useAffiliationNavigation()
   const affStore = useAffiliationsStore()
   const brdModal = useBrdModals()
+  const { validateAccountStatus } = useAccountValidation()
   const isLoading = ref(true)
   const route = useRoute()
 
@@ -58,12 +59,13 @@ export function useMagicLinkProcessing () {
    */
   const processMagicLink = async (config: MagicLinkConfig) => {
     try {
-      // Load and check if the current account has an active subscription to BRD. If not, stop processing
-      await affStore.loadSubscriptionStatus()
-      if (affStore.isSubscribed !== true) {
-        return
+      // Validate account status using the reusable composable
+      const canProceed = await validateAccountStatus()
+      if (!canProceed) {
+        return // Modal was shown, stop processing
       }
 
+      // Continue with magic link processing if all checks pass
       isLoading.value = true
       // Extract query parameters from the URL
       const { nr, email, phone } = route.query as { nr: string, email: string, phone: string }

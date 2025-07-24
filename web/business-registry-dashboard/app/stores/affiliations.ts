@@ -34,6 +34,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   const isSubscribed = ref<boolean | null>(null)
 
+  const membership = ref<Member | null>(null)
+
   const authorizedActions = ref<AuthorizedActions[]>([])
 
   // Track if filters changed during loading
@@ -842,6 +844,13 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   }
 
+  async function loadMembership () {
+    // Only make the API call if membership hasn't been loaded yet
+    if (membership.value === null) {
+      membership.value = await getUserMembership(accountStore.currentAccount.id)
+    }
+  }
+
   async function loadAuthorizedActions () {
     const actions = await $legalApi<{ authorizedPermissions: AuthorizedActions[] }>('/permissions')
     authorizedActions.value = actions.authorizedPermissions
@@ -889,6 +898,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     isSubscribed,
     loadSubscriptionStatus,
     loadAuthorizedActions,
+    membership,
+    loadMembership,
     $reset
   }
 }
