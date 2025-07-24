@@ -37,10 +37,8 @@ const resetData = () => {
     shareName.value = ''
   }
 
-  hasMaxShares.value = shareValues.value.hasMaximumShares ? '' : 'false'
-  hasNoMaxShares.value = shareValues.value.hasMaximumShares ? 'false' : t('label.noMax')
-  hasParValue.value = shareValues.value.hasParValue ? '' : 'false'
-  hasNoParValue.value = shareValues.value.hasParValue ? 'false' : t('label.noPar')
+  hasNoMaxShares.value = shareValues.value.hasMaximumShares ? '' : t('label.noMax')
+  hasNoParValue.value = shareValues.value.hasParValue ? '' : t('label.noPar')
 }
 
 watch(shareClasses, resetData, { deep: true })
@@ -65,10 +63,8 @@ const shareValues = ref<Share>(
   )
 )
 
-const hasMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : 'false')
-const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? 'false' : t('label.noMax'))
-const hasParValue = ref<string>(shareValues.value.hasParValue ? '' : 'false')
-const hasNoParValue = ref<string>(shareValues.value.hasParValue ? 'false' : t('label.noPar'))
+const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : t('label.noMax'))
+const hasNoParValue = ref<string>(shareValues.value.hasParValue ? '' : t('label.noPar'))
 const errors = ref<ZodError[]>([])
 
 const shareName = ref<string>(
@@ -79,25 +75,20 @@ const shareName = ref<string>(
 
 const maxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = true
-  hasMaxShares.value = ''
-  hasNoMaxShares.value = 'false'
+  hasNoMaxShares.value = ''
 }
 
 const noMaxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = false
-  hasMaxShares.value = 'false'
-  hasNoMaxShares.value = t('label.noMax')
-}
+  hasNoMaxShares.value = t('label.noMax')}
 
 const parValueChangeHandler = () => {
   shareValues.value.hasParValue = true
-  hasParValue.value = ''
-  hasNoParValue.value = 'false'
+  hasNoParValue.value = ''
 }
 
 const noParValueChangeHandler = () => {
   shareValues.value.hasParValue = false
-  hasParValue.value = 'false'
   hasNoParValue.value = t('label.noPar')
 }
 
@@ -196,7 +187,7 @@ const cleanData = () => {
 
         <div class="flex">
           <URadioGroup
-            v-model="hasMaxShares"
+            v-model="hasNoMaxShares"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
@@ -205,12 +196,26 @@ const cleanData = () => {
             @change="maxSharesChangeHandler()"
           />
           <UFormField :error="errors.maxNumberOfShares">
-            <UInput
+            <UInputNumber
               v-model="shareValues.maxNumberOfShares"
               :placeholder="$t('label.maximumNumberOfShares')"
-              type="number"
+              :disableWheelChange="true"
               class="flex-auto"
-            />
+              :ui="{
+                base: 'w-full rounded-md border-0 placeholder:text-dimmed'
+                + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+              }"
+            >
+              <template #decrement>
+                <span> </span>
+              </template>
+              <template #increment>
+                <span> </span>
+              </template>
+            </UInputNumber>
           </UFormField>
         </div>
         <div>
@@ -225,7 +230,7 @@ const cleanData = () => {
 
         <div class="flex">
           <URadioGroup
-            v-model="hasParValue"
+            v-model="hasNoParValue"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
@@ -235,11 +240,26 @@ const cleanData = () => {
           />
           <div class="flex flex-auto">
             <UFormField :error="errors?.parValue" class="mr-2 w-[50%]">
-              <UInput
+              <UInputNumber
                 v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
-                type="number"
-              />
+                :disableWheelChange="true"
+                class="flex-auto"
+                :ui="{
+                  base: 'w-full rounded-md border-0 placeholder:text-dimmed'
+                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                }"
+                >
+                <template #decrement>
+                  <span> </span>
+                </template>
+                <template #increment>
+                  <span> </span>
+                </template>
+              </UInputNumber>
             </UFormField>
             <UFormField
               :error="errors?.currency"
