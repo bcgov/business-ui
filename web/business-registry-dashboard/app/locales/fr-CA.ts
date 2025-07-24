@@ -218,11 +218,11 @@ export default {
     },
     adminAccountSetupIncomplete: {
       title: 'Création de Compte Incomplète',
-      description: 'Terminez la création de votre compte et assurez-vous que le produit Business Registry est ajouté à votre compte avant d\'essayer le lien à nouveau.'
+      description: 'Finissez la création de votre compte et assurez-vous que le produit Business Registry est ajouté à votre compte avant d\'essayer le lien à nouveau.'
     },
     nonAdminAccountSetupIncomplete: {
       title: 'Création de Compte Incomplète',
-      description: 'Demandez à votre administrateur de terminer la création de votre compte et de s\'assurer que le produit Business Registry a été ajouté avant d\'essayer le lien à nouveau.'
+      description: 'Demandez à votre administrateur de finire la création de votre compte et de s\'assurer que le produit Business Registry a été ajouté avant d\'essayer le lien à nouveau.'
     }
   },
   entityTypes: {
