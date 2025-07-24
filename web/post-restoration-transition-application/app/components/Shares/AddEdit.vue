@@ -273,7 +273,7 @@ const cleanData = () => {
                 v-model="shareValues.currency"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
-                class="h-[56px] w-full"
+                class="h-[56px] w-full pl-2"
               />
             </UFormField>
           </div>
