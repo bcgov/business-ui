@@ -80,7 +80,7 @@ const maxSharesChangeHandler = () => {
 
 const noMaxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = false
-  hasNoMaxShares.value = t('label.noMax')}
+  hasNoMaxShares.value = t('label.noMax') }
 
 const parValueChangeHandler = () => {
   shareValues.value.hasParValue = true
@@ -199,21 +199,21 @@ const cleanData = () => {
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
               :placeholder="$t('label.maximumNumberOfShares')"
-              :disableWheelChange="true"
+              :disable-wheel-change="true"
               class="flex-auto"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
-                + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
-                + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
-                + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
-                + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
               }"
             >
               <template #decrement>
-                <span> </span>
+                <span />
               </template>
               <template #increment>
-                <span> </span>
+                <span />
               </template>
             </UInputNumber>
           </UFormField>
@@ -243,21 +243,21 @@ const cleanData = () => {
               <UInputNumber
                 v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
-                :disableWheelChange="true"
+                :disable-wheel-change="true"
                 class="flex-auto"
                 :ui="{
                   base: 'w-full rounded-md border-0 placeholder:text-dimmed'
-                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
-                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
-                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
-                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                    + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                    + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                    + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                    + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
                 }"
-                >
+              >
                 <template #decrement>
-                  <span> </span>
+                  <span />
                 </template>
                 <template #increment>
-                  <span> </span>
+                  <span />
                 </template>
               </UInputNumber>
             </UFormField>
