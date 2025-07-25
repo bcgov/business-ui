@@ -35,6 +35,7 @@ const businessId = route.params.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
+  activeBusiness,
   articles,
   certifiedByLegalName,
   compPartyEmail,
@@ -155,6 +156,10 @@ const showPreviousResolutionsDateLabel = computed(() => {
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
 }
+
+const minArticleResolutionDate = computed(() => {
+  return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
+})
 </script>
 
 <template>
@@ -264,6 +269,8 @@ const removeDateHandler = () => {
                       v-model="articles.currentDate"
                       name="articles-current-date"
                       :label="$t('text.articlesDate')"
+                      :min-date="minArticleResolutionDate"
+                      :max-date="(new Date()).toISOString()"
                       @save="showDateInputBox=false"
                       @cancel="showDateInputBox=false"
                     />
