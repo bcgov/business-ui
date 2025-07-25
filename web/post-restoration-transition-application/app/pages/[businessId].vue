@@ -186,6 +186,7 @@ const removeDateHandler = () => {
         <FormSubSection
           icon="i-mdi-domain"
           :title="$t('label.officeAddresses')"
+          class="pb-6"
         >
           <FormDataList
             :data="offices"
@@ -208,6 +209,7 @@ const removeDateHandler = () => {
         <FormSubSection
           icon="i-mdi-account-multiple-plus"
           :title="$t('label.currentDirectors')"
+          class="pb-6"
         >
           <FormDataList
             :data="directors"
@@ -233,7 +235,7 @@ const removeDateHandler = () => {
         >
           <ConnectFormSection
             :title="$t('label.resolutionOrCourtOrderDate')"
-            class="m-6 text-base"
+            class="text-base p-6 pb-2"
           >
             <template #title="{ error }">
               <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''">
