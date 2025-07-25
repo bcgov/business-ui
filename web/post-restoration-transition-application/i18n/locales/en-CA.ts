@@ -21,6 +21,7 @@ export default {
     added: 'Added',
     addSeries: 'Add Series',
     addShare: 'Add Share Class',
+    articles: 'Articles',
     businessCorporationsAct: 'Business Corporations Act',
     cancel: 'Cancel',
     change: 'Change',
