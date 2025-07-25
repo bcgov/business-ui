@@ -35,6 +35,7 @@ const businessId = route.params.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
+  activeBusiness,
   articles,
   certifiedByLegalName,
   compPartyEmail,
@@ -155,6 +156,10 @@ const showPreviousResolutionsDateLabel = computed(() => {
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
 }
+
+const minArticleResolutionDate = computed(() => {
+  return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
+})
 </script>
 
 <template>
@@ -186,6 +191,7 @@ const removeDateHandler = () => {
         <FormSubSection
           icon="i-mdi-domain"
           :title="$t('label.officeAddresses')"
+          class="pb-6"
         >
           <FormDataList
             :data="offices"
@@ -208,6 +214,7 @@ const removeDateHandler = () => {
         <FormSubSection
           icon="i-mdi-account-multiple-plus"
           :title="$t('label.currentDirectors')"
+          class="pb-6"
         >
           <FormDataList
             :data="directors"
@@ -233,7 +240,7 @@ const removeDateHandler = () => {
         >
           <ConnectFormSection
             :title="$t('label.resolutionOrCourtOrderDate')"
-            class="m-6 text-base"
+            class="text-base p-6 pb-2"
           >
             <template #title="{ error }">
               <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''">
@@ -262,6 +269,8 @@ const removeDateHandler = () => {
                       v-model="articles.currentDate"
                       name="articles-current-date"
                       :label="$t('text.articlesDate')"
+                      :min-date="minArticleResolutionDate"
+                      :max-date="(new Date()).toISOString()"
                       @save="showDateInputBox=false"
                       @cancel="showDateInputBox=false"
                     />

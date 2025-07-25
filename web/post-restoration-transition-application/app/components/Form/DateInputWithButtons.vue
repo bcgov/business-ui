@@ -6,6 +6,8 @@ defineProps<{
   id: string
   name: string
   label: string
+  minDate?: string
+  maxDate?: string
 }>()
 
 const emit = defineEmits(['save', 'cancel'])
@@ -27,6 +29,8 @@ const cancelHandler = () => {
     :id="name + '_id'"
     v-model="selectedValue"
     :label="label"
+    :min-date="minDate"
+    :max-date="maxDate"
   />
   <div class="flex flex-row mt-2 space-x-4 float-end">
     <UButton

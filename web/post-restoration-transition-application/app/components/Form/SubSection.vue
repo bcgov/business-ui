@@ -14,7 +14,7 @@ defineProps<{
 <template>
   <section
     :aria-label="title"
-    class="bg-bcGovColor-white pb-6"
+    class="bg-bcGovColor-white"
   >
     <slot name="title">
       <div
