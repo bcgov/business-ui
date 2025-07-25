@@ -440,6 +440,18 @@ const removeDateHandler = () => {
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
+    <FormSection
+      :title="$t('transitionApplication.subtitle.shares')"
+      :has-errors="sectionErrors.reviewAndConfirm"
+    >
+      <FormSubSection
+        :title="$t('text.sharesTitle')"
+        icon="i-mdi-sitemap"
+        class="space-y-6 p-6"
+      >
+        <Shares />
+      </FormSubSection>
+    </FormSection>
     <!-- NB: needed so that the tw classes are loaded -->
     <!-- <main class="app-inner-container app-body">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">

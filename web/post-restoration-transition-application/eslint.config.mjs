@@ -30,6 +30,7 @@ export default withNuxt({
     'vue/html-indent': 'warn',
     'vue/script-indent': 'warn',
     '@stylistic/brace-style': 'off',
-    '@stylistic/indent': 'off'
+    '@stylistic/indent': 'off',
+    '@stylistic/indent-binary-ops': 'off'
   }
 })
