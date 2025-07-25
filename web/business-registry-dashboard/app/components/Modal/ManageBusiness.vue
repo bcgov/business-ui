@@ -183,7 +183,7 @@ onMounted(async () => {
         </p>
 
         <p>
-          To keep up to date on when businesses can be self-managed through the BC Business Registry, visit and subscribe to <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">http://bcreg.ca/updates</a>.
+          To keep up to date on when businesses can be self-managed through the BC Business Registry application, visit and subscribe to <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">http://bcreg.ca/updates</a>.
         </p>
 
         <div class="grid auto-cols-auto">
