@@ -16,10 +16,14 @@ export const usePostRestorationTransitionApplicationStore
   const courtOrderNumber = ref<string | undefined>(undefined)
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
+  const modifiedShareIndexes = ref<number[]>([])
 
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
+  const shareClasses = ref<Share[]>([])
+  const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
+  const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
 
   const businessName = computed(() => {
@@ -58,8 +62,9 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
-    const [authInfo, business, apiAddresses, apiDirectors] = await Promise.all([
+    const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
       authApi.getAuthInfo(businessId),
+      legalApi.getShareClasses(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
@@ -73,6 +78,8 @@ export const usePostRestorationTransitionApplicationStore
 
     activeBusiness.value = business
     directors.value = apiDirectors
+    shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
+    ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
     const resolutions = await legalApi.getResolutions(businessId)
     if (resolutions.resolutions?.length > 0) {
@@ -120,6 +127,16 @@ export const usePostRestorationTransitionApplicationStore
     await _updateBreadcrumbs(businessId)
   }
 
+  const shareWithSpecialRightsModified = computed(() => {
+    for (const index of modifiedShareIndexes.value) {
+      if (shareClasses.value[index]?.hasRightsOrRestrictions
+          || ORIGINAL_SHARE_CLASSES.value[index]?.hasRightsOrRestrictions) {
+        return true
+      }
+    }
+    return false
+  })
+
   return {
     activeBusiness,
     articles,
@@ -131,8 +148,13 @@ export const usePostRestorationTransitionApplicationStore
     isStaffOrSbcStaff,
     legalName,
     offices,
+    shareClasses,
     planOfArrangement,
     regOfficeEmail,
-    init
+    init,
+    editingShareIndex,
+    modifiedShareIndexes,
+    shareWithSpecialRightsModified,
+    ORIGINAL_SHARE_CLASSES
   }
 })

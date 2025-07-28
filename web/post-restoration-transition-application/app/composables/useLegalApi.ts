@@ -24,9 +24,20 @@ export const useLegalApi2 = () => {
     return await $legalApi<{ resolutions: ApiResolutions[] }>(`businesses/${businessId}/resolutions`)
   }
 
+  /**
+   * Retrieves a list of share classes associated with a given business ID.
+   *
+   * @param {string} businessId - The unique identifier of the business whose share classes are being requested.
+   * @return {Promise<Share>} A promise that resolves to the response containing the share classes.
+   */
+  async function getShareClasses(businessId: string): Promise<Share> {
+    return await $legalApi<Share>(`businesses/${businessId}/share-classes`)
+  }
+
   return {
     ...useLegalApi(),
     getAddresses,
-    getResolutions
+    getResolutions,
+    getShareClasses
   }
 }
