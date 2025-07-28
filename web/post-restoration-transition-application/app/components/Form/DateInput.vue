@@ -10,6 +10,8 @@ const {
   required?: boolean
   invalid?: boolean
   maxlength?: string
+  minDate?: string
+  maxDate?: string
 }>()
 
 const showDatePicker = ref(false)
@@ -20,8 +22,6 @@ const updateDate = (date: string) => {
 const hasDateChanged = ref(false)
 const dateSelectPickerRef = ref<unknown>()
 const selectedDate = ref('')
-const minDate = ref('')
-const maxDate = ref('')
 const changeDateHandler = () => {
   showDatePicker.value = false
 }
@@ -51,6 +51,7 @@ const blurInputHandler = () => {
         trailing: { pointer: '' }
       }
     }"
+    @focusin="showDatePicker = true"
     @blur="blurInputHandler"
     @change="changeDateHandler"
   >
