@@ -70,18 +70,20 @@ export const usePostRestorationTransitionApplicationStore
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
     ]).catch((error) => {
-
       const modal = useModal()
       const router = useRouter()
       const rtc = useRuntimeConfig().public
-      let buttons: ModalButtonProps[] = []
+      const buttons: ModalButtonProps[] = []
       const errorStatus = error.statusCode || 404
       if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
-        buttons.push({ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` })
+        buttons.push({
+          label: t('label.goToMyBusinessRegistry'),
+          to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+        })
       } else if (errorStatus > 499 && errorStatus < 600) {
         buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
         buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
-      }else {
+      } else {
         buttons.push({ label: t('label.close'), shouldClose: true })
       }
       modal.openBaseErrorModal(
@@ -102,16 +104,16 @@ export const usePostRestorationTransitionApplicationStore
     shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
     ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
-    try{
+    try {
       const resolutions = await legalApi.getResolutions(businessId)
       if (resolutions.resolutions?.length > 0) {
         articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
       }
-    }catch(error){
+    } catch (error) {
       const modal = useModal()
       modal.openBaseErrorModal(
         error,
-        'modal.error.initOfficerStore',
+        'modal.error.initOfficerStore'
       )
     }
 
