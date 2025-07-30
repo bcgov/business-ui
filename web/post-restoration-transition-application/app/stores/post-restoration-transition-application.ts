@@ -7,6 +7,7 @@ export const usePostRestorationTransitionApplicationStore
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
   const feeStore = useConnectFeeStore()
+  const accountStore = useConnectAccountStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
@@ -68,7 +69,27 @@ export const usePostRestorationTransitionApplicationStore
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
-    ])
+    ]).catch((error) => {
+
+      const modal = useModal()
+      const router = useRouter()
+      const rtc = useRuntimeConfig().public
+      let buttons: ModalButtonProps[] = []
+      const errorStatus = error.statusCode || 404
+      if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
+        buttons.push({ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` })
+      } else if (errorStatus > 499 && errorStatus < 600) {
+        buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
+        buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
+      }else {
+        buttons.push({ label: t('label.close'), shouldClose: true })
+      }
+      modal.openBaseErrorModal(
+        error,
+        'modal.error.initOfficerStore',
+        buttons
+      )
+    })
     // FUTURE: error handling on fees #29114
     const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
     feeStore.feeOptions.showServiceFees = true
@@ -81,9 +102,17 @@ export const usePostRestorationTransitionApplicationStore
     shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
     ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
-    const resolutions = await legalApi.getResolutions(businessId)
-    if (resolutions.resolutions?.length > 0) {
-      articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
+    try{
+      const resolutions = await legalApi.getResolutions(businessId)
+      if (resolutions.resolutions?.length > 0) {
+        articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
+      }
+    }catch(error){
+      const modal = useModal()
+      modal.openBaseErrorModal(
+        error,
+        'modal.error.initOfficerStore',
+      )
     }
 
     // reset offices so when pushing they are not duplicated (on refresh and similar)
