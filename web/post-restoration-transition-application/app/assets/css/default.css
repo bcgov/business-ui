@@ -1,0 +1,4 @@
+.p-10 {
+  padding-inline: calc(var(--spacing) * 10);
+  padding-block: calc(var(--spacing) * 10);
+}
