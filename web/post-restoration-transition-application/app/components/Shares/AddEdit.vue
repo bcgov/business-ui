@@ -222,10 +222,10 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoMaxShares"
             :items="[$t('label.noMax')]"
-            @change="noMaxSharesChangeHandler()"
             :ui="{
               label: 'text-base'
             }"
+            @change="noMaxSharesChangeHandler()"
           />
         </div>
 
@@ -285,10 +285,10 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoParValue"
             :items="[$t('label.noPar')]"
-            @change="noParValueChangeHandler()"
             :ui="{
               label: 'text-base'
             }"
+            @change="noParValueChangeHandler()"
           />
         </div>
 
@@ -304,14 +304,14 @@ const cleanData = () => {
       <UButton
         :label="$t('label.done')"
         color="primary"
-        @click="done()"
         class="rounded"
+        @click="done()"
       />
       <UButton
         :label="$t('label.cancel')"
         variant="outline"
-        @click="cancel()"
         class="rounded"
+        @click="cancel()"
       />
     </div>
   </div>

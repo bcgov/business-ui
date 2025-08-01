@@ -241,8 +241,10 @@ const addedShare = () => {
 
 <template>
   <div>
-    <p class="mx-6 mt-6 mb-4">{{ $t('text.sharesDescription') }}</p>
-  <UButton
+    <p class="mx-6 mt-6 mb-4">
+      {{ $t('text.sharesDescription') }}
+    </p>
+    <UButton
       icon="i-mdi-plus"
       :label="$t('label.addShare')"
       color="primary"
