@@ -25,7 +25,7 @@ export function useAccountValidation () {
       const currentAccountId = accountStore.currentAccount.id
 
       // Scenario 2: Check if user with incomplete account setup
-      if(!affStore.membership) {
+      if (!affStore.membership) {
         brdModal.openAdminAccountSetupIncomplete()
         return false
       }
