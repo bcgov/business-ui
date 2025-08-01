@@ -47,6 +47,11 @@ const columns = [
         th: 'w-[140px] text-right',
         td: 'w-[140px] text-right'
       }
+    },
+    cell: ({ row }) => {
+      const maxNumberOfShares = row.original.maxNumberOfShares || t('label.noMax')
+
+      return maxNumberOfShares
     }
   },
   {
@@ -61,6 +66,10 @@ const columns = [
     cell: ({ row }) => {
       const symbol = getSymbolFromCurrency(row.original.currency) || ''
       const parValue = row.original.parValue || ''
+
+      if (parValue === '0') {
+        return t('label.noPar')
+      }
 
       return `${symbol}${parValue}`
     }
@@ -83,8 +92,8 @@ const columns = [
     },
     meta: {
       class: {
-        th: 'w-[115px]',
-        td: 'w-[115px]'
+        th: 'min-w-[150px]',
+        td: 'min-w-[150px]'
       }
     }
   },
@@ -111,31 +120,39 @@ const getDropdownActions = (row: Row<Share>) => {
   return [
     {
       label: t('label.addSeries'),
+      icon: 'i-mdi-playlist-plus',
       onClick: () => {
         // eslint-disable-next-line no-console
         console.log('Add Series', row)
       },
+      color: 'primary',
       disabled: !row.original.hasRightsOrRestrictions
     },
     {
       label: t('label.moveUp'),
+      icon: 'i-mdi-arrow-up',
       onClick: () => {
         moveShare(row.index, true)
       },
+      color: 'primary',
       disabled: row.index === 0
     },
     {
       label: t('label.moveDown'),
+      icon: 'i-mdi-arrow-down',
       onClick: () => {
         moveShare(row.index, false)
       },
+      color: 'primary',
       disabled: row.index === shareClasses.value.length - 1
     },
     {
       label: t('label.delete'),
+      icon: 'i-mdi-delete',
       onClick: () => {
         deleteShare(row.index)
-      }
+      },
+      color: 'primary'
     }
   ]
 }
@@ -224,15 +241,17 @@ const addedShare = () => {
 
 <template>
   <div>
-    <p>{{ $t('text.sharesDescription') }}</p>
+    <p class="mx-6 mt-6 mb-4">
+      {{ $t('text.sharesDescription') }}
+    </p>
     <UButton
       icon="i-mdi-plus"
       :label="$t('label.addShare')"
       color="primary"
-      class="inline-block my-4 px-5 py-3"
+      class="inline-block rounded text-base ml-6 px-7 pt-[11px]"
       variant="outline"
       :ui="{
-        label: 'align-top'
+        label: 'align-top leading-[19px]'
       }"
       :aria-label="$t('label.addShare')"
       @click="addShare()"
@@ -266,19 +285,19 @@ const addedShare = () => {
         </div>
         <div>
           <UBadge
-            v-if="editedIndexes.includes(row.index)"
-            color="primary"
-            class="rounded-sm"
-          >
-            {{ t('label.edited') }}
-          </UBadge>
-        </div>
-        <div>
-          <UBadge
             v-if="row.original.removed"
             class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"
           >
             {{ t('label.deleted') }}
+          </UBadge>
+        </div>
+        <div>
+          <UBadge
+            v-if="!row.original.removed && editedIndexes.includes(row.index)"
+            color="primary"
+            class="rounded-sm"
+          >
+            {{ t('label.changed') }}
           </UBadge>
         </div>
       </template>
@@ -312,13 +331,18 @@ const addedShare = () => {
           class="h-6 inline-block"
         />
         <UDropdownMenu v-if="!row.original.removed" :items="getDropdownActions(row)">
-          <UButton
-            icon="i-mdi-chevron-down"
-            color="primary"
-            variant="ghost"
-            class="inline-block"
-            :aria-label="$t('label.actions')"
-          />
+          <template #default="{ open }">
+            <UButton
+              :icon="open ? 'i-mdi-triangle' : 'i-mdi-triangle-down'"
+              color="primary"
+              variant="ghost"
+              class="inline-block"
+              :aria-label="$t('label.actions')"
+              :ui="{
+                leadingIcon: 'size-3 text-primary'
+              }"
+            />
+          </template>
         </UDropdownMenu>
       </template>
       <template #expanded="{ row }">

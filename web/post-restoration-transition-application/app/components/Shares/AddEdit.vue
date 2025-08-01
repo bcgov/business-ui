@@ -222,6 +222,9 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoMaxShares"
             :items="[$t('label.noMax')]"
+            :ui="{
+              label: 'text-base'
+            }"
             @change="noMaxSharesChangeHandler()"
           />
         </div>
@@ -239,7 +242,7 @@ const cleanData = () => {
             @change="parValueChangeHandler()"
           />
           <div class="flex flex-auto">
-            <UFormField :error="errors?.parValue" class="mr-2 w-[50%]">
+            <UFormField :error="errors?.parValue" class="mr-4 w-[30%]">
               <UInputNumber
                 v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
@@ -263,7 +266,7 @@ const cleanData = () => {
             </UFormField>
             <UFormField
               :error="errors?.currency"
-              class="h-full w-[50%]"
+              class="h-full w-[70%]"
               :ui="{
                 root: 'h-11 max-h-11',
                 content: 'h-12 max-h-12'
@@ -282,6 +285,9 @@ const cleanData = () => {
           <URadioGroup
             v-model="hasNoParValue"
             :items="[$t('label.noPar')]"
+            :ui="{
+              label: 'text-base'
+            }"
             @change="noParValueChangeHandler()"
           />
         </div>
@@ -294,15 +300,17 @@ const cleanData = () => {
         />
       </div>
     </div>
-    <div class="flex justify-end space-x-2">
+    <div class="flex justify-end space-x-4">
       <UButton
         :label="$t('label.done')"
         color="primary"
+        class="rounded"
         @click="done()"
       />
       <UButton
         :label="$t('label.cancel')"
         variant="outline"
+        class="rounded"
         @click="cancel()"
       />
     </div>

@@ -456,7 +456,7 @@ const minArticleResolutionDate = computed(() => {
       <FormSubSection
         :title="$t('text.sharesTitle')"
         icon="i-mdi-sitemap"
-        class="space-y-6 p-6"
+        class="pb-6"
       >
         <Shares />
       </FormSubSection>
