@@ -24,6 +24,12 @@ export function useAccountValidation () {
       // Get current account ID
       const currentAccountId = accountStore.currentAccount.id
 
+      // Scenario 2: Check if user with incomplete account setup
+      if(!affStore.membership) {
+        brdModal.openAdminAccountSetupIncomplete()
+        return false
+      }
+
       // Check if user is an admin and if their membership is active
       const isAdmin = (affStore.membership?.membershipTypeCode === MembershipType.Admin)
       const isMembershipActive = (affStore.membership?.membershipStatus === MembershipStatus.Active)
@@ -37,13 +43,13 @@ export function useAccountValidation () {
         return true
       }
 
-      // Scenario 2: Admin with incomplete account setup
+      // Scenario 2: Admin with inactive membership
       if (isAdmin && !isMembershipActive) {
         brdModal.openAdminAccountSetupIncomplete()
         return false
       }
 
-      // Scenario 3: Non-admin user with incomplete setup (either inactive membership or no subscription)
+      // Scenario 3: Non-admin user with either inactive membership or no subscription
       if (!isAdmin && (!isMembershipActive || !affStore.isSubscribed)) {
         brdModal.openNonAdminAccountSetupIncomplete()
         return false
