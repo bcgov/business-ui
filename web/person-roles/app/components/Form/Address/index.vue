@@ -64,7 +64,7 @@ async function populateAddressComplete(e: UiAddress) {
       :schema-prefix="schemaPrefix"
     />
 
-    <div class="flex flex-col gap-4 sm:flex-row">
+    <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
       <FormAddressCity
         :id
         v-model="state.city"

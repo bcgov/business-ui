@@ -330,40 +330,62 @@ watch(
 
 <template>
   <div class="py-10 space-y-8">
-    <div>
-      <h1>{{ $t('page.officerChange.h1') }}</h1>
-      <p class="mt-2">
+    <h1>{{ $t('page.officerChange.h1') }}</h1>
+
+    <section class="space-y-4">
+      <h3 class="text-lg">
+        1. Officer Information
+      </h3>
+      <p class="-mt-2">
         {{ $t('text.trackOfficers') }}
       </p>
-    </div>
-
-    <div class="bg-white p-6 flex flex-col gap-4 rounded">
-      <!-- TODO: update with correct design/validation -->
-      <span class="text-lg text-bcGovGray-900 font-bold">Temp Folio input</span>
-      <ConnectInput
-        id="folio-number"
-        v-model="officerStore.folioNumber"
-        :label="$t('label.folioNumberOpt')"
+      <UButton
+        :label="$t('label.addOfficer')"
+        class="px-5 py-3"
+        color="primary"
+        icon="i-mdi-account-plus"
+        variant="outline"
+        :disabled="officerStore.initializing"
+        @click="onAddOfficerClick"
       />
-    </div>
 
-    <UButton
-      :label="$t('label.addOfficer')"
-      class="px-5 py-3"
-      color="primary"
-      icon="i-mdi-account-plus"
-      variant="outline"
-      :disabled="officerStore.initializing"
-      @click="onAddOfficerClick"
-    />
+      <FormOfficerChange
+        v-if="officerStore.addingOfficer"
+        :title="$t('label.addOfficer')"
+        @officer-change="onFormSubmit"
+        @cancel="officerStore.addingOfficer = false"
+      />
 
-    <FormOfficerChange
-      v-if="officerStore.addingOfficer"
-      :title="$t('label.addOfficer')"
-      @officer-change="onFormSubmit"
-      @cancel="officerStore.addingOfficer = false"
-    />
+      <TableOfficerChange @table-action="setAlertText(true)" />
+    </section>
 
-    <TableOfficerChange @table-action="setAlertText(true)" />
+    <section class="flex flex-col gap-4">
+      <h2 class="text-lg">
+        2. {{ $t('label.folioNumberOpt') }}
+      </h2>
+      <p class="-mt-2">
+        {{ $t('text.trackFolio') }}
+      </p>
+
+      <UForm
+        :state="{}"
+        class="bg-white p-6 rounded-sm shadow-sm"
+        :class="{
+          'border-l-3 border-red-600': false
+        }"
+      >
+        <FormSection
+          :label="$t('label.folioNumber')"
+          orientation="horizontal"
+        >
+          <FormFieldInput
+            v-model="officerStore.folioNumber"
+            name="folionumber"
+            :label="$t('label.folioNumberOpt')"
+            input-id="folio-number"
+          />
+        </FormSection>
+      </UForm>
+    </section>
   </div>
 </template>

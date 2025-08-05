@@ -317,9 +317,9 @@ function clearUnfinishedTaskMsg() {
     @keyup.tab="clearUnfinishedTaskMsg"
   >
     <div class="flex flex-col sm:flex-row gap-6">
-      <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
+      <h3 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
         {{ title }}
-      </h2>
+      </h3>
       <div class="flex flex-col gap-9 w-full">
         <div class="flex flex-col gap-9 w-full">
           <FormSection

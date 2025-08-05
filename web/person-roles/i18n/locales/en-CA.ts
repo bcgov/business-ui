@@ -120,8 +120,8 @@ export default {
     bcRegistriesDashboard: 'BC Registries Dashboard',
     notEntered: 'Not Entered',
     notAvailable: 'Not Available',
-    folioNumber: 'Folio Number',
-    folioNumberOpt: 'Folio Number (Optional)'
+    folioNumber: 'Folio or Reference Number',
+    folioNumberOpt: 'Folio or Reference Number (Optional)'
   },
   modal: {
     error: {
@@ -215,7 +215,8 @@ export default {
     finishTaskBeforeSave: 'Finish this task before saving.',
     noChangesToSave: 'There are no changes to save.',
     noChangesToSubmit: 'There are no changes to submit.',
-    finishTaskBeforeOtherChanges: 'Finish this task before making other changes.'
+    finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
+    trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.'
   },
   validation: {
     required: 'Required',
