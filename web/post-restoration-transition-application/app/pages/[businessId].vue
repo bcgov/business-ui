@@ -303,6 +303,14 @@ setButtonControl({
         </FormSubSection>
 
         <FormSubSection
+          :title="$t('text.sharesTitle')"
+          class="pb-6"
+          icon="i-mdi-sitemap"
+        >
+          <Shares />
+        </FormSubSection>
+
+        <FormSubSection
           icon="i-mdi-handshake"
           :title="$t('label.articles')"
           :has-errors="hasArticlesErrors"
@@ -564,18 +572,6 @@ setButtonControl({
             </template>
           </FormCertify>
         </ConnectFormSection>
-      </FormSubSection>
-    </FormSection>
-    <FormSection
-      :title="$t('transitionApplication.subtitle.shares')"
-      :has-errors="false"
-    >
-      <FormSubSection
-        :title="$t('text.sharesTitle')"
-        icon="i-mdi-sitemap"
-        class="pb-6"
-      >
-        <Shares />
       </FormSubSection>
     </FormSection>
     <!-- NB: needed so that the tw classes are loaded -->
