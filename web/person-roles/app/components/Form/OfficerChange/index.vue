@@ -355,7 +355,7 @@ function clearUnfinishedTaskMsg() {
               v-model="state.hasPreferredName"
               :label="$t('label.haspreferredName')"
               :ui="{ root: 'items-center' }"
-              class="-mt-2"
+              :class="state.hasPreferredName ? 'mb-6' : ''"
             />
 
             <UFormField
@@ -422,6 +422,7 @@ function clearUnfinishedTaskMsg() {
             v-model="state.sameAsDelivery"
             :label="$t('label.sameAsDeliveryAddress')"
             :ui="{ root: 'items-center' }"
+            :class="state.sameAsDelivery ? '' : 'mb-6'"
           />
 
           <FormAddress
