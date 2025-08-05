@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import getSymbolFromCurrency from 'currency-symbol-map'
 
 const t = useNuxtApp().$i18n.t
@@ -245,15 +245,15 @@ const addedShare = () => {
       {{ $t('text.sharesDescription') }}
     </p>
     <UButton
-      icon="i-mdi-plus"
+      :aria-label="$t('label.addShare')"
       :label="$t('label.addShare')"
-      color="primary"
-      class="inline-block rounded text-base ml-6 px-7 pt-[11px]"
-      variant="outline"
       :ui="{
         label: 'align-top leading-[19px]'
       }"
-      :aria-label="$t('label.addShare')"
+      class="inline-block rounded text-base ml-6 px-7 pt-[11px]"
+      color="primary"
+      icon="i-mdi-plus"
+      variant="outline"
       @click="addShare()"
     />
     <SharesAddEdit
@@ -346,10 +346,12 @@ const addedShare = () => {
         </UDropdownMenu>
       </template>
       <template #expanded="{ row }">
-        <SharesAddEdit
-          @cancel="toggleShareExpanded(row)"
-          @done="updated(row)"
-        />
+        <div class="pr-4">
+          <SharesAddEdit
+            @cancel="toggleShareExpanded(row)"
+            @done="updated(row)"
+          />
+        </div>
       </template>
     </UTable>
   </div>
