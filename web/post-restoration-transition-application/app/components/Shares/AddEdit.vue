@@ -325,7 +325,7 @@ const cleanData = () => {
             </UFormField>
             <UFormField
               :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
-              class="h-full flex-1 w-full bg-green-500"
+              class="h-full flex-1 w-full"
             >
               <USelect
                 v-model="shareValues.currency"
