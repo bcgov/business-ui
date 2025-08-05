@@ -258,8 +258,9 @@ const cleanData = () => {
                   + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                   + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
               }"
-              @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
               class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+              @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
+              @focusin="maxSharesChangeHandler()"
             >
               <template #decrement>
                 <span />
@@ -311,6 +312,7 @@ const cleanData = () => {
                     + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
                 }"
                 class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+                @focusin="parValueChangeHandler()"
                 @update:model-value="revalidateIfHasErrors('parValue')"
               >
                 <template #decrement>
@@ -330,6 +332,7 @@ const cleanData = () => {
                 :placeholder="$t('label.currency')"
                 :items="currencies"
                 class="p-[18px] w-full pl-2"
+                @focus="parValueChangeHandler()"
                 @update:model-value="revalidateIfHasErrors('currency')"
               />
             </UFormField>

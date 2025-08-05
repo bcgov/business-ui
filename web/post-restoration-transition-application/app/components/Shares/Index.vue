@@ -258,6 +258,7 @@ const addedShare = () => {
     />
     <SharesAddEdit
       v-show="addingShare"
+      class="py-4 px-6"
       @cancel="addingShare = false"
       @done="addedShare"
     />
@@ -346,12 +347,11 @@ const addedShare = () => {
         </UDropdownMenu>
       </template>
       <template #expanded="{ row }">
-        <div class="pr-4">
-          <SharesAddEdit
-            @cancel="toggleShareExpanded(row)"
-            @done="updated(row)"
-          />
-        </div>
+        <SharesAddEdit
+          class="pr-4"
+          @cancel="toggleShareExpanded(row)"
+          @done="updated(row)"
+        />
       </template>
     </UTable>
   </div>
