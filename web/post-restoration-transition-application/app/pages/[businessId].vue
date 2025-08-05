@@ -1,7 +1,9 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
+
+const { setButtonControl } = useButtonControl()
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
@@ -160,6 +162,19 @@ const removeDateHandler = () => {
 const minArticleResolutionDate = computed(() => {
   return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
 })
+
+const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
+
+setButtonControl({
+  leftButtons: [
+    { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+    { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+  ],
+  rightButtons: [
+    { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+    { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+  ]
+})
 </script>
 
 <template>
@@ -243,7 +258,7 @@ const minArticleResolutionDate = computed(() => {
             class="text-base p-6 pb-2"
           >
             <template #title="{ error }">
-              <p class="mb-2 sm:mb-0 sm:font-bold" :class="error ? 'text-red-600' : ''">
+              <p :class="error ? 'text-red-600' : ''" class="mb-2 sm:mb-0 sm:font-bold">
                 {{ $t('label.resolutionOr') }}<br>
                 {{ $t('label.courtOrderDate') }}
               </p>
@@ -468,7 +483,7 @@ const minArticleResolutionDate = computed(() => {
           <slot />
         </div>
 
-        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10">
+        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10 md:grid-cols-2">
           <ConnectFeeWidget class="sticky lg:top-10" />
         </div>
       </div>
