@@ -136,16 +136,16 @@ export default {
           description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
         },
         404: {
-          title: 'Page not found',
-          description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
+          title: 'Invalid Link',
+          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
         },
         500: {
-          title: 'Internal Server Error',
-          description: 'Internal error, please try again later.'
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
         },
         undefined: {
-          title: 'Unknown Error',
-          description: 'An unknown error occured while loading this business, please try again later.'
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
         }
       },
       getDraftFiling: {

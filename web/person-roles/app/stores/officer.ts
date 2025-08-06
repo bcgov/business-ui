@@ -163,18 +163,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const status = error instanceof FetchError
         ? error.response?.status
         : undefined
-      const isUnauthorized = status && [401, 403].includes(status)
+      const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
       modal.openBaseErrorModal(
         error,
         'modal.error.initOfficerStore',
-        isUnauthorized
+        isUnauthorizedOrBusinessNotFound
           ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
               {
                 label: t('btn.goBack'),
                 to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
                 variant: 'outline'
-              },
+              }, // BC1239315?draft=200111
               { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
             ]
       )
