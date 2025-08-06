@@ -18,8 +18,8 @@ export const isCurrentOrganization = (accountId: number) => {
  */
 export async function getUserMembership (orgId: number | string): Promise<Member | null> {
   try {
-    const { $authApi } = useNuxtApp()
-    const membership = await $authApi<Member>(`/users/orgs/${orgId}/membership`)
+    const { $authApiBRD } = useNuxtApp()
+    const membership = await $authApiBRD<Member>(`/users/orgs/${orgId}/membership`)
 
     return membership
   } catch (error) {
@@ -38,8 +38,8 @@ export async function getUserMembership (orgId: number | string): Promise<Member
  */
 export async function addUserProductSubscription (orgId: number | string, payload: OrgProductsRequestBody): Promise<boolean> {
   try {
-    const { $authApi } = useNuxtApp()
-    await $authApi(`/orgs/${orgId}/products`, {
+    const { $authApiBRD } = useNuxtApp()
+    await $authApiBRD(`/orgs/${orgId}/products`, {
       method: 'POST',
       body: payload
     })
@@ -76,8 +76,8 @@ export async function addBusinessRegistryDashboardSubscription (orgId: number | 
  */
 export async function hasActiveBusinessRegistryDashboardSubscription (orgId: number | string): Promise<boolean> {
   try {
-    const { $authApi } = useNuxtApp()
-    const products = await $authApi<string>(`/orgs/${orgId}/products`)
+    const { $authApiBRD } = useNuxtApp()
+    const products = await $authApiBRD<string>(`/orgs/${orgId}/products`)
     const parsedProducts = JSON.parse(products) as OrgProduct[]
 
     // Code for the Business Registry Dashboard product

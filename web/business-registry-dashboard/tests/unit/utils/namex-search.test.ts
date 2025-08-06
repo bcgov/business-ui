@@ -14,7 +14,7 @@ mockNuxtImport('useRuntimeConfig', () => {
   return () => (
     {
       public: {
-        namexApiUrl: 'https://namexApiUrl.example.com'
+        namexApiGwUrl: 'https://namexApiUrl.example.com'
       }
     }
   )

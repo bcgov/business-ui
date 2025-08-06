@@ -21,7 +21,7 @@ mockNuxtImport('useNuxtApp', () => {
         authenticated: mockAuthenticated,
         token: 'mock-token'
       },
-      $authApi: mockAuthApi,
+      $authApiBRD: mockAuthApi,
       $legalApi: mockLegalApi
     }
   )

@@ -250,7 +250,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
     }
   }
 
-  const { $authApi, $legalApi } = useNuxtApp()
+  const { $authApiBRD, $legalApi } = useNuxtApp()
 
   const response = await $legalApi('/businesses?draft=true', {
     method: 'POST',
@@ -265,7 +265,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
   // unable to do this from backend, since it causes a circular dependency
   const incorporationNumber = business.businessIdentifier
 
-  await $authApi(`/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
+  await $authApiBRD(`/orgs/${currentAccountId}/affiliations/${incorporationNumber}`, {
     method: 'DELETE',
     body: { data: { passcodeResetEmail: undefined, resetPasscode: false, logDeleteDraft: true } }
   })

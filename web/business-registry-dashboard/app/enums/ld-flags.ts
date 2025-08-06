@@ -26,7 +26,5 @@ export enum LDFlags {
   SupportedAmalgamationEntities = 'supported-amalgamation-entities',
   SupportedContinuationInEntities = 'supported-continuation-in-entities',
   SupportRestorationEntities = 'supported-restoration-entities',
-  UseAuthApiGwUrl='use-auth-api-gw-url',
   UseBusinessApiGwUrl = 'use-business-api-gw-url',
-  UseNamexGwUrl = 'use-namex-gw-url'
 }
