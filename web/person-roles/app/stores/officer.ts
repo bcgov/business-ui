@@ -334,10 +334,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
       if (isEqual(tableOfficers, currentOfficers)) {
         return false
       }
-      const draftState: OfficersDraftFiling = JSON.parse(JSON.stringify(filingDraftState.value))
-      const draftOfficers = draftState.filing.changeOfOfficers.map(state => state.new)
-      // when saving, check if theres draft state saved already and if so compare to the table state
-      if (draftOfficers.length > 0) {
+      // Check if a draft exists and has any changes
+      if (filingDraftState.value?.filing?.changeOfOfficers?.length) {
+        const draftState: OfficersDraftFiling = JSON.parse(JSON.stringify(filingDraftState.value))
+        const draftOfficers = draftState.filing.changeOfOfficers.map(state => state.new)
+
+        // When saving, check if the table state or folio has changed from the draft
         return !isEqual(tableOfficers, draftOfficers) || draftState.filing.header.folioNumber !== folio.number
       }
     }
