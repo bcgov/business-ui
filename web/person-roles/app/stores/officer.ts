@@ -174,7 +174,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
                 label: t('btn.goBack'),
                 to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
                 variant: 'outline'
-              }, // BC1239315?draft=200111
+              },
               { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
             ]
       )
