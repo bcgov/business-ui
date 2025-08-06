@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { z } from 'zod'
+import type { Form, FormError } from '@nuxt/ui'
+
 const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
@@ -98,6 +101,12 @@ async function submitFiling() {
       return
     }
 
+    // validate folio input
+    const isFolioValid = await validateFolioNumber()
+    if (!isFolioValid) {
+      return
+    }
+
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
@@ -125,7 +134,7 @@ async function submitFiling() {
       officerData
     )
     // add folio number // TODO: validation?
-    payload.filing.header.folioNumber = officerStore.folioNumber
+    payload.filing.header.folioNumber = officerStore.folio.number
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
@@ -199,8 +208,14 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 
   // prevent save if there are no changes
-  if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', t('text.noChangesToSave'))
+  // if (!officerStore.checkHasChanges('save')) {
+  //   setAlertText(false, 'left', t('text.noChangesToSave'))
+  //   return
+  // }
+
+  // validate folio input
+  const isFolioValid = await validateFolioNumber()
+  if (!isFolioValid) {
     return
   }
 
@@ -212,60 +227,62 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       handleButtonLoading(false, 'left', 0)
     }
 
+    await sleep(5000)
+
     // pull draft id from url or mark as undefined
-    const draftId = (urlParams.draft as string) ?? undefined
+    // const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
-    if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
-      // TODO: how granular do we want to be with our error messages?
-      // we check pending tasks on page mount
-      // this will only occur if a pending task has been created after the initial page mount
-      modal.openBaseErrorModal(
-        undefined,
-        'modal.error.pendingTaskOnSaveOrSubmit'
-      )
-      return
-    }
+    // const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    // if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
+    //   // TODO: how granular do we want to be with our error messages?
+    //   // we check pending tasks on page mount
+    //   // this will only occur if a pending task has been created after the initial page mount
+    //   modal.openBaseErrorModal(
+    //     undefined,
+    //     'modal.error.pendingTaskOnSaveOrSubmit'
+    //   )
+    //   return
+    // }
 
     // save table state
-    const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
+    // const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // create filing payload
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
-      officerStore.activeBusiness,
-      'changeOfOfficers',
-      { changeOfOfficers: officerTableSnapshot }
-    )
+    // const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
+    //   officerStore.activeBusiness,
+    //   'changeOfOfficers',
+    //   { changeOfOfficers: officerTableSnapshot }
+    // )
 
     // add folio number // TODO: validation?
-    payload.filing.header.folioNumber = officerStore.folioNumber
-    payload.filing.header.type = FilingHeaderType.NON_LEGAL
+    // payload.filing.header.folioNumber = officerStore.folio.number
+    // payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
-    const res = await legalApi.saveOrUpdateDraftFiling(
-      officerStore.activeBusiness.identifier,
-      payload,
-      false,
-      draftId
-    )
+    // const res = await legalApi.saveOrUpdateDraftFiling(
+    //   officerStore.activeBusiness.identifier,
+    //   payload,
+    //   false,
+    //   draftId
+    // )
 
     // update saved draft state to track changes
-    officerStore.officerDraftTableState = officerTableSnapshot
+    // officerStore.officerDraftTableState = officerTableSnapshot
 
     // update url with filing id
     // required if it's the first time 'save draft' was clicked
     // if page refreshes, the correct data will be reloaded
-    urlParams.draft = String(res.filing.header.filingId)
+    // urlParams.draft = String(res.filing.header.filingId)
 
     // if resume later, navigate back to business dashboard
-    if (resumeLater) {
-      revokeBeforeUnloadEvent()
-      await navigateTo(
-        businessDashboardUrlWithBusinessAndAccount.value,
-        { external: true }
-      )
-    }
+    // if (resumeLater) {
+    //   revokeBeforeUnloadEvent()
+    //   await navigateTo(
+    //     businessDashboardUrlWithBusinessAndAccount.value,
+    //     { external: true }
+    //   )
+    // }
   } catch (error) {
     modal.openBaseErrorModal(
       error,
@@ -274,6 +291,30 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   } finally {
     handleButtonLoading(true)
   }
+}
+
+// folio number stuff
+const folioSchema = z.object({
+  number: z.string().max(50, t('validation.maxChars', { count: 50 })).optional()
+})
+type FolioSchema = z.output<typeof folioSchema>
+const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
+const folioErrors = computed<FormError[] | undefined>(() => {
+  const errors = folioFormRef.value?.getErrors()
+  return errors
+})
+async function validateFolioNumber() {
+  const errors = folioFormRef.value?.getErrors()
+  if (errors && errors[0]) {
+    await folioFormRef.value?.validate({ silent: true })
+    const el = document.getElementById('folio-number')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.focus({ preventScroll: true })
+    }
+    return false
+  }
+  return true
 }
 
 // init officers on mount and when account changes
@@ -333,9 +374,9 @@ watch(
     <h1>{{ $t('page.officerChange.h1') }}</h1>
 
     <section class="space-y-4">
-      <h3 class="text-lg">
-        1. Officer Information
-      </h3>
+      <h2 class="text-lg">
+        1. {{ $t('label.officerInfo') }}
+      </h2>
       <p class="-mt-2">
         {{ $t('text.trackOfficers') }}
       </p>
@@ -368,19 +409,22 @@ watch(
       </p>
 
       <UForm
-        :state="{}"
+        ref="folio-form"
+        :state="officerStore.folio"
+        :schema="folioSchema"
         class="bg-white p-6 rounded-sm shadow-sm"
         :class="{
-          'border-l-3 border-red-600': false
+          'border-l-3 border-red-600': folioErrors && folioErrors[0]
         }"
       >
         <FormSection
           :label="$t('label.folioNumber')"
           orientation="horizontal"
+          :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
           <FormFieldInput
-            v-model="officerStore.folioNumber"
-            name="folionumber"
+            v-model="officerStore.folio.number"
+            name="number"
             :label="$t('label.folioNumberOpt')"
             input-id="folio-number"
           />

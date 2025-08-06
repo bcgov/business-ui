@@ -121,7 +121,8 @@ export default {
     notEntered: 'Not Entered',
     notAvailable: 'Not Available',
     folioNumber: 'Folio or Reference Number',
-    folioNumberOpt: 'Folio or Reference Number (Optional)'
+    folioNumberOpt: 'Folio or Reference Number (Optional)',
+    officerInfo: 'Officer Information'
   },
   modal: {
     error: {
