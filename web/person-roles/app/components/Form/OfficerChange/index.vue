@@ -307,7 +307,7 @@ function clearUnfinishedTaskMsg() {
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined),
+      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
       'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
@@ -317,9 +317,12 @@ function clearUnfinishedTaskMsg() {
     @keyup.tab="clearUnfinishedTaskMsg"
   >
     <div class="flex flex-col sm:flex-row gap-6">
-      <h2 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
+      <h3
+        class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5"
+        :class="{ 'text-red-600': unfinishedTaskMsg !== '' }"
+      >
         {{ title }}
-      </h2>
+      </h3>
       <div class="flex flex-col gap-9 w-full">
         <div class="flex flex-col gap-9 w-full">
           <FormSection
@@ -355,7 +358,7 @@ function clearUnfinishedTaskMsg() {
               v-model="state.hasPreferredName"
               :label="$t('label.haspreferredName')"
               :ui="{ root: 'items-center' }"
-              class="-mt-2"
+              :class="state.hasPreferredName ? 'mb-6' : ''"
             />
 
             <UFormField
@@ -422,6 +425,7 @@ function clearUnfinishedTaskMsg() {
             v-model="state.sameAsDelivery"
             :label="$t('label.sameAsDeliveryAddress')"
             :ui="{ root: 'items-center' }"
+            :class="state.sameAsDelivery ? '' : 'mb-6'"
           />
 
           <FormAddress
@@ -443,17 +447,17 @@ function clearUnfinishedTaskMsg() {
           </p>
           <div class="flex gap-6 justify-end">
             <UButton
+              :label="$t('btn.cancel')"
+              variant="outline"
+              size="xl"
+              @click="$emit('cancel')"
+            />
+            <UButton
               id="btn-officer-form-done"
               :label="$t('btn.done')"
               type="submit"
               class="font-bold"
               size="xl"
-            />
-            <UButton
-              :label="$t('btn.cancel')"
-              variant="outline"
-              size="xl"
-              @click="$emit('cancel')"
             />
           </div>
         </div>

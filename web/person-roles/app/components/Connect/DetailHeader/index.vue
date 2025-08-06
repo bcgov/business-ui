@@ -129,7 +129,7 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
               >
                 <div class="flex flex-row flex-wrap gap-2">
                   <dt
-                    class="font-bold"
+                    class="font-bold text-bcGovGray-900"
                     :class="[detail.edit?.isEditing && 'mt-1']"
                   >
                     {{ detail.label }}:

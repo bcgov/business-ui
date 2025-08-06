@@ -13,14 +13,15 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
+  const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
   const officerTableState = ref<OfficerTableState[]>([]) // officer state displayed in table
-  const officerDraftTableState = shallowRef<OfficerTableState[]>([]) // officer state saved as draft
   const expanded = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
   const editState = ref<Officer>({} as Officer) // default state passed to officer form in edit mode
-  const folioNumber = ref<string>('')
+  const folio = reactive<{ number: string }>({ number: '' })
+  const filingDraftState = shallowRef<OfficersDraftFiling>({} as OfficersDraftFiling) // filing state saved as draft
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
@@ -32,7 +33,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
       detailsHeaderStore.loading = true
 
       // if filing ID provided, get and validate the filing structure, return early if invalid
-      let draftState: OfficerTableState[] = []
       if (draftId) {
         try {
           const { isValid, data } = await legalApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
@@ -43,8 +43,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
           if (!isValid) {
             throw new Error('Draft filing invalid')
           } else {
-            draftState = data?.filing.changeOfOfficers || []
-            folioNumber.value = data?.filing.header?.folioNumber || ''
+            filingDraftState.value = { filing: data?.filing, errors: [] } as OfficersDraftFiling
+            folio.number = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
           modal.openBaseErrorModal(
@@ -99,6 +99,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
+      activeBusinessAuthInfo.value = authInfo
       // set masthead data
       const contact = authInfo.contacts[0]
       const ext = contact?.extension || contact?.phoneExtension
@@ -113,7 +114,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         { label: t('label.phone'), value: phoneLabel }
       ]
 
-      // map current officers
+      // map current/existing officers
       const officers = parties.map((p) => {
         const mailingAddress = formatAddressUi(p.mailingAddress)
         const deliveryAddress = formatAddressUi(p.deliveryAddress)
@@ -145,9 +146,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       initialOfficers.value = officers // retain initial officer state before changes
 
       // set table to returned draft state if exists
-      if (draftId && draftState.length) {
-        officerTableState.value = draftState
-        officerDraftTableState.value = draftState
+      if (draftId && filingDraftState.value.filing.changeOfOfficers.length) {
+        officerTableState.value = JSON.parse(JSON.stringify(filingDraftState.value.filing.changeOfOfficers))
         return
       }
 
@@ -163,11 +163,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const status = error instanceof FetchError
         ? error.response?.status
         : undefined
-      const isUnauthorized = status && [401, 403].includes(status)
+      const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
       modal.openBaseErrorModal(
         error,
         'modal.error.initOfficerStore',
-        isUnauthorized
+        isUnauthorizedOrBusinessNotFound
           ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
               {
@@ -364,11 +364,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
       if (isEqual(tableOfficers, currentOfficers)) {
         return false
       }
-      const draftState: OfficerTableState[] = JSON.parse(JSON.stringify(officerDraftTableState.value))
-      const draftOfficers = draftState.map(state => state.state.officer)
+      const draftState: OfficersDraftFiling = JSON.parse(JSON.stringify(filingDraftState.value))
+      const draftOfficers = draftState.filing.changeOfOfficers.map(state => state.state.officer)
       // when saving, check if theres draft state saved already and if so compare to the table state
       if (draftOfficers.length > 0) {
-        return !isEqual(tableOfficers, draftOfficers)
+        return !isEqual(tableOfficers, draftOfficers) || draftState.filing.header.folioNumber !== folio.number
       }
     }
     // if no draft has been saved yet, compare against the original state.
@@ -383,17 +383,17 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initializing.value = false
     addingOfficer.value = false
     officerTableState.value = []
-    officerDraftTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
     activeBusiness.value = {} as BusinessData
     initialOfficers.value = []
-    folioNumber.value = ''
+    folio.number = ''
+    filingDraftState.value = {} as OfficersDraftFiling
+    activeBusinessAuthInfo.value = {} as AuthInformation
   }
 
   return {
     officerTableState,
-    officerDraftTableState,
     initializing,
     addingOfficer,
     activeBusiness,
@@ -401,7 +401,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
     editState,
     disableActions,
     initialOfficers,
-    folioNumber,
+    folio,
+    filingDraftState,
+    activeBusinessAuthInfo,
     initOfficerStore,
     addNewOfficer,
     editOfficer,

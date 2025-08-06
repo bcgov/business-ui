@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { z } from 'zod'
+import type { Form, FormError } from '@nuxt/ui'
+
 const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
@@ -98,6 +101,12 @@ async function submitFiling() {
       return
     }
 
+    // validate folio input
+    const isFolioValid = await validateFolioNumber()
+    if (!isFolioValid) {
+      return
+    }
+
     // set submit button as loading, disable all other bottom buttons
     handleButtonLoading(false, 'right', 1)
 
@@ -124,8 +133,13 @@ async function submitFiling() {
       'changeOfOfficers',
       officerData
     )
-    // add folio number // TODO: validation?
-    payload.filing.header.folioNumber = officerStore.folioNumber
+    // add folio number if it exists
+    if (officerStore.folio.number) {
+      payload.filing.header.folioNumber = officerStore.folio.number
+    } else if (officerStore.activeBusinessAuthInfo.folioNumber) { // if not, use entity folio number if available
+      payload.filing.header.folioNumber = officerStore.activeBusinessAuthInfo.folioNumber
+    }
+    // set as non legal filing
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
@@ -204,6 +218,12 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     return
   }
 
+  // validate folio input
+  const isFolioValid = await validateFolioNumber()
+  if (!isFolioValid) {
+    return
+  }
+
   try {
     // set appropriate button loading state
     if (resumeLater) {
@@ -238,8 +258,8 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       { changeOfOfficers: officerTableSnapshot }
     )
 
-    // add folio number // TODO: validation?
-    payload.filing.header.folioNumber = officerStore.folioNumber
+    // add folio number & set as non legal filing
+    payload.filing.header.folioNumber = officerStore.folio.number
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
@@ -251,7 +271,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     )
 
     // update saved draft state to track changes
-    officerStore.officerDraftTableState = officerTableSnapshot
+    officerStore.filingDraftState = res
 
     // update url with filing id
     // required if it's the first time 'save draft' was clicked
@@ -274,6 +294,30 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   } finally {
     handleButtonLoading(true)
   }
+}
+
+// folio number stuff
+const folioSchema = z.object({
+  number: z.string().max(50, t('validation.maxChars', { count: 50 })).optional()
+})
+type FolioSchema = z.output<typeof folioSchema>
+const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
+const folioErrors = computed<FormError[] | undefined>(() => {
+  const errors = folioFormRef.value?.getErrors()
+  return errors
+})
+async function validateFolioNumber() {
+  const errors = folioFormRef.value?.getErrors()
+  if (errors && errors[0]) {
+    await folioFormRef.value?.validate({ silent: true })
+    const el = document.getElementById('folio-number')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      el.focus({ preventScroll: true })
+    }
+    return false
+  }
+  return true
 }
 
 // init officers on mount and when account changes
@@ -330,40 +374,66 @@ watch(
 
 <template>
   <div class="py-10 space-y-8">
-    <div>
-      <h1>{{ $t('page.officerChange.h1') }}</h1>
-      <p class="mt-2">
+    <h1>{{ $t('page.officerChange.h1') }}</h1>
+
+    <section class="space-y-4">
+      <h2 class="text-lg">
+        1. {{ $t('label.officerInfo') }}
+      </h2>
+      <p class="-mt-2">
         {{ $t('text.trackOfficers') }}
       </p>
-    </div>
-
-    <div class="bg-white p-6 flex flex-col gap-4 rounded">
-      <!-- TODO: update with correct design/validation -->
-      <span class="text-lg text-bcGovGray-900 font-bold">Temp Folio input</span>
-      <ConnectInput
-        id="folio-number"
-        v-model="officerStore.folioNumber"
-        :label="$t('label.folioNumberOpt')"
+      <UButton
+        :label="$t('label.addOfficer')"
+        class="px-5 py-3"
+        color="primary"
+        icon="i-mdi-account-plus"
+        variant="outline"
+        :disabled="officerStore.initializing"
+        @click="onAddOfficerClick"
       />
-    </div>
 
-    <UButton
-      :label="$t('label.addOfficer')"
-      class="px-5 py-3"
-      color="primary"
-      icon="i-mdi-account-plus"
-      variant="outline"
-      :disabled="officerStore.initializing"
-      @click="onAddOfficerClick"
-    />
+      <FormOfficerChange
+        v-if="officerStore.addingOfficer"
+        :title="$t('label.addOfficer')"
+        @officer-change="onFormSubmit"
+        @cancel="officerStore.addingOfficer = false"
+      />
 
-    <FormOfficerChange
-      v-if="officerStore.addingOfficer"
-      :title="$t('label.addOfficer')"
-      @officer-change="onFormSubmit"
-      @cancel="officerStore.addingOfficer = false"
-    />
+      <TableOfficerChange @table-action="setAlertText(true)" />
+    </section>
 
-    <TableOfficerChange @table-action="setAlertText(true)" />
+    <section class="flex flex-col gap-4">
+      <h2 class="text-lg">
+        2. {{ $t('label.folioNumberOpt') }}
+      </h2>
+      <p class="-mt-2">
+        {{ $t('text.trackFolio') }}
+      </p>
+
+      <UForm
+        ref="folio-form"
+        :state="officerStore.folio"
+        :schema="folioSchema"
+        class="bg-white p-6 rounded-sm shadow-sm"
+        :class="{
+          'border-l-3 border-red-600': folioErrors && folioErrors[0]
+        }"
+      >
+        <FormSection
+          :label="$t('label.folioNumber')"
+          orientation="horizontal"
+          :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
+        >
+          <FormFieldInput
+            v-model="officerStore.folio.number"
+            name="number"
+            :label="$t('label.folioNumberOpt')"
+            input-id="folio-number"
+            @focusin="setAlertText(true)"
+          />
+        </FormSection>
+      </UForm>
+    </section>
   </div>
 </template>

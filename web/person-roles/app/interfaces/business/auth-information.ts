@@ -16,4 +16,5 @@ export interface AuthInformation {
   name: string
   passCodeClaimed: boolean
   folioNumber?: string
+  isLoadedLear?: boolean
 }
