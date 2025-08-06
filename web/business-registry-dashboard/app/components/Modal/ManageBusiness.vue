@@ -94,6 +94,10 @@ const authOptions = computed<AccordionItem[]>(() => {
   return options
 })
 
+const isLearBusiness = computed(async () => {
+  return await checkBusinessExistsInLear(props.business.identifier)
+})
+
 async function handleEmailAuthSentStateClosed () {
   if (formAddBusinessRef.value?.currentState === 'FormAddBusinessEmailAuthSent') {
     toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
@@ -174,17 +178,27 @@ onMounted(async () => {
           {{ $t('form.manageBusiness.missingInfo.fragmentPrt3') }}
         </p> -->
 
-        <!-- temporarily disabled per #29292
-        <p>The business doesn't have an email on file. Please contact B.C. Registries by choosing one of the options in the help section below</p> -->
-
-        <!-- temporary text per #29292: -->
-        <p>
-          Your company is still managed through <a href="https://www.corporateonline.gov.bc.ca" target="_blank" class="text-blue-500 underline">Corporate Online</a>, and will be moved to the BC Business Registry soon.
-        </p>
-
-        <p>
-          To keep up to date on when businesses can be self-managed through the BC Business Registry application, visit and subscribe to <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">http://bcreg.ca/updates</a>.
-        </p>
+        <!-- temporarily disabled per #29789 -->
+        <!-- company is in LEAR but doesn't have an email on file -->
+        <div v-if="isLearBusiness">
+          <p>The business doesn't have an email on file. Please contact B.C. Registries by choosing one of the options in the help section below</p>
+        </div>
+        <!-- company is still managed in COLIN -->
+        <div v-else>
+          <p>
+            Your company is still managed through
+            <a href="https://www.corporateonline.gov.bc.ca" target="_blank" class="text-blue-500 underline">Corporate Online</a>
+            <UIcon name="i-mdi-open-in-new" class="mr-2 size-5 text-bcGovColor-activeBlue" />
+            and will be moved to the BC Business Registry soon.
+          </p>
+          <p class="mt-4">
+            To stay informed about when companies can be managed directly through the BC Business Registry, subscribe to
+            <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">
+              BC Registries Modernization Updates
+            </a>.
+          </p>
+        </div>
+        <!-- temporary text per #29789: -->
 
         <div class="grid auto-cols-auto">
           <div class="grid-flow-col place-content-start justify-start">
