@@ -447,17 +447,17 @@ function clearUnfinishedTaskMsg() {
           </p>
           <div class="flex gap-6 justify-end">
             <UButton
+              :label="$t('btn.cancel')"
+              variant="outline"
+              size="xl"
+              @click="$emit('cancel')"
+            />
+            <UButton
               id="btn-officer-form-done"
               :label="$t('btn.done')"
               type="submit"
               class="font-bold"
               size="xl"
-            />
-            <UButton
-              :label="$t('btn.cancel')"
-              variant="outline"
-              size="xl"
-              @click="$emit('cancel')"
             />
           </div>
         </div>
