@@ -22,13 +22,7 @@ const preventDropdownCloseAutoFocus = ref(false)
 const addressSchema = getRequiredAddressSchema()
 
 // returns a unique list of badge props to display in the table based on what actions were taken
-function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
-  if (!actions.length) {
-    return []
-  }
-
-  const unique = [...new Set(actions)]
-
+function getTableBadges(oldOfficer: Officer | undefined, newOfficer: Officer): BadgeProps[] {
   const badgeMap: Record<OfficerFormAction, BadgeProps> = {
     name: {
       label: t('badge.nameChanged')
@@ -48,22 +42,22 @@ function getTableBadges(actions: OfficerFormAction[]): BadgeProps[] {
     }
   }
 
-  if (unique.includes('removed')) {
-    return [badgeMap['removed']]
-  }
-
-  if (unique.includes('added')) {
+  if (oldOfficer === undefined) {
     return [badgeMap['added']]
   }
 
-  const newBadges = unique.map(i => badgeMap[i])
+  if (newOfficer.roles.every(r => r.cessationDate !== null)) {
+    return [badgeMap['removed']]
+  }
 
-  return newBadges
+  const stateDiff = getOfficerStateDiff(oldOfficer, newOfficer)
+
+  return stateDiff.map(i => badgeMap[i])
 }
 
 // used to apply 'removed' styling if the row was removed
 function getIsRowRemoved(row: Row<OfficerTableState>) {
-  return row.original.state.actions.includes('removed')
+  return row.original.new.roles.every(r => r.cessationDate !== null)
 }
 
 // concatenates default class to apply to the <td>
@@ -101,7 +95,7 @@ function getRowActions(row: Row<OfficerTableState>) {
     }
   ]
 
-  if (row.original.history.length) {
+  if (row.original.old && getOfficerStateDiff(row.original.old, row.original.new).length > 0) {
     actions.unshift({
       label: t('label.change'),
       icon: 'i-mdi-pencil',
@@ -132,10 +126,10 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const officer = row.original.state.officer
+      const officer = row.original.new
       const name = `${officer.firstName} ${officer.middleName} ${officer.lastName}`.toUpperCase()
       const preferredName = officer.preferredName
-      const badges = getTableBadges(row.original.state.actions)
+      const badges = getTableBadges(row.original.old, row.original.new)
       const defaultCellClass = 'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal flex flex-col gap-2'
       const containerClass = getCellContainerClass(row, defaultCellClass)
 
@@ -184,8 +178,8 @@ const columns: TableColumn<OfficerTableState>[] = [
         'OTHER'
       ]
       const roleOrderMap = new Map(roleOrder.map((role, index) => [role, index]))
-      const isRemoved = row.original.state.actions.includes('removed')
-      const allRoles = row.original.state.officer.roles
+      const isRemoved = getIsRowRemoved(row)
+      const allRoles = row.original.new.roles
       const activeRoles = allRoles.filter(r => r.cessationDate === null)
       const displayedRoles = isRemoved ? allRoles : activeRoles
       const sortedRoles = [...displayedRoles].sort((a, b) => {
@@ -213,7 +207,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const address = row.original.state.officer.deliveryAddress
+      const address = row.original.new.deliveryAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
 
       return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
@@ -228,8 +222,8 @@ const columns: TableColumn<OfficerTableState>[] = [
       }
     },
     cell: ({ row }) => {
-      const sameAs = row.original.state.officer.sameAsDelivery
-      const mailingAddress = row.original.state.officer.mailingAddress
+      const sameAs = row.original.new.sameAsDelivery
+      const mailingAddress = row.original.new.mailingAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
 
       // only display mailing address if fully entered
@@ -254,7 +248,7 @@ const columns: TableColumn<OfficerTableState>[] = [
     },
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
-      const hasHistory = row.original.history.length
+      const hasEdits = row.original.old && getOfficerStateDiff(row.original.old, row.original.new).length > 0
       const containerClass = getCellContainerClass(row, 'pl-2 py-4 pr-6 ml-auto flex justify-end', true)
 
       return h(
@@ -268,15 +262,15 @@ const columns: TableColumn<OfficerTableState>[] = [
               default: () => [
                 h(UButton, {
                   variant: 'ghost',
-                  label: (isRemoved || hasHistory) ? t('label.undo') : t('label.change'),
-                  icon: (isRemoved || hasHistory) ? 'i-mdi-undo' : 'i-mdi-pencil',
+                  label: (isRemoved || hasEdits) ? t('label.undo') : t('label.change'),
+                  icon: (isRemoved || hasEdits) ? 'i-mdi-undo' : 'i-mdi-pencil',
                   class: 'px-4',
                   onClick: async () => {
                     const hasActiveForm = await officerStore.checkHasActiveForm('change')
                     if (hasActiveForm) {
                       return
                     }
-                    if (isRemoved || hasHistory) {
+                    if (isRemoved || hasEdits) {
                       officerStore.undoOfficer(row)
                     } else {
                       officerStore.initOfficerEdit(row)

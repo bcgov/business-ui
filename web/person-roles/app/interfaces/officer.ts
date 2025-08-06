@@ -18,15 +18,19 @@ export interface Officer {
   hasPreferredName: boolean
 }
 
+// export interface OfficerTableState {
+//   state: {
+//     officer: Officer
+//     actions: OfficerFormAction[]
+//   }
+//   history: Array<{
+//     officer: Officer
+//     actions: OfficerFormAction[]
+//   }>
+// }
 export interface OfficerTableState {
-  state: {
-    officer: Officer
-    actions: OfficerFormAction[]
-  }
-  history: Array<{
-    officer: Officer
-    actions: OfficerFormAction[]
-  }>
+  new: Officer
+  old?: Officer
 }
 
 export interface OfficerRolePayload {
