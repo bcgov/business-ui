@@ -427,6 +427,7 @@ watch(
             name="number"
             :label="$t('label.folioNumberOpt')"
             input-id="folio-number"
+            @focusin="setAlertText(true)"
           />
         </FormSection>
       </UForm>
