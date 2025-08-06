@@ -6,3 +6,7 @@ export type OfficerTableEditState = {
   data: Partial<Officer>
   section: OfficerTableEditSection
 }
+
+export type OfficersDraftFiling = FilingPutResponse<{
+  changeOfOfficers: OfficerTableState[]
+}>

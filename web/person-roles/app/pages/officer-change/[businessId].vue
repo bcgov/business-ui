@@ -208,10 +208,10 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 
   // prevent save if there are no changes
-  // if (!officerStore.checkHasChanges('save')) {
-  //   setAlertText(false, 'left', t('text.noChangesToSave'))
-  //   return
-  // }
+  if (!officerStore.checkHasChanges('save')) {
+    setAlertText(false, 'left', t('text.noChangesToSave'))
+    return
+  }
 
   // validate folio input
   const isFolioValid = await validateFolioNumber()
@@ -230,59 +230,59 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     await sleep(5000)
 
     // pull draft id from url or mark as undefined
-    // const draftId = (urlParams.draft as string) ?? undefined
+    const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    // const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
-    // if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
-    //   // TODO: how granular do we want to be with our error messages?
-    //   // we check pending tasks on page mount
-    //   // this will only occur if a pending task has been created after the initial page mount
-    //   modal.openBaseErrorModal(
-    //     undefined,
-    //     'modal.error.pendingTaskOnSaveOrSubmit'
-    //   )
-    //   return
-    // }
+    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
+      // TODO: how granular do we want to be with our error messages?
+      // we check pending tasks on page mount
+      // this will only occur if a pending task has been created after the initial page mount
+      modal.openBaseErrorModal(
+        undefined,
+        'modal.error.pendingTaskOnSaveOrSubmit'
+      )
+      return
+    }
 
     // save table state
-    // const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
+    const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // create filing payload
-    // const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
-    //   officerStore.activeBusiness,
-    //   'changeOfOfficers',
-    //   { changeOfOfficers: officerTableSnapshot }
-    // )
+    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
+      officerStore.activeBusiness,
+      'changeOfOfficers',
+      { changeOfOfficers: officerTableSnapshot }
+    )
 
-    // add folio number // TODO: validation?
-    // payload.filing.header.folioNumber = officerStore.folio.number
-    // payload.filing.header.type = FilingHeaderType.NON_LEGAL
+    // add folio number & set as non legal filing
+    payload.filing.header.folioNumber = officerStore.folio.number
+    payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
-    // const res = await legalApi.saveOrUpdateDraftFiling(
-    //   officerStore.activeBusiness.identifier,
-    //   payload,
-    //   false,
-    //   draftId
-    // )
+    const res = await legalApi.saveOrUpdateDraftFiling(
+      officerStore.activeBusiness.identifier,
+      payload,
+      false,
+      draftId
+    )
 
     // update saved draft state to track changes
-    // officerStore.officerDraftTableState = officerTableSnapshot
+    officerStore.filingDraftState = res
 
     // update url with filing id
     // required if it's the first time 'save draft' was clicked
     // if page refreshes, the correct data will be reloaded
-    // urlParams.draft = String(res.filing.header.filingId)
+    urlParams.draft = String(res.filing.header.filingId)
 
     // if resume later, navigate back to business dashboard
-    // if (resumeLater) {
-    //   revokeBeforeUnloadEvent()
-    //   await navigateTo(
-    //     businessDashboardUrlWithBusinessAndAccount.value,
-    //     { external: true }
-    //   )
-    // }
+    if (resumeLater) {
+      revokeBeforeUnloadEvent()
+      await navigateTo(
+        businessDashboardUrlWithBusinessAndAccount.value,
+        { external: true }
+      )
+    }
   } catch (error) {
     modal.openBaseErrorModal(
       error,
