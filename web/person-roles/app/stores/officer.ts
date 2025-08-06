@@ -13,6 +13,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const detailsHeaderStore = useConnectDetailsHeaderStore()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
+  const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
@@ -98,6 +99,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         legalApi.getParties(businessId, { classType: 'officer' })
       ])
 
+      activeBusinessAuthInfo.value = authInfo
       // set masthead data
       const contact = authInfo.contacts[0]
       const ext = contact?.extension || contact?.phoneExtension
@@ -387,6 +389,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initialOfficers.value = []
     folio.number = ''
     filingDraftState.value = {} as OfficersDraftFiling
+    activeBusinessAuthInfo.value = {} as AuthInformation
   }
 
   return {
@@ -400,6 +403,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
     initialOfficers,
     folio,
     filingDraftState,
+    activeBusinessAuthInfo,
     initOfficerStore,
     addNewOfficer,
     editOfficer,

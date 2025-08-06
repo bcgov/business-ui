@@ -133,8 +133,13 @@ async function submitFiling() {
       'changeOfOfficers',
       officerData
     )
-    // add folio number // TODO: validation?
-    payload.filing.header.folioNumber = officerStore.folio.number
+    // add folio number if it exists
+    if (officerStore.folio.number) {
+      payload.filing.header.folioNumber = officerStore.folio.number
+    } else if (officerStore.activeBusinessAuthInfo.folioNumber) { // if not, use entity folio number if available
+      payload.filing.header.folioNumber = officerStore.activeBusinessAuthInfo.folioNumber
+    }
+    // set as non legal filing
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
@@ -226,8 +231,6 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     } else {
       handleButtonLoading(false, 'left', 0)
     }
-
-    await sleep(5000)
 
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
