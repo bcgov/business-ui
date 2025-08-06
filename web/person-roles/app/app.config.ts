@@ -53,9 +53,9 @@ export default defineAppConfig({
     },
     checkbox: {
       slots: {
-        root: 'relative flex items-start',
-        base: 'shrink-0 flex items-center justify-center rounded-(--ui-radius) text-(--ui-bg) ring-2 ring-inset ring-bcGovGray-700 focus-visible:outline-2 focus-visible:outline-offset-2',
-        label: 'block font-medium text-(--ui-text) text-base'
+        root: 'relative flex items-start group',
+        base: 'relative shrink-0 flex overflow-visible items-center justify-center ring-2 ring-bcGovGray-700 before:absolute before:-inset-2.75 before:flex before:items-center before:justify-center group-hover:before:bg-[#C7C7C7]/50 before:rounded-full cursor-pointer group-active:before:bg-[#454545]/40 has-data-[state=checked]:hover:before:bg-[#7AA1D2]/40 has-data-[state=checked]:active:before:bg-[#155fb7]/40 before:transition-colors',
+        label: 'block font-medium text-(--ui-text) text-base cursor-pointer'
       }
     },
     formField: {
