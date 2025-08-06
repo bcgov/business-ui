@@ -155,7 +155,7 @@ describe('useOfficerStore', () => {
 
         // assert
         expect(store.officerTableState[0]!.state.officer.firstName).toBe('Draft Officer')
-        expect(store.officerDraftTableState[0]!.state.officer.firstName).toBe('Draft Officer')
+        expect(store.filingDraftState.filing.changeOfOfficers[0]!.state.officer.firstName).toBe('Draft Officer')
         expect(store.initialOfficers[0]!.firstName).toBe('Initial') // Initial state is still loaded for history
       })
 
@@ -370,7 +370,15 @@ describe('useOfficerStore', () => {
       beforeEach(() => {
         store.initialOfficers = [{ ...initialOfficer }]
         store.officerTableState = [createTableState({ ...initialOfficer })]
-        store.officerDraftTableState = []
+        store.filingDraftState = {
+          filing: {
+            changeOfOfficers: [createTableState(draftOfficer)],
+            header: {
+              folioNumber: ''
+            }
+          },
+          errors: []
+        } as unknown as OfficersDraftFiling
       })
 
       describe('when "when" is "submit"', () => {
@@ -384,7 +392,7 @@ describe('useOfficerStore', () => {
         })
 
         test('should return true even if table state matches draft state (but differs from initial)', () => {
-          store.officerDraftTableState = [createTableState(draftOfficer)]
+          store.filingDraftState.filing.changeOfOfficers = [createTableState(draftOfficer)]
           store.officerTableState = [createTableState(draftOfficer)]
           // The check should ignore the draft and compare to initial, so this is a change.
           expect(store.checkHasChanges('submit')).toBe(true)
@@ -409,7 +417,7 @@ describe('useOfficerStore', () => {
 
         describe('and a draft exists', () => {
           beforeEach(() => {
-            store.officerDraftTableState = [createTableState(draftOfficer)]
+            store.filingDraftState.filing.changeOfOfficers = [createTableState(draftOfficer)]
           })
 
           test('should return false if table state is identical to draft state', () => {
@@ -437,7 +445,7 @@ describe('useOfficerStore', () => {
       store.initialOfficers = [{ firstName: 'Test' }] as unknown as Officer[]
       store.officerTableState = [{ state: {} }] as unknown as OfficerTableState[]
       store.activeBusiness = { legalName: 'Test Inc' } as unknown as BusinessData
-      store.folioNumber = '123'
+      store.folio.number = '123'
 
       store.$reset()
 
@@ -445,7 +453,7 @@ describe('useOfficerStore', () => {
       expect(store.initialOfficers).toEqual([])
       expect(store.officerTableState).toEqual([])
       expect(store.activeBusiness).toEqual({})
-      expect(store.folioNumber).toEqual('')
+      expect(store.folio.number).toEqual('')
     })
   })
 
