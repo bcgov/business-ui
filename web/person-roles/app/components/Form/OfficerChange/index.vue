@@ -307,7 +307,7 @@ function clearUnfinishedTaskMsg() {
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined),
+      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
       'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
@@ -317,7 +317,10 @@ function clearUnfinishedTaskMsg() {
     @keyup.tab="clearUnfinishedTaskMsg"
   >
     <div class="flex flex-col sm:flex-row gap-6">
-      <h3 class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5">
+      <h3
+        class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5"
+        :class="{ 'text-red-600': unfinishedTaskMsg !== '' }"
+      >
         {{ title }}
       </h3>
       <div class="flex flex-col gap-9 w-full">

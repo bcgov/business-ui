@@ -308,7 +308,8 @@ const columns: TableColumn<OfficerTableState>[] = [
                         'ui': {
                           leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
                         },
-                        'aria-label': t('label.moreActions')
+                        'aria-label': t('label.moreActions'),
+                        'onClick': emit('table-action')
                       })
                   })
               ]
