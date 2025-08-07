@@ -19,14 +19,8 @@ export interface Officer {
 }
 
 export interface OfficerTableState {
-  state: {
-    officer: Officer
-    actions: OfficerFormAction[]
-  }
-  history: Array<{
-    officer: Officer
-    actions: OfficerFormAction[]
-  }>
+  new: Officer
+  old?: Officer
 }
 
 export interface OfficerRolePayload {

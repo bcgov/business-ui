@@ -53,10 +53,38 @@ export default defineAppConfig({
     },
     checkbox: {
       slots: {
-        root: 'relative flex items-start',
-        base: 'shrink-0 flex items-center justify-center rounded-(--ui-radius) text-(--ui-bg) ring-2 ring-inset ring-bcGovGray-700 focus-visible:outline-2 focus-visible:outline-offset-2',
-        label: 'block font-medium text-(--ui-text) text-base'
-      }
+        root: 'relative flex items-center group',
+        base: 'rounded-xs relative shrink-0 flex overflow-visible items-center justify-center ring-2 ring-bcGovGray-700 before:absolute before:-inset-2.75 before:flex before:items-center before:justify-center group-hover:before:bg-[#C7C7C7]/80 before:rounded-full cursor-pointer group-active:before:bg-[#454545]/40 has-data-[state=checked]:hover:before:bg-[#7AA1D2]/40 has-data-[state=checked]:active:before:bg-[#155fb7]/40 before:transition-colors',
+        label: 'cursor-pointer text-sm'
+      },
+      variants: {
+        variant: {
+          card: {
+            root: 'bg-bcGovGray-100 border border-gray-300 rounded-sm'
+          }
+        },
+        indicator: {
+          start: {
+            wrapper: 'ms-4'
+          }
+        }
+      },
+      compoundVariants: [
+        {
+          size: 'lg',
+          variant: 'card',
+          class: {
+            root: 'p-4.25'
+          }
+        },
+        {
+          color: 'primary',
+          variant: 'card',
+          class: {
+            root: 'has-data-[state=checked]:border-gray-300 cursor-pointer'
+          }
+        }
+      ]
     },
     formField: {
       slots: {

@@ -153,11 +153,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // map intitial officers data to display in table if no draft officers
       officerTableState.value = officers.map(o => ({
-          state: {
-            officer: o,
-            actions: []
-          },
-          history: []
+        new: o,
+        old: o
       }))
     } catch (error) {
       const status = error instanceof FetchError
@@ -196,13 +193,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
       v.mailingAddress = getNewOfficer().mailingAddress
     }
 
-    const newState: OfficerTableState = {
-      state: {
-        officer: v,
-        actions: ['added']
-      },
-      history: []
-    }
+    const newState = JSON.parse(JSON.stringify({
+      new: v
+    }))
 
     officerTableState.value = [
       ...officerTableState.value,
@@ -230,31 +223,27 @@ export const useOfficerStore = defineStore('officer-store', () => {
   *  @param {Row<OfficerTableState>} row The row to remove
   */
   function removeOfficer(row: Row<OfficerTableState>): void {
-    const initialState = row.original.state
-    const initialHistory = row.original.history
+    const oldOfficer = row.original.old
+    const newOfficer = row.original.new
 
-    // delete newly added officer from table
-    if (initialState.actions.includes('added')) {
+    // delete newly added officer from table - no old officer means new only
+    if (oldOfficer === undefined) {
       officerTableState.value = [
         ...officerTableState.value.slice(0, row.index),
         ...officerTableState.value.slice(row.index + 1)
       ]
-    } else { // else add removed badge and add cessation date to roles
+    } else { // else add cessation date to roles
       const todayUtc = getToday()
-      const officerToRemove = initialState.officer
 
-      const ceasedRoles: OfficerRoleObj[] = officerToRemove.roles.map(role => ({
+      const ceasedRoles: OfficerRoleObj[] = newOfficer.roles.map(role => ({
           ...role,
           cessationDate: todayUtc
       }))
 
-      const newState = {
-        state: {
-          officer: { ...officerToRemove, roles: ceasedRoles },
-          actions: [...initialState.actions, 'removed' as OfficerFormAction]
-        },
-        history: [...initialHistory, initialState]
-      }
+      const newState = JSON.parse(JSON.stringify({
+        new: { ...newOfficer, roles: ceasedRoles },
+        old: oldOfficer
+      }))
 
       updateOfficerTable(newState, row)
     }
@@ -266,19 +255,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
   *  @param {Row<OfficerTableState>} row The row to undo
   */
   function undoOfficer(row: Row<OfficerTableState>): void {
-    // undo all edits, can use commented code to undo individual edits if required
-    const initialHistory = row.original.history
-    // leaving this in for now, could use this instead to undo each individual action
-    // const previousState = initialHistory[initialHistory.length - 1]
-    const previousState = initialHistory[0]
+    const oldOfficer = row.original.old
 
-      if (previousState) {
-        // same here
-        // const newHistory = initialHistory.slice(0, initialHistory.length - 1)
-        const newState = {
-          state: previousState,
-          history: [] // newHistory
-        }
+      if (oldOfficer) {
+        const newState = JSON.parse(JSON.stringify({
+          new: oldOfficer,
+          old: oldOfficer
+        }))
         updateOfficerTable(newState, row)
       }
   }
@@ -292,17 +275,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   * @param {Row<OfficerTableState>} row The row to update the officer state.
   */
   function editOfficer(data: Officer, row: Row<OfficerTableState>): void {
-    const initialState = row.original.state
-    const initialHistory = row.original.history
-
-    // get any changed sections between new/old state
-    const sectionDiffs = getOfficerStateDiff(initialState.officer, data)
-
-    // return early if no changes made
-    if (!sectionDiffs.length) {
-      cancelOfficerEdit()
-      return
-    }
+    const oldOfficer = row.original.old
 
     // set address to empty fields if not fully entered
     const addressSchema = getRequiredAddressSchema()
@@ -311,13 +284,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
       data.mailingAddress = getNewOfficer().mailingAddress
     }
 
-    const newState = {
-      state: {
-        officer: data,
-        actions: [...initialState.actions, ...sectionDiffs]
-      },
-      history: [...initialHistory, initialState]
-    }
+    const newState = JSON.parse(JSON.stringify({
+      old: oldOfficer,
+      new: data
+    }))
 
     updateOfficerTable(newState, row)
     cancelOfficerEdit()
@@ -328,7 +298,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   * @param {Row<OfficerTableState>} row The row to edit.
   */
   function initOfficerEdit(row: Row<OfficerTableState>): void {
-    const officer = JSON.parse(JSON.stringify(row.original.state.officer))
+    const officer = JSON.parse(JSON.stringify(row.original.new))
     editState.value = officer
     expanded.value = { [row.index]: true }
   }
@@ -357,17 +327,19 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   function checkHasChanges(when: 'save' | 'submit'): boolean {
     const tableState: OfficerTableState[] = JSON.parse(JSON.stringify(officerTableState.value))
-    const tableOfficers = tableState.map(state => state.state.officer)
+    const tableOfficers = tableState.map(state => state.new)
     const currentOfficers = JSON.parse(JSON.stringify(initialOfficers.value))
     // check if the table state is different from the initial (current) officers
     if (when === 'save') {
       if (isEqual(tableOfficers, currentOfficers)) {
         return false
       }
-      const draftState: OfficersDraftFiling = JSON.parse(JSON.stringify(filingDraftState.value))
-      const draftOfficers = draftState.filing.changeOfOfficers.map(state => state.state.officer)
-      // when saving, check if theres draft state saved already and if so compare to the table state
-      if (draftOfficers.length > 0) {
+      // Check if a draft exists and has any changes
+      if (filingDraftState.value?.filing?.changeOfOfficers?.length) {
+        const draftState: OfficersDraftFiling = JSON.parse(JSON.stringify(filingDraftState.value))
+        const draftOfficers = draftState.filing.changeOfOfficers.map(state => state.new)
+
+        // When saving, check if the table state or folio has changed from the draft
         return !isEqual(tableOfficers, draftOfficers) || draftState.filing.header.folioNumber !== folio.number
       }
     }

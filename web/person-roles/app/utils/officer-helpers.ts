@@ -20,7 +20,7 @@ export function formatOfficerPayload(newState: OfficerTableState[]): ChangeOfOff
   const addressSchema = getRequiredAddressSchema()
 
   const data = newState.map((s) => {
-    const officer = s.state.officer
+    const officer = s.new
 
     const roles = officer.roles.map((r) => {
       return {
