@@ -83,6 +83,7 @@ export interface NameRequest {
     natureBusinessInfo?: string
     applicants?: Array<Applicant>
     corpNum?: string
+    legalName?: string
 }
 
 export interface Applicant {
