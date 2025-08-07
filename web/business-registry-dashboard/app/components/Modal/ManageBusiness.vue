@@ -17,6 +17,7 @@ const hasBusinessAuthentication = ref(false)
 const contactEmail = ref('')
 const affiliatedAccounts = ref<Array<{branchName?: string, name: string, uuid: string }>>([])
 const formAddBusinessRef = ref<InstanceType<typeof FormAddBusiness> | null>(null)
+const isLearBusiness = ref(false)
 const includedCorpTypes: string[] = [
   CorpTypes.BC_CCC,
   CorpTypes.BC_COMPANY,
@@ -127,6 +128,9 @@ onMounted(async () => {
     hasBusinessAuthentication.value = false
     logFetchError(error, 'Error retrieving business passcode')
   }
+
+  isLearBusiness.value = await checkBusinessExistsInLear(props.business.identifier)
+
   setTimeout(() => { // give enough time for computed options to update before removing loading state
     loading.value = false
   }, 300)
@@ -155,36 +159,42 @@ onMounted(async () => {
         v-else-if="authOptions.length === 0"
         class="flex flex-col gap-4"
       >
-        <!-- temporarily disabled per #29292
-        <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p> -->
+        <!-- company is in LEAR but doesn't have an email on file -->
+        <template v-if="isLearBusiness">
+          <p>The business doesn't have an email on file. Please contact B.C. Registries by choosing one of the options in the help section below.</p>
+          <!-- temporarily disabled per #29292, will be enablewhen form process is ready
+          <p>{{ $t('form.manageBusiness.missingInfo.p1') }}</p> -->
 
-        <!-- On hold for email form
-        <p class="border-b border-gray-300 pb-3">
-          {{ $t('form.manageBusiness.missingInfo.fragmentPrt1') }}
-          <a
-            href=" "
-            target="_blank"
-            class="text-blue-500 underline"
-          >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
-          </a>
-          <UIcon
-            name="i-mdi-open-in-new"
-            class="mr-2 size-5 text-bcGovColor-activeBlue"
-          />
-          {{ $t('form.manageBusiness.missingInfo.fragmentPrt3') }}
-        </p> -->
-
-        <!-- temporarily disabled per #29292
-        <p>The business doesn't have an email on file. Please contact B.C. Registries by choosing one of the options in the help section below</p> -->
-
-        <!-- temporary text per #29292: -->
-        <p>
-          Your company is still managed through <a href="https://www.corporateonline.gov.bc.ca" target="_blank" class="text-blue-500 underline">Corporate Online</a>, and will be moved to the BC Business Registry soon.
-        </p>
-
-        <p>
-          To keep up to date on when businesses can be self-managed through the BC Business Registry application, visit and subscribe to <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">http://bcreg.ca/updates</a>.
-        </p>
+          <!-- On hold for email form
+          <p class="border-b border-gray-300 pb-3">
+            {{ $t('form.manageBusiness.missingInfo.fragmentPrt1') }}
+            <a
+              href=" "
+              target="_blank"
+              class="text-blue-500 underline"
+            >{{ $t('form.manageBusiness.missingInfo.fragmentPrt2') }}
+            </a>
+            <UIcon
+              name="i-mdi-open-in-new"
+              class="mr-2 size-5 text-bcGovColor-activeBlue"
+            />
+            {{ $t('form.manageBusiness.missingInfo.fragmentPrt3') }}
+          </p> -->
+        </template>
+        <!-- company is still managed in COLIN -->
+        <template v-else>
+          <p>
+            Your company is still managed through
+            <a href="https://www.corporateonline.gov.bc.ca" target="_blank" class="text-blue-500 underline">Corporate Online</a>
+            <UIcon name="i-mdi-open-in-new" class="size-5 text-bcGovColor-activeBlue" /> and will be moved to the BC Business Registry soon.
+          </p>
+          <p class="mt-4">
+            To stay informed about when companies can be managed directly through the BC Business Registry, subscribe to
+            <a href="https://www2.gov.bc.ca/gov/content/employment-business/business/managing-a-business/permits-licences/news-updates/modernization" target="_blank" class="text-blue-500 underline">
+              BC Registries Modernization Updates<UIcon name="i-mdi-open-in-new" class="size-5 text-bcGovColor-activeBlue" />
+            </a>.
+          </p>
+        </template>
 
         <div class="grid auto-cols-auto">
           <div class="grid-flow-col place-content-start justify-start">
