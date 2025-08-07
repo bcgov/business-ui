@@ -120,9 +120,9 @@ export function isSupportedRestorationEntities (item: Business): boolean {
   }
 }
 
-export function getPreferredName(names: Names[]): string | undefined {
-    const approved = names.find(n => n.state === NrState.APPROVED || n.state === NrState.CONDITIONAL)
-    return (approved ?? names[0])?.name;
+export function getPreferredName (names: Names[]): string | undefined {
+  const approved = names.find(n => n.state === NrState.APPROVED || n.state === NrState.CONDITIONAL)
+  return (approved ?? names[0])?.name
 }
 
 export async function createNamedBusiness ({ filingType, business }: { filingType: FilingTypes, business: Business}) {
@@ -165,7 +165,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
             nameRequest: {
               legalType: business.nameRequest.legalType,
               nrNumber: business.businessIdentifier || business.nameRequest.nrNumber,
-              legalName: business.nameRequest.names? getPreferredName(business.nameRequest.names): undefined
+              legalName: getPreferredName(business.nameRequest.names ?? [])
             }
           }
         }
@@ -187,7 +187,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
             nameRequest: {
               legalType: business.nameRequest.legalType,
               nrNumber: business.businessIdentifier || business.nameRequest.nrNumber,
-              legalName: business.nameRequest.names? getPreferredName(business.nameRequest.names): undefined
+              legalName: getPreferredName(business.nameRequest.names ?? [])
             }
           }
         }
@@ -217,7 +217,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
             nameRequest: {
               legalType: business.nameRequest.legalType,
               nrNumber: business.nameRequest.nrNumber,
-              legalName: business.nameRequest.names? getPreferredName(business.nameRequest.names): undefined
+              legalName: getPreferredName(business.nameRequest.names ?? [])
             }
           }
         }
@@ -242,7 +242,7 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
             nameRequest: {
               legalType: business.nameRequest.legalType,
               nrNumber: business.nameRequest.nrNumber,
-              legalName: business.nameRequest.names? getPreferredName(business.nameRequest.names): undefined
+              legalName: getPreferredName(business.nameRequest.names ?? [])
             }
           }
         }
