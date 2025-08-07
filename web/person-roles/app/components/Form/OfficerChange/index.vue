@@ -394,12 +394,23 @@ function clearUnfinishedTaskMsg() {
             name="roles"
             :ui="{ error: 'sr-only' }"
           >
-            <FormCheckboxGroup
+            <UCheckboxGroup
+              id="officer-role-options"
+              :model-value="selectedRoles"
+              :items="roleOptions"
+              variant="card"
+              size="lg"
+              :ui="{
+                fieldset: 'grid grid-cols-2 gap-4'
+              }"
+              @update:model-value="handleRoleChange"
+            />
+            <!-- <FormCheckboxGroup
               id="officer-role-options"
               :items="roleOptions"
               :model-value="selectedRoles"
               @update:model-value="handleRoleChange"
-            />
+            /> -->
           </UFormField>
         </FormSection>
 
