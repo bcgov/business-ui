@@ -85,7 +85,7 @@ describe('useOfficerStore', () => {
         expect(store.activeBusiness.legalName).toBe('Test Inc.')
         expect(store.initialOfficers).toHaveLength(1)
         expect(store.initialOfficers[0]!.firstName).toBe('Initial')
-        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Initial')
+        expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
         expect(mockModal.openBaseErrorModal).not.toHaveBeenCalled()
       })
 
@@ -141,8 +141,14 @@ describe('useOfficerStore', () => {
       const draftId = 'draft123'
 
       test('should load and populate state from a valid draft', async () => {
-        const draftState = [{ state: { officer: { firstName: 'Draft Officer' } } }] as OfficerTableState[]
-        const draftResponse = { isValid: true, data: { filing: { changeOfOfficers: draftState } } }
+        const draftResponse = {
+          isValid: true,
+          data: {
+              filing: {
+                  changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
+              }
+          }
+        }
 
         // mocks
         mockLegalApi.getAndValidateDraftFiling.mockResolvedValue(draftResponse)
@@ -154,8 +160,8 @@ describe('useOfficerStore', () => {
         await store.initOfficerStore(businessId, draftId)
 
         // assert
-        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Draft Officer')
-        expect(store.filingDraftState.filing.changeOfOfficers[0]!.state.officer.firstName).toBe('Draft Officer')
+        expect(store.officerTableState[0]!.new.firstName).toBe('Draft Officer')
+        expect(store.filingDraftState.filing.changeOfOfficers[0]!.new.firstName).toBe('Draft Officer')
         expect(store.initialOfficers[0]!.firstName).toBe('Initial') // Initial state is still loaded for history
       })
 
@@ -218,8 +224,7 @@ describe('useOfficerStore', () => {
 
         // assert
         expect(store.officerTableState).toHaveLength(1)
-        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Test')
-        expect(store.officerTableState[0]!.state.actions).toContain('added')
+        expect(store.officerTableState[0]!.new.firstName).toBe('Test')
       })
 
       test('resets mailing address if validation fails', () => {
@@ -234,7 +239,7 @@ describe('useOfficerStore', () => {
         // assert
         expect(store.officerTableState).toHaveLength(1)
         // mailing address should be reset to empty string
-        expect(store.officerTableState[0]!.state.officer.mailingAddress.street).toBe('')
+        expect(store.officerTableState[0]!.new.mailingAddress.street).toBe('')
       })
     })
 
@@ -243,14 +248,13 @@ describe('useOfficerStore', () => {
         const existingOfficer = { id: '1', firstName: 'Carol', roles: [{ roleType: 'CEO', cessationDate: null }] }
         const row = {
           index: 0,
-          original: { state: { officer: existingOfficer, actions: [] }, history: [] }
+          original: { new: existingOfficer, old: existingOfficer }
         } as unknown as Row<OfficerTableState>
         store.officerTableState = [row.original]
 
         store.removeOfficer(row)
 
-        expect(store.officerTableState[0]!.state.actions).toContain('removed')
-        expect(store.officerTableState[0]!.state!.officer!.roles[0]!.cessationDate).toBeDefined()
+        expect(store.officerTableState[0]!.new!.roles[0]!.cessationDate).toBeDefined()
       })
 
       test('deletes a newly added officer from the table', () => {
@@ -269,18 +273,17 @@ describe('useOfficerStore', () => {
 
     describe('undoOfficer', () => {
       test('reverts an officer to its previous state', () => {
-        const originalState = { officer: { firstName: 'Original' }, actions: [] }
-        const editedState = { officer: { firstName: 'Edited' }, actions: ['name'] }
+        const originalState = { firstName: 'Original' }
+        const editedState = { firstName: 'Edited' }
         const row = {
           index: 0,
-          original: { state: editedState, history: [originalState] }
+          original: { new: editedState, old: originalState }
         } as unknown as Row<OfficerTableState>
         store.officerTableState = [row.original]
 
         store.undoOfficer(row)
 
-        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Original')
-        expect(store.officerTableState[0]!.history).toEqual([]) // history is cleared
+        expect(store.officerTableState[0]!.new.firstName).toBe('Original')
       })
     })
 
@@ -290,22 +293,20 @@ describe('useOfficerStore', () => {
         // @ts-expect-error - safeParse return type requires data object
         vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
         const originalOfficer = { id: '1', firstName: 'Carol' } as Officer
-        const row = { index: 0, original: { state: { officer: originalOfficer, actions: [] }, history: [] } }
+        const row = { index: 0, original: { new: originalOfficer } }
         store.officerTableState = [row.original]
         const newData = { ...originalOfficer, firstName: 'Caroline' }
 
         store.editOfficer(newData, row as unknown as Row<OfficerTableState>)
 
-        expect(store.officerTableState[0]!.state.officer.firstName).toBe('Caroline')
-        expect(store.officerTableState[0]!.state.actions).toContain('name')
-        expect(store.officerTableState[0]!.history).toHaveLength(1)
+        expect(store.officerTableState[0]!.new.firstName).toBe('Caroline')
       })
     })
 
     describe('initOfficerEdit', () => {
       test('sets the editState and expands the row', () => {
         const officer = { firstName: 'Carol' } as Officer
-        const row = { index: 1, original: { state: { officer, actions: [] }, history: [] } }
+        const row = { index: 1, original: { new: officer } }
 
         store.initOfficerEdit(row as unknown as Row<OfficerTableState>)
 
@@ -363,8 +364,7 @@ describe('useOfficerStore', () => {
       const editedOfficer = { id: '1', firstName: 'Edited Version' } as Officer
 
       const createTableState = (officer: Officer): OfficerTableState => ({
-        state: { officer, actions: [] },
-        history: []
+        new: officer
       })
 
       beforeEach(() => {

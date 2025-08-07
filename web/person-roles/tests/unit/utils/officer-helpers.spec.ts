@@ -49,8 +49,9 @@ describe('officer-helpers utils', () => {
       ]
     }
 
+    // UPDATED: Mock to use the new `new` property
     const baseState = [
-      { state: { officer: baseOfficer, actions: [] }, history: [] }
+      { new: baseOfficer }
     ] as unknown as OfficerTableState[]
 
     test('should format the payload correctly', () => {
@@ -77,15 +78,16 @@ describe('officer-helpers utils', () => {
     })
 
     test('should INCLUDE mailingAddress if it is complete and valid', () => {
-      const modifiedOfficer = {
-        ...baseOfficer,
-        mailingAddress: { street: '456 Mail St', city: 'Vancouver', postalCode: 'V6B 4N2', country: 'CA', region: 'BC' }
-      } as unknown as Officer
-      const modifiedState: OfficerTableState[] = [
-        { state: { officer: modifiedOfficer, actions: [] }, history: [] }
-      ]
+      const modifiedOfficerState = {
+        new: {
+          ...baseOfficer,
+          mailingAddress: {
+            street: '456 Mail St', city: 'Vancouver', postalCode: 'V6B 4N2', country: 'CA', region: 'BC'
+          }
+        }
+      }
 
-      const result = formatOfficerPayload(modifiedState).changeOfOfficers
+      const result = formatOfficerPayload([modifiedOfficerState] as OfficerTableState[]).changeOfOfficers
       const officerPayload = result.relationships[0]
 
       expect(officerPayload).toHaveProperty('mailingAddress')
@@ -95,8 +97,8 @@ describe('officer-helpers utils', () => {
     test('should handle multiple officers in the payload', () => {
       const secondOfficer = { ...baseOfficer, id: '456', firstName: 'Another' }
       const multiState = [
-        { state: { officer: baseOfficer, actions: [] }, history: [] },
-        { state: { officer: secondOfficer, actions: [] }, history: [] }
+        { new: baseOfficer },
+        { new: secondOfficer }
       ] as unknown as OfficerTableState[]
 
       const result = formatOfficerPayload(multiState).changeOfOfficers
