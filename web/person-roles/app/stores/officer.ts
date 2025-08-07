@@ -232,7 +232,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         ...officerTableState.value.slice(0, row.index),
         ...officerTableState.value.slice(row.index + 1)
       ]
-    } else { // else add removed badge and add cessation date to roles
+    } else { // else add cessation date to roles
       const todayUtc = getToday()
 
       const ceasedRoles: OfficerRoleObj[] = newOfficer.roles.map(role => ({
