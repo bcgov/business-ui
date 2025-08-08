@@ -483,8 +483,9 @@ setButtonControl({
           <slot />
         </div>
 
-        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10 md:grid-cols-2">
+        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10">
           <ConnectFeeWidget class="sticky lg:top-10" />
+          <div class="md:justify-end md:justify-start md:grid-cols-2 ring rounded-md">CSS for page buttons</div>
         </div>
       </div>
     </main> -->
