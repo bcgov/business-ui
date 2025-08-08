@@ -1,0 +1,133 @@
+{
+  "transition": {
+    "nameTranslations": [
+      {
+        "name": "Société Exemple Inc.",
+        "language": "fr"
+      }
+    ],
+    "offices": {
+      "registeredOffice": {
+        "deliveryAddress": {
+          "streetAddress": "123 Main Street",
+          "streetAddressAdditional": "Suite 100",
+          "addressCity": "Victoria",
+          "addressRegion": "BC",
+          "postalCode": "V8W 2Y2",
+          "addressCountry": "CA"
+        },
+        "mailingAddress": {
+          "streetAddress": "123 Main Street",
+          "streetAddressAdditional": "Suite 100",
+          "addressCity": "Victoria",
+          "addressRegion": "BC",
+          "postalCode": "V8W 2Y2",
+          "addressCountry": "CA"
+        }
+      },
+      "recordsOffice": {
+        "deliveryAddress": {
+          "streetAddress": "456 Business Ave",
+          "addressCity": "Vancouver",
+          "addressRegion": "BC",
+          "postalCode": "V6B 1A1",
+          "addressCountry": "CA"
+        },
+        "mailingAddress": {
+          "streetAddress": "456 Business Ave",
+          "addressCity": "Vancouver",
+          "addressRegion": "BC",
+          "postalCode": "V6B 1A1",
+          "addressCountry": "CA"
+        }
+      }
+    },
+    "parties": [
+      {
+        "officer": {
+          "firstName": "John",
+          "lastName": "Smith",
+          "middleName": "Robert"
+        },
+        "mailingAddress": {
+          "streetAddress": "789 Director Lane",
+          "addressCity": "Richmond",
+          "addressRegion": "BC",
+          "postalCode": "V7A 1B2",
+          "addressCountry": "CA"
+        },
+        "deliveryAddress": {
+          "streetAddress": "789 Director Lane",
+          "addressCity": "Richmond",
+          "addressRegion": "BC",
+          "postalCode": "V7A 1B2",
+          "addressCountry": "CA"
+        },
+        "roles": [
+          {
+            "roleType": "Director",
+            "appointmentDate": "2024-01-15"
+          },
+          {
+            "roleType": "President",
+            "appointmentDate": "2024-01-15"
+          }
+        ]
+      },
+      {
+        "officer": {
+          "firstName": "Jane",
+          "lastName": "Doe"
+        },
+        "mailingAddress": {
+          "streetAddress": "321 Secretary St",
+          "addressCity": "Burnaby",
+          "addressRegion": "BC",
+          "postalCode": "V5G 2M3",
+          "addressCountry": "CA"
+        },
+        "roles": [
+          {
+            "roleType": "Director",
+            "appointmentDate": "2024-01-15"
+          },
+          {
+            "roleType": "Secretary",
+            "appointmentDate": "2024-01-15"
+          }
+        ]
+      }
+    ],
+    "shareStructure": {
+      "shareClasses": [
+        {
+          "id": 1,
+          "name": "Common Shares",
+          "priority": 1,
+          "hasMaximumShares": false,
+          "hasParValue": false,
+          "hasRightsOrRestrictions": false,
+          "series": []
+        },
+        {
+          "id": 2,
+          "name": "Preferred Shares",
+          "priority": 2,
+          "hasMaximumShares": true,
+          "maxNumberOfShares": 1000000,
+          "hasParValue": true,
+          "parValue": 1.00,
+          "currency": "CAD",
+          "hasRightsOrRestrictions": true,
+          "series": []
+        }
+      ]
+    },
+    "hasProvisions": true,
+    "contactPoint": {
+      "email": "legal@examplecompany.ca",
+      "phone": "+1-250-555-0123",
+      "extension": "101"
+    }
+  }
+}

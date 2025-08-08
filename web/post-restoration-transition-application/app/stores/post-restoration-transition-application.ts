@@ -1,9 +1,13 @@
 import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
+import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
+
+const transitionApplicationIncompleteHook = 'app:transition-application-form:incomplete'
 
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
   const t = useNuxtApp().$i18n.t
+  const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
   const feeStore = useConnectFeeStore()
@@ -26,6 +30,8 @@ export const usePostRestorationTransitionApplicationStore
   const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
   const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
+
+  const editState = computed(() => editingShareIndex.value !== -1)
 
   const businessName = computed(() => {
     const alternateName = activeBusiness.value?.alternateNames?.length > 0
@@ -161,12 +167,66 @@ export const usePostRestorationTransitionApplicationStore
   const shareWithSpecialRightsModified = computed(() => {
     for (const index of modifiedShareIndexes.value) {
       if (shareClasses.value[index]?.hasRightsOrRestrictions
-          || ORIGINAL_SHARE_CLASSES.value[index]?.hasRightsOrRestrictions) {
+        || ORIGINAL_SHARE_CLASSES.value[index]?.hasRightsOrRestrictions) {
         return true
       }
     }
     return false
   })
+
+  async function checkHasActiveForm(opt: 'save' | 'submit' | 'change') {
+    if (!isEmpty(editState.value)) {
+      let msg
+      switch (opt) {
+        case 'save':
+          msg = t('text.finishTaskBeforeSave')
+          break
+        case 'change':
+          msg = t('text.finishTaskBeforeOtherChanges')
+          break
+        case 'submit':
+          msg = t('text.finishTaskBeforeSubmit')
+          break
+        default:
+          msg = t('text.finishTaskBeforeOtherChanges')
+      }
+
+      await nuxtApp.callHook(transitionApplicationIncompleteHook, { message: msg })
+      return true
+    }
+    return false
+  }
+
+  const checkHasChanges = async (opt: 'save' | 'submit' | 'change') => {
+    if (await checkHasActiveForm(opt)) {
+      return true
+    }
+    return true
+    // return false
+    // todo: on wha1t changes do we want to stop ?
+  }
+
+  const getFilingPayload = (): StandaloneTransitionFiling | undefined => {
+    // todo: implement filing payload
+    const officesData = toStandaloneTransitionOffices(offices.value)
+    if (officesData === undefined) {
+      return undefined
+    }
+    const transitionFiling = {
+      transition: {
+        nameTranslations: activeBusiness.value.alternateNames,
+        offices: officesData,
+        parties: directors.value,
+        hasProvisions: false, // todo: find out hot wo fill this out
+        contactPoint: {
+          email: compPartyEmail.value || regOfficeEmail.value || '' // todo: find out correct details for this
+        },
+        shareStructure: { shareClasses: shareClasses.value }
+      }
+    }
+    console.info(transitionFiling)
+    return transitionFiling
+  }
 
   return {
     activeBusiness,
@@ -183,6 +243,9 @@ export const usePostRestorationTransitionApplicationStore
     planOfArrangement,
     regOfficeEmail,
     init,
+    checkHasActiveForm,
+    checkHasChanges,
+    getFilingPayload,
     editingShareIndex,
     modifiedShareIndexes,
     shareWithSpecialRightsModified,
