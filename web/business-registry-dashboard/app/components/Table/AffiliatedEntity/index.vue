@@ -185,7 +185,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busName.placeholder')"
             :aria-label="$t('table.affiliation.filter.busName.aria')"
-            :disabled="affStore.affiliations.loading"
+            @keydown.enter.prevent="affStore.loadAffiliations"
           />
         </TableColumnHeader>
       </template>
@@ -207,7 +207,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             variant="bcGovSm"
             :placeholder="$t('table.affiliation.filter.busNumber.placeholder')"
             :aria-label="$t('table.affiliation.filter.busNumber.aria')"
-            :disabled="affStore.affiliations.loading"
+            @keydown.enter.prevent="affStore.loadAffiliations"
           />
         </TableColumnHeader>
       </template>

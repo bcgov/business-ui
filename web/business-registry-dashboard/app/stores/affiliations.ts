@@ -463,7 +463,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         }
       }
     },
-    { debounce: 400 } // 400ms debounce time - wait for user input to settle
+    { debounce: 500 } // 500ms debounce time - wait for user input to settle
   )
 
   // Separate watch for immediately resetting page when limit changes
