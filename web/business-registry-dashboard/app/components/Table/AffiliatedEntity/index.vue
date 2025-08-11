@@ -227,6 +227,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <MultiSelectTypeAhead
             v-model="affStore.affiliations.filters.type"
             :options="affStore.typeOptions"
+            :section-break-before="affStore.typeOptionsSectionBreakBefore"
             :placeholder="$t('table.affiliation.filter.legalType.placeholder')"
             :disabled="affStore.affiliations.loading"
             :label="$t('table.affiliation.filter.legalType.aria', {
@@ -255,6 +256,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <MultiSelectTypeAhead
             v-model="affStore.affiliations.filters.status"
             :options="affStore.statusOptions"
+            :section-break-before="affStore.statusOptionsSectionBreakBefore"
             :placeholder="$t('table.affiliation.filter.busStates.placeholder')"
             :disabled="affStore.affiliations.loading"
             :label="$t('table.affiliation.filter.busStates.aria', {

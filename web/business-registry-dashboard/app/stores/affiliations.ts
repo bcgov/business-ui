@@ -663,6 +663,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       : Array.from(new Set(affiliations.results.map(affiliationStatus)))
   })
 
+  // Determine where to insert section breaks in the status filter list
+  // - Only applies when pagination is enabled, using predefined break points
+  const statusOptionsSectionBreakBefore = computed(() => {
+    if (enablePagination.value) {
+      return STATUS_FILTER_OPTIONS_SECTION_BREAK_BEFORE
+    }
+    return []
+  })
+
   // If pagination is enabled, use the type filter options from the enum
   // Otherwise, create type filter options from stored all options
   const typeOptions = computed(() => {
@@ -673,6 +682,15 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return allTypeOptions.value.length > 0
       ? allTypeOptions.value
       : Array.from(new Set(affiliations.results.map(affiliationType)))
+  })
+
+  // Determine where to insert section breaks in the type filter list
+  // - Only applies when pagination is enabled, using predefined break points
+  const typeOptionsSectionBreakBefore = computed(() => {
+    if (enablePagination.value) {
+      return TYPE_FILTER_OPTIONS_SECTION_BREAK_BEFORE
+    }
+    return []
   })
 
   const hasFilters = computed(() => {
@@ -873,7 +891,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     setColumns,
     filteredResults,
     statusOptions,
+    statusOptionsSectionBreakBefore,
     typeOptions,
+    typeOptionsSectionBreakBefore,
     hasFilters,
     resetFilters,
     authorizedActions,

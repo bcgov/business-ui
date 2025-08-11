@@ -5,6 +5,7 @@ const props = defineProps<{
   placeholder: string
   disabled?: boolean
   label: string
+  sectionBreakBefore?: string[] // <-- optional, list of items to place a break before
 }>()
 
 const emit = defineEmits<{
@@ -151,15 +152,23 @@ onClickOutside(componentRef, () => {
           v-for="option in filteredOptions"
           :key="option"
           data-testid="option"
-          class="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-50"
-          @click="toggleOption(option)"
         >
-          <UCheckbox
-            :model-value="modelValue.includes(option)"
-            :aria-label="`Select ${option}`"
-            class="pointer-events-none"
-          />
-          <span class="flex-1 text-sm">{{ option }}</span>
+          <!--
+            Render a horizontal divider line before this option if it's in the sectionBreakBefore list.
+            This visually separates groups of options in the dropdown.
+          -->
+          <hr v-if="sectionBreakBefore?.includes(option)" class="w-full border-gray-300">
+          <label
+            class="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-50"
+            @click.prevent="toggleOption(option)"
+          >
+            <UCheckbox
+              :model-value="modelValue.includes(option)"
+              :aria-label="`Select ${option}`"
+              class="pointer-events-none"
+            />
+            <span class="flex-1 text-sm">{{ option }}</span>
+          </label>
         </div>
 
         <!-- No results message -->

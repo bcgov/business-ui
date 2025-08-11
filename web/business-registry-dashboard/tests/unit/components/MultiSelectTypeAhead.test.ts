@@ -25,7 +25,8 @@ describe('MultiSelectTypeAhead', () => {
     modelValue: [],
     options: mockOptions,
     placeholder: 'Select type...',
-    label: 'Filter by type'
+    label: 'Filter by type',
+    sectionBreakBefore: []
   }
 
   it('should mount successfully', async () => {
