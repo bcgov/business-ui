@@ -157,9 +157,7 @@ onClickOutside(componentRef, () => {
             Render a horizontal divider line before this option if it's in the sectionBreakBefore list.
             This visually separates groups of options in the dropdown.
           -->
-          <template v-if="sectionBreakBefore?.includes(option)">
-            <hr class="my-1 w-full border-gray-300">
-          </template>
+          <hr v-if="sectionBreakBefore?.includes(option)" class="my-1 w-full border-gray-300">
           <label
             class="flex cursor-pointer items-center gap-2 px-3 py-2 hover:bg-gray-50"
             @click.prevent="toggleOption(option)"
