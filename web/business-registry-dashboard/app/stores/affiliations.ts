@@ -333,13 +333,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (filtersChangedDuringLoading.value) {
         filtersChangedDuringLoading.value = false
 
-        // Update the actual filters with the latest values
-        if (affiliations.filters.businessName !== latestFilters.businessName) {
-          affiliations.filters.businessName = latestFilters.businessName
-        }
-        if (affiliations.filters.businessNumber !== latestFilters.businessNumber) {
-          affiliations.filters.businessNumber = latestFilters.businessNumber
-        }
         // Update type and status filters
         if (!isEqual(affiliations.filters.type, latestFilters.type)) {
           affiliations.filters.type = [...latestFilters.type]
