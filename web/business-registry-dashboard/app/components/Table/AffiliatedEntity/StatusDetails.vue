@@ -81,7 +81,7 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRING_SOON}`, status.data),
       colour: 'text-bcGovColor-caution',
-      priority: 3.5, // Medium priority - higher than BADSTANDING (priority 4)
+      priority: 2, // High priority - same as EXPIRED cant exists at the same time
       type: status.type
     }
   }
@@ -118,6 +118,8 @@ const alertMessages = computed(() => {
   // For all other cases, process all details and filter by priority
   const temp: Message[] = []
 
+  // This logic ensures EXPIRED alerts take precedence over BADSTANDING
+  // Check if we have any EXPIRED alert
   const hasExpired = props.details.some(detail =>
     (typeof detail === 'object' && detail.type === EntityAlertTypes.EXPIRED) ||
     detail === EntityAlertTypes.EXPIRED
