@@ -384,7 +384,7 @@ export default {
             firm: 'An email will be sent to the business contact email of the business:',
             corpOrBenOrCoop: 'An email will be sent to the registered office contact email of the business:'
           },
-          instructions: 'Click on the link in the email to add this business. The link will valid for 15 minutes.',
+          instructions: 'Click on the link in the email to add this business. The link will be valid for 12 hours.',
           update: 'To update this email, download and submit this'
         },
         delegation: {
@@ -410,7 +410,7 @@ export default {
       emailSent: {
         heading: 'Authorization Email Sent',
         p1: 'An email was sent to {boldStart}{email}{boldEnd}',
-        p2: 'Confirm your access by clicking the link inside. This will add the business to your Business Registry List. The link is valid for 15 minutes.'
+        p2: 'Confirm your access by clicking the link inside. This will add the business to your Business Registry List. The link is valid for 12 hours.'
       },
       toast: {
         success: '{identifier} was successfully added to your table.',
