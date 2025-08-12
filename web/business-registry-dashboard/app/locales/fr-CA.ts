@@ -374,7 +374,7 @@ export default {
             firm: "Un e-mail sera envoyé à l'adresse e-mail de contact de l'entreprise :",
             corpOrBenOrCoop: "Un e-mail sera envoyé à l'adresse e-mail de contact du bureau enregistré de l'entreprise :"
           },
-          instructions: "Pour confirmer votre accès, cliquez sur le lien dans l'e-mail. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes.",
+          instructions: "Pour confirmer votre accès, cliquez sur le lien dans l'e-mail. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 12 heures.",
           update: 'Pour mettre à jour ce courriel, téléchargez et soumettez ceci'
         },
         delegation: {
@@ -400,7 +400,7 @@ export default {
       emailSent: {
         heading: "E-mail d'autorisation envoyé",
         p1: 'Un e-mail a été envoyé à {boldStart}{email}{boldEnd}',
-        p2: "Confirmez votre accès en cliquant sur le lien à l'intérieur. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 15 minutes."
+        p2: "Confirmez votre accès en cliquant sur le lien à l'intérieur. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 12 heures."
       },
       toast: {
         success: '{identifier} a été ajouté avec succès à votre tableau.',
