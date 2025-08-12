@@ -78,7 +78,6 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
   }
   // EXPIRING in 14 Days alert - includes the type of entity that's expiring soon
   if (status.type === EntityAlertTypes.EXPIRING_SOON) {
-    console.log('Expiring soon status:', status.type)
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRING_SOON}`, status.data),
       colour: 'text-bcGovColor-caution',
