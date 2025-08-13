@@ -1,3 +1,5 @@
+import * as z from 'zod'
+
 export interface Articles {
   // current date in iso string format
   currentDate: string | undefined
@@ -18,3 +20,17 @@ export interface ApiResolutions {
   id: number
   type: string
 }
+
+export const articlesSchema = z.object({
+  currentDate: z.string().optional(),
+  resolutionDates: z.array(z.string()),
+  specialResolutionChanges: z.boolean()
+}).refine((data) => {
+  if (data.specialResolutionChanges) {
+    return data.currentDate !== undefined && data.resolutionDates.length > 0
+  }
+  return true
+}, {
+  message: 'errors.articles',
+  path: ['currentDate']
+})

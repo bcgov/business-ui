@@ -67,6 +67,7 @@ export default {
     refresh: 'Refresh Page',
     registeredOffice: 'Registered Office',
     resolutionOr: 'Resolution or',
+    resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
     shareClass: 'Share Class',
@@ -118,5 +119,12 @@ export default {
         TRANP: 'Post Restoration Transition Application'
       }
     }
+  },
+  errors: {
+    maxLength50: 'Maximum 50 characters',
+    maxLength30: 'Maximum 30 characters',
+    email: 'Valid email is required',
+    articles: 'You must add a date because you changed your share structure and it contains a class or series of shares with special rights or restrictions.',
+    required: 'This field is required'
   }
 }
