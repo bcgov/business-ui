@@ -74,7 +74,7 @@ describe('searchAPIPlugin - regSearch', () => {
 
     expect(_fetch).toHaveBeenCalledWith(
       'https://regSearchApiUrl.example.com/businesses/search/facets?' +
-      'start=0&rows=20&categories=legalType:A,BC,BEN,C,CBEN,CC,CCC,CP,CUL,FI,GP,LL,LLC,LP,PA,S,SP,ULC,XCP,XL,XP,XS&query=value:test',      
+      'start=0&rows=20&categories=legalType:A,BC,BEN,C,CBEN,CC,CCC,CP,CUL,FI,GP,LL,LLC,LP,PA,S,SP,ULC,XCP,XL,XP,XS&query=value:test',
       {
         headers: {
           Authorization: 'Bearer 123',
