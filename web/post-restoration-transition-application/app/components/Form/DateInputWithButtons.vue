@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import DateInput from '~/components/Form/DateInput.vue'
 
 const model = defineModel<string>()
@@ -25,27 +25,29 @@ const cancelHandler = () => {
 </script>
 
 <template>
-  <DateInput
-    :id="name + '_id'"
-    v-model="selectedValue"
-    :label="label"
-    :min-date="minDate"
-    :max-date="maxDate"
-  />
+  <div class="pb-[22px]">
+    <DateInput
+      :id="name + '_id'"
+      v-model="selectedValue"
+      :label="label"
+      :max-date="maxDate"
+      :min-date="minDate"
+    />
+  </div>
   <div class="flex flex-row mt-2 space-x-4 float-end">
     <UButton
       :label="$t('label.save')"
       :padded="false"
-      variant="solid"
-      color="primary"
       class="rounded text-base pt-[11px] pb-[11px]"
+      color="primary"
+      variant="solid"
       @click="saveHandler"
     />
     <UButton
       :label="$t('label.cancel')"
       :padded="false"
-      variant="outline"
       class="rounded text-base pt-[11px] pb-[11px]"
+      variant="outline"
       @click="cancelHandler"
     />
   </div>

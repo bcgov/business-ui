@@ -10,7 +10,7 @@ export interface Series {
     maxNumberOfShares?: number
     parValue?: number
     priority: number
-    removed?: boolean
+    removed?: boolean // UI property - tracking if the share got removed
 }
 
 export interface Share extends Series {
