@@ -248,7 +248,7 @@ export default {
     DISSOLUTION: 'This business is in the process of being dissolved',
     PROCESSING: 'This name request is still processing. It may take up to 10 minutes.',
     EXPIRED: 'This {type} is no longer valid; the name request is expired.',
-    EXPIRING_SOON: 'This name request is expiring soon. Please Register Business.',
+    EXPIRING_SOON: 'This name request is expiring soon. Complete your application before the expiry date',
     FUTURE_EFFECTIVE: 'Scheduled to take effect on {effectiveDate}.',
     CHANGE_REQUESTED: 'Changes to your authorization have been requested.'
   },

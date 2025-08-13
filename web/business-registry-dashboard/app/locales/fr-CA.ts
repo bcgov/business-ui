@@ -238,6 +238,7 @@ export default {
     DISSOLUTION: 'Cette entreprise est en cours de dissolution',
     PROCESSING: "Cette demande de dénomination est encore en cours de traitement, cela peut prendre jusqu'à 10 minutes.",
     EXPIRED: "Cette {type} n'est plus valide; la demande de nom est expirée.",
+    EXPIRING_SOON: "Cette demande de nom expire bientôt. Complétez votre candidature avant la date d'expiration",
     FUTURE_EFFECTIVE: 'Programmé pour prendre effet le {effectiveDate}.',
     CHANGE_REQUESTED: 'Des modifications à votre autorisation ont été demandées.'
   },
