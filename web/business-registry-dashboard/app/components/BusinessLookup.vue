@@ -1,7 +1,13 @@
 <script setup lang="ts">
 const affStore = useAffiliationsStore()
+const { $searchAPI } = useNuxtApp()
 
 const searchType = ref<'reg' | 'namex'>('reg')
+
+const selectedSearchFn = computed(() =>
+  searchType.value === 'reg' ? $searchAPI.regSearch : $searchAPI.namexSearch
+)
+
 </script>
 <template>
   <div class="flex max-w-screen-sm flex-col gap-4">
@@ -17,7 +23,7 @@ const searchType = ref<'reg' | 'namex'>('reg')
     >
       <AsyncComboBox
         :key="searchType"
-        :search-fn="searchType === 'reg' ? regSearch : namexSearch"
+        :search-fn="selectedSearchFn"
         :id-attr="searchType === 'reg' ? 'identifier' : 'nrNum'"
         :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
         :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
