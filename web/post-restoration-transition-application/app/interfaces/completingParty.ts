@@ -6,7 +6,7 @@ export interface completingParty {
 
 export const completingPartySchema = z.object({
     email: z.union([
-      z.literal( '' ),
+      z.literal(''),
       z.string().email('errors.email')
     ])
 })

@@ -42,7 +42,10 @@ export const useStandaloneTransitionButtons = () => {
       completingPartyValues,
       articlesValues
     )
-    return
+
+    if (hasErrors) {
+      return
+    }
 
     const businessId = filingStore.activeBusiness.identifier
 

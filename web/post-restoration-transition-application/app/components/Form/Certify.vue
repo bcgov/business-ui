@@ -16,12 +16,11 @@ const hasError = computed(() => {
   const length = certifyErrors?.value?.['certified']?.length || 0
   return length > 0
 })
-
 </script>
 
 <template>
   <div class="flex">
-    <!-- We don't show a text error even if one exists as it just must be checked-->
+    <!-- We don't show a text error even if one exists as it just must be checked -->
     <UFormField>
       <UCheckbox
         v-model="certified"

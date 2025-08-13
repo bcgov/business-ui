@@ -12,7 +12,6 @@ const errorStore = usePostRestorationErrorsStore()
 const {
   certifyErrors,
   folioErrors,
-  shareErrors,
   courtOrderErrors,
   articlesErrors,
   completingPartyErrors } = storeToRefs(errorStore)
@@ -43,13 +42,6 @@ const hasCourtOrderErrors = computed(() => {
     return false
   }
   return Object.keys(courtOrderErrors?.value).length > 0
-})
-
-const hasShareErrors = computed(() => {
-  if (!shareErrors?.value) {
-    return false
-  }
-  return Object.keys(shareErrors?.value).length > 0
 })
 
 const hasCompletingPartyErrors = computed(() => {
@@ -101,11 +93,6 @@ const {
   regOfficeEmail,
   shareWithSpecialRightsModified
 } = storeToRefs(filingStore)
-
-const sectionErrors = ref({
-  reviewAndConfirm: true,
-  certify: true
-})
 
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal

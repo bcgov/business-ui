@@ -1,16 +1,14 @@
-import { z } from 'zod'
-
 import { certifySchema } from '~/interfaces/certify'
 import { shareSchema } from '~/interfaces/shares'
 
 export const usePostRestorationErrorsStore
   = defineStore('post-restoration-errors-store', () => {
-  const certifyErrors = ref<{[key: string]: string[]}>({})
-  const shareErrors = ref<{[key: string]: string[]}>({})
-  const folioErrors = ref<{[key: string]: string[]}>({})
-  const courtOrderErrors = ref<{[key: string]: string[]}>({})
-  const completingPartyErrors = ref<{[key: string]: string[]}>({})
-  const articlesErrors = ref<{[key: string]: string[]}>({})
+  const certifyErrors = ref<{ [key: string]: string[] }>({})
+  const shareErrors = ref<{ [key: string]: string[] }>({})
+  const folioErrors = ref<{ [key: string]: string[] }>({})
+  const courtOrderErrors = ref<{ [key: string]: string[] }>({})
+  const completingPartyErrors = ref<{ [key: string]: string[] }>({})
+  const articlesErrors = ref<{ [key: string]: string[] }>({})
 
   const clearErrors = () => {
     certifyErrors.value = {}
@@ -56,12 +54,12 @@ export const usePostRestorationErrorsStore
   }
 
   const hasErrors = computed(() => {
-    return Object.keys(certifyErrors.value).length > 0 ||
-      Object.keys(folioErrors.value).length > 0 ||
-      Object.keys(shareErrors.value).length > 0 ||
-      Object.keys(courtOrderErrors.value).length > 0 ||
-      Object.keys(completingPartyErrors.value).length > 0 ||
-      Object.keys(articlesErrors.value).length > 0
+    return Object.keys(certifyErrors.value).length > 0
+      || Object.keys(folioErrors.value).length > 0
+      || Object.keys(shareErrors.value).length > 0
+      || Object.keys(courtOrderErrors.value).length > 0
+      || Object.keys(completingPartyErrors.value).length > 0
+      || Object.keys(articlesErrors.value).length > 0
   })
 
   const verifyThenHasErrors = (certify: certify,
