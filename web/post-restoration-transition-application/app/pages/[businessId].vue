@@ -209,6 +209,12 @@ const minArticleResolutionDate = computed(() => {
   return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
 })
 
+const verifyIfHasErrors = (hasErrors: boolean, verifyMethod: (args) => void, args) => {
+  if (hasErrors) {
+    verifyMethod(args)
+  }
+}
+
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 
 setButtonControl({
@@ -405,6 +411,11 @@ setButtonControl({
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
+            @blur="verifyIfHasErrors(
+              hasCompletingPartyErrors,
+              errorStore.verifyCompletingParty,
+              ({ email: compPartyEmail })
+            )"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -427,6 +438,11 @@ setButtonControl({
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
+            @blur="verifyIfHasErrors(
+              hasCourtOrderErrors,
+              errorStore.verifyCourtOrder,
+              { courtOrderNumber: courtOrderNumber }
+            )"
           />
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.planOfArrangement')">
@@ -459,6 +475,7 @@ setButtonControl({
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
+            @blur="verifyIfHasErrors(hasFolioErrors, errorStore.verifyFolioReference, { folio: folio })"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -516,6 +533,11 @@ setButtonControl({
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
+            @blur="verifyIfHasErrors(
+              hasCertifyErrors,
+              errorStore.verifyCertify,
+              { name: legalName, certified: certifiedByLegalName }
+            )"
           />
         </ConnectFormSection>
         <ConnectFormSection title=" ">

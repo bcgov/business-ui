@@ -8,6 +8,7 @@ defineProps({
   label: { type: String, default: '' },
   placeholder: { type: String, default: '' }
 })
+const emit = defineEmits(['blur'])
 </script>
 
 <template>
@@ -23,6 +24,7 @@ defineProps({
       :label
       :invalid="invalid"
       :aria-placeholder="placeholder"
+      @blur="emit('blur')"
     />
   </UFormField>
 </template>
