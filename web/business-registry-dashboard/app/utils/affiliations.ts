@@ -202,17 +202,19 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
   return isDraft(affiliationStatus(item)) && (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
 }
 
-export const isExpiringSoon = (item: Business): boolean => {
-  // Return false if there's no expiration date
+export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: boolean } => {
+  // Return default if there's no expiration date
   if (!item.nameRequest?.expirationDate) {
-    return false
+    return { daysDiff: NaN, isSoon: false }
   }
+
   const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
   const currentDate = moment().tz('America/Vancouver')
 
   const daysDiff = expirationDate.diff(currentDate.startOf('day'), 'days')
+  const isSoon = daysDiff >= 0 && daysDiff <=10
 
-  return daysDiff >= 0 && daysDiff < 14
+  return { daysDiff, isSoon }
 }
 
 export const isFrozed = (item: Business): boolean => {
@@ -244,6 +246,7 @@ export const isChangeRequested = (item: Business) => {
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
+  const { daysDiff, isSoon } = isExpiringSoon(item)
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
@@ -275,8 +278,8 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   if (isChangeRequested(item)) {
     details.push(EntityAlertTypes.CHANGE_REQUESTED)
   }
-  if (isExpiringSoon(item)) {
-    details.push({ type: EntityAlertTypes.EXPIRING_SOON }, { data: { type: affiliationName(item) } })
+  if (isSoon) {
+    details.push({ type: EntityAlertTypes.EXPIRING_SOON, data: { daysDiff } })
   }
   return details
 }
