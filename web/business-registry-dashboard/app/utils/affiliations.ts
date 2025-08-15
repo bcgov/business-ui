@@ -197,9 +197,11 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
   if (type === CorpTypes.CONTINUATION_IN) {
     return affiliationStatus(item) === EntityStateStatus.APPROVED
   }
+  if (isDraft(affiliationStatus(item))) {
+    return (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
+  }
 
-  // Default behavior (IA/Registration/Amalgamation)
-  return isDraft(affiliationStatus(item)) && (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
+  return isExpiredDate
 }
 
 export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: boolean } => {
@@ -250,7 +252,7 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
   const { daysDiff, isSoon } = isExpiringSoon(item)
-  console.log('isSoon', isSoon, 'daysDiff', daysDiff)
+  console.log('isExpired', isExpired(item))
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
