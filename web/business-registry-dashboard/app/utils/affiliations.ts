@@ -212,7 +212,7 @@ export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: bool
   const currentDate = moment().tz('America/Vancouver')
 
   const daysDiff = expirationDate.diff(currentDate.startOf('day'), 'days')
-  const isSoon = daysDiff > 0 && daysDiff <= 10
+  const isSoon = daysDiff >= 0 && daysDiff <= 10
 
   return { daysDiff, isSoon }
 }

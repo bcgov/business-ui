@@ -92,7 +92,7 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRING_SOON}.${expiryMessageKey}`, status.data),
       colour: 'text-bcGovColor-caution',
-      priority: 2, // High priority - same as EXPIRED cant exists at the same time
+      priority: 2.5, // High priority - same as EXPIRED cant exists at the same time
       type: status.type,
       daysDiff: status.data?.daysDiff
     }
