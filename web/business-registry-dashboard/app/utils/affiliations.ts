@@ -204,7 +204,7 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
 
 export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: boolean } => {
   // Return default if there's no expiration date
-  if (!item.nameRequest?.expirationDate || !isExpired(item)) {
+  if (!item.nameRequest?.expirationDate || isExpired(item)) {
     return { daysDiff: NaN, isSoon: false }
   }
 
