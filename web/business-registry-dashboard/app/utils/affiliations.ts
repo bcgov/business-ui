@@ -211,7 +211,10 @@ export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: bool
   const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
   const currentDate = moment().tz('America/Vancouver')
 
-  const daysDiff = expirationDate.diff(currentDate.startOf('day'), 'days')
+  let daysDiff = expirationDate.diff(currentDate.startOf('day'), 'days')
+  if (daysDiff === 0 && expirationDate.isBefore(currentDate)) {
+    daysDiff = -1
+  }
   const isSoon = daysDiff >= 0 && daysDiff <= 10
 
   return { daysDiff, isSoon }
@@ -247,6 +250,7 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
   const { daysDiff, isSoon } = isExpiringSoon(item)
+  console.log('isSoon', isSoon, 'daysDiff', daysDiff)
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
