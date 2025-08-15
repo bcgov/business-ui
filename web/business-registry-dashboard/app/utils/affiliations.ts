@@ -197,21 +197,23 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
   if (type === CorpTypes.CONTINUATION_IN) {
     return affiliationStatus(item) === EntityStateStatus.APPROVED
   }
+  if (isDraft(affiliationStatus(item))) {
+    return (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
+  }
 
-  // Default behavior (IA/Registration/Amalgamation)
-  return isDraft(affiliationStatus(item)) && (isIA(affiliationType(item)) || isAmalgamation(affiliationType(item)))
+  return isExpiredDate
 }
 
 export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: boolean } => {
   // Return default if there's no expiration date
-  if (!item.nameRequest?.expirationDate) {
+  if (!item.nameRequest?.expirationDate || isExpired(item)) {
     return { daysDiff: NaN, isSoon: false }
   }
 
-  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
-  const currentDate = moment().tz('America/Vancouver')
+  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver').startOf('day')
+  const currentDate = moment().tz('America/Vancouver').startOf('day')
 
-  const daysDiff = expirationDate.diff(currentDate.startOf('day'), 'days')
+  const daysDiff = expirationDate.diff(currentDate, 'days')
   const isSoon = daysDiff >= 0 && daysDiff <= 10
 
   return { daysDiff, isSoon }
