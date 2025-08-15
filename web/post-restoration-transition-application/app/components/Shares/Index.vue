@@ -293,7 +293,7 @@ const addedShare = () => {
         </div>
         <div>
           <UBadge
-            v-if="!row.original.removed && editedIndexes.includes(row.index)"
+            v-if="!addedIndexes.includes(row.index) && !row.original.removed && editedIndexes.includes(row.index)"
             color="primary"
             class="rounded-sm"
           >

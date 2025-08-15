@@ -8,7 +8,6 @@ defineProps<{
 <template>
   <div
     data-testid="form-section"
-    :class="[error ? 'border-l-2 border-red-600' : '']"
   >
     <div class="flex flex-col sm:flex-row">
       <div
