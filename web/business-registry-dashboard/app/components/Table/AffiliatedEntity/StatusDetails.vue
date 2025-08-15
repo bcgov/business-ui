@@ -73,7 +73,7 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
     return {
       message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRED}`, status.data),
       colour: 'text-red-600',
-      priority: 2.5, // High priority - will override BADSTANDING (priority 4)
+      priority: 2, // High priority - will override BADSTANDING (priority 4)
       type: status.type
     }
   }
