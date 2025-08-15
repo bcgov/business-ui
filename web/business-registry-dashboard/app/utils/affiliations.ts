@@ -252,7 +252,6 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details = []
   const { daysDiff, isSoon } = isExpiringSoon(item)
-  console.log('isExpired', isExpired(item))
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
