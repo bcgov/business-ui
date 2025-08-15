@@ -240,7 +240,7 @@ export default {
     EXPIRED: "Cette {type} n'est plus valide; la demande de nom est expirée.",
     EXPIRING_SOON: {
       today: "Cette demande de nom expirera aujourd’hui",
-      tomorrow: 'Cette demande de nom expirera bientôt',
+      tomorrow: 'Cette demande de nom expirera demain',
       inDays: 'Cette demande de nom expirera dans {daysDiff} jours'
     },
     FUTURE_EFFECTIVE: 'Programmé pour prendre effet le {effectiveDate}.',
