@@ -7,6 +7,7 @@ interface Message {
   colour: string // The color class to apply
   priority: number // Priority value (lower number = higher priority)
   type?: string // Optional type identifier
+  daysDiff?: number | string // Optional days difference
 }
 
 const props = defineProps({
@@ -76,7 +77,26 @@ const generateMessage = (status: string | { type: string, data: any }): Message 
       type: status.type
     }
   }
+  // EXPIRING in 10 Days alert - includes the type of entity that's expiring soon
+  if (status.type === EntityAlertTypes.EXPIRING_SOON) {
+    const daysDiff = status.data.daysDiff
+    let expiryMessageKey
 
+    if (daysDiff === 0) {
+      expiryMessageKey = 'today'
+    } else if (daysDiff === 1) {
+      expiryMessageKey = 'tomorrow'
+    } else {
+      expiryMessageKey = 'inDays'
+    }
+    return {
+      message: t(`entityAlertTypes.${EntityAlertTypes.EXPIRING_SOON}.${expiryMessageKey}`, status.data),
+      colour: 'text-bcGovColor-caution',
+      priority: 2, // High priority - same as EXPIRED cant exists at the same time
+      type: status.type,
+      daysDiff: status.data?.daysDiff
+    }
+  }
   // FUTURE_EFFECTIVE alert - includes formatted date
   if (status.type === EntityAlertTypes.FUTURE_EFFECTIVE) {
     const effectiveDateFormatted = formatEffectiveDate(status.data.effectiveDate)
