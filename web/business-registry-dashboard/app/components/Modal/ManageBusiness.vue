@@ -5,7 +5,7 @@ const brdModal = useBrdModals()
 const toast = useToast()
 const affStore = useAffiliationsStore()
 const { t } = useI18n()
-const { $authApi } = useNuxtApp()
+const { $authApiBRD } = useNuxtApp()
 const ldStore = useConnectLaunchdarklyStore()
 
 const props = defineProps<{
@@ -106,7 +106,7 @@ async function handleEmailAuthSentStateClosed () {
 onMounted(async () => {
   // try loading contact info
   try {
-    const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
+    const response = await $authApiBRD<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
     contactEmail.value = response.email
   } catch (error) {
     logFetchError(error, 'Error retrieving business contacts')
@@ -114,7 +114,7 @@ onMounted(async () => {
 
   // try loading affiliated accounts
   try {
-    const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
+    const response = await $authApiBRD<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
     affiliatedAccounts.value = response.orgsDetails
   } catch (error) {
     logFetchError(error, 'Error retrieving affiliated accounts')
@@ -122,7 +122,7 @@ onMounted(async () => {
 
   // try loading business passcode
   try {
-    const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
+    const response = await $authApiBRD<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
     hasBusinessAuthentication.value = response.hasValidPassCode
   } catch (error) {
     hasBusinessAuthentication.value = false

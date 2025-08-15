@@ -22,9 +22,9 @@ export enum LDFlags {
   ProductCSOStatus = 'product-CSO-status',
   ProductSiteRegistryStatus = 'product-ESRA-status',
   ProductWillsStatus = 'product-VS-status',
-  UseBusinessApiGwUrl = 'use-business-api-gw-url',
   SentryEnable = 'sentry-enable',
   SupportedAmalgamationEntities = 'supported-amalgamation-entities',
   SupportedContinuationInEntities = 'supported-continuation-in-entities',
-  SupportRestorationEntities = 'supported-restoration-entities'
+  SupportRestorationEntities = 'supported-restoration-entities',
+  UseBusinessApiGwUrl = 'use-business-api-gw-url',
 }

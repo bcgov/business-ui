@@ -4,7 +4,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
-  const { $keycloak, $authApi, $legalApi } = useNuxtApp()
+  const { $keycloak, $authApiBRD, $legalApi } = useNuxtApp()
   const { t, locale } = useI18n()
   const toast = useToast()
   const brdModal = useBrdModals()
@@ -75,7 +75,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   const newlyAddedIdentifier = ref<string>('')
 
   function removeAffiliation (orgIdentifier: number, incorporationNumber: string, passcodeResetEmail?: string, resetPasscode?: boolean) {
-    return $authApi(`/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`, {
+    return $authApiBRD(`/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`, {
       method: 'DELETE',
       body: {
         data: { passcodeResetEmail, resetPasscode, logDeleteDraft: true }
@@ -145,7 +145,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   function removeInvite (inviteId: number) {
-    return $authApi(`/affiliationInvitations/${inviteId}`, {
+    return $authApiBRD(`/affiliationInvitations/${inviteId}`, {
       method: 'DELETE'
     })
   }
@@ -166,7 +166,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       return affiliatedEntities
     }
 
-    const pendingInvites = await $authApi<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
+    const pendingInvites = await $authApiBRD<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
       params: {
         orgId: currentAccountId,
         businessDetails: true
@@ -285,7 +285,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         }
       }
 
-      const response = await $authApi<{ entities: AffiliationResponse[], totalResults?: number, hasMore?: boolean }>(url)
+      const response = await $authApiBRD<{ entities: AffiliationResponse[], totalResults?: number, hasMore?: boolean }>(url)
 
       let affiliatedEntities: Business[] = []
 
@@ -333,13 +333,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       if (filtersChangedDuringLoading.value) {
         filtersChangedDuringLoading.value = false
 
-        // Update the actual filters with the latest values
-        if (affiliations.filters.businessName !== latestFilters.businessName) {
-          affiliations.filters.businessName = latestFilters.businessName
-        }
-        if (affiliations.filters.businessNumber !== latestFilters.businessNumber) {
-          affiliations.filters.businessNumber = latestFilters.businessNumber
-        }
         // Update type and status filters
         if (!isEqual(affiliations.filters.type, latestFilters.type)) {
           affiliations.filters.type = [...latestFilters.type]
@@ -463,7 +456,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         }
       }
     },
-    { debounce: 400 } // 400ms debounce time - wait for user input to settle
+    { debounce: 500 } // 500ms debounce time - wait for user input to settle
   )
 
   // Separate watch for immediately resetting page when limit changes
@@ -704,7 +697,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   function createAffiliation (affiliation: CreateAffiliationRequestBody) {
     const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)) ? route.params.orgId : accountStore.currentAccount.id
-    return $authApi(`/orgs/${orgId}/affiliations`, {
+    return $authApiBRD(`/orgs/${orgId}/affiliations`, {
       method: 'POST',
       body: affiliation
     })
@@ -712,7 +705,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   function createNRAffiliation (affiliation: CreateNRAffiliationRequestBody) {
     const orgId = (route.params.orgId && IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION)) ? route.params.orgId : accountStore.currentAccount.id
-    return $authApi(`/orgs/${orgId}/affiliations?newBusiness=true`, {
+    return $authApiBRD(`/orgs/${orgId}/affiliations?newBusiness=true`, {
       method: 'POST',
       body: affiliation
     })
@@ -797,7 +790,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
     try {
       const affiliationInvitationId = invitationId || invite?.id || ''
-      await $authApi(`/affiliationInvitations/${affiliationInvitationId}`, {
+      await $authApiBRD(`/affiliationInvitations/${affiliationInvitationId}`, {
         method: 'PATCH',
         body: {} // empty body required
       })
@@ -817,7 +810,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   async function deletePendingInvitations (businessIdentifier: string) {
     try {
-      const { affiliationInvitations = [] } = await $authApi<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
+      const { affiliationInvitations = [] } = await $authApiBRD<{ affiliationInvitations: AffiliationInviteInfo[] }>('/affiliationInvitations', {
         params: {
           orgId: accountStore.currentAccount.id,
           businessDetails: true,

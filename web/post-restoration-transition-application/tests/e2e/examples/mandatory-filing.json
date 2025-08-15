@@ -1,0 +1,59 @@
+{
+  "transition": {
+    "offices": {
+      "registeredOffice": {
+        "deliveryAddress": {
+          "streetAddress": "123 Main Street",
+          "addressCity": "Victoria",
+          "addressRegion": "BC",
+          "postalCode": "V8W 2Y2",
+          "addressCountry": "CA"
+        }
+      },
+      "recordsOffice": {
+        "deliveryAddress": {
+          "streetAddress": "123 Main Street",
+          "addressCity": "Victoria",
+          "addressRegion": "BC",
+          "postalCode": "V8W 2Y2",
+          "addressCountry": "CA"
+        }
+      }
+    },
+    "parties": [
+      {
+        "officer": {
+          "firstName": "John",
+          "lastName": "Smith"
+        },
+        "mailingAddress": {
+          "streetAddress": "789 Director Lane",
+          "addressCity": "Richmond",
+          "addressRegion": "BC",
+          "postalCode": "V7A 1B2",
+          "addressCountry": "CA"
+        },
+        "roles": [
+          {
+            "roleType": "Director",
+            "appointmentDate": "2024-01-15"
+          }
+        ]
+      }
+    ],
+    "shareStructure": {
+      "shareClasses": [
+        {
+          "id": 1,
+          "name": "Common Shares",
+          "priority": 1,
+          "hasMaximumShares": false,
+          "hasParValue": false,
+          "hasRightsOrRestrictions": false,
+          "series": []
+        }
+      ]
+    },
+    "hasProvisions": false
+  }
+}
