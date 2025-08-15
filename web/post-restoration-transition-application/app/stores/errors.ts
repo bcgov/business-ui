@@ -4,7 +4,7 @@ import { shareSchema } from '~/interfaces/shares'
 export const usePostRestorationErrorsStore
   = defineStore('post-restoration-errors-store', () => {
   const certifyErrors = ref<{ [key: string]: string[] }>({})
-  const shareErrors = ref<{ [key: string]: string[] }>({})
+  const shareErrors = ref<{ [key: string]: string[] }[]>([])
   const folioErrors = ref<{ [key: string]: string[] }>({})
   const courtOrderErrors = ref<{ [key: string]: string[] }>({})
   const completingPartyErrors = ref<{ [key: string]: string[] }>({})
@@ -12,7 +12,7 @@ export const usePostRestorationErrorsStore
 
   const clearErrors = () => {
     certifyErrors.value = {}
-    shareErrors.value = {}
+    shareErrors.value = []
     folioErrors.value = {}
     courtOrderErrors.value = {}
     completingPartyErrors.value = {}
@@ -28,10 +28,14 @@ export const usePostRestorationErrorsStore
   }
 
   const verifyShareClasses = (shareClasses: Share[]) => {
-    shareErrors.value = {}
-    const shareResult = shareSchema.safeParse(shareClasses)
-    if (!shareResult.success) {
-      shareErrors.value = shareResult.error.flatten().fieldErrors
+    shareErrors.value = []
+    for (let i = 0; i < shareClasses.length; i++) {
+      const shareResult = shareSchema.safeParse(shareClasses[i])
+      if (!shareResult.success) {
+        shareErrors.value.push(shareResult.error.flatten().fieldErrors)
+      }else{
+        shareErrors.value.push({})
+      }
     }
   }
 

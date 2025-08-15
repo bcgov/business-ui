@@ -407,6 +407,7 @@ setButtonControl({
         <ConnectFormSection :title="$t('label.completingParty')" :error="hasCompletingPartyErrors">
           <ConnectFormInput
             v-model="compPartyEmail"
+            data-testid="compPartyEmail-input"
             :error="completingPartyErrors?.['email']?.[0]"
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
@@ -434,6 +435,7 @@ setButtonControl({
         <ConnectFormSection :title="$t('label.courtOrderNumber')" :error="hasCourtOrderErrors">
           <ConnectFormInput
             v-model="courtOrderNumber"
+            data-testid="courtOrderNumber-input"
             :error="courtOrderErrors?.['courtOrderNumber']?.[0]"
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
@@ -471,6 +473,7 @@ setButtonControl({
         >
           <ConnectFormInput
             v-model="folio"
+            data-testid="folio-input"
             :error="folioErrors?.['folio']?.[0]"
             :invalid="hasFolioErrors"
             :name="'business.folio'"
@@ -529,6 +532,7 @@ setButtonControl({
         >
           <ConnectFormInput
             v-model="legalName"
+            data-testid="legalName-input"
             :error="certifyErrors?.['name']?.[0]"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"

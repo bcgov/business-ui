@@ -17,7 +17,7 @@ export const useStandaloneTransitionButtons = () => {
       certified: filingStore.certifiedByLegalName || false,
       name: filingStore.legalName || ''
     }
-    const shareValues: Share[] = []
+    const shareValues: Share[] = filingStore.shareClasses
     const folioValues: folioReference = {
       folio: filingStore.folio || ''
     }

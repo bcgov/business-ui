@@ -1,4 +1,4 @@
-import * as z from 'zod'
+import { z } from 'zod'
 
 export interface Series {
     id?: number // can be undefined when adding
@@ -17,50 +17,52 @@ export interface Share extends Series {
     series: Series[]
 }
 
+const refine = (input, ctx) => {
+  let goodStanding = true
+  if (input.hasMaximumShares) {
+      goodStanding = goodStanding && input.maxNumberOfShares !== undefined
+      if (input.maxNumberOfShares === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['maxNumberOfShares'],
+          message: 'errors.maxNumberOfShares'
+        })
+      }
+  }
+
+  if (input.hasParValue) {
+      goodStanding = goodStanding && input.parValue !== undefined
+      goodStanding = goodStanding && input.currency !== undefined
+      if (input.parValue === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['parValue'],
+          message: 'errors.parValue'
+        })
+      }
+      if (input.currency === undefined || input.currency === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['currency'],
+          message: 'errors.currency'
+        })
+      }
+  }
+
+  return goodStanding
+}
+
 export const seriesSchema = z.object({
-    name: z.string().min(1),
-    currency: z.string().optional(),
+    name: z.string().min(1, 'errors.required'),
+    currency: z.string().optional().nullable(),
     hasMaximumShares: z.boolean(),
     hasParValue: z.boolean(),
     hasRightsOrRestrictions: z.boolean(),
-    maxNumberOfShares: z.number().optional(),
-    parValue: z.number().optional(),
+    maxNumberOfShares: z.number().optional().nullable(),
+    parValue: z.number().optional().nullable(),
     priority: z.number()
-}).superRefine((input, ctx) => {
-  let goodStanding = true
-    if (input.hasMaximumShares) {
-        goodStanding = goodStanding && input.maxNumberOfShares !== undefined
-        if (input.maxNumberOfShares === undefined) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['maxNumberOfShares'],
-            message: 'Maximum Number of Shares is required, when has maximum is selected'
-          })
-        }
-    }
+}).superRefine(refine)
 
-    if (input.hasParValue) {
-        goodStanding = goodStanding && input.parValue !== undefined
-        goodStanding = goodStanding && input.currency !== undefined
-        if (input.parValue === undefined) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['parValue'],
-            message: 'Par Value is required, when has par value is selected'
-          })
-        }
-        if (input.currency === undefined || input.currency === '') {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['currency'],
-            message: 'Currency is required, when has par value is selected'
-          })
-        }
-    }
-
-    return goodStanding
-})
-
-export const shareSchema = z.object({
+export const shareSchema = seriesSchema.sourceType().extend({
     series: z.array(seriesSchema).optional()
-})
+}).superRefine(refine)

@@ -9,11 +9,18 @@ const {
   editingShareIndex
 } = storeToRefs(filingStore)
 
+const errorStore = usePostRestorationErrorsStore()
+const {
+  shareErrors
+} = storeToRefs(errorStore)
+
 const emit = defineEmits(['cancel', 'done'])
 const SHARES_TEXT = ' Shares'
 
 const resetData = () => {
-  errors.value = []
+  shareErrors.value = []
+  firstParChange.value = true
+  firstMaxChange.value = true
   if (editingShareIndex.value !== -1) {
     shareValues.value
       = JSON.parse(
@@ -43,6 +50,9 @@ const resetData = () => {
 
 watch(shareClasses, resetData, { deep: true })
 
+const firstParChange = ref(true)
+const firstMaxChange = ref(true)
+
 const shareValues = ref<Share>(
   JSON.parse(
     JSON.stringify(
@@ -65,7 +75,6 @@ const shareValues = ref<Share>(
 
 const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : t('label.noMax'))
 const hasNoParValue = ref<string>(shareValues.value.hasParValue ? '' : t('label.noPar'))
-const errors = ref<ZodError[]>([])
 
 const shareName = ref<string>(
   shareValues?.value?.name.substring(0,
@@ -75,20 +84,31 @@ const shareName = ref<string>(
 
 const maxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = true
+  if (firstMaxChange.value) {
+    shareValues.value.maxNumberOfShares = undefined
+  }
+  firstMaxChange.value = false
   hasNoMaxShares.value = ''
 }
 
 const noMaxSharesChangeHandler = () => {
   shareValues.value.hasMaximumShares = false
+  firstMaxChange.value = false
   hasNoMaxShares.value = t('label.noMax') }
 
 const parValueChangeHandler = () => {
   shareValues.value.hasParValue = true
+  if (firstParChange.value) {
+    shareValues.value.parValue = undefined
+    shareValues.value.currency = undefined
+  }
+  firstParChange.value = false
   hasNoParValue.value = ''
 }
 
 const noParValueChangeHandler = () => {
   shareValues.value.hasParValue = false
+  firstParChange.value = false
   hasNoParValue.value = t('label.noPar')
 }
 
@@ -110,25 +130,50 @@ const cancel = () => {
   }
 }
 
+const revalidateIfHasErrors = (errorField: string) => {
+  if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]){
+    shareValues.value.name = shareName.value
+    cleanData()
+    errorStore.verifyShareClasses(getWorkingShareClasses())
+  }
+}
+
+const getError = (errorField: string) => {
+  return shareErrors.value[getErrorIndex()]?.[errorField]?.[0]
+}
+
+const getErrorIndex = () => {
+  return editingShareIndex.value !== -1 ? editingShareIndex.value : shareClasses.value.length
+}
+
+const getWorkingShareClasses = () => {
+  const rv = [...shareClasses.value]
+  if (editingShareIndex.value !== -1) {
+    rv[editingShareIndex.value] = shareValues.value
+  } else {
+    rv.push(shareValues.value)
+  }
+
+  return rv
+}
+
 const done = () => {
   if (hasChanges()) {
     shareValues.value.name = shareName.value
     cleanData()
-    const validationResults = seriesSchema.safeParse(shareValues.value)
+    errorStore.verifyShareClasses(getWorkingShareClasses())
+    
     const otherShareClasses = shareClasses.value.filter((_, index) => index !== editingShareIndex.value)
     const names = otherShareClasses.map(share => share.name.toLowerCase())
     if (names.includes((shareName.value + SHARES_TEXT).toLowerCase())) {
-      errors.value = []
-      errors.value['name'] = 'Share name already exists'
+      if (!shareErrors.value[getErrorIndex()]) {
+        shareErrors.value[getErrorIndex()] = {}
+      }
+      shareErrors.value[getErrorIndex()]['name'] = [t('errors.shareNameExists')]
       return
     }
-    if (!validationResults.success) {
-      errors.value = []
-      for (const error of validationResults.error.errors) {
-        if (error.path?.length > 0) {
-          errors.value[error.path[0]] = error.message
-        }
-      }
+
+    if (Object.keys(shareErrors.value[getErrorIndex()]).length > 0) {
       return
     }
     shareValues.value.name = shareName.value + SHARES_TEXT
@@ -166,9 +211,10 @@ const cleanData = () => {
       </div>
 
       <div class="inline-block ml-6 flex-auto space-y-6">
-        <UFormField :error="errors?.name">
+        <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
           <UInput
             v-model="shareName"
+            @blur="revalidateIfHasErrors('name')"
             :placeholder="$t('label.shareClassName')"
             class="w-full"
           >
@@ -195,9 +241,10 @@ const cleanData = () => {
             }"
             @change="maxSharesChangeHandler()"
           />
-          <UFormField :error="errors.maxNumberOfShares">
+          <UFormField :error="$te(getError('maxNumberOfShares')) ? $t(getError('maxNumberOfShares')) : getError('maxNumberOfShares')">
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
+              @update:modelValue="revalidateIfHasErrors('maxNumberOfShares')"
               :placeholder="$t('label.maximumNumberOfShares')"
               :disable-wheel-change="true"
               class="flex-auto"
@@ -242,9 +289,10 @@ const cleanData = () => {
             @change="parValueChangeHandler()"
           />
           <div class="flex flex-auto">
-            <UFormField :error="errors?.parValue" class="mr-4 w-[30%]">
+            <UFormField :error="$te(getError('parValue')) ? $t(getError('parValue')) : getError('parValue')" class="mr-4 w-[30%]">
               <UInputNumber
                 v-model="shareValues.parValue"
+                @update:modelValue="revalidateIfHasErrors('parValue')"
                 :placeholder="$t('label.parValue')"
                 :disable-wheel-change="true"
                 class="flex-auto"
@@ -265,7 +313,7 @@ const cleanData = () => {
               </UInputNumber>
             </UFormField>
             <UFormField
-              :error="errors?.currency"
+              :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
               class="h-full w-[70%]"
               :ui="{
                 root: 'h-11 max-h-11',
@@ -274,6 +322,7 @@ const cleanData = () => {
             >
               <USelect
                 v-model="shareValues.currency"
+                @update:modelValue="revalidateIfHasErrors('currency')"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
                 class="h-[56px] w-full pl-2"
