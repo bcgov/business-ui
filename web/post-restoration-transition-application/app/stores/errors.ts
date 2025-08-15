@@ -33,7 +33,7 @@ export const usePostRestorationErrorsStore
       const shareResult = shareSchema.safeParse(shareClasses[i])
       if (!shareResult.success) {
         shareErrors.value.push(shareResult.error.flatten().fieldErrors)
-      }else{
+      } else {
         shareErrors.value.push({})
       }
     }

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import currencySymbolMap from 'currency-symbol-map/map'
-import type { ZodError } from 'zod'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -131,7 +130,7 @@ const cancel = () => {
 }
 
 const revalidateIfHasErrors = (errorField: string) => {
-  if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]){
+  if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) {
     shareValues.value.name = shareName.value
     cleanData()
     errorStore.verifyShareClasses(getWorkingShareClasses())
@@ -162,7 +161,7 @@ const done = () => {
     shareValues.value.name = shareName.value
     cleanData()
     errorStore.verifyShareClasses(getWorkingShareClasses())
-    
+
     const otherShareClasses = shareClasses.value.filter((_, index) => index !== editingShareIndex.value)
     const names = otherShareClasses.map(share => share.name.toLowerCase())
     if (names.includes((shareName.value + SHARES_TEXT).toLowerCase())) {
@@ -214,9 +213,9 @@ const cleanData = () => {
         <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
           <UInput
             v-model="shareName"
-            @blur="revalidateIfHasErrors('name')"
             :placeholder="$t('label.shareClassName')"
             class="w-full"
+            @blur="revalidateIfHasErrors('name')"
           >
             <template #trailing>
               <div class="text-[16px] text-bcGovColor-midGray">
@@ -241,10 +240,14 @@ const cleanData = () => {
             }"
             @change="maxSharesChangeHandler()"
           />
-          <UFormField :error="$te(getError('maxNumberOfShares')) ? $t(getError('maxNumberOfShares')) : getError('maxNumberOfShares')">
+          <UFormField
+            :error="
+              $te(getError('maxNumberOfShares'))
+                ? $t(getError('maxNumberOfShares'))
+                : getError('maxNumberOfShares')"
+          >
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
-              @update:modelValue="revalidateIfHasErrors('maxNumberOfShares')"
               :placeholder="$t('label.maximumNumberOfShares')"
               :disable-wheel-change="true"
               class="flex-auto"
@@ -255,6 +258,7 @@ const cleanData = () => {
                   + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                   + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
               }"
+              @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
             >
               <template #decrement>
                 <span />
@@ -289,10 +293,15 @@ const cleanData = () => {
             @change="parValueChangeHandler()"
           />
           <div class="flex flex-auto">
-            <UFormField :error="$te(getError('parValue')) ? $t(getError('parValue')) : getError('parValue')" class="mr-4 w-[30%]">
+            <UFormField
+              :error="
+                $te(getError('parValue'))
+                  ? $t(getError('parValue'))
+                  : getError('parValue')"
+              class="mr-4 w-[30%]"
+            >
               <UInputNumber
                 v-model="shareValues.parValue"
-                @update:modelValue="revalidateIfHasErrors('parValue')"
                 :placeholder="$t('label.parValue')"
                 :disable-wheel-change="true"
                 class="flex-auto"
@@ -303,6 +312,7 @@ const cleanData = () => {
                     + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                     + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
                 }"
+                @update:model-value="revalidateIfHasErrors('parValue')"
               >
                 <template #decrement>
                   <span />
@@ -322,10 +332,10 @@ const cleanData = () => {
             >
               <USelect
                 v-model="shareValues.currency"
-                @update:modelValue="revalidateIfHasErrors('currency')"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
                 class="h-[56px] w-full pl-2"
+                @update:model-value="revalidateIfHasErrors('currency')"
               />
             </UFormField>
           </div>
