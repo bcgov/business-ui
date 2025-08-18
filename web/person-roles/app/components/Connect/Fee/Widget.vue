@@ -164,7 +164,7 @@ const getItemFee = (feeItem: ConnectFeeItem) => {
             v-if="!!feeOptions.showPriorityFees"
             :description="$t('ConnectFeeWidget.feeSummary.priorityFees')"
             :fee="totalPriorityFees"
-            :show-fee-value="isPlaceholderActive"
+            :show-fee-value="isPlaceholderActive ? placeholderFeeItem.priorityFees : totalPriorityFees"
           />
           <ConnectFeeExtraFee
             v-if="!!feeOptions.showProcessingFees"
