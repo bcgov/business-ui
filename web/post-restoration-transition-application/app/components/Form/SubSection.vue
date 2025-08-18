@@ -8,6 +8,7 @@ export default {
 defineProps<{
   title: string | undefined
   icon?: string
+  hasErrors?: boolean
 }>()
 </script>
 
@@ -15,6 +16,7 @@ defineProps<{
   <section
     :aria-label="title"
     class="bg-bcGovColor-white"
+    :class="hasErrors ? 'border-l-2 border-red-600' : ''"
   >
     <slot name="title">
       <div

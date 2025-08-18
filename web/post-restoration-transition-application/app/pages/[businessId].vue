@@ -8,6 +8,48 @@ const { setButtonControl } = useButtonControl()
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
+const errorStore = usePostRestorationErrorsStore()
+const {
+  certifyErrors,
+  folioErrors,
+  courtOrderErrors,
+  articlesErrors,
+  completingPartyErrors } = storeToRefs(errorStore)
+
+const hasCertifyErrors = computed(() => {
+  if (!certifyErrors?.value) {
+    return false
+  }
+  return Object.keys(certifyErrors?.value).length > 0
+})
+
+const hasArticlesErrors = computed(() => {
+  if (!articlesErrors?.value) {
+    return false
+  }
+  return Object.keys(articlesErrors?.value).length > 0
+})
+
+const hasFolioErrors = computed(() => {
+  if (!folioErrors?.value) {
+    return false
+  }
+  return Object.keys(folioErrors?.value).length > 0
+})
+
+const hasCourtOrderErrors = computed(() => {
+  if (!courtOrderErrors?.value) {
+    return false
+  }
+  return Object.keys(courtOrderErrors?.value).length > 0
+})
+
+const hasCompletingPartyErrors = computed(() => {
+  if (!completingPartyErrors?.value) {
+    return false
+  }
+  return Object.keys(completingPartyErrors?.value).length > 0
+})
 
 useHead({
   title: t('transitionApplication.title')
@@ -48,12 +90,16 @@ const {
   legalName,
   offices,
   planOfArrangement,
-  regOfficeEmail
+  regOfficeEmail,
+  shareWithSpecialRightsModified
 } = storeToRefs(filingStore)
 
-const sectionErrors = ref({
-  reviewAndConfirm: false,
-  certify: false
+watch(shareWithSpecialRightsModified, (newVal) => {
+  articles.value.specialResolutionChanges = newVal
+  const articlesResult = articlesSchema.safeParse(articles)
+  if (!articlesResult.success) {
+    articlesErrors.value = articlesResult.error.flatten().fieldErrors
+  }
 })
 
 // Define table columns
@@ -163,6 +209,12 @@ const minArticleResolutionDate = computed(() => {
   return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
 })
 
+const verifyIfHasErrors = (hasErrors: boolean, verifyMethod: (args) => void, args) => {
+  if (hasErrors) {
+    verifyMethod(args)
+  }
+}
+
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 
 setButtonControl({
@@ -188,6 +240,7 @@ setButtonControl({
       </h1>
       <i18n-t
         keypath="text.transitionYourBusiness"
+        scope="global"
         tag="p"
         class="mb-4 text-[18px]"
       >
@@ -199,7 +252,7 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
       :description="$t('text.reviewAndConfirmDescription')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="false"
       class="space-y-4"
     >
       <div class="space-y-6">
@@ -252,13 +305,15 @@ setButtonControl({
         <FormSubSection
           icon="i-mdi-handshake"
           :title="$t('label.articles')"
+          :has-errors="hasArticlesErrors"
         >
           <ConnectFormSection
             :title="$t('label.resolutionOrCourtOrderDate')"
+            :has-errors="hasArticlesErrors"
             class="text-base p-6 pb-2"
           >
-            <template #title="{ error }">
-              <p :class="error ? 'text-red-600' : ''" class="mb-2 sm:mb-0 sm:font-bold">
+            <template #title>
+              <p :class="hasArticlesErrors ? 'text-red-600' : ''" class="mb-2 sm:mb-0 sm:font-bold">
                 {{ $t('label.resolutionOr') }}<br>
                 {{ $t('label.courtOrderDate') }}
               </p>
@@ -300,6 +355,15 @@ setButtonControl({
                       @click="showDateInputBox=true"
                     />
                   </div>
+                  <div v-if="hasArticlesErrors">
+                    <UAlert
+                      :description="t('errors.articles')"
+                      icon="mdi-warning"
+                      color="error"
+                      variant="subtle"
+                      class="mt-4"
+                    />
+                  </div>
                 </div>
                 <div>
                   <!-- todo: when validations come in, add error info box here -->
@@ -329,21 +393,30 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.documentDelivery')"
       :description="$t('text.documentDelivery')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="hasCompletingPartyErrors"
       class="space-y-4"
     >
       <FormSubSection
         title=""
+        :has-errors="hasCompletingPartyErrors"
         class="space-y-6 p-6"
       >
         <ConnectFormSection :title="$t('label.registeredOffice')">
           {{ regOfficeEmail }}
         </ConnectFormSection>
-        <ConnectFormSection :title="$t('label.completingParty')">
+        <ConnectFormSection :title="$t('label.completingParty')" :error="hasCompletingPartyErrors">
           <ConnectFormInput
             v-model="compPartyEmail"
+            data-testid="compPartyEmail-input"
+            :error="completingPartyErrors?.['email']?.[0]"
+            :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
+            @blur="verifyIfHasErrors(
+              hasCompletingPartyErrors,
+              errorStore.verifyCompletingParty,
+              ({ email: compPartyEmail })
+            )"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -351,18 +424,27 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.courtOrder')"
       :description="$t('text.courtOrder')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="hasCourtOrderErrors"
       class="space-y-4"
     >
       <FormSubSection
         title=""
         class="space-y-6 p-6"
+        :has-errors="hasCourtOrderErrors"
       >
-        <ConnectFormSection :title="$t('label.courtOrderNumber')">
+        <ConnectFormSection :title="$t('label.courtOrderNumber')" :error="hasCourtOrderErrors">
           <ConnectFormInput
             v-model="courtOrderNumber"
+            data-testid="courtOrderNumber-input"
+            :error="courtOrderErrors?.['courtOrderNumber']?.[0]"
+            :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
+            @blur="verifyIfHasErrors(
+              hasCourtOrderErrors,
+              errorStore.verifyCourtOrder,
+              { courtOrderNumber: courtOrderNumber }
+            )"
           />
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.planOfArrangement')">
@@ -377,25 +459,33 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.folio')"
       :description="$t('text.folioOrReferenceNumber')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="hasFolioErrors"
       class="space-y-4"
     >
       <FormSubSection
         title=""
         class="space-y-6 p-6"
+        :has-errors="hasFolioErrors"
       >
-        <ConnectFormSection :title="$t('label.folioOrReferenceNumber')">
+        <ConnectFormSection
+          :title="$t('label.folioOrReferenceNumber')"
+          :error="hasFolioErrors"
+        >
           <ConnectFormInput
             v-model="folio"
+            data-testid="folio-input"
+            :error="folioErrors?.['folio']?.[0]"
+            :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
+            @blur="verifyIfHasErrors(hasFolioErrors, errorStore.verifyFolioReference, { folio: folio })"
           />
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
     <FormSection
       :title="$t('transitionApplication.subtitle.companyProvisions')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="false"
     >
       <FormSubSection
         title=""
@@ -406,6 +496,7 @@ setButtonControl({
         </p>
         <i18n-t
           keypath="text.companyProvisionsText"
+          scope="global"
           tag="p"
           class="mb-4"
         >
@@ -427,31 +518,42 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
-      :has-errors="sectionErrors.certify"
+      :has-errors="hasCertifyErrors"
       class="space-y-4"
     >
       <FormSubSection
         title=""
+        :has-errors="hasCertifyErrors"
         class="space-y-6 p-6"
       >
         <ConnectFormSection
           :title="$t('label.legalName')"
+          :error="hasCertifyErrors"
         >
           <ConnectFormInput
             v-model="legalName"
+            data-testid="legalName-input"
+            :error="certifyErrors?.['name']?.[0]"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
+            @blur="verifyIfHasErrors(
+              hasCertifyErrors,
+              errorStore.verifyCertify,
+              { name: legalName, certified: certifiedByLegalName }
+            )"
           />
         </ConnectFormSection>
         <ConnectFormSection title=" ">
           <FormCertify
             v-model="certifiedByLegalName"
+            :has-error="hasCertifyErrors"
             :legal-name="displayLegalName || $t('text.legalNameCertifyPlaceHolder')"
           >
             <template v-if="isStaffOrSbcStaff" #certifyText>
               <i18n-t
                 keypath="text.certifiesItHasRelevantKnowledgeStaff"
+                scope="global"
                 tag="p"
                 class="mt-[-2px]"
               >
@@ -466,7 +568,7 @@ setButtonControl({
     </FormSection>
     <FormSection
       :title="$t('transitionApplication.subtitle.shares')"
-      :has-errors="sectionErrors.reviewAndConfirm"
+      :has-errors="false"
     >
       <FormSubSection
         :title="$t('text.sharesTitle')"
