@@ -282,11 +282,15 @@ export async function checkBusinessExistsInLear (corpNum: string): Promise<boole
   const { $legalApi } = useNuxtApp()
 
   try {
-    const response = await $legalApi(`/businesses/${corpNum}`)
+    const response = await $legalApi(`/businesses/${corpNum}?slim=true`)
     // If we get a response, the business exists
     return !!response
   } catch (error) {
     if (error instanceof Error) {
+      // Handle 401 Unauthorized
+      if ('response' in error && (error as any).response?.status === StatusCodes.UNAUTHORIZED) {
+        return true
+      }
       // Handle 404 Not Found
       if ('response' in error && (error as any).response?.status === StatusCodes.NOT_FOUND) {
         return false
