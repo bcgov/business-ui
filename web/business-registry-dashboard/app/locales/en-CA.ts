@@ -415,7 +415,7 @@ export default {
       emailSent: {
         heading: 'Authorization Email Sent',
         p1: 'An email was sent to {boldStart}{email}{boldEnd}',
-        p2: 'Confirm your access by clicking the link inside. This will add the business to your Business Registry List. The link is valid for 12 hours.'
+        p2: 'Confirm your access by clicking the link in this email. This will add the business to your Business Registry List. The link is valid for 12 hours.'
       },
       toast: {
         success: '{identifier} was successfully added to your table.',
