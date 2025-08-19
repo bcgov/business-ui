@@ -4,6 +4,7 @@ import {
   NrRequestActionCodes,
   NrRequestTypeCodes
 } from '@bcrs-shared-components/enums'
+import moment from 'moment-timezone'
 
 mockNuxtImport('useConnectAccountStore', () => {
   return () => (
@@ -28,7 +29,7 @@ const mockBusiness: Business = {
   nameRequest: {
     state: 'APPROVED',
     legalType: CorpTypes.BENEFIT_COMPANY,
-    expirationDate: new Date('2023-12-31'),
+    expirationDate: moment().tz('America/Vancouver').add(1, 'year').toDate(),
     enableIncorporation: true,
     requestActionCd: NrRequestActionCodes.NEW_BUSINESS,
     requestTypeCd: NrRequestTypeCodes.CHANGE_BEN,
@@ -252,6 +253,8 @@ describe('affiliations utils', () => {
     // })
 
     it('should return false if NR is not expired', () => {
+      // const business = { ...mockBusiness }
+      // business.nameRequest!.expirationDate = moment().tz('America/Vancouver').add(1, 'year').toDate()
       expect(isExpired(mockBusiness)).toBe(false)
     })
   })
