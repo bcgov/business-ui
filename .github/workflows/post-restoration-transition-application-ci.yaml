@@ -46,6 +46,7 @@ jobs:
       with:
         node-version: 24
         cache: 'pnpm'
+        working-directory: ./web/${{ matrix.project }}
     - name: Install dependencies
       run: pnpm install
     - name: Install Playwright browsers
