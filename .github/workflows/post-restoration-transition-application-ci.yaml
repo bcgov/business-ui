@@ -53,7 +53,7 @@ jobs:
       run: npx playwright install --with-deps
     - name: Set basic env
       run: |
-        cp .env.example .env
+        cp .env.sample .env
     - name: Run Playwright tests
       run: HOME=/root pnpm test:e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
     - name: Upload blob report to GitHub Actions Artifacts
