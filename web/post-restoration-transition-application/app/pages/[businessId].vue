@@ -62,7 +62,7 @@ definePageMeta({
   middleware: () => {
     // redirect to reg home with return url if user unauthenticated
     const { $keycloak, $config } = useNuxtApp()
-    if (!$keycloak.authenticated) {
+    if (!$keycloak.authenticated && !useRuntimeConfig().public.ci) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
         `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
