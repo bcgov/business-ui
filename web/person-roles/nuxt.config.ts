@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   ],
 
   extends: [
-    '@sbc-connect/nuxt-core-layer-beta'
+    '@bcreg/nuxt-base'
   ],
 
   router: {
