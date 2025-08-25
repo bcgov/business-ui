@@ -405,7 +405,7 @@ export default {
       emailSent: {
         heading: "E-mail d'autorisation envoyé",
         p1: 'Un e-mail a été envoyé à {boldStart}{email}{boldEnd}',
-        p2: "Confirmez votre accès en cliquant sur le lien à l'intérieur. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 12 heures."
+        p2: "Confirmez votre accès en cliquant sur le lien dans cet email. Cela ajoutera l'entreprise à votre liste de registres d'entreprises. Le lien est valable pendant 12 heures."
       },
       toast: {
         success: '{identifier} a été ajouté avec succès à votre tableau.',
