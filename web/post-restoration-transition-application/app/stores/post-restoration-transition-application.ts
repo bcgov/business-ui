@@ -22,6 +22,7 @@ export const usePostRestorationTransitionApplicationStore
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
   const modifiedShareIndexes = ref<number[]>([])
+  const staffPay = ref<StaffPay>({priority: false} as StaffPay)
 
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
@@ -30,6 +31,8 @@ export const usePostRestorationTransitionApplicationStore
   const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
   const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
+  const editingDirector= ref<OrgPerson | undefined>(undefined)
+  const modifiedDirectors = ref<number[]>([])
 
   const editState = computed(() => editingShareIndex.value !== -1)
 
@@ -102,6 +105,7 @@ export const usePostRestorationTransitionApplicationStore
     const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
     feeStore.feeOptions.showServiceFees = true
     if (transitionFees) {
+      transitionFees.total = transitionFees.filingFees + transitionFees.serviceFees
       feeStore.addReplaceFee(transitionFees)
     }
 
@@ -249,6 +253,9 @@ export const usePostRestorationTransitionApplicationStore
     editingShareIndex,
     modifiedShareIndexes,
     shareWithSpecialRightsModified,
-    ORIGINAL_SHARE_CLASSES
+    ORIGINAL_SHARE_CLASSES,
+    staffPay,
+    editingDirector,
+    modifiedDirectors
   }
 })

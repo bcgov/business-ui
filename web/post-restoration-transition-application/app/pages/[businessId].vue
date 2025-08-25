@@ -2,6 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
+import { UButton } from '#components'
 
 const { setButtonControl } = useButtonControl()
 
@@ -14,6 +15,7 @@ const {
   folioErrors,
   courtOrderErrors,
   articlesErrors,
+  staffPayErrors,
   completingPartyErrors } = storeToRefs(errorStore)
 
 const hasCertifyErrors = computed(() => {
@@ -28,6 +30,13 @@ const hasArticlesErrors = computed(() => {
     return false
   }
   return Object.keys(articlesErrors?.value).length > 0
+})
+
+const hasStaffPayErrors = computed(() => {
+  if (!staffPayErrors?.value) {
+    return false
+  }
+  return Object.keys(staffPayErrors?.value).length > 0
 })
 
 const hasFolioErrors = computed(() => {
@@ -101,6 +110,19 @@ watch(shareWithSpecialRightsModified, (newVal) => {
     articlesErrors.value = articlesResult.error.flatten().fieldErrors
   }
 })
+
+const anyExpanded = ref(false)
+const editingDirectorIndex = ref(-1)
+
+const toggleDirectorExpanded = (row: Row<Series>) => {
+  if (row.getIsExpanded()) {
+    anyExpanded.value = false
+    editingDirectorIndex.value = -1
+  } else {
+    editingDirectorIndex.value = row.index
+  }
+  row.toggleExpanded()
+}
 
 // Define table columns
 const officesColumns = ref([
@@ -179,11 +201,21 @@ const directorsColumns = ref([
   {
     accessorKey: 'action',
     header: '',
-    cell: () => {
+    cell: ({ row }) => {
       return h(
-        'div',
-        { class: 'text-left font-bold text-bgGovColor-midGray' },
-        'TODO: ADD CHANGE LINK'
+        UButton,
+        {
+          icon: 'i-mdi-pencil',
+          label: t('label.change'),
+          color: 'primary',
+          class: 'inline-block mr-0 px-3',
+          variant: 'ghost',
+          'aria-label': t('label.change'),
+          'ui': {
+            label: 'align-top'
+          },
+          onClick: () => toggleDirectorExpanded(row)
+        }
       )
     }
   }
@@ -292,7 +324,11 @@ setButtonControl({
               th: 'text-[14px] text-left text-bcGovColor-midGray p-4',
               td: 'border-t-1 border-bcGovColor-hairlinesOnWhite text-[14px] whitespace-nowrap p-4 text-gray-500'
             }"
-          />
+          >
+            <template #expanded="{ row }">
+              <FormAddressChange :index="row.index" @done="toggleDirectorExpanded(row)" @cancel="toggleDirectorExpanded(row)" />
+            </template>
+          </FormDataList>
           <InfoBox
             icon="i-mdi-information-outline"
             :title="$t('text.needOtherChange')"
@@ -300,6 +336,15 @@ setButtonControl({
             class="pl-6 pr-6 text-[14px]"
             title-class="text-[14px]"
           />
+        </FormSubSection>
+
+        <FormSubSection
+          :title="$t('text.sharesTitle')"
+          icon="i-mdi-sitemap"
+          :has-errors="false"
+          class="pb-6"
+        >
+          <Shares />
         </FormSubSection>
 
         <FormSubSection
@@ -566,18 +611,26 @@ setButtonControl({
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
+    
     <FormSection
-      :title="$t('transitionApplication.subtitle.shares')"
-      :has-errors="false"
+      :title="$t('transitionApplication.subtitle.staffPayment')"
+      v-if="isStaffOrSbcStaff"
+      :has-errors="hasStaffPayErrors"
     >
       <FormSubSection
-        :title="$t('text.sharesTitle')"
-        icon="i-mdi-sitemap"
-        class="pb-6"
+        title=""
+        :has-errors="hasStaffPayErrors"
+        class="space-y-6 p-6"
       >
-        <Shares />
+        <ConnectFormSection
+          :title="$t('label.payment')"
+          :error="hasStaffPayErrors"
+        >
+          <FormStaffPay />
+        </ConnectFormSection>
       </FormSubSection>
     </FormSection>
+
     <!-- NB: needed so that the tw classes are loaded -->
     <!-- <main class="app-inner-container app-body">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">

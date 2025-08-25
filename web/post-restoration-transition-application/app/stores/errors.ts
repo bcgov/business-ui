@@ -1,5 +1,7 @@
 import { certifySchema } from '~/interfaces/certify'
 import { shareSchema } from '~/interfaces/shares'
+import { usePostRestorationTransitionApplicationStore } from '~/stores/post-restoration-transition-application'
+import { StaffPaySchema } from '~/interfaces/staffPay'
 
 export const usePostRestorationErrorsStore
   = defineStore('post-restoration-errors-store', () => {
@@ -9,6 +11,11 @@ export const usePostRestorationErrorsStore
   const courtOrderErrors = ref<{ [key: string]: string[] }>({})
   const completingPartyErrors = ref<{ [key: string]: string[] }>({})
   const articlesErrors = ref<{ [key: string]: string[] }>({})
+  const staffPayErrors = ref<{ [key: string]: string[] }>({})
+  const filingStore = usePostRestorationTransitionApplicationStore()
+  const {
+    isStaffOrSbcStaff
+  } = storeToRefs(filingStore)
 
   const clearErrors = () => {
     certifyErrors.value = {}
@@ -17,6 +24,7 @@ export const usePostRestorationErrorsStore
     courtOrderErrors.value = {}
     completingPartyErrors.value = {}
     articlesErrors.value = {}
+    staffPayErrors.value = {}
   }
 
   const verifyCertify = (certify: certify) => {
@@ -71,12 +79,21 @@ export const usePostRestorationErrorsStore
     }
   }
 
+  const verifyStaffPay = (staffPay: StaffPay) => {
+    staffPayErrors.value = {}
+    const staffPayResult = StaffPaySchema.safeParse(staffPay)
+    if (!staffPayResult.success) {
+      staffPayErrors.value = staffPayResult.error.flatten().fieldErrors
+    }
+  }
+
   const verify = (certify: certify,
     shareClasses: Share[],
     folioReference: folioReference,
     courtOrder: courtOrder,
     completingParty: completingParty,
-    articles: Articles
+    articles: Articles,
+    staffPay?: StaffPay
   ) => {
     clearErrors()
     verifyCertify(certify)
@@ -85,6 +102,9 @@ export const usePostRestorationErrorsStore
     verifyCourtOrder(courtOrder)
     verifyCompletingParty(completingParty)
     verifyArticles(articles)
+    if (staffPay && isStaffOrSbcStaff.value) {
+      verifyStaffPay(staffPay)
+    }
   }
 
   const verifyThenHasErrors = (certify: certify,
@@ -92,9 +112,10 @@ export const usePostRestorationErrorsStore
     folioReference: folioReference,
     courtOrder: courtOrder,
     completingParty: completingParty,
-    articles: Articles
+    articles: Articles,
+    staffPay?: StaffPay
   ) => {
-    verify(certify, shareClasses, folioReference, courtOrder, completingParty, articles)
+    verify(certify, shareClasses, folioReference, courtOrder, completingParty, articles, staffPay)
     return hasErrors.value
   }
 
@@ -110,6 +131,7 @@ export const usePostRestorationErrorsStore
   return {
     certifyErrors,
     folioErrors,
+    staffPayErrors,
     shareErrors,
     courtOrderErrors,
     completingPartyErrors,
@@ -123,6 +145,7 @@ export const usePostRestorationErrorsStore
     verifyFolioReference,
     verifyCourtOrder,
     verifyCompletingParty,
-    verifyArticles
+    verifyArticles,
+    verifyStaffPay
   }
 })
