@@ -3,7 +3,7 @@ import { STAFF_PAY_PAYMENT_METHODS } from '../enum/staff_pay_methods'
 
 const message = 'errors.maxLength30'
 
-const refine = (input: any, ctx: any) => {
+const refine = (input, ctx) => {
   if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.CASH) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
