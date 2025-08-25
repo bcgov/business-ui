@@ -77,7 +77,7 @@ export default {
     resolutionOr: 'Resolution or',
     resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
     routingSlipNumber: 'Routing Slip Number',
-    sameAsDelivery: "Same as Delivery Address",
+    sameAsDelivery: 'Same as Delivery Address',
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
     shareClass: 'Share Class',

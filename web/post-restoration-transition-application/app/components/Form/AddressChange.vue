@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const props = defineProps<{ 
-  index: number 
+const props = defineProps<{
+  index: number
 }>()
 
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -13,7 +13,7 @@ const emit = defineEmits(['done', 'cancel'])
 
 const clearDeliveryAddress = () => {
   if (sameAsMailing.value) {
-      editingDirector.value.deliveryAddress = {
+    editingDirector.value.deliveryAddress = {
       addressCity: '',
       addressCountry: '',
       addressRegion: '',
@@ -38,7 +38,7 @@ const convertAddress = (address: Address, toState: boolean) => {
       city: address.addressCity,
       region: address.addressRegion,
       postalCode: address.postalCode,
-      province: address.addressRegion,
+      province: address.addressRegion
     }
   }
   return {
@@ -49,7 +49,7 @@ const convertAddress = (address: Address, toState: boolean) => {
     postalCode: address.postalCode,
     addressType: address.addressType,
     deliveryInstructions: address.deliveryInstructions,
-    streetAddressAdditional: address.streetAddressAdditional,
+    streetAddressAdditional: address.streetAddressAdditional
   }
 }
 
@@ -68,7 +68,9 @@ const setMailingState = () => {
 setDeliveryState()
 setMailingState(true)
 watch(editingDirector, setDeliveryState)
-watch(editingDirector, () => {setMailingState(true)})
+watch(editingDirector, () => {
+  setMailingState(true)
+})
 
 editingDirector.value = directors.value[props.index]
 const formRef = ref()
@@ -94,8 +96,9 @@ const cancel = () => {
 
 <template>
   <div>
-
-    <p class="font-bold text-lg mb-4">{{ $t('label.mailingAddress') }}</p>
+    <p class="font-bold text-lg mb-4">
+      {{ $t('label.mailingAddress') }}
+    </p>
     <FormAddress
       id="mailing-address"
       v-model="mailingState"
@@ -105,7 +108,9 @@ const cancel = () => {
       :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
     />
 
-    <p class="font-bold text-lg mb-4">{{ $t('label.deliveryAddress') }}</p>
+    <p class="font-bold text-lg mb-4">
+      {{ $t('label.deliveryAddress') }}
+    </p>
     <UFormField
       name="sameAsMailing"
       :model-value="sameAsMailing"
@@ -115,10 +120,10 @@ const cancel = () => {
         id="same-as-mailing"
         v-model="sameAsMailing"
         :label="$t('label.sameAsMailingAddress')"
-        @update:modelValue="clearDeliveryAddress"
         :ui="{
           label: 'ml-2 text-base'
         }"
+        @update:model-value="clearDeliveryAddress"
       />
     </UFormField>
     <FormAddress
@@ -130,7 +135,6 @@ const cancel = () => {
       not-po-box
       :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
     />
-
 
     <div class="flex justify-end space-x-4">
       <UButton
@@ -210,6 +214,4 @@ const cancel = () => {
     </template>
   </UFormField>
 </template> -->
-
-
 </template>

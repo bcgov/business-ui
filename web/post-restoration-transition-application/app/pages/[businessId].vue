@@ -205,16 +205,16 @@ const directorsColumns = ref([
       return h(
         UButton,
         {
-          icon: 'i-mdi-pencil',
-          label: t('label.change'),
-          color: 'primary',
-          class: 'inline-block mr-0 px-3',
-          variant: 'ghost',
+          'icon': 'i-mdi-pencil',
+          'label': t('label.change'),
+          'color': 'primary',
+          'class': 'inline-block mr-0 px-3',
+          'variant': 'ghost',
           'aria-label': t('label.change'),
           'ui': {
             label: 'align-top'
           },
-          onClick: () => toggleDirectorExpanded(row)
+          'onClick': () => toggleDirectorExpanded(row)
         }
       )
     }
@@ -326,7 +326,11 @@ setButtonControl({
             }"
           >
             <template #expanded="{ row }">
-              <FormAddressChange :index="row.index" @done="toggleDirectorExpanded(row)" @cancel="toggleDirectorExpanded(row)" />
+              <FormAddressChange
+                :index="row.index"
+                @done="toggleDirectorExpanded(row)"
+                @cancel="toggleDirectorExpanded(row)"
+              />
             </template>
           </FormDataList>
           <InfoBox
@@ -611,10 +615,10 @@ setButtonControl({
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
-    
+
     <FormSection
-      :title="$t('transitionApplication.subtitle.staffPayment')"
       v-if="isStaffOrSbcStaff"
+      :title="$t('transitionApplication.subtitle.staffPayment')"
       :has-errors="hasStaffPayErrors"
     >
       <FormSubSection

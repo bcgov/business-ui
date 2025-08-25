@@ -10,7 +10,7 @@ const errorStore = usePostRestorationErrorsStore()
 const {
   staffPayErrors
 } = storeToRefs(errorStore)
-  
+
 const { staffPay } = storeToRefs(filingStore)
 
 const revalidateIfHasErrors = (errorField: string) => {
@@ -42,22 +42,21 @@ const updatePaymentMethod = () => {
   }
   feeStore.addReplaceFee(fee)
 }
-
 </script>
 
 <template>
   <div class="space-y-3">
-    <!-- Cash or cheque-->
+    <!-- Cash or cheque -->
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{label: $t('label.cashOrCheque'), value: STAFF_PAY_PAYMENT_METHODS[0]}]"
+      :items="[{ label: $t('label.cashOrCheque'), value: STAFF_PAY_PAYMENT_METHODS[0] }]"
       :ui="{
         label: 'text-base'
       }"
       @change="updatePaymentMethod()"
     />
-    <UFormField 
+    <UFormField
       :error="$te(getError('routingSlipNumber')) ? $t(getError('routingSlipNumber')) : getError('routingSlipNumber')"
       class="ml-6 mb-6"
     >
@@ -73,14 +72,16 @@ const updatePaymentMethod = () => {
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{label: $t('label.bcOnline'), value: STAFF_PAY_PAYMENT_METHODS[1]}]"
+      :items="[{ label: $t('label.bcOnline'), value: STAFF_PAY_PAYMENT_METHODS[1] }]"
       :ui="{
         label: 'text-base'
       }"
       @change="updatePaymentMethod()"
     />
-    <UFormField 
-      :error="$te(getError('bcOnlineAccountNumber')) ? $t(getError('bcOnlineAccountNumber')) : getError('bcOnlineAccountNumber')"
+    <UFormField
+      :error="$te(getError('bcOnlineAccountNumber'))
+        ? $t(getError('bcOnlineAccountNumber'))
+        : getError('bcOnlineAccountNumber')"
       class="ml-6 mb-6"
     >
       <UInput
@@ -90,7 +91,7 @@ const updatePaymentMethod = () => {
         @blur="revalidateIfHasErrors('bcOnlineAccountNumber')"
       />
     </UFormField>
-    <UFormField 
+    <UFormField
       :error="$te(getError('datNumber')) ? $t(getError('datNumber')) : getError('datNumber')"
       class="ml-6 mb-6"
     >
@@ -101,7 +102,7 @@ const updatePaymentMethod = () => {
         @blur="revalidateIfHasErrors('datNumber')"
       />
     </UFormField>
-    <UFormField 
+    <UFormField
       :error="$te(getError('folioNumber')) ? $t(getError('folioNumber')) : getError('folioNumber')"
       class="ml-6 mb-6"
     >
@@ -117,14 +118,14 @@ const updatePaymentMethod = () => {
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{label: $t('label.noFee'), value: STAFF_PAY_PAYMENT_METHODS[2]}]"
+      :items="[{ label: $t('label.noFee'), value: STAFF_PAY_PAYMENT_METHODS[2] }]"
       :ui="{
         label: 'text-base'
       }"
       @change="updatePaymentMethod()"
     />
-    
-    <hr class="border-bcGovGray-300" />
+
+    <hr class="border-bcGovGray-300">
 
     <UCheckbox
       v-model="staffPay.priority"
@@ -133,7 +134,7 @@ const updatePaymentMethod = () => {
       :ui="{
         label: 'ml-2 text-base'
       }"
-      @update:modelValue="updatePriority"
+      @update:model-value="updatePriority"
     />
   </div>
 </template>

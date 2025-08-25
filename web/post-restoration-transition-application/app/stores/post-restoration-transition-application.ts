@@ -22,7 +22,7 @@ export const usePostRestorationTransitionApplicationStore
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
   const modifiedShareIndexes = ref<number[]>([])
-  const staffPay = ref<StaffPay>({priority: false} as StaffPay)
+  const staffPay = ref<StaffPay>({ priority: false } as StaffPay)
 
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
@@ -31,7 +31,7 @@ export const usePostRestorationTransitionApplicationStore
   const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
   const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
-  const editingDirector= ref<OrgPerson | undefined>(undefined)
+  const editingDirector = ref<OrgPerson | undefined>(undefined)
   const modifiedDirectors = ref<number[]>([])
 
   const editState = computed(() => editingShareIndex.value !== -1)
