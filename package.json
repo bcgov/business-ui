@@ -1,0 +1,13 @@
+{
+  "name": "business-ui",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
+}

@@ -1,0 +1,7 @@
+packages:
+  - web/person-roles
+  - packages/**
+
+shamefullyHoist: true
+
+catalog:

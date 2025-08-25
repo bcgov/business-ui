@@ -1,0 +1,32 @@
+{
+  "name": "@bcreg/nuxt-base",
+  "type": "module",
+  "version": "0.1.0",
+  "repository": "github:bcgov/business-ui",
+  "license": "BSD-3-Clause",
+  "main": "./nuxt.config.ts",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "nuxi dev .playground",
+    "prepare": "nuxt prepare .playground",
+    "build": "nuxt build .playground",
+    "build:test": "pnpm generate && npx serve .playground/.output/public",
+    "generate": "nuxt generate .playground",
+    "preview": "npx serve .playground/.output/public",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "pnpm run test:unit; pnpm run test:e2e",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:unit:watch": "vitest",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "typecheck": "npx nuxt typecheck"
+  },
+  "dependencies": {
+    "@sbc-connect/nuxt-core-layer-beta": "^0.0.13"
+  },
+  "devDependencies": {
+    "nuxt": "^3.17.6"
+  }
+}
