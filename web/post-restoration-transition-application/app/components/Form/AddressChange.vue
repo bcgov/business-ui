@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { convertAddress } from '~/utils/address'
+
 const props = defineProps<{
   index: number
 }>()
@@ -27,32 +29,6 @@ const clearDeliveryAddress = () => {
   }
 }
 
-const convertAddress = (address: Address, toState: boolean) => {
-  if (typeof address === 'undefined') {
-    return {}
-  }
-  if (toState) {
-    return {
-      country: address.addressCountry,
-      street: address.streetAddress,
-      city: address.addressCity,
-      region: address.addressRegion,
-      postalCode: address.postalCode,
-      province: address.addressRegion
-    }
-  }
-  return {
-    addressCountry: address.country,
-    streetAddress: address.street,
-    addressCity: address.city,
-    addressRegion: address.region,
-    postalCode: address.postalCode,
-    addressType: address.addressType,
-    deliveryInstructions: address.deliveryInstructions,
-    streetAddressAdditional: address.streetAddressAdditional
-  }
-}
-
 const setDeliveryState = (updateSameAsMailing = true) => {
   deliveryState.value = convertAddress(editingDirector.value?.deliveryAddress, true)
   if (updateSameAsMailing) {
@@ -65,12 +41,10 @@ const setMailingState = () => {
   sameAsMailing.value = JSON.stringify(deliveryState.value) === JSON.stringify(mailingState.value)
 }
 
-setDeliveryState()
-setMailingState(true)
-watch(editingDirector, setDeliveryState)
+watch(editingDirector, setDeliveryState, { immediate: true })
 watch(editingDirector, () => {
   setMailingState(true)
-})
+}, { immediate: true })
 
 editingDirector.value = directors.value[props.index]
 const formRef = ref()

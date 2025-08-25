@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { STAFF_PAY_PAYMENT_METHODS } from '~/enum/staff_pay_methods'
+
 const FEE_CODE = 'TRANP'
 const filingStore = usePostRestorationTransitionApplicationStore()
 const feeStore = useConnectFeeStore()
@@ -34,7 +36,7 @@ const updatePriority = async () => {
 
 const updatePaymentMethod = () => {
   const fee = JSON.parse(JSON.stringify(fees.value[FEE_CODE]))
-  if (staffPay.value.paymentMethod === STAFF_PAY_PAYMENT_METHODS[2]) {
+  if (staffPay.value.paymentMethod === STAFF_PAY_PAYMENT_METHODS.NONE) {
     fee.waived = true
   }
   else {
@@ -50,7 +52,7 @@ const updatePaymentMethod = () => {
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{ label: $t('label.cashOrCheque'), value: STAFF_PAY_PAYMENT_METHODS[0] }]"
+      :items="[{ label: $t('label.cashOrCheque'), value: STAFF_PAY_PAYMENT_METHODS.CASH }]"
       :ui="{
         label: 'text-base'
       }"
@@ -72,7 +74,7 @@ const updatePaymentMethod = () => {
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{ label: $t('label.bcOnline'), value: STAFF_PAY_PAYMENT_METHODS[1] }]"
+      :items="[{ label: $t('label.bcOnline'), value: STAFF_PAY_PAYMENT_METHODS.BCONLINE }]"
       :ui="{
         label: 'text-base'
       }"
@@ -118,7 +120,7 @@ const updatePaymentMethod = () => {
     <URadioGroup
       v-model="staffPay.paymentMethod"
       size="xl"
-      :items="[{ label: $t('label.noFee'), value: STAFF_PAY_PAYMENT_METHODS[2] }]"
+      :items="[{ label: $t('label.noFee'), value: STAFF_PAY_PAYMENT_METHODS.NONE }]"
       :ui="{
         label: 'text-base'
       }"

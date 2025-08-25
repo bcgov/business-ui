@@ -1,17 +1,16 @@
 import * as z from 'zod'
-
-export const STAFF_PAY_PAYMENT_METHODS = ['cash', 'bconline', 'none']
+import { STAFF_PAY_PAYMENT_METHODS } from '../enum/staff_pay_methods'
 
 const message = 'errors.maxLength30'
 
-const refine = (input, ctx) => {
-  if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS[0]) {
+const refine = (input: any, ctx: any) => {
+  if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.CASH) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['routingSlipNumber'],
       message: 'errors.required'
     })
-  } else if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS[1]) {
+  } else if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.BCONLINE) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['bcOnlineAccountNumber'],
@@ -26,7 +25,7 @@ const refine = (input, ctx) => {
 }
 
 export interface StaffPay {
-    paymentMethod: string
+    paymentMethod: STAFF_PAY_PAYMENT_METHODS
     routingSlipNumber: string
     bcOnlineAccountNumber: string
     datNumber: string
