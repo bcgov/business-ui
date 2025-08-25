@@ -17,7 +17,8 @@
     "test:unit": "vitest --dir tests/unit",
     "test:unit:cov": "vitest --dir tests/unit --coverage",
     "test:e2e": "npx playwright test",
-    "test:e2e:ui": "npx playwright test --ui"
+    "test:e2e:ui": "npx playwright test --ui",
+    "build:test": "pnpm generate && npx serve .output/public"
   },
   "dependencies": {
     "@sbc-connect/nuxt-core-layer-beta": "^0.0.5",
