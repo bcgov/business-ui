@@ -8,6 +8,11 @@
   "author": "",
   "license": "BSD-3-Clause",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "ci:publish": "changeset publish"
+  },
+  "dependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.5"
   }
 }
