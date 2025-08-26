@@ -1,0 +1,1 @@
+[![License](https://img.shields.io/badge/License-BSD%203%20Clause-blue.svg)](LICENSE)
