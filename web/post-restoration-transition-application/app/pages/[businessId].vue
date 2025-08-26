@@ -500,7 +500,7 @@ setButtonControl({
           <UCheckbox
             v-model="planOfArrangement"
             :label="$t('label.planOfArrangement')"
-            :ui="{ base: 'cursor-pointer mt-1', label: 'cursor-pointer', wrapper: 'w-fit' }"
+            :ui="{ base: 'cursor-pointer mt-1', label: 'cursor-pointer pl-2', wrapper: 'w-fit' }"
           />
         </ConnectFormSection>
       </FormSubSection>

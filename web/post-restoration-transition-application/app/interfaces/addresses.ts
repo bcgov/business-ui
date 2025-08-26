@@ -1,4 +1,5 @@
 import { toApiAddress } from '~/utils/address'
+
 export interface Office {
   officeType: 'recordsOffice' | 'registeredOffice'
   deliveryAddress: UiAddress

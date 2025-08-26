@@ -30,7 +30,7 @@ const hasError = computed(() => {
       >
         <template #label>
           <div class="flex flex-col text-base space-y-2">
-            <div>
+            <div class="pl-2">
               <slot name="certifyText">
                 <i18n-t
                   keypath="text.certifiesItHasRelevantKnowledgeClient"
@@ -45,14 +45,14 @@ const hasError = computed(() => {
                 </i18n-t>
               </slot>
             </div>
-            <div>
+            <div class="pl-2">
               <slot name="certifyDate">
                 <span class="font-bold">
                   {{ $t('label.date') }}:
                 </span>{{ nowAsIsoDate() }}
               </slot>
             </div>
-            <div>
+            <div class="pl-2">
               <slot name="certifyNote">
                 <span class="font-bold">
                   {{ $t('label.note') }}:
