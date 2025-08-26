@@ -354,8 +354,12 @@ const cleanData = () => {
         <UCheckbox
           v-model="shareValues.hasRightsOrRestrictions"
           :label="$t('label.hasRightsOrRestrictions')"
+          :ui=" {
+            base: 'mt-1',
+            label: 'pl-2'
+          }"
         />
-        <div class="flex justify-end space-x-4">
+        <div class="flex justify-end space-x-4 pl-2">
           <UButton
             :label="$t('label.done')"
             color="primary"

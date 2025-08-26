@@ -105,7 +105,6 @@ const {
 } = storeToRefs(filingStore)
 
 watch(shareWithSpecialRightsModified, (newVal) => {
-  console.log('... shareWithSpecialRightsModified')
   articles.value.specialResolutionChanges = newVal
   errorStore.verifyArticles(articles.value)
 })
@@ -375,14 +374,14 @@ const handleArticlesDateChange = () => {
               <div class="flex flex-col space-y-4">
                 <p>{{ $t('text.articlesDescription') }}</p>
                 <div>
-                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6">
+                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6 items-center">
                     <p>{{ articles?.currentDate ? fromIsoToUsDateFormat(articles?.currentDate) : '' }}</p>
                     <UButton
                       icon="i-mdi-delete"
                       :label="$t('label.remove')"
                       :padded="false"
                       variant="ghost"
-                      class="rounded text-base p-0 gap-1"
+                      class="rounded text-base gap-1"
                       @click="removeDateHandler"
                     />
                   </div>

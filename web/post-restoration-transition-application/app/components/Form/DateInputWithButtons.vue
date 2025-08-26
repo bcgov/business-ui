@@ -34,7 +34,7 @@ const cancelHandler = () => {
       :min-date="minDate"
     />
   </div>
-  <div class="flex flex-row mt-2 space-x-4 float-end">
+  <div class="flex flex-row mt-2 space-x-4 float-end mb-2">
     <UButton
       :label="$t('label.save')"
       :padded="false"
