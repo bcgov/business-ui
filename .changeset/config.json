@@ -11,8 +11,6 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "person-roles",
-    "business-registry-dashboard",
-    "post-restoration-transition-application"
+    "person-roles"
   ]
 }
