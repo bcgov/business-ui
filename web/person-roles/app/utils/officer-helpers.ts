@@ -1,3 +1,5 @@
+import { isEqual } from 'es-toolkit'
+
 const ROLE_RELATIONSHIPS: [OfficerRole, string][] = [
   [OfficerRole.CEO, 'CEO'],
   [OfficerRole.CFO, 'CFO'],

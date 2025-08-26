@@ -1,5 +1,6 @@
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { isEqual } from 'lodash'
+import { isEqual } from 'es-toolkit'
+import { isEmpty } from 'es-toolkit/compat'
 import { FetchError } from 'ofetch'
 
 export const useOfficerStore = defineStore('officer-store', () => {

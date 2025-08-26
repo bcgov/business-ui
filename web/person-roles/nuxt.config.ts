@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-import { createResolver } from 'nuxt/kit'
+// import { createResolver } from 'nuxt/kit'
 
-const { resolve } = createResolver(import.meta.url)
+// const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
   ssr: false,
@@ -26,12 +26,11 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/eslint',
-    '@nuxt/test-utils/module',
-    'nuxt-lodash'
+    '@nuxt/test-utils/module'
   ],
 
   extends: [
-    '@bcreg/nuxt-base'
+    '@sbc-connect/nuxt-business-base'
   ],
 
   router: {
@@ -76,16 +75,7 @@ export default defineNuxtConfig({
         file: 'fr-CA.ts'
       }
     ],
-    strategy: 'prefix',
-    lazy: true,
-    langDir: 'locales',
-    defaultLocale: 'en-CA',
-    detectBrowserLanguage: false,
-    vueI18n: resolve('./i18n.config.ts'),
-    bundle: {
-      onlyLocales: ['en-CA'], // disable fr-CA
-      optimizeTranslationDirective: false // we recommend disabling this feature as it causes issues and will be deprecated in v10.
-    }
+    langDir: 'locales'
   },
 
   // full options
@@ -100,10 +90,6 @@ export default defineNuxtConfig({
         quotes: 'single'
       }
     }
-  },
-
-  future: {
-    compatibilityVersion: 4
   },
 
   compatibilityDate: '2024-11-27',
