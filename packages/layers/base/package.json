@@ -1,11 +1,11 @@
 {
-  "name": "@bcreg/nuxt-base",
+  "name": "@sbc-connect/nuxt-business-base",
   "type": "module",
   "version": "0.1.0",
   "repository": "github:bcgov/business-ui",
   "license": "BSD-3-Clause",
   "main": "./nuxt.config.ts",
-  "private": true,
+  "private": false,
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "nuxi dev .playground",
