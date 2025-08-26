@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const model = defineModel<string | undefined>({ default: undefined })
+const emit = defineEmits(['change'])
 
 const {
   maxlength = '1000'
@@ -18,6 +19,7 @@ const showDatePicker = ref(false)
 const updateDate = (date: string) => {
   displayDate.value = fromIsoToUsDateFormat(date)?.toString() || ''
   model.value = date
+  emit('change')
 }
 const handleUpdateDate = (date: Date) => {
   updateDate(date.toISOString())
@@ -29,6 +31,7 @@ const dateSelectPickerRef = ref<unknown>()
 const selectedDate = ref('')
 const changeDateHandler = () => {
   showDatePicker.value = false
+  emit('change')
 }
 
 const displayDate = ref('')
@@ -52,7 +55,7 @@ const blurInputHandler = () => {
     :aria-required="required"
     :disabled
     :maxlength
-    class="w-full grow"
+    class="w-full grow !rounded-md"
     :ui="{
       base: invalid ? 'ring-0 shadow-bcGovInputError focus:shadow-bcGovInputError' : '',
       icon: {
