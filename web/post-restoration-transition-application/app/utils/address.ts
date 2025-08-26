@@ -21,3 +21,20 @@ export const areApiAddressesEqual = (address1: ApiAddress, address2: ApiAddress)
     && address1.streetAddress === address2.streetAddress
     && address1.streetAddressAdditional === address2.streetAddressAdditional
 }
+
+export const toApiAddress = (address: UiAddress): ApiAddress | undefined => {
+  if (!address) {
+    return undefined
+  }
+  return {
+    streetAddress: address.street ?? '',
+    streetAddressAdditional: address.streetAdditional ?? '',
+    addressCity: address.city ?? '',
+    addressRegion: address.region ?? '',
+    postalCode: address.postalCode ?? '',
+    addressCountry: address.country ?? '',
+    deliveryInstructions: address.locationDescription ?? ''
+  }
+}
+
+export const toUiAddress = formatAddressUi

@@ -34,13 +34,16 @@ export const useStandaloneTransitionButtons = () => {
       specialResolutionChanges: filingStore.articles.specialResolutionChanges || false
     }
 
+    const staffPayValues: StaffPay = filingStore.staffPay
+
     const hasErrors = errorStore.verifyThenHasErrors(
       certifiedValues,
       shareValues,
       folioValues,
       courtOrderValues,
       completingPartyValues,
-      articlesValues
+      articlesValues,
+      staffPayValues
     )
 
     if (hasErrors) {

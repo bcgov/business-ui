@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import currencySymbolMap from 'currency-symbol-map/map'
 
 const t = useNuxtApp().$i18n.t
@@ -214,11 +214,11 @@ const cleanData = () => {
           <UInput
             v-model="shareName"
             :placeholder="$t('label.shareClassName')"
-            class="w-full"
+            class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
             @blur="revalidateIfHasErrors('name')"
           >
             <template #trailing>
-              <div class="text-[16px] text-bcGovColor-midGray">
+              <div class="text-base text-bcGovColor-midGray">
                 {{ $t('label.shares') }}
               </div>
             </template>
@@ -245,12 +245,12 @@ const cleanData = () => {
               $te(getError('maxNumberOfShares'))
                 ? $t(getError('maxNumberOfShares'))
                 : getError('maxNumberOfShares')"
+            class="w-full"
           >
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
               :placeholder="$t('label.maximumNumberOfShares')"
               :disable-wheel-change="true"
-              class="flex-auto"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
                   + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
@@ -258,7 +258,9 @@ const cleanData = () => {
                   + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                   + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
               }"
+              class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
               @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
+              @focusin="maxSharesChangeHandler()"
             >
               <template #decrement>
                 <span />
@@ -269,16 +271,14 @@ const cleanData = () => {
             </UInputNumber>
           </UFormField>
         </div>
-        <div>
-          <URadioGroup
-            v-model="hasNoMaxShares"
-            :items="[$t('label.noMax')]"
-            :ui="{
-              label: 'text-base'
-            }"
-            @change="noMaxSharesChangeHandler()"
-          />
-        </div>
+        <URadioGroup
+          v-model="hasNoMaxShares"
+          :items="[$t('label.noMax')]"
+          :ui="{
+            label: 'text-base'
+          }"
+          @change="noMaxSharesChangeHandler()"
+        />
 
         <hr class="border-bcGovGray-300">
 
@@ -292,7 +292,7 @@ const cleanData = () => {
             }"
             @change="parValueChangeHandler()"
           />
-          <div class="flex flex-auto">
+          <div class="flex gap-4 w-full">
             <UFormField
               :error="
                 $te(getError('parValue'))
@@ -304,7 +304,6 @@ const cleanData = () => {
                 v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
                 :disable-wheel-change="true"
-                class="flex-auto"
                 :ui="{
                   base: 'w-full rounded-md border-0 placeholder:text-dimmed'
                     + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
@@ -312,6 +311,8 @@ const cleanData = () => {
                     + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                     + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
                 }"
+                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+                @focusin="parValueChangeHandler()"
                 @update:model-value="revalidateIfHasErrors('parValue')"
               >
                 <template #decrement>
@@ -324,17 +325,14 @@ const cleanData = () => {
             </UFormField>
             <UFormField
               :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
-              class="h-full w-[70%]"
-              :ui="{
-                root: 'h-11 max-h-11',
-                content: 'h-12 max-h-12'
-              }"
+              class="h-full flex-1 w-full"
             >
               <USelect
                 v-model="shareValues.currency"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
-                class="h-[56px] w-full pl-2"
+                class="p-[18px] w-full pl-2"
+                @focus="parValueChangeHandler()"
                 @update:model-value="revalidateIfHasErrors('currency')"
               />
             </UFormField>
@@ -357,21 +355,21 @@ const cleanData = () => {
           v-model="shareValues.hasRightsOrRestrictions"
           :label="$t('label.hasRightsOrRestrictions')"
         />
+        <div class="flex justify-end space-x-4">
+          <UButton
+            :label="$t('label.done')"
+            color="primary"
+            class="rounded"
+            @click="done()"
+          />
+          <UButton
+            :label="$t('label.cancel')"
+            variant="outline"
+            class="rounded"
+            @click="cancel()"
+          />
+        </div>
       </div>
-    </div>
-    <div class="flex justify-end space-x-4">
-      <UButton
-        :label="$t('label.done')"
-        color="primary"
-        class="rounded"
-        @click="done()"
-      />
-      <UButton
-        :label="$t('label.cancel')"
-        variant="outline"
-        class="rounded"
-        @click="cancel()"
-      />
     </div>
   </div>
 </template>

@@ -1,3 +1,5 @@
+import { toApiAddress } from '~/utils/address'
+
 export interface Office {
   officeType: 'recordsOffice' | 'registeredOffice'
   deliveryAddress: UiAddress
@@ -6,21 +8,6 @@ export interface Office {
 
 export type ApiOffice = ApiBaseAddressObj
 export type ApiOffices = IncorporationAddress
-
-export const toApiAddress = (address: UiAddress): ApiAddress | undefined => {
-  if (!address) {
-    return undefined
-  }
-  return {
-    streetAddress: address.street ?? '',
-    streetAddressAdditional: address.streetAdditional ?? '',
-    addressCity: address.city ?? '',
-    addressRegion: address.region ?? '',
-    postalCode: address.postalCode ?? '',
-    addressCountry: address.country ?? '',
-    deliveryInstructions: address.locationDescription ?? ''
-  }
-}
 
 export const toApiOffice = (office: Office | undefined): ApiOffice | undefined => {
   if (!office) {
