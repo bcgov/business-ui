@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const model = defineModel<string>({ default: '' })
+const model = defineModel<string | undefined>({ default: undefined })
 
 const {
   maxlength = '1000'
@@ -16,8 +16,13 @@ const {
 
 const showDatePicker = ref(false)
 const updateDate = (date: string) => {
-  displayDate.value = fromIsoToUsDateFormat(date) || ''
+  displayDate.value = fromIsoToUsDateFormat(date)?.toString() || ''
   model.value = date
+}
+const handleUpdateDate = (date: Date) => {
+  updateDate(date.toISOString())
+  showDatePicker.value = false
+  hasDateChanged.value = true
 }
 const hasDateChanged = ref(false)
 const dateSelectPickerRef = ref<unknown>()
@@ -28,6 +33,9 @@ const changeDateHandler = () => {
 
 const displayDate = ref('')
 const blurInputHandler = () => {
+  if (!displayDate.value) {
+    return
+  }
   const tempDate = new Date(displayDate.value)
   // set to all dates to be in noon UTC to display correctly when showing current date in our timezone
   // and to avoid extensive calculation of PST vs PDT
@@ -75,9 +83,9 @@ const blurInputHandler = () => {
     v-if="showDatePicker"
     ref="dateSelectPickerRef"
     class="absolute z-20"
-    :default-selected-date="selectedDate"
+    :default-selected-date="selectedDate || undefined"
     :set-min-date="minDate"
     :set-max-date="maxDate"
-    @selected-date="updateDate($event); showDatePicker = false; hasDateChanged = true"
+    @selected-date="handleUpdateDate($event)"
   />
 </template>

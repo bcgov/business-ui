@@ -16,7 +16,8 @@ const {
   courtOrderErrors,
   articlesErrors,
   staffPayErrors,
-  completingPartyErrors } = storeToRefs(errorStore)
+  completingPartyErrors
+} = storeToRefs(errorStore)
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -104,11 +105,9 @@ const {
 } = storeToRefs(filingStore)
 
 watch(shareWithSpecialRightsModified, (newVal) => {
+  console.log('... shareWithSpecialRightsModified')
   articles.value.specialResolutionChanges = newVal
-  const articlesResult = articlesSchema.safeParse(articles)
-  if (!articlesResult.success) {
-    articlesErrors.value = articlesResult.error.flatten().fieldErrors
-  }
+  errorStore.verifyArticles(articles.value)
 })
 
 const anyExpanded = ref(false)
@@ -259,6 +258,11 @@ setButtonControl({
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
+
+const handleArticlesDateChange = () => {
+  verifyIfHasErrors(hasArticlesErrors.value, errorStore.verifyArticles, articles.value)
+  showDateInputBox.value = false
+}
 </script>
 
 <template>
@@ -372,7 +376,7 @@ setButtonControl({
                 <p>{{ $t('text.articlesDescription') }}</p>
                 <div>
                   <div v-if="articles?.currentDate" class="flex flex-row space-x-6">
-                    <p>{{ fromIsoToUsDateFormat(articles?.currentDate) }}</p>
+                    <p>{{ articles?.currentDate ? fromIsoToUsDateFormat(articles?.currentDate) : '' }}</p>
                     <UButton
                       icon="i-mdi-delete"
                       :label="$t('label.remove')"
@@ -390,8 +394,8 @@ setButtonControl({
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
-                      @save="showDateInputBox=false"
-                      @cancel="showDateInputBox=false"
+                      @save="handleArticlesDateChange"
+                      @cancel="handleArticlesDateChange"
                     />
                   </div>
                   <div v-else>

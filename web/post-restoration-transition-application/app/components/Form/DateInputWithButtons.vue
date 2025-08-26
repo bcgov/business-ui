@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import DateInput from '~/components/Form/DateInput.vue'
 
-const model = defineModel<string>()
+const model = defineModel<string | undefined>()
 defineProps<{
   id: string
   name: string
@@ -12,14 +12,14 @@ defineProps<{
 
 const emit = defineEmits(['save', 'cancel'])
 
-const selectedValue = ref(model.value || '')
+const selectedValue = ref(model.value || undefined)
 
 const saveHandler = () => {
   model.value = selectedValue.value
   emit('save', model.value)
 }
 const cancelHandler = () => {
-  selectedValue.value = ''
+  selectedValue.value = undefined
   emit('cancel')
 }
 </script>
