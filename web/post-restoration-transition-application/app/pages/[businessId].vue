@@ -233,6 +233,7 @@ const showPreviousResolutionsDateLabel = computed(() => {
 
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
+  errorStore.verifyArticles(articles.value)
 }
 
 const minArticleResolutionDate = computed(() => {
