@@ -2,7 +2,7 @@
 import type { FormErrorEvent, Form, FormSubmitEvent, FormError } from '@nuxt/ui'
 import type { AcceptableValue } from 'reka-ui'
 import { z } from 'zod'
-import { isEqual } from 'lodash'
+import { isEqual } from 'es-toolkit'
 import { UForm } from '#components'
 
 const na = useNuxtApp()

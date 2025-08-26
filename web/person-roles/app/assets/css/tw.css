@@ -1,6 +1,6 @@
 @import "tailwindcss" theme(static);
 @import "@nuxt/ui";
-@source "../../../node_modules/@bcreg/nuxt-base/node_modules/@sbc-connect/nuxt-core-layer-beta";
+@source "../../../node_modules/@sbc-connect/nuxt-business-base/node_modules/@sbc-connect/nuxt-core-layer-beta";
 
 /* Customize Nuxt UI default tokens */
 :root {

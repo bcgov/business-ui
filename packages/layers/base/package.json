@@ -24,9 +24,10 @@
     "typecheck": "npx nuxt typecheck"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-core-layer-beta": "^0.0.13"
+    "@sbc-connect/nuxt-forms": "^0.1.12",
+    "@sbc-connect/nuxt-pay": "^0.1.12"
   },
   "devDependencies": {
-    "nuxt": "^3.17.6"
+    "nuxt": "^4.0.3"
   }
 }

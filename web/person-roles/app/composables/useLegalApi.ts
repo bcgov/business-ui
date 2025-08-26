@@ -1,6 +1,6 @@
 export const useLegalApi = () => {
   const { $legalApi } = useNuxtApp()
-  const { kcUser } = useKeycloak()
+  const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
 
   function createFilingPayload<F extends Record<string, unknown>>(
@@ -12,7 +12,7 @@ export const useLegalApi = () => {
       filing: {
         header: {
           name: filingName,
-          certifiedBy: kcUser.value.fullName,
+          certifiedBy: authUser.value.fullName,
           accountId,
           date: getToday(),
           type: FilingHeaderType.LEGAL

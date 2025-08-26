@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { createResolver } from 'nuxt/kit'
+// import { createResolver } from 'nuxt/kit'
 
-const { resolve } = createResolver(import.meta.url)
+// const { resolve } = createResolver(import.meta.url)
 export default defineNuxtConfig({
   ssr: false,
 
@@ -13,7 +13,12 @@ export default defineNuxtConfig({
     dirs: ['interfaces', 'types', 'enums']
   },
 
-  extends: ['@sbc-connect/nuxt-core-layer-beta'],
+  extends: [
+    // "@sbc-connect/nuxt-core-layer-beta": "^0.0.13",
+    // '@sbc-connect/nuxt-core-layer-beta',
+    '@sbc-connect/nuxt-pay',
+    '@sbc-connect/nuxt-forms'
+  ],
 
   modules: [],
 

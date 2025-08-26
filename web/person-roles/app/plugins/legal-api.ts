@@ -3,7 +3,7 @@ export default defineNuxtPlugin(() => {
   const legalApiUrl = rtc.legalApiUrl as string
   const appName = rtc.appName
   const xApiKey = rtc.xApiKey
-  const { $keycloak } = useNuxtApp()
+  const { $connectAuth } = useNuxtApp()
   const accountId = useConnectAccountStore().currentAccount.id
 
   const api = $fetch.create({
@@ -11,18 +11,18 @@ export default defineNuxtPlugin(() => {
     onRequest({ options }) {
       const headers = options.headers ||= {} as Headers
       if (Array.isArray(headers)) {
-        headers.push(['Authorization', `Bearer ${$keycloak.token}`])
+        headers.push(['Authorization', `Bearer ${$connectAuth.token}`])
         headers.push(['App-Name', appName])
         headers.push(['Account-Id', accountId])
         headers.push(['X-Apikey', xApiKey])
       } else if (headers instanceof Headers) {
-        headers.set('Authorization', `Bearer ${$keycloak.token}`)
+        headers.set('Authorization', `Bearer ${$connectAuth.token}`)
         headers.set('App-Name', appName)
         headers.set('Account-Id', String(accountId))
         headers.set('X-Apikey', String(xApiKey))
       } else {
         // @ts-expect-error - 'Authorization' doesnt exist on type Headers
-        headers.Authorization = `Bearer ${$keycloak.token}`
+        headers.Authorization = `Bearer ${$connectAuth.token}`
         // @ts-expect-error - 'App-Name' doesnt exist on type Headers
         headers['App-Name'] = appName
         // @ts-expect-error - 'Account-Id' doesnt exist on type Headers
