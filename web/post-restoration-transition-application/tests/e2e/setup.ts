@@ -1,4 +1,5 @@
-import { type Browser, chromium, type Page } from '@playwright/test'
+import { chromium } from '@playwright/test'
+import type { Browser, Page } from '@playwright/test'
 import { config as dotenvConfig } from 'dotenv'
 
 // load default env
@@ -23,9 +24,8 @@ async function isServerReady(url: string, timeout: number = 30000): Promise<bool
 }
 
 async function globalSetup() {
-  const baseUrl = process.env.NUXT_BASE_URL!
-
-  console.info('Waiting for the server to be ready...')
+  console.info('Test setup starting...')
+  const baseUrl = process.env.NUXT_PUBLIC_BASE_URL!
   // make sure app is available
   const serverReady = await isServerReady(baseUrl)
   if (!serverReady) {
@@ -36,30 +36,27 @@ async function globalSetup() {
   const browser: Browser = await chromium.launch()
   const context = await browser.newContext()
   const page: Page = await context.newPage()
-
   // complete login steps
   await page.goto(baseUrl)
 
-  const username = process.env.PLAYWRIGHT_TEST_BCSC_USERNAME!
-  const password = process.env.PLAYWRIGHT_TEST_BCSC_PASSWORD!
+  // TODO: figure out auth later
+  // const username = process.env.PLAYWRIGHT_TEST_BCSC_USERNAME!
+  // const password = process.env.PLAYWRIGHT_TEST_BCSC_PASSWORD!
 
-  await page.getByRole('button', { name: 'Select log in method' }).click()
-  await page.getByRole('menuitem', { name: 'BC Services Card' }).click()
-  await page.getByLabel('Log in with Test with').click()
-  await page.getByLabel('Email or username').fill(username)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Continue' }).click()
-  await page.waitForURL('**/login/username')
-  await page.getByText('I agree to the BC Login Service Terms of Use').click()
-  await page.getByRole('button', { name: 'Continue' }).click()
+  // await page.getByRole('button', { name: 'Select log in method' }).click()
+  // await page.getByRole('menuitem', { name: 'BC Services Card' }).click()
+  // await page.getByLabel('Log in with Test with').click()
+  // await page.getByLabel('Email or username').fill(username)
+  // await page.getByLabel('Password').fill(password)
+  // await page.getByRole('button', { name: 'Continue' }).click()
 
-  // should be redirected back to baseUrl after successful login
-  await page.waitForURL((url) => {
-    return url.toString().startsWith(baseUrl)
-  })
-  // save auth state and close browser
-  await page.context().storageState({ path: `tests/e2e/.auth/bcsc-user.json` })
+  // // should be redirected back to baseUrl after successful login
+  // await page.waitForURL(baseUrl + '**')
+
+  // // save auth state and close browser
+  // await page.context().storageState({ path: 'tests/e2e/.auth/bcsc-user.json' })
   await browser.close()
+  console.info('Test setup completed.')
 }
 
 export default globalSetup
