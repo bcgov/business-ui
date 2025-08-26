@@ -22,28 +22,19 @@ export const areApiAddressesEqual = (address1: ApiAddress, address2: ApiAddress)
     && address1.streetAddressAdditional === address2.streetAddressAdditional
 }
 
-export const convertAddress = (address: ApiAddress | UiAddress, toState: boolean) => {
-  if (typeof address === 'undefined') {
-    return {}
-  }
-  if (toState) {
-    return {
-      country: address.addressCountry,
-      street: address.streetAddress,
-      city: address.addressCity,
-      region: address.addressRegion,
-      postalCode: address.postalCode,
-      province: address.addressRegion
-    }
+export const toApiAddress = (address: UiAddress): ApiAddress | undefined => {
+  if (!address) {
+    return undefined
   }
   return {
-    addressCountry: address.country,
-    streetAddress: address.street,
-    addressCity: address.city,
-    addressRegion: address.region,
-    postalCode: address.postalCode,
-    addressType: address.addressType,
-    deliveryInstructions: address.deliveryInstructions,
-    streetAddressAdditional: address.streetAddressAdditional
+    streetAddress: address.street ?? '',
+    streetAddressAdditional: address.streetAdditional ?? '',
+    addressCity: address.city ?? '',
+    addressRegion: address.region ?? '',
+    postalCode: address.postalCode ?? '',
+    addressCountry: address.country ?? '',
+    deliveryInstructions: address.locationDescription ?? ''
   }
 }
+
+export const toUiAddress = formatAddressUi
