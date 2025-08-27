@@ -44,7 +44,7 @@ mockNuxtImport('useNuxtApp', () => () => ({
   $i18n: { t: (key: string) => key }
 }))
 
-describe.only('useOfficerStore', () => {
+describe('useOfficerStore', () => {
   let store: ReturnType<typeof useOfficerStore>
 
   beforeEach(() => {
