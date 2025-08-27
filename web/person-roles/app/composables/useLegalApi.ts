@@ -94,14 +94,14 @@ export const useLegalApi = () => {
     draftId: number | string,
     filingName: string
   ): Promise<{ isValid: boolean, data: FilingGetByIdResponse<F> | null }> {
-      const response = await getFilingById<F>(businessId, draftId)
-      const isValid = isValidDraft<F>(filingName, response)
+    const response = await getFilingById<F>(businessId, draftId)
+    const isValid = isValidDraft<F>(filingName, response)
 
-      if (!isValid) {
-        return { isValid, data: null }
-      }
+    if (!isValid) {
+      return { isValid, data: null }
+    }
 
-      return { isValid, data: response }
+    return { isValid, data: response }
   }
 
   /**

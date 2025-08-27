@@ -168,13 +168,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
         isUnauthorizedOrBusinessNotFound
           ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
-              {
-                label: t('btn.goBack'),
-                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-                variant: 'outline'
-              },
-              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
-            ]
+            {
+              label: t('btn.goBack'),
+              to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
+              variant: 'outline'
+            },
+            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+          ]
       )
     } finally {
       detailsHeaderStore.loading = false
@@ -237,8 +237,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const todayUtc = getToday()
 
       const ceasedRoles: OfficerRoleObj[] = newOfficer.roles.map(role => ({
-          ...role,
-          cessationDate: todayUtc
+        ...role,
+        cessationDate: todayUtc
       }))
 
       const newState = JSON.parse(JSON.stringify({
@@ -258,13 +258,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
   function undoOfficer(row: Row<OfficerTableState>): void {
     const oldOfficer = row.original.old
 
-      if (oldOfficer) {
-        const newState = JSON.parse(JSON.stringify({
-          new: oldOfficer,
-          old: oldOfficer
-        }))
-        updateOfficerTable(newState, row)
-      }
+    if (oldOfficer) {
+      const newState = JSON.parse(JSON.stringify({
+        new: oldOfficer,
+        old: oldOfficer
+      }))
+      updateOfficerTable(newState, row)
+    }
   }
 
   /**

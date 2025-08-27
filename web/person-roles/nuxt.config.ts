@@ -25,7 +25,6 @@ export default defineNuxtConfig({
   ],
 
   modules: [
-    '@nuxt/eslint',
     '@nuxt/test-utils/module'
   ],
 
@@ -80,17 +79,17 @@ export default defineNuxtConfig({
 
   // full options
   // https://github.com/eslint-stylistic/eslint-stylistic/blob/main/packages/eslint-plugin/configs/customize.ts#L16
-  eslint: {
-    config: {
-      stylistic: {
-        indent: 2,
-        semi: false,
-        commaDangle: 'never',
-        jsx: false,
-        quotes: 'single'
-      }
-    }
-  },
+  // eslint: {
+  //   config: {
+  //     stylistic: {
+  //       indent: 2,
+  //       semi: false,
+  //       commaDangle: 'never',
+  //       jsx: false,
+  //       quotes: 'single'
+  //     }
+  //   }
+  // },
 
   compatibilityDate: '2024-11-27',
 
