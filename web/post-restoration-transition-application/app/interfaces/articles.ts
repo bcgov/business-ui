@@ -22,12 +22,12 @@ export interface ApiResolutions {
 }
 
 export const articlesSchema = z.object({
-  currentDate: z.string().optional(),
+  currentDate: z.date().optional(),
   resolutionDates: z.array(z.string()),
   specialResolutionChanges: z.boolean()
 }).refine((data) => {
   if (data.specialResolutionChanges) {
-    return data.currentDate !== undefined && data.resolutionDates.length > 0
+    return data.currentDate !== undefined
   }
   return true
 }, {

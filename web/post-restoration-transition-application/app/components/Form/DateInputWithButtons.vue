@@ -8,6 +8,7 @@ defineProps<{
   label: string
   minDate?: string
   maxDate?: string
+  hasErrors?: boolean
 }>()
 
 const emit = defineEmits(['save', 'cancel'])
@@ -36,7 +37,7 @@ const cancelHandler = () => {
   </div>
   <div class="flex flex-row mt-2 space-x-4 float-end">
     <UButton
-      :label="$t('label.save')"
+      :label="!!hasErrors ? $t('label.done') : $t('label.save')"
       :padded="false"
       class="rounded text-base pt-[11px] pb-[11px]"
       color="primary"

@@ -26,7 +26,7 @@ const hasCertifyErrors = computed(() => {
 })
 
 const hasArticlesErrors = computed(() => {
-  if (!articlesErrors?.value) {
+  if (!articlesErrors?.value || showDateInputBox.value) {
     return false
   }
   return Object.keys(articlesErrors?.value).length > 0
@@ -118,7 +118,8 @@ const toggleDirectorExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
     editingDirectorIndex.value = -1
-  } else {
+  } else if (!anyExpanded.value) {
+    anyExpanded.value = true
     editingDirectorIndex.value = row.index
   }
   row.toggleExpanded()
@@ -235,16 +236,15 @@ const showPreviousResolutionsDateLabel = computed(() => {
 
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
+  validate()
 }
 
 const minArticleResolutionDate = computed(() => {
   return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
 })
 
-const verifyIfHasErrors = (hasErrors: boolean, verifyMethod: (args) => void, args) => {
-  if (hasErrors) {
-    verifyMethod(args)
-  }
+const verify = (verifyMethod: (args) => void, args) => {
+  verifyMethod(args)
 }
 
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
@@ -259,6 +259,12 @@ setButtonControl({
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
+
+const closeDateandValidate = () => {
+  showDateInputBox.value = false
+  validate()
+}
+
 </script>
 
 <template>
@@ -390,8 +396,8 @@ setButtonControl({
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
-                      @save="showDateInputBox=false"
-                      @cancel="showDateInputBox=false"
+                      @save="closeDateandValidate()"
+                      @cancel="closeDateandValidate()"
                     />
                   </div>
                   <div v-else>
@@ -409,8 +415,11 @@ setButtonControl({
                       :description="t('errors.articles')"
                       icon="mdi-warning"
                       color="error"
+                      :ui="{
+                        icon: 'text-red-600'
+                      }"
                       variant="subtle"
-                      class="mt-4"
+                      class="mt-4 text-black"
                     />
                   </div>
                 </div>
@@ -442,7 +451,7 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.documentDelivery')"
       :description="$t('text.documentDelivery')"
-      :has-errors="hasCompletingPartyErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -461,8 +470,7 @@ setButtonControl({
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
-            @blur="verifyIfHasErrors(
-              hasCompletingPartyErrors,
+            @update:modelValue="verify(
               errorStore.verifyCompletingParty,
               ({ email: compPartyEmail })
             )"
@@ -473,7 +481,7 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.courtOrder')"
       :description="$t('text.courtOrder')"
-      :has-errors="hasCourtOrderErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -489,8 +497,7 @@ setButtonControl({
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
-            @blur="verifyIfHasErrors(
-              hasCourtOrderErrors,
+            @update:modelValue="verify(
               errorStore.verifyCourtOrder,
               { courtOrderNumber: courtOrderNumber }
             )"
@@ -508,7 +515,7 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.folio')"
       :description="$t('text.folioOrReferenceNumber')"
-      :has-errors="hasFolioErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -527,7 +534,7 @@ setButtonControl({
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
-            @blur="verifyIfHasErrors(hasFolioErrors, errorStore.verifyFolioReference, { folio: folio })"
+            @update:modelValue="verify(errorStore.verifyFolioReference, { folio: folio })"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -567,7 +574,7 @@ setButtonControl({
     <FormSection
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
-      :has-errors="hasCertifyErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -577,17 +584,17 @@ setButtonControl({
       >
         <ConnectFormSection
           :title="$t('label.legalName')"
-          :error="hasCertifyErrors"
+          :error="certifyErrors?.['name']?.[0] !== undefined"
         >
           <ConnectFormInput
             v-model="legalName"
             data-testid="legalName-input"
             :error="certifyErrors?.['name']?.[0]"
+            :invalid="certifyErrors?.['name']?.[0] !== undefined"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
-            @blur="verifyIfHasErrors(
-              hasCertifyErrors,
+            @update:modelValue="verify(
               errorStore.verifyCertify,
               { name: legalName, certified: certifiedByLegalName }
             )"
@@ -619,7 +626,7 @@ setButtonControl({
     <FormSection
       v-if="isStaffOrSbcStaff"
       :title="$t('transitionApplication.subtitle.staffPayment')"
-      :has-errors="hasStaffPayErrors"
+      :has-errors="false"
     >
       <FormSubSection
         title=""
