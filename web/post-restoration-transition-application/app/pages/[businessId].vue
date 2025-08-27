@@ -2,7 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
-import { UButton } from '#components'
+import { UButton, UBadge } from '#components'
 
 const { setButtonControl } = useButtonControl()
 
@@ -100,7 +100,8 @@ const {
   offices,
   planOfArrangement,
   regOfficeEmail,
-  shareWithSpecialRightsModified
+  shareWithSpecialRightsModified,
+  modifiedDirectors
 } = storeToRefs(filingStore)
 
 watch(shareWithSpecialRightsModified, (newVal) => {
@@ -161,11 +162,27 @@ const directorsColumns = ref([
     accessorKey: 'officer',
     header: t('label.name'),
     cell: ({ row }) => {
-      return h(
-        'div',
-        { class: 'text-left font-bold text-bgGovColor-midGray' },
-        `${row.original.officer.firstName} ${row.original.officer.lastName}`
-      )
+      if (modifiedDirectors.value.includes(row.index)) {
+        return [
+          h(
+            'div',
+            { class: 'text-left font-bold text-bgGovColor-midGray' },
+            `${row.original.officer.firstName} ${row.original.officer.lastName}`
+          ),
+          h(
+            UBadge,
+            { color: 'primary', class: 'rounded-sm' },
+            t('label.changed')
+          )
+        ]
+      }
+      return [
+        h(
+          'div',
+          { class: 'text-left font-bold text-bgGovColor-midGray' },
+          `${row.original.officer.firstName} ${row.original.officer.lastName}`
+        )
+      ]
     }
   },
   {
