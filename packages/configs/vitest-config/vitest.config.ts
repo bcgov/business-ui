@@ -30,6 +30,8 @@ export default defineVitestConfig({
       exclude: [
         'utils/**/index.ts'
       ]
-    }
+    },
+    setupFiles: './tests/unit/setup.ts',
+    globals: true
   }
 })
