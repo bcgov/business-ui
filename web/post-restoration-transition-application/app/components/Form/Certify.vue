@@ -28,7 +28,9 @@ const hasError = computed(() => {
         name="certification"
         :disabled="isDisabled"
         data-test="certify-section-checkbox"
-        @update:modelValue="(newVal) => {errorsStore.verifyCertify({ certified: newVal, name: filingStore.legalName })}"
+        @update:model-value="(newVal) => {
+          errorsStore.verifyCertify({ certified: newVal, name: filingStore.legalName })
+        }"
       >
         <template #label>
           <div class="flex flex-col text-base space-y-2">

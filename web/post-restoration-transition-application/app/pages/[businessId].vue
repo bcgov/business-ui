@@ -281,7 +281,6 @@ const closeDateandValidate = () => {
   showDateInputBox.value = false
   validate()
 }
-
 </script>
 
 <template>
@@ -487,7 +486,7 @@ const closeDateandValidate = () => {
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
-            @update:modelValue="verify(
+            @update:model-value="verify(
               errorStore.verifyCompletingParty,
               ({ email: compPartyEmail })
             )"
@@ -514,7 +513,7 @@ const closeDateandValidate = () => {
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
-            @update:modelValue="verify(
+            @update:model-value="verify(
               errorStore.verifyCourtOrder,
               { courtOrderNumber: courtOrderNumber }
             )"
@@ -551,7 +550,7 @@ const closeDateandValidate = () => {
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
-            @update:modelValue="verify(errorStore.verifyFolioReference, { folio: folio })"
+            @update:model-value="verify(errorStore.verifyFolioReference, { folio: folio })"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -611,7 +610,7 @@ const closeDateandValidate = () => {
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
-            @update:modelValue="verify(
+            @update:model-value="verify(
               errorStore.verifyCertify,
               { name: legalName, certified: certifiedByLegalName }
             )"

@@ -56,7 +56,7 @@ watch (mailingState, (oldVal, newVal) => {
   if (sameAsMailing.value) {
     sameAsMailing.value = false
   }
-}, { deep: true})
+}, { deep: true })
 
 const done = () => {
   editingDirector.value.deliveryAddress = toApiAddress(deliveryState.value, false)
