@@ -144,9 +144,9 @@ describe('useOfficerStore', () => {
         const draftResponse = {
           isValid: true,
           data: {
-              filing: {
-                  changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
-              }
+            filing: {
+              changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
+            }
           }
         }
 

@@ -17,12 +17,12 @@ const {
 
 const regions = computed(() => {
   switch (country) {
-  case 'US':
-    return countrySubdivisions.us
-  case 'CA':
-    return countrySubdivisions.ca
-  default:
-    return []
+    case 'US':
+      return countrySubdivisions.us
+    case 'CA':
+      return countrySubdivisions.ca
+    default:
+      return []
   }
 })
 

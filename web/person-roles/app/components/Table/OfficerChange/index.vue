@@ -143,14 +143,14 @@ const columns: TableColumn<OfficerTableState>[] = [
           : null,
         badges.length
           ? h('ul', { class: 'flex flex-col gap-2' },
-              badges.map(badge =>
-                h(UBadge, {
-                  as: 'li',
-                  class: 'w-min',
-                  key: badge.label,
-                  ...badge
-                })
-              )
+            badges.map(badge =>
+              h(UBadge, {
+                as: 'li',
+                class: 'w-min',
+                key: badge.label,
+                ...badge
+              })
+            )
           )
           : null
       ])
@@ -191,9 +191,9 @@ const columns: TableColumn<OfficerTableState>[] = [
 
       return sortedRoles.length
         ? h('ul', { class: containerClass },
-            sortedRoles.map(role =>
-              h('li', {}, t(`enum.officerRole.${role.roleType}`))
-            )
+          sortedRoles.map(role =>
+            h('li', {}, t(`enum.officerRole.${role.roleType}`))
+          )
         )
         : null
     }
