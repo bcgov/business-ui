@@ -394,6 +394,7 @@ const handleArticlesDateChange = () => {
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
+                      readonly
                       @save="handleArticlesDateChange"
                       @cancel="handleArticlesDateChange"
                     />

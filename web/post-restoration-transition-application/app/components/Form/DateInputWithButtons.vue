@@ -11,6 +11,7 @@ const props = defineProps<{
   label: string
   minDate?: string
   maxDate?: string
+  readonly?: boolean
 }>()
 
 const emit = defineEmits(['save', 'cancel'])
@@ -43,6 +44,7 @@ const saveError = ref('')
       <DateInput
         :id="name + '_id'"
         v-model="selectedValue"
+        :readonly
         :label="label"
         :max-date="maxDate"
         :min-date="minDate"
