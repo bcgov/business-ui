@@ -16,28 +16,24 @@
     "test:unit": "vitest --dir tests/unit",
     "test:unit:cov": "vitest --dir tests/unit --coverage",
     "test:e2e": "npx playwright test",
-    "test:e2e:ui": "npx playwright test --ui"
+    "test:e2e:ui": "npx playwright test --ui",
+    "build:test": "pnpm generate && npx serve .output/public"
   },
   "dependencies": {
     "@sbc-connect/nuxt-business-base": "workspace:*",
     "http-status-codes": "^2.3.0",
     "luxon": "^3.6.1",
-    "nuxt": "^4.0.3"
+    "nuxt": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.2",
-    "@faker-js/faker": "^9.9.0",
-    "@nuxt/test-utils": "^3.19.2",
-    "@nuxtjs/i18n": "^9.5.6",
-    "@playwright/test": "^1.53.2",
-    "@testing-library/vue": "^8.1.0",
+    "@axe-core/playwright": "catalog:",
+    "@sbc-connect/playwright-config": "workspace:*",
+    "@sbc-connect/vitest-config": "workspace:*",
     "@types/luxon": "^3.6.2",
     "@types/node": "^24.0.10",
-    "@vitest/coverage-v8": "^3.2.4",
-    "@vue/test-utils": "^2.4.6",
-    "happy-dom": "^18.0.1",
-    "otpauth": "^9.4.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

@@ -8,9 +8,9 @@ mockNuxtImport('useNuxtApp', () => {
   })
 })
 
-mockNuxtImport('useKeycloak', () => {
+mockNuxtImport('useConnectAuth', () => {
   return () => ({
-    kcUser: { value: { fullName: 'Test User' } }
+    authUser: { value: { fullName: 'Test User' } }
   })
 })
 

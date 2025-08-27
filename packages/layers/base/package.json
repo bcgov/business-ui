@@ -28,6 +28,10 @@
     "@sbc-connect/nuxt-pay": "^0.1.12"
   },
   "devDependencies": {
-    "nuxt": "^4.0.3"
+    "nuxt": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }
