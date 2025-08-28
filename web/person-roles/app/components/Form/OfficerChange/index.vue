@@ -405,12 +405,6 @@ function clearUnfinishedTaskMsg() {
               }"
               @update:model-value="handleRoleChange"
             />
-            <!-- <FormCheckboxGroup
-              id="officer-role-options"
-              :items="roleOptions"
-              :model-value="selectedRoles"
-              @update:model-value="handleRoleChange"
-            /> -->
           </UFormField>
         </FormSection>
 
