@@ -325,7 +325,7 @@ function clearUnfinishedTaskMsg() {
       </h3>
       <div class="flex flex-col gap-9 w-full">
         <div class="flex flex-col gap-9 w-full">
-          <FormSection
+          <ConnectFieldset
             :label="$t('label.legalName')"
             :error="formErrors.name"
           >
@@ -381,10 +381,10 @@ function clearUnfinishedTaskMsg() {
                 />
               </template>
             </UFormField>
-          </FormSection>
+          </ConnectFieldset>
         </div>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.roles')"
           :error="formErrors.roles"
           :show-error-msg="true"
@@ -406,9 +406,9 @@ function clearUnfinishedTaskMsg() {
               @update:model-value="handleRoleChange"
             />
           </UFormField>
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.deliveryAddress')"
           :error="formErrors.delivery"
         >
@@ -419,9 +419,9 @@ function clearUnfinishedTaskMsg() {
             :form-ref="formRef"
             street-help-text="no-po"
           />
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.mailingAddress')"
           :error="formErrors.mailing"
         >
@@ -439,7 +439,7 @@ function clearUnfinishedTaskMsg() {
             schema-prefix="mailingAddress"
             :form-ref="formRef"
           />
-        </FormSection>
+        </ConnectFieldset>
 
         <div class="flex sm:flex-row flex-col gap-4 justify-end sm:items-center -mt-5">
           <p

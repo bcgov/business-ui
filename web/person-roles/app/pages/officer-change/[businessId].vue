@@ -420,7 +420,7 @@ watch(
           'border-l-3 border-red-600': folioErrors && folioErrors[0]
         }"
       >
-        <FormSection
+        <ConnectFormFieldWrapper
           :label="$t('label.folioNumber')"
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
@@ -432,7 +432,7 @@ watch(
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />
-        </FormSection>
+        </ConnectFormFieldWrapper>
       </UForm>
     </section>
   </div>
