@@ -12,8 +12,8 @@ export interface Officer {
   lastName: string
   preferredName: string
   roles: OfficerRoleObj[]
-  mailingAddress: UiAddress
-  deliveryAddress: UiAddress
+  mailingAddress: ConnectAddress
+  deliveryAddress: ConnectAddress
   sameAsDelivery: boolean
   hasPreferredName: boolean
 }
