@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     dirs: ['interfaces', 'types', 'enums']
   },
 
+  typescript: {
+    includeWorkspace: true // required for ts to recognize autoimports in test files
+  },
+
   extends: [
     // "@sbc-connect/nuxt-core-layer-beta": "^0.0.13",
     // '@sbc-connect/nuxt-core-layer-beta',

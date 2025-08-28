@@ -48,7 +48,8 @@ export default createConfigForNuxt({
   }
 }).prepend({
   ignores: [
-    '**playwright-report**',
+    '**/playwright-report',
+    '**/coverage',
     '**/business-registry-dashboard/',
     '**/post-restoration-transition-application/',
     'eslint.config.mjs'

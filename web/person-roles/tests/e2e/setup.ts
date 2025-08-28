@@ -24,7 +24,7 @@ async function isServerReady(url: string, timeout: number = 30000): Promise<bool
 }
 
 async function globalSetup() {
-  const baseUrl = process.env.NUXT_BASE_URL!
+  const baseUrl = process.env.NUXT_PUBLIC_BASE_URL!
 
   console.info('Waiting for the server to be ready...')
   // make sure app is available

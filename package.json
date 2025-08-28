@@ -17,6 +17,7 @@
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.5",
     "@nuxt/eslint-config": "1.5.2",
+    "dotenv": "catalog:",
     "eslint": "9.31.0"
   }
 }
