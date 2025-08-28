@@ -1,9 +1,21 @@
+<script setup lang="ts">
+const accountStore = useConnectAccountStore()
+</script>
+
 <template>
-  <ConnectLayoutForm>
-    <template #header>
-      <ConnectHeaderAuth />
-    </template>
-    <template #body>
+  <div
+    class="app-container"
+    data-testid="form-layout"
+  >
+    <ConnectHeaderAuth />
+    <ConnectSystemBanner />
+    <ConnectBreadcrumb
+      :account-id="accountStore.currentAccount.id
+        ? String(accountStore.currentAccount.id)
+        : undefined"
+    />
+    <ConnectDetailHeader />
+    <main class="app-inner-container app-body">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">
         <div class="grow max-w-full overflow-hidden">
           <slot />
@@ -13,6 +25,8 @@
           <ConnectFeeWidget class="sticky lg:top-10" />
         </div>
       </div>
-    </template>
-  </ConnectLayoutForm>
+    </main>
+    <ConnectButtonControlWrapper />
+    <ConnectFooter />
+  </div>
 </template>

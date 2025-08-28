@@ -122,7 +122,8 @@ export default {
     notAvailable: 'Not Available',
     folioNumber: 'Folio or Reference Number',
     folioNumberOpt: 'Folio or Reference Number (Optional)',
-    officerInfo: 'Officer Information'
+    officerInfo: 'Officer Information',
+    officerChange: 'Officer Change'
   },
   modal: {
     error: {
@@ -247,43 +248,6 @@ export default {
     officerChange: {
       title: 'Officer Change - People Roles - BC Registries and Online Services',
       h1: 'Officer Change'
-    }
-  },
-  // components
-  ConnectHeader: {
-    title: 'BC Registries and Online Services'
-  },
-  ConnectBreadcrumb: {
-    default: 'BC Registries and Online Services'
-  },
-  ConnectFeeWidget: {
-    feeSummary: {
-      title: 'Fee Summary',
-      total: 'Total Fees',
-      noFee: 'No Fee',
-      priorityFees: 'Priority Fees',
-      futureEffectiveFees: 'Future Effective Fees',
-      serviceFees: 'Service Fee',
-      itemLabels: {
-        PLACEHOLDER: 'Placeholder (Replace Me)', // each project using the connect fee widget should change the placeholder filingTypeCode
-        TEST: 'This is test entry',
-        undefined: 'Item Fee',
-        OFFICER_CHANGE: 'Officer Change'
-      }
-    },
-    paymentMethod: {
-      DIRECT_PAY: 'Credit Card',
-      PAD: 'Pre-authorized Debit (PAD) {account}',
-      BCOL: 'Online Banking',
-      JV: 'Journal Voucher',
-      undefined: 'Default'
-    },
-    payingWith: {
-      DIRECT_PAY: 'Paying with Credit Card',
-      PAD: 'Paying with Pre-authorized Debit (PAD) {account}',
-      BCOL: 'Paying with Online Banking',
-      JV: 'Paying with Journal Voucher',
-      undefined: 'Paying with default method'
     }
   }
 }

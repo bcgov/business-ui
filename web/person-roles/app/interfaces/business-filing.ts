@@ -19,7 +19,7 @@ export interface FilingHeaderResponse {
   paymentToken: string
   status: FilingStatus
   submitter: string
-  paymentMethod?: ConnectPaymentMethod
+  paymentMethod?: ConnectPayMethod
   folioNumber?: string
   type?: FilingHeaderType
 }
