@@ -412,13 +412,12 @@ function clearUnfinishedTaskMsg() {
           :label="$t('label.deliveryAddress')"
           :error="formErrors.delivery"
         >
-          <FormAddress
+          <ConnectFormAddress
             id="delivery-address"
             v-model="state.deliveryAddress"
-            schema-prefix="deliveryAddress."
+            schema-prefix="deliveryAddress"
             :form-ref="formRef"
-            not-po-box
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
+            street-help-text="no-po"
           />
         </FormSection>
 
@@ -433,13 +432,12 @@ function clearUnfinishedTaskMsg() {
             :class="state.sameAsDelivery ? '' : 'mb-6'"
           />
 
-          <FormAddress
+          <ConnectFormAddress
             v-if="!state.sameAsDelivery"
             id="mailing-address"
             v-model="state.mailingAddress"
-            schema-prefix="mailingAddress."
+            schema-prefix="mailingAddress"
             :form-ref="formRef"
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
         </FormSection>
 
