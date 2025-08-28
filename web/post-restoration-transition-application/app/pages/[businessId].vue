@@ -2,7 +2,7 @@
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
-import { UButton } from '#components'
+import { UButton, UBadge } from '#components'
 
 const { setButtonControl } = useButtonControl()
 
@@ -27,7 +27,7 @@ const hasCertifyErrors = computed(() => {
 })
 
 const hasArticlesErrors = computed(() => {
-  if (!articlesErrors?.value) {
+  if (!articlesErrors?.value || showDateInputBox.value) {
     return false
   }
   return Object.keys(articlesErrors?.value).length > 0
@@ -101,7 +101,8 @@ const {
   offices,
   planOfArrangement,
   regOfficeEmail,
-  shareWithSpecialRightsModified
+  shareWithSpecialRightsModified,
+  modifiedDirectors
 } = storeToRefs(filingStore)
 
 watch(shareWithSpecialRightsModified, (newVal) => {
@@ -116,7 +117,8 @@ const toggleDirectorExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
     editingDirectorIndex.value = -1
-  } else {
+  } else if (!anyExpanded.value) {
+    anyExpanded.value = true
     editingDirectorIndex.value = row.index
   }
   row.toggleExpanded()
@@ -158,11 +160,27 @@ const directorsColumns = ref([
     accessorKey: 'officer',
     header: t('label.name'),
     cell: ({ row }) => {
-      return h(
-        'div',
-        { class: 'text-left font-bold text-bgGovColor-midGray' },
-        `${row.original.officer.firstName} ${row.original.officer.lastName}`
-      )
+      if (modifiedDirectors.value.includes(row.index)) {
+        return [
+          h(
+            'div',
+            { class: 'text-left font-bold text-bgGovColor-midGray' },
+            `${row.original.officer.firstName} ${row.original.officer.lastName}`
+          ),
+          h(
+            UBadge,
+            { color: 'primary', class: 'rounded-sm' },
+            t('label.changed')
+          )
+        ]
+      }
+      return [
+        h(
+          'div',
+          { class: 'text-left font-bold text-bgGovColor-midGray' },
+          `${row.original.officer.firstName} ${row.original.officer.lastName}`
+        )
+      ]
     }
   },
   {
@@ -233,17 +251,15 @@ const showPreviousResolutionsDateLabel = computed(() => {
 
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
-  errorStore.verifyArticles(articles.value)
+  validate()
 }
 
 const minArticleResolutionDate = computed(() => {
   return activeBusiness?.value?.foundingDate ? new Date(activeBusiness?.value?.foundingDate).toISOString() : ''
 })
 
-const verifyIfHasErrors = (hasErrors: boolean, verifyMethod: (args) => void, args) => {
-  if (hasErrors) {
-    verifyMethod(args)
-  }
+const verify = (verifyMethod: (args) => void, args) => {
+  verifyMethod(args)
 }
 
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
@@ -259,9 +275,9 @@ setButtonControl({
   ]
 })
 
-const handleArticlesDateChange = () => {
-  verifyIfHasErrors(hasArticlesErrors.value, errorStore.verifyArticles, articles.value)
+const closeDateandValidate = () => {
   showDateInputBox.value = false
+  validate()
 }
 </script>
 
@@ -395,8 +411,8 @@ const handleArticlesDateChange = () => {
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
                       readonly
-                      @save="handleArticlesDateChange"
-                      @cancel="handleArticlesDateChange"
+                      @save="closeDateandValidate()"
+                      @cancel="closeDateandValidate()"
                     />
                   </div>
                   <div v-else>
@@ -414,8 +430,11 @@ const handleArticlesDateChange = () => {
                       :description="t('errors.articles')"
                       icon="mdi-warning"
                       color="error"
+                      :ui="{
+                        icon: 'text-red-600'
+                      }"
                       variant="subtle"
-                      class="mt-4"
+                      class="mt-4 text-black"
                     />
                   </div>
                 </div>
@@ -447,7 +466,7 @@ const handleArticlesDateChange = () => {
     <FormSection
       :title="$t('transitionApplication.subtitle.documentDelivery')"
       :description="$t('text.documentDelivery')"
-      :has-errors="hasCompletingPartyErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -466,8 +485,7 @@ const handleArticlesDateChange = () => {
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
-            @blur="verifyIfHasErrors(
-              hasCompletingPartyErrors,
+            @update:model-value="verify(
               errorStore.verifyCompletingParty,
               ({ email: compPartyEmail })
             )"
@@ -478,7 +496,7 @@ const handleArticlesDateChange = () => {
     <FormSection
       :title="$t('transitionApplication.subtitle.courtOrder')"
       :description="$t('text.courtOrder')"
-      :has-errors="hasCourtOrderErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -494,8 +512,7 @@ const handleArticlesDateChange = () => {
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
-            @blur="verifyIfHasErrors(
-              hasCourtOrderErrors,
+            @update:model-value="verify(
               errorStore.verifyCourtOrder,
               { courtOrderNumber: courtOrderNumber }
             )"
@@ -513,7 +530,7 @@ const handleArticlesDateChange = () => {
     <FormSection
       :title="$t('transitionApplication.subtitle.folio')"
       :description="$t('text.folioOrReferenceNumber')"
-      :has-errors="hasFolioErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -532,7 +549,7 @@ const handleArticlesDateChange = () => {
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
-            @blur="verifyIfHasErrors(hasFolioErrors, errorStore.verifyFolioReference, { folio: folio })"
+            @update:model-value="verify(errorStore.verifyFolioReference, { folio: folio })"
           />
         </ConnectFormSection>
       </FormSubSection>
@@ -572,7 +589,7 @@ const handleArticlesDateChange = () => {
     <FormSection
       :title="$t('transitionApplication.subtitle.certify')"
       :description="$t('text.certifySectionDescription')"
-      :has-errors="hasCertifyErrors"
+      :has-errors="false"
       class="space-y-4"
     >
       <FormSubSection
@@ -582,17 +599,17 @@ const handleArticlesDateChange = () => {
       >
         <ConnectFormSection
           :title="$t('label.legalName')"
-          :error="hasCertifyErrors"
+          :error="certifyErrors?.['name']?.[0] !== undefined"
         >
           <ConnectFormInput
             v-model="legalName"
             data-testid="legalName-input"
             :error="certifyErrors?.['name']?.[0]"
+            :invalid="certifyErrors?.['name']?.[0] !== undefined"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
-            @blur="verifyIfHasErrors(
-              hasCertifyErrors,
+            @update:model-value="verify(
               errorStore.verifyCertify,
               { name: legalName, certified: certifiedByLegalName }
             )"
@@ -624,7 +641,7 @@ const handleArticlesDateChange = () => {
     <FormSection
       v-if="isStaffOrSbcStaff"
       :title="$t('transitionApplication.subtitle.staffPayment')"
-      :has-errors="hasStaffPayErrors"
+      :has-errors="false"
     >
       <FormSubSection
         title=""

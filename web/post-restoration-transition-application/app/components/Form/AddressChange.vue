@@ -49,6 +49,15 @@ watch(editingDirector, () => {
 editingDirector.value = directors.value[props.index]
 const formRef = ref()
 
+watch (mailingState, (oldVal, newVal) => {
+  if (JSON.stringify(oldVal) === JSON.stringify(newVal)) {
+    return
+  }
+  if (sameAsMailing.value) {
+    sameAsMailing.value = false
+  }
+}, { deep: true })
+
 const done = () => {
   editingDirector.value.deliveryAddress = toApiAddress(deliveryState.value, false)
   editingDirector.value.mailingAddress = toApiAddress(mailingState.value, false)
