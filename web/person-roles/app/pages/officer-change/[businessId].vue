@@ -97,7 +97,7 @@ async function submitFiling() {
 
     // prevent submit if there are no changes
     if (!officerStore.checkHasChanges('submit')) {
-      setAlertText(false, 'right', t('text.noChangesToSubmit'))
+      setAlertText(false, 'right', undefined, t('text.noChangesToSubmit'))
       return
     }
 
@@ -214,7 +214,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
   // prevent save if there are no changes
   if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', t('text.noChangesToSave'))
+    setAlertText(false, 'left', undefined, t('text.noChangesToSave'))
     return
   }
 
@@ -351,17 +351,6 @@ watch(
       }
     ])
 
-    setButtonControl({
-      leftButtons: [
-        { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-        { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
-      ],
-      rightButtons: [
-        { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-        { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
-      ]
-    })
-
     // save filing before user logged out when session expires
     setOnBeforeSessionExpired(async () => {
       revokeBeforeUnloadEvent()
@@ -370,6 +359,21 @@ watch(
   },
   { immediate: true }
 )
+
+setButtonControl({
+  leftGroup: {
+    buttons: [
+      { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+      { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+    ]
+  },
+  rightGroup: {
+    buttons: [
+      { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+      { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+    ]
+  }
+})
 </script>
 
 <template>
