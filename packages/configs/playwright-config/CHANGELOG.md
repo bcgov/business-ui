@@ -1,5 +1,11 @@
 # @sbc-connect/playwright-config
 
+## 0.0.9
+
+### Patch Changes
+
+- [#212](https://github.com/bcgov/business-ui/pull/212) [`a484bba`](https://github.com/bcgov/business-ui/commit/a484bba34fa3795472a6ff9e8d3bed38a7521b50) Thanks [@deetz99](https://github.com/deetz99)! - Add test setup to base layer and init base layer CI. issue: bcgov/entity#29333
+
 ## 0.0.8
 
 ### Patch Changes
