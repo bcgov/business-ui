@@ -44,11 +44,11 @@ export default defineConfig<ConfigOptions>({
     // do not open browser
     headless: true
   },
-  projects: deviceNames.map(name => ({ name, use: devices[name] }))
-  // webServer: {
-  //   command: 'pnpm build:test',
-  //   port: 3000,
-  //   reuseExistingServer: !process.env.CI,
-  //   timeout: 30000
-  // }
+  projects: deviceNames.map(name => ({ name, use: devices[name] })),
+  webServer: {
+    command: 'pnpm build:test',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+    timeout: 30000
+  }
 })
