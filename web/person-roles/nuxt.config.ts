@@ -9,17 +9,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
-  app: {
-    head: {
-      link: [
-        { rel: 'stylesheet', href: '/css/addresscomplete-2.50.min.css' }
-      ],
-      script: [
-        { src: '/js/addresscomplete-2.50.min.js', type: 'text/javascript', defer: true }
-      ]
-    }
-  },
-
   css: [
     '~/assets/css/tw.css'
   ],
