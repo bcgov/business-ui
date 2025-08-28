@@ -14,20 +14,19 @@ const getMockForIdentifier = (identifier: string, current: object, lib: library)
   try {
     current = lib[identifier]
   } catch (e) {
+    console.error(e)
     current = lib.base
   }
   return current
 }
 
-
 export const mockForIdentifier = async (page: Page, identifier: string) => {
-
   const entity = getMockForIdentifier(identifier, entities.base, entities)
   const business = getMockForIdentifier(identifier, businesses.base, businesses)
   const share = getMockForIdentifier(identifier, shares.base, shares)
   const address = getMockForIdentifier(identifier, addresses.base, addresses)
   const director = getMockForIdentifier(identifier, directors.base, directors)
-  
+
   await page.route(`*/**/entities/${identifier}`, async (route) => {
     await route.fulfill({ json: entity })
   })
