@@ -319,7 +319,7 @@ const columns: TableColumn<OfficerTableState>[] = [
 const expandedTrClass = computed(() =>
   (typeof expanded.value === 'object' && expanded.value !== null && expanded.value[0] === true)
     ? ''
-    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-bcGovGray-100'
+    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-gray-100'
 )
 </script>
 
@@ -333,13 +333,13 @@ const expandedTrClass = computed(() =>
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
-      th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-0 py-0 text-bcGovGray-900 align-top',
+      th: 'bg-shade-secondary text-neutral-highlighted px-2',
+      td: 'px-0 py-0 text-neutral-highlighted align-top',
       tr: expandedTrClass
     }"
   >
     <template #expanded="{ row }">
-      <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''">
+      <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-shade' : ''">
         <FormOfficerChange
           class="max-w-full"
           :default-state="editState"
@@ -352,7 +352,7 @@ const expandedTrClass = computed(() =>
     </template>
 
     <template #empty>
-      <div class="text-bcGovGray-700 text-left text-base px-6">
+      <div class="text-gray-700 text-left text-base px-6">
         {{ $t('text.noOfficers') }}
       </div>
     </template>

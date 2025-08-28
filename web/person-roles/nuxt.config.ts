@@ -9,10 +9,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
-  css: [
-    '~/assets/css/tw.css'
-  ],
-
   modules: [
     '@nuxt/test-utils/module'
   ],
