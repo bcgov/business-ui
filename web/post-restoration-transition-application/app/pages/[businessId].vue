@@ -411,8 +411,8 @@ const closeDateandValidate = () => {
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
                       readonly
-                      @save="closeDateandValidate()"
-                      @cancel="closeDateandValidate()"
+                      @save="closeDateandValidate"
+                      @cancel="closeDateandValidate"
                     />
                   </div>
                   <div v-else>
