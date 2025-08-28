@@ -425,7 +425,7 @@ watch(
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
-          <FormFieldInput
+          <ConnectFormInput
             v-model="officerStore.folio.number"
             name="number"
             :label="$t('label.folioNumberOpt')"

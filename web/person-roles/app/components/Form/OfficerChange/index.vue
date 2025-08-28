@@ -330,7 +330,7 @@ function clearUnfinishedTaskMsg() {
             :error="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.firstName"
                 name="firstName"
                 input-id="first-name"
@@ -338,14 +338,14 @@ function clearUnfinishedTaskMsg() {
                 autofocus
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.middleName"
                 name="middleName"
                 input-id="middle-name"
                 :label="$t('label.middleNameOpt')"
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.lastName"
                 name="lastName"
                 input-id="last-name"
