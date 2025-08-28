@@ -240,4 +240,8 @@ body {
   .floating-label-textarea {
     @apply pointer-events-none absolute left-0 top-1 text-bcGovGray-900 text-xs font-medium px-2.5 transition-all peer-focus:top-1 peer-focus:text-xs peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-focus:translate-none peer-focus:text-blue-500;
   }
+
+  div[data-testid="button-control"] button {
+    @apply !rounded;
+  }
 }

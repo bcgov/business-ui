@@ -27,7 +27,7 @@ export const articlesSchema = z.object({
   specialResolutionChanges: z.boolean()
 }).refine((data) => {
   if (data.specialResolutionChanges) {
-    return data.currentDate !== undefined && data.resolutionDates.length > 0
+    return data.currentDate !== undefined
   }
   return true
 }, {

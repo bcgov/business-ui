@@ -16,7 +16,8 @@ const {
   courtOrderErrors,
   articlesErrors,
   staffPayErrors,
-  completingPartyErrors } = storeToRefs(errorStore)
+  completingPartyErrors
+} = storeToRefs(errorStore)
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -105,10 +106,7 @@ const {
 
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
-  const articlesResult = articlesSchema.safeParse(articles)
-  if (!articlesResult.success) {
-    articlesErrors.value = articlesResult.error.flatten().fieldErrors
-  }
+  errorStore.verifyArticles(articles.value)
 })
 
 const anyExpanded = ref(false)
@@ -235,6 +233,7 @@ const showPreviousResolutionsDateLabel = computed(() => {
 
 const removeDateHandler = () => {
   articles.value.currentDate = undefined
+  errorStore.verifyArticles(articles.value)
 }
 
 const minArticleResolutionDate = computed(() => {
@@ -259,6 +258,11 @@ setButtonControl({
     { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
   ]
 })
+
+const handleArticlesDateChange = () => {
+  verifyIfHasErrors(hasArticlesErrors.value, errorStore.verifyArticles, articles.value)
+  showDateInputBox.value = false
+}
 </script>
 
 <template>
@@ -371,14 +375,14 @@ setButtonControl({
               <div class="flex flex-col space-y-4">
                 <p>{{ $t('text.articlesDescription') }}</p>
                 <div>
-                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6">
-                    <p>{{ fromIsoToUsDateFormat(articles?.currentDate) }}</p>
+                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6 items-center">
+                    <p>{{ articles?.currentDate ? fromIsoToUsDateFormat(articles?.currentDate) : '' }}</p>
                     <UButton
                       icon="i-mdi-delete"
                       :label="$t('label.remove')"
                       :padded="false"
                       variant="ghost"
-                      class="rounded text-base p-0 gap-1"
+                      class="rounded text-base gap-1"
                       @click="removeDateHandler"
                     />
                   </div>
@@ -390,8 +394,9 @@ setButtonControl({
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
-                      @save="showDateInputBox=false"
-                      @cancel="showDateInputBox=false"
+                      readonly
+                      @save="handleArticlesDateChange"
+                      @cancel="handleArticlesDateChange"
                     />
                   </div>
                   <div v-else>

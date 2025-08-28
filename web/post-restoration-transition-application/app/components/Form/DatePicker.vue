@@ -6,8 +6,8 @@ import VueDatePicker from '@vuepic/vue-datepicker'
 const props = defineProps<{
   defaultSelectedDate?: Date | null
   error?: boolean
-  setMaxDate?: Date
-  setMinDate?: Date
+  setMaxDate?: string
+  setMinDate?: string
 }>()
 const emit = defineEmits<{ (e: 'selectedDate', value: Date | null): void }>()
 
@@ -16,12 +16,12 @@ const selectedDate: Ref<Date | null> = ref(props.defaultSelectedDate || null)
 watch(() => selectedDate.value, val => emit('selectedDate', val))
 
 // max/min
-const maxDate: Ref<Date | null> = ref(props.setMaxDate || null)
+const maxDate: Ref<string | null> = ref(props.setMaxDate || null)
 watch(() => props.setMaxDate, (val) => {
   maxDate.value = val || null
 })
 
-const minDate: Ref<Date | null> = ref(props.setMinDate || null)
+const minDate: Ref<string | null> = ref(props.setMinDate || null)
 watch(() => props.setMinDate, (val) => {
   minDate.value = val || null
 })
