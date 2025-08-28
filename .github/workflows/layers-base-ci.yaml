@@ -1,0 +1,115 @@
+name: Base Layer CI
+
+on:
+  pull_request:
+    paths:
+      - "packages/layers/base/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ["base"]
+        job: ['lint', 'build', 'test:unit'] # ['lint', 'typecheck', 'build', 'test:unit'] # TODO: fix typecheck
+    defaults:
+      run:
+        working-directory: ./packages/layers/${{ matrix.project }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10
+        run_install: false
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Set basic env
+      run: |
+        cp .env.example .env
+    - name: ${{ matrix.job }}
+      run: pnpm ${{ matrix.job }}
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ["base"]
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+    defaults:
+      run:
+        working-directory: ./packages/layers/${{ matrix.project }}
+    env:
+      CI: true
+    container:
+      image: mcr.microsoft.com/playwright:v1.54.0-noble
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10
+        run_install: false
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    - name: Set basic env
+      run: |
+        cp .env.example .env
+    - name: Run Playwright tests
+      run: HOME=/root pnpm test:e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+    - name: Upload blob report to GitHub Actions Artifacts
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: blob-report-${{ matrix.shardIndex }}
+        path: packages/layers/${{ matrix.project }}/blob-report
+        retention-days: 1
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs: [e2e-tests]
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ["base"]
+    defaults:
+      run:
+        working-directory: ./packages/layers/${{ matrix.project }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Download blob reports from GitHub Actions Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: packages/layers/${{ matrix.project }}/all-blob-reports
+        pattern: blob-report-*
+        merge-multiple: true
+
+    - name: Merge into HTML Report
+      run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+    - name: Upload HTML report
+      uses: actions/upload-artifact@v4
+      with:
+        name: html-report--attempt-${{ github.run_attempt }}
+        path: packages/layers/${{ matrix.project }}/playwright-report
+        retention-days: 2

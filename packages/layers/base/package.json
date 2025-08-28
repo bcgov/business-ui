@@ -32,6 +32,9 @@
     "vue": "catalog:",
     "vue-router": "catalog:",
     "typescript": "catalog:",
-    "vue-tsc": "catalog:"
+    "vue-tsc": "catalog:",
+    "@axe-core/playwright": "catalog:",
+    "@sbc-connect/playwright-config": "workspace:*",
+    "@sbc-connect/vitest-config": "workspace:*"
   }
 }
