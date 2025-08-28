@@ -1,2 +1,4 @@
 @import "#connect-theme";
 @source "../../../../app";
+/* explicitly add this class - not coming through from forms layer for some reason */
+@source inline("sm:w-1/4")

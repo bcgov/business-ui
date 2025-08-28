@@ -1,13 +1,9 @@
 <template>
-  <div
-    class="app-container"
-    data-testid="form-layout"
-  >
-    <ConnectHeader />
-    <ConnectSystemBanner />
-    <ConnectBreadcrumb />
-    <ConnectDetailHeader />
-    <main class="app-inner-container app-body">
+  <ConnectLayoutForm>
+    <template #header>
+      <ConnectHeaderAuth />
+    </template>
+    <template #body>
       <div class="flex flex-col lg:flex-row lg:gap-6 grow">
         <div class="grow max-w-full overflow-hidden">
           <slot />
@@ -17,8 +13,6 @@
           <ConnectFeeWidget class="sticky lg:top-10" />
         </div>
       </div>
-    </main>
-    <ConnectButtonControl />
-    <ConnectFooter />
-  </div>
+    </template>
+  </ConnectLayoutForm>
 </template>
