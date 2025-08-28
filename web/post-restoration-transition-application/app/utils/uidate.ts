@@ -20,3 +20,26 @@ export const fromIsoToUsDateFormat = (isoDate: string | undefined) => {
 export const nowAsIsoDate = () => {
   return new Intl.DateTimeFormat('en-CA').format(new Date())
 }
+
+export const isDateBetween = (
+  dateToCheck: string | Date,
+  startDate: string | Date | undefined = undefined,
+  endDate: string | Date | undefined = undefined,
+  inclusive: boolean = true
+): boolean => {
+  if (!startDate) {
+    startDate = new Date(0)
+  }
+  if (!endDate) {
+    endDate = new Date('3000-01-01')
+  }
+  const date = new Date(dateToCheck)
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  if (inclusive) {
+    return date >= start && date <= end
+  } else {
+    return date > start && date < end
+  }
+}

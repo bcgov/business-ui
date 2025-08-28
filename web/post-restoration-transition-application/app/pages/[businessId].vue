@@ -16,7 +16,8 @@ const {
   courtOrderErrors,
   articlesErrors,
   staffPayErrors,
-  completingPartyErrors } = storeToRefs(errorStore)
+  completingPartyErrors
+} = storeToRefs(errorStore)
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -106,10 +107,7 @@ const {
 
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
-  const articlesResult = articlesSchema.safeParse(articles)
-  if (!articlesResult.success) {
-    articlesErrors.value = articlesResult.error.flatten().fieldErrors
-  }
+  errorStore.verifyArticles(articles.value)
 })
 
 const anyExpanded = ref(false)
@@ -393,14 +391,14 @@ const closeDateandValidate = () => {
               <div class="flex flex-col space-y-4">
                 <p>{{ $t('text.articlesDescription') }}</p>
                 <div>
-                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6">
-                    <p>{{ fromIsoToUsDateFormat(articles?.currentDate) }}</p>
+                  <div v-if="articles?.currentDate" class="flex flex-row space-x-6 items-center">
+                    <p>{{ articles?.currentDate ? fromIsoToUsDateFormat(articles?.currentDate) : '' }}</p>
                     <UButton
                       icon="i-mdi-delete"
                       :label="$t('label.remove')"
                       :padded="false"
                       variant="ghost"
-                      class="rounded text-base p-0 gap-1"
+                      class="rounded text-base gap-1"
                       @click="removeDateHandler"
                     />
                   </div>
@@ -412,6 +410,7 @@ const closeDateandValidate = () => {
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
+                      readonly
                       @save="closeDateandValidate()"
                       @cancel="closeDateandValidate()"
                     />

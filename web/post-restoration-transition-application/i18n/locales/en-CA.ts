@@ -131,14 +131,15 @@ export default {
     }
   },
   errors: {
-    maxLength50: 'Maximum 50 characters',
-    maxLength30: 'Maximum 30 characters',
+    articles: 'You must add a date because you changed your share structure and it contains a class or series of shares with special rights or restrictions.',
+    currency: 'Currency is required, when has par value is selected',
     email: 'Valid email is required',
-    articles: 'You must enter a date because you have changed or added a share class or series that has special rights or restrictions.',
-    required: 'This field is required',
-    shareNameExists: 'Share name already exists',
+    maxLength30: 'Maximum 30 characters',
+    maxLength50: 'Maximum 50 characters',
     maxNumberOfShares: 'Maximum Number of Shares is required, when has maximum is selected',
+    notAValidInput: 'Not a valid input',
     parValue: 'Par Value is required, when has par value is selected',
-    currency: 'Currency is required, when has par value is selected'
+    required: 'This field is required',
+    shareNameExists: 'Share name already exists'
   }
 }

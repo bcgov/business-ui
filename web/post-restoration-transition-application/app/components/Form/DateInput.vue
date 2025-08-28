@@ -1,8 +1,10 @@
-<script setup lang="ts">
-const model = defineModel<string>({ default: '' })
+<script lang="ts" setup>
+const model = defineModel<string | undefined>({ default: undefined })
+const emit = defineEmits(['change'])
 
 const {
-  maxlength = '1000'
+  maxlength = '1000',
+  readonly = false
 } = defineProps<{
   id: string
   label: string
@@ -12,72 +14,88 @@ const {
   maxlength?: string
   minDate?: string
   maxDate?: string
+  readonly?: boolean
 }>()
 
 const showDatePicker = ref(false)
 const updateDate = (date: string) => {
-  displayDate.value = fromIsoToUsDateFormat(date) || ''
+  displayDate.value = fromIsoToUsDateFormat(date)?.toString() || ''
   model.value = date
+  emit('change')
+}
+const handleUpdateDate = (date: Date) => {
+  updateDate(date.toISOString())
+  showDatePicker.value = false
+  hasDateChanged.value = true
 }
 const hasDateChanged = ref(false)
 const dateSelectPickerRef = ref<unknown>()
 const selectedDate = ref('')
 const changeDateHandler = () => {
   showDatePicker.value = false
+  emit('change')
 }
 
 const displayDate = ref('')
 const blurInputHandler = () => {
+  if (!displayDate.value) {
+    return
+  }
   const tempDate = new Date(displayDate.value)
   // set to all dates to be in noon UTC to display correctly when showing current date in our timezone
   // and to avoid extensive calculation of PST vs PDT
   tempDate.setUTCHours(12, 0, 0, 0)
   updateDate(tempDate.toISOString())
 }
+
+const focusInHandler = () => {
+  showDatePicker.value = true
+  return !readonly
+}
 </script>
 
 <template>
   <UInput
     v-model.trim="displayDate"
-    :data-testid="id"
-    placeholder=""
     :aria-required="required"
+    :data-testid="id"
     :disabled
     :maxlength
-    class="w-full grow"
+    :readonly
     :ui="{
       base: invalid ? 'ring-0 shadow-bcGovInputError focus:shadow-bcGovInputError' : '',
       icon: {
         trailing: { pointer: '' }
       }
     }"
-    @focusin="showDatePicker = true"
+    class="w-full grow !rounded-md"
+    placeholder=""
     @blur="blurInputHandler"
     @change="changeDateHandler"
+    @focusin="focusInHandler"
   >
     <label
+      :class="invalid ? 'text-red-600' : ''"
       :for="id"
       class="floating-label-input"
-      :class="invalid ? 'text-red-600' : ''"
     >
       {{ label }}
     </label>
     <template #trailing>
       <UIcon
+        class="text-2xl text-bcGovColor-midGray cursor-pointer"
         name="i-mdi-calendar"
-        class="text-2xl
-         text-bcGovColor-midGray"
-        @click="showDatePicker = true"
+        @click="showDatePicker = !showDatePicker"
       />
     </template>
   </UInput>
   <FormDatePicker
     v-if="showDatePicker"
     ref="dateSelectPickerRef"
-    class="absolute z-20"
-    :default-selected-date="selectedDate"
-    :set-min-date="minDate"
+    :default-selected-date="selectedDate || undefined"
     :set-max-date="maxDate"
-    @selected-date="updateDate($event); showDatePicker = false; hasDateChanged = true"
+    :set-min-date="minDate"
+    class="absolute z-20"
+    @selected-date="handleUpdateDate($event)"
   />
 </template>
