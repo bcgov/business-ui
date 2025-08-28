@@ -1,4 +1,4 @@
-export const entityCP1002605 = {
+export const base = {
     affiliations: [
         {
             created: '2023-11-29T00:11:53+00:00',
@@ -40,3 +40,5 @@ export const entityCP1002605 = {
     name: 'BTR\'S COOP',
     passCodeClaimed: true
 }
+
+export const CP1002605 = base

@@ -1,16 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { entityCP1002605 } from '../../mocks/auth/entities'
-import { businessCP1002605 } from '../../mocks/lear/business'
+import { CP1002605 } from '../../mocks/lear/business'
+import { mockForIdentifier } from '../test-utils/helpers'
 
 test.describe('Example', () => {
-  const identifier = businessCP1002605.business.identifier
+  const identifier = CP1002605.business.identifier
   test.beforeEach(async ({ page }) => {
-    await page.route(`*/**/entities/${identifier}`, async (route) => {
-      await route.fulfill({ json: entityCP1002605 })
-    })
-    await page.route(`*/**/businesses/${identifier}?slim=true`, async (route) => {
-      await route.fulfill({ json: businessCP1002605 })
-    })
+    await mockForIdentifier(page, identifier)
   })
   test('Passes', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
