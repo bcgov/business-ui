@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.4
+
+### Patch Changes
+
+- [#216](https://github.com/bcgov/business-ui/pull/216) [`07f8251`](https://github.com/bcgov/business-ui/commit/07f8251a23dd1fa6bbf510e5c54dad4a3a6a282e) Thanks [@deetz99](https://github.com/deetz99)! - Update deps and add css module. issue: bcgov/entity#29341
+
 ## 0.1.3
 
 ### Patch Changes
