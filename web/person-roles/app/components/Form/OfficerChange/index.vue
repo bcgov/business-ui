@@ -74,7 +74,7 @@ const schema = z.object({
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
   preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
-  mailingAddress: getNotRequiredAddressSchema(),
+  mailingAddress: getNonRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
   deliveryAddress: getRequiredAddressSchema(),
   roles: z
@@ -307,7 +307,7 @@ function clearUnfinishedTaskMsg() {
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
+      'border-l-3 border-error': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
       'rounded-sm shadow-sm': !editing
     }"
     :validate-on="['blur']"
@@ -318,19 +318,19 @@ function clearUnfinishedTaskMsg() {
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h3
-        class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5"
-        :class="{ 'text-red-600': unfinishedTaskMsg !== '' }"
+        class="w-full sm:w-1/5 font-bold text-neutral-highlighted text-base -mt-1.5"
+        :class="{ 'text-error': unfinishedTaskMsg !== '' }"
       >
         {{ title }}
       </h3>
       <div class="flex flex-col gap-9 w-full">
         <div class="flex flex-col gap-9 w-full">
-          <FormSection
+          <ConnectFieldset
             :label="$t('label.legalName')"
             :error="formErrors.name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.firstName"
                 name="firstName"
                 input-id="first-name"
@@ -338,14 +338,14 @@ function clearUnfinishedTaskMsg() {
                 autofocus
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.middleName"
                 name="middleName"
                 input-id="middle-name"
                 :label="$t('label.middleNameOpt')"
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.lastName"
                 name="lastName"
                 input-id="last-name"
@@ -381,10 +381,10 @@ function clearUnfinishedTaskMsg() {
                 />
               </template>
             </UFormField>
-          </FormSection>
+          </ConnectFieldset>
         </div>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.roles')"
           :error="formErrors.roles"
           :show-error-msg="true"
@@ -405,30 +405,23 @@ function clearUnfinishedTaskMsg() {
               }"
               @update:model-value="handleRoleChange"
             />
-            <!-- <FormCheckboxGroup
-              id="officer-role-options"
-              :items="roleOptions"
-              :model-value="selectedRoles"
-              @update:model-value="handleRoleChange"
-            /> -->
           </UFormField>
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.deliveryAddress')"
           :error="formErrors.delivery"
         >
-          <FormAddress
+          <ConnectFormAddress
             id="delivery-address"
             v-model="state.deliveryAddress"
-            schema-prefix="deliveryAddress."
+            schema-prefix="deliveryAddress"
             :form-ref="formRef"
-            not-po-box
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
+            street-help-text="no-po"
           />
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.mailingAddress')"
           :error="formErrors.mailing"
         >
@@ -439,15 +432,14 @@ function clearUnfinishedTaskMsg() {
             :class="state.sameAsDelivery ? '' : 'mb-6'"
           />
 
-          <FormAddress
+          <ConnectFormAddress
             v-if="!state.sameAsDelivery"
             id="mailing-address"
             v-model="state.mailingAddress"
-            schema-prefix="mailingAddress."
+            schema-prefix="mailingAddress"
             :form-ref="formRef"
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
           />
-        </FormSection>
+        </ConnectFieldset>
 
         <div class="flex sm:flex-row flex-col gap-4 justify-end sm:items-center -mt-5">
           <p

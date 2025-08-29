@@ -9,7 +9,7 @@
           />
           {{ $t('contactInfo.bcros.tollFree.title') }}
           <a
-            class="text-blue-500 underline"
+            class="text-primary underline"
             href="tel:+1-877-526-1526"
           >
             1-877-526-1526
@@ -24,7 +24,7 @@
           />
           {{ $t('contactInfo.bcros.victoriaOffice.title') }}
           <a
-            class="text-blue-500 underline"
+            class="text-primary underline"
             href="tel:+1-250-387-7848"
           >
             250-387-7848
@@ -39,7 +39,7 @@
           />
           {{ $t('contactInfo.bcros.email.title') }}
           <a
-            class="text-blue-500 underline"
+            class="text-primary underline"
             href="mailto:bcregistries@gov.bc.ca?subject=BC%20Registries%20Support%20Request"
             target="_blank"
           >

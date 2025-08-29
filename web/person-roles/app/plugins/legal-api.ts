@@ -1,35 +1,22 @@
-export default defineNuxtPlugin(() => {
-  const rtc = useRuntimeConfig().public
-  const legalApiUrl = rtc.legalApiUrl as string
+export default defineNuxtPlugin((nuxtApp) => {
+  const rtc = nuxtApp.$config.public
+  const legalApiUrl = rtc.legalApiUrl + rtc.legalApiVersion
   const appName = rtc.appName
   const xApiKey = rtc.xApiKey
-  const { $connectAuth } = useNuxtApp()
-  const accountId = useConnectAccountStore().currentAccount.id
 
   const api = $fetch.create({
     baseURL: legalApiUrl,
-    onRequest({ options }) {
-      const headers = options.headers ||= {} as Headers
-      if (Array.isArray(headers)) {
-        headers.push(['Authorization', `Bearer ${$connectAuth.token}`])
-        headers.push(['App-Name', appName])
-        headers.push(['Account-Id', accountId])
-        headers.push(['X-Apikey', xApiKey])
-      } else if (headers instanceof Headers) {
-        headers.set('Authorization', `Bearer ${$connectAuth.token}`)
-        headers.set('App-Name', appName)
-        headers.set('Account-Id', String(accountId))
-        headers.set('X-Apikey', String(xApiKey))
-      } else {
-        // @ts-expect-error - 'Authorization' doesnt exist on type Headers
-        headers.Authorization = `Bearer ${$connectAuth.token}`
-        // @ts-expect-error - 'App-Name' doesnt exist on type Headers
-        headers['App-Name'] = appName
-        // @ts-expect-error - 'Account-Id' doesnt exist on type Headers
-        headers['Account-Id'] = accountId
-        // @ts-expect-error - 'X-Apikey' doesnt exist on type Headers
-        headers['X-Apikey'] = xApiKey
-      }
+    async onRequest({ options }) {
+      const auth = useConnectAuth()
+      const accountStore = useConnectAccountStore()
+
+      const token = await auth.getToken()
+      const accountId = accountStore.currentAccount.id
+
+      options.headers.set('Authorization', `Bearer ${token}`)
+      options.headers.set('App-Name', appName)
+      options.headers.set('X-Apikey', xApiKey)
+      options.headers.set('Account-Id', String(accountId))
     }
   })
 

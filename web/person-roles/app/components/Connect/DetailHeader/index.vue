@@ -66,7 +66,7 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
           <div>
             <component
               :is="title.el"
-              class="text-[1.375rem] font-bold text-gray-900"
+              class="text-[1.375rem] font-bold text-neutral-highlighted"
             >
               {{ title.text }}
             </component>
@@ -129,7 +129,7 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
               >
                 <div class="flex flex-row flex-wrap gap-2">
                   <dt
-                    class="font-bold text-bcGovGray-900"
+                    class="font-bold text-neutral-highlighted"
                     :class="[detail.edit?.isEditing && 'mt-1']"
                   >
                     {{ detail.label }}:

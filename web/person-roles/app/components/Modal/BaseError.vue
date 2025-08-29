@@ -39,7 +39,7 @@ const description = te(descKey) ? t(descKey) : t(`${i18nPrefix}.undefined.descri
   >
     <template #content>
       <div class="p-10 flex flex-col gap-6">
-        <h2 class="text-2xl font-semibold text-bcGovColor-darkGray">
+        <h2 class="text-2xl font-semibold text-neutral-highlighted">
           {{ title }}
         </h2>
         <p>{{ description }}</p>

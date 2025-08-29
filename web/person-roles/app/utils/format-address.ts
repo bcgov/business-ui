@@ -1,4 +1,4 @@
-export function formatAddressUi(address: ApiAddress | undefined): UiAddress {
+export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress {
   return {
     street: address?.streetAddress ?? '',
     streetAdditional: address?.streetAddressAdditional ?? '',

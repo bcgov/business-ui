@@ -29,6 +29,10 @@ definePageMeta({
         { external: true }
       )
     }
+  },
+  buttonControl: {
+    leftGroup: { buttons: [] },
+    rightGroup: { buttons: [] }
   }
 })
 
@@ -37,28 +41,6 @@ const businessDashboardUrlWithBusinessAndAccount = computed(() =>
   `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
 )
 
-// TODO: get fee from pay api?
-// set empty fee
-feeStore.feeOptions.showServiceFees = false
-feeStore.fees = {
-  OFFICER_CHANGE: {
-    filingFees: 0,
-    filingType: 'Officer change fee',
-    filingTypeCode: 'OFFICER_CHANGE',
-    futureEffectiveFees: 0,
-    priorityFees: 0,
-    processingFees: 0,
-    serviceFees: 0,
-    tax: {
-      gst: 0,
-      pst: 0
-    },
-    total: 0,
-    waived: true
-  }
-}
-
-// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
   if (officerStore.checkHasChanges('save')) {
@@ -97,7 +79,7 @@ async function submitFiling() {
 
     // prevent submit if there are no changes
     if (!officerStore.checkHasChanges('submit')) {
-      setAlertText(false, 'right', t('text.noChangesToSubmit'))
+      setAlertText(false, 'right', undefined, t('text.noChangesToSubmit'))
       return
     }
 
@@ -214,7 +196,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
   // prevent save if there are no changes
   if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', t('text.noChangesToSave'))
+    setAlertText(false, 'left', undefined, t('text.noChangesToSave'))
     return
   }
 
@@ -325,8 +307,21 @@ async function validateFolioNumber() {
 watch(
   () => accountStore.currentAccount.id,
   async (id) => {
+    // load officer info
     const draftId = (urlParams.draft as string) ?? undefined
     await officerStore.initOfficerStore(businessId, draftId)
+
+    // load fees
+    try {
+      const officerFeeCode = 'NOCOI'
+      await feeStore.initFees(
+        [{ code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }],
+        { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
+      )
+      feeStore.addReplaceFee(officerFeeCode)
+    } catch {
+      // do nothing if fee failed
+    }
 
     setBreadcrumbs([
       {
@@ -352,14 +347,18 @@ watch(
     ])
 
     setButtonControl({
-      leftButtons: [
-        { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-        { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
-      ],
-      rightButtons: [
-        { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-        { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
-      ]
+      leftGroup: {
+        buttons: [
+          { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+          { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+        ]
+      },
+      rightGroup: {
+        buttons: [
+          { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+          { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+        ]
+      }
     })
 
     // save filing before user logged out when session expires
@@ -420,19 +419,19 @@ watch(
           'border-l-3 border-red-600': folioErrors && folioErrors[0]
         }"
       >
-        <FormSection
+        <ConnectFormFieldWrapper
           :label="$t('label.folioNumber')"
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
-          <FormFieldInput
+          <ConnectFormInput
             v-model="officerStore.folio.number"
             name="number"
             :label="$t('label.folioNumberOpt')"
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />
-        </FormSection>
+        </ConnectFormFieldWrapper>
       </UForm>
     </section>
   </div>

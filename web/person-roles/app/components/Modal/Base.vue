@@ -25,7 +25,7 @@ defineEmits<{ close: [] }>()
           role="alert"
           class="flex flex-col gap-6 text-left"
         >
-          <h2 class="text-2xl font-semibold text-bcGovColor-darkGray">
+          <h2 class="text-2xl font-semibold text-neutral-highlighted">
             {{ title }}
           </h2>
           <p>{{ description }}</p>
