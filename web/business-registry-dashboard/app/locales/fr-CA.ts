@@ -302,7 +302,10 @@ export default {
     manageBusiness: {
       heading: 'Gérer une entreprise de la C.B.',
       businessName: "{boldStart}Nom de l'entreprise:{boldEnd} {name}",
-      businessNumber: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
+      businessNumber: {
+        default: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
+        firm: "{boldStart}Numéro d'enregistrement:{boldEnd} {number}",
+      },
       missingInfo: {
         p1: 'Certaines informations requises pour cette entreprise sont manquantes.',
         fragmentPrt1: "L'entreprise n'a pas d'adresse courriel dans ses dossiers. Vous pouvez télécharger et soumettre ceci",

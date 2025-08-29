@@ -312,7 +312,10 @@ export default {
     manageBusiness: {
       heading: 'Manage a B.C. Business',
       businessName: '{boldStart}Business Name:{boldEnd} {name}',
-      businessNumber: '{boldStart}Incorporation Number:{boldEnd} {number}',
+      businessNumber: {
+        default: '{boldStart}Incorporation Number:{boldEnd} {number}',
+        firm: '{boldStart}Registration Number:{boldEnd} {number}',
+      },
       missingInfo: {
         p1: 'Some required information for this business is missing.',
         fragmentPrt1: 'The business doesn\'t have an email on file. You can download and submit this',
@@ -362,8 +365,8 @@ export default {
           },
           fields: {
             name: {
-              arialabel: 'Propietor or Partner Name (e.g., Last Name, First Name Middlename)',
-              placeholder: 'Propietor or Partner Name (e.g., Last Name, First Name Middlename)',
+              arialabel: 'Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
+              placeholder: 'Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
               help: 'Name as it appears on the Business Summary or the Statement of Registration',
               error: {
                 required: 'Proprietor or Partner Name is required',
