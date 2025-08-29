@@ -95,6 +95,10 @@ const authOptions = computed<AccordionItem[]>(() => {
   return options
 })
 
+const businessIdentifierLabel = computed(() => {
+  return businessDetails.value.isFirm ? 'form.manageBusiness.businessIdentifier.firm' : 'form.manageBusiness.businessIdentifier.default'
+})
+
 async function handleEmailAuthSentStateClosed () {
   if (formAddBusinessRef.value?.currentState === 'FormAddBusinessEmailAuthSent') {
     toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
@@ -147,7 +151,7 @@ onMounted(async () => {
           <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
+          <ConnectI18nBold class="text-bcGovColor-darkGray" :translation-path="businessIdentifierLabel" :number="business.identifier" />
         </li>
       </ul>
 
