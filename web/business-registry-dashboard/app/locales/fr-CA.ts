@@ -304,7 +304,7 @@ export default {
       businessName: "{boldStart}Nom de l'entreprise:{boldEnd} {name}",
       businessNumber: {
         default: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
-        firm: "{boldStart}Numéro d'enregistrement:{boldEnd} {number}",
+        firm: "{boldStart}Numéro d'enregistrement:{boldEnd} {number}"
       },
       missingInfo: {
         p1: 'Certaines informations requises pour cette entreprise sont manquantes.',

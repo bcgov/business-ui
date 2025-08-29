@@ -314,7 +314,7 @@ export default {
       businessName: '{boldStart}Business Name:{boldEnd} {name}',
       businessNumber: {
         default: '{boldStart}Incorporation Number:{boldEnd} {number}',
-        firm: '{boldStart}Registration Number:{boldEnd} {number}',
+        firm: '{boldStart}Registration Number:{boldEnd} {number}'
       },
       missingInfo: {
         p1: 'Some required information for this business is missing.',
