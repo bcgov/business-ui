@@ -312,7 +312,7 @@ export default {
     manageBusiness: {
       heading: 'Manage a B.C. Business',
       businessName: '{boldStart}Business Name:{boldEnd} {name}',
-      businessNumber: {
+      businessIdentifier: {
         default: '{boldStart}Incorporation Number:{boldEnd} {number}',
         firm: '{boldStart}Registration Number:{boldEnd} {number}'
       },

@@ -302,7 +302,7 @@ export default {
     manageBusiness: {
       heading: 'Gérer une entreprise de la C.B.',
       businessName: "{boldStart}Nom de l'entreprise:{boldEnd} {name}",
-      businessNumber: {
+      businessIdentifier: {
         default: "{boldStart}Numéro d'incorporation:{boldEnd} {number}",
         firm: "{boldStart}Numéro d'enregistrement:{boldEnd} {number}"
       },

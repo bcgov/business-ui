@@ -95,8 +95,8 @@ const authOptions = computed<AccordionItem[]>(() => {
   return options
 })
 
-const businessNumberLabel = computed(() => {
-  return businessDetails.value.isFirm ? 'form.manageBusiness.businessNumber.firm' : 'form.manageBusiness.businessNumber.default'
+const businessIdentifierLabel = computed(() => {
+  return businessDetails.value.isFirm ? 'form.manageBusiness.businessIdentifier.firm' : 'form.manageBusiness.businessIdentifier.default'
 })
 
 async function handleEmailAuthSentStateClosed () {
@@ -151,7 +151,7 @@ onMounted(async () => {
           <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" :translation-path="businessNumberLabel" :number="business.identifier" />
+          <ConnectI18nBold class="text-bcGovColor-darkGray" :translation-path="businessIdentifierLabel" :number="business.identifier" />
         </li>
       </ul>
 
