@@ -212,9 +212,10 @@ export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: bool
 
   const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver').startOf('day')
   const currentDate = moment().tz('America/Vancouver').startOf('day')
+  const isConsumed = item.nameRequest?.stateCd === NrState.CONSUMED
 
   const daysDiff = expirationDate.diff(currentDate, 'days')
-  const isSoon = daysDiff >= 0 && daysDiff <= 10
+  const isSoon = daysDiff >= 0 && daysDiff <= 10 && !isConsumed
 
   return { daysDiff, isSoon }
 }
