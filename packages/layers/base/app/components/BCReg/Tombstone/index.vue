@@ -43,7 +43,7 @@ const handleButtonAction = async (button: BusinessTombstoneBtn, event: MouseEven
 
 <template>
   <div
-    class="bg-white py-8"
+    class="bg-white py-8 px-2 sm:px-4"
     data-testid="business-tombstone"
   >
     <div class="app-inner-container">

@@ -15,8 +15,8 @@ const accountStore = useConnectAccountStore()
         : undefined"
     />
     <BCRegTombstone />
-    <main class="app-inner-container app-body">
-      <div class="flex flex-col lg:flex-row lg:gap-6 grow">
+    <main class="app-body px-2 sm:px-4">
+      <div class="flex flex-col lg:flex-row lg:gap-6 grow app-inner-container">
         <div class="grow max-w-full overflow-hidden">
           <slot />
         </div>
