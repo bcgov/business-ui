@@ -11,7 +11,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const businessApi = useBusinessApi()
   const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
-  const detailsHeaderStore = useConnectDetailsHeaderStore()
+  const tombstoneStore = useBusinessTombstoneStore()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
@@ -31,7 +31,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      detailsHeaderStore.loading = true
+      tombstoneStore.loading = true
 
       // if filing ID provided, get and validate the filing structure, return early if invalid
       if (draftId) {
@@ -102,18 +102,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       activeBusinessAuthInfo.value = authInfo
       // set masthead data
-      const contact = authInfo.contacts[0]
-      const ext = contact?.extension || contact?.phoneExtension
-      const phoneLabel = ext ? `${contact?.phone || ''} Ext: ${ext}` : contact?.phone || t('label.notAvailable')
-
-      detailsHeaderStore.title = { el: 'span', text: business.legalName }
-      detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-      detailsHeaderStore.sideDetails = [
-        { label: t('label.businessNumber'), value: business.taxId ?? t('label.notAvailable') },
-        { label: t('label.incorporationNumber'), value: business.identifier },
-        { label: t('label.email'), value: contact?.email || t('label.notAvailable') },
-        { label: t('label.phone'), value: phoneLabel }
-      ]
+      tombstoneStore.setFilingDefault(business, authInfo)
 
       // map current/existing officers
       const officers = parties.map((p) => {
@@ -177,7 +166,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
           ]
       )
     } finally {
-      detailsHeaderStore.loading = false
       initializing.value = false
     }
   }

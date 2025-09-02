@@ -6,9 +6,9 @@ const {
   details,
   sideDetails,
   bottomButtons
-} = storeToRefs(useConnectDetailsHeaderStore())
+} = storeToRefs(useBusinessTombstoneStore())
 
-const validate = (sideDetail: ConnectDetailHeaderSideDetail, onlyOnExistingErr: boolean) => {
+const validate = (sideDetail: BusinessTombstoneSideDetail, onlyOnExistingErr: boolean) => {
   if (onlyOnExistingErr && !sideDetail.edit?.validation?.error) {
     return
   }
@@ -17,7 +17,7 @@ const validate = (sideDetail: ConnectDetailHeaderSideDetail, onlyOnExistingErr: 
   }
 }
 
-const save = (sideDetail: ConnectDetailHeaderSideDetail) => {
+const save = (sideDetail: BusinessTombstoneSideDetail) => {
   if (sideDetail.edit) {
     sideDetail.edit.validation?.validate(sideDetail.value)
     if (sideDetail.edit.validation?.error) {
@@ -28,9 +28,15 @@ const save = (sideDetail: ConnectDetailHeaderSideDetail) => {
   }
 }
 
-const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
+const handleButtonAction = async (button: BusinessTombstoneBtn, event: MouseEvent) => {
   button.loading = true
-  await button.action()
+  if (button.onClick) {
+    if (Array.isArray(button.onClick)) {
+      await Promise.all(button.onClick.map(fn => fn(event)))
+    } else if (button.onClick) {
+      await button.onClick(event)
+    }
+  }
   button.loading = false
 }
 </script>
@@ -38,24 +44,24 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
 <template>
   <div
     class="bg-white py-8"
-    data-testid="connect-details-header"
+    data-testid="business-tombstone"
   >
     <div class="app-inner-container">
       <div
         v-if="loading"
-        class="flex animate-pulse flex-col gap-2 *:space-y-2 sm:flex-row"
+        class="flex flex-col gap-2 *:space-y-2 sm:flex-row"
       >
         <div class="grow">
-          <div class="h-9 w-[400px] rounded bg-gray-200" />
-          <div class="h-5 w-[250px] rounded bg-gray-200" />
-          <div class="h-5 w-[200px] rounded bg-gray-200" />
-          <div class="h-5 w-[150px] rounded bg-gray-200" />
+          <USkeleton class="h-9 w-[400px] rounded" />
+          <USkeleton class="h-5 w-[250px] rounded" />
+          <USkeleton class="h-5 w-[200px] rounded" />
+          <USkeleton class="h-5 w-[150px] rounded" />
         </div>
         <div>
-          <div class="h-5 w-[300px] rounded bg-gray-200" />
-          <div class="h-5 w-[300px] rounded bg-gray-200" />
-          <div class="h-5 w-[300px] rounded bg-gray-200" />
-          <div class="h-5 w-[300px] rounded bg-gray-200" />
+          <USkeleton class="h-5 w-[300px] rounded" />
+          <USkeleton class="h-5 w-[300px] rounded" />
+          <USkeleton class="h-5 w-[300px] rounded" />
+          <USkeleton class="h-5 w-[300px] rounded" />
         </div>
       </div>
       <div
@@ -74,7 +80,7 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
               v-if="subtitles.length"
               class="flex divide-x divide-gray-500"
             >
-              <ConnectDetailHeaderItem
+              <BCRegTombstoneItem
                 v-for="subtitle, i in subtitles"
                 :key="'subtitle-' + i"
                 v-bind="subtitle"
@@ -90,7 +96,7 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
                   v-for="detail, i in details"
                   :key="'detail-' + i"
                 >
-                  <ConnectDetailHeaderItem v-bind="detail" />
+                  <BCRegTombstoneItem v-bind="detail" />
                 </div>
               </div>
             </slot>
@@ -102,13 +108,9 @@ const handleButtonAction = async (button: ConnectDetailHeaderBtn) => {
                 <UButton
                   v-for="btn in bottomButtons"
                   :key="btn.label"
-                  :label="btn.label"
-                  :icon="btn.icon"
-                  :loading="btn.loading"
+                  v-bind="btn"
                   class="pl-0"
-                  color="primary"
-                  variant="link"
-                  @click="handleButtonAction(btn)"
+                  @click="handleButtonAction(btn, $event)"
                 />
               </div>
             </slot>

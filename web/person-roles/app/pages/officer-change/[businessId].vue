@@ -18,7 +18,7 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'form',
+  layout: 'filing',
   middleware: () => {
     // redirect to reg home with return url if user unauthenticated
     const { $connectAuth, $config } = useNuxtApp()

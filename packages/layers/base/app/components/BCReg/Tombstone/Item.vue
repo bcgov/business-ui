@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import type { ConnectDetailHeaderItem } from '#imports'
+import type { BusinessTombstoneItem } from '#imports'
 
-defineProps<ConnectDetailHeaderItem>()
+defineProps<BusinessTombstoneItem>()
 </script>
 
 <template>
   <div class="flex space-x-1">
     <UIcon
       v-if="icon"
-      :name="icon"
-      :class="iconClass || 'mt-1 text-primary'"
+      v-bind="icon"
+      :class="itemClass || 'mt-1 text-primary'"
     />
     <UBadge
       v-if="badge"
-      :label="text"
-      :color="badgeColour || 'primary'"
+      v-bind="badge"
       :class="itemClass || 'px-3'"
     />
-    <a
+    <ULink
       v-else-if="link"
-      :href="linkHref"
+      v-bind="link"
       :class="itemClass || 'mt-[2px] text-sm text-primary underline'"
-    >
-      {{ text }}
-    </a>
+    />
     <p
       v-else
       :class="itemClass || 'mt-[2px] text-sm'"
