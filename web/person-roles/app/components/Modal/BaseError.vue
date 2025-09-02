@@ -1,8 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { FetchError } from 'ofetch'
-import type { H3Error } from 'h3'
-
 // https://vue-i18n.intlify.dev/api/composition.html#te-key-locale
 const { t, te } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
@@ -20,15 +16,7 @@ const {
 }>()
 defineEmits<{ close: [] }>()
 
-function isH3Error(err: unknown): err is H3Error {
-  return !!err && typeof err === 'object' && 'statusCode' in (err as any)
-}
-
-const status = error instanceof FetchError
-  ? error.response?.status
-  : isH3Error(error)
-    ? error.statusCode
-    : undefined
+const status = getErrorStatus(error)
 
 const titleKey = `${i18nPrefix}.${status}.title`
 const descKey = `${i18nPrefix}.${status}.description`

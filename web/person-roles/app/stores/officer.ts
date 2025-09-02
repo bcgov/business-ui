@@ -154,9 +154,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       }))
     } catch (error) {
-      const status = error instanceof FetchError
-        ? error.response?.status
-        : undefined
+      const status = getErrorStatus(error)
       const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
       modal.openBaseErrorModal(
         error,
