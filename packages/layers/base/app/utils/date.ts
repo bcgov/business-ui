@@ -4,12 +4,12 @@ import { DateTime } from 'luxon'
 /**
  * Gets todays date, can customize timezone and output format.
  *
- * @param {string} timezone - An IANA timezone string (e.g., 'America/Vancouver').
- * @param {string} format - A Luxon format string (e.g., 'MMMM dd, yyyy').
+ * @param timezone - An IANA timezone string (e.g., 'America/Vancouver').
+ * @param format - A Luxon format string (e.g., 'MMMM dd, yyyy').
  *
  * Defaults to UTC and ISODate (yyyy-mm-dd) format
  *
- * @returns {string} The formatted date string.
+ * @returns The formatted date string.
  *
  * Timezones https://moment.github.io/luxon/#/zones?id=specifying-a-zone
  *

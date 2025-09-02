@@ -67,8 +67,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // version: `Person Roles UI v${process.env.npm_package_version || ''}`,
-      legalApiUrl: '',
-      legalApiVersion: '',
       businessDashboardUrl: '',
       brdUrl: '',
       paymentPortalUrl: ''

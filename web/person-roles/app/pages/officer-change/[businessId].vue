@@ -11,7 +11,7 @@ const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
 const modal = useModal()
-const legalApi = useLegalApi()
+const businessApi = useBusinessApi()
 
 useHead({
   title: t('page.officerChange.title')
@@ -96,7 +96,7 @@ async function submitFiling() {
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
@@ -110,7 +110,7 @@ async function submitFiling() {
 
     // format payload
     const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
       officerStore.activeBusiness,
       'changeOfOfficers',
       officerData
@@ -126,7 +126,7 @@ async function submitFiling() {
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling(
+      await businessApi.saveOrUpdateDraftFiling(
         officerStore.activeBusiness.identifier,
         payload,
         true,
@@ -134,7 +134,7 @@ async function submitFiling() {
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling(
+      await businessApi.postFiling(
         officerStore.activeBusiness.identifier,
         payload
       )
@@ -218,7 +218,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
@@ -234,7 +234,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // create filing payload
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
       officerStore.activeBusiness,
       'changeOfOfficers',
       { changeOfOfficers: officerTableSnapshot }
@@ -245,7 +245,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
-    const res = await legalApi.saveOrUpdateDraftFiling(
+    const res = await businessApi.saveOrUpdateDraftFiling(
       officerStore.activeBusiness.identifier,
       payload,
       false,

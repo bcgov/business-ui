@@ -1,5 +1,5 @@
-export const useLegalApi = () => {
-  const { $legalApi } = useNuxtApp()
+export const useBusinessApi = () => {
+  const { $businessApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
 
@@ -34,7 +34,7 @@ export const useLegalApi = () => {
    * @returns A promise that resolves the business tasks.
   */
   async function getTasks(businessId: string): Promise<TaskGetResponse> {
-    return $legalApi(`businesses/${businessId}/tasks`)
+    return $businessApi(`businesses/${businessId}/tasks`)
   }
 
   /**
@@ -78,7 +78,7 @@ export const useLegalApi = () => {
     businessId: string,
     filingId: number | string
   ): Promise<FilingGetByIdResponse<F>> {
-    return $legalApi(`businesses/${businessId}/filings/${filingId}`)
+    return $businessApi(`businesses/${businessId}/filings/${filingId}`)
   }
 
   /**
@@ -115,7 +115,7 @@ export const useLegalApi = () => {
     identifier: string,
     body: FilingSubmissionBody<F>
   ): Promise<FilingPostResponse<F>> {
-    return $legalApi(`businesses/${identifier}/filings`,
+    return $businessApi(`businesses/${identifier}/filings`,
       {
         method: 'POST',
         body
@@ -160,7 +160,7 @@ export const useLegalApi = () => {
     const method = filingId ? 'PUT' : 'POST'
     const query = isSubmission ? undefined : { draft: true }
 
-    return $legalApi(url,
+    return $businessApi(url,
       {
         method,
         body,
@@ -176,7 +176,7 @@ export const useLegalApi = () => {
    * @returns a promise to delete the filing
    */
   async function deleteFilingById(businessId: string, filingId: number): Promise<unknown> {
-    return $legalApi(`businesses/${businessId}/filings/${filingId}`, { method: 'DELETE' })
+    return $businessApi(`businesses/${businessId}/filings/${filingId}`, { method: 'DELETE' })
   }
 
   /**
@@ -188,7 +188,7 @@ export const useLegalApi = () => {
   function getBusiness(businessId: string, slim?: false): Promise<BusinessData>
 
   async function getBusiness(businessId: string, slim: boolean = false): Promise<BusinessData | BusinessDataSlim> {
-    const response = await $legalApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
+    const response = await $businessApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
       query: slim ? { slim: true } : undefined
     })
 
@@ -202,7 +202,7 @@ export const useLegalApi = () => {
    * @returns a promise to return the data
    */
   async function getParties(businessId: string, query?: Record<string, unknown>): Promise<OrgPerson[]> {
-    const response = await $legalApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
+    const response = await $businessApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
       query
     })
 

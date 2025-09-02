@@ -41,10 +41,6 @@ export default {
       }
     }
   },
-  currency: {
-    cad: 'CAD',
-    usd: 'USD'
-  },
   enum: {
     officerRole: {
       CEO: 'Chief Executive Officer',
@@ -59,38 +55,7 @@ export default {
       Officer: 'Officer' // TODO: update when subtype/roles are defined in api
     }
   },
-  help: {
-    addressCannotBePOBox: 'Address cannot be a PO Box',
-    addressCanBePOBox: 'Street address, PO box, rural route, or general delivery address'
-  },
   label: {
-    address: 'Address',
-    addressResidential: 'Residential Address',
-    state: 'State',
-    street: 'Street Address',
-    streetAdditional: 'Additional Street Address (Optional)',
-    streetName: 'Street Name',
-    streetNumber: 'Street Number',
-    unitNumber: 'Unit Number',
-    unitNumberOpt: 'Unit Number (Optional)',
-    country: 'Country',
-    line1: 'Address Line 1',
-    line2: 'Address Line 2 (Optional)',
-    city: 'City',
-    region: 'Region',
-    regionOpt: 'Region (Optional)',
-    province: 'Province',
-    postalCode: 'Postal Code',
-    zipCode: 'Zip Code',
-    code: 'Code',
-    mailingAddress: 'Mailing Address',
-    deliveryAddress: 'Delivery Address',
-    sameAsMailAddress: 'Same as Mailing Address',
-    sameAsDeliveryAddress: 'Same as Delivery Address',
-    deliveryInstructions: 'Delivery Instructions',
-    deliveryInstructionsOpt: 'Delivery Instructions (Optional)',
-    locationDescription: 'Location Description',
-    locationDescriptionOpt: 'Location Description (Optional)',
     addOfficer: 'Add Officer',
     name: 'Name',
     legalName: 'Legal Name',

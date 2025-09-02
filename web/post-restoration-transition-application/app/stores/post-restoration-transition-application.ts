@@ -1,4 +1,4 @@
-import { useLegalApi2 } from '~/composables/useLegalApi'
+import { useLegalApi2 } from '~/composables/useBusinessApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
 

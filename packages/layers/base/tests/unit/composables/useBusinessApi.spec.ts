@@ -4,7 +4,7 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 const mockLegalApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => ({
-    $legalApi: mockLegalApi
+    $businessApi: mockLegalApi
   })
 })
 
@@ -20,8 +20,8 @@ mockNuxtImport('useConnectAccountStore', () => {
   })
 })
 
-describe('useLegalApi', () => {
-  const legalApi = useLegalApi()
+describe('useBusinessApi', () => {
+  const businessApi = useBusinessApi()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -41,7 +41,7 @@ describe('useLegalApi', () => {
       const filingName = 'changeOfOfficers'
       const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
 
-      const result = legalApi.createFilingPayload(business, filingName, { [filingName]: payload })
+      const result = businessApi.createFilingPayload(business, filingName, { [filingName]: payload })
 
       expect(result).toHaveProperty('filing')
       const filing = result.filing
@@ -67,7 +67,7 @@ describe('useLegalApi', () => {
         changeOfAddress: { deliveryAddress: { street: '123 Main' } }
       }
 
-      const result = legalApi.createFilingPayload(business, 'changeOfOfficers', filings)
+      const result = businessApi.createFilingPayload(business, 'changeOfOfficers', filings)
       const filing = result.filing
 
       expect(filing.header.name).toBe('changeOfOfficers')
@@ -84,7 +84,7 @@ describe('useLegalApi', () => {
       const businessId = 'BC123'
       mockLegalApi.mockResolvedValue({ business: { legalName: 'Full Business' } })
 
-      await legalApi.getBusiness(businessId)
+      await businessApi.getBusiness(businessId)
 
       expect(mockLegalApi).toHaveBeenCalledWith(`businesses/${businessId}`, { query: undefined })
     })
@@ -93,7 +93,7 @@ describe('useLegalApi', () => {
       const businessId = 'BC123'
       mockLegalApi.mockResolvedValue({ business: { legalName: 'Slim Business' } })
 
-      await legalApi.getBusiness(businessId, true)
+      await businessApi.getBusiness(businessId, true)
 
       expect(mockLegalApi).toHaveBeenCalledWith(`businesses/${businessId}`, { query: { slim: true } })
     })
@@ -105,7 +105,7 @@ describe('useLegalApi', () => {
       const query = { classType: 'officer' }
       mockLegalApi.mockResolvedValue({ parties: [] })
 
-      await legalApi.getParties(businessId, query)
+      await businessApi.getParties(businessId, query)
 
       expect(mockLegalApi).toHaveBeenCalledWith(`businesses/${businessId}/parties`, { query })
     })
@@ -116,7 +116,7 @@ describe('useLegalApi', () => {
       const business = {
         identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
       } as BusinessData
-      const payload = legalApi.createFilingPayload(
+      const payload = businessApi.createFilingPayload(
         business,
         'changeOfOfficers',
         { changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] } }
@@ -124,7 +124,7 @@ describe('useLegalApi', () => {
 
       mockLegalApi.mockResolvedValue({ filing: { header: { name: 'changeOfOfficers' } } })
 
-      await legalApi.postFiling(business.identifier, payload)
+      await businessApi.postFiling(business.identifier, payload)
 
       expect(mockLegalApi).toHaveBeenCalledOnce()
       expect(mockLegalApi).toHaveBeenCalledWith(
@@ -147,7 +147,7 @@ describe('useLegalApi', () => {
       identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
     } as BusinessData
 
-    const payload = legalApi.createFilingPayload(
+    const payload = businessApi.createFilingPayload(
       business,
       'changeOfOfficers',
       { data: 'test' }
@@ -156,7 +156,7 @@ describe('useLegalApi', () => {
     test('should make a POST request to create a new draft', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
+      await businessApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings`,
@@ -172,7 +172,7 @@ describe('useLegalApi', () => {
       const filingId = 999
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false, filingId)
+      await businessApi.saveOrUpdateDraftFiling(business.identifier, payload, false, filingId)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings/${filingId}`,
@@ -187,7 +187,7 @@ describe('useLegalApi', () => {
     test('should submit a final filing (not a draft) when isSubmission is true', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, true)
+      await businessApi.saveOrUpdateDraftFiling(business.identifier, payload, true)
 
       expect(mockLegalApi).toHaveBeenCalledWith(
         `businesses/${business.identifier}/filings`,
@@ -202,7 +202,7 @@ describe('useLegalApi', () => {
     test('should build the filing body correctly', async () => {
       mockLegalApi.mockResolvedValue({ filing: {} })
 
-      await legalApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
+      await businessApi.saveOrUpdateDraftFiling(business.identifier, payload, false)
 
       // @ts-expect-error - mockLegalApi.mock.calls may be undefined
       const sentBody = mockLegalApi.mock.calls[0][1].body
@@ -217,7 +217,7 @@ describe('useLegalApi', () => {
       const mockResponse = { tasks: [{ task: { todo: { header: { name: 'Test Todo' } } } }] } as TaskGetResponse
       mockLegalApi.mockResolvedValue(mockResponse)
 
-      const result = await legalApi.getTasks(businessId)
+      const result = await businessApi.getTasks(businessId)
 
       expect(mockLegalApi).toHaveBeenCalledOnce()
       expect(mockLegalApi).toHaveBeenCalledWith(`businesses/${businessId}/tasks`)
@@ -236,7 +236,7 @@ describe('useLegalApi', () => {
 
       mockLegalApi.mockResolvedValue(mockTasksResponse)
 
-      const result = await legalApi.getPendingTask('BC123', 'filing')
+      const result = await businessApi.getPendingTask('BC123', 'filing')
 
       expect(result).toBeDefined()
       expect(result?.filing.header.status).toBe(FilingStatus.DRAFT)
@@ -253,7 +253,7 @@ describe('useLegalApi', () => {
       }
       mockLegalApi.mockResolvedValue(mockTasksResponse)
 
-      const result = await legalApi.getPendingTask('BC123', 'filing')
+      const result = await businessApi.getPendingTask('BC123', 'filing')
 
       expect(result).toBeUndefined()
     })
@@ -266,7 +266,7 @@ describe('useLegalApi', () => {
       }
       mockLegalApi.mockResolvedValue(mockFilingResponse)
 
-      const result = await legalApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
+      const result = await businessApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
 
       expect(result.isValid).toBe(true)
       expect(result.data).toEqual(mockFilingResponse)
@@ -276,7 +276,7 @@ describe('useLegalApi', () => {
       const mockFilingResponse = { filing: { header: { status: 'COMPLETED' } } }
       mockLegalApi.mockResolvedValue(mockFilingResponse)
 
-      const result = await legalApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
+      const result = await businessApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
 
       expect(result.isValid).toBe(false)
       expect(result.data).toBeNull()
@@ -289,7 +289,7 @@ describe('useLegalApi', () => {
       const filingId = 999
       mockLegalApi.mockResolvedValue({ success: true })
 
-      await legalApi.deleteFilingById(businessId, filingId)
+      await businessApi.deleteFilingById(businessId, filingId)
 
       expect(mockLegalApi).toHaveBeenCalledOnce()
       expect(mockLegalApi).toHaveBeenCalledWith(

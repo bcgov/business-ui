@@ -8,7 +8,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const t = na.$i18n.t
   const rtc = useRuntimeConfig().public
   const modal = useModal()
-  const legalApi = useLegalApi()
+  const businessApi = useBusinessApi()
   const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
@@ -36,7 +36,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // if filing ID provided, get and validate the filing structure, return early if invalid
       if (draftId) {
         try {
-          const { isValid, data } = await legalApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
+          const { isValid, data } = await businessApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
             businessId,
             draftId,
             'changeOfOfficers'
@@ -67,8 +67,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get full business data
       // get business pending tasks
       const [business, pendingTask] = await Promise.all([
-        legalApi.getBusiness(businessId),
-        legalApi.getPendingTask(businessId, 'filing')
+        businessApi.getBusiness(businessId),
+        businessApi.getPendingTask(businessId, 'filing')
       ])
 
       // set business ref
@@ -97,7 +97,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get current business officers
       const [authInfo, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
-        legalApi.getParties(businessId, { classType: 'officer' })
+        businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
       activeBusinessAuthInfo.value = authInfo

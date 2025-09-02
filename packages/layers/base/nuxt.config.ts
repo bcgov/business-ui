@@ -55,6 +55,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    public: {}
+    public: {
+      businessApiUrl: '',
+      businessApiVersion: ''
+    }
   }
 })
