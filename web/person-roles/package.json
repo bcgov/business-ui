@@ -21,8 +21,6 @@
   },
   "dependencies": {
     "@sbc-connect/nuxt-business-base": "workspace:*",
-    "http-status-codes": "^2.3.0",
-    "luxon": "^3.6.1",
     "nuxt": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
@@ -31,7 +29,6 @@
     "@axe-core/playwright": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
-    "@types/luxon": "^3.6.2",
     "@types/node": "^24.0.10",
     "typescript": "catalog:",
     "vue-tsc": "catalog:"

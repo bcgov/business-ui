@@ -26,6 +26,7 @@
   "dependencies": {
     "@sbc-connect/nuxt-forms": "^0.1.13",
     "@sbc-connect/nuxt-pay": "^0.1.13",
+    "http-status-codes": "^2.3.0",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
