@@ -163,9 +163,9 @@ async function cancelFiling() {
       t('modal.unsavedChanges.description'),
       false,
       [
-        { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
+        { label: t('label.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
         {
-          label: t('btn.exitWithoutSaving'),
+          label: t('label.exitWithoutSaving'),
           size: 'xl',
           onClick: async () => {
             revokeBeforeUnloadEvent()

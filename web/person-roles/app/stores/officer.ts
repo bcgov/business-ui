@@ -33,10 +33,17 @@ export const useOfficerStore = defineStore('officer-store', () => {
       initializing.value = true
       tombstoneStore.loading = true
 
+      // throw error and show modal if invalid business ID
+      if (businessId === 'undefined') {
+        throw createError({ statusCode: 404 })
+      }
+
       // if filing ID provided, get and validate the filing structure, return early if invalid
       if (draftId) {
         try {
-          const { isValid, data } = await businessApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
+          const { isValid, data } = await businessApi.getAndValidateDraftFiling<
+            { changeOfOfficers: OfficerTableState[] }
+          >(
             businessId,
             draftId,
             'changeOfOfficers'
@@ -53,11 +60,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
             'modal.error.getDraftFiling',
             [
               {
-                label: t('btn.goBack'),
+                label: t('label.goBack'),
                 to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
                 variant: 'outline'
               },
-              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+              { label: t('label.refreshPage'), onClick: () => window.location.reload() }
             ]
           )
           return
@@ -83,11 +90,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
           'modal.error.filingNotAllowed',
           [
             {
-              label: t('btn.goBack'),
+              label: t('label.goBack'),
               to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
               variant: 'outline'
             },
-            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
         )
         return
@@ -158,11 +165,11 @@ export const useOfficerStore = defineStore('officer-store', () => {
           ? [{ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
             {
-              label: t('btn.goBack'),
+              label: t('label.goBack'),
               to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
               variant: 'outline'
             },
-            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
       )
     } finally {
