@@ -312,15 +312,19 @@ watch(
     await officerStore.initOfficerStore(businessId, draftId)
 
     // load fees
-    try {
-      const officerFeeCode = 'NOCOI'
-      await feeStore.initFees(
-        [{ code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }],
-        { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
-      )
-      feeStore.addReplaceFee(officerFeeCode)
-    } catch {
+    if (officerStore.activeBusiness.legalType !== undefined) {
+      try {
+        const officerFeeCode = 'NOCOI'
+        await feeStore.initFees(
+          [
+            { code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }
+          ],
+          { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
+        )
+        feeStore.addReplaceFee(officerFeeCode)
+      } catch {
       // do nothing if fee failed
+      }
     }
 
     setBreadcrumbs([
