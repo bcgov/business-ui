@@ -7,40 +7,6 @@ export default {
     added: 'ADDED',
     removed: 'REMOVED'
   },
-  btn: {
-    done: 'Done',
-    cancel: 'Cancel',
-    submit: 'Submit',
-    save: 'Save',
-    saveExit: 'Save and Resume Later',
-    goToBRD: 'Go to Business Registry Dashboard',
-    keepEditing: 'Keep Editing',
-    exitWithoutSaving: 'Exit Without Saving',
-    close: 'Close',
-    goBack: 'Go Back',
-    refreshPage: 'Refresh Page',
-    goToMyBusinessRegistry: 'Go to My Business Registry'
-  },
-  contactInfo: {
-    bcros: {
-      tollFree: {
-        title: 'Toll Free:',
-        value: '1-877-370-1033'
-      },
-      victoriaOffice: {
-        title: 'Victoria Office:',
-        value: '1-250-370-1033'
-      },
-      email: {
-        title: 'Email:',
-        value: "BCRegistries{'@'}gov.bc.ca"
-      },
-      hours: {
-        title: 'Hours of Operation:',
-        value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
-      }
-    }
-  },
   enum: {
     officerRole: {
       CEO: 'Chief Executive Officer',
@@ -57,32 +23,8 @@ export default {
   },
   label: {
     addOfficer: 'Add Officer',
-    name: 'Name',
-    legalName: 'Legal Name',
     roles: 'Roles',
-    firstName: 'First Name',
-    middleNameOpt: 'Middle Name (Optional)',
-    lastName: 'Last Name',
-    preferredNameOpt: 'Preferred Name (Optional)',
-    preferredName: 'Preferred Name',
-    preferredNameColon: 'Preferred Name:',
     haspreferredName: 'This person also has another name they prefer to use',
-    actions: 'Actions',
-    changeName: 'Change Name',
-    changeRoles: 'Change Roles',
-    changeAddress: 'Change Address',
-    undo: 'Undo',
-    remove: 'Remove',
-    moreActions: 'More Actions',
-    edit: 'Edit',
-    change: 'Change',
-    makeChanges: 'Make Changes',
-    myBusinessRegistry: 'My Business Registry',
-    bcRegistriesDashboard: 'BC Registries Dashboard',
-    notEntered: 'Not Entered',
-    notAvailable: 'Not Available',
-    folioNumber: 'Folio or Reference Number',
-    folioNumberOpt: 'Folio or Reference Number (Optional)',
     officerInfo: 'Officer Information',
     officerChange: 'Officer Change'
   },
@@ -182,20 +124,6 @@ export default {
     trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.'
   },
   validation: {
-    required: 'Required',
-    fieldRequired: 'This field is required',
-    minChars: 'Minimum 0 characters | Minimum 1 character | Minimum {count} characters', // 0/1 most likely will never be used but required for pluralization
-    maxChars: 'Maximum 0 characters | Maximum 1 character | Maximum {count} characters', // 0/1 most likely will never be used but required for pluralization
-    address: {
-      country: 'Please select a country',
-      street: 'Please enter a street address',
-      streetName: 'Please enter a street name',
-      streetNumber: 'Please enter a street number',
-      city: 'Please enter a city',
-      region: 'Please select a region',
-      postalCode: 'Please enter a postal code',
-      unitNumber: 'Please enter a unit number'
-    },
     name: {
       first: 'Please enter a first name',
       last: 'Please enter a last name',

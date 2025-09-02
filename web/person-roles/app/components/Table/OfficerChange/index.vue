@@ -137,7 +137,7 @@ const columns: TableColumn<OfficerTableState>[] = [
         h('span', {}, name),
         preferredName
           ? h('div', { class: 'flex flex-col' }, [
-            h('i', { class: 'text-sm italic font-normal' }, t('label.preferredNameColon')),
+            h('i', { class: 'text-sm italic font-normal' }, t('label.preferredName') + ':'),
             h('span', { class: 'text-sm' }, preferredName.toUpperCase())
           ])
           : null,

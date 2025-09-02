@@ -57,7 +57,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       businessApiUrl: '',
-      businessApiVersion: ''
+      businessApiVersion: '',
+      businessDashboardUrl: '',
+      brdUrl: ''
     }
   }
 })

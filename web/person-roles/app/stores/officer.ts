@@ -155,7 +155,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         error,
         'modal.error.initOfficerStore',
         isUnauthorizedOrBusinessNotFound
-          ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+          ? [{ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
             {
               label: t('btn.goBack'),

@@ -7,7 +7,7 @@
             name="i-mdi-phone"
             class="mr-2 size-4 text-blue-350"
           />
-          {{ $t('contactInfo.bcros.tollFree.title') }}
+          {{ $t('contactInfo.tollFree.title') }}
           <a
             class="text-primary underline"
             href="tel:+1-877-526-1526"
@@ -22,7 +22,7 @@
             name="i-mdi-phone"
             class="mr-2 size-4 text-blue-350"
           />
-          {{ $t('contactInfo.bcros.victoriaOffice.title') }}
+          {{ $t('contactInfo.victoriaOffice.title') }}
           <a
             class="text-primary underline"
             href="tel:+1-250-387-7848"
@@ -37,7 +37,7 @@
             name="i-mdi-email"
             class="mr-2 size-4 text-blue-350"
           />
-          {{ $t('contactInfo.bcros.email.title') }}
+          {{ $t('contactInfo.email.title') }}
           <a
             class="text-primary underline"
             href="mailto:bcregistries@gov.bc.ca?subject=BC%20Registries%20Support%20Request"
@@ -50,9 +50,9 @@
     </ul>
 
     <p>
-      <strong>{{ $t('contactInfo.bcros.hours.title') }}</strong>
+      <strong>{{ $t('contactInfo.hours.title') }}</strong>
       <br>
-      {{ $t('contactInfo.bcros.hours.value') }}
+      {{ $t('contactInfo.hours.value') }}
     </p>
   </div>
 </template>

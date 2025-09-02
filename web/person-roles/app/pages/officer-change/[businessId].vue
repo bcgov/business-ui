@@ -280,7 +280,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
 // folio number stuff
 const folioSchema = z.object({
-  number: z.string().max(50, t('validation.maxChars', { count: 50 })).optional()
+  number: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).optional()
 })
 type FolioSchema = z.output<typeof folioSchema>
 const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
@@ -349,14 +349,14 @@ watch(
     setButtonControl({
       leftGroup: {
         buttons: [
-          { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-          { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+          { onClick: () => saveFiling(), label: t('label.save'), variant: 'outline' },
+          { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
         ]
       },
       rightGroup: {
         buttons: [
-          { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-          { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+          { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
+          { onClick: submitFiling, label: t('label.submit'), trailingIcon: 'i-mdi-chevron-right' }
         ]
       }
     })
@@ -404,7 +404,7 @@ watch(
 
     <section class="flex flex-col gap-4">
       <h2 class="text-lg">
-        2. {{ $t('label.folioNumberOpt') }}
+        2. {{ $t('label.folioOrRefNumber') }}
       </h2>
       <p class="-mt-2">
         {{ $t('text.trackFolio') }}
@@ -420,14 +420,14 @@ watch(
         }"
       >
         <ConnectFormFieldWrapper
-          :label="$t('label.folioNumber')"
+          :label="$t('label.folioOrRefNumber')"
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
           <ConnectFormInput
             v-model="officerStore.folio.number"
             name="number"
-            :label="$t('label.folioNumberOpt')"
+            :label="$t('label.folioOrRefNumber')"
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />
