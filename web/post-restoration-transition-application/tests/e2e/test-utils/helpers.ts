@@ -58,10 +58,8 @@ export const mockForIdentifier = async (page: Page, identifier: string) => {
 }
 
 export const impersonateUser = async (page: Page, user: string) => {
-  //set currentAccount and userAccounts
   const userJson = users[user]
-  await page.evaluate(userData => {
-    sessionStorage.setItem('ciAccount', JSON.stringify(userData))
-  }, userJson)
-  await page.reload({ waitUntil: 'domcontentloaded' })
+  await page.route('*/**/api/v1/users/test/settings', async (route) => {
+    await route.fulfill({ json: userJson })
+  })
 }

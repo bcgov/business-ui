@@ -60,8 +60,8 @@ test.describe('Post restoration Transition Application Filing', () => {
   })
 
   test('Invalid', async ({ page }) => {
-    await page.goto(`./en-CA/${identifier}`)
     await impersonateUser(page, 'staff')
+    await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, invalid)
