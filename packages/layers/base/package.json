@@ -24,17 +24,20 @@
     "typecheck": "npx nuxt typecheck"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-forms": "^0.1.13",
-    "@sbc-connect/nuxt-pay": "^0.1.13"
+    "@sbc-connect/nuxt-forms": "^0.1.17",
+    "@sbc-connect/nuxt-pay": "^0.1.17",
+    "http-status-codes": "^2.3.0",
+    "luxon": "^3.6.1"
   },
   "devDependencies": {
-    "nuxt": "catalog:",
-    "vue": "catalog:",
-    "vue-router": "catalog:",
-    "typescript": "catalog:",
-    "vue-tsc": "catalog:",
     "@axe-core/playwright": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
-    "@sbc-connect/vitest-config": "workspace:*"
+    "@sbc-connect/vitest-config": "workspace:*",
+    "@types/luxon": "^3.6.2",
+    "nuxt": "catalog:",
+    "typescript": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:",
+    "vue-tsc": "catalog:"
   }
 }

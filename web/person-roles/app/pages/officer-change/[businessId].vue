@@ -10,15 +10,15 @@ const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
-const modal = useModal()
-const legalApi = useLegalApi()
+const { baseModal, errorModal } = useModal()
+const businessApi = useBusinessApi()
 
 useHead({
   title: t('page.officerChange.title')
 })
 
 definePageMeta({
-  layout: 'form',
+  layout: 'filing',
   middleware: () => {
     // redirect to reg home with return url if user unauthenticated
     const { $connectAuth, $config } = useNuxtApp()
@@ -96,21 +96,21 @@ async function submitFiling() {
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      modal.openBaseErrorModal(
-        undefined,
-        'modal.error.pendingTaskOnSaveOrSubmit'
-      )
+      await errorModal.open({
+        error: undefined,
+        i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
+      })
       return
     }
 
     // format payload
     const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
       officerStore.activeBusiness,
       'changeOfOfficers',
       officerData
@@ -126,7 +126,7 @@ async function submitFiling() {
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling(
+      await businessApi.saveOrUpdateDraftFiling(
         officerStore.activeBusiness.identifier,
         payload,
         true,
@@ -134,7 +134,7 @@ async function submitFiling() {
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling(
+      await businessApi.postFiling(
         officerStore.activeBusiness.identifier,
         payload
       )
@@ -147,10 +147,10 @@ async function submitFiling() {
       { external: true }
     )
   } catch (error) {
-    modal.openBaseErrorModal(
+    await errorModal.open({
       error,
-      'modal.error.submitFiling'
-    )
+      i18nPrefix: 'modal.error.submitFiling'
+    })
   } finally {
     handleButtonLoading(true)
   }
@@ -158,14 +158,14 @@ async function submitFiling() {
 
 async function cancelFiling() {
   if (officerStore.checkHasChanges('save')) {
-    await modal.openBaseModal(
-      t('modal.unsavedChanges.title'),
-      t('modal.unsavedChanges.description'),
-      false,
-      [
-        { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
+    await baseModal.open({
+      title: t('modal.unsavedChanges.title'),
+      description: t('modal.unsavedChanges.description'),
+      dismissible: false,
+      buttons: [
+        { label: t('label.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
         {
-          label: t('btn.exitWithoutSaving'),
+          label: t('label.exitWithoutSaving'),
           size: 'xl',
           onClick: async () => {
             revokeBeforeUnloadEvent()
@@ -175,7 +175,7 @@ async function cancelFiling() {
           }
         }
       ]
-    )
+    })
   } else {
     await navigateTo(
       businessDashboardUrlWithBusinessAndAccount.value,
@@ -218,15 +218,15 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      modal.openBaseErrorModal(
-        undefined,
-        'modal.error.pendingTaskOnSaveOrSubmit'
-      )
+      errorModal.open({
+        error: undefined,
+        i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
+      })
       return
     }
 
@@ -234,7 +234,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // create filing payload
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
       officerStore.activeBusiness,
       'changeOfOfficers',
       { changeOfOfficers: officerTableSnapshot }
@@ -245,7 +245,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
-    const res = await legalApi.saveOrUpdateDraftFiling(
+    const res = await businessApi.saveOrUpdateDraftFiling(
       officerStore.activeBusiness.identifier,
       payload,
       false,
@@ -269,10 +269,10 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       )
     }
   } catch (error) {
-    modal.openBaseErrorModal(
+    errorModal.open({
       error,
-      'modal.error.submitFiling'
-    )
+      i18nPrefix: 'modal.error.submitFiling'
+    })
   } finally {
     handleButtonLoading(true)
   }
@@ -280,7 +280,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
 // folio number stuff
 const folioSchema = z.object({
-  number: z.string().max(50, t('validation.maxChars', { count: 50 })).optional()
+  number: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).optional()
 })
 type FolioSchema = z.output<typeof folioSchema>
 const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
@@ -312,15 +312,19 @@ watch(
     await officerStore.initOfficerStore(businessId, draftId)
 
     // load fees
-    try {
-      const officerFeeCode = 'NOCOI'
-      await feeStore.initFees(
-        [{ code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }],
-        { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
-      )
-      feeStore.addReplaceFee(officerFeeCode)
-    } catch {
+    if (officerStore.activeBusiness.legalType !== undefined) {
+      try {
+        const officerFeeCode = 'NOCOI'
+        await feeStore.initFees(
+          [
+            { code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }
+          ],
+          { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
+        )
+        feeStore.addReplaceFee(officerFeeCode)
+      } catch {
       // do nothing if fee failed
+      }
     }
 
     setBreadcrumbs([
@@ -349,14 +353,14 @@ watch(
     setButtonControl({
       leftGroup: {
         buttons: [
-          { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-          { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+          { onClick: () => saveFiling(), label: t('label.save'), variant: 'outline' },
+          { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
         ]
       },
       rightGroup: {
         buttons: [
-          { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-          { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+          { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
+          { onClick: submitFiling, label: t('label.submit'), trailingIcon: 'i-mdi-chevron-right' }
         ]
       }
     })
@@ -404,7 +408,7 @@ watch(
 
     <section class="flex flex-col gap-4">
       <h2 class="text-lg">
-        2. {{ $t('label.folioNumberOpt') }}
+        2. {{ $t('label.folioOrRefNumber') }}
       </h2>
       <p class="-mt-2">
         {{ $t('text.trackFolio') }}
@@ -420,14 +424,14 @@ watch(
         }"
       >
         <ConnectFormFieldWrapper
-          :label="$t('label.folioNumber')"
+          :label="$t('label.folioOrRefNumber')"
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
           <ConnectFormInput
             v-model="officerStore.folio.number"
             name="number"
-            :label="$t('label.folioNumberOpt')"
+            :label="$t('label.folioOrRefNumber')"
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />

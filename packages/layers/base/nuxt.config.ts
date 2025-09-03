@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-08-25',
 
   imports: {
-    dirs: ['interfaces', 'types', 'enums']
+    dirs: ['interfaces', 'types', 'enums', 'stores']
   },
 
   typescript: {
@@ -55,6 +55,11 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    public: {}
+    public: {
+      businessApiUrl: '',
+      businessApiVersion: '',
+      businessDashboardUrl: '',
+      brdUrl: ''
+    }
   }
 })

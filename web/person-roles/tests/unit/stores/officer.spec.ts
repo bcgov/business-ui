@@ -12,7 +12,7 @@ const mockLegalApi = {
 const mockAuthApi = {
   getAuthInfo: vi.fn()
 }
-mockNuxtImport('useLegalApi', () => () => mockLegalApi)
+mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
 mockNuxtImport('useAuthApi', () => () => mockAuthApi)
 
 const mockModal = {

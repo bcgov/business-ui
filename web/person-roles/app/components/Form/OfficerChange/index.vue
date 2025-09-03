@@ -69,10 +69,10 @@ const roleSchema = z.object({
 })
 
 const schema = z.object({
-  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
-  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
-  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
-  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).default(''),
+  firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
+  middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
+  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 })),
+  preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
   mailingAddress: getNonRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
@@ -450,14 +450,14 @@ function clearUnfinishedTaskMsg() {
           </p>
           <div class="flex gap-6 justify-end">
             <UButton
-              :label="$t('btn.cancel')"
+              :label="$t('label.cancel')"
               variant="outline"
               size="xl"
               @click="$emit('cancel')"
             />
             <UButton
               id="btn-officer-form-done"
-              :label="$t('btn.done')"
+              :label="$t('label.done')"
               type="submit"
               class="font-bold"
               size="xl"

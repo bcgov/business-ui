@@ -1,17 +1,16 @@
 import type { ExpandedState, Row } from '@tanstack/vue-table'
 import { isEqual } from 'es-toolkit'
 import { isEmpty } from 'es-toolkit/compat'
-import { FetchError } from 'ofetch'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
   const rtc = useRuntimeConfig().public
-  const modal = useModal()
-  const legalApi = useLegalApi()
+  const { errorModal } = useModal()
+  const businessApi = useBusinessApi()
   const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
-  const detailsHeaderStore = useConnectDetailsHeaderStore()
+  const tombstoneStore = useBusinessTombstoneStore()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
@@ -31,12 +30,19 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      detailsHeaderStore.loading = true
+      tombstoneStore.loading = true
+
+      // throw error and show modal if invalid business ID
+      if (businessId === 'undefined') {
+        throw createError({ statusCode: 404 })
+      }
 
       // if filing ID provided, get and validate the filing structure, return early if invalid
       if (draftId) {
         try {
-          const { isValid, data } = await legalApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
+          const { isValid, data } = await businessApi.getAndValidateDraftFiling<
+            { changeOfOfficers: OfficerTableState[] }
+          >(
             businessId,
             draftId,
             'changeOfOfficers'
@@ -48,18 +54,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
             folio.number = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
-          modal.openBaseErrorModal(
+          errorModal.open({
             error,
-            'modal.error.getDraftFiling',
-            [
+            i18nPrefix: 'modal.error.getDraftFiling',
+            buttons: [
               {
-                label: t('btn.goBack'),
+                label: t('label.goBack'),
                 to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
                 variant: 'outline'
               },
-              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+              { label: t('label.refreshPage'), onClick: () => window.location.reload() }
             ]
-          )
+          })
           return
         }
       }
@@ -67,8 +73,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get full business data
       // get business pending tasks
       const [business, pendingTask] = await Promise.all([
-        legalApi.getBusiness(businessId),
-        legalApi.getPendingTask(businessId, 'filing')
+        businessApi.getBusiness(businessId),
+        businessApi.getPendingTask(businessId, 'filing')
       ])
 
       // set business ref
@@ -78,18 +84,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
       if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
-        modal.openBaseErrorModal(
-          undefined,
-          'modal.error.filingNotAllowed',
-          [
+        errorModal.open({
+          error: undefined,
+          i18nPrefix: 'modal.error.filingNotAllowed',
+          buttons: [
             {
-              label: t('btn.goBack'),
+              label: t('label.goBack'),
               to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
               variant: 'outline'
             },
-            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
-        )
+        })
         return
       }
 
@@ -97,23 +103,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get current business officers
       const [authInfo, parties] = await Promise.all([
         authApi.getAuthInfo(businessId),
-        legalApi.getParties(businessId, { classType: 'officer' })
+        businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
       activeBusinessAuthInfo.value = authInfo
       // set masthead data
-      const contact = authInfo.contacts[0]
-      const ext = contact?.extension || contact?.phoneExtension
-      const phoneLabel = ext ? `${contact?.phone || ''} Ext: ${ext}` : contact?.phone || t('label.notAvailable')
-
-      detailsHeaderStore.title = { el: 'span', text: business.legalName }
-      detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-      detailsHeaderStore.sideDetails = [
-        { label: t('label.businessNumber'), value: business.taxId ?? t('label.notAvailable') },
-        { label: t('label.incorporationNumber'), value: business.identifier },
-        { label: t('label.email'), value: contact?.email || t('label.notAvailable') },
-        { label: t('label.phone'), value: phoneLabel }
-      ]
+      tombstoneStore.setFilingDefault(business, authInfo)
 
       // map current/existing officers
       const officers = parties.map((p) => {
@@ -158,26 +153,23 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       }))
     } catch (error) {
-      const status = error instanceof FetchError
-        ? error.response?.status
-        : undefined
+      const status = getErrorStatus(error)
       const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
-      modal.openBaseErrorModal(
+      errorModal.open({
         error,
-        'modal.error.initOfficerStore',
-        isUnauthorizedOrBusinessNotFound
-          ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
+        i18nPrefix: 'modal.error.initOfficerStore',
+        buttons: isUnauthorizedOrBusinessNotFound
+          ? [{ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
             {
-              label: t('btn.goBack'),
+              label: t('label.goBack'),
               to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
               variant: 'outline'
             },
-            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
+            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
-      )
+      })
     } finally {
-      detailsHeaderStore.loading = false
       initializing.value = false
     }
   }
