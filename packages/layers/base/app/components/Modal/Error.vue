@@ -3,17 +3,19 @@
 const { t, te } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
 
+interface ErrorModalProps {
+  error: unknown
+  i18nPrefix: string
+  buttons?: ConnectModalButton[]
+}
+
 const {
   error,
   i18nPrefix,
   buttons = [
     { label: useNuxtApp().$i18n.t('label.close'), shouldClose: true }
   ]
-} = defineProps<{
-  error?: unknown
-  i18nPrefix: string
-  buttons?: ModalButtonProps[]
-}>()
+} = defineProps<ErrorModalProps>()
 defineEmits<{ close: [] }>()
 
 const status = getErrorStatus(error)

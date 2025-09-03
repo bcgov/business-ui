@@ -7,7 +7,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
   const rtc = useRuntimeConfig().public
-  const modal = useModal()
+  const { errorModal } = useModal()
   const businessApi = useBusinessApi()
   const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
@@ -55,10 +55,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
             folio.number = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
-          modal.openBaseErrorModal(
+          errorModal.open({
             error,
-            'modal.error.getDraftFiling',
-            [
+            i18nPrefix: 'modal.error.getDraftFiling',
+            buttons: [
               {
                 label: t('label.goBack'),
                 to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
@@ -66,7 +66,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
               },
               { label: t('label.refreshPage'), onClick: () => window.location.reload() }
             ]
-          )
+          })
           return
         }
       }
@@ -85,10 +85,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
       if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
-        modal.openBaseErrorModal(
-          undefined,
-          'modal.error.filingNotAllowed',
-          [
+        errorModal.open({
+          error: undefined,
+          i18nPrefix: 'modal.error.filingNotAllowed',
+          buttons: [
             {
               label: t('label.goBack'),
               to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
@@ -96,7 +96,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             },
             { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
-        )
+        })
         return
       }
 
@@ -156,10 +156,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
     } catch (error) {
       const status = getErrorStatus(error)
       const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
-      modal.openBaseErrorModal(
+      errorModal.open({
         error,
-        'modal.error.initOfficerStore',
-        isUnauthorizedOrBusinessNotFound
+        i18nPrefix: 'modal.error.initOfficerStore',
+        buttons: isUnauthorizedOrBusinessNotFound
           ? [{ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
           : [
             {
@@ -169,7 +169,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             },
             { label: t('label.refreshPage'), onClick: () => window.location.reload() }
           ]
-      )
+      })
     } finally {
       initializing.value = false
     }
