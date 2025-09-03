@@ -12,8 +12,8 @@ defaults:
     working-directory: "./web/person-roles"
 
 jobs:
-  business-people-cd:
-    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
+  business-people-ui-ci:
+    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@main 
     with:
       app_name: "business-people"
       working_directory: "./web/person-roles"
