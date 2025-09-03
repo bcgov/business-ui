@@ -1,5 +1,11 @@
 # @sbc-connect/playwright-config
 
+## 0.0.10
+
+### Patch Changes
+
+- [#220](https://github.com/bcgov/business-ui/pull/220) [`c0a0515`](https://github.com/bcgov/business-ui/commit/c0a0515e9b62bd9150206c9ea81429add6a28d97) Thanks [@deetz99](https://github.com/deetz99)! - Refactor all person-roles common components, interfaces, composables, utils, etc into business layer. issue: bcgov/entity#29341
+
 ## 0.0.9
 
 ### Patch Changes
