@@ -44,8 +44,8 @@ const saveError = ref('')
     >
       <DateInput
         :id="name + '_id'"
-        :data-testid="id"
         v-model="selectedValue"
+        :data-testid="id"
         :readonly
         :label="label"
         :max-date="maxDate"

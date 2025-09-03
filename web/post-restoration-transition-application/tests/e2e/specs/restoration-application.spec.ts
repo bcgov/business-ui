@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
-import enI18n from '~~/i18n/locales/en-CA'
 import { mockForIdentifier } from '../test-utils/helpers'
+import enI18n from '~~/i18n/locales/en-CA'
 
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'

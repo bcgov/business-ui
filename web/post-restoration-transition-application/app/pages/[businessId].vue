@@ -73,7 +73,6 @@ definePageMeta({
     // redirect to reg home with return url if user unauthenticated
     const { $keycloak, $config } = useNuxtApp()
     if (useRuntimeConfig().public.ci) {
-      
       $keycloak.tokenParsed = {
         firstname: 'TestFirst',
         lastname: 'TestLast',
@@ -89,11 +88,9 @@ definePageMeta({
       const account = useConnectAccountStore()
       const { currentAccount, userAccounts } = storeToRefs(account)
       const resp = await account.getUserAccounts('test')
-      console.log('mock account', resp, resp?.[0])
       if (resp && resp[0]) {
         Object.assign(currentAccount.value, resp[0])
         Object.assign(userAccounts.value, resp)
-        console.log('did the mocking')
       }
     } else if (!$keycloak.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)
@@ -287,12 +284,12 @@ const verify = (verifyMethod: (args) => void, args) => {
 
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
-  { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline'},
-  { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline'}
+  { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+  { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
 ]
 const rightButtons = [
-  { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline'},
-  { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right'}
+  { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+  { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
 ]
 
 leftButtons[0]['data-testid'] = 'save-button'
