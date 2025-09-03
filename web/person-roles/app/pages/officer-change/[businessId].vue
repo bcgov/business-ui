@@ -376,7 +376,7 @@ watch(
 
 // TODO: remove this
 onMounted(() => {
-  console.info('this should be removed')
+  console.info('this should be removed!')
 })
 </script>
 
