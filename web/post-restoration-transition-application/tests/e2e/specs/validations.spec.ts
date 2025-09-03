@@ -62,12 +62,34 @@ test.describe('Post restoration Transition Application Filing', () => {
   })
 
   test('Invalid', async ({ page }) => {
-    await impersonateUser(page, 'staff')
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, invalid)
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+  })
+
+  test('Staff, Pay Section', async({ page }) => {
+    await impersonateUser(page, 'staff')
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await fill(page, valid)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
+
+    await page.getByRole('radio').getByText('Cash or Cheque').click()
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
+
+    await page.getByRole('radio').getByText('BC Online').click()
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(6)
+
+    await page.getByRole('radio').getByText('No Fee').click()
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
   })
