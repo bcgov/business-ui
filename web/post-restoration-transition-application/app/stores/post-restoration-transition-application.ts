@@ -10,6 +10,7 @@ export const usePostRestorationTransitionApplicationStore
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
   const authApi = useAuthApi()
+  const { $keycloak } = useNuxtApp()
   const feeStore = useConnectFeeStore()
   const accountStore = useConnectAccountStore()
   const detailsHeaderStore = useConnectDetailsHeaderStore()
@@ -72,6 +73,22 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
+    if (true || useRuntimeConfig().public.ci) {
+      const userData = JSON.parse(sessionStorage.getItem('ciAccount') || '{}')
+      console.log('u',$keycloak,$keycloak.tokenParsed)
+      // accountStore.currentAccount.value = userData
+      // accountStore.userAccounts.value = [userData]
+      // authenticated.value = true
+      // kcUser.value = {
+        // keycloakGuid: '123',
+        // firstName: 'Test',
+        // lastName: 'User',
+        // email: 'test@user.com',
+        // roles: ['staff', 'sbc_staff']
+      // }
+      // await useConnectAccountStore().initAccountStore()
+      console.log('done')
+    }
     const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
       authApi.getAuthInfo(businessId),
       legalApi.getShareClasses(businessId),

@@ -246,6 +246,7 @@ const addedShare = () => {
     </p>
     <UButton
       :aria-label="$t('label.addShare')"
+      data-testid="add-share-button"
       :label="$t('label.addShare')"
       :ui="{
         label: 'align-top leading-[19px]'

@@ -329,6 +329,7 @@ const cleanData = () => {
             >
               <USelect
                 v-model="shareValues.currency"
+                data-testid="currency-select"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
                 class="p-[18px] w-full pl-2"
