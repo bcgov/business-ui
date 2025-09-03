@@ -1,7 +1,7 @@
 {
   "name": "@sbc-connect/vitest-config",
   "type": "module",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "repository": "github:bcgov/business-ui",
   "main": "./vitest.config.ts",
   "private": true,
