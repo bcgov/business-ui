@@ -373,6 +373,11 @@ watch(
   },
   { immediate: true }
 )
+
+// TODO: remove this
+onMounted(() => {
+  console.info('this should be removed')
+})
 </script>
 
 <template>
