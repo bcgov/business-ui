@@ -365,8 +365,8 @@ export default {
           },
           fields: {
             name: {
-              arialabel: 'Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
-              placeholder: 'Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
+              arialabel: 'Proprietor or Partner Name (e.g., Last Name, First Name, Middle Name)',
+              placeholder: 'Proprietor or Partner Name (e.g., Last Name, First Name, Middle Name)',
               help: 'Name as it appears on the Business Summary or the Statement of Registration',
               error: {
                 required: 'Proprietor or Partner Name is required',
@@ -463,8 +463,8 @@ export default {
         },
         firm: {
           401: {
-            title: 'Invalid Proprietor or Partner Name (e.g., Last Name, First Name Middlename)',
-            description: 'Unable to add the business. The provided proprietor or partner name (e.g., last name, first name middlename) is invalid.'
+            title: 'Invalid Proprietor or Partner Name (e.g., Last Name, First Name, Middle Name)',
+            description: 'Unable to add the business. The provided proprietor or partner name (e.g., last name, first name, middle name) is invalid.'
           },
           404: {
             title: 'Business Not Found',
