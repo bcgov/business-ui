@@ -5,7 +5,7 @@ const accountStore = useConnectAccountStore()
 <template>
   <div
     class="app-container"
-    data-testid="form-layout"
+    data-testid="filing-layout"
   >
     <ConnectHeaderAuth />
     <ConnectSystemBanner />
@@ -14,7 +14,7 @@ const accountStore = useConnectAccountStore()
         ? String(accountStore.currentAccount.id)
         : undefined"
     />
-    <BCRegTombstone />
+    <ConnectTombstone state-key="business-filing-tombstone" data-testid="business-filing-tombstone" />
     <main class="app-body px-2 sm:px-4">
       <div class="flex flex-col lg:flex-row lg:gap-6 grow app-inner-container">
         <div class="grow max-w-full overflow-hidden">

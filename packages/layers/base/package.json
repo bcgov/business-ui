@@ -24,8 +24,8 @@
     "typecheck": "npx nuxt typecheck"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-forms": "^0.1.19",
-    "@sbc-connect/nuxt-pay": "^0.1.19",
+    "@sbc-connect/nuxt-forms": "^0.1.21",
+    "@sbc-connect/nuxt-pay": "^0.1.21",
     "http-status-codes": "^2.3.0",
     "luxon": "^3.6.1"
   },
