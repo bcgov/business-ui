@@ -9,6 +9,8 @@
       "shareClassName": "Test Shares",
       "shareParValueCurrency": "CAD",
       "shareParValue": 1,
+      "shareHasParValue": true,
+      "shareHasMaxShares": true,
       "shareMax": 1000000,
       "shareColumnRightsRestrictions": false
     }

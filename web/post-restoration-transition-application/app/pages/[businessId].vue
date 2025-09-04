@@ -91,6 +91,7 @@ definePageMeta({
       if (resp && resp[0]) {
         Object.assign(currentAccount.value, resp[0])
         Object.assign(userAccounts.value, resp)
+        $keycloak.authenticated = true
       }
     } else if (!$keycloak.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)

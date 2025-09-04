@@ -233,6 +233,7 @@ const cleanData = () => {
         <div class="flex">
           <URadioGroup
             v-model="hasNoMaxShares"
+            data-testid="maxShares-radio"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
@@ -273,6 +274,7 @@ const cleanData = () => {
         </div>
         <URadioGroup
           v-model="hasNoMaxShares"
+          data-testid="noMaxShares-radio"
           :items="[$t('label.noMax')]"
           :ui="{
             label: 'text-base'
@@ -285,6 +287,7 @@ const cleanData = () => {
         <div class="flex">
           <URadioGroup
             v-model="hasNoParValue"
+            data-testid="parValue-radio"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
@@ -342,6 +345,7 @@ const cleanData = () => {
         <div>
           <URadioGroup
             v-model="hasNoParValue"
+            data-testid="noParValue-radio"
             :items="[$t('label.noPar')]"
             :ui="{
               label: 'text-base'

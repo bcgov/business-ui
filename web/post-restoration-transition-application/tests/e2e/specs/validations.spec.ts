@@ -36,6 +36,16 @@ const fill = async (page: Page, values: object) => {
   for (let i = 0; i < values.shares.length; i++) {
     await page.getByTestId('add-share-button').click()
     await page.locator('input[placeholder="Class Name [Shares]"]').first().fill(values.shares[i].shareClassName)
+    if (values.shares[i].shareHasParValue) {
+      await page.getByTestId('parValue-radio').click()
+    } else {
+      await page.getByTestId('noParValue-radio').click()
+    }
+    if (values.shares[i].shareHasMaxShares) {
+      await page.getByTestId('maxShares-radio').click()
+    } else {
+      await page.getByTestId('noMaxShares-radio').click()
+    }
     await page.locator('input[placeholder="Maximum Number of Shares"]')
       .first().fill(values.shares[i].shareMax.toString())
     await page.locator('input[placeholder="Par Value"]').first().fill(values.shares[i].shareParValue.toString())
@@ -77,20 +87,20 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, valid)
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await expect(page.locator('p.text-red-600').getByText('Payment')).toHaveCount(1)
 
-    await page.getByRole('radio').getByText('Cash or Cheque').click()
+    await page.locator('[aria-label="Cash or Cheque"]').click()
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(5)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(1)
 
-    await page.getByRole('radio').getByText('BC Online').click()
+    await page.locator('[aria-label="BC Online"]').click()
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(6)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
 
-    await page.getByRole('radio').getByText('No Fee').click()
+    await page.locator('[aria-label="No Fee"]').click()
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
   })
 })
