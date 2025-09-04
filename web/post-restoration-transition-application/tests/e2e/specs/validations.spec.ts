@@ -81,7 +81,7 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
   })
 
-  test('Staff, Pay Section', async({ page }) => {
+  test('Staff, Pay Section', async ({ page }) => {
     await impersonateUser(page, 'staff')
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
