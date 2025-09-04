@@ -1,5 +1,4 @@
 import type { Page } from '@playwright/test'
-
 import { TRANP } from '../../mocks/pay/fee'
 
 import * as entities from '../../mocks/auth/entities'
@@ -48,6 +47,7 @@ export const mockForIdentifier = async (page: Page, identifier: string) => {
   await page.route(`*/**/businesses/${identifier}/parties?type=director`, async (route) => {
     await route.fulfill({ json: director })
   })
+
   await page.route(`*/**/fees/**/TRANP`, async (route) => {
     await route.fulfill({ json: TRANP })
   })
