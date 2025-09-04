@@ -8,7 +8,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const rtc = useRuntimeConfig().public
   const { errorModal } = useModal()
   const businessApi = useBusinessApi()
-  const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
 
@@ -102,7 +101,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get business auth info for masthead
       // get current business officers
       const [authInfo, parties] = await Promise.all([
-        authApi.getAuthInfo(businessId),
+        businessApi.getAuthInfo(businessId),
         businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
