@@ -27,7 +27,7 @@ const hasError = computed(() => {
         v-model="certified"
         name="certification"
         :disabled="isDisabled"
-        data-test="certify-section-checkbox"
+        data-testid="certify-section-checkbox"
         @update:model-value="(newVal) => {
           errorsStore.verifyCertify({ certified: newVal, name: filingStore.legalName })
         }"

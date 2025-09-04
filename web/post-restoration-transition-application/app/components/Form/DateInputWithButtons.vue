@@ -45,6 +45,7 @@ const saveError = ref('')
       <DateInput
         :id="name + '_id'"
         v-model="selectedValue"
+        :data-testid="id"
         :readonly
         :label="label"
         :max-date="maxDate"
@@ -56,6 +57,7 @@ const saveError = ref('')
   <div class="flex flex-row mt-2 space-x-4 float-end mb-2">
     <UButton
       :label="!!hasErrors ? $t('label.done') : $t('label.save')"
+      :data-testid="id + '_save'"
       :padded="false"
       class="rounded text-base pt-[11px] pb-[11px]"
       color="primary"
