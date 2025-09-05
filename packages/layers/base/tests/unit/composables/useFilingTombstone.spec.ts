@@ -119,10 +119,12 @@ describe('useFilingTombstone', () => {
     expect(phoneDetail?.value).toBe('555-333-4444 Ext: 123')
   })
 
-  it('sets loading to false when finished loading', () => {
+  it('sets loading to false when finished setting defaults', () => {
     const { setFilingDefault, filingTombstone } = useFilingTombstone()
 
-    filingTombstone.value.loading = false
+    filingTombstone.value.loading = true
+
+    expect(filingTombstone.value.loading).toBe(true)
 
     setFilingDefault(mockBusiness, mockAuthInfo)
 
