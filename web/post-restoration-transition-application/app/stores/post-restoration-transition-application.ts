@@ -119,6 +119,9 @@ export const usePostRestorationTransitionApplicationStore
       if (resolutions.resolutions?.length > 0) {
         articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
       }
+      if (business.foundingDate) {
+        articles.value.incorpDate = business.foundingDate
+      }
     } catch (error) {
       const modal = useModal()
       modal.openBaseErrorModal(

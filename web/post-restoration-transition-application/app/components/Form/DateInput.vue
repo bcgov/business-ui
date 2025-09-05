@@ -4,7 +4,8 @@ const emit = defineEmits(['change'])
 
 const {
   maxlength = '1000',
-  readonly = false
+  readonly = false,
+  focusOut = false
 } = defineProps<{
   id: string
   label: string
@@ -15,8 +16,10 @@ const {
   minDate?: string
   maxDate?: string
   readonly?: boolean
+  focusOut?: boolean
 }>()
 
+const firstFocus = ref(true)
 const showDatePicker = ref(false)
 const updateDate = (date: string) => {
   displayDate.value = fromIsoToUsDateFormat(date)?.toString() || ''
@@ -49,6 +52,11 @@ const blurInputHandler = () => {
 }
 
 const focusInHandler = () => {
+  if (firstFocus.value && focusOut) {
+    firstFocus.value = false
+    return
+  }
+
   showDatePicker.value = true
   return !readonly
 }

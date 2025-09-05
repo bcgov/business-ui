@@ -19,6 +19,9 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
+const modalDate = ref<string | undefined>(undefined)
+const pickDateModalOpen = ref<boolean>(false)
+
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
     return false
@@ -129,6 +132,9 @@ const {
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
   errorStore.verifyArticles(articles.value)
+  if (newVal && hasArticlesErrors.value) {
+    pickDateModalOpen.value = true
+  }
 })
 
 const anyExpanded = ref(false)
@@ -307,6 +313,16 @@ const closeDateandValidate = () => {
   showDateInputBox.value = false
   validate()
 }
+
+const saveModalDate = async () => {
+  articles.value.currentDate = modalDate.value
+  errorStore.verifyArticles(articles.value)
+  if (hasArticlesErrors.value) {
+    articles.value.currentDate = ''
+    return
+  }
+  pickDateModalOpen.value = false
+}
 </script>
 
 <template>
@@ -314,6 +330,62 @@ const closeDateandValidate = () => {
   <!-- z-10 lg:shadow-sm bg-midnightBlue-900 divide-bcGovGray-300 justify-between -->
   <!-- border-b border-t border-bcGovGray-300 border-gray-300 ml-[5px] -->
   <div class="py-10 space-y-10">
+    <UModal
+      :open="pickDateModalOpen"
+      class="overflow-visible"
+    >
+      <template #content>
+        <div class="p-10 flex flex-col gap-6">
+          <div
+            role="alert"
+            class="flex flex-col gap-6 text-left"
+          >
+            <h2 class="text-2xl font-semibold text-bcGovColor-darkGray">
+              {{ $t('label.resolutionOrCourtOrderDate') }}
+            </h2>
+            <p class="text-sm">
+              {{ $t('text.sharesDescription') }}
+            </p>
+          </div>
+          <div>
+            <UFormField
+              :error="articlesErrors?.currentDate?.[0] !== 'errors.articles'
+                && $te(articlesErrors?.currentDate?.[0])
+                ? $t(articlesErrors?.currentDate?.[0],
+                     {
+                       incorpDate: fromIsoToUsDateFormat(new Date(articles.incorpDate).toISOString()),
+                       today: fromIsoToUsDateFormat(new Date().toISOString())
+                     }
+                )
+                : ''"
+            >
+              <FormDateInput
+                id="modal-date-input"
+                v-model="modalDate"
+                :focus-out="true"
+                :readonly="true"
+                :label="$t('label.resolutionOrCourtOrderDate')"
+                :max-date="new Date().toISOString()"
+                :min-date="articles.incorpDate ? new Date(articles.incorpDate).toISOString() : undefined"
+              />
+            </UFormField>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-4">
+            <UButton
+              @click="pickDateModalOpen = false"
+            >
+              Cancel
+            </UButton>
+            <UButton
+              @click="saveModalDate()"
+            >
+              Done
+            </UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
+
     <section>
       <h1 class="mb-2">
         {{ $t('transitionApplication.title') }}
