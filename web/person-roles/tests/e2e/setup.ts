@@ -33,6 +33,10 @@ async function globalSetup() {
     throw new Error(`Server at ${baseUrl} did not become ready within the timeout period.`)
   }
 
+  if (process.env.CI) {
+    return
+  }
+
   // launch browser and create page context
   const browser: Browser = await chromium.launch()
   const context = await browser.newContext()

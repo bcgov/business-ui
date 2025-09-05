@@ -303,6 +303,7 @@ function clearUnfinishedTaskMsg() {
 <template>
   <UForm
     ref="officer-form"
+    data-testid="officer-form"
     :state
     :schema="schema"
     class="bg-white p-6"
@@ -328,27 +329,31 @@ function clearUnfinishedTaskMsg() {
           <ConnectFieldset
             :label="$t('label.legalName')"
             :error="formErrors.name"
+            data-testid="fieldset-name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
               <ConnectFormInput
                 v-model="state.firstName"
+                data-testid="form-group-first-name"
                 name="firstName"
-                input-id="first-name"
+                input-id="first-name-input"
                 :label="$t('label.firstName')"
                 autofocus
               />
 
               <ConnectFormInput
                 v-model="state.middleName"
+                data-testid="form-group-middle-name"
                 name="middleName"
-                input-id="middle-name"
+                input-id="middle-name-input"
                 :label="$t('label.middleNameOpt')"
               />
 
               <ConnectFormInput
                 v-model="state.lastName"
+                data-testid="form-group-last-name"
                 name="lastName"
-                input-id="last-name"
+                input-id="last-name-input"
                 required
                 :label="$t('label.lastName')"
               />
@@ -367,10 +372,11 @@ function clearUnfinishedTaskMsg() {
               class="grow flex-1"
               :label="$t('label.preferredName')"
               :ui="{ label: 'mb-3.5' }"
+              data-testid="form-group-preferred-name"
             >
               <template #default="{ error }">
                 <ConnectInput
-                  id="preferred-name"
+                  id="preferred-name-input"
                   v-model="state.preferredName"
                   :invalid="!!error"
                   :label="$t('label.preferredNameOpt')"

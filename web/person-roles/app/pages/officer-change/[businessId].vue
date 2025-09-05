@@ -22,7 +22,7 @@ definePageMeta({
   middleware: () => {
     // redirect to reg home with return url if user unauthenticated
     const { $connectAuth, $config } = useNuxtApp()
-    if (!$connectAuth.authenticated) {
+    if (!$connectAuth.authenticated && !$config.public.ci) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
         `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
@@ -416,6 +416,7 @@ watch(
 
       <UForm
         ref="folio-form"
+        data-testid="folio-form"
         :state="officerStore.folio"
         :schema="folioSchema"
         class="bg-white p-6 rounded-sm shadow-sm"
@@ -430,8 +431,9 @@ watch(
         >
           <ConnectFormInput
             v-model="officerStore.folio.number"
+            data-testid="form-field-folio-number"
             name="number"
-            :label="$t('label.folioOrRefNumber')"
+            :label="$t('label.folioOrRefNumberOpt')"
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />
