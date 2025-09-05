@@ -132,6 +132,7 @@ export default {
   },
   errors: {
     articles: 'You must add a date because you changed your share structure and it contains a class or series of shares with special rights or restrictions.',
+    articlesDateRange: 'Please enter a date between {incorpDate} and {today}.',
     currency: 'Currency is required, when has par value is selected',
     email: 'Valid email is required',
     maxLength30: 'Maximum 30 characters',
