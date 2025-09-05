@@ -5,6 +5,7 @@ scripts
 .eslintrc
 app/tests
 vitest.config.ts
+playwright.config.ts
 tests
 eslint.config.ts
 tsconfig.json

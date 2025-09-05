@@ -1,5 +1,5 @@
 export const useBusinessApi = () => {
-  const { $businessApi } = useNuxtApp()
+  const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
 
@@ -209,7 +209,16 @@ export const useBusinessApi = () => {
     return response.parties
   }
 
+  /**
+   * Fetches the auth info of the given business.
+   * @returns a promise to return the data
+   */
+  async function getAuthInfo(businessId: string): Promise<AuthInformation> {
+    return $authApi(`/entities/${businessId}`)
+  }
+
   return {
+    // business api queries
     getFilingById,
     deleteFilingById,
     postFiling,
@@ -219,6 +228,8 @@ export const useBusinessApi = () => {
     getTasks,
     getPendingTask,
     getAndValidateDraftFiling,
-    createFilingPayload
+    createFilingPayload,
+    // auth/entity queries
+    getAuthInfo
   }
 }

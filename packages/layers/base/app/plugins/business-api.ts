@@ -1,10 +1,13 @@
+import type { $Fetch } from 'ofetch'
+
 export default defineNuxtPlugin((nuxtApp) => {
   const rtc = nuxtApp.$config.public
   const businessApiUrl = rtc.businessApiUrl + rtc.businessApiVersion
   const appName = rtc.appName
   const xApiKey = rtc.xApiKey
 
-  const api = $fetch.create({
+  // $fetch not being recognized
+  const api = ($fetch as $Fetch).create({
     baseURL: businessApiUrl,
     async onRequest({ options }) {
       const auth = useConnectAuth()
