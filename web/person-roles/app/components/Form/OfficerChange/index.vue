@@ -417,6 +417,7 @@ function clearUnfinishedTaskMsg() {
         <ConnectFieldset
           :label="$t('label.deliveryAddress')"
           :error="formErrors.delivery"
+          data-testid="delivery-address-fieldset"
         >
           <ConnectFormAddress
             id="delivery-address"
@@ -430,6 +431,7 @@ function clearUnfinishedTaskMsg() {
         <ConnectFieldset
           :label="$t('label.mailingAddress')"
           :error="formErrors.mailing"
+          data-testid="mailing-address-fieldset"
         >
           <UCheckbox
             v-model="state.sameAsDelivery"
