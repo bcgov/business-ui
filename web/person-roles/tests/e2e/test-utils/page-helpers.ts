@@ -7,6 +7,10 @@ import { provinceSubdivisions } from './data'
 type Person = ReturnType<typeof getFakePerson>
 type PersonLastNameRequired = Partial<Person> & Pick<Person, 'lastName'>
 
+export function getOfficerForm(page: Page) {
+  return page.getByTestId('officer-form')
+}
+
 export async function setupOfficerChangePage(page: Page) {
   const identifier = 'BC1234567'
   // auth api business info GET
