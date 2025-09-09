@@ -372,11 +372,13 @@ const saveModalDate = async () => {
           </div>
           <div class="flex flex-wrap items-center justify-center gap-4">
             <UButton
+              data-testid="modal-date-cancel"
               @click="pickDateModalOpen = false"
             >
               Cancel
             </UButton>
             <UButton
+              data-testid="modal-date-done"
               @click="saveModalDate()"
             >
               Done
