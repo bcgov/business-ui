@@ -119,6 +119,14 @@ export async function completeOfficerForm(
   cancel: boolean = false
 ) {
   const form = page.getByTestId('officer-form')
+
+  // reset all roles before continuing
+  const rolesFieldset = page.locator('fieldset').filter({ hasText: 'Roles' })
+  const checkedCheckboxes = await rolesFieldset.getByRole('checkbox', { checked: true }).all()
+  for (const checkbox of checkedCheckboxes) {
+    await checkbox.setChecked(false)
+  }
+
   // fill out name fields
   await fillNameFields(page, person)
   // select roles
@@ -147,7 +155,8 @@ export async function completeOfficerForm(
 export async function assertNameTableCell(
   page: Page,
   person: PersonLastNameRequired,
-  badges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>
+  badges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>,
+  notBadges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>
 ) {
   const row = getTableRowForPerson(page, person)
   const tableCell = row.getByRole('cell').first()
@@ -167,6 +176,11 @@ export async function assertNameTableCell(
   if (badges) {
     for (const badge of badges) {
       await expect(tableCell).toContainText(badge)
+    }
+  }
+  if (notBadges) {
+    for (const badge of notBadges) {
+      await expect(tableCell).not.toContainText(badge)
     }
   }
 }
@@ -192,8 +206,10 @@ export async function assertAddress(
   } else {
     await expect(row.getByRole('cell').nth(column)).toContainText(address.street)
     await expect(row.getByRole('cell').nth(column)).toContainText(address.city)
-    const region = provinceSubdivisions.find(province => province.name === address.region)
-    await expect(row.getByRole('cell').nth(column)).toContainText(region!.code)
+    const region = address.region.length === 2 // dont convert if region already in iso2 format
+      ? address.region
+      : provinceSubdivisions.find(province => province.name === address.region)!.code
+    await expect(row.getByRole('cell').nth(column)).toContainText(region)
     await expect(row.getByRole('cell').nth(column)).toContainText(address.postalCode)
     await expect(row.getByRole('cell').nth(column)).toContainText('Canada')
     await expect(row.getByRole('cell').nth(column)).toContainText(address.locationDescription)
