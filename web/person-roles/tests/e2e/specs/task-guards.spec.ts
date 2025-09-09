@@ -148,4 +148,28 @@ test.describe('Task Guards', () => {
     await page.getByRole('link', { name: 'Officer Change Test Business' }).click()
     await expect(page).not.toHaveURL(/.*business-dashboard.*/)
   })
+
+  test('should prevent making changes when form is open for new officer', async ({ page }) => {
+    // open add officer form
+    await openOfficerForm(page)
+
+    // try to edit the existing officer
+    const row = getTableRowForPerson(page, initialOfficerPerson)
+    await openOfficerForm(page, row)
+
+    // form should have error text
+    await expect(getOfficerForm(page)).toContainText('Finish this task before making other changes.')
+  })
+
+  test('should prevent making changes when form is open for editing officer', async ({ page }) => {
+    // open the form to edit the existing officer
+    const row = getTableRowForPerson(page, initialOfficerPerson)
+    await openOfficerForm(page, row)
+
+    // try to open add officer form
+    await openOfficerForm(page)
+
+    // form should have error text
+    await expect(getOfficerForm(page)).toContainText('Finish this task before making other changes.')
+  })
 })
