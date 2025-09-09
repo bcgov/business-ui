@@ -1,41 +1,11 @@
 import { test, expect } from '@playwright/test'
-import type { Locator } from '@playwright/test'
-// import { scanA11y } from '../test-utils/a11y'
-import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
-
-// TODO: fix a11y checks
-// await scanA11y(page, ['#connect-system-banner', '#business-filing-tombstone'])
+import { setupOfficerChangePage } from '../test-utils'
 
 test.describe('Form Validation', () => {
   test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
 
-  const identifier = 'BC1234567'
-  let form: Locator
-
   test.beforeEach(async ({ page }) => {
-    // mock all api calls
-    await page.route(`*/**/entities/${identifier}`, async (route) => {
-      await route.fulfill({ json: authInfoBC1234567 })
-    })
-    await page.route(`*/**/businesses/${identifier}`, async (route) => {
-      await route.fulfill({ json: businessBC1234567 })
-    })
-    await page.route(`*/**/businesses/${identifier}/tasks`, async (route) => {
-      await route.fulfill({ json: tasksBC1234567 })
-    })
-    await page.route(`*/**/businesses/${identifier}/parties?classType=officer`, async (route) => {
-      await route.fulfill({ json: partiesBC1234567 })
-    })
-    await page.route('*/**/fees/**/NOCOI', async (route) => {
-      await route.fulfill({ json: NOCOI })
-    })
-
-    // go to officer change page
-    await page.goto('./en-CA/officer-change/BC1234567')
-    await page.waitForLoadState('networkidle')
-
-    // wait for page to be visible
-    await expect(page.getByText('Officer Change').first()).toBeVisible()
+    await setupOfficerChangePage(page)
   })
 
   test.describe('Add Officer Form', () => {
@@ -44,9 +14,7 @@ test.describe('Form Validation', () => {
       await expect(page.getByTestId('officer-form')).not.toBeVisible()
       // open form
       await page.getByRole('button', { name: 'Add Officer' }).click()
-      form = page.getByTestId('officer-form')
-
-      await expect(form).toBeVisible()
+      await expect(page.getByTestId('officer-form')).toBeVisible()
     })
 
     test('should display required field errors on submit', async ({ page }) => {

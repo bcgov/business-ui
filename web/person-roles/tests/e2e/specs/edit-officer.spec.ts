@@ -5,7 +5,6 @@ import { getFakeAddress, getFakePerson, getRandomRoles, provinceSubdivisions } f
 import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 // TODO: fix a11y checks
-// await scanA11y(page, ['#connect-system-banner', '#business-filing-tombstone'])
 
 async function fillAddress(page: Page, type: 'mailing' | 'delivery', data: ReturnType<typeof getFakeAddress>) {
   const fieldset = page.getByTestId(`${type}-address-fieldset`)
