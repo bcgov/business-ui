@@ -11,7 +11,7 @@ export function getOfficerForm(page: Page) {
   return page.getByTestId('officer-form')
 }
 
-export async function setupOfficerChangePage(page: Page) {
+export async function setupOfficerChangePage(page: Page, includeNavigation = true) {
   const identifier = 'BC1234567'
   // auth api business info GET
   await page.route(`*/**/entities/${identifier}`, async (route) => {
@@ -37,12 +37,15 @@ export async function setupOfficerChangePage(page: Page) {
   await page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
     await route.fulfill({ status: 201 })
   })
-  // navigate to page
-  await page.goto(`./en-CA/officer-change/${identifier}`)
-  // wait for network to settle
-  await page.waitForLoadState('networkidle')
-  // wait for heading, this will wait for the loading state to finish on initial page mount
-  await expect(page.getByText('Officer Change').first()).toBeVisible()
+
+  if (includeNavigation) {
+    // navigate to page
+    await page.goto(`./en-CA/officer-change/${identifier}`)
+    // wait for network to settle
+    await page.waitForLoadState('networkidle')
+    // wait for heading, this will wait for the loading state to finish on initial page mount
+    await expect(page.getByText('Officer Change').first()).toBeVisible()
+  }
 }
 
 export function getTableRowForPerson(page: Page, person: PersonLastNameRequired) {
