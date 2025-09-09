@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.6
+
+### Patch Changes
+
+- [#227](https://github.com/bcgov/business-ui/pull/227) [`ddf1216`](https://github.com/bcgov/business-ui/commit/ddf1216f377632d8483ebc9199898074d521511e) Thanks [@deetz99](https://github.com/deetz99)! - Update connect layers deps, use connect tombstone, create filing tombstone helper composable, move business auth info fetch into business api composable. issue: bcgov/entity#29341
+
 ## 0.1.5
 
 ### Patch Changes
