@@ -155,7 +155,6 @@ test.describe('Draft Officers', () => {
     await page.reload()
 
     // wait for page state to be reinitialized
-    await page.waitForLoadState('networkidle')
     await expect(page.getByText('Officer Change').first()).toBeVisible()
     await page.waitForTimeout(5000)
 

@@ -30,7 +30,6 @@ test.describe('Page init errors', () => {
 
         // navigate to page and wait for settled state
         await page.goto(`./en-CA/officer-change/${identifier}`)
-        await page.waitForLoadState('networkidle')
         await expect(page.getByText('Officer Change').first()).toBeVisible()
 
         // assert modal content
@@ -48,7 +47,6 @@ test.describe('Page init errors', () => {
 
         // navigate to page and wait for settled state
         await page.goto(`./en-CA/officer-change/${identifier}`)
-        await page.waitForLoadState('networkidle')
         await expect(page.getByText('Officer Change').first()).toBeVisible()
 
         // assert modal content
@@ -60,13 +58,12 @@ test.describe('Page init errors', () => {
 
     testCases.forEach(({ status, expectedText }) => {
       test(`should display "${expectedText}" modal if the parties fetch fails with ${status}`, async ({ page }) => {
-        await page.route(`*/**/business/${identifier}/parties?classType=officer`, async (route) => {
+        await page.route(`*/**/businesses/${identifier}/parties?classType=officer`, async (route) => {
           await route.fulfill({ status })
         })
 
         // navigate to page and wait for settled state
         await page.goto(`./en-CA/officer-change/${identifier}`)
-        await page.waitForLoadState('networkidle')
         await expect(page.getByText('Officer Change').first()).toBeVisible()
 
         // assert modal content
@@ -96,7 +93,6 @@ test.describe('Page init errors', () => {
 
     // navigate to page and wait for settled state
     await page.goto(`./en-CA/officer-change/${identifier}`)
-    await page.waitForLoadState('networkidle')
     await expect(page.getByText('Officer Change').first()).toBeVisible()
 
     // assert modal content
@@ -131,7 +127,6 @@ test.describe('Page init errors', () => {
 
     // navigate to page and wait for settled state
     await page.goto(`./en-CA/officer-change/${identifier}`)
-    await page.waitForLoadState('networkidle')
     await expect(page.getByText('Officer Change').first()).toBeVisible()
 
     // assert modal content
@@ -149,7 +144,6 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
-      await page.waitForLoadState('networkidle')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content
@@ -181,7 +175,6 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
-      await page.waitForLoadState('networkidle')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content

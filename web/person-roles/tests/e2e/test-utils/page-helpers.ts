@@ -41,8 +41,6 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   if (includeNavigation) {
     // navigate to page
     await page.goto(`./en-CA/officer-change/${identifier}`)
-    // wait for network to settle
-    await page.waitForLoadState('networkidle')
     // wait for heading, this will wait for the loading state to finish on initial page mount
     await expect(page.getByText('Officer Change').first()).toBeVisible()
   }
