@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import type { Page, Locator } from '@playwright/test'
 import { getFakeAddress, getFakePerson, getRandomRoles, provinceSubdivisions } from '../test-utils'
 // import { scanA11y } from '../test-utils/a11y'
-import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
+import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567 } from '~~/tests/mocks'
 
 // TODO: fix a11y checks
 // await scanA11y(page, ['#connect-system-banner', '#business-filing-tombstone'])
