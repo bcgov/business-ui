@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 import type { getFakePerson, getFakeAddress } from './data'
@@ -89,8 +89,19 @@ export async function selectRoles(page: Page, roles: string[]) {
   }
 }
 
-export async function openOfficerForm(page: Page) {
-  await page.getByRole('button', { name: 'Add Officer' }).click()
+export async function openOfficerForm(page: Page, row?: Locator) {
+  if (row) { // pass a row to open the form in edit mode
+    const changeButton = row.getByRole('button', { name: 'Change' })
+    if (await changeButton.isVisible()) { // if no edits or newly added, there will be a change button
+      await changeButton.click()
+    } else { // if edits to existing officer, need to access change button in more actions menu
+      await row.getByRole('button', { name: 'More Actions' }).click()
+      await page.getByRole('menuitem', { name: 'Change' }).click()
+    }
+  } else { // if no row, open new 'Add Officer' form
+    await page.getByRole('button', { name: 'Add Officer' }).click()
+  }
+  // form should be visible after either scenario
   await expect(page.getByTestId('officer-form')).toBeVisible()
 }
 
