@@ -8,9 +8,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const rtc = useRuntimeConfig().public
   const { errorModal } = useModal()
   const businessApi = useBusinessApi()
-  const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
-  const tombstoneStore = useBusinessTombstoneStore()
+  const { setFilingDefault, filingTombstone } = useFilingTombstone()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
@@ -30,7 +29,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      tombstoneStore.loading = true
+      filingTombstone.value.loading = true
 
       // throw error and show modal if invalid business ID
       if (businessId === 'undefined') {
@@ -102,13 +101,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // get business auth info for masthead
       // get current business officers
       const [authInfo, parties] = await Promise.all([
-        authApi.getAuthInfo(businessId),
+        businessApi.getAuthInfo(businessId),
         businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
       activeBusinessAuthInfo.value = authInfo
       // set masthead data
-      tombstoneStore.setFilingDefault(business, authInfo)
+      setFilingDefault(business, authInfo)
 
       // map current/existing officers
       const officers = parties.map((p) => {
