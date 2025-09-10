@@ -11,12 +11,12 @@ import {
   assertAddress,
   getTableRowForPerson
 } from '../test-utils'
-// import { businessBC1234567 } from '~~/tests/mocks'
+import { businessBC1234567 } from '~~/tests/mocks'
+
+const identifier = businessBC1234567.business.identifier
 
 test.describe('Adding Officers', () => {
   // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
-
-  const identifier = 'BC1234567'
 
   test.beforeEach(async ({ page }) => {
     await setupOfficerChangePage(page)

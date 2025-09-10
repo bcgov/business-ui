@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { setupOfficerChangePage } from '../test-utils'
+import { setupOfficerChangePage, navigateToOfficerChangePage } from '../test-utils'
 import { businessBC1234567 } from '~~/tests/mocks'
 import en from '~~/i18n/locales/en-CA'
 
+const identifier = businessBC1234567.business.identifier
+
 test.describe('Page init errors', () => {
   // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
-
-  const identifier = 'BC1234567'
 
   test.beforeEach(async ({ page }) => {
     await setupOfficerChangePage(page, false)
@@ -29,8 +29,7 @@ test.describe('Page init errors', () => {
         })
 
         // navigate to page and wait for settled state
-        await page.goto(`./en-CA/officer-change/${identifier}`)
-        await expect(page.getByText('Officer Change').first()).toBeVisible()
+        await navigateToOfficerChangePage(page)
 
         // assert modal content
         const modal = page.getByRole('dialog')
@@ -46,8 +45,7 @@ test.describe('Page init errors', () => {
         })
 
         // navigate to page and wait for settled state
-        await page.goto(`./en-CA/officer-change/${identifier}`)
-        await expect(page.getByText('Officer Change').first()).toBeVisible()
+        await navigateToOfficerChangePage(page)
 
         // assert modal content
         const modal = page.getByRole('dialog')
@@ -63,8 +61,7 @@ test.describe('Page init errors', () => {
         })
 
         // navigate to page and wait for settled state
-        await page.goto(`./en-CA/officer-change/${identifier}`)
-        await expect(page.getByText('Officer Change').first()).toBeVisible()
+        await navigateToOfficerChangePage(page)
 
         // assert modal content
         const modal = page.getByRole('dialog')
@@ -92,8 +89,7 @@ test.describe('Page init errors', () => {
     })
 
     // navigate to page and wait for settled state
-    await page.goto(`./en-CA/officer-change/${identifier}`)
-    await expect(page.getByText('Officer Change').first()).toBeVisible()
+    await navigateToOfficerChangePage(page)
 
     // assert modal content
     const modal = page.getByRole('dialog')
@@ -126,8 +122,7 @@ test.describe('Page init errors', () => {
     })
 
     // navigate to page and wait for settled state
-    await page.goto(`./en-CA/officer-change/${identifier}`)
-    await expect(page.getByText('Officer Change').first()).toBeVisible()
+    await navigateToOfficerChangePage(page)
 
     // assert modal content
     const modal = page.getByRole('dialog')
@@ -144,6 +139,7 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
+      await page.waitForResponse('*/**/businesses/**/*')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content
@@ -175,6 +171,7 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
+      await page.waitForResponse('*/**/businesses/**/*')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content

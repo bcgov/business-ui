@@ -14,7 +14,7 @@ import {
 } from '../test-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
-const identifier = 'BC1234567'
+const identifier = businessBC1234567.business.identifier
 const initialOfficer = partiesBC1234567.parties[0]!
 const initialRoles = ['Chief Executive Officer']
 const initialDeliveryAddress = {

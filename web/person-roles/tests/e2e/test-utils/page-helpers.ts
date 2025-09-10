@@ -6,13 +6,22 @@ import { provinceSubdivisions } from './data'
 
 type Person = ReturnType<typeof getFakePerson>
 type PersonLastNameRequired = Partial<Person> & Pick<Person, 'lastName'>
+const identifier = businessBC1234567.business.identifier
 
 export function getOfficerForm(page: Page) {
   return page.getByTestId('officer-form')
 }
 
+export async function navigateToOfficerChangePage(page: Page) {
+  // navigate to page
+  await page.goto(`./en-CA/officer-change/${identifier}`)
+  // wait for api response to settle
+  await page.waitForResponse('*/**/businesses/**/*')
+  // wait for heading, this will wait for the loading state to finish on initial page mount
+  await expect(page.getByText('Officer Change').first()).toBeVisible()
+}
+
 export async function setupOfficerChangePage(page: Page, includeNavigation = true) {
-  const identifier = 'BC1234567'
   // auth api business info GET
   await page.route(`*/**/entities/${identifier}`, async (route) => {
     await route.fulfill({ json: authInfoBC1234567 })
@@ -56,17 +65,17 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   })
 
   if (includeNavigation) {
-    // navigate to page
-    await page.goto(`./en-CA/officer-change/${identifier}`)
-    // wait for heading, this will wait for the loading state to finish on initial page mount
-    await expect(page.getByText('Officer Change').first()).toBeVisible()
+    // navigate to page and wait for settled state
+    await navigateToOfficerChangePage(page)
   }
 }
 
 export function getTableRowForPerson(page: Page, person: PersonLastNameRequired) {
   const table = page.getByRole('table')
   expect(table).toBeDefined()
-  const row = table.getByRole('row').filter({ hasText: person.lastName.toUpperCase() })
+  const row = table.locator('tbody').getByRole('row').filter({
+    has: page.locator('td:first-child', { hasText: person.lastName.toUpperCase() })
+  })
   expect(row).toBeDefined()
   return row
 }
@@ -111,7 +120,7 @@ export async function selectRoles(page: Page, roles: string[]) {
   const rolesFieldset = page.locator('fieldset').filter({ hasText: 'Roles' })
 
   for (const role of roles) {
-    await rolesFieldset.getByRole('checkbox', { name: role, exact: true }).click({ force: true })
+    await rolesFieldset.getByRole('checkbox', { name: role, exact: true }).setChecked(true)
   }
 }
 
@@ -126,6 +135,9 @@ export async function openOfficerForm(page: Page, row?: Locator) {
     }
   } else { // if no row, open new 'Add Officer' form
     await page.getByRole('button', { name: 'Add Officer' }).click()
+    const addOfficerButton = page.getByRole('button', { name: 'Add Officer' })
+    await expect(addOfficerButton).toBeEnabled()
+    await addOfficerButton.click()
   }
   // form should be visible after either scenario
   await expect(page.getByTestId('officer-form')).toBeVisible()
@@ -159,7 +171,7 @@ export async function completeOfficerForm(
   if (mailingAddress) {
     if (mailingAddress === 'same') {
       // check mailing same as delivery
-      await form.getByRole('checkbox', { name: 'Same as Delivery Address' }).click({ force: true })
+      await form.getByRole('checkbox', { name: 'Same as Delivery Address' }).setChecked(true)
     } else {
       await fillAddress(page, 'mailing', mailingAddress)
     }

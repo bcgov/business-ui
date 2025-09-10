@@ -38,7 +38,7 @@ export function getRandomRoles() {
 
   const randomCount = Math.floor(Math.random() * roles.length) + 1
 
-  return [...roles].sort(() => 0.5 - Math.random()).slice(0, randomCount)
+  return [...roles].sort(() => 0.5 - Math.random()).slice(0, randomCount <= 3 ? 3 : randomCount)
 }
 
 export const provinceSubdivisions: Array<{ name: string, code: string }> = [
