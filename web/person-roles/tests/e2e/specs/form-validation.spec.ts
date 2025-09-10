@@ -37,8 +37,16 @@ test.describe('Form Validation', () => {
       await page.getByRole('button', { name: 'Done' }).click()
       await expect(regionGroup).toContainText('This field is required')
 
+      const countrySelect = page.getByTestId('delivery-address-input-country')
+      await countrySelect.scrollIntoViewIfNeeded()
+      await page.getByTestId('delivery-address-input-country').focus()
       await page.getByTestId('delivery-address-input-country').click()
-      await page.getByRole('option', { name: 'Albania' }).first().click()
+      const optionsList = page.getByRole('listbox') // listbox is a teleport on the page body
+      await optionsList.scrollIntoViewIfNeeded()
+      await expect(optionsList).toBeVisible()
+      await page.keyboard.type('Albania')
+      await page.keyboard.press('Enter')
+      await expect(optionsList).not.toBeVisible()
 
       await page.getByRole('button', { name: 'Done' }).click()
 
