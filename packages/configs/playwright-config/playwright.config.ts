@@ -52,6 +52,9 @@ export default defineConfig<ConfigOptions>({
     command: 'pnpm build:test',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 30000
+    timeout: 30000,
+    env: {
+      playwright: 'true'
+    }
   }
 })

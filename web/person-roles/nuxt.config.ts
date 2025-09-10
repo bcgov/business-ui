@@ -67,7 +67,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Person Roles UI v${process.env.npm_package_version || ''}`,
-      ci: process.env.CI === 'true'
+      playwright: process.env.playwright === 'true'
     }
   }
 })

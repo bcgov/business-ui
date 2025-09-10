@@ -22,7 +22,7 @@ definePageMeta({
   middleware: async () => {
     // mock user if in CI environment // TODO: figure out real logins for e2e in CI
     const { $connectAuth, $config } = useNuxtApp()
-    if ($config.public.ci) {
+    if ($config.public.playwright) {
       $connectAuth.tokenParsed = {
         firstname: 'TestFirst',
         lastname: 'TestLast',
