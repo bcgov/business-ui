@@ -7,12 +7,15 @@ export interface Articles {
   resolutionDates: string[]
   // tracks if the current filing had special resolution changes
   specialResolutionChanges: boolean
+  // track the incorp date for validation only
+  incorpDate?: string | undefined
 }
 
 export const EmptyArticles = (): Articles => ({
   currentDate: undefined,
   resolutionDates: [],
-  specialResolutionChanges: false
+  specialResolutionChanges: false,
+  incorpDate: undefined
 })
 
 export interface ApiResolutions {
@@ -24,13 +27,25 @@ export interface ApiResolutions {
 export const articlesSchema = z.object({
   currentDate: z.string().optional(),
   resolutionDates: z.array(z.string()),
-  specialResolutionChanges: z.boolean()
+  specialResolutionChanges: z.boolean(),
+  incorpDate: z.string().optional()
 }).refine((data) => {
   if (data.specialResolutionChanges) {
     return data.currentDate !== undefined && data.currentDate !== ''
   }
+
   return true
 }, {
   message: 'errors.articles',
+  path: ['currentDate']
+}).refine((data) => {
+  if (data.currentDate && new Date(data.currentDate) > new Date()) {
+    return false
+  } else if (data.currentDate && data.incorpDate && new Date(data.currentDate) < new Date(data.incorpDate)) {
+    return false
+  }
+  return true
+}, {
+  message: 'errors.articlesDateRange',
   path: ['currentDate']
 })

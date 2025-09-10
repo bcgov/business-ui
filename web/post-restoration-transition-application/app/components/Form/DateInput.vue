@@ -4,7 +4,8 @@ const emit = defineEmits(['change'])
 
 const {
   maxlength = '1000',
-  readonly = false
+  readonly = false,
+  focusOut = false
 } = defineProps<{
   id: string
   label: string
@@ -15,8 +16,11 @@ const {
   minDate?: string
   maxDate?: string
   readonly?: boolean
+  focusOut?: boolean
 }>()
 
+// this is just to force hide the calendar as when this is first in a modal it opens the calendar by default
+const firstFocus = ref(true)
 const showDatePicker = ref(false)
 const updateDate = (date: string) => {
   displayDate.value = fromIsoToUsDateFormat(date)?.toString() || ''
@@ -49,6 +53,12 @@ const blurInputHandler = () => {
 }
 
 const focusInHandler = () => {
+  // avoid showing calendar if the prop is set (for modal use otherwise it auto opens immediately)
+  if (firstFocus.value && focusOut) {
+    firstFocus.value = false
+    return
+  }
+
   showDatePicker.value = true
   return !readonly
 }

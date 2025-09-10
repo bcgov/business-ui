@@ -369,12 +369,14 @@ const cleanData = () => {
             :label="$t('label.done')"
             color="primary"
             class="rounded"
+            data-testid="addEditSharesDone"
             @click="done()"
           />
           <UButton
             :label="$t('label.cancel')"
             variant="outline"
             class="rounded"
+            data-testid="addEditSharesCancel"
             @click="cancel()"
           />
         </div>

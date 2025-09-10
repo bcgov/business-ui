@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { mockForIdentifier, impersonateUser } from '../test-utils/helpers'
 import valid from '../../mocks/filingData/valid.json' with { type: 'json' }
+import validSpecial from '../../mocks/filingData/validSpecial.json' with { type: 'json' }
 import invalid from '../../mocks/filingData/invalid.json' with { type: 'json' }
 
-const fill = async (page: Page, values: object) => {
+import i18en from '~~/i18n/locales/en-CA'
+
+const fillBasic = async (page: Page, values: object) => {
   await page.getByTestId('legalName-input').locator('input').first().fill(values.legalName)
   await page.getByTestId('compPartyEmail-input').locator('input').first().fill(values.email)
   await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(values.courtOrderNumber)
@@ -11,6 +14,9 @@ const fill = async (page: Page, values: object) => {
   if (values.certify) {
     await page.getByTestId('certify-section-checkbox').click()
   }
+}
+
+const fillDates = async (page: Page, values: object) => {
   // this is a loop but it currently only supports adding one date
   for (let i = 0; i < values.articlesDates.length; i++) {
     const now = new Date()
@@ -32,10 +38,13 @@ const fill = async (page: Page, values: object) => {
     ).click()
     await page.getByTestId('articlesCurrentDate_save').click()
   }
+}
 
+const fillShares = async (page: Page, values: object) => {
   for (let i = 0; i < values.shares.length; i++) {
     await page.getByTestId('add-share-button').click()
-    await page.locator('input[placeholder="Class Name [Shares]"]').first().fill(values.shares[i].shareClassName)
+    await page.locator('input[placeholder="' + i18en.label.shareClassName + '"]')
+      .first().fill(values.shares[i].shareClassName)
     if (values.shares[i].shareHasParValue) {
       await page.getByTestId('parValue-radio').click()
     } else {
@@ -46,12 +55,25 @@ const fill = async (page: Page, values: object) => {
     } else {
       await page.getByTestId('noMaxShares-radio').click()
     }
-    await page.locator('input[placeholder="Maximum Number of Shares"]')
+    await page.locator('input[placeholder="' + i18en.label.maximumNumberOfShares + '"]')
       .first().fill(values.shares[i].shareMax.toString())
-    await page.locator('input[placeholder="Par Value"]').first().fill(values.shares[i].shareParValue.toString())
+    await page.locator('input[placeholder="' + i18en.label.parValue + '"]')
+      .first().fill(values.shares[i].shareParValue.toString())
     await page.getByTestId('currency-select').first().click()
     await page.locator('div.group.select-none').getByText(values.shares[i].shareParValueCurrency).click()
+
+    if (values.shares[i].shareColumnRightsRestrictions) {
+      await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').click()
+    }
+
+    await page.getByTestId('addEditSharesDone').click()
   }
+}
+
+const fill = async (page: Page, values: object) => {
+  await fillBasic(page, values)
+  await fillDates(page, values)
+  await fillShares(page, values)
 }
 
 test.describe('Post restoration Transition Application Filing', () => {
@@ -102,5 +124,43 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.locator('[aria-label="No Fee"]').click()
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+  })
+
+  test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await fillBasic(page, validSpecial)
+    await fillShares(page, validSpecial)
+    await expect(page.getByTestId('modal-date-input')).toBeVisible()
+    await page.getByTestId('modal-date-cancel').click()
+    await expect(page.getByTestId('modal-date-input')).not.toBeVisible()
+    await expect(page.getByText(i18en.errors.articles)).toBeVisible()
+    await fillDates(page, validSpecial)
+    await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
+    await page.getByTestId('submit-button').click()
+  })
+
+  test('Test save pop up for date when share with special rights added/edited', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await fillBasic(page, validSpecial)
+    await fillShares(page, validSpecial)
+    await expect(page.getByTestId('modal-date-input')).toBeVisible()
+    await page.getByTestId('modal-date-done').click()
+    // should still be up as we haven't entered a date
+    await expect(page.getByTestId('modal-date-input')).toBeVisible()
+
+    await page.getByTestId('modal-date-input').click()
+    const today = new Date()
+    const selector
+      = `${today.getFullYear()}`
+      + `-${(today.getMonth() + 1) < 10 ? '0' : ''}${today.getMonth() + 1}`
+      + `-${(today.getDate() < 10 ? '0' : '')}${today.getDate()}`
+    await page.locator(`[id="${selector}"] div`).click()
+    await page.getByTestId('modal-date-done').click()
+
+    await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
+    await page.getByTestId('submit-button').click()
+    await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
   })
 })
