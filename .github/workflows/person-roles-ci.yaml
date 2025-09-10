@@ -13,7 +13,7 @@ defaults:
 
 jobs:
   business-people-ui-ci:
-    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@main 
+    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
     with:
       app_name: "business-people"
       working_directory: "./web/person-roles"
