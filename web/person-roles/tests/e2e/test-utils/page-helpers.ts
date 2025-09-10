@@ -126,6 +126,7 @@ export async function selectRoles(page: Page, roles: string[]) {
 
 export async function openOfficerForm(page: Page, row?: Locator) {
   if (row) { // pass a row to open the form in edit mode
+    await expect(row).toBeVisible()
     const changeButton = row.getByRole('button', { name: 'Change' })
     if (await changeButton.isVisible()) { // if no edits or newly added, there will be a change button
       await changeButton.click()
