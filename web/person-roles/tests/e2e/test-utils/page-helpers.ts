@@ -96,8 +96,12 @@ export async function fillAddress(page: Page, type: 'mailing' | 'delivery', data
   await fieldset.getByTestId(`${type}-address-input-region`).focus()
   await fieldset.getByTestId(`${type}-address-input-region`).click()
   const optionsList = page.getByRole('listbox') // listbox is a teleport on the page body
+  await optionsList.scrollIntoViewIfNeeded()
   await expect(optionsList).toBeVisible()
-  await optionsList.getByRole('option', { name: data.region, exact: true }).click()
+  // use keyboard instead of click actions
+  // element out of viewport bug on firefox (works fine when manually testing but failing in pw browser)
+  await page.keyboard.type(data.region)
+  await page.keyboard.press('Enter')
   await expect(optionsList).not.toBeVisible()
   await fieldset.getByTestId(`${type}-address-input-postalCode`).fill(data.postalCode)
   await fieldset.getByTestId(`${type}-address-input-locationDescription`).fill(data.locationDescription)
@@ -155,7 +159,7 @@ export async function completeOfficerForm(
   if (mailingAddress) {
     if (mailingAddress === 'same') {
       // check mailing same as delivery
-      form.getByRole('checkbox', { name: 'Same as Delivery Address' }).click({ force: true })
+      await form.getByRole('checkbox', { name: 'Same as Delivery Address' }).click({ force: true })
     } else {
       await fillAddress(page, 'mailing', mailingAddress)
     }
