@@ -102,3 +102,4 @@ sw.*
 test-results
 tests/e2e/.auth/**
 playwright-report
+blob-report

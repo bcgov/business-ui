@@ -4,7 +4,7 @@ import { businessBC1234567 } from '~~/tests/mocks'
 import en from '~~/i18n/locales/en-CA'
 
 test.describe('Page init errors', () => {
-  test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
+  // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
 
   const identifier = 'BC1234567'
 

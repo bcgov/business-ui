@@ -37,6 +37,23 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   await page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
     await route.fulfill({ status: 201 })
   })
+  // user accounts GET request
+  await page.route('*/**/users/test/settings', async (route) => {
+    await route.fulfill({
+      json: [
+        {
+          accountStatus: 'ACTIVE',
+          accountType: 'PREMIUM',
+          id: 1234,
+          label: 'Test Account Label',
+          productSettings: '/account/1234/restricted-product',
+          type: 'ACCOUNT',
+          urlorigin: 'https://dev.account.bcregistry.gov.bc.ca',
+          urlpath: '/account/1234/settings'
+        }
+      ]
+    })
+  })
 
   if (includeNavigation) {
     // navigate to page

@@ -16,7 +16,7 @@ const initialOfficer = partiesBC1234567.parties[0]!
 const initialOfficerPerson = { lastName: initialOfficer.officer.lastName }
 
 test.describe('Task Guards', () => {
-  test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
+  // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
 
   test.beforeEach(async ({ page }) => {
     await setupOfficerChangePage(page)
@@ -105,7 +105,7 @@ test.describe('Task Guards', () => {
     )
 
     // assert table data
-    assertNameTableCell(page, person, ['ADDED'])
+    await assertNameTableCell(page, person, ['ADDED'])
 
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
 
