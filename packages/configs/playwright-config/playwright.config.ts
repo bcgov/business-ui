@@ -33,7 +33,6 @@ export default defineConfig<ConfigOptions>({
   testDir: './tests/e2e',
   testMatch: '**/*.spec.ts',
   workers: 2,
-  // retries: process.env.CI ? 2 : 0,
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
   use: {
     nuxt: {
