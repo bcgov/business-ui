@@ -2,7 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import type { Row } from '@tanstack/vue-table'
-import { businessBC1234567, tasksBC1234567, partiesBC1234567, authInfoBC1234567 } from '~~/tests/mocks'
+import { businessBC1234567 } from '~~/tests/mocks'
 
 const mockLegalApi = {
   getBusiness: vi.fn(),
