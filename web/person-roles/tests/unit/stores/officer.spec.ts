@@ -2,39 +2,47 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import type { Row } from '@tanstack/vue-table'
+import { businessBC1234567 } from '~~/tests/mocks'
 
 const mockLegalApi = {
   getBusiness: vi.fn(),
   getParties: vi.fn(),
   getPendingTask: vi.fn(),
-  getAndValidateDraftFiling: vi.fn()
-}
-const mockAuthApi = {
-  getAuthInfo: vi.fn()
+  getAndValidateDraftFiling: vi.fn(),
+  getAuthInfo: vi.fn(),
+  getTasks: vi.fn()
 }
 mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
-mockNuxtImport('useAuthApi', () => () => mockAuthApi)
 
-const mockModal = {
-  openBaseErrorModal: vi.fn(),
-  openOfficerFilingNotAllowedModal: vi.fn()
-}
-mockNuxtImport('useModal', () => () => mockModal)
-mockNuxtImport('useRuntimeConfig', () => () => ({ public: {} }))
+const mockErrorModalOpen = vi.fn()
+mockNuxtImport('useModal', () => {
+  return () => ({
+    errorModal: {
+      open: mockErrorModalOpen
+    }
+  })
+})
+mockNuxtImport('useRuntimeConfig', () => () => (
+  {
+    public: {
+      businessDashboardUrl: 'http://business-dashboard-url/'
+    }
+  }
+))
 
 mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 123 } }))
-mockNuxtImport('useConnectDetailsHeaderStore', () => () => (
-  { loading: false, title: {}, subtitles: [], sideDetails: [] })
-)
+mockNuxtImport('useConnectTombstone', () => () => ({
+  tombstone: {
+    value: { loading: false, title: {}, subtitles: [], sideDetails: [] }
+  },
+  $reset: vi.fn()
+}))
 
-// mockNuxtImport('validateBusinessAllowedFilings', () => () => mockAllowedFilings)
-mockNuxtImport('getRequiredAddressSchema', () => () => ({ safeParse: () => ({ success: true }) }))
-
-vi.mock('~~/app/utils/business/validate/allowed-filings', () => ({
+vi.mock('@sbc-connect/nuxt-business-base/app/utils/validate/allowed-filings', () => ({
   validateBusinessAllowedFilings: vi.fn().mockReturnValue(false)
 }))
 
-vi.mock('~~/app/utils/zod-schemas/addresses', () => ({
+vi.mock('@sbc-connect/nuxt-forms/app/utils/zod-schemas/addresses', () => ({
   getRequiredAddressSchema: vi.fn()
 }))
 
@@ -47,7 +55,7 @@ mockNuxtImport('useNuxtApp', () => () => ({
 describe('useOfficerStore', () => {
   let store: ReturnType<typeof useOfficerStore>
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks()
     const pinia = createPinia()
     setActivePinia(pinia)
@@ -74,7 +82,7 @@ describe('useOfficerStore', () => {
         mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
         vi.mocked(validateBusinessAllowedFilings).mockReturnValue(true) // Filing is allowed
-        mockAuthApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
+        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
         mockLegalApi.getParties.mockResolvedValue(mockParties)
 
         // init store
@@ -86,7 +94,7 @@ describe('useOfficerStore', () => {
         expect(store.initialOfficers).toHaveLength(1)
         expect(store.initialOfficers[0]!.firstName).toBe('Initial')
         expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
-        expect(mockModal.openBaseErrorModal).not.toHaveBeenCalled()
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
       })
 
       test('should show modal and return early if filing is not allowed', async () => {
@@ -99,7 +107,7 @@ describe('useOfficerStore', () => {
         await store.initOfficerStore(businessId)
 
         // assert
-        expect(mockModal.openBaseErrorModal).toHaveBeenCalled()
+        expect(mockErrorModalOpen).toHaveBeenCalled()
         expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
         expect(store.officerTableState).toHaveLength(0)
       })
@@ -114,25 +122,25 @@ describe('useOfficerStore', () => {
         await store.initOfficerStore(businessId)
 
         // assert
-        expect(mockModal.openBaseErrorModal).toHaveBeenCalled()
+        expect(mockErrorModalOpen).toHaveBeenCalled()
         expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
       })
 
       test('should initialize with an empty state for a business with no officers', async () => {
         // mock no parties
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
+        mockLegalApi.getBusiness.mockResolvedValue(businessBC1234567.business)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        mockAuthApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
+        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
         mockLegalApi.getParties.mockResolvedValue([]) // No parties
         vi.mocked(validateBusinessAllowedFilings).mockReturnValue(true)
 
         // init store
-        await store.initOfficerStore(businessId)
+        await store.initOfficerStore(businessBC1234567.business.identifier)
 
         // assert
         expect(store.initialOfficers).toHaveLength(0)
         expect(store.officerTableState).toHaveLength(0)
-        expect(mockModal.openBaseErrorModal).not.toHaveBeenCalled()
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
       })
     })
 
@@ -154,7 +162,7 @@ describe('useOfficerStore', () => {
         mockLegalApi.getAndValidateDraftFiling.mockResolvedValue(draftResponse)
         mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getParties.mockResolvedValue(mockParties) // Still fetches initial parties
-        mockAuthApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
+        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
 
         // init store
         await store.initOfficerStore(businessId, draftId)
@@ -173,7 +181,11 @@ describe('useOfficerStore', () => {
         await store.initOfficerStore(businessId, draftId)
 
         // assert
-        expect(mockModal.openBaseErrorModal).toHaveBeenCalled()
+        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
+          error: expect.any(Error),
+          i18nPrefix: 'modal.error.getDraftFiling',
+          buttons: expect.any(Array)
+        }))
         expect(mockLegalApi.getBusiness).not.toHaveBeenCalled() // Should return early after draft check
         expect(store.officerTableState).toHaveLength(0)
       })
@@ -187,11 +199,11 @@ describe('useOfficerStore', () => {
         await store.initOfficerStore(businessId, draftId)
 
         // assert
-        expect(mockModal.openBaseErrorModal).toHaveBeenCalledWith(
-          apiError,
-          'modal.error.getDraftFiling',
-          expect.any(Array)
-        )
+        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
+          error: expect.any(Error),
+          i18nPrefix: 'modal.error.getDraftFiling',
+          buttons: expect.any(Array)
+        }))
         expect(store.officerTableState).toHaveLength(0)
       })
     })
@@ -206,7 +218,11 @@ describe('useOfficerStore', () => {
       await store.initOfficerStore(businessId)
 
       // assert
-      expect(mockModal.openBaseErrorModal).toHaveBeenCalledWith(apiError, expect.any(String), expect.any(Array))
+      expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
+        error: expect.any(Error),
+        i18nPrefix: 'modal.error.initOfficerStore',
+        buttons: expect.any(Array)
+      }))
       expect(store.initializing).toBe(false)
     })
   })

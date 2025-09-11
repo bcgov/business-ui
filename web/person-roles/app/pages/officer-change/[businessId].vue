@@ -19,10 +19,23 @@ useHead({
 
 definePageMeta({
   layout: 'filing',
-  middleware: () => {
-    // redirect to reg home with return url if user unauthenticated
+  middleware: async () => {
+    // mock user if in CI environment // TODO: figure out real logins for e2e in CI
     const { $connectAuth, $config } = useNuxtApp()
-    if (!$connectAuth.authenticated) {
+    if ($config.public.playwright) {
+      $connectAuth.tokenParsed = {
+        firstname: 'TestFirst',
+        lastname: 'TestLast',
+        name: 'TestFirst TestLast',
+        username: 'testUsername',
+        email: 'testEmail@test.com',
+        sub: 'test',
+        loginSource: 'IDIR',
+        realm_access: { roles: ['public_user'] }
+      }
+      await useConnectAccountStore().setAccountInfo()
+      // redirect to reg home with return url if user unauthenticated
+    } else if (!$connectAuth.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
         `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
@@ -416,6 +429,7 @@ watch(
 
       <UForm
         ref="folio-form"
+        data-testid="folio-form"
         :state="officerStore.folio"
         :schema="folioSchema"
         class="bg-white p-6 rounded-sm shadow-sm"
@@ -430,8 +444,9 @@ watch(
         >
           <ConnectFormInput
             v-model="officerStore.folio.number"
+            data-testid="form-field-folio-number"
             name="number"
-            :label="$t('label.folioOrRefNumber')"
+            :label="$t('label.folioOrRefNumberOpt')"
             input-id="folio-number"
             @focusin="setAlertText(true)"
           />

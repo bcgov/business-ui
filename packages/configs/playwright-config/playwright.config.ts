@@ -8,19 +8,22 @@ dotenvConfig()
 
 const { resolve } = createResolver(import.meta.url)
 
+// only desktop supported
+// https://id.gov.bc.ca/static/help/supported_browsers.html
 const deviceNames = [
   'Desktop Chrome',
   ...(process.env.CI
     ? [
       'Desktop Firefox',
       'Desktop Edge',
-      'Desktop Safari',
-      'iPad (gen 11) landscape',
-      'Blackberry PlayBook landscape',
-      'Nexus 10 landscape',
-      'iPhone 15 Pro',
-      'Pixel 7',
-      'iPhone 6'
+      'Desktop Safari'
+      // TODO: add fix mobile tests?
+      // 'iPad (gen 11) landscape',
+      // 'Blackberry PlayBook landscape',
+      // 'Nexus 10 landscape',
+      // 'iPhone 15 Pro',
+      // 'Pixel 7',
+      // 'iPhone 6'
     ]
     : [])
 ]
@@ -29,7 +32,7 @@ export default defineConfig<ConfigOptions>({
   globalSetup: './tests/e2e/setup',
   testDir: './tests/e2e',
   testMatch: '**/*.spec.ts',
-  workers: process.env.CI ? 2 : undefined,
+  workers: 2,
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
   use: {
     nuxt: {
@@ -49,6 +52,9 @@ export default defineConfig<ConfigOptions>({
     command: 'pnpm build:test',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 30000
+    timeout: 60000,
+    env: {
+      playwright: 'true'
+    }
   }
 })

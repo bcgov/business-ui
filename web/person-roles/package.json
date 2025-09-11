@@ -1,6 +1,6 @@
 {
   "name": "person-roles",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.13.1",
@@ -13,7 +13,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "vitest --dir tests/unit --passWithNoTests --coverage",
+    "test": "vitest --dir tests/unit",
     "test:unit": "vitest --dir tests/unit",
     "test:unit:cov": "vitest --dir tests/unit --coverage",
     "test:e2e": "npx playwright test",
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
+    "@faker-js/faker": "^10.0.0",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
     "@types/node": "^24.0.10",

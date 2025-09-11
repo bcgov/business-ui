@@ -55,6 +55,7 @@ export default {
     notEntered: 'Not Entered',
     phone: 'Phone',
     preferredName: 'Preferred Name',
+    preferredNameOpt: 'Preferred Name (Optional)',
     refreshPage: 'Refresh Page',
     remove: 'Remove',
     sameAsDeliveryAddress: 'Same as Delivery Address',

@@ -209,8 +209,13 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const address = row.original.new.deliveryAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
+      const addressKey = JSON.stringify(address)
 
-      return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
+      return h(
+        'div',
+        { class: containerClass },
+        h(ConnectAddressDisplay, { address, key: addressKey, textDecor: true })
+      )
     }
   },
   {
@@ -225,6 +230,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       const sameAs = row.original.new.sameAsDelivery
       const mailingAddress = row.original.new.mailingAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
+      const addressKey = JSON.stringify(mailingAddress)
 
       // only display mailing address if fully entered
       const isValidAddress = (addressSchema.safeParse(mailingAddress)).success
@@ -233,7 +239,7 @@ const columns: TableColumn<OfficerTableState>[] = [
         ? h('span', {}, t('label.notEntered'))
         : sameAs
           ? h('span', {}, t('label.sameAsDeliveryAddress'))
-          : h(ConnectAddressDisplay, { address: mailingAddress })
+          : h(ConnectAddressDisplay, { address: mailingAddress, key: addressKey, textDecor: true })
       ))
     }
   },
@@ -357,6 +363,4 @@ const expandedTrClass = computed(() =>
       </div>
     </template>
   </UTable>
-
-  <!-- <pre>{{ officers }}</pre> -->
 </template>

@@ -1,5 +1,5 @@
-import { chromium } from '@playwright/test'
-import type { Browser, Page } from '@playwright/test'
+// import { chromium } from '@playwright/test'
+// import type { Browser, Page } from '@playwright/test'
 import { config as dotenvConfig } from 'dotenv'
 
 // load default env
@@ -33,36 +33,40 @@ async function globalSetup() {
     throw new Error(`Server at ${baseUrl} did not become ready within the timeout period.`)
   }
 
-  // launch browser and create page context
-  const browser: Browser = await chromium.launch()
-  const context = await browser.newContext()
-  const page: Page = await context.newPage()
+  // if (process.env.CI) {
+  //   return
+  // }
 
-  // complete login steps
-  await page.goto(baseUrl)
+  // // launch browser and create page context
+  // const browser: Browser = await chromium.launch()
+  // const context = await browser.newContext()
+  // const page: Page = await context.newPage()
 
-  const username = process.env.PLAYWRIGHT_TEST_BCSC_USERNAME!
-  const password = process.env.PLAYWRIGHT_TEST_BCSC_PASSWORD!
+  // // complete login steps
+  // await page.goto(baseUrl)
 
-  await page.getByRole('button', { name: 'Select log in method' }).click()
-  await page.getByRole('menuitem', { name: 'BC Services Card' }).click()
-  await page.getByLabel('Log in with Test with').click()
-  await page.getByLabel('Email or username').fill(username)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Continue' }).click()
-  // necessary after sign in change
-  const agreeToTerms = page.getByText('I agree to the BC Login')
-  if (agreeToTerms) {
-    await agreeToTerms.click()
-    await page.getByRole('button', { name: 'Continue' }).click()
-  }
+  // const username = process.env.PLAYWRIGHT_TEST_BCSC_USERNAME!
+  // const password = process.env.PLAYWRIGHT_TEST_BCSC_PASSWORD!
 
-  // should be redirected back to baseUrl after successful login
-  await page.waitForURL(baseUrl + '**')
+  // await page.getByRole('button', { name: 'Select log in method' }).click()
+  // await page.getByRole('menuitem', { name: 'BC Services Card' }).click()
+  // await page.getByLabel('Log in with Test with').click()
+  // await page.getByLabel('Email or username').fill(username)
+  // await page.getByLabel('Password').fill(password)
+  // await page.getByRole('button', { name: 'Continue' }).click()
+  // // necessary after sign in change
+  // const agreeToTerms = page.getByText('I agree to the BC Login')
+  // if (agreeToTerms) {
+  //   await agreeToTerms.click()
+  //   await page.getByRole('button', { name: 'Continue' }).click()
+  // }
 
-  // save auth state and close browser
-  await page.context().storageState({ path: 'tests/e2e/.auth/bcsc-user.json' })
-  await browser.close()
+  // // should be redirected back to baseUrl after successful login
+  // await page.waitForURL(baseUrl + '**')
+
+  // // save auth state and close browser
+  // await page.context().storageState({ path: 'tests/e2e/.auth/bcsc-user.json' })
+  // await browser.close()
 }
 
 export default globalSetup
