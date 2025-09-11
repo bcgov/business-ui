@@ -2,6 +2,7 @@ import { certifySchema } from '~/interfaces/certify'
 import { shareSchema } from '~/interfaces/shares'
 import { usePostRestorationTransitionApplicationStore } from '~/stores/post-restoration-transition-application'
 import { StaffPaySchema } from '~/interfaces/staffPay'
+import type { PageSection } from '~/enum/page_sections'
 
 export const usePostRestorationErrorsStore
   = defineStore('post-restoration-errors-store', () => {

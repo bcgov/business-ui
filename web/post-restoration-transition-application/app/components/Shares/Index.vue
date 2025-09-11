@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import getSymbolFromCurrency from 'currency-symbol-map'
+import { PageSection } from '~/enum/page_sections'
 
 const t = useNuxtApp().$i18n.t
 const anyExpanded = ref(false)
@@ -12,8 +13,6 @@ const props = defineProps<{
   editFormError: string | undefined
 }>()
 
-const sharesEditFormId = `${props.formId}-edit-form`
-
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
@@ -21,6 +20,9 @@ const {
   modifiedShareIndexes,
   ORIGINAL_SHARE_CLASSES
 } = storeToRefs(filingStore)
+
+const sharesEditFormId = `${props.formId}-edit-form`
+filingStore.registerFormIdToSection(sharesEditFormId, PageSection.SHARES)
 
 const addedIndexes = ref<number[]>([])
 const editedIndexes = ref<number[]>([])
@@ -183,8 +185,10 @@ const toggleShareExpanded = (row: Row<Series>) => {
     editingShareIndex.value = -1
     editFormClosed(sharesEditFormId)
   } else {
+    if (editFormOpen(sharesEditFormId)) {
+      return
+    }
     editingShareIndex.value = row.index
-    editFormOpen(sharesEditFormId)
   }
   row.toggleExpanded()
 }

@@ -3,6 +3,7 @@ import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
+import { PageSection } from '~/enum/page_sections'
 
 const { setButtonControl } = useButtonControl()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
@@ -128,9 +129,35 @@ const {
   planOfArrangement,
   regOfficeEmail,
   shareWithSpecialRightsModified,
-  openEditComponentId,
   modifiedDirectors
 } = storeToRefs(filingStore)
+
+const sectionHasErrors = computed(() => (section: PageSection): boolean => {
+  /* eslint-disable vue/script-indent */
+  switch (section) {
+    case PageSection.ARTICLES:
+      if (hasArticlesErrors.value ||
+        (filingStore.sectionHasOpenForm(PageSection.ARTICLES) && openEditFormError.value)) {
+        return true
+      }
+      break
+    case PageSection.SHARES:
+      if (filingStore.sectionHasOpenForm(PageSection.SHARES) && openEditFormError.value) {
+        return true
+      }
+      break
+    case PageSection.DIRECTORS:
+      if (filingStore.sectionHasOpenForm(PageSection.DIRECTORS) && openEditFormError.value) {
+        return true
+      }
+      break
+    default:
+      break
+  }
+  /* eslint-enable */
+
+  return false
+})
 
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
@@ -291,6 +318,8 @@ const removeArticlesDateHandler = () => {
 
 const ARTICLES_CURRENT_DATE_FORM_ID = 'articles-current-date-edit-form'
 const ADDRESS_CHANGE_FORM_ID = 'address-change-edit-form'
+filingStore.registerFormIdToSection(ARTICLES_CURRENT_DATE_FORM_ID, PageSection.ARTICLES)
+filingStore.registerFormIdToSection(ADDRESS_CHANGE_FORM_ID, PageSection.DIRECTORS)
 
 const addArticlesDateButtonHandler = () => {
   if (editFormOpen(ARTICLES_CURRENT_DATE_FORM_ID)) {
@@ -455,6 +484,7 @@ const saveModalDate = async () => {
         <FormSubSection
           icon="i-mdi-account-multiple-plus"
           :title="$t('label.currentDirectors')"
+          :has-errors="sectionHasErrors(PageSection.DIRECTORS)"
           class="pb-6"
         >
           <FormDataList
@@ -488,7 +518,7 @@ const saveModalDate = async () => {
         <FormSubSection
           :title="$t('text.sharesTitle')"
           icon="i-mdi-sitemap"
-          :has-errors="false"
+          :has-errors="sectionHasErrors(PageSection.SHARES)"
           class="pb-6"
         >
           <Shares
@@ -500,11 +530,11 @@ const saveModalDate = async () => {
         <FormSubSection
           icon="i-mdi-handshake"
           :title="$t('label.articles')"
-          :has-errors="hasArticlesErrors"
+          :has-errors="sectionHasErrors(PageSection.ARTICLES)"
         >
           <ConnectFormSection
             :title="$t('label.resolutionOrCourtOrderDate')"
-            :has-errors="hasArticlesErrors"
+            :has-errors="sectionHasErrors(PageSection.ARTICLES)"
             class="text-base p-6 pb-2"
           >
             <template #title>

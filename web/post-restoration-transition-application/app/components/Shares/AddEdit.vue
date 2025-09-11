@@ -3,7 +3,6 @@ import currencySymbolMap from 'currency-symbol-map/map'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
-const { openEditFormError } = storeToRefs(usePostRestorationErrorsStore())
 const {
   shareClasses,
   editingShareIndex
@@ -132,7 +131,6 @@ const cancel = () => {
     resetData()
     emit('cancel')
   }
-  editFormClosed('shares')
 }
 
 const revalidateIfHasErrors = (errorField: string) => {

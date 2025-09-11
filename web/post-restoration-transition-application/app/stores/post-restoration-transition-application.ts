@@ -1,6 +1,7 @@
 import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
+import type { PageSection } from '~/enum/page_sections'
 
 const transitionApplicationIncompleteHook = 'app:transition-application-form:incomplete'
 
@@ -24,6 +25,7 @@ export const usePostRestorationTransitionApplicationStore
   const modifiedShareIndexes = ref<number[]>([])
   const staffPay = ref<StaffPay>({ priority: false } as StaffPay)
 
+  const formIdSectionMapping = ref<{ [key: string]: PageSection }>({})
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
@@ -236,6 +238,18 @@ export const usePostRestorationTransitionApplicationStore
     return transitionFiling
   }
 
+  const sectionHasOpenForm = (pageSection: PageSection): boolean => {
+    // setup in this direction as we can have only one blocking edit form open on the page
+    if (openEditComponentId.value) {
+      return (pageSection === formIdSectionMapping.value[openEditComponentId.value])
+    }
+    return false
+  }
+
+  const registerFormIdToSection = (formId: string, pageSection: PageSection) => {
+    formIdSectionMapping.value[formId] = pageSection
+  }
+
   return {
     activeBusiness,
     articles,
@@ -250,6 +264,8 @@ export const usePostRestorationTransitionApplicationStore
     shareClasses,
     planOfArrangement,
     regOfficeEmail,
+    sectionHasOpenForm,
+    registerFormIdToSection,
     init,
     checkHasActiveForm,
     checkHasChanges,
