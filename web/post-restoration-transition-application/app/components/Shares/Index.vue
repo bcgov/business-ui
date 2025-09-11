@@ -1,9 +1,17 @@
 <script lang="ts" setup>
 import getSymbolFromCurrency from 'currency-symbol-map'
+import { PageSection } from '~/enum/page_sections'
 
 const t = useNuxtApp().$i18n.t
 const anyExpanded = ref(false)
 const addingShare = ref(false)
+
+const { editFormClosed, editFormOpen, scrollToOpenForm } = useEditFormHandlers()
+
+const props = defineProps<{
+  formId: string
+  editFormError: string | undefined
+}>()
 
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
@@ -12,6 +20,9 @@ const {
   modifiedShareIndexes,
   ORIGINAL_SHARE_CLASSES
 } = storeToRefs(filingStore)
+
+const sharesEditFormId = `${props.formId}-edit-form`
+filingStore.registerFormIdToSection(sharesEditFormId, PageSection.SHARES)
 
 const addedIndexes = ref<number[]>([])
 const editedIndexes = ref<number[]>([])
@@ -159,10 +170,12 @@ const getDropdownActions = (row: Row<Share>) => {
 
 const toggleShareExpanded = (row: Row<Series>) => {
   if (addingShare.value) {
+    scrollToOpenForm('edit')
     return
   }
 
   if (anyExpanded.value && editingShareIndex.value !== row.index) {
+    scrollToOpenForm('edit')
     return
   }
 
@@ -170,7 +183,11 @@ const toggleShareExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
     editingShareIndex.value = -1
+    editFormClosed(sharesEditFormId)
   } else {
+    if (editFormOpen(sharesEditFormId)) {
+      return
+    }
     editingShareIndex.value = row.index
   }
   row.toggleExpanded()
@@ -209,8 +226,15 @@ const undoDelete = (index: number) => {
 
 const addShare = () => {
   if (addingShare.value === true || anyExpanded.value === true) {
+    scrollToOpenForm('edit')
     return
   }
+
+  // check if any other form is open, if is scroll to it and cancel adding share
+  if (editFormOpen(sharesEditFormId)) {
+    return
+  }
+
   addingShare.value = true
 }
 
@@ -235,7 +259,18 @@ const addedShare = () => {
   if (!modifiedShareIndexes.value.includes(shareClasses.value.length - 1)) {
     modifiedShareIndexes.value.push(shareClasses.value.length - 1)
   }
+  editFormClosed(sharesEditFormId)
   addingShare.value = false
+}
+
+const shareAddEditCancelHandler = () => {
+  addingShare.value = false
+  editFormClosed(sharesEditFormId)
+}
+
+const shareAddEditDoneHandler = () => {
+  addedShare()
+  editFormClosed(sharesEditFormId)
 }
 </script>
 
@@ -260,8 +295,10 @@ const addedShare = () => {
     <SharesAddEdit
       v-show="addingShare"
       class="py-4 px-6"
-      @cancel="addingShare = false"
-      @done="addedShare"
+      :form-id="sharesEditFormId"
+      :form-error="editFormError"
+      @cancel="shareAddEditCancelHandler"
+      @done="shareAddEditDoneHandler"
     />
     <UTable
       :data="flattenData(shareClasses)"
@@ -349,6 +386,8 @@ const addedShare = () => {
       </template>
       <template #expanded="{ row }">
         <SharesAddEdit
+          :form-id="sharesEditFormId"
+          :form-error="editFormError"
           class="pr-4"
           @cancel="toggleShareExpanded(row)"
           @done="updated(row)"

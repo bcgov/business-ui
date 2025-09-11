@@ -36,7 +36,7 @@ const fillDates = async (page: Page, values: object) => {
     await page.locator(
       `[id="${year}-${(month + 1) < 10 ? '0' : ''}${month + 1}-${(day) < 10 ? '0' : ''}${day}"] div`
     ).click()
-    await page.getByTestId('articlesCurrentDate_save').click()
+    await page.getByTestId('articles-current-date-edit-form_save').click()
   }
 }
 
