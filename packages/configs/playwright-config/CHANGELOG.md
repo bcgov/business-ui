@@ -1,5 +1,11 @@
 # @sbc-connect/playwright-config
 
+## 0.0.11
+
+### Patch Changes
+
+- [#230](https://github.com/bcgov/business-ui/pull/230) [`248a325`](https://github.com/bcgov/business-ui/commit/248a325b8c946aa9a4db4c9948ac28459e6a0354) Thanks [@deetz99](https://github.com/deetz99)! - Exclude mobile from config
+
 ## 0.0.10
 
 ### Patch Changes
