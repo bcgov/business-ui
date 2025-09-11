@@ -204,6 +204,10 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
   return isExpiredDate
 }
 
+export const isConsumed = (item: Business) => {
+  return item.nameRequest?.state === NrState.CONSUMED
+}
+
 export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: boolean } => {
   // Return default if there's no expiration date
   if (!item.nameRequest?.expirationDate || isExpired(item)) {
@@ -212,10 +216,9 @@ export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: bool
 
   const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver').startOf('day')
   const currentDate = moment().tz('America/Vancouver').startOf('day')
-  const isConsumed = item.nameRequest?.stateCd === NrState.CONSUMED
 
   const daysDiff = expirationDate.diff(currentDate, 'days')
-  const isSoon = daysDiff >= 0 && daysDiff <= 10 && !isConsumed
+  const isSoon = daysDiff >= 0 && daysDiff <= 10 && !isConsumed(item)
 
   return { daysDiff, isSoon }
 }
@@ -248,8 +251,12 @@ export const isChangeRequested = (item: Business) => {
  */
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
-  const details = []
+  const details: any[] = []
   const { daysDiff, isSoon } = isExpiringSoon(item)
+  // Check for Name Request State is Consumed
+  if (isConsumed(item)) {
+    return details
+  }
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
@@ -260,10 +267,7 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
     }
     const type = typeMap[item.corpType?.code as keyof typeof typeMap] || t('entityTypes.incorporationApplication')
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
-  }
-  // Special case: Check for expired Name Requests for Continuation Applications
-  // Unlike other filings, Continuation Applications can expire even when in APPROVED status
-  if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
+  } else if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type: t('entityTypes.continuationApplication') } })
   }
   if (isFrozed(item)) {
