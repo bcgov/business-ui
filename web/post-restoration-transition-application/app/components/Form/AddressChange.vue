@@ -3,6 +3,8 @@ import { toApiAddress, toUiAddress } from '~/utils/address'
 
 const props = defineProps<{
   index: number
+  formId: string
+  editFormError: string | undefined
 }>()
 
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -78,7 +80,7 @@ const cancel = () => {
 </script>
 
 <template>
-  <div class="flex space-x-6">
+  <div :id="formId" class="flex space-x-6">
     <div class="flex flex-col pr-4">
       <p class="font-bold text-bgGovColor-midGray">
         {{ editingDirector?.officer?.firstName }} {{ editingDirector?.officer?.lastName }}
@@ -125,7 +127,10 @@ const cancel = () => {
         :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
       />
 
-      <div class="flex justify-end space-x-4">
+      <div class="flex justify-end space-x-4 items-center">
+        <div v-if="editFormError" class="text-outcomes-error text-sm">
+          {{ $t(editFormError) }}
+        </div>
         <UButton
           :label="$t('label.done')"
           color="primary"

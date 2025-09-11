@@ -3,6 +3,7 @@ import currencySymbolMap from 'currency-symbol-map/map'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
+const { openEditFormError } = storeToRefs(usePostRestorationErrorsStore())
 const {
   shareClasses,
   editingShareIndex
@@ -14,6 +15,10 @@ const {
 } = storeToRefs(errorStore)
 
 const emit = defineEmits(['cancel', 'done'])
+defineProps<{
+  formId: string
+  formError?: string | undefined
+}>()
 const SHARES_TEXT = ' Shares'
 
 const resetData = () => {
@@ -127,6 +132,7 @@ const cancel = () => {
     resetData()
     emit('cancel')
   }
+  editFormClosed('shares')
 }
 
 const revalidateIfHasErrors = (errorField: string) => {
@@ -203,7 +209,7 @@ const cleanData = () => {
 
 <template>
   <div>
-    <div class="flex">
+    <div :id="formId" class="flex">
       <div class="font-bold inline-flex text-sm flex-1">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
         {{ $t('label.shareClass') }}
@@ -364,7 +370,10 @@ const cleanData = () => {
             label: 'pl-2'
           }"
         />
-        <div class="flex justify-end space-x-4 pl-2">
+        <div class="flex justify-end space-x-4 pl-2 items-center">
+          <div v-if="formError" class="text-outcomes-error text-sm">
+            {{ $t(formError) }}
+          </div>
           <UButton
             :label="$t('label.done')"
             color="primary"

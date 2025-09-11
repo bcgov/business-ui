@@ -5,6 +5,7 @@ import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
 
 const { setButtonControl } = useButtonControl()
+const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
@@ -16,6 +17,7 @@ const {
   courtOrderErrors,
   articlesErrors,
   staffPayErrors,
+  openEditFormError,
   completingPartyErrors
 } = storeToRefs(errorStore)
 
@@ -126,6 +128,7 @@ const {
   planOfArrangement,
   regOfficeEmail,
   shareWithSpecialRightsModified,
+  openEditComponentId,
   modifiedDirectors
 } = storeToRefs(filingStore)
 
@@ -143,8 +146,13 @@ const editingDirectorIndex = ref(-1)
 const toggleDirectorExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
+    editFormClosed(ADDRESS_CHANGE_FORM_ID)
     editingDirectorIndex.value = -1
   } else if (!anyExpanded.value) {
+    // if any blocking form is open, it will scroll to it, and cancel toggle
+    if (editFormOpen(ADDRESS_CHANGE_FORM_ID)) {
+      return
+    }
     anyExpanded.value = true
     editingDirectorIndex.value = row.index
   }
@@ -276,9 +284,19 @@ const showPreviousResolutionsDateLabel = computed(() => {
     : t('text.previousResolutionsShow')
 })
 
-const removeDateHandler = () => {
+const removeArticlesDateHandler = () => {
   articles.value.currentDate = undefined
   validate()
+}
+
+const ARTICLES_CURRENT_DATE_FORM_ID = 'articles-current-date-edit-form'
+const ADDRESS_CHANGE_FORM_ID = 'address-change-edit-form'
+
+const addArticlesDateButtonHandler = () => {
+  if (editFormOpen(ARTICLES_CURRENT_DATE_FORM_ID)) {
+    return
+  }
+  showDateInputBox.value = true
 }
 
 const minArticleResolutionDate = computed(() => {
@@ -309,7 +327,8 @@ setButtonControl({
   rightButtons: rightButtons
 })
 
-const closeDateandValidate = () => {
+const closeArticleDateEntryAndValidate = () => {
+  editFormClosed(ARTICLES_CURRENT_DATE_FORM_ID)
   showDateInputBox.value = false
   validate()
 }
@@ -449,7 +468,9 @@ const saveModalDate = async () => {
           >
             <template #expanded="{ row }">
               <FormAddressChange
+                :form-id="ADDRESS_CHANGE_FORM_ID"
                 :index="row.index"
+                :edit-form-error="openEditFormError"
                 @done="toggleDirectorExpanded(row)"
                 @cancel="toggleDirectorExpanded(row)"
               />
@@ -470,7 +491,10 @@ const saveModalDate = async () => {
           :has-errors="false"
           class="pb-6"
         >
-          <Shares />
+          <Shares
+            form-id="shares-section"
+            :edit-form-error="openEditFormError"
+          />
         </FormSubSection>
 
         <FormSubSection
@@ -501,20 +525,20 @@ const saveModalDate = async () => {
                       :padded="false"
                       variant="ghost"
                       class="rounded text-base gap-1"
-                      @click="removeDateHandler"
+                      @click="removeArticlesDateHandler"
                     />
                   </div>
                   <div v-else-if="showDateInputBox">
                     <FormDateInputWithButtons
-                      id="articlesCurrentDate"
+                      :id="ARTICLES_CURRENT_DATE_FORM_ID"
                       v-model="articles.currentDate"
                       name="articles-current-date"
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
                       readonly
-                      @save="closeDateandValidate"
-                      @cancel="closeDateandValidate"
+                      @save="closeArticleDateEntryAndValidate"
+                      @cancel="closeArticleDateEntryAndValidate"
                     />
                   </div>
                   <div v-else>
@@ -525,7 +549,7 @@ const saveModalDate = async () => {
                       :padded="false"
                       variant="outline"
                       class="rounded text-base pt-[11px] pb-[11px]"
-                      @click="showDateInputBox=true"
+                      @click="addArticlesDateButtonHandler"
                     />
                   </div>
                   <div v-if="hasArticlesErrors">

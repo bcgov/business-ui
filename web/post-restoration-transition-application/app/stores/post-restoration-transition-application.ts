@@ -32,6 +32,7 @@ export const usePostRestorationTransitionApplicationStore
   const editingShareIndex = ref<number>(-1)
   const certifiedByLegalName = ref<boolean | undefined>(false)
   const editingDirector = ref<OrgPerson | undefined>(undefined)
+  const openEditComponentId = ref<string | undefined>(undefined)
   const modifiedDirectors = ref<number[]>([])
 
   const editState = computed(() => editingShareIndex.value !== -1)
@@ -259,6 +260,7 @@ export const usePostRestorationTransitionApplicationStore
     ORIGINAL_SHARE_CLASSES,
     staffPay,
     editingDirector,
+    openEditComponentId,
     modifiedDirectors
   }
 })
