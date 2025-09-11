@@ -136,8 +136,8 @@ const sectionHasErrors = computed(() => (section: PageSection): boolean => {
   /* eslint-disable vue/script-indent */
   switch (section) {
     case PageSection.ARTICLES:
-      if (hasArticlesErrors.value ||
-        (filingStore.sectionHasOpenForm(PageSection.ARTICLES) && openEditFormError.value)) {
+      if (hasArticlesErrors.value
+        || (filingStore.sectionHasOpenForm(PageSection.ARTICLES) && openEditFormError.value)) {
         return true
       }
       break
@@ -288,6 +288,7 @@ const directorsColumns = ref([
           'color': 'primary',
           'class': 'inline-block mr-0 px-3',
           'variant': 'ghost',
+          'data-testId': 'change-director-address-button',
           'aria-label': t('label.change'),
           'ui': {
             label: 'align-top'

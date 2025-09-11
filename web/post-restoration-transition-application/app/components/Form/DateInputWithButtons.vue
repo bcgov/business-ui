@@ -71,6 +71,7 @@ const saveError = ref('')
     <UButton
       :label="$t('label.cancel')"
       :padded="false"
+      :data-testid="id + '_cancel'"
       class="rounded text-base pt-[11px] pb-[11px]"
       variant="outline"
       @click="cancelHandler"

@@ -141,6 +141,7 @@ const cancel = () => {
           :label="$t('label.cancel')"
           variant="outline"
           class="rounded"
+          data-testId="directorChangeAddressCancelBtn"
           @click="cancel()"
         />
       </div>

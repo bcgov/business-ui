@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import currencySymbolMap from 'currency-symbol-map/map'
+import { PageSection } from '~/enum/page_sections'
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
@@ -369,7 +370,10 @@ const cleanData = () => {
           }"
         />
         <div class="flex justify-end space-x-4 pl-2 items-center">
-          <div v-if="formError" class="text-outcomes-error text-sm">
+          <div
+            v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
+            class="text-outcomes-error text-sm"
+          >
             {{ $t(formError) }}
           </div>
           <UButton
