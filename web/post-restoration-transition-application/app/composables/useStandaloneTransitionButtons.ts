@@ -2,6 +2,7 @@ import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transit
 import { validate } from '~/utils/validate'
 
 export const useStandaloneTransitionButtons = () => {
+  const { scrollToOpenForm } = useEditFormHandlers()
   // submit final filing
   async function submitFiling() {
     const modal = useModal()
@@ -14,6 +15,10 @@ export const useStandaloneTransitionButtons = () => {
     const filingStore = usePostRestorationTransitionApplicationStore()
 
     const hasErrors = validate()
+
+    if (scrollToOpenForm('submit')) {
+      return
+    }
 
     if (hasErrors) {
       return
