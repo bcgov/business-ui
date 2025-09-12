@@ -316,7 +316,7 @@ const addedShare = () => {
     <SharesAddEdit
       v-show="addingShare"
       class="py-4 px-6"
-      :is-a-series="false"
+      :is-series="false"
       @cancel="addingShare = false"
       @done="addedShare"
     />
@@ -407,7 +407,7 @@ const addedShare = () => {
       <template #expanded="{ row }">
         <SharesAddEdit
           class="pr-4"
-          :is-a-series="addSeries"
+          :is-series="addSeries"
           @cancel="toggleShareExpanded(row, true)"
           @done="updated(row)"
         />
