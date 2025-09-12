@@ -1,11 +1,16 @@
 <script lang="ts" setup>
 import currencySymbolMap from 'currency-symbol-map/map'
 
+const props = defineProps<{
+  isASeries?: boolean
+}>()
+
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
-  editingShareIndex
+  editingShareIndex,
+  editingSeriesParent
 } = storeToRefs(filingStore)
 
 const errorStore = usePostRestorationErrorsStore()
@@ -37,8 +42,12 @@ const resetData = () => {
       hasRightsOrRestrictions: false,
       maxNumberOfShares: undefined,
       parValue: undefined,
-      priority: shareClasses.value.length + 1,
-      series: []
+      priority: shareClasses.value.length + 1
+    }
+    if (props.isASeries && editingSeriesParent.value !== -1) {
+      shareValues.value.parentShareIndex = editingSeriesParent.value
+    } else {
+      shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
     }
     shareName.value = ''
   }
@@ -52,7 +61,7 @@ watch(shareClasses, resetData, { deep: true })
 const firstParChange = ref(true)
 const firstMaxChange = ref(true)
 
-const shareValues = ref<Share>(
+const shareValues = ref<Share | Series>(
   JSON.parse(
     JSON.stringify(
       shareClasses?.value?.[editingShareIndex.value]
@@ -65,12 +74,17 @@ const shareValues = ref<Share>(
           hasRightsOrRestrictions: false,
           maxNumberOfShares: undefined,
           parValue: undefined,
-          priority: shareClasses.value.length + 1,
-          series: []
+          priority: shareClasses.value.length + 1
         }
     )
   )
 )
+
+if (props.isASeries && editingSeriesParent.value !== -1) {
+  shareValues.value.parentShareIndex = editingSeriesParent.value
+} else {
+  shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
+}
 
 const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : t('label.noMax'))
 const hasNoParValue = ref<string>(shareValues.value.hasParValue ? '' : t('label.noPar'))
@@ -130,7 +144,7 @@ const cancel = () => {
 }
 
 const revalidateIfHasErrors = (errorField: string) => {
-  if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) {
+  if ((shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) || (props.isASeries)) {
     shareValues.value.name = shareName.value
     cleanData()
     errorStore.verifyShareClasses(getWorkingShareClasses())
@@ -178,6 +192,8 @@ const done = () => {
     shareValues.value.name = shareName.value + SHARES_TEXT
     if (editingShareIndex.value !== -1) {
       shareClasses.value[editingShareIndex.value] = shareValues.value
+    } else if (props.isASeries && editingSeriesParent.value !== -1) {
+      shareClasses.value[editingSeriesParent.value].series.push(shareValues.value)
     } else {
       shareClasses.value.push(shareValues.value)
     }
@@ -206,14 +222,14 @@ const cleanData = () => {
     <div class="flex">
       <div class="font-bold inline-flex text-sm flex-1">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
-        {{ $t('label.shareClass') }}
+        {{ isASeries ? $t('label.shareSeries') : $t('label.shareClass') }}
       </div>
 
       <div class="inline-block ml-6 flex-auto space-y-6">
         <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
           <UInput
             v-model="shareName"
-            :placeholder="$t('label.shareClassName')"
+            :placeholder="isASeries ? $t('label.shareSeriesName') : $t('label.shareClassName')"
             class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
             @blur="revalidateIfHasErrors('name')"
           >
@@ -225,7 +241,7 @@ const cleanData = () => {
           </UInput>
         </UFormField>
         <div class="text-sm text-gray-500 -mt-6 ml-4">
-          {{ $t('text.helperText.shareClassName') }}
+          {{ isASeries ? $t('text.helperText.shareSeriesName') : $t('text.helperText.shareClassName') }}
         </div>
 
         <hr class="border-bcGovGray-300">
@@ -250,7 +266,7 @@ const cleanData = () => {
           >
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
-              :placeholder="$t('label.maximumNumberOfShares')"
+              :placeholder="isASeries ? $t('label.maximumNumberOfSeries') : $t('label.maximumNumberOfShares')"
               :disable-wheel-change="true"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
@@ -284,7 +300,7 @@ const cleanData = () => {
 
         <hr class="border-bcGovGray-300">
 
-        <div class="flex">
+        <div v-if="!isASeries" class="flex">
           <URadioGroup
             v-model="hasNoParValue"
             data-testid="parValue-radio"
@@ -342,7 +358,7 @@ const cleanData = () => {
             </UFormField>
           </div>
         </div>
-        <div>
+        <div v-if="!isASeries">
           <URadioGroup
             v-model="hasNoParValue"
             data-testid="noParValue-radio"
@@ -352,6 +368,45 @@ const cleanData = () => {
             }"
             @change="noParValueChangeHandler()"
           />
+        </div>
+        <div v-else>
+          <!-- is a series -->
+          <div v-if="shareClasses?.[editingSeriesParent]?.hasParValue !== false" class="flex gap-4 w-full">
+            <UFormField class="mr-4 w-[30%]">
+              <UInput
+                :value="shareClasses?.[editingSeriesParent]?.parValue"
+                :readonly="true"
+                :disable-wheel-change="true"
+                :disabled="true"
+                variant="ghost"
+                :ui="{
+                  base: 'w-full rounded-md border-0 border-b-1 border-dashed placeholder:text-dimmed'
+                    + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                    + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                    + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                    + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                }"
+                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+              />
+            </UFormField>
+            <UFormField class="h-full flex-1 w-full">
+              <UInput
+                :value="shareClasses?.[editingSeriesParent]?.currency"
+                :readonly="true"
+                :disabled="true"
+                variant="ghost"
+                :ui="{
+                  base: 'w-full rounded-md border-0 border-b-1 border-dashed placeholder:text-dimmed'
+                    + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                    + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                    + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                    + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                }"
+                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+              />
+            </UFormField>
+          </div>
+          {{ shareClasses?.[editingSeriesParent]?.hasParValue === false ? $t('label.noPar') : '' }}
         </div>
 
         <hr class="border-bcGovGray-300">

@@ -56,6 +56,7 @@ export default {
     legalName: 'Legal Name',
     mailingAddress: 'Mailing Address',
     maximumNumberOfShares: 'Maximum Number of Shares',
+    maximumNumberOfSeries: 'Maximum number of shares in this series',
     moveDown: 'Move Down',
     moveUp: 'Move Up',
     name: 'Name',
@@ -81,7 +82,9 @@ export default {
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
     shareClass: 'Share Class',
+    shareSeries: 'Series',
     shareClassName: 'Class Name [Shares]',
+    shareSeriesName: 'Series Name [Shares]',
     shareColumnActions: 'Actions',
     shareColumnMaxNum: 'Max. Number of Shares',
     shareColumnName: 'Name of Share Class or Series',
@@ -108,7 +111,8 @@ export default {
     folioOrReferenceNumber: 'This is meant for your own tracking purposes and will appear on your receipt.',
     goToMainFileAddressChange: 'Go to the main page of this business and file an address change.',
     helperText: {
-      shareClassName: 'Only enter the class name. The word “shares” will be added automatically.'
+      shareClassName: 'Only enter the class name. The word “shares” will be added automatically.',
+      shareSeriesName: 'Only enter the series name. The word "shares" will be added automatically.'
     },
     itIsAnOffenceToMakeFalseStatement: 'It is an offence to make a false or misleading statement in respect of a material fact in a record submitted to the Corporate Registry for filing. See section 427 of the Business Corporations Act.',
     legalNameCertifyPlaceHolder: '[LEGAL NAME]',
@@ -135,10 +139,12 @@ export default {
     articlesDateRange: 'Please enter a date between {incorpDate} and {today}.',
     currency: 'Currency is required, when has par value is selected',
     email: 'Valid email is required',
+    exceedsNumberOfShares: 'This would make the total of shares exceeds maximum number of shares across all series',
     maxLength30: 'Maximum 30 characters',
     maxLength50: 'Maximum 50 characters',
     maxNumberOfShares: 'Maximum Number of Shares is required, when has maximum is selected',
     notAValidInput: 'Not a valid input',
+    parentShareRequired: 'Parent share is required', // shouldn't be possible to get
     parValue: 'Par Value is required, when has par value is selected',
     required: 'This field is required',
     shareNameExists: 'Share name already exists'
