@@ -2,7 +2,7 @@
 import currencySymbolMap from 'currency-symbol-map/map'
 
 const props = defineProps<{
-  isASeries?: boolean
+  isSeries?: boolean
 }>()
 
 const t = useNuxtApp().$i18n.t
@@ -44,7 +44,7 @@ const resetData = () => {
       parValue: undefined,
       priority: shareClasses.value.length + 1
     }
-    if (props.isASeries && editingSeriesParent.value !== -1) {
+    if (props.isSeries && editingSeriesParent.value !== -1) {
       shareValues.value.parentShareIndex = editingSeriesParent.value
     } else {
       shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
@@ -80,7 +80,7 @@ const shareValues = ref<Share | Series>(
   )
 )
 
-if (props.isASeries && editingSeriesParent.value !== -1) {
+if (props.isSeries && editingSeriesParent.value !== -1) {
   shareValues.value.parentShareIndex = editingSeriesParent.value
 } else {
   shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
@@ -144,7 +144,7 @@ const cancel = () => {
 }
 
 const revalidateIfHasErrors = (errorField: string) => {
-  if ((shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) || (props.isASeries)) {
+  if ((shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) || (props.isSeries)) {
     shareValues.value.name = shareName.value
     cleanData()
     errorStore.verifyShareClasses(getWorkingShareClasses())
@@ -192,7 +192,7 @@ const done = () => {
     shareValues.value.name = shareName.value + SHARES_TEXT
     if (editingShareIndex.value !== -1) {
       shareClasses.value[editingShareIndex.value] = shareValues.value
-    } else if (props.isASeries && editingSeriesParent.value !== -1) {
+    } else if (props.isSeries && editingSeriesParent.value !== -1) {
       shareClasses.value[editingSeriesParent.value].series.push(shareValues.value)
     } else {
       shareClasses.value.push(shareValues.value)
@@ -222,14 +222,14 @@ const cleanData = () => {
     <div class="flex">
       <div class="font-bold inline-flex text-sm flex-1">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
-        {{ isASeries ? $t('label.shareSeries') : $t('label.shareClass') }}
+        {{ isSeries ? $t('label.shareSeries') : $t('label.shareClass') }}
       </div>
 
       <div class="inline-block ml-6 flex-auto space-y-6">
         <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
           <UInput
             v-model="shareName"
-            :placeholder="isASeries ? $t('label.shareSeriesName') : $t('label.shareClassName')"
+            :placeholder="isSeries ? $t('label.shareSeriesName') : $t('label.shareClassName')"
             class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
             @blur="revalidateIfHasErrors('name')"
           >
@@ -241,7 +241,7 @@ const cleanData = () => {
           </UInput>
         </UFormField>
         <div class="text-sm text-gray-500 -mt-6 ml-4">
-          {{ isASeries ? $t('text.helperText.shareSeriesName') : $t('text.helperText.shareClassName') }}
+          {{ isSeries ? $t('text.helperText.shareSeriesName') : $t('text.helperText.shareClassName') }}
         </div>
 
         <hr class="border-bcGovGray-300">
@@ -266,7 +266,7 @@ const cleanData = () => {
           >
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
-              :placeholder="isASeries ? $t('label.maximumNumberOfSeries') : $t('label.maximumNumberOfShares')"
+              :placeholder="isSeries ? $t('label.maximumNumberOfSeries') : $t('label.maximumNumberOfShares')"
               :disable-wheel-change="true"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
@@ -300,7 +300,7 @@ const cleanData = () => {
 
         <hr class="border-bcGovGray-300">
 
-        <div v-if="!isASeries" class="flex">
+        <div v-if="!isSeries" class="flex">
           <URadioGroup
             v-model="hasNoParValue"
             data-testid="parValue-radio"
@@ -358,7 +358,7 @@ const cleanData = () => {
             </UFormField>
           </div>
         </div>
-        <div v-if="!isASeries">
+        <div v-if="!isSeries">
           <URadioGroup
             v-model="hasNoParValue"
             data-testid="noParValue-radio"

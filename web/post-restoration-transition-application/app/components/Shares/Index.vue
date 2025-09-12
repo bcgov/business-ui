@@ -217,6 +217,9 @@ const moveShare = (index: number, moveUp: boolean) => {
 
 const deleteShare = (index: number) => {
   shareClasses.value[index].removed = true
+  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
+    shareClasses.value[index].series[i].removed = true
+  }
   if (!modifiedShareIndexes.value.includes(index)) {
     modifiedShareIndexes.value.push(index)
   }
