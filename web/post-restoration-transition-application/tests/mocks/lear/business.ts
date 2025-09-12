@@ -15,3 +15,4 @@ export const base = {
 }
 
 export const CP1002605 = base
+export const BC0000001 = base

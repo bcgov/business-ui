@@ -35,10 +35,15 @@ export const usePostRestorationErrorsStore
     }
   }
 
-  const verifyShareClasses = (shareClasses: Share[]) => {
+  const verifyShareClasses = (shareClasses: (Share | Series)[]) => {
     shareErrors.value = []
     for (let i = 0; i < shareClasses.length; i++) {
-      const shareResult = shareSchema.safeParse(shareClasses[i])
+      let shareResult = null
+      if (Object.keys(shareClasses[i]).includes('series')) {
+        shareResult = shareSchema.safeParse(shareClasses[i])
+      } else {
+        shareResult = seriesSchema.safeParse(shareClasses[i])
+      }
       if (!shareResult.success) {
         shareErrors.value.push(shareResult.error.flatten().fieldErrors)
       } else {
