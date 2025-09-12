@@ -252,11 +252,11 @@ export const isChangeRequested = (item: Business) => {
 export const getDetails = (item: Business): EntityAlertTypes[] => {
   const { t } = useNuxtApp().$i18n
   const details: any[] = []
-  const { daysDiff, isSoon } = isExpiringSoon(item)
   // Check for Name Request State is Consumed
   if (isConsumed(item)) {
     return details
   }
+  const { daysDiff, isSoon } = isExpiringSoon(item)
   // Check for expired Name Requests for IAs/Registrations/Amalgamations
   // These are draft filings that haven't been submitted yet
   if (isExpired(item)) {
