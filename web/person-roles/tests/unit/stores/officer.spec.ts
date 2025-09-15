@@ -4,6 +4,14 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import type { Row } from '@tanstack/vue-table'
 import { businessBC1234567 } from '~~/tests/mocks'
 
+mockNuxtImport('useRoute', () => {
+  return () => ({
+    params: {
+      businessId: 'BC1234567'
+    }
+  })
+})
+
 const mockLegalApi = {
   getBusiness: vi.fn(),
   getParties: vi.fn(),
