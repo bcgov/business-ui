@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.9
+
+### Patch Changes
+
+- [#237](https://github.com/bcgov/business-ui/pull/237) [`44eaf88`](https://github.com/bcgov/business-ui/commit/44eaf88094adf0a56577f171555306b099bc1604) Thanks [@deetz99](https://github.com/deetz99)! - Update pay/forms layer deps
+
 ## 0.1.8
 
 ### Patch Changes
