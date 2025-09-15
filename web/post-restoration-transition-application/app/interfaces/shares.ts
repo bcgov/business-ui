@@ -20,16 +20,12 @@ export interface Share extends Series {
 
 const seriesRefine = (input, ctx) => {
   const filingStore = usePostRestorationTransitionApplicationStore()
-  let goodStanding = true
+  // is true if no errors, false otherwise
+  let noErrors = true
   const parent = filingStore.shareClasses[input.parentShareIndex]
 
   if (!parent) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['name'],
-      message: 'errors.parentShareRequired' // it shouldn't be possible to get this unless user breaks code
-    })
-    goodStanding = false
+    throw new Error('errors.parentShareRequired')
   }
 
   if (parent?.hasMaximumShares && parent?.maxNumberOfShares !== undefined) {
@@ -46,17 +42,18 @@ const seriesRefine = (input, ctx) => {
         path: ['maxNumberOfShares'],
         message: 'errors.exceedsNumberOfShares'
       })
-      goodStanding = false
+      noErrors = false
     }
   }
 
-  return goodStanding
+  return noErrors
 }
 
 const refine = (input, ctx) => {
-  let goodStanding = true
+  // is true if no errors, false otherwise
+  let noErrors = true
   if (input.hasMaximumShares) {
-      goodStanding = goodStanding && input.maxNumberOfShares !== undefined
+    noErrors = noErrors && input.maxNumberOfShares !== undefined
       if (input.maxNumberOfShares === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -67,8 +64,8 @@ const refine = (input, ctx) => {
   }
 
   if (input.hasParValue) {
-      goodStanding = goodStanding && input.parValue !== undefined
-      goodStanding = goodStanding && input.currency !== undefined
+    noErrors = noErrors && input.parValue !== undefined
+    noErrors = noErrors && input.currency !== undefined
       if (input.parValue === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -86,10 +83,10 @@ const refine = (input, ctx) => {
   }
 
   if (Object.keys(input).includes('parentShareIndex')) {
-    goodStanding = goodStanding && seriesRefine(input, ctx)
+    noErrors = noErrors && seriesRefine(input, ctx)
   }
 
-  return goodStanding
+  return noErrors
 }
 
 export const seriesSchema = z.object({

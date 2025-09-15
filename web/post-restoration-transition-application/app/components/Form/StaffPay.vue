@@ -64,6 +64,7 @@ const updatePaymentMethod = () => {
     >
       <UInput
         v-model="staffPay.routingSlipNumber"
+        :disabled="staffPay.paymentMethod !== STAFF_PAY_PAYMENT_METHODS.CASH"
         :placeholder="$t('label.routingSlipNumber')"
         class="w-full"
         @blur="revalidateIfHasErrors('routingSlipNumber')"
@@ -89,6 +90,7 @@ const updatePaymentMethod = () => {
       <UInput
         v-model="staffPay.bcOnlineAccountNumber"
         :placeholder="$t('label.bcOnlineAccountNumber')"
+        :disabled="staffPay.paymentMethod !== STAFF_PAY_PAYMENT_METHODS.BCONLINE"
         class="w-full"
         @blur="revalidateIfHasErrors('bcOnlineAccountNumber')"
       />
@@ -99,6 +101,7 @@ const updatePaymentMethod = () => {
     >
       <UInput
         v-model="staffPay.datNumber"
+        :disabled="staffPay.paymentMethod !== STAFF_PAY_PAYMENT_METHODS.BCONLINE"
         :placeholder="$t('label.datNumber')"
         class="w-full"
         @blur="revalidateIfHasErrors('datNumber')"
@@ -110,6 +113,7 @@ const updatePaymentMethod = () => {
     >
       <UInput
         v-model="staffPay.folioNumber"
+        :disabled="staffPay.paymentMethod !== STAFF_PAY_PAYMENT_METHODS.BCONLINE"
         :placeholder="$t('label.folioNumber')"
         class="w-full"
         @blur="revalidateIfHasErrors('folioNumber')"

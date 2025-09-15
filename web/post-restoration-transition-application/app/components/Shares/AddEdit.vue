@@ -18,8 +18,11 @@ const {
   shareErrors
 } = storeToRefs(errorStore)
 
-const emit = defineEmits(['cancel', 'done'])
+const emit = defineEmits(['cancel', 'done', 'force-redraw'])
 const SHARES_TEXT = ' Shares'
+const hasDeletedSeries = ref(false)
+
+const translationPath = props.isSeries ? 'series' : 'share'
 
 const resetData = () => {
   shareErrors.value = []
@@ -54,6 +57,36 @@ const resetData = () => {
 
   hasNoMaxShares.value = shareValues.value.hasMaximumShares ? '' : t('label.noMax')
   hasNoParValue.value = shareValues.value.hasParValue ? '' : t('label.noPar')
+}
+
+const rightsChangeHandler = (newVal: boolean | indeterminate) => {
+  if (shareValues.value.series && shareValues.value.series.length > 0) {
+    if (!newVal) {
+      useModal().openBaseModal(
+        t('label.shareSeriesRightsRestrictions'),
+        t('text.shareSeriesRightsRestrictions'),
+        false,
+        [
+          { label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true, onClick: () => {
+            shareValues.value.hasRightsOrRestrictions = true
+          } },
+          { label: t('label.removeSeries'), size: 'xl', shouldClose: true, onClick: () => {
+            for (let i = 0; i < shareValues.value.series.length; i++) {
+              shareValues.value.series[i].removed = true
+            }
+            // const copy = JSON.parse(JSON.stringify(shareValues.value))
+            // Object.assign(shareValues.value, copy)
+            hasDeletedSeries.value = true
+          } }
+        ]
+      )
+    } else if (hasDeletedSeries.value) {
+      for (let i = 0; i < shareValues.value.series.length; i++) {
+        delete shareValues.value.series[i].removed
+      }
+      hasDeletedSeries.value = false
+    }
+  }
 }
 
 watch(shareClasses, resetData, { deep: true })
@@ -144,7 +177,7 @@ const cancel = () => {
 }
 
 const revalidateIfHasErrors = (errorField: string) => {
-  if ((shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) || (props.isSeries)) {
+  if (getError(errorField) || props.isSeries) {
     shareValues.value.name = shareName.value
     cleanData()
     errorStore.verifyShareClasses(getWorkingShareClasses())
@@ -222,14 +255,14 @@ const cleanData = () => {
     <div class="flex">
       <div class="font-bold inline-flex text-sm flex-1">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
-        {{ isSeries ? $t('label.shareSeries') : $t('label.shareClass') }}
+        {{ $t(`label.${translationPath}`) }}
       </div>
 
       <div class="inline-block ml-6 flex-auto space-y-6">
         <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
           <UInput
             v-model="shareName"
-            :placeholder="isSeries ? $t('label.shareSeriesName') : $t('label.shareClassName')"
+            :placeholder="$t(`label.${translationPath}Name`)"
             class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
             @blur="revalidateIfHasErrors('name')"
           >
@@ -266,7 +299,7 @@ const cleanData = () => {
           >
             <UInputNumber
               v-model="shareValues.maxNumberOfShares"
-              :placeholder="isSeries ? $t('label.maximumNumberOfSeries') : $t('label.maximumNumberOfShares')"
+              :placeholder="$t(`label.${translationPath}MaximumNumberOf`)"
               :disable-wheel-change="true"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
@@ -300,74 +333,76 @@ const cleanData = () => {
 
         <hr class="border-bcGovGray-300">
 
-        <div v-if="!isSeries" class="flex">
-          <URadioGroup
-            v-model="hasNoParValue"
-            data-testid="parValue-radio"
-            :items="['']"
-            class="flex-0 mr-3 align-bottom text-base"
-            :ui="{
-              container: 'text-base h-[56px]'
-            }"
-            @change="parValueChangeHandler()"
-          />
-          <div class="flex gap-4 w-full">
-            <UFormField
-              :error="
-                $te(getError('parValue'))
-                  ? $t(getError('parValue'))
-                  : getError('parValue')"
-              class="mr-4 w-[30%]"
-            >
-              <UInputNumber
-                v-model="shareValues.parValue"
-                :placeholder="$t('label.parValue')"
-                :disable-wheel-change="true"
-                :ui="{
-                  base: 'w-full rounded-md border-0 placeholder:text-dimmed'
-                    + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
-                    + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
-                    + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
-                    + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
-                }"
-                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
-                @focusin="parValueChangeHandler()"
-                @update:model-value="revalidateIfHasErrors('parValue')"
-              >
-                <template #decrement>
-                  <span />
-                </template>
-                <template #increment>
-                  <span />
-                </template>
-              </UInputNumber>
-            </UFormField>
-            <UFormField
-              :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
-              class="h-full flex-1 w-full"
-            >
-              <USelect
-                v-model="shareValues.currency"
-                data-testid="currency-select"
-                :placeholder="$t('label.currency')"
-                :items="currencies"
-                class="p-[18px] w-full pl-2"
-                @focus="parValueChangeHandler()"
-                @update:model-value="revalidateIfHasErrors('currency')"
-              />
-            </UFormField>
-          </div>
-        </div>
         <div v-if="!isSeries">
-          <URadioGroup
-            v-model="hasNoParValue"
-            data-testid="noParValue-radio"
-            :items="[$t('label.noPar')]"
-            :ui="{
-              label: 'text-base'
-            }"
-            @change="noParValueChangeHandler()"
-          />
+          <div class="flex">
+            <URadioGroup
+              v-model="hasNoParValue"
+              data-testid="parValue-radio"
+              :items="['']"
+              class="flex-0 mr-3 align-bottom text-base"
+              :ui="{
+                container: 'text-base h-[56px]'
+              }"
+              @change="parValueChangeHandler()"
+            />
+            <div class="flex gap-4 w-full">
+              <UFormField
+                :error="
+                  $te(getError('parValue'))
+                    ? $t(getError('parValue'))
+                    : getError('parValue')"
+                class="mr-4 w-[30%]"
+              >
+                <UInputNumber
+                  v-model="shareValues.parValue"
+                  :placeholder="$t('label.parValue')"
+                  :disable-wheel-change="true"
+                  :ui="{
+                    base: 'w-full rounded-md border-0 placeholder:text-dimmed'
+                      + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                      + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                      + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                      + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+                  }"
+                  class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+                  @focusin="parValueChangeHandler()"
+                  @update:model-value="revalidateIfHasErrors('parValue')"
+                >
+                  <template #decrement>
+                    <span />
+                  </template>
+                  <template #increment>
+                    <span />
+                  </template>
+                </UInputNumber>
+              </UFormField>
+              <UFormField
+                :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
+                class="h-full flex-1 w-full"
+              >
+                <USelect
+                  v-model="shareValues.currency"
+                  data-testid="currency-select"
+                  :placeholder="$t('label.currency')"
+                  :items="currencies"
+                  class="p-[18px] w-full pl-2"
+                  @focus="parValueChangeHandler()"
+                  @update:model-value="revalidateIfHasErrors('currency')"
+                />
+              </UFormField>
+            </div>
+          </div>
+          <div class="mt-6">
+            <URadioGroup
+              v-model="hasNoParValue"
+              data-testid="noParValue-radio"
+              :items="[$t('label.noPar')]"
+              :ui="{
+                label: 'text-base'
+              }"
+              @change="noParValueChangeHandler()"
+            />
+          </div>
         </div>
         <div v-else>
           <!-- is a series -->
@@ -418,6 +453,7 @@ const cleanData = () => {
             base: 'mt-1',
             label: 'pl-2'
           }"
+          @update:model-value="rightsChangeHandler"
         />
         <div class="flex justify-end space-x-4 pl-2">
           <UButton

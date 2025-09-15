@@ -4,6 +4,7 @@ import getSymbolFromCurrency from 'currency-symbol-map'
 const t = useNuxtApp().$i18n.t
 const anyExpanded = ref(false)
 const addingShare = ref(false)
+const shareTableKey = ref(0)
 
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
@@ -227,6 +228,9 @@ const deleteShare = (index: number) => {
 
 const undoDelete = (index: number) => {
   delete shareClasses.value[index].removed
+  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
+    delete shareClasses.value[index].series[i].removed
+  }
   modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== index)
 }
 
@@ -285,6 +289,7 @@ const updated = (row: Row<Share | Series>) => {
   addSeries.value = false
   addingShare.value = false
   editingSeriesParent.value = -1
+  shareTableKey.value++
   toggleShareExpanded(row, forceClose)
 }
 
@@ -295,6 +300,7 @@ const addedShare = () => {
   }
   addingShare.value = false
   addSeries.value = false
+  shareTableKey.value++
 }
 </script>
 
@@ -324,6 +330,7 @@ const addedShare = () => {
       @done="addedShare"
     />
     <UTable
+      :key="`share-table-${shareTableKey}`"
       :data="flattenData(shareClasses)"
       :columns="columns"
       :ui="{
@@ -378,7 +385,7 @@ const addedShare = () => {
           @click="toggleShareExpanded(row)"
         />
         <UButton
-          v-else
+          v-else-if="row.original.removed && row.original.parentShareIndex === undefined"
           icon="i-mdi-undo"
           :label="$t('label.undo')"
           color="primary"
