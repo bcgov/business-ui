@@ -103,12 +103,28 @@ export const useOfficerModals = () => {
     })
   }
 
+  async function openFilingNotAvailableModal() {
+    await baseModal.open({
+      title: t('modal.filingNotAvailable.title'),
+      description: t('modal.filingNotAvailable.description'),
+      buttons: [
+        {
+          label: t('label.goBack'),
+          to: businessDashboardUrl.value,
+          external: true
+        }
+      ],
+      dismissible: false
+    })
+  }
+
   return {
     openUnsavedChangesModal,
     openPendingTaskOnSaveOrSubmitModal,
     openSaveFilingErrorModal,
     openFilingNotAllowedErrorModal,
     openGetDraftFilingErrorModal,
-    openInitOfficerStoreErrorModal
+    openInitOfficerStoreErrorModal,
+    openFilingNotAvailableModal
   }
 }

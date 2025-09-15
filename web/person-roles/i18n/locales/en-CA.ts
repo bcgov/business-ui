@@ -110,6 +110,10 @@ export default {
         title: 'PAD Account in Confirmation Period',
         description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
       }
+    },
+    filingNotAvailable: {
+      title: 'Page not available',
+      description: 'The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.'
     }
   },
   text: {
