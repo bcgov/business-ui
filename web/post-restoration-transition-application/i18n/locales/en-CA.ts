@@ -55,7 +55,6 @@ export default {
     hasRightsOrRestrictions: 'This share class has special rights or restrictions',
     legalName: 'Legal Name',
     mailingAddress: 'Mailing Address',
-    maximumNumberOfShares: 'Maximum Number of Shares',
     moveDown: 'Move Down',
     moveUp: 'Move Up',
     name: 'Name',
@@ -74,14 +73,19 @@ export default {
     recordsOffice: 'Records Office',
     refresh: 'Refresh Page',
     registeredOffice: 'Registered Office',
+    removeSeries: 'Remove Series',
     resolutionOr: 'Resolution or',
     resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
     routingSlipNumber: 'Routing Slip Number',
     sameAsDelivery: 'Same as Delivery Address',
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
-    shareClass: 'Share Class',
-    shareClassName: 'Class Name [Shares]',
+    series: 'Series',
+    seriesName: 'Series Name [Shares]',
+    seriesMaximumNumberOf: 'Maximum number of shares in this series',
+    share: 'Share Class',
+    shareMaximumNumberOf: 'Maximum Number of Shares',
+    shareName: 'Class Name [Shares]',
     shareColumnActions: 'Actions',
     shareColumnMaxNum: 'Max. Number of Shares',
     shareColumnName: 'Name of Share Class or Series',
@@ -89,6 +93,7 @@ export default {
     shareColumnParValueCurrency: 'Currency',
     shareColumnRightsRestrictions: 'Special Rights or Restrictions',
     shares: 'Shares',
+    shareSeriesRightsRestrictions: 'Remove Share Series',
     to: 'to',
     yes: 'Yes'
   },
@@ -108,7 +113,8 @@ export default {
     folioOrReferenceNumber: 'This is meant for your own tracking purposes and will appear on your receipt.',
     goToMainFileAddressChange: 'Go to the main page of this business and file an address change.',
     helperText: {
-      shareClassName: 'Only enter the class name. The word “shares” will be added automatically.'
+      shareName: 'Only enter the class name. The word “shares” will be added automatically.',
+      seriesName: 'Only enter the series name. The word "shares" will be added automatically.'
     },
     itIsAnOffenceToMakeFalseStatement: 'It is an offence to make a false or misleading statement in respect of a material fact in a record submitted to the Corporate Registry for filing. See section 427 of the Business Corporations Act.',
     legalNameCertifyPlaceHolder: '[LEGAL NAME]',
@@ -120,6 +126,7 @@ export default {
     previousResolutionsShow: 'Show previous resolutions or court Order dates',
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
     sharesDescription: 'To make changes to a class or series of shares with special rights or restrictions, you must have passed a resolution or have a court order. Only enter changes related to a single resolution or court order date. ',
+    shareSeriesRightsRestrictions: 'This share class has one or more share series. If you remove the special rights and restrictions of this share class, all associated share series will be removed.',
     sharesTitle: 'Share Structure',
     transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
   },
@@ -135,10 +142,12 @@ export default {
     articlesDateRange: 'Please enter a date between {incorpDate} and {today}.',
     currency: 'Currency is required, when has par value is selected',
     email: 'Valid email is required',
+    exceedsNumberOfShares: 'This would make the total of shares exceeds maximum number of shares across all series',
     maxLength30: 'Maximum 30 characters',
     maxLength50: 'Maximum 50 characters',
     maxNumberOfShares: 'Maximum Number of Shares is required, when has maximum is selected',
     notAValidInput: 'Not a valid input',
+    parentShareRequired: 'Parent share is required', // shouldn't be possible to get
     parValue: 'Par Value is required, when has par value is selected',
     required: 'This field is required',
     shareNameExists: 'Share name already exists'

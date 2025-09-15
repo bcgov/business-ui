@@ -4,25 +4,32 @@ import getSymbolFromCurrency from 'currency-symbol-map'
 const t = useNuxtApp().$i18n.t
 const anyExpanded = ref(false)
 const addingShare = ref(false)
+const shareTableKey = ref(0)
 
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
   editingShareIndex,
   modifiedShareIndexes,
-  ORIGINAL_SHARE_CLASSES
+  ORIGINAL_SHARE_CLASSES,
+  editingSeriesParent
 } = storeToRefs(filingStore)
 
 const addedIndexes = ref<number[]>([])
 const editedIndexes = ref<number[]>([])
+const addSeries = ref<boolean>(false)
+const addSeriesShareIndex = ref<number>(-1)
 
 const flattenData = (data: Share[]) => {
   const flatData: Series[] = []
   data.sort((a, b) => a.priority - b.priority)
-  data.forEach((share) => {
+  data.forEach((share, index) => {
     flatData.push(share)
     if (share.series && share.series.length > 0) {
       share.series.sort((a, b) => a.priority - b.priority)
+      share.series.forEach((s) => {
+        s.parentShareIndex = index
+      })
       flatData.push(...flattenData(share.series))
     }
   })
@@ -122,8 +129,7 @@ const getDropdownActions = (row: Row<Share>) => {
       label: t('label.addSeries'),
       icon: 'i-mdi-playlist-plus',
       onClick: () => {
-        // eslint-disable-next-line no-console
-        console.log('Add Series', row)
+        addASeries(row)
       },
       color: 'primary',
       disabled: !row.original.hasRightsOrRestrictions
@@ -157,13 +163,28 @@ const getDropdownActions = (row: Row<Share>) => {
   ]
 }
 
-const toggleShareExpanded = (row: Row<Series>) => {
+const toggleShareExpanded = (row: Row<Share | Series>, skipValidations?: boolean) => {
+  if (skipValidations === undefined) {
+    skipValidations = false
+  }
+
+  if (skipValidations) {
+    addingShare.value = false
+    anyExpanded.value = false
+    editingShareIndex.value = -1
+  }
+
   if (addingShare.value) {
     return
   }
 
   if (anyExpanded.value && editingShareIndex.value !== row.index) {
     return
+  }
+
+  addSeries.value = row.original.series ? false : true
+  if (addSeries.value) {
+    editingSeriesParent.value = row.original.parentShareIndex
   }
 
   anyExpanded.value = true
@@ -197,6 +218,9 @@ const moveShare = (index: number, moveUp: boolean) => {
 
 const deleteShare = (index: number) => {
   shareClasses.value[index].removed = true
+  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
+    shareClasses.value[index].series[i].removed = true
+  }
   if (!modifiedShareIndexes.value.includes(index)) {
     modifiedShareIndexes.value.push(index)
   }
@@ -204,17 +228,36 @@ const deleteShare = (index: number) => {
 
 const undoDelete = (index: number) => {
   delete shareClasses.value[index].removed
+  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
+    delete shareClasses.value[index].series[i].removed
+  }
   modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== index)
 }
 
 const addShare = () => {
-  if (addingShare.value === true || anyExpanded.value === true) {
+  if (addingShare.value || anyExpanded.value || addSeries.value) {
     return
   }
   addingShare.value = true
 }
 
-const updated = (row: Row<Series>) => {
+const addASeries = (row: Row<Share>) => {
+  if (addingShare.value || anyExpanded.value) {
+    return
+  }
+  addSeries.value = true
+  addSeriesShareIndex.value = row.index
+  anyExpanded.value = true
+  editingSeriesParent.value = row.index
+  editingShareIndex.value = -1
+  row.toggleExpanded()
+}
+
+const updated = (row: Row<Share | Series>) => {
+  if (addSeries.value) {
+    editingShareIndex.value = editingSeriesParent.value
+  }
+
   const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[row.index])
   const current = JSON.stringify(shareClasses.value[row.index])
 
@@ -227,7 +270,27 @@ const updated = (row: Row<Series>) => {
     modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== row.index)
     editedIndexes.value = editedIndexes.value.filter(i => i !== row.index)
   }
-  toggleShareExpanded(row)
+  let forceClose = false
+  if (Object.keys(row.original).includes('parentShareIndex')) {
+    forceClose = true
+  } else if (
+    (Object.keys(shareClasses.value[row.index]).includes('series'))
+    && shareClasses.value[row.index]?.series?.length > 0) {
+    const parValue = shareClasses.value[row.index].parValue
+    const hasParValue = shareClasses.value[row.index].hasParValue
+    const currency = shareClasses.value[row.index].currency
+
+    for (let i = 0; i < shareClasses.value[row.index].series.length; i++) {
+      shareClasses.value[row.index].series[i].parValue = parValue
+      shareClasses.value[row.index].series[i].hasParValue = hasParValue
+      shareClasses.value[row.index].series[i].currency = currency
+    }
+  }
+  addSeries.value = false
+  addingShare.value = false
+  editingSeriesParent.value = -1
+  shareTableKey.value++
+  toggleShareExpanded(row, forceClose)
 }
 
 const addedShare = () => {
@@ -236,6 +299,8 @@ const addedShare = () => {
     modifiedShareIndexes.value.push(shareClasses.value.length - 1)
   }
   addingShare.value = false
+  addSeries.value = false
+  shareTableKey.value++
 }
 </script>
 
@@ -260,10 +325,12 @@ const addedShare = () => {
     <SharesAddEdit
       v-show="addingShare"
       class="py-4 px-6"
+      :is-series="false"
       @cancel="addingShare = false"
       @done="addedShare"
     />
     <UTable
+      :key="`share-table-${shareTableKey}`"
       :data="flattenData(shareClasses)"
       :columns="columns"
       :ui="{
@@ -318,7 +385,7 @@ const addedShare = () => {
           @click="toggleShareExpanded(row)"
         />
         <UButton
-          v-else
+          v-else-if="row.original.removed && row.original.parentShareIndex === undefined"
           icon="i-mdi-undo"
           :label="$t('label.undo')"
           color="primary"
@@ -350,7 +417,8 @@ const addedShare = () => {
       <template #expanded="{ row }">
         <SharesAddEdit
           class="pr-4"
-          @cancel="toggleShareExpanded(row)"
+          :is-series="addSeries"
+          @cancel="toggleShareExpanded(row, true)"
           @done="updated(row)"
         />
       </template>
