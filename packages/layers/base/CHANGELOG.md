@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.8
+
+### Patch Changes
+
+- [#235](https://github.com/bcgov/business-ui/pull/235) [`92fcc09`](https://github.com/bcgov/business-ui/commit/92fcc09d92806aca8b3ef29ffd96fb1a390baf97) Thanks [@deetz99](https://github.com/deetz99)! - Update nuxt-pay dep.
+
 ## 0.1.7
 
 ### Patch Changes
