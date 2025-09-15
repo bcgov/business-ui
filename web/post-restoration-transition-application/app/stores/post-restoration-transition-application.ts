@@ -36,6 +36,7 @@ export const usePostRestorationTransitionApplicationStore
   const editingDirector = ref<OrgPerson | undefined>(undefined)
   const openEditComponentId = ref<string | undefined>(undefined)
   const modifiedDirectors = ref<number[]>([])
+  const editingSeriesParent = ref<number>(-1)
 
   const editState = computed(() => editingShareIndex.value !== -1)
 
@@ -276,7 +277,8 @@ export const usePostRestorationTransitionApplicationStore
     ORIGINAL_SHARE_CLASSES,
     staffPay,
     editingDirector,
+    modifiedDirectors,
     openEditComponentId,
-    modifiedDirectors
+    editingSeriesParent
   }
 })

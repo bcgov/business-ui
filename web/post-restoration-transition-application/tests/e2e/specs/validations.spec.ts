@@ -43,7 +43,7 @@ const fillDates = async (page: Page, values: object) => {
 const fillShares = async (page: Page, values: object) => {
   for (let i = 0; i < values.shares.length; i++) {
     await page.getByTestId('add-share-button').click()
-    await page.locator('input[placeholder="' + i18en.label.shareClassName + '"]')
+    await page.locator('input[placeholder="' + i18en.label.shareName + '"]')
       .first().fill(values.shares[i].shareClassName)
     if (values.shares[i].shareHasParValue) {
       await page.getByTestId('parValue-radio').click()
@@ -55,7 +55,7 @@ const fillShares = async (page: Page, values: object) => {
     } else {
       await page.getByTestId('noMaxShares-radio').click()
     }
-    await page.locator('input[placeholder="' + i18en.label.maximumNumberOfShares + '"]')
+    await page.locator('input[placeholder="' + i18en.label.shareMaximumNumberOf + '"]')
       .first().fill(values.shares[i].shareMax.toString())
     await page.locator('input[placeholder="' + i18en.label.parValue + '"]')
       .first().fill(values.shares[i].shareParValue.toString())
