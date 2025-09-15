@@ -5,10 +5,8 @@ import { isEmpty } from 'es-toolkit/compat'
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
-  const rtc = useRuntimeConfig().public
-  const { errorModal } = useModal()
+  const modal = useOfficerModals()
   const businessApi = useBusinessApi()
-  const accountStore = useConnectAccountStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
@@ -53,18 +51,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
             folio.number = data?.filing.header?.folioNumber || ''
           }
         } catch (error) {
-          errorModal.open({
-            error,
-            i18nPrefix: 'modal.error.getDraftFiling',
-            buttons: [
-              {
-                label: t('label.goBack'),
-                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-                variant: 'outline'
-              },
-              { label: t('label.refreshPage'), onClick: () => window.location.reload() }
-            ]
-          })
+          await modal.openGetDraftFilingErrorModal(error)
           return
         }
       }
@@ -83,18 +70,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // return early if the filing is not allowed or the business has pending tasks
       const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
       if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
-        errorModal.open({
-          error: undefined,
-          i18nPrefix: 'modal.error.filingNotAllowed',
-          buttons: [
-            {
-              label: t('label.goBack'),
-              to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-              variant: 'outline'
-            },
-            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
-          ]
-        })
+        await modal.openFilingNotAllowedErrorModal()
         return
       }
 
@@ -152,22 +128,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       }))
     } catch (error) {
-      const status = getErrorStatus(error)
-      const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
-      errorModal.open({
-        error,
-        i18nPrefix: 'modal.error.initOfficerStore',
-        buttons: isUnauthorizedOrBusinessNotFound
-          ? [{ label: t('label.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
-          : [
-            {
-              label: t('label.goBack'),
-              to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-              variant: 'outline'
-            },
-            { label: t('label.refreshPage'), onClick: () => window.location.reload() }
-          ]
-      })
+      await modal.openInitOfficerStoreErrorModal(error)
     } finally {
       initializing.value = false
     }

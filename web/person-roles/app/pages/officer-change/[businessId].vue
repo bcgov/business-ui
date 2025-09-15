@@ -10,7 +10,7 @@ const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
-const { baseModal, errorModal } = useModal()
+const modal = useOfficerModals()
 const businessApi = useBusinessApi()
 
 useHead({
@@ -96,10 +96,7 @@ async function submitFiling() {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      await errorModal.open({
-        error: undefined,
-        i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
-      })
+      await modal.openPendingTaskOnSaveOrSubmitModal()
       return
     }
 
@@ -142,10 +139,7 @@ async function submitFiling() {
       { external: true }
     )
   } catch (error) {
-    await errorModal.open({
-      error,
-      i18nPrefix: 'modal.error.submitFiling'
-    })
+    await modal.openSaveFilingErrorModal(error)
   } finally {
     handleButtonLoading(true)
   }
@@ -153,24 +147,7 @@ async function submitFiling() {
 
 async function cancelFiling() {
   if (officerStore.checkHasChanges('save')) {
-    await baseModal.open({
-      title: t('modal.unsavedChanges.title'),
-      description: t('modal.unsavedChanges.description'),
-      dismissible: false,
-      buttons: [
-        { label: t('label.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
-        {
-          label: t('label.exitWithoutSaving'),
-          size: 'xl',
-          onClick: async () => {
-            revokeBeforeUnloadEvent()
-            await navigateTo(businessDashboardUrlWithBusinessAndAccount.value, {
-              external: true
-            })
-          }
-        }
-      ]
-    })
+    await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
   } else {
     await navigateTo(
       businessDashboardUrlWithBusinessAndAccount.value,
@@ -218,10 +195,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      errorModal.open({
-        error: undefined,
-        i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
-      })
+      await modal.openPendingTaskOnSaveOrSubmitModal()
       return
     }
 
@@ -264,10 +238,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
       )
     }
   } catch (error) {
-    errorModal.open({
-      error,
-      i18nPrefix: 'modal.error.submitFiling'
-    })
+    await modal.openSaveFilingErrorModal(error)
   } finally {
     handleButtonLoading(true)
   }
