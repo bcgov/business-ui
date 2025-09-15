@@ -21,6 +21,7 @@ const {
 
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
+const submittedModal = ref<boolean>(false)
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -133,6 +134,7 @@ watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
   errorStore.verifyArticles(articles.value)
   if (newVal && hasArticlesErrors.value) {
+    submittedModal.value = false
     pickDateModalOpen.value = true
   }
 })
@@ -315,6 +317,7 @@ const closeDateandValidate = () => {
 }
 
 const saveModalDate = async () => {
+  submittedModal.value = true
   articles.value.currentDate = modalDate.value
   errorStore.verifyArticles(articles.value)
   if (hasArticlesErrors.value) {
@@ -349,7 +352,7 @@ const saveModalDate = async () => {
           </div>
           <div>
             <UFormField
-              :error="articlesErrors?.currentDate?.[0] !== 'errors.articles'
+              :error="articlesErrors?.currentDate?.[0] !== 'errors.articles' || submittedModal
                 && $te(articlesErrors?.currentDate?.[0])
                 ? $t(articlesErrors?.currentDate?.[0],
                      {
