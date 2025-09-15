@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { scanA11y } from '../test-utils/a11y'
+// import { scanA11y } from '../test-utils/a11y'
 
 test.describe('Example', () => {
   // use saved login state
