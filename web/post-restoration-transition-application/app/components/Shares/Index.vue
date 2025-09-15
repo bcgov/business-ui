@@ -23,7 +23,9 @@ const {
   editingSeriesParent
 } = storeToRefs(filingStore)
 
+const sharesAddFormId = `${props.formId}-add-form`
 const sharesEditFormId = `${props.formId}-edit-form`
+filingStore.registerFormIdToSection(sharesAddFormId, PageSection.SHARES)
 filingStore.registerFormIdToSection(sharesEditFormId, PageSection.SHARES)
 
 const addedIndexes = ref<number[]>([])
@@ -258,7 +260,7 @@ const addShare = () => {
   }
 
   // check if any other form is open, if is scroll to it and cancel adding share
-  if (editFormOpen(sharesEditFormId)) {
+  if (editFormOpen(sharesAddFormId)) {
     return
   }
 
@@ -322,7 +324,7 @@ const addedShare = () => {
   if (!modifiedShareIndexes.value.includes(shareClasses.value.length - 1)) {
     modifiedShareIndexes.value.push(shareClasses.value.length - 1)
   }
-  editFormClosed(sharesEditFormId)
+  editFormClosed(sharesAddFormId)
   addingShare.value = false
   addSeries.value = false
   shareTableKey.value++
@@ -330,12 +332,12 @@ const addedShare = () => {
 
 const shareAddEditCancelHandler = () => {
   addingShare.value = false
-  editFormClosed(sharesEditFormId)
+  editFormClosed(sharesAddFormId)
 }
 
 const shareAddEditDoneHandler = () => {
   addedShare()
-  editFormClosed(sharesEditFormId)
+  editFormClosed(sharesAddFormId)
 }
 </script>
 
@@ -361,7 +363,7 @@ const shareAddEditDoneHandler = () => {
       v-show="addingShare"
       class="py-4 px-6"
       :is-series="false"
-      :form-id="sharesEditFormId"
+      :form-id="sharesAddFormId"
       :form-error="editFormError"
       @cancel="shareAddEditCancelHandler"
       @done="shareAddEditDoneHandler"

@@ -475,23 +475,22 @@ const cleanData = () => {
 
       <hr class="border-bcGovGray-300">
 
-      <UCheckbox
-        v-model="shareValues.hasRightsOrRestrictions"
-        :label="$t('label.hasRightsOrRestrictions')"
-        :ui=" {
-          base: 'mt-1',
-          label: 'pl-2'
-        }"
-        @update:model-value="rightsChangeHandler"
-      />
-      <div class="flex justify-end space-x-4 pl-2 items-center">
-        <div
-          v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
-          class="text-outcomes-error text-sm"
-        >
-          {{ $t(formError) }}
-        </div>
-        <div class="flex justify-end space-x-4 pl-2">
+        <UCheckbox
+          v-model="shareValues.hasRightsOrRestrictions"
+          :label="$t('label.hasRightsOrRestrictions')"
+          :ui=" {
+            base: 'mt-1',
+            label: 'pl-2'
+          }"
+          @update:model-value="rightsChangeHandler"
+        />
+        <div class="flex justify-end space-x-4 pl-2 items-center">
+          <div
+            v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
+            class="text-outcomes-error text-sm"
+          >
+            {{ $t(formError) }}
+          </div>
           <UButton
             :label="$t('label.done')"
             color="primary"
@@ -507,7 +506,6 @@ const cleanData = () => {
             @click="cancel()"
           />
         </div>
-      </div>
     </div>
   </ConnectFormSection>
 </template>

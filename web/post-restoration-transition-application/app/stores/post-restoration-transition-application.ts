@@ -277,8 +277,8 @@ export const usePostRestorationTransitionApplicationStore
     ORIGINAL_SHARE_CLASSES,
     staffPay,
     editingDirector,
-    modifiedDirectors,
     openEditComponentId,
+    modifiedDirectors,
     editingSeriesParent
   }
 })
