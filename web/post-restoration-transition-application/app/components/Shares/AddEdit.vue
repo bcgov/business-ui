@@ -87,6 +87,7 @@ const shareName = ref<string>(
 )
 
 const maxSharesChangeHandler = () => {
+  clearErrors('maxNumberOfShares')
   shareValues.value.hasMaximumShares = true
   if (firstMaxChange.value) {
     shareValues.value.maxNumberOfShares = undefined
@@ -96,11 +97,14 @@ const maxSharesChangeHandler = () => {
 }
 
 const noMaxSharesChangeHandler = () => {
+  clearErrors('maxNumberOfShares')
   shareValues.value.hasMaximumShares = false
   firstMaxChange.value = false
   hasNoMaxShares.value = t('label.noMax') }
 
 const parValueChangeHandler = () => {
+  clearErrors('parValue')
+  clearErrors('currency')
   shareValues.value.hasParValue = true
   if (firstParChange.value) {
     shareValues.value.parValue = undefined
@@ -111,6 +115,8 @@ const parValueChangeHandler = () => {
 }
 
 const noParValueChangeHandler = () => {
+  clearErrors('parValue')
+  clearErrors('currency')
   shareValues.value.hasParValue = false
   firstParChange.value = false
   hasNoParValue.value = t('label.noPar')
@@ -134,11 +140,9 @@ const cancel = () => {
   }
 }
 
-const revalidateIfHasErrors = (errorField: string) => {
+const clearErrors = (errorField: string) => {
   if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) {
-    shareValues.value.name = shareName.value
-    cleanData()
-    errorStore.verifyShareClasses(getWorkingShareClasses())
+    shareErrors.value[getErrorIndex()][errorField] = []
   }
 }
 
@@ -207,55 +211,114 @@ const cleanData = () => {
 </script>
 
 <template>
-  <div>
-    <div :id="formId" class="flex">
-      <div class="font-bold inline-flex text-sm flex-1">
+  <ConnectFormSection
+    :title="$t('label.officeAddresses')"
+    class="pb-6"
+  >
+    <template #title>
+      <p :class="formError ? 'text-red-600' : ''" class="mb-2 sm:mb-0 sm:font-bold">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
         {{ $t('label.shareClass') }}
+      </p>
+    </template>
+
+    <div :id="formId"  class="inline-block space-y-6">
+      <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
+        <UInput
+          v-model="shareName"
+          :placeholder="$t('label.shareClassName')"
+          class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+          @keydown="clearErrors('name')"
+        >
+          <template #trailing>
+            <div class="text-base text-bcGovColor-midGray">
+              {{ $t('label.shares') }}
+            </div>
+          </template>
+        </UInput>
+      </UFormField>
+      <div class="text-sm text-gray-500 -mt-6 ml-4">
+        {{ $t('text.helperText.shareClassName') }}
       </div>
 
-      <div class="inline-block ml-6 flex-auto space-y-6">
-        <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
-          <UInput
-            v-model="shareName"
-            :placeholder="$t('label.shareClassName')"
-            class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
-            @blur="revalidateIfHasErrors('name')"
-          >
-            <template #trailing>
-              <div class="text-base text-bcGovColor-midGray">
-                {{ $t('label.shares') }}
-              </div>
-            </template>
-          </UInput>
-        </UFormField>
-        <div class="text-sm text-gray-500 -mt-6 ml-4">
-          {{ $t('text.helperText.shareClassName') }}
-        </div>
+      <hr class="border-bcGovGray-300">
 
-        <hr class="border-bcGovGray-300">
-
-        <div class="flex">
-          <URadioGroup
-            v-model="hasNoMaxShares"
-            data-testid="maxShares-radio"
-            :items="['']"
-            class="flex-0 mr-3 align-bottom text-base"
+      <div class="flex">
+        <URadioGroup
+          v-model="hasNoMaxShares"
+          data-testid="maxShares-radio"
+          :items="['']"
+          class="flex-0 mr-3 align-bottom text-base"
+          :ui="{
+            container: 'text-base h-[56px]'
+          }"
+          @change="maxSharesChangeHandler()"
+        />
+        <UFormField
+          :error="
+            $te(getError('maxNumberOfShares'))
+              ? $t(getError('maxNumberOfShares'))
+              : getError('maxNumberOfShares')"
+          class="w-full"
+        >
+          <UInputNumber
+            v-model="shareValues.maxNumberOfShares"
+            :placeholder="$t('label.maximumNumberOfShares')"
+            :disable-wheel-change="true"
             :ui="{
-              container: 'text-base h-[56px]'
+              base: 'w-full rounded-md border-0 placeholder:text-dimmed'
+                + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
             }"
-            @change="maxSharesChangeHandler()"
-          />
+            class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+            @keydown="clearErrors('maxNumberOfShares')"
+            @focusin="maxSharesChangeHandler()"
+          >
+            <template #decrement>
+              <span />
+            </template>
+            <template #increment>
+              <span />
+            </template>
+          </UInputNumber>
+        </UFormField>
+      </div>
+      <URadioGroup
+        v-model="hasNoMaxShares"
+        data-testid="noMaxShares-radio"
+        :items="[$t('label.noMax')]"
+        :ui="{
+          label: 'text-base'
+        }"
+        @change="noMaxSharesChangeHandler()"
+      />
+
+      <hr class="border-bcGovGray-300">
+
+      <div class="flex">
+        <URadioGroup
+          v-model="hasNoParValue"
+          data-testid="parValue-radio"
+          :items="['']"
+          class="flex-0 mr-3 align-bottom text-base"
+          :ui="{
+            container: 'text-base h-[56px]'
+          }"
+          @change="parValueChangeHandler()"
+        />
+        <div class="flex gap-4 w-full">
           <UFormField
             :error="
-              $te(getError('maxNumberOfShares'))
-                ? $t(getError('maxNumberOfShares'))
-                : getError('maxNumberOfShares')"
-            class="w-full"
+              $te(getError('parValue'))
+                ? $t(getError('parValue'))
+                : getError('parValue')"
+            class="mr-4 w-[30%]"
           >
             <UInputNumber
-              v-model="shareValues.maxNumberOfShares"
-              :placeholder="$t('label.maximumNumberOfShares')"
+              v-model="shareValues.parValue"
+              :placeholder="$t('label.parValue')"
               :disable-wheel-change="true"
               :ui="{
                 base: 'w-full rounded-md border-0 placeholder:text-dimmed'
@@ -265,8 +328,8 @@ const cleanData = () => {
                   + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
               }"
               class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
-              @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
-              @focusin="maxSharesChangeHandler()"
+              @focusin="parValueChangeHandler()"
+              @keydown="clearErrors('parValue')"
             >
               <template #decrement>
                 <span />
@@ -276,122 +339,66 @@ const cleanData = () => {
               </template>
             </UInputNumber>
           </UFormField>
+          <UFormField
+            :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
+            class="h-full flex-1 w-full"
+          >
+            <USelect
+              v-model="shareValues.currency"
+              data-testid="currency-select"
+              :placeholder="$t('label.currency')"
+              :items="currencies"
+              class="p-[18px] w-full pl-2"
+              @focus="parValueChangeHandler()"
+              @click.stop="clearErrors('currency')"
+            />
+          </UFormField>
         </div>
+      </div>
+      <div>
         <URadioGroup
-          v-model="hasNoMaxShares"
-          data-testid="noMaxShares-radio"
-          :items="[$t('label.noMax')]"
+          v-model="hasNoParValue"
+          data-testid="noParValue-radio"
+          :items="[$t('label.noPar')]"
           :ui="{
             label: 'text-base'
           }"
-          @change="noMaxSharesChangeHandler()"
+          @change="noParValueChangeHandler()"
         />
+      </div>
 
-        <hr class="border-bcGovGray-300">
+      <hr class="border-bcGovGray-300">
 
-        <div class="flex">
-          <URadioGroup
-            v-model="hasNoParValue"
-            data-testid="parValue-radio"
-            :items="['']"
-            class="flex-0 mr-3 align-bottom text-base"
-            :ui="{
-              container: 'text-base h-[56px]'
-            }"
-            @change="parValueChangeHandler()"
-          />
-          <div class="flex gap-4 w-full">
-            <UFormField
-              :error="
-                $te(getError('parValue'))
-                  ? $t(getError('parValue'))
-                  : getError('parValue')"
-              class="mr-4 w-[30%]"
-            >
-              <UInputNumber
-                v-model="shareValues.parValue"
-                :placeholder="$t('label.parValue')"
-                :disable-wheel-change="true"
-                :ui="{
-                  base: 'w-full rounded-md border-0 placeholder:text-dimmed'
-                    + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
-                    + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
-                    + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
-                    + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
-                }"
-                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
-                @focusin="parValueChangeHandler()"
-                @update:model-value="revalidateIfHasErrors('parValue')"
-              >
-                <template #decrement>
-                  <span />
-                </template>
-                <template #increment>
-                  <span />
-                </template>
-              </UInputNumber>
-            </UFormField>
-            <UFormField
-              :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
-              class="h-full flex-1 w-full"
-            >
-              <USelect
-                v-model="shareValues.currency"
-                data-testid="currency-select"
-                :placeholder="$t('label.currency')"
-                :items="currencies"
-                class="p-[18px] w-full pl-2"
-                @focus="parValueChangeHandler()"
-                @update:model-value="revalidateIfHasErrors('currency')"
-              />
-            </UFormField>
-          </div>
+      <UCheckbox
+        v-model="shareValues.hasRightsOrRestrictions"
+        :label="$t('label.hasRightsOrRestrictions')"
+        :ui=" {
+          base: 'mt-1',
+          label: 'pl-2'
+        }"
+      />
+      <div class="flex justify-end space-x-4 pl-2 items-center">
+        <div
+          v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
+          class="text-outcomes-error text-sm"
+        >
+          {{ $t(formError) }}
         </div>
-        <div>
-          <URadioGroup
-            v-model="hasNoParValue"
-            data-testid="noParValue-radio"
-            :items="[$t('label.noPar')]"
-            :ui="{
-              label: 'text-base'
-            }"
-            @change="noParValueChangeHandler()"
-          />
-        </div>
-
-        <hr class="border-bcGovGray-300">
-
-        <UCheckbox
-          v-model="shareValues.hasRightsOrRestrictions"
-          :label="$t('label.hasRightsOrRestrictions')"
-          :ui=" {
-            base: 'mt-1',
-            label: 'pl-2'
-          }"
+        <UButton
+          :label="$t('label.done')"
+          color="primary"
+          class="rounded"
+          data-testid="addEditSharesDone"
+          @click="done()"
         />
-        <div class="flex justify-end space-x-4 pl-2 items-center">
-          <div
-            v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
-            class="text-outcomes-error text-sm"
-          >
-            {{ $t(formError) }}
-          </div>
-          <UButton
-            :label="$t('label.done')"
-            color="primary"
-            class="rounded"
-            data-testid="addEditSharesDone"
-            @click="done()"
-          />
-          <UButton
-            :label="$t('label.cancel')"
-            variant="outline"
-            class="rounded"
-            data-testid="addEditSharesCancel"
-            @click="cancel()"
-          />
-        </div>
+        <UButton
+          :label="$t('label.cancel')"
+          variant="outline"
+          class="rounded"
+          data-testid="addEditSharesCancel"
+          @click="cancel()"
+        />
       </div>
     </div>
-  </div>
+  </ConnectFormSection>
 </template>
