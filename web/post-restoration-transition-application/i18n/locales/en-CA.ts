@@ -113,8 +113,8 @@ export default {
     folioOrReferenceNumber: 'This is meant for your own tracking purposes and will appear on your receipt.',
     goToMainFileAddressChange: 'Go to the main page of this business and file an address change.',
     helperText: {
-      shareClassName: 'Only enter the class name. The word “shares” will be added automatically.',
-      shareSeriesName: 'Only enter the series name. The word "shares" will be added automatically.'
+      shareName: 'Only enter the class name. The word “shares” will be added automatically.',
+      seriesName: 'Only enter the series name. The word "shares" will be added automatically.'
     },
     itIsAnOffenceToMakeFalseStatement: 'It is an offence to make a false or misleading statement in respect of a material fact in a record submitted to the Corporate Registry for filing. See section 427 of the Business Corporations Act.',
     legalNameCertifyPlaceHolder: '[LEGAL NAME]',

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import currencySymbolMap from 'currency-symbol-map/map'
 
+// NOTE: if isASeries is set then editingSeriesParent must not be -1
 const props = defineProps<{
   isSeries?: boolean
 }>()
@@ -274,7 +275,7 @@ const cleanData = () => {
           </UInput>
         </UFormField>
         <div class="text-sm text-gray-500 -mt-6 ml-4">
-          {{ isSeries ? $t('text.helperText.shareSeriesName') : $t('text.helperText.shareClassName') }}
+          {{ $t(`text.helperText.${translationPath}Name`) }}
         </div>
 
         <hr class="border-bcGovGray-300">

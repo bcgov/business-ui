@@ -9,14 +9,14 @@ const fillSeries = async (page: Page, values: object) => {
   for (let i = 0; i < values.shares.length; i++) {
     await page.locator('[aria-label="Actions"]').first().click()
     await page.locator('[role="menuitem"]').first().click()
-    await page.locator('input[placeholder="' + i18en.label.shareSeriesName + '"]')
+    await page.locator('input[placeholder="' + i18en.label.shareName + '"]')
       .first().fill(values.shares[i].shareClassName)
     if (values.shares[i].shareHasMaxShares) {
       await page.getByTestId('maxShares-radio').nth(1).click()
     } else {
       await page.getByTestId('noMaxShares-radio').nth(1).click()
     }
-    await page.locator('input[placeholder="' + i18en.label.maximumNumberOfSeries + '"]')
+    await page.locator('input[placeholder="' + i18en.label.seriesMaximumNumberOf + '"]')
       .fill(values.shares[i].shareMax.toString())
 
     if (values.shares[i].shareColumnRightsRestrictions) {
