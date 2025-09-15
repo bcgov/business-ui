@@ -19,30 +19,12 @@ useHead({
 
 definePageMeta({
   layout: 'filing',
-  middleware: async () => {
-    // mock user if in CI environment // TODO: figure out real logins for e2e in CI
-    const { $connectAuth, $config } = useNuxtApp()
-    if ($config.public.playwright) {
-      $connectAuth.tokenParsed = {
-        firstname: 'TestFirst',
-        lastname: 'TestLast',
-        name: 'TestFirst TestLast',
-        username: 'testUsername',
-        email: 'testEmail@test.com',
-        sub: 'test',
-        loginSource: 'IDIR',
-        realm_access: { roles: ['public_user'] }
-      }
-      await useConnectAccountStore().setAccountInfo()
-      // redirect to reg home with return url if user unauthenticated
-    } else if (!$connectAuth.authenticated) {
-      const returnUrl = encodeURIComponent(window.location.href)
-      return navigateTo(
-        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
-        { external: true }
-      )
-    }
-  },
+  middleware: [
+    // Mock auth if playwright is running
+    'mock-connect-auth',
+    // Check for login redirect
+    'connect-auth'
+  ],
   buttonControl: {
     leftGroup: { buttons: [] },
     rightGroup: { buttons: [] }

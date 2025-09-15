@@ -3,6 +3,12 @@ export default defineAppConfig({
     header: {
       whatsNew: false,
       localeSelect: false
+    },
+    login: {
+      redirect: '/officer-change/undefined'
+    },
+    logout: {
+      redirect: '/auth/login'
     }
   }
 })
