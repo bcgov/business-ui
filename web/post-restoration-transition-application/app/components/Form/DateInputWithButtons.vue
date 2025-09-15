@@ -3,6 +3,7 @@ import DateInput from '~/components/Form/DateInput.vue'
 import { isDateBetween } from '~/utils/uidate'
 
 const t = useNuxtApp().$i18n.t
+const { openEditFormError } = storeToRefs(usePostRestorationErrorsStore())
 
 const model = defineModel<string | undefined>()
 const props = defineProps<{
@@ -38,7 +39,7 @@ const saveError = ref('')
 </script>
 
 <template>
-  <div class="pb-[22px]">
+  <div :id="id" class="pb-[22px]">
     <UFormField
       :error="saveError"
     >
@@ -54,7 +55,10 @@ const saveError = ref('')
       />
     </UFormField>
   </div>
-  <div class="flex flex-row mt-2 space-x-4 float-end mb-2">
+  <div class="flex flex-row mt-2 space-x-4 float-end mb-2 items-center">
+    <div v-if="openEditFormError" class="text-outcomes-error text-sm">
+      {{ $t(openEditFormError) }}
+    </div>
     <UButton
       :label="!!hasErrors ? $t('label.done') : $t('label.save')"
       :data-testid="id + '_save'"
@@ -67,6 +71,7 @@ const saveError = ref('')
     <UButton
       :label="$t('label.cancel')"
       :padded="false"
+      :data-testid="id + '_cancel'"
       class="rounded text-base pt-[11px] pb-[11px]"
       variant="outline"
       @click="cancelHandler"
