@@ -9,6 +9,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const businessApi = useBusinessApi()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
   const ld = useConnectLaunchDarkly()
+  const rtc = useRuntimeConfig().public
 
   const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
   const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
@@ -64,13 +65,15 @@ export const useOfficerStore = defineStore('officer-store', () => {
         businessApi.getPendingTask(businessId, 'filing')
       ])
 
-      const allowedBusinessTypes = (
-        await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
-      ).split(' ')
+      if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
+        const allowedBusinessTypes = (
+          await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
+        ).split(' ')
 
-      if (!allowedBusinessTypes.includes(business.legalType)) {
-        await modal.openFilingNotAvailableModal()
-        return
+        if (!allowedBusinessTypes.includes(business.legalType)) {
+          await modal.openFilingNotAvailableModal()
+          return
+        }
       }
 
       // set business ref
