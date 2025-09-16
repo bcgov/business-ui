@@ -26,7 +26,7 @@ const accountStore = useConnectAccountStore()
         </div>
       </div>
     </main>
-    <ConnectButtonControlWrapper data-testid="business-filing-button-control" />
+    <ConnectButtonControlWrapper data-testid="business-filing-button-control" class="px-2 sm:px-4" />
     <ConnectFooter />
   </div>
 </template>
