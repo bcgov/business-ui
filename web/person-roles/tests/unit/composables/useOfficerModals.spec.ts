@@ -55,11 +55,9 @@ describe('useOfficerModals', () => {
 
       await openUnsavedChangesModal(mockRevokeEvent)
 
-      // Get the onClick function from the button passed to the mock
       const exitButtonOnClick = mockBaseModalOpen.mock.calls[0]![0].buttons[1].onClick
       await exitButtonOnClick()
 
-      // Assert that the side effects happened
       expect(mockRevokeEvent).toHaveBeenCalledOnce()
       expect(mockNavigateTo).toHaveBeenCalledOnce()
       expect(mockNavigateTo).toHaveBeenCalledWith(
@@ -188,6 +186,29 @@ describe('useOfficerModals', () => {
       expect(callArgs.buttons).toHaveLength(2)
       expect(callArgs.buttons[0].label).toBe('Go Back')
       expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+    })
+  })
+
+  describe('openFilingNotAvailableModal', () => {
+    it('should open the base modal with the correct title, description, and button', async () => {
+      const { openFilingNotAvailableModal } = useOfficerModals()
+
+      await openFilingNotAvailableModal()
+
+      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+      expect(mockErrorModalOpen).not.toHaveBeenCalled()
+
+      const callArgs = mockBaseModalOpen.mock.calls[0]![0]
+      expect(callArgs.title).toBe('Page not available')
+      // eslint-disable-next-line
+      expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+      expect(callArgs.dismissible).toBe(false)
+
+      expect(callArgs.buttons).toHaveLength(1)
+      const button = callArgs.buttons[0]
+      expect(button.label).toBe('Go Back')
+      expect(button.to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+      expect(button.external).toBe(true)
     })
   })
 })

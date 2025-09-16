@@ -23,10 +23,14 @@ const mockLegalApi = {
 mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
 
 const mockErrorModalOpen = vi.fn()
+const mockBaseModalOpen = vi.fn()
 mockNuxtImport('useModal', () => {
   return () => ({
     errorModal: {
       open: mockErrorModalOpen
+    },
+    baseModal: {
+      open: mockBaseModalOpen
     }
   })
 })
@@ -60,6 +64,11 @@ mockNuxtImport('useNuxtApp', () => () => ({
   $i18n: { t: (key: string) => key }
 }))
 
+const mockGetFeatureFlag = vi.fn()
+mockNuxtImport('useConnectLaunchDarkly', () => () => ({
+  getFeatureFlag: mockGetFeatureFlag
+}))
+
 describe('useOfficerStore', () => {
   let store: ReturnType<typeof useOfficerStore>
 
@@ -69,6 +78,7 @@ describe('useOfficerStore', () => {
     setActivePinia(pinia)
     store = useOfficerStore()
     store.$reset()
+    mockGetFeatureFlag.mockResolvedValue('CC')
   })
 
   test('initializes with the correct default state', () => {
@@ -80,7 +90,7 @@ describe('useOfficerStore', () => {
 
   describe('initOfficerStore', () => {
     const businessId = 'BC123'
-    const mockBusiness = { identifier: businessId, legalName: 'Test Inc.' } as BusinessData
+    const mockBusiness = { identifier: businessId, legalName: 'Test Inc.', legalType: 'CC' } as BusinessData
     const mockParties = [{ officer: { id: 1, firstName: 'Initial' }, roles: [] }] as unknown as OrgPerson[]
 
     // Starting a new filing (no draftId)
@@ -232,6 +242,30 @@ describe('useOfficerStore', () => {
         buttons: expect.any(Array)
       }))
       expect(store.initializing).toBe(false)
+    })
+
+    test('should show "Page not available" modal if feature flag doesnt match business type', async () => {
+      // mock API calls and permissions
+      mockGetFeatureFlag.mockResolvedValue('') // add empty response for FF
+      mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
+      mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
+
+      // init store
+      await store.initOfficerStore(businessId)
+
+      // assert - should open modal
+      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+      const callArgs = mockBaseModalOpen.mock.calls[0]![0]
+
+      expect(callArgs.title).toBe('modal.filingNotAvailable.title')
+      expect(callArgs.description).toBe('modal.filingNotAvailable.description')
+      expect(callArgs.dismissible).toBe(false)
+
+      expect(callArgs.buttons).toHaveLength(1)
+      const button = callArgs.buttons[0]
+      expect(button.label).toBe('label.goBack')
+      expect(button.external).toBe(true)
+      expect(button.to).toBe('http://business-dashboard-url/BC1234567?accountid=123')
     })
   })
 

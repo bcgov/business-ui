@@ -1,6 +1,6 @@
 {
   "name": "person-roles",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.13.1",
