@@ -267,6 +267,9 @@ export const getDetails = (item: Business): EntityAlertTypes[] => {
     }
     const type = typeMap[item.corpType?.code as keyof typeof typeMap] || t('entityTypes.incorporationApplication')
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type } })
+  // Continuation Applications are a special case: they can expire even in APPROVED status.
+  // Without this "else if", both conditions could be true and we would show *two* EXPIRED alerts.
+  // To avoid duplication, we show only the continuationApplication alert.
   } else if (isExpired(item, CorpTypes.CONTINUATION_IN)) {
     details.push({ type: EntityAlertTypes.EXPIRED, data: { type: t('entityTypes.continuationApplication') } })
   }
