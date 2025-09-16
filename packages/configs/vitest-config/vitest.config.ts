@@ -16,7 +16,7 @@ export default defineVitestConfig({
     },
     coverage: {
       provider: 'v8',
-      reportsDirectory: './tests/unit/coverage',
+      reportsDirectory: '../tests/unit/coverage',
       include: [
         'pages/**',
         'layouts/**',
@@ -31,7 +31,7 @@ export default defineVitestConfig({
         'utils/**/index.ts'
       ]
     },
-    setupFiles: './tests/unit/setup.ts',
+    setupFiles: '../tests/unit/setup.ts',
     globals: true
   }
 })
