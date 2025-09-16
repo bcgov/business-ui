@@ -26,7 +26,7 @@
 ## Composables
 
 - [useBusinessApi](./composables/useBusinessApi.md)
-- useFilingTombstone
+- [useFilingTombstone](./composables//useFilingTombstone.md)
 - useModal
 
 ## Stores

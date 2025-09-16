@@ -3,6 +3,10 @@ definePageMeta({
   layout: 'connect-auth'
 })
 
+useHead({
+  title: 'ModalError Example'
+})
+
 const { errorModal } = useModal()
 const localePath = useLocalePath()
 
@@ -27,7 +31,7 @@ setBreadcrumbs([
     label: 'Examples'
   },
   {
-    label: 'Filing Layout'
+    label: 'ModalError'
   }
 ])
 </script>
