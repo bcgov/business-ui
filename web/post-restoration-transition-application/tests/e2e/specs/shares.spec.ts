@@ -16,7 +16,7 @@ test.describe('Shares Add/Edit shares form validations', () => {
     await page.goto(`./en-CA/${identifier}`)
 
     await page.getByTestId('add-share-button').click()
-    await expect(page.locator('#shares-section-edit-form')).toBeVisible()
+    await expect(page.locator('#shares-section-add-form')).toBeVisible()
     await page.getByPlaceholder(enI18n.label.shareName).fill('ParReq')
 
     // Enable Par Value (turn on)
@@ -32,18 +32,16 @@ test.describe('Shares Add/Edit shares form validations', () => {
     // Choose to switch to No Par to satisfy requirements alternatively
     await page.getByTestId('noParValue-radio').click()
 
-    // If the save passes, the form will close; otherwise, ensure no par/currency errors remain visible
+    // ensure no par/currency errors remain visible
     await expect(page.getByText(enI18n.errors.parValue)).toHaveCount(0)
     await expect(page.getByText(enI18n.errors.currency)).toHaveCount(0)
-
-    await expect(page.getByText(enI18n.errors.parValue)).toBeVisible()
   })
 
   test('Maximum Shares enabled requires a number until provided or No Max selected', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
 
     await page.getByTestId('add-share-button').click()
-    await expect(page.locator('#shares-section-edit-form')).toBeVisible()
+    await expect(page.locator('#shares-section-add-form')).toBeVisible()
     await page.getByTestId('maxShares-radio').click()
     await page.getByTestId('addEditSharesDone').click()
 
