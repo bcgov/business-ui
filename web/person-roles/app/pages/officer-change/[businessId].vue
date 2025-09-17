@@ -3,7 +3,6 @@ import { z } from 'zod'
 import type { Form, FormError } from '@nuxt/ui'
 
 const { t } = useI18n()
-const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const officerStore = useOfficerStore()
@@ -12,6 +11,7 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
 const modal = useOfficerModals()
 const businessApi = useBusinessApi()
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
 
 useHead({
   title: t('page.officerChange.title')
@@ -32,9 +32,9 @@ definePageMeta({
 })
 
 const businessId = route.params.businessId as string
-const businessDashboardUrlWithBusinessAndAccount = computed(() =>
-  `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
-)
+// const businessDashboardUrlWithBusinessAndAccount = computed(() =>
+//   `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
+// )
 
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
@@ -134,10 +134,7 @@ async function submitFiling() {
     // remove window beforeUnload event to prevent navigation block
     revokeBeforeUnloadEvent()
     // navigate to business dashboard if filing does *not* fail
-    await navigateTo(
-      businessDashboardUrlWithBusinessAndAccount.value,
-      { external: true }
-    )
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
   } finally {
@@ -149,10 +146,7 @@ async function cancelFiling() {
   if (officerStore.checkHasChanges('save')) {
     await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
   } else {
-    await navigateTo(
-      businessDashboardUrlWithBusinessAndAccount.value,
-      { external: true }
-    )
+    await navigateTo(dashboardOrEditUrl.value, { external: true })
   }
 }
 
@@ -232,10 +226,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     // if resume later, navigate back to business dashboard
     if (resumeLater) {
       revokeBeforeUnloadEvent()
-      await navigateTo(
-        businessDashboardUrlWithBusinessAndAccount.value,
-        { external: true }
-      )
+      await navigateTo(dashboardUrl.value, { external: true })
     }
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
@@ -272,7 +263,7 @@ async function validateFolioNumber() {
 // update breadcrumbs and bottom buttons when account changes
 watch(
   () => accountStore.currentAccount.id,
-  async (id) => {
+  async () => {
     // load officer info
     const draftId = (urlParams.draft as string) ?? undefined
     await officerStore.initOfficerStore(businessId, draftId)
@@ -293,28 +284,7 @@ watch(
       }
     }
 
-    setBreadcrumbs([
-      {
-        label: t('label.bcRegistriesDashboard'),
-        to: `${rtc.registryHomeUrl}dashboard`,
-        external: true,
-        appendAccountId: true
-      },
-      {
-        label: t('label.myBusinessRegistry'),
-        to: `${rtc.brdUrl}account/${id}`,
-        external: true
-      },
-      {
-        label: officerStore.activeBusiness.legalName,
-        to: `${rtc.businessDashboardUrl + businessId}`,
-        appendAccountId: true,
-        external: true
-      },
-      {
-        label: t('page.officerChange.h1')
-      }
-    ])
+    setBreadcrumbs(breadcrumbs.value)
 
     setButtonControl({
       leftGroup: {

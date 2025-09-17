@@ -23,6 +23,9 @@ export default {
   },
   label: {
     addOfficer: 'Add Officer',
+    changeAddress: 'Change Address',
+    changeName: 'Change Name',
+    changeRoles: 'Change Roles',
     roles: 'Roles',
     haspreferredName: 'This person also has another name they prefer to use',
     officerInfo: 'Officer Information',
