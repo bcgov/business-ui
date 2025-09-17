@@ -19,6 +19,7 @@
     "test": "pnpm run test:unit; pnpm run test:e2e",
     "test:unit": "vitest run --passWithNoTests",
     "test:unit:watch": "vitest",
+    "test:unit:cov": "vitest --dir tests/unit --coverage",
     "test:e2e": "npx playwright test",
     "test:e2e:ui": "npx playwright test --ui",
     "typecheck": "npx nuxt typecheck"

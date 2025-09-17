@@ -50,8 +50,8 @@ mockNuxtImport('useConnectTombstone', () => () => ({
   $reset: vi.fn()
 }))
 
-vi.mock('@sbc-connect/nuxt-business-base/app/utils/validate/allowed-filings', () => ({
-  validateBusinessAllowedFilings: vi.fn().mockReturnValue(false)
+vi.mock('@sbc-connect/nuxt-business-base/app/utils/is-filing-allowed', () => ({
+  isFilingAllowed: vi.fn().mockReturnValue(false)
 }))
 
 vi.mock('@sbc-connect/nuxt-forms/app/utils/zod-schemas/addresses', () => ({
@@ -99,7 +99,7 @@ describe('useOfficerStore', () => {
         // mock API calls and permissions
         mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
-        vi.mocked(validateBusinessAllowedFilings).mockReturnValue(true) // Filing is allowed
+        vi.mocked(isFilingAllowed).mockReturnValue(true) // Filing is allowed
         mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
         mockLegalApi.getParties.mockResolvedValue(mockParties)
 
@@ -119,7 +119,7 @@ describe('useOfficerStore', () => {
         // mock that the filing is NOT allowed
         mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        vi.mocked(validateBusinessAllowedFilings).mockReturnValue(false)
+        vi.mocked(isFilingAllowed).mockReturnValue(false)
 
         // init store
         await store.initOfficerStore(businessId)
@@ -134,7 +134,7 @@ describe('useOfficerStore', () => {
         // mock that a pending task exists
         mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue({ task: {} })
-        vi.mocked(validateBusinessAllowedFilings).mockReturnValue(true)
+        vi.mocked(isFilingAllowed).mockReturnValue(true)
 
         // init store
         await store.initOfficerStore(businessId)
@@ -150,7 +150,7 @@ describe('useOfficerStore', () => {
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
         mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
         mockLegalApi.getParties.mockResolvedValue([]) // No parties
-        vi.mocked(validateBusinessAllowedFilings).mockReturnValue(true)
+        vi.mocked(isFilingAllowed).mockReturnValue(true)
 
         // init store
         await store.initOfficerStore(businessBC1234567.business.identifier)

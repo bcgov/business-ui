@@ -81,8 +81,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
       // return early if the filing is not allowed or the business has pending tasks
-      const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
-      if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
+      if ((!isFilingAllowed(business, 'changeOfOfficers') || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         await modal.openFilingNotAllowedErrorModal()
         return
       }
