@@ -1,5 +1,11 @@
 # @sbc-connect/vitest-config
 
+## 0.0.10
+
+### Patch Changes
+
+- [#242](https://github.com/bcgov/business-ui/pull/242) [`87dfb3a`](https://github.com/bcgov/business-ui/commit/87dfb3abfde4449d8b48ebf68b750c39b5f4240f) Thanks [@deetz99](https://github.com/deetz99)! - Fix coverage file path.
+
 ## 0.0.9
 
 ### Patch Changes
