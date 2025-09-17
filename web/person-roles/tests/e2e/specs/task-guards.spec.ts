@@ -128,8 +128,8 @@ test.describe('Task Guards', () => {
 
     await page.getByRole('heading', { name: 'Officer Change' }).click()
     await page.getByRole('link', { name: 'Company Information Page' }).click()
-    await expect(page).not.toHaveURL(/.*business-dashboard.*/)
-    await expect(page).not.toHaveURL(/.*edit\.business.*/)
+    // should still be on officer change page
+    await expect(page).toHaveURL(/.*officer-change.*/)
   })
 
   test('should prevent making changes when form is open for new officer', async ({ page }) => {
