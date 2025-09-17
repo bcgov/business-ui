@@ -319,7 +319,6 @@ watch(
     setButtonControl({
       leftGroup: {
         buttons: [
-          { onClick: () => saveFiling(), label: t('label.save'), variant: 'outline' },
           { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
         ]
       },

@@ -28,12 +28,6 @@ test.describe('Task Guards', () => {
     await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
   })
 
-  test('should prevent filing save when form is open for new officer', async ({ page }) => {
-    await openOfficerForm(page)
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
-  })
-
   test('should prevent filing save and resume when form is open for new officer', async ({ page }) => {
     await openOfficerForm(page)
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
@@ -47,13 +41,6 @@ test.describe('Task Guards', () => {
     await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
   })
 
-  test('should prevent filing save when form is open when editing existing officer', async ({ page }) => {
-    const row = getTableRowForPerson(page, initialOfficerPerson)
-    await openOfficerForm(page, row)
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
-  })
-
   test('should prevent filing save and resume when form is open when editing existing officer', async ({ page }) => {
     const row = getTableRowForPerson(page, initialOfficerPerson)
     await openOfficerForm(page, row)
@@ -64,11 +51,6 @@ test.describe('Task Guards', () => {
   test('should prevent filing submit when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Submit' }).click()
     await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to submit.')
-  })
-
-  test('should prevent filing save when no changes have been made', async ({ page }) => {
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to save.')
   })
 
   test('should prevent filing save and resume when no changes have been made', async ({ page }) => {
