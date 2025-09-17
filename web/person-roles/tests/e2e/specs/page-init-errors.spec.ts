@@ -98,39 +98,6 @@ test.describe('Page init errors', () => {
     await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.description)
   })
 
-  test('should display "Page not available" modal if business has pending tasks', async ({ page }) => {
-    await page.route(`*/**/businesses/${identifier}/tasks`, async (route) => {
-      await route.fulfill({
-        json: {
-          tasks: [
-            {
-              enabled: true,
-              order: 1,
-              task: {
-                filing: {
-                  business: businessBC1234567,
-                  changeOfDirectors: {},
-                  header: {
-                    status: 'DRAFT'
-                  }
-                }
-              }
-            }
-          ]
-        }
-      })
-    })
-
-    // navigate to page and wait for settled state
-    await navigateToOfficerChangePage(page)
-
-    // assert modal content
-    const modal = page.getByRole('dialog')
-    await expect(modal).toBeVisible()
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.title)
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.description)
-  })
-
   test.describe('Draft Filing Fetch Errors', () => {
     test('should display "Page not Found" modal if draft filing returns 404', async ({ page }) => {
       await page.route(`*/**/businesses/${identifier}/filings/123`, async (route) => {

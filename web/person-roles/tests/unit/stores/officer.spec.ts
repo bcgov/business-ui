@@ -131,20 +131,6 @@ describe('useOfficerStore', () => {
         expect(store.officerTableState).toHaveLength(0)
       })
 
-      test('should show modal and return early if a pending task exists', async () => {
-        // mock that a pending task exists
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
-        mockLegalApi.getPendingTask.mockResolvedValue({ task: {} })
-        vi.mocked(isFilingAllowed).mockReturnValue(true)
-
-        // init store
-        await store.initOfficerStore(businessId)
-
-        // assert
-        expect(mockErrorModalOpen).toHaveBeenCalled()
-        expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
-      })
-
       test('should initialize with an empty state for a business with no officers', async () => {
         // mock no parties
         mockLegalApi.getBusiness.mockResolvedValue(businessBC1234567.business)

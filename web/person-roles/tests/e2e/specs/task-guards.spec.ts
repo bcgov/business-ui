@@ -60,13 +60,13 @@ test.describe('Task Guards', () => {
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
+    await expect(page).toHaveURL(/.*edit\.business.*/)
     expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
   })
 
   test('should be able to navigate away when no changes have been made', async ({ page }) => {
-    await page.getByRole('link', { name: 'Officer Change Test Business' }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
+    await page.getByRole('link', { name: 'Company Information Page' }).click()
+    await expect(page).toHaveURL(/.*edit\.business.*/)
     expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
   })
 
@@ -127,8 +127,9 @@ test.describe('Task Guards', () => {
     })
 
     await page.getByRole('heading', { name: 'Officer Change' }).click()
-    await page.getByRole('link', { name: 'Officer Change Test Business' }).click()
+    await page.getByRole('link', { name: 'Company Information Page' }).click()
     await expect(page).not.toHaveURL(/.*business-dashboard.*/)
+    await expect(page).not.toHaveURL(/.*edit\.business.*/)
   })
 
   test('should prevent making changes when form is open for new officer', async ({ page }) => {

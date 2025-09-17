@@ -59,11 +59,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       }
 
       // get full business data
-      // get business pending tasks
-      const [business, pendingTask] = await Promise.all([
-        businessApi.getBusiness(businessId),
-        businessApi.getPendingTask(businessId, 'filing')
-      ])
+      const business = await businessApi.getBusiness(businessId)
 
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
@@ -81,7 +77,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
       // return early if the filing is not allowed or the business has pending tasks
-      if ((!isFilingAllowed(business, 'changeOfOfficers') || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
+      if (!isFilingAllowed(business, 'changeOfOfficers') && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         await modal.openFilingNotAllowedErrorModal()
         return
       }
