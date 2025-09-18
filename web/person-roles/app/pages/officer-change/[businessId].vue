@@ -32,9 +32,6 @@ definePageMeta({
 })
 
 const businessId = route.params.businessId as string
-// const businessDashboardUrlWithBusinessAndAccount = computed(() =>
-//   `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
-// )
 
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
