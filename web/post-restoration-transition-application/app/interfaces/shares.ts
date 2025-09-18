@@ -12,6 +12,8 @@ export interface Series {
     priority: number
     removed?: boolean // UI property - tracking if the share got removed
     parentShareIndex?: number // UI property - tracking the parent share index
+    added?: boolean // UI property - tracking if the share got added
+    modified?: boolean // UI property - tracking if the share got modified
 }
 
 export interface Share extends Series {

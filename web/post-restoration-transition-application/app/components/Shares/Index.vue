@@ -18,18 +18,18 @@ const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
   editingShareIndex,
-  modifiedShareIndexes,
   ORIGINAL_SHARE_CLASSES,
-  editingSeriesParent
+  editingSeriesParent,
 } = storeToRefs(filingStore)
+
 
 const sharesAddFormId = `${props.formId}-add-form`
 const sharesEditFormId = `${props.formId}-edit-form`
 filingStore.registerFormIdToSection(sharesAddFormId, PageSection.SHARES)
 filingStore.registerFormIdToSection(sharesEditFormId, PageSection.SHARES)
 
-const addedIndexes = ref<number[]>([])
-const editedIndexes = ref<number[]>([])
+const addEditSeries = ref<boolean>(false)
+
 const addSeries = ref<boolean>(false)
 const addSeriesShareIndex = ref<number>(-1)
 
@@ -48,6 +48,10 @@ const flattenData = (data: Share[]) => {
   })
   return flatData
 }
+
+const flattenedShareClasses = computed ( () => {
+  return flattenData(shareClasses.value)
+})
 
 const columns = [
   {
@@ -145,7 +149,7 @@ const getDropdownActions = (row: Row<Share>) => {
         addASeries(row)
       },
       color: 'primary',
-      disabled: !row.original.hasRightsOrRestrictions
+      disabled: !row.original.hasRightsOrRestrictions && row.original.parentShareIndex === undefined
     },
     {
       label: t('label.moveUp'),
@@ -154,7 +158,14 @@ const getDropdownActions = (row: Row<Share>) => {
         moveShare(row.index, true)
       },
       color: 'primary',
-      disabled: row.index === 0
+      disabled: (
+        row.original.removed
+        || row.index === 0
+        || (
+          row.original?.parentShareIndex !== undefined && row.original.parentShareIndex !== -1
+          && JSON.stringify(row.original) === JSON.stringify(shareClasses.value[row.original.parentShareIndex].series[0]) 
+          )
+      )
     },
     {
       label: t('label.moveDown'),
@@ -163,7 +174,14 @@ const getDropdownActions = (row: Row<Share>) => {
         moveShare(row.index, false)
       },
       color: 'primary',
-      disabled: row.index === shareClasses.value.length - 1
+      disabled: (
+        row.original.removed
+        || row.index === flattenedShareClasses.value.length - 1
+        || (
+          row.original?.parentShareIndex !== undefined && row.original.parentShareIndex !== -1
+          && JSON.stringify(row.original) === JSON.stringify(shareClasses.value[row.original.parentShareIndex].series[shareClasses.value[row.original.parentShareIndex].series.length - 1]) 
+          )
+      )
     },
     {
       label: t('label.delete'),
@@ -197,14 +215,15 @@ const toggleShareExpanded = (row: Row<Share | Series>, skipValidations?: boolean
     return
   }
 
-  addSeries.value = row.original.series ? false : true
-  if (addSeries.value) {
+  addEditSeries.value = row.original.series ? false : true
+  if (addEditSeries.value) {
     editingSeriesParent.value = row.original.parentShareIndex
   }
 
   anyExpanded.value = true
   if (row.getIsExpanded()) {
     anyExpanded.value = false
+    addSeries.value = false
     editingShareIndex.value = -1
     editFormClosed(sharesEditFormId)
   } else {
@@ -220,18 +239,47 @@ const moveShare = (index: number, moveUp: boolean) => {
   if (moveUp && index === 0) {
     return
   }
-  if (!moveUp && index === shareClasses.value.length - 1) {
+  if (!moveUp && index === flattenedShareClasses.value.length - 1) {
     return
   }
 
-  const newIndex = moveUp ? index - 1 : index + 1
+  const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+
+  if (isSeries) {
+    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
+    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
+      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+    })
+    
+    const newIndex = moveUp ? seriesIndex - 1 : seriesIndex + 1
+    if (newIndex < 0 || newIndex >= shareClasses.value[shareIndex].series.length) {
+      return
+    }
+    // Swap elements using splice for reactivity
+    const arr = shareClasses.value[shareIndex].series
+    const temp = arr[seriesIndex]
+    const oldPriority = temp.priority
+    
+    temp.priority = arr[newIndex].priority
+    arr[newIndex].priority = oldPriority
+
+    arr.splice(seriesIndex, 1)
+    arr.splice(newIndex, 0, temp)
+    return
+  }
+  //otherwise it's a share
+  const realIndex = shareClasses.value.findIndex((s) => {
+    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+  })
+  const newIndex = moveUp ? realIndex - 1 : realIndex + 1
+  
   // Swap elements using splice for reactivity
   const arr = shareClasses.value
-  const temp = arr[index]
+  const temp = arr[realIndex]
   const oldPriority = temp.priority
   temp.priority = arr[newIndex].priority
   arr[newIndex].priority = oldPriority
-  arr.splice(index, 1)
+  arr.splice(realIndex, 1)
   arr.splice(newIndex, 0, temp)
 }
 
@@ -240,9 +288,6 @@ const deleteShare = (index: number) => {
   for (let i = 0; i < shareClasses.value[index].series.length; i++) {
     shareClasses.value[index].series[i].removed = true
   }
-  if (!modifiedShareIndexes.value.includes(index)) {
-    modifiedShareIndexes.value.push(index)
-  }
 }
 
 const undoDelete = (index: number) => {
@@ -250,11 +295,10 @@ const undoDelete = (index: number) => {
   for (let i = 0; i < shareClasses.value[index].series.length; i++) {
     delete shareClasses.value[index].series[i].removed
   }
-  modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== index)
 }
 
 const addShare = () => {
-  if (addingShare.value || anyExpanded.value || addSeries.value) {
+  if (addingShare.value || anyExpanded.value || addSeries.value || addEditSeries.value) {
     scrollToOpenForm('edit')
     return
   }
@@ -271,62 +315,92 @@ const addASeries = (row: Row<Share>) => {
   if (addingShare.value || anyExpanded.value) {
     return
   }
-  addSeries.value = true
+  addEditSeries.value = true
   addSeriesShareIndex.value = row.index
+  addSeries.value = true
   anyExpanded.value = true
-  editingSeriesParent.value = row.index
+  let parentIndex = -1
+  for (let i = 0; i < shareClasses.value.length; i++) {
+    if (JSON.stringify(shareClasses.value[i]) === JSON.stringify(row.original)) {
+      parentIndex = i
+      break;
+    }
+  }
+  editingSeriesParent.value = parentIndex
   editingShareIndex.value = -1
   row.toggleExpanded()
 }
 
-const updated = (row: Row<Share | Series>) => {
-  if (addSeries.value) {
-    editingShareIndex.value = editingSeriesParent.value
-  }
+const getIndexes = () => {
+  let shareIndex = -1
+  let seriesIndex = -1
 
-  const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[row.index])
-  const current = JSON.stringify(shareClasses.value[row.index])
-
-  if (original !== current) {
-    if (!modifiedShareIndexes.value.includes(row.index)) {
-      modifiedShareIndexes.value.push(row.index)
-    }
-    editedIndexes.value.push(row.index)
+  if (editingSeriesParent.value !== -1) {
+    shareIndex = editingSeriesParent.value
+  } else if (editingShareIndex.value === -1) {
+    shareIndex = shareClasses.value.length
   } else {
-    modifiedShareIndexes.value = modifiedShareIndexes.value.filter(i => i !== row.index)
-    editedIndexes.value = editedIndexes.value.filter(i => i !== row.index)
+    shareIndex = editingShareIndex.value
   }
-  let forceClose = false
-  if (Object.keys(row.original).includes('parentShareIndex')) {
-    forceClose = true
-  } else if (
-    (Object.keys(shareClasses.value[row.index]).includes('series'))
-    && shareClasses.value[row.index]?.series?.length > 0) {
-    const parValue = shareClasses.value[row.index].parValue
-    const hasParValue = shareClasses.value[row.index].hasParValue
-    const currency = shareClasses.value[row.index].currency
 
-    for (let i = 0; i < shareClasses.value[row.index].series.length; i++) {
-      shareClasses.value[row.index].series[i].parValue = parValue
-      shareClasses.value[row.index].series[i].hasParValue = hasParValue
-      shareClasses.value[row.index].series[i].currency = currency
+  if (addSeries.value) {
+    seriesIndex = shareClasses.value[shareIndex].series.length - 1
+  }else if (addEditSeries.value) {
+    seriesIndex = editingShareIndex.value
+  }
+
+  return { shareIndex, seriesIndex }
+}
+
+const updated = (row: Row<Share | Series>) => {
+  const { shareIndex, seriesIndex } = getIndexes()
+
+  if (addSeries.value) {
+    //adding a series
+    shareClasses.value[shareIndex].series[seriesIndex].added = true
+    const newValues = JSON.stringify(shareClasses.value)
+    shareClasses.value = [...JSON.parse(newValues)]
+    shareClasses.value.push()
+  } else {
+    //updating either a series or a share
+    const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex])
+    const current = JSON.stringify(shareClasses.value[shareIndex])
+    shareClasses.value[shareIndex].modified = original !== current
+    if (addEditSeries.value) {
+      //updating a series
+      const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex].series[seriesIndex])
+      const current = JSON.stringify(shareClasses.value[shareIndex].series[seriesIndex])
+      shareClassses.value[shareIndex].series[seriesIndex].modified = original !== current
     }
   }
-  addSeries.value = false
+
+  let forceClose = addEditSeries.value
+  if (
+    (Object.keys(shareClasses.value[shareIndex]).includes('series'))
+    && shareClasses.value[shareIndex]?.series?.length > 0) {
+    const parValue = shareClasses.value[shareIndex].parValue
+    const hasParValue = shareClasses.value[shareIndex].hasParValue
+    const currency = shareClasses.value[shareIndex].currency
+
+    for (let i = 0; i < shareClasses.value[shareIndex].series.length; i++) {
+      shareClasses.value[shareIndex].series[i].parValue = parValue
+      shareClasses.value[shareIndex].series[i].hasParValue = hasParValue
+      shareClasses.value[shareIndex].series[i].currency = currency
+    }
+  }
+  addEditSeries.value = false
   addingShare.value = false
   editingSeriesParent.value = -1
+  editingShareIndex.value = -1
   shareTableKey.value++
   toggleShareExpanded(row, forceClose)
 }
 
 const addedShare = () => {
-  addedIndexes.value.push(shareClasses.value.length - 1)
-  if (!modifiedShareIndexes.value.includes(shareClasses.value.length - 1)) {
-    modifiedShareIndexes.value.push(shareClasses.value.length - 1)
-  }
+  shareClasses.value[shareClasses.value.length - 1].added = true
   editFormClosed(sharesAddFormId)
   addingShare.value = false
-  addSeries.value = false
+  addEditSeries.value = false
   shareTableKey.value++
 }
 
@@ -370,7 +444,7 @@ const shareAddEditDoneHandler = () => {
     />
     <UTable
       :key="`share-table-${shareTableKey}`"
-      :data="flattenData(shareClasses)"
+      :data="flattenedShareClasses"
       :columns="columns"
       :ui="{
         thead: 'rounded-t-md',
@@ -384,24 +458,20 @@ const shareAddEditDoneHandler = () => {
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
         <div>
           <UBadge
-            v-if="addedIndexes.includes(row.index)"
+            v-if="row.original.added"
             color="primary"
             class="rounded-sm"
           >
             {{ t('label.added') }}
           </UBadge>
-        </div>
-        <div>
           <UBadge
-            v-if="row.original.removed"
+            v-else-if="row.original.removed"
             class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"
           >
             {{ t('label.deleted') }}
           </UBadge>
-        </div>
-        <div>
           <UBadge
-            v-if="!addedIndexes.includes(row.index) && !row.original.removed && editedIndexes.includes(row.index)"
+            v-else-if="row.original.modified"
             color="primary"
             class="rounded-sm"
           >
@@ -458,7 +528,7 @@ const shareAddEditDoneHandler = () => {
           :form-id="sharesEditFormId"
           :form-error="editFormError"
           class="pr-4"
-          :is-series="addSeries"
+          :is-series="addEditSeries"
           @cancel="toggleShareExpanded(row, true)"
           @done="updated(row)"
         />

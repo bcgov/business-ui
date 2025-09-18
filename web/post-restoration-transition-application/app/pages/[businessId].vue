@@ -9,8 +9,10 @@ const { setButtonControl } = useButtonControl()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
 const t = useNuxtApp().$i18n.t
+const te = useNuxtApp().$i18n.te
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
+const route = useRoute()
 const errorStore = usePostRestorationErrorsStore()
 const {
   certifyErrors,
@@ -22,9 +24,43 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
+const filingStore = usePostRestorationTransitionApplicationStore()
+const businessId = route.params.businessId as string
+filingStore.init(businessId)
+const {
+  activeBusiness,
+  articles,
+  certifiedByLegalName,
+  compPartyEmail,
+  courtOrderNumber,
+  directors,
+  folio,
+  isStaffOrSbcStaff,
+  legalName,
+  offices,
+  planOfArrangement,
+  regOfficeEmail,
+  shareWithSpecialRightsModified,
+  modifiedDirectors
+} = storeToRefs(filingStore)
+
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
 const submittedModal = ref<boolean>(false)
+const modalDateError = () => {
+  const dateError = articlesErrors?.value?.currentDate?.[0]
+  const submit = submittedModal.value
+  const articleDate = articles?.value?.incorpDate
+  return dateError !== undefined && (dateError !== 'errors.articles' || submit)
+                && te(dateError)
+                ? t(dateError,
+                     {
+                       incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
+                       today: fromIsoToUsDateFormat(new Date().toISOString())
+                     }
+                )
+                : ''
+}
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -72,8 +108,6 @@ useHead({
   title: t('transitionApplication.title')
 })
 
-const route = useRoute()
-
 definePageMeta({
   layout: 'form',
   middleware: async () => {
@@ -111,27 +145,6 @@ definePageMeta({
 })
 
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
-
-const businessId = route.params.businessId as string
-
-const filingStore = usePostRestorationTransitionApplicationStore()
-filingStore.init(businessId)
-const {
-  activeBusiness,
-  articles,
-  certifiedByLegalName,
-  compPartyEmail,
-  courtOrderNumber,
-  directors,
-  folio,
-  isStaffOrSbcStaff,
-  legalName,
-  offices,
-  planOfArrangement,
-  regOfficeEmail,
-  shareWithSpecialRightsModified,
-  modifiedDirectors
-} = storeToRefs(filingStore)
 
 const sectionHasErrors = computed(() => (section: PageSection): boolean => {
   /* eslint-disable vue/script-indent */
@@ -385,6 +398,8 @@ const saveModalDate = async () => {
     <UModal
       :open="pickDateModalOpen"
       class="overflow-visible"
+      title="dateModal"
+      description="pick date for special rights"
     >
       <template #content>
         <div class="p-10 flex flex-col gap-6">
@@ -401,15 +416,7 @@ const saveModalDate = async () => {
           </div>
           <div>
             <UFormField
-              :error="articlesErrors?.currentDate?.[0] !== 'errors.articles' || submittedModal
-                && $te(articlesErrors?.currentDate?.[0])
-                ? $t(articlesErrors?.currentDate?.[0],
-                     {
-                       incorpDate: fromIsoToUsDateFormat(new Date(articles.incorpDate).toISOString()),
-                       today: fromIsoToUsDateFormat(new Date().toISOString())
-                     }
-                )
-                : ''"
+              :error="modalDateError()"
             >
               <FormDateInput
                 id="modal-date-input"
