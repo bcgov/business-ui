@@ -140,19 +140,20 @@ test.describe('Draft Officers', () => {
     await assertAddress(page, newPerson, 2, newDeliveryAddress)
     await assertAddress(page, newPerson, 3)
 
-    // save filing
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
+    // save and resume later filing
+    await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
 
-    // should have updated url with draft filing id
-    const updatedUrl = new RegExp(`.*${identifier}\\?draft=${filingId}.*`)
-    await expect(page).toHaveURL(updatedUrl)
+    // user should be redirected away
+    await expect(page).not.toHaveURL(/.*officer-change.*/)
 
-    // reload page with draft url
-    await page.reload()
+    // navigate to page - with draft id
+    await page.goto(`./en-CA/officer-change/${identifier}?draft=${filingId}`)
+    // wait for api response to settle
+    await page.waitForResponse('*/**/businesses/**/*')
 
     // wait for page state to be reinitialized
     await expect(page.getByText('Officer Change').first()).toBeVisible()
-    await page.waitForTimeout(5000)
+    // await page.waitForTimeout(5000)
 
     // page should reload with saved draft data
     await assertNameTableCell(page, newPerson, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])

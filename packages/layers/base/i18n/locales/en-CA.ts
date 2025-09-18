@@ -1,5 +1,13 @@
 export default {
   /* Ordering should be alphabetical unless otherwise specified */
+  connect: {
+    breadcrumb: {
+      default: 'BC Registries and Online Services' // default breadcrumb item text - will be shown before breadcrumbs have been set
+    },
+    header: {
+      title: 'BC Registries and Online Services' // header component title text
+    }
+  },
   /* Common translations only */
   contactInfo: {
     tollFree: {
@@ -25,10 +33,8 @@ export default {
     businessNumber: 'Business Number',
     cancel: 'Cancel',
     change: 'Change',
-    changeAddress: 'Change Address',
-    changeName: 'Change Name',
-    changeRoles: 'Change Roles',
     close: 'Close',
+    companyInformationPage: 'Company Information Page',
     deliveryAddress: 'Delivery Address',
     done: 'Done',
     edit: 'Edit',

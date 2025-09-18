@@ -98,8 +98,11 @@ export async function fillNameFields(page: Page, person: PersonLastNameRequired)
 
 export async function fillAddress(page: Page, type: 'mailing' | 'delivery', data: ReturnType<typeof getFakeAddress>) {
   const fieldset = page.getByTestId(`${type}-address-fieldset`)
+  await fieldset.getByTestId(`${type}-address-input-street`).click()
   await fieldset.getByTestId(`${type}-address-input-street`).fill(data.street)
+  await fieldset.getByTestId(`${type}-address-input-streetAdditional`).click()
   await fieldset.getByTestId(`${type}-address-input-streetAdditional`).fill(data.streetAdditional)
+  await fieldset.getByTestId(`${type}-address-input-city`).click()
   await fieldset.getByTestId(`${type}-address-input-city`).fill(data.city)
   // region - this is flaky, must focus first and wait for listbox or test may fail
   await fieldset.getByTestId(`${type}-address-input-region`).focus()
@@ -112,7 +115,9 @@ export async function fillAddress(page: Page, type: 'mailing' | 'delivery', data
   await page.keyboard.type(data.region)
   await page.keyboard.press('Enter')
   await expect(optionsList).not.toBeVisible()
+  await fieldset.getByTestId(`${type}-address-input-postalCode`).click()
   await fieldset.getByTestId(`${type}-address-input-postalCode`).fill(data.postalCode)
+  await fieldset.getByTestId(`${type}-address-input-locationDescription`).click()
   await fieldset.getByTestId(`${type}-address-input-locationDescription`).fill(data.locationDescription)
 }
 

@@ -1,14 +1,9 @@
 export const useOfficerModals = () => {
   const { baseModal, errorModal } = useModal()
   const t = useNuxtApp().$i18n.t
-  const route = useRoute()
   const rtc = useRuntimeConfig().public
   const accountStore = useConnectAccountStore()
-
-  const businessId = route.params.businessId as string
-  const businessDashboardUrl = computed(() =>
-    `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
-  )
+  const { dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
 
   async function openUnsavedChangesModal(revokeBeforeUnloadEvent: () => void) {
     await baseModal.open({
@@ -22,7 +17,7 @@ export const useOfficerModals = () => {
           size: 'xl',
           onClick: async () => {
             revokeBeforeUnloadEvent()
-            await navigateTo(businessDashboardUrl.value, {
+            await navigateTo(dashboardOrEditUrl.value, {
               external: true
             })
           }
@@ -52,7 +47,7 @@ export const useOfficerModals = () => {
       buttons: [
         {
           label: t('label.goBack'),
-          to: businessDashboardUrl.value,
+          to: dashboardOrEditUrl.value,
           external: true,
           variant: 'outline'
         },
@@ -68,7 +63,7 @@ export const useOfficerModals = () => {
       buttons: [
         {
           label: t('label.goBack'),
-          to: businessDashboardUrl.value,
+          to: dashboardUrl.value,
           variant: 'outline',
           external: true
         },
@@ -94,7 +89,7 @@ export const useOfficerModals = () => {
         : [
           {
             label: t('label.goBack'),
-            to: businessDashboardUrl.value,
+            to: dashboardOrEditUrl.value,
             variant: 'outline',
             external: true
           },
@@ -110,7 +105,7 @@ export const useOfficerModals = () => {
       buttons: [
         {
           label: t('label.goBack'),
-          to: businessDashboardUrl.value,
+          to: dashboardOrEditUrl.value,
           external: true
         }
       ],

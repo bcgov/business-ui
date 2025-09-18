@@ -59,7 +59,8 @@ export default defineNuxtConfig({
       businessApiUrl: '',
       businessApiVersion: '',
       businessDashboardUrl: '',
-      brdUrl: ''
+      brdUrl: '',
+      businessEditUrl: ''
     }
   }
 })

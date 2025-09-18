@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
+const identifier = 'BC1234567'
+
 const mockBaseModalOpen = vi.fn()
 const mockErrorModalOpen = vi.fn()
 mockNuxtImport('useModal', () => {
@@ -13,14 +15,17 @@ mockNuxtImport('useModal', () => {
 const { mockNavigateTo } = vi.hoisted(() => ({ mockNavigateTo: vi.fn() }))
 mockNuxtImport('navigateTo', () => mockNavigateTo)
 
-mockNuxtImport('useRoute', () => () => ({
-  params: { businessId: 'BC1234567' }
-}))
+const mockRoute = reactive({
+  params: { businessId: identifier },
+  query: {} as { draft?: string }
+})
+mockNuxtImport('useRoute', () => () => mockRoute)
 
 mockNuxtImport('useRuntimeConfig', () => () => ({
   public: {
     businessDashboardUrl: 'http://business-dashboard-example/',
-    brdUrl: 'http://brd-example/'
+    brdUrl: 'http://brd-example/',
+    businessEditUrl: 'http://business-edit/'
   }
 }))
 
@@ -31,6 +36,7 @@ mockNuxtImport('useConnectAccountStore', () => () => ({
 describe('useOfficerModals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockRoute.query = {}
   })
 
   describe('openUnsavedChangesModal', () => {
@@ -49,20 +55,44 @@ describe('useOfficerModals', () => {
       expect(callArgs.buttons[1].label).toBe('Exit Without Saving')
     })
 
-    it('should call revoke event and navigate when "Exit" button is clicked', async () => {
-      const { openUnsavedChangesModal } = useOfficerModals()
-      const mockRevokeEvent = vi.fn()
+    describe('When draft is NOT present', () => {
+      it('should call revoke event and navigate to business edit when "Exit" button is clicked', async () => {
+        const { openUnsavedChangesModal } = useOfficerModals()
+        const mockRevokeEvent = vi.fn()
 
-      await openUnsavedChangesModal(mockRevokeEvent)
+        await openUnsavedChangesModal(mockRevokeEvent)
 
-      const exitButtonOnClick = mockBaseModalOpen.mock.calls[0]![0].buttons[1].onClick
-      await exitButtonOnClick()
+        const exitButtonOnClick = mockBaseModalOpen.mock.calls[0]![0].buttons[1].onClick
+        await exitButtonOnClick()
 
-      expect(mockRevokeEvent).toHaveBeenCalledOnce()
-      expect(mockNavigateTo).toHaveBeenCalledOnce()
-      expect(mockNavigateTo).toHaveBeenCalledWith(
-        'http://business-dashboard-example/BC1234567?accountid=test-account-id', { external: true }
-      )
+        expect(mockRevokeEvent).toHaveBeenCalledOnce()
+        expect(mockNavigateTo).toHaveBeenCalledOnce()
+        expect(mockNavigateTo).toHaveBeenCalledWith(
+          'http://business-edit/BC1234567/alteration?accountid=test-account-id', { external: true }
+        )
+      })
+    })
+
+    describe('When draft is present', () => {
+      beforeEach(() => {
+        mockRoute.query = { draft: '12345' }
+      })
+
+      it('should call revoke event and navigate to business dashboard when "Exit" button is clicked', async () => {
+        const { openUnsavedChangesModal } = useOfficerModals()
+        const mockRevokeEvent = vi.fn()
+
+        await openUnsavedChangesModal(mockRevokeEvent)
+
+        const exitButtonOnClick = mockBaseModalOpen.mock.calls[0]![0].buttons[1].onClick
+        await exitButtonOnClick()
+
+        expect(mockRevokeEvent).toHaveBeenCalledOnce()
+        expect(mockNavigateTo).toHaveBeenCalledOnce()
+        expect(mockNavigateTo).toHaveBeenCalledWith(
+          'http://business-dashboard-example/BC1234567?accountid=test-account-id', { external: true }
+        )
+      })
     })
   })
 
@@ -95,17 +125,38 @@ describe('useOfficerModals', () => {
   })
 
   describe('openFilingNotAllowedErrorModal', () => {
-    it('should open the error modal with the correct buttons and prefix', async () => {
-      const { openFilingNotAllowedErrorModal } = useOfficerModals()
-      await openFilingNotAllowedErrorModal()
+    describe('When draft is NOT present', () => {
+      it('should open the error modal with the correct buttons and prefix', async () => {
+        const { openFilingNotAllowedErrorModal } = useOfficerModals()
+        await openFilingNotAllowedErrorModal()
 
-      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
-      const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
-      expect(callArgs.buttons).toHaveLength(2)
-      expect(callArgs.buttons[0].label).toBe('Go Back')
-      expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
-      expect(callArgs.buttons[1].label).toBe('Refresh Page')
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(callArgs.buttons[1].label).toBe('Refresh Page')
+      })
+    })
+
+    describe('When draft is present', () => {
+      beforeEach(() => {
+        mockRoute.query = { draft: '12345' }
+      })
+
+      it('should open the error modal with the correct buttons and prefix', async () => {
+        const { openFilingNotAllowedErrorModal } = useOfficerModals()
+        await openFilingNotAllowedErrorModal()
+
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+        expect(callArgs.buttons[1].label).toBe('Refresh Page')
+      })
     })
   })
 
@@ -162,53 +213,116 @@ describe('useOfficerModals', () => {
       expect(callArgs.buttons[0].to).toBe('http://brd-example/account/test-account-id')
     })
 
-    it('should show "Go Back" and "Refresh" buttons for a 500 error', async () => {
-      const { openInitOfficerStoreErrorModal } = useOfficerModals()
-      const mockError = { statusCode: 500, message: 'Server Error' }
-      await openInitOfficerStoreErrorModal(mockError)
+    describe('When draft is NOT present', () => {
+      it('should show "Go Back" and "Refresh" buttons for a 500 error', async () => {
+        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const mockError = { statusCode: 500, message: 'Server Error' }
+        await openInitOfficerStoreErrorModal(mockError)
 
-      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
-      const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
-      expect(callArgs.buttons).toHaveLength(2)
-      expect(callArgs.buttons[0].label).toBe('Go Back')
-      expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
-      expect(callArgs.buttons[1].label).toBe('Refresh Page')
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(callArgs.buttons[1].label).toBe('Refresh Page')
+      })
+
+      it('should show "Go Back" and "Refresh" buttons for an unknown error', async () => {
+        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const mockError = new Error('Network Failed') // An error without a statusCode
+        await openInitOfficerStoreErrorModal(mockError)
+
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+      })
     })
 
-    it('should show "Go Back" and "Refresh" buttons for an unknown error', async () => {
-      const { openInitOfficerStoreErrorModal } = useOfficerModals()
-      const mockError = new Error('Network Failed') // An error without a statusCode
-      await openInitOfficerStoreErrorModal(mockError)
+    describe('When draft is present', () => {
+      beforeEach(() => {
+        mockRoute.query = { draft: '12345' }
+      })
 
-      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
-      const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.buttons).toHaveLength(2)
-      expect(callArgs.buttons[0].label).toBe('Go Back')
-      expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+      it('should show "Go Back" and "Refresh" buttons for a 500 error', async () => {
+        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const mockError = { statusCode: 500, message: 'Server Error' }
+        await openInitOfficerStoreErrorModal(mockError)
+
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+        expect(callArgs.buttons[1].label).toBe('Refresh Page')
+      })
+
+      it('should show "Go Back" and "Refresh" buttons for an unknown error', async () => {
+        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const mockError = new Error('Network Failed') // An error without a statusCode
+        await openInitOfficerStoreErrorModal(mockError)
+
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+        expect(callArgs.buttons).toHaveLength(2)
+        expect(callArgs.buttons[0].label).toBe('Go Back')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+      })
     })
   })
 
   describe('openFilingNotAvailableModal', () => {
-    it('should open the base modal with the correct title, description, and button', async () => {
-      const { openFilingNotAvailableModal } = useOfficerModals()
+    describe('When draft is NOT present', () => {
+      it('should open the base modal with the correct title, description, and button', async () => {
+        const { openFilingNotAvailableModal } = useOfficerModals()
 
-      await openFilingNotAvailableModal()
+        await openFilingNotAvailableModal()
 
-      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
-      expect(mockErrorModalOpen).not.toHaveBeenCalled()
+        expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
 
-      const callArgs = mockBaseModalOpen.mock.calls[0]![0]
-      expect(callArgs.title).toBe('Page not available')
-      // eslint-disable-next-line
-      expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
-      expect(callArgs.dismissible).toBe(false)
+        const callArgs = mockBaseModalOpen.mock.calls[0]![0]
+        expect(callArgs.title).toBe('Page not available')
+        // eslint-disable-next-line
+        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.dismissible).toBe(false)
 
-      expect(callArgs.buttons).toHaveLength(1)
-      const button = callArgs.buttons[0]
-      expect(button.label).toBe('Go Back')
-      expect(button.to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
-      expect(button.external).toBe(true)
+        expect(callArgs.buttons).toHaveLength(1)
+        const button = callArgs.buttons[0]
+        expect(button.label).toBe('Go Back')
+        expect(button.to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(button.external).toBe(true)
+      })
+    })
+
+    describe('When draft is present', () => {
+      beforeEach(() => {
+        mockRoute.query = { draft: '12345' }
+      })
+
+      it('should open the base modal with the correct title, description, and button', async () => {
+        const { openFilingNotAvailableModal } = useOfficerModals()
+
+        await openFilingNotAvailableModal()
+
+        expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
+
+        const callArgs = mockBaseModalOpen.mock.calls[0]![0]
+        expect(callArgs.title).toBe('Page not available')
+        // eslint-disable-next-line
+        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.dismissible).toBe(false)
+
+        expect(callArgs.buttons).toHaveLength(1)
+        const button = callArgs.buttons[0]
+        expect(button.label).toBe('Go Back')
+        expect(button.to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+        expect(button.external).toBe(true)
+      })
     })
   })
 })

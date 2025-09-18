@@ -28,12 +28,6 @@ test.describe('Task Guards', () => {
     await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
   })
 
-  test('should prevent filing save when form is open for new officer', async ({ page }) => {
-    await openOfficerForm(page)
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
-  })
-
   test('should prevent filing save and resume when form is open for new officer', async ({ page }) => {
     await openOfficerForm(page)
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
@@ -45,13 +39,6 @@ test.describe('Task Guards', () => {
     await openOfficerForm(page, row)
     await page.getByRole('button', { name: 'Submit' }).click()
     await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
-  })
-
-  test('should prevent filing save when form is open when editing existing officer', async ({ page }) => {
-    const row = getTableRowForPerson(page, initialOfficerPerson)
-    await openOfficerForm(page, row)
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
   })
 
   test('should prevent filing save and resume when form is open when editing existing officer', async ({ page }) => {
@@ -66,11 +53,6 @@ test.describe('Task Guards', () => {
     await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to submit.')
   })
 
-  test('should prevent filing save when no changes have been made', async ({ page }) => {
-    await page.getByRole('button', { name: 'Save', exact: true }).click()
-    await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to save.')
-  })
-
   test('should prevent filing save and resume when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
     await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to save.')
@@ -78,13 +60,13 @@ test.describe('Task Guards', () => {
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
+    await expect(page).toHaveURL(/.*edit\.business.*/)
     expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
   })
 
   test('should be able to navigate away when no changes have been made', async ({ page }) => {
-    await page.getByRole('link', { name: 'Officer Change Test Business' }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
+    await page.getByRole('link', { name: 'Company Information Page' }).click()
+    await expect(page).toHaveURL(/.*edit\.business.*/)
     expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
   })
 
@@ -145,8 +127,9 @@ test.describe('Task Guards', () => {
     })
 
     await page.getByRole('heading', { name: 'Officer Change' }).click()
-    await page.getByRole('link', { name: 'Officer Change Test Business' }).click()
-    await expect(page).not.toHaveURL(/.*business-dashboard.*/)
+    await page.getByRole('link', { name: 'Company Information Page' }).click()
+    // should still be on officer change page
+    await expect(page).toHaveURL(/.*officer-change.*/)
   })
 
   test('should prevent making changes when form is open for new officer', async ({ page }) => {

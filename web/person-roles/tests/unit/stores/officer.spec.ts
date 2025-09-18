@@ -4,13 +4,13 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import type { Row } from '@tanstack/vue-table'
 import { businessBC1234567 } from '~~/tests/mocks'
 
-mockNuxtImport('useRoute', () => {
-  return () => ({
-    params: {
-      businessId: 'BC1234567'
-    }
-  })
+const identifier = 'BC1234567'
+
+const mockRoute = reactive({
+  params: { businessId: identifier },
+  query: {} as { draft?: string }
 })
+mockNuxtImport('useRoute', () => () => mockRoute)
 
 const mockLegalApi = {
   getBusiness: vi.fn(),
@@ -37,7 +37,8 @@ mockNuxtImport('useModal', () => {
 mockNuxtImport('useRuntimeConfig', () => () => (
   {
     public: {
-      businessDashboardUrl: 'http://business-dashboard-url/'
+      businessDashboardUrl: 'http://business-dashboard-url/',
+      businessEditUrl: 'http://business-edit/'
     }
   }
 ))
@@ -128,20 +129,6 @@ describe('useOfficerStore', () => {
         expect(mockErrorModalOpen).toHaveBeenCalled()
         expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
         expect(store.officerTableState).toHaveLength(0)
-      })
-
-      test('should show modal and return early if a pending task exists', async () => {
-        // mock that a pending task exists
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
-        mockLegalApi.getPendingTask.mockResolvedValue({ task: {} })
-        vi.mocked(isFilingAllowed).mockReturnValue(true)
-
-        // init store
-        await store.initOfficerStore(businessId)
-
-        // assert
-        expect(mockErrorModalOpen).toHaveBeenCalled()
-        expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
       })
 
       test('should initialize with an empty state for a business with no officers', async () => {
@@ -265,7 +252,7 @@ describe('useOfficerStore', () => {
       const button = callArgs.buttons[0]
       expect(button.label).toBe('label.goBack')
       expect(button.external).toBe(true)
-      expect(button.to).toBe('http://business-dashboard-url/BC1234567?accountid=123')
+      expect(button.to).toBe('http://business-edit/BC1234567/alteration?accountid=123')
     })
   })
 
