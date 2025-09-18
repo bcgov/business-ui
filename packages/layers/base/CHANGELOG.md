@@ -1,5 +1,13 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.11
+
+### Patch Changes
+
+- [#244](https://github.com/bcgov/business-ui/pull/244) [`370c175`](https://github.com/bcgov/business-ui/commit/370c175d07d03b61723e36c0a404caa19f20a182) Thanks [@deetz99](https://github.com/deetz99)! - Set Header and Breadcrumb default text to be 'BC Registries and Online Services' instead of 'SBC Connect'
+
+- [#244](https://github.com/bcgov/business-ui/pull/244) [`370c175`](https://github.com/bcgov/business-ui/commit/370c175d07d03b61723e36c0a404caa19f20a182) Thanks [@deetz99](https://github.com/deetz99)! - Add business edit url to nuxt config, remove officer only i18n labels, add company info page i18n label
+
 ## 0.1.10
 
 ### Patch Changes
