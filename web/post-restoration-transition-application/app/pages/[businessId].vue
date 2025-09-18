@@ -52,14 +52,14 @@ const modalDateError = () => {
   const submit = submittedModal.value
   const articleDate = articles?.value?.incorpDate
   return dateError !== undefined && (dateError !== 'errors.articles' || submit)
-                && te(dateError)
-                ? t(dateError,
-                     {
-                       incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
-                       today: fromIsoToUsDateFormat(new Date().toISOString())
-                     }
-                )
-                : ''
+    && te(dateError)
+    ? t(dateError,
+        {
+          incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
+          today: fromIsoToUsDateFormat(new Date().toISOString())
+        }
+    )
+    : ''
 }
 
 const hasCertifyErrors = computed(() => {

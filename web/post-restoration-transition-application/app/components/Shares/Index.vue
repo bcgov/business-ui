@@ -19,9 +19,8 @@ const {
   shareClasses,
   editingShareIndex,
   ORIGINAL_SHARE_CLASSES,
-  editingSeriesParent,
+  editingSeriesParent
 } = storeToRefs(filingStore)
-
 
 const sharesAddFormId = `${props.formId}-add-form`
 const sharesEditFormId = `${props.formId}-edit-form`
@@ -49,7 +48,7 @@ const flattenData = (data: Share[]) => {
   return flatData
 }
 
-const flattenedShareClasses = computed ( () => {
+const flattenedShareClasses = computed (() => {
   return flattenData(shareClasses.value)
 })
 
@@ -163,8 +162,10 @@ const getDropdownActions = (row: Row<Share>) => {
         || row.index === 0
         || (
           row.original?.parentShareIndex !== undefined && row.original.parentShareIndex !== -1
-          && JSON.stringify(row.original) === JSON.stringify(shareClasses.value[row.original.parentShareIndex].series[0]) 
+          && JSON.stringify(row.original) === JSON.stringify(
+            shareClasses.value[row.original.parentShareIndex].series[0]
           )
+        )
       )
     },
     {
@@ -179,8 +180,12 @@ const getDropdownActions = (row: Row<Share>) => {
         || row.index === flattenedShareClasses.value.length - 1
         || (
           row.original?.parentShareIndex !== undefined && row.original.parentShareIndex !== -1
-          && JSON.stringify(row.original) === JSON.stringify(shareClasses.value[row.original.parentShareIndex].series[shareClasses.value[row.original.parentShareIndex].series.length - 1]) 
+          && JSON.stringify(row.original) === JSON.stringify(
+            shareClasses.value[row.original.parentShareIndex].series[
+              shareClasses.value[row.original.parentShareIndex].series.length - 1
+            ]
           )
+        )
       )
     },
     {
@@ -250,7 +255,7 @@ const moveShare = (index: number, moveUp: boolean) => {
     const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
       return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
     })
-    
+
     const newIndex = moveUp ? seriesIndex - 1 : seriesIndex + 1
     if (newIndex < 0 || newIndex >= shareClasses.value[shareIndex].series.length) {
       return
@@ -259,7 +264,7 @@ const moveShare = (index: number, moveUp: boolean) => {
     const arr = shareClasses.value[shareIndex].series
     const temp = arr[seriesIndex]
     const oldPriority = temp.priority
-    
+
     temp.priority = arr[newIndex].priority
     arr[newIndex].priority = oldPriority
 
@@ -267,12 +272,12 @@ const moveShare = (index: number, moveUp: boolean) => {
     arr.splice(newIndex, 0, temp)
     return
   }
-  //otherwise it's a share
+  // otherwise it's a share
   const realIndex = shareClasses.value.findIndex((s) => {
     return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
   })
   const newIndex = moveUp ? realIndex - 1 : realIndex + 1
-  
+
   // Swap elements using splice for reactivity
   const arr = shareClasses.value
   const temp = arr[realIndex]
@@ -323,7 +328,7 @@ const addASeries = (row: Row<Share>) => {
   for (let i = 0; i < shareClasses.value.length; i++) {
     if (JSON.stringify(shareClasses.value[i]) === JSON.stringify(row.original)) {
       parentIndex = i
-      break;
+      break
     }
   }
   editingSeriesParent.value = parentIndex
@@ -345,7 +350,7 @@ const getIndexes = () => {
 
   if (addSeries.value) {
     seriesIndex = shareClasses.value[shareIndex].series.length - 1
-  }else if (addEditSeries.value) {
+  } else if (addEditSeries.value) {
     seriesIndex = editingShareIndex.value
   }
 
@@ -356,25 +361,25 @@ const updated = (row: Row<Share | Series>) => {
   const { shareIndex, seriesIndex } = getIndexes()
 
   if (addSeries.value) {
-    //adding a series
+    // adding a series
     shareClasses.value[shareIndex].series[seriesIndex].added = true
     const newValues = JSON.stringify(shareClasses.value)
     shareClasses.value = [...JSON.parse(newValues)]
     shareClasses.value.push()
   } else {
-    //updating either a series or a share
+    // updating either a series or a share
     const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex])
     const current = JSON.stringify(shareClasses.value[shareIndex])
     shareClasses.value[shareIndex].modified = original !== current
     if (addEditSeries.value) {
-      //updating a series
+      // updating a series
       const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex].series[seriesIndex])
       const current = JSON.stringify(shareClasses.value[shareIndex].series[seriesIndex])
       shareClassses.value[shareIndex].series[seriesIndex].modified = original !== current
     }
   }
 
-  let forceClose = addEditSeries.value
+  const forceClose = addEditSeries.value
   if (
     (Object.keys(shareClasses.value[shareIndex]).includes('series'))
     && shareClasses.value[shareIndex]?.series?.length > 0) {

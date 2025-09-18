@@ -281,6 +281,6 @@ export const usePostRestorationTransitionApplicationStore
     editingDirector,
     openEditComponentId,
     modifiedDirectors,
-    editingSeriesParent,
+    editingSeriesParent
   }
 })
