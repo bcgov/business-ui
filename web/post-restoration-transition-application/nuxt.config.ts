@@ -28,6 +28,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
+    'nuxt-anchorscroll',
     'nuxt-lodash'
   ],
 

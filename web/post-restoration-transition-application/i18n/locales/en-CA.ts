@@ -140,6 +140,8 @@ export default {
   errors: {
     articles: 'You must add a date because you changed your share structure and it contains a class or series of shares with special rights or restrictions.',
     articlesDateRange: 'Please enter a date between {incorpDate} and {today}.',
+    closeOpenFormBeforeSubmitting: 'Finish this task before submitting',
+    closeOpenFormBeforeOtherChanges: 'Finish this task before making other changes',
     currency: 'Currency is required, when has par value is selected',
     email: 'Valid email is required',
     exceedsNumberOfShares: 'This would make the total of shares exceeds maximum number of shares across all series',

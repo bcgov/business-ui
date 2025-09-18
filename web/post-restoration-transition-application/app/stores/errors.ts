@@ -12,6 +12,7 @@ export const usePostRestorationErrorsStore
   const completingPartyErrors = ref<{ [key: string]: string[] }>({})
   const articlesErrors = ref<{ [key: string]: string[] }>({})
   const staffPayErrors = ref<{ [key: string]: string[] }>({})
+  const openEditFormError = ref<string | undefined>(undefined)
   const filingStore = usePostRestorationTransitionApplicationStore()
   const {
     isStaffOrSbcStaff
@@ -141,6 +142,7 @@ export const usePostRestorationErrorsStore
     courtOrderErrors,
     completingPartyErrors,
     articlesErrors,
+    openEditFormError,
     clearErrors,
     verify,
     hasErrors,

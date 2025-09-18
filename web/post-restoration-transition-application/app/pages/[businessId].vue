@@ -3,8 +3,10 @@ import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
+import { PageSection } from '~/enum/page_sections'
 
 const { setButtonControl } = useButtonControl()
+const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
@@ -16,6 +18,7 @@ const {
   courtOrderErrors,
   articlesErrors,
   staffPayErrors,
+  openEditFormError,
   completingPartyErrors
 } = storeToRefs(errorStore)
 
@@ -130,6 +133,33 @@ const {
   modifiedDirectors
 } = storeToRefs(filingStore)
 
+const sectionHasErrors = computed(() => (section: PageSection): boolean => {
+  /* eslint-disable vue/script-indent */
+  switch (section) {
+    case PageSection.ARTICLES:
+      if (hasArticlesErrors.value
+        || (filingStore.sectionHasOpenForm(PageSection.ARTICLES) && openEditFormError.value)) {
+        return true
+      }
+      break
+    case PageSection.SHARES:
+      if (filingStore.sectionHasOpenForm(PageSection.SHARES) && openEditFormError.value) {
+        return true
+      }
+      break
+    case PageSection.DIRECTORS:
+      if (filingStore.sectionHasOpenForm(PageSection.DIRECTORS) && openEditFormError.value) {
+        return true
+      }
+      break
+    default:
+      break
+  }
+  /* eslint-enable */
+
+  return false
+})
+
 watch(shareWithSpecialRightsModified, (newVal) => {
   articles.value.specialResolutionChanges = newVal
   errorStore.verifyArticles(articles.value)
@@ -145,8 +175,13 @@ const editingDirectorIndex = ref(-1)
 const toggleDirectorExpanded = (row: Row<Series>) => {
   if (row.getIsExpanded()) {
     anyExpanded.value = false
+    editFormClosed(ADDRESS_CHANGE_FORM_ID)
     editingDirectorIndex.value = -1
   } else if (!anyExpanded.value) {
+    // if any blocking form is open, it will scroll to it, and cancel toggle
+    if (editFormOpen(ADDRESS_CHANGE_FORM_ID)) {
+      return
+    }
     anyExpanded.value = true
     editingDirectorIndex.value = row.index
   }
@@ -255,6 +290,7 @@ const directorsColumns = ref([
           'color': 'primary',
           'class': 'inline-block mr-0 px-3',
           'variant': 'ghost',
+          'data-testId': 'change-director-address-button',
           'aria-label': t('label.change'),
           'ui': {
             label: 'align-top'
@@ -278,9 +314,21 @@ const showPreviousResolutionsDateLabel = computed(() => {
     : t('text.previousResolutionsShow')
 })
 
-const removeDateHandler = () => {
+const removeArticlesDateHandler = () => {
   articles.value.currentDate = undefined
   validate()
+}
+
+const ARTICLES_CURRENT_DATE_FORM_ID = 'articles-current-date-edit-form'
+const ADDRESS_CHANGE_FORM_ID = 'address-change-edit-form'
+filingStore.registerFormIdToSection(ARTICLES_CURRENT_DATE_FORM_ID, PageSection.ARTICLES)
+filingStore.registerFormIdToSection(ADDRESS_CHANGE_FORM_ID, PageSection.DIRECTORS)
+
+const addArticlesDateButtonHandler = () => {
+  if (editFormOpen(ARTICLES_CURRENT_DATE_FORM_ID)) {
+    return
+  }
+  showDateInputBox.value = true
 }
 
 const minArticleResolutionDate = computed(() => {
@@ -311,7 +359,8 @@ setButtonControl({
   rightButtons: rightButtons
 })
 
-const closeDateandValidate = () => {
+const closeArticleDateEntryAndValidate = () => {
+  editFormClosed(ARTICLES_CURRENT_DATE_FORM_ID)
   showDateInputBox.value = false
   validate()
 }
@@ -439,6 +488,7 @@ const saveModalDate = async () => {
         <FormSubSection
           icon="i-mdi-account-multiple-plus"
           :title="$t('label.currentDirectors')"
+          :has-errors="sectionHasErrors(PageSection.DIRECTORS)"
           class="pb-6"
         >
           <FormDataList
@@ -452,7 +502,9 @@ const saveModalDate = async () => {
           >
             <template #expanded="{ row }">
               <FormAddressChange
+                :form-id="ADDRESS_CHANGE_FORM_ID"
                 :index="row.index"
+                :edit-form-error="openEditFormError"
                 @done="toggleDirectorExpanded(row)"
                 @cancel="toggleDirectorExpanded(row)"
               />
@@ -470,20 +522,23 @@ const saveModalDate = async () => {
         <FormSubSection
           :title="$t('text.sharesTitle')"
           icon="i-mdi-sitemap"
-          :has-errors="false"
+          :has-errors="sectionHasErrors(PageSection.SHARES)"
           class="pb-6"
         >
-          <Shares />
+          <Shares
+            form-id="shares-section"
+            :edit-form-error="openEditFormError"
+          />
         </FormSubSection>
 
         <FormSubSection
           icon="i-mdi-handshake"
           :title="$t('label.articles')"
-          :has-errors="hasArticlesErrors"
+          :has-errors="sectionHasErrors(PageSection.ARTICLES)"
         >
           <ConnectFormSection
             :title="$t('label.resolutionOrCourtOrderDate')"
-            :has-errors="hasArticlesErrors"
+            :has-errors="sectionHasErrors(PageSection.ARTICLES)"
             class="text-base p-6 pb-2"
           >
             <template #title>
@@ -504,20 +559,20 @@ const saveModalDate = async () => {
                       :padded="false"
                       variant="ghost"
                       class="rounded text-base gap-1"
-                      @click="removeDateHandler"
+                      @click="removeArticlesDateHandler"
                     />
                   </div>
                   <div v-else-if="showDateInputBox">
                     <FormDateInputWithButtons
-                      id="articlesCurrentDate"
+                      :id="ARTICLES_CURRENT_DATE_FORM_ID"
                       v-model="articles.currentDate"
                       name="articles-current-date"
                       :label="$t('text.articlesDate')"
                       :min-date="minArticleResolutionDate"
                       :max-date="(new Date()).toISOString()"
                       readonly
-                      @save="closeDateandValidate"
-                      @cancel="closeDateandValidate"
+                      @save="closeArticleDateEntryAndValidate"
+                      @cancel="closeArticleDateEntryAndValidate"
                     />
                   </div>
                   <div v-else>
@@ -528,7 +583,7 @@ const saveModalDate = async () => {
                       :padded="false"
                       variant="outline"
                       class="rounded text-base pt-[11px] pb-[11px]"
-                      @click="showDateInputBox=true"
+                      @click="addArticlesDateButtonHandler"
                     />
                   </div>
                   <div v-if="hasArticlesErrors">
