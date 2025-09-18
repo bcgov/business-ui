@@ -6,9 +6,6 @@ settings:
 
 catalogs:
   default:
-    '@axe-core/playwright':
-      specifier: ^4.10.2
-      version: 4.10.2
     '@nuxt/test-utils':
       specifier: ^3.19.1
       version: 3.19.2
@@ -94,7 +91,7 @@ importers:
         version: 3.7.1
     devDependencies:
       '@axe-core/playwright':
-        specifier: 'catalog:'
+        specifier: ^4.10.2
         version: 4.10.2(playwright-core@1.55.0)
       '@sbc-connect/playwright-config':
         specifier: workspace:*
@@ -137,7 +134,7 @@ importers:
         version: 4.5.1(vue@3.5.20(typescript@5.9.2))
     devDependencies:
       '@axe-core/playwright':
-        specifier: 'catalog:'
+        specifier: ^4.10.2
         version: 4.10.2(playwright-core@1.55.0)
       '@faker-js/faker':
         specifier: ^10.0.0

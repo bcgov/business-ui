@@ -31,7 +31,7 @@
     "luxon": "^3.6.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "catalog:",
+    "@axe-core/playwright": "^4.10.2",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
     "@types/luxon": "^3.6.2",
