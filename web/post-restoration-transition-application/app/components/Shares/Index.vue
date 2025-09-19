@@ -32,6 +32,10 @@ const addEditSeries = ref<boolean>(false)
 const addSeries = ref<boolean>(false)
 const addSeriesShareIndex = ref<number>(-1)
 
+const bottomShare = computed(() => {
+  return flattenedShareClasses.value.findLastIndex(s => Object.keys(s).includes('series'))
+})
+
 const flattenData = (data: Share[]) => {
   const flatData: Series[] = []
   data.sort((a, b) => a.priority - b.priority)
@@ -177,7 +181,7 @@ const getDropdownActions = (row: Row<Share>) => {
       color: 'primary',
       disabled: (
         row.original.removed
-        || row.index === flattenedShareClasses.value.length - 1
+        || (row.index >= bottomShare.value && row.original.parentShareIndex === undefined)
         || (
           row.original?.parentShareIndex !== undefined && row.original.parentShareIndex !== -1
           && JSON.stringify(row.original) === JSON.stringify(
@@ -289,16 +293,52 @@ const moveShare = (index: number, moveUp: boolean) => {
 }
 
 const deleteShare = (index: number) => {
-  shareClasses.value[index].removed = true
-  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
-    shareClasses.value[index].series[i].removed = true
+  const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  if (isSeries) {
+    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
+    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
+      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+    })
+    if (shareClasses.value[shareIndex].series[seriesIndex].added) {
+      shareClasses.value[shareIndex].series.splice(seriesIndex, 1)
+      return
+    }
+    shareClasses.value[shareIndex].series[seriesIndex].removed = true
+    return
+  }
+  const realIndex = shareClasses.value.findIndex((s) => {
+    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+  })
+  if (shareClasses.value[realIndex]?.added === true) {
+    shareClasses.value.splice(realIndex, 1)
+    return
+  }
+  shareClasses.value[realIndex].removed = true
+  for (let i = 0; i < shareClasses.value[realIndex]?.series.length; i++) {
+    if (shareClasses.value[realIndex]?.series[i].added === true) {
+      shareClasses.value[realIndex].series.splice(i, 1)
+    } else {
+      shareClasses.value[realIndex].series[i].removed = true
+    }
   }
 }
 
 const undoDelete = (index: number) => {
-  delete shareClasses.value[index].removed
-  for (let i = 0; i < shareClasses.value[index].series.length; i++) {
-    delete shareClasses.value[index].series[i].removed
+  const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  if (isSeries) {
+    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
+    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
+      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+    })
+    shareClasses.value[shareIndex].series[seriesIndex].removed = false
+    return
+  }
+  const realIndex = shareClasses.value.findIndex((s) => {
+    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+  })
+  shareClasses.value[realIndex].removed = false
+  for (let i = 0; i < shareClasses.value[realIndex].series.length; i++) {
+    shareClasses.value[realIndex].series[i].removed = false
   }
 }
 
@@ -363,6 +403,7 @@ const updated = (row: Row<Share | Series>) => {
   if (addSeries.value) {
     // adding a series
     shareClasses.value[shareIndex].series[seriesIndex].added = true
+    shareClasses.value[editingSeriesParent.value].modified = true
     const newValues = JSON.stringify(shareClasses.value)
     shareClasses.value = [...JSON.parse(newValues)]
     shareClasses.value.push()
@@ -396,9 +437,9 @@ const updated = (row: Row<Share | Series>) => {
   addEditSeries.value = false
   addingShare.value = false
   editingSeriesParent.value = -1
-  editingShareIndex.value = -1
   shareTableKey.value++
   toggleShareExpanded(row, forceClose)
+  editingShareIndex.value = -1
 }
 
 const addedShare = () => {
@@ -463,17 +504,17 @@ const shareAddEditDoneHandler = () => {
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
         <div>
           <UBadge
+            v-if="row.original.removed"
+            class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"
+          >
+            {{ t('label.deleted') }}
+          </UBadge>
+          <UBadge
             v-if="row.original.added"
             color="primary"
             class="rounded-sm"
           >
             {{ t('label.added') }}
-          </UBadge>
-          <UBadge
-            v-else-if="row.original.removed"
-            class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"
-          >
-            {{ t('label.deleted') }}
           </UBadge>
           <UBadge
             v-else-if="row.original.modified"
@@ -499,7 +540,11 @@ const shareAddEditDoneHandler = () => {
           @click="toggleShareExpanded(row)"
         />
         <UButton
-          v-else-if="row.original.removed && row.original.parentShareIndex === undefined"
+          v-else-if="row.original.removed
+            && (
+              !Object.keys(row.original).includes('parentShareIndex')
+              || shareClasses[row.original.parentShareIndex].removed === false
+              || shareClasses[row.original.parentShareIndex].removed === undefined)"
           icon="i-mdi-undo"
           :label="$t('label.undo')"
           color="primary"
