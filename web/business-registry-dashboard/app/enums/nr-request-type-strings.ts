@@ -30,6 +30,7 @@ export enum NrRequestTypeStrings {
   ULCT = 'Continuation In', // Unlimited Liability Co.
 
   // Conversion
+  BECC = 'Conversion (Act)', // Community Contribution Co.
   BECR = 'Conversion (Act)', // BC Benefit Company Incorporation
   CCV = 'Conversion (Act)', // Community Contribution Co.
   UC = 'Conversion (Act)', // Unlimited Liability Co.
