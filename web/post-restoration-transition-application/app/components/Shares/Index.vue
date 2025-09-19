@@ -510,7 +510,7 @@ const shareAddEditDoneHandler = () => {
             {{ t('label.deleted') }}
           </UBadge>
           <UBadge
-            v-if="row.original.added"
+            v-else-if="row.original.added"
             color="primary"
             class="rounded-sm"
           >
