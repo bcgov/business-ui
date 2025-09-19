@@ -22,7 +22,6 @@ export enum LDFlags {
   ProductCSOStatus = 'product-CSO-status',
   ProductSiteRegistryStatus = 'product-ESRA-status',
   ProductWillsStatus = 'product-VS-status',
-  SentryEnable = 'sentry-enable',
   SupportedAmalgamationEntities = 'supported-amalgamation-entities',
   SupportedContinuationInEntities = 'supported-continuation-in-entities',
   SupportRestorationEntities = 'supported-restoration-entities',
