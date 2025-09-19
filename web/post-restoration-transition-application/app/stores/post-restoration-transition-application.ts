@@ -22,7 +22,6 @@ export const usePostRestorationTransitionApplicationStore
   const courtOrderNumber = ref<string | undefined>(undefined)
   const planOfArrangement = ref<boolean>(false)
   const folio = ref<string | undefined>(undefined)
-  const modifiedShareIndexes = ref<number[]>([])
   const staffPay = ref<StaffPay>({ priority: false } as StaffPay)
 
   const formIdSectionMapping = ref<{ [key: string]: PageSection }>({})
@@ -176,10 +175,14 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   const shareWithSpecialRightsModified = computed(() => {
-    for (const index of modifiedShareIndexes.value) {
-      if (shareClasses.value[index]?.hasRightsOrRestrictions
-        || ORIGINAL_SHARE_CLASSES.value[index]?.hasRightsOrRestrictions) {
+    for (const share of shareClasses.value) {
+      if (share.hasRightsOrRestrictions && (share.added || share.modified)) {
         return true
+      }
+      for (const series of share.series) {
+        if (series.hasRightsOrRestrictions && (series.added || series.modified)) {
+          return true
+        }
       }
     }
     return false
@@ -272,7 +275,6 @@ export const usePostRestorationTransitionApplicationStore
     checkHasChanges,
     getFilingPayload,
     editingShareIndex,
-    modifiedShareIndexes,
     shareWithSpecialRightsModified,
     ORIGINAL_SHARE_CLASSES,
     staffPay,
