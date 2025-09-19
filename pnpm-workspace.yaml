@@ -1,5 +1,5 @@
 packages:
-  - web/person-roles
+  - "!web/**"
   - packages/**
 
 catalog:

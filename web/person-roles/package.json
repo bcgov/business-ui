@@ -21,18 +21,15 @@
     "build:test": "pnpm generate && npx serve .output/public"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-business-base": "workspace:*",
-    "nuxt": "catalog:",
-    "vue": "catalog:",
-    "vue-router": "catalog:"
+    "nuxt": "^4.0.3",
+    "vue": "^3.5.20",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@axe-core/playwright": "catalog:",
+    "@axe-core/playwright": "^4.10.2",
     "@faker-js/faker": "^10.0.0",
-    "@sbc-connect/playwright-config": "workspace:*",
-    "@sbc-connect/vitest-config": "workspace:*",
     "@types/node": "^24.0.10",
-    "typescript": "catalog:",
-    "vue-tsc": "catalog:"
+    "typescript": "^5.8.3",
+    "vue-tsc": "^3.0.4"
   }
 }
