@@ -23,7 +23,8 @@
   "dependencies": {
     "nuxt": "^4.0.3",
     "vue": "^3.5.20",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "@sbc-connect/nuxt-business-base": "0.1.11"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
