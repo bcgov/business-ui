@@ -14,8 +14,7 @@ export default defineNuxtConfig({
   ],
 
   extends: [
-    // '@sbc-connect/nuxt-business-base'
-    '../../packages/layers/base'
+    '@sbc-connect/nuxt-business-base'
   ],
 
   router: {

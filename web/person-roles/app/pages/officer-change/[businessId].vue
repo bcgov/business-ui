@@ -372,5 +372,7 @@ watch(
         </ConnectFormFieldWrapper>
       </UForm>
     </section>
+    <!-- hack for css - will fix later -->
+    <!-- sm:w-1/4 @container @3xl:justify-start @3xl:justify-end -->
   </div>
 </template>
