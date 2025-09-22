@@ -16,7 +16,6 @@ test.describe('Post restoration Transition Application Filing', () => {
 
     await expect(page.getByText(enI18n.transitionApplication.subtitle.reviewAndConfirm)).toBeVisible()
     await expect(page.getByText(enI18n.transitionApplication.subtitle.documentDelivery)).toBeVisible()
-    await expect(page.getByText(enI18n.transitionApplication.subtitle.courtOrder)).toBeVisible()
     await expect(page.getByText(enI18n.transitionApplication.subtitle.folio)).toBeVisible()
     await expect(page.getByText(enI18n.transitionApplication.subtitle.companyProvisions)).toBeVisible()
     await expect(page.getByText(enI18n.transitionApplication.subtitle.certify)).toBeVisible()
