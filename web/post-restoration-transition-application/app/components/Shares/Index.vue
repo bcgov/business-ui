@@ -196,7 +196,22 @@ const getDropdownActions = (row: Row<Share>) => {
       label: t('label.delete'),
       icon: 'i-mdi-delete',
       onClick: () => {
-        deleteShare(row.index)
+        const rowIndex = row.index
+        if (row.original.series && row.original.series.length > 0) {
+          useModal().openBaseModal(
+            t('label.shareSeriesRightsRestrictionsWithClass'),
+            t('text.shareSeriesRightsRestrictionsWithClass'),
+            false,
+            [
+              { label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true },
+              { label: t('label.remove'), size: 'xl', shouldClose: true, onClick: () => {
+                deleteShare(rowIndex)
+              } }
+            ]
+          )
+          return
+        }
+        deleteShare(rowIndex)
       },
       color: 'primary'
     }
@@ -245,7 +260,7 @@ const toggleShareExpanded = (row: Row<Share | Series>, skipValidations?: boolean
 }
 
 const getIndexFromRowIndex = (rowIndex: number) => {
-  const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  const isSeries = Object.keys(flattenedShareClasses.value[rowIndex]).includes('parentShareIndex')
   if (isSeries) {
     const shareIndex = flattenedShareClasses.value[rowIndex].parentShareIndex
     const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
@@ -253,11 +268,11 @@ const getIndexFromRowIndex = (rowIndex: number) => {
     })
     return { shareIndex, seriesIndex }
   }
-  const realIndex = shareClasses.value.findIndex((s) => {
-    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+  const shareIndex = shareClasses.value.findIndex((s) => {
+    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[rowIndex])
   })
   const seriesIndex = -1
-  return { realIndex, seriesIndex }
+  return { shareIndex, seriesIndex }
 }
 
 const moveShare = (index: number, moveUp: boolean) => {
@@ -376,17 +391,9 @@ const addASeries = (row: Row<Share>) => {
   row.toggleExpanded()
 }
 
-const getIndexes = (deleteMoveIndexes: boolean = false) => {
+const getIndexes = () => {
   let shareIndex = -1
   let seriesIndex = -1
-
-  if (deleteMoveIndexes) {
-    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
-    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
-      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-    })
-    return { shareIndex, seriesIndex }
-  }
 
   if (editingSeriesParent.value !== -1) {
     shareIndex = editingSeriesParent.value
