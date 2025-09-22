@@ -258,7 +258,6 @@ const getIndexFromRowIndex = (rowIndex: number) => {
   })
   const seriesIndex = -1
   return { realIndex, seriesIndex }
-
 }
 
 const moveShare = (index: number, moveUp: boolean) => {
@@ -314,7 +313,7 @@ const deleteShare = (index: number) => {
     shareClasses.value[shareIndex].series[seriesIndex].removed = true
     return
   }
-  
+
   if (shareClasses.value[shareIndex]?.added === true) {
     shareClasses.value.splice(shareIndex, 1)
     return

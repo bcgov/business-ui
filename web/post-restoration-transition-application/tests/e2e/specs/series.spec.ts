@@ -226,7 +226,7 @@ test.describe('Share Series', () => {
     await checkHelper([1, 2, 3])
   })
 
-  test('Can\'t add a series to a series', async({ page }) => {
+  test('Can\'t add a series to a series', async ({ page }) => {
     const longId = 'BC0000002'
     await mockForIdentifier(page, longId)
     await page.goto(`./en-CA/${longId}`)
@@ -244,7 +244,6 @@ test.describe('Share Series', () => {
 
     await page.locator('[aria-label="Actions"]').nth(1).click()
     await expect(page.getByText(i18en.label.addSeries)).toBeDisabled()
-    
   })
 
   // delete shares / series
