@@ -70,24 +70,24 @@ const resetData = () => {
 const rightsChangeHandler = (newVal: boolean | indeterminate) => {
   if (shareValues.value.series && shareValues.value.series.length > 0) {
     if (!newVal) {
-      useModal().openBaseModal(
-        t('label.shareSeriesRightsRestrictions'),
-        t('text.shareSeriesRightsRestrictions'),
-        false,
-        [
-          { label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true, onClick: () => {
-            shareValues.value.hasRightsOrRestrictions = true
-          } },
-          { label: t('label.removeSeries'), size: 'xl', shouldClose: true, onClick: () => {
-            for (let i = 0; i < shareValues.value.series.length; i++) {
-              shareValues.value.series[i].removed = true
-            }
-            // const copy = JSON.parse(JSON.stringify(shareValues.value))
-            // Object.assign(shareValues.value, copy)
-            hasDeletedSeries.value = true
-          } }
-        ]
-      )
+      // useModal().openBaseModal(
+      //   t('label.shareSeriesRightsRestrictions'),
+      //   t('text.shareSeriesRightsRestrictions'),
+      //   false,
+      //   [
+      //     { label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true, onClick: () => {
+      //       shareValues.value.hasRightsOrRestrictions = true
+      //     } },
+      //     { label: t('label.removeSeries'), size: 'xl', shouldClose: true, onClick: () => {
+      //       for (let i = 0; i < shareValues.value.series.length; i++) {
+      //         shareValues.value.series[i].removed = true
+      //       }
+      //       // const copy = JSON.parse(JSON.stringify(shareValues.value))
+      //       // Object.assign(shareValues.value, copy)
+      //       hasDeletedSeries.value = true
+      //     } }
+      //   ]
+      // )
     } else if (hasDeletedSeries.value) {
       for (let i = 0; i < shareValues.value.series.length; i++) {
         delete shareValues.value.series[i].removed

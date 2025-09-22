@@ -2,6 +2,7 @@ import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
 import type { PageSection } from '~/enum/page_sections'
+import { isEmpty } from 'es-toolkit/compat'
 
 const transitionApplicationIncompleteHook = 'app:transition-application-form:incomplete'
 
@@ -10,11 +11,11 @@ export const usePostRestorationTransitionApplicationStore
   const t = useNuxtApp().$i18n.t
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
-  const authApi = useAuthApi()
+  // const authApi = useAuthApi()
   const feeStore = useConnectFeeStore()
   const accountStore = useConnectAccountStore()
-  const detailsHeaderStore = useConnectDetailsHeaderStore()
-  const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
+  // const detailsHeaderStore = useConnectDetailsHeaderStore()
+  const { userFullName } = storeToRefs(accountStore)
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const articles = ref<Articles>(EmptyArticles())
   const regOfficeEmail = ref<string | undefined>(undefined)
@@ -36,6 +37,10 @@ export const usePostRestorationTransitionApplicationStore
   const openEditComponentId = ref<string | undefined>(undefined)
   const modifiedDirectors = ref<number[]>([])
   const editingSeriesParent = ref<number>(-1)
+
+  const isStaffOrSbcStaff = computed(() => {
+    accountStore.hasRoles(['staff'])
+  })
 
   const editState = computed(() => editingShareIndex.value !== -1)
 
@@ -75,42 +80,65 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
+    console.log('~~~~~~~> init store ', businessId)
+
+    // // get business auth info for masthead
+    // // get current business officers
+    // const [authInfo] = await Promise.all([
+    //   legalApi.getAuthInfo(businessId),
+    // ])
+    //
+    // // activeBusinessAuthInfo.value = authInfo
+    // // set masthead data
+    // setFilingDefault(business, authInfo)
+    // const authInfo = await legalApi.getAuthInfo(businessId)
+    // console.log('~~~ 1')
+    // const shareClassesResponse = await legalApi.getShareClasses(businessId)
+    // console.log('~~~ 2')
+    // const business = await legalApi.getBusiness(businessId, true)
+    // console.log('~~~ 3')
+    // const apiAddresses = await legalApi.getAddresses(businessId)
+    // console.log('~~~ 4')
+    // const apiDirectors = await legalApi.getParties(businessId, { type: 'director' })
+    // console.log('~~~ 5')
     const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
-      authApi.getAuthInfo(businessId),
-      legalApi.getShareClasses(businessId),
-      legalApi.getBusiness(businessId, true),
-      legalApi.getAddresses(businessId),
-      legalApi.getParties(businessId, { type: 'director' })
+    //   legalApi.getAuthInfo(businessId),
+    //   legalApi.getShareClasses(businessId),
+    //   legalApi.getBusiness(businessId, true),
+    //   legalApi.getAddresses(businessId),
+    //   legalApi.getParties(businessId, { type: 'director' })
     ]).catch((error) => {
-      const modal = useModal()
-      const router = useRouter()
-      const rtc = useRuntimeConfig().public
-      const buttons: ModalButtonProps[] = []
-      const errorStatus = error.statusCode || 404
-      if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
-        buttons.push({
-          label: t('label.goToMyBusinessRegistry'),
-          to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
-        })
-      } else if (errorStatus > 499 && errorStatus < 600) {
-        buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
-        buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
-      } else {
-        buttons.push({ label: t('label.close'), shouldClose: true })
-      }
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.initOfficerStore',
-        buttons
-      )
+    //   console.log('~~~~~~~~~~1', authInfo)
+    //   // const modal = useModal()
+    //   // const router = useRouter()
+    //   // const rtc = useRuntimeConfig().public
+    //   // const buttons: ModalButtonProps[] = []
+    //   // const errorStatus = error.statusCode || 404
+    //   // if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
+    //   //   buttons.push({
+    //   //     label: t('label.goToMyBusinessRegistry'),
+    //   //     to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+    //   //   })
+    //   // } else if (errorStatus > 499 && errorStatus < 600) {
+    //   //   buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
+    //   //   buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
+    //   // } else {
+    //   //   buttons.push({ label: t('label.close'), shouldClose: true })
+    //   // }
+    //   // modal.openBaseErrorModal(
+    //   //   error,
+    //   //   'modal.error.initOfficerStore',
+    //   //   buttons
+    //   // )
     })
+    console.log('~~~~~~~~~~', authInfo)
+    // setFilingDefault(business, authInfo)
     // FUTURE: error handling on fees #29114
-    const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
-    feeStore.feeOptions.showServiceFees = true
-    if (transitionFees) {
-      transitionFees.total = transitionFees.filingFees + transitionFees.serviceFees
-      feeStore.addReplaceFee(transitionFees)
-    }
+    // const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
+    // feeStore.feeOptions.showServiceFees = true
+    // if (transitionFees) {
+    //   feeStore.addReplaceFee(transitionFees)
+    // }
 
     activeBusiness.value = business
     directors.value = apiDirectors
@@ -126,11 +154,11 @@ export const usePostRestorationTransitionApplicationStore
         articles.value.incorpDate = business.foundingDate
       }
     } catch (error) {
-      const modal = useModal()
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.initOfficerStore'
-      )
+      // const modal = useModal()
+      // modal.openBaseErrorModal(
+      //   error,
+      //   'modal.error.initOfficerStore'
+      // )
     }
 
     // reset offices so when pushing they are not duplicated (on refresh and similar)
@@ -157,14 +185,14 @@ export const usePostRestorationTransitionApplicationStore
     regOfficeEmail.value = contact?.email
     folio.value = authInfo.folioNumber
 
-    detailsHeaderStore.title = { el: 'span', text: business.legalName }
-    detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-    detailsHeaderStore.sideDetails = [
-      { label: t('label.businessNumber'), value: business.taxId ?? '' },
-      { label: t('label.incorporationNumber'), value: business.identifier },
-      { label: t('label.email'), value: contact?.email ?? '' },
-      { label: t('label.phone'), value: phoneLabel }
-    ]
+    // detailsHeaderStore.title = { el: 'span', text: business.legalName }
+    // detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
+    // detailsHeaderStore.sideDetails = [
+    //   { label: t('label.businessNumber'), value: business.taxId ?? '' },
+    //   { label: t('label.incorporationNumber'), value: business.identifier },
+    //   { label: t('label.email'), value: contact?.email ?? '' },
+    //   { label: t('label.phone'), value: phoneLabel }
+    // ]
 
     // if user is client, autopopulate legalName
     if (!isStaffOrSbcStaff.value) {

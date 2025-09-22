@@ -5,7 +5,7 @@ import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
-const { setButtonControl } = useButtonControl()
+// const { setButtonControl } = useButtonControl()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
 const t = useNuxtApp().$i18n.t
@@ -109,39 +109,39 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'form',
-  middleware: async () => {
-    // redirect to reg home with return url if user unauthenticated
-    const { $keycloak, $config } = useNuxtApp()
-    if (useRuntimeConfig().public.ci) {
-      $keycloak.tokenParsed = {
-        firstname: 'TestFirst',
-        lastname: 'TestLast',
-        name: 'TestFirst TestLast',
-        username: 'testUsername',
-        email: 'testEmail@test.com',
-        sub: 'test',
-        loginSource: 'IDIR',
-        realm_access: { roles: ['public_user'] }
-      }
-
-      // set account stuff (normally would happen after kc init in 'setupAuth')
-      const account = useConnectAccountStore()
-      const { currentAccount, userAccounts } = storeToRefs(account)
-      const resp = await account.getUserAccounts('test')
-      if (resp && resp[0]) {
-        Object.assign(currentAccount.value, resp[0])
-        Object.assign(userAccounts.value, resp)
-        $keycloak.authenticated = true
-      }
-    } else if (!$keycloak.authenticated) {
-      const returnUrl = encodeURIComponent(window.location.href)
-      return navigateTo(
-        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
-        { external: true }
-      )
-    }
-  }
+  layout: 'filing' //,
+  // middleware: async () => {
+  //   // redirect to reg home with return url if user unauthenticated
+  //   const { $keycloak, $config } = useNuxtApp()
+  //   if (useRuntimeConfig().public.ci) {
+  //     $keycloak.tokenParsed = {
+  //       firstname: 'TestFirst',
+  //       lastname: 'TestLast',
+  //       name: 'TestFirst TestLast',
+  //       username: 'testUsername',
+  //       email: 'testEmail@test.com',
+  //       sub: 'test',
+  //       loginSource: 'IDIR',
+  //       realm_access: { roles: ['public_user'] }
+  //     }
+  //
+  //     // set account stuff (normally would happen after kc init in 'setupAuth')
+  //     const account = useConnectAccountStore()
+  //     const { currentAccount, userAccounts } = storeToRefs(account)
+  //     const resp = await account.getUserAccounts('test')
+  //     if (resp && resp[0]) {
+  //       Object.assign(currentAccount.value, resp[0])
+  //       Object.assign(userAccounts.value, resp)
+  //       $keycloak.authenticated = true
+  //     }
+  //   } else if (!$keycloak.authenticated) {
+  //     const returnUrl = encodeURIComponent(window.location.href)
+  //     return navigateTo(
+  //       `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
+  //       { external: true }
+  //     )
+  //   }
+  // }
 })
 
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
@@ -352,25 +352,25 @@ const verify = (verifyMethod: (args) => void, args) => {
   verifyMethod(args)
 }
 
-const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
+// const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
-  { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-  { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+  // { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
+  // { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
 ]
 const rightButtons = [
-  { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-  { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+  // { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
+  // { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
 ]
 
-leftButtons[0]['data-testid'] = 'save-button'
-leftButtons[1]['data-testid'] = 'saveExit-button'
-rightButtons[0]['data-testid'] = 'cancel-button'
-rightButtons[1]['data-testid'] = 'submit-button'
+// leftButtons[0]['data-testid'] = 'save-button'
+// leftButtons[1]['data-testid'] = 'saveExit-button'
+// rightButtons[0]['data-testid'] = 'cancel-button'
+// rightButtons[1]['data-testid'] = 'submit-button'
 
-setButtonControl({
-  leftButtons: leftButtons,
-  rightButtons: rightButtons
-})
+// setButtonControl({
+//   leftButtons: leftButtons,
+//   rightButtons: rightButtons
+// })
 
 const closeArticleDateEntryAndValidate = () => {
   editFormClosed(ARTICLES_CURRENT_DATE_FORM_ID)
@@ -775,7 +775,7 @@ const saveModalDate = async () => {
             data-testid="legalName-input"
             :error="certifyErrors?.['name']?.[0]"
             :invalid="certifyErrors?.['name']?.[0] !== undefined"
-            :name="'documentDelivery.completingPartyEmail'"
+            :name="'certify.legalName'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
             @update:model-value="verify(

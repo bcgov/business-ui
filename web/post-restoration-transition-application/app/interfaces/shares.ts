@@ -91,7 +91,7 @@ const refine = (input, ctx) => {
   return noErrors
 }
 
-export const seriesSchema = z.object({
+const baseShareSeriesSchema = z.object({
     name: z.string().min(1, 'errors.required'),
     currency: z.string().optional().nullable(),
     hasMaximumShares: z.boolean(),
@@ -101,8 +101,11 @@ export const seriesSchema = z.object({
     parValue: z.number().optional().nullable(),
     priority: z.number(),
     parentShareIndex: z.number().optional().nullable() // UI property - tracking the parent share index
-}).superRefine(refine)
+})
 
-export const shareSchema = seriesSchema.sourceType().extend({
+export const seriesSchema = baseShareSeriesSchema.superRefine(refine)
+
+export const shareSchema = baseShareSeriesSchema.extend({
+    isShareClass: true,
     series: z.array(seriesSchema).optional()
 }).superRefine(refine)
