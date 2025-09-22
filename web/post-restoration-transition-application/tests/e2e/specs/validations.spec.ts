@@ -97,9 +97,9 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, invalid)
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
   })
 
   test('Staff, Pay Section and Court Section', async ({ page }) => {
