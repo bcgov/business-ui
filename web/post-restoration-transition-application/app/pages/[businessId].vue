@@ -463,7 +463,7 @@ const saveModalDate = async () => {
       </i18n-t>
     </section>
     <FormSection
-      :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
+      :title="`1. ${$t('transitionApplication.subtitle.reviewAndConfirm')}`"
       :description="$t('text.reviewAndConfirmDescription')"
       :has-errors="false"
       class="space-y-4"
@@ -632,7 +632,7 @@ const saveModalDate = async () => {
       </div>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.documentDelivery')"
+      :title="`2. ${$t('transitionApplication.subtitle.documentDelivery')}`"
       :description="$t('text.documentDelivery')"
       :has-errors="false"
       class="space-y-4"
@@ -662,7 +662,8 @@ const saveModalDate = async () => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.courtOrder')"
+      v-if="isStaffOrSbcStaff"
+      :title="`3. ${$t('transitionApplication.subtitle.courtOrder')}`"
       :description="$t('text.courtOrder')"
       :has-errors="false"
       class="space-y-4"
@@ -696,7 +697,7 @@ const saveModalDate = async () => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.folio')"
+      :title="`${isStaffOrSbcStaff ? '4' : '3'}. ${$t('transitionApplication.subtitle.folio')}`"
       :description="$t('text.folioOrReferenceNumber')"
       :has-errors="false"
       class="space-y-4"
@@ -723,7 +724,7 @@ const saveModalDate = async () => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.companyProvisions')"
+      :title="`${isStaffOrSbcStaff ? '5' : '4'}. ${$t('transitionApplication.subtitle.companyProvisions')}`"
       :has-errors="false"
     >
       <FormSubSection
@@ -755,7 +756,7 @@ const saveModalDate = async () => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.certify')"
+      :title="`${isStaffOrSbcStaff ? '6' : '5'}. ${$t('transitionApplication.subtitle.certify')}`"
       :description="$t('text.certifySectionDescription')"
       :has-errors="false"
       class="space-y-4"
@@ -808,7 +809,7 @@ const saveModalDate = async () => {
 
     <FormSection
       v-if="isStaffOrSbcStaff"
-      :title="$t('transitionApplication.subtitle.staffPayment')"
+      :title="`7. ${$t('transitionApplication.subtitle.staffPayment')}`"
       :has-errors="false"
     >
       <FormSubSection

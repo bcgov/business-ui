@@ -152,7 +152,7 @@ const getDropdownActions = (row: Row<Share>) => {
         addASeries(row)
       },
       color: 'primary',
-      disabled: !row.original.hasRightsOrRestrictions && row.original.parentShareIndex === undefined
+      disabled: !row.original.hasRightsOrRestrictions || (row.original.parentShareIndex !== undefined)
     },
     {
       label: t('label.moveUp'),
@@ -244,6 +244,23 @@ const toggleShareExpanded = (row: Row<Share | Series>, skipValidations?: boolean
   row.toggleExpanded()
 }
 
+const getIndexFromRowIndex = (rowIndex: number) => {
+  const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  if (isSeries) {
+    const shareIndex = flattenedShareClasses.value[rowIndex].parentShareIndex
+    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
+      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[rowIndex])
+    })
+    return { shareIndex, seriesIndex }
+  }
+  const realIndex = shareClasses.value.findIndex((s) => {
+    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+  })
+  const seriesIndex = -1
+  return { realIndex, seriesIndex }
+
+}
+
 const moveShare = (index: number, moveUp: boolean) => {
   if (moveUp && index === 0) {
     return
@@ -253,13 +270,9 @@ const moveShare = (index: number, moveUp: boolean) => {
   }
 
   const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  const { shareIndex, seriesIndex } = getIndexFromRowIndex(index)
 
   if (isSeries) {
-    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
-    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
-      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-    })
-
     const newIndex = moveUp ? seriesIndex - 1 : seriesIndex + 1
     if (newIndex < 0 || newIndex >= shareClasses.value[shareIndex].series.length) {
       return
@@ -276,29 +289,24 @@ const moveShare = (index: number, moveUp: boolean) => {
     arr.splice(newIndex, 0, temp)
     return
   }
-  // otherwise it's a share
-  const realIndex = shareClasses.value.findIndex((s) => {
-    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-  })
-  const newIndex = moveUp ? realIndex - 1 : realIndex + 1
+  // otherwise it's a share -- find the index of the share in the unflattened array
+  const newIndex = moveUp ? shareIndex - 1 : shareIndex + 1
 
   // Swap elements using splice for reactivity
+  // This will cause the flattened array to update because it's computed on shareClasses
   const arr = shareClasses.value
-  const temp = arr[realIndex]
+  const temp = arr[shareIndex]
   const oldPriority = temp.priority
   temp.priority = arr[newIndex].priority
   arr[newIndex].priority = oldPriority
-  arr.splice(realIndex, 1)
+  arr.splice(shareIndex, 1)
   arr.splice(newIndex, 0, temp)
 }
 
 const deleteShare = (index: number) => {
   const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  const { shareIndex, seriesIndex } = getIndexFromRowIndex(index)
   if (isSeries) {
-    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
-    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
-      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-    })
     if (shareClasses.value[shareIndex].series[seriesIndex].added) {
       shareClasses.value[shareIndex].series.splice(seriesIndex, 1)
       return
@@ -306,39 +314,32 @@ const deleteShare = (index: number) => {
     shareClasses.value[shareIndex].series[seriesIndex].removed = true
     return
   }
-  const realIndex = shareClasses.value.findIndex((s) => {
-    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-  })
-  if (shareClasses.value[realIndex]?.added === true) {
-    shareClasses.value.splice(realIndex, 1)
+  
+  if (shareClasses.value[shareIndex]?.added === true) {
+    shareClasses.value.splice(shareIndex, 1)
     return
   }
-  shareClasses.value[realIndex].removed = true
-  for (let i = 0; i < shareClasses.value[realIndex]?.series.length; i++) {
-    if (shareClasses.value[realIndex]?.series[i].added === true) {
-      shareClasses.value[realIndex].series.splice(i, 1)
+  shareClasses.value[shareIndex].removed = true
+  for (let i = 0; i < shareClasses.value[shareIndex]?.series.length; i++) {
+    if (shareClasses.value[shareIndex]?.series[i].added === true) {
+      shareClasses.value[shareIndex].series.splice(i, 1)
     } else {
-      shareClasses.value[realIndex].series[i].removed = true
+      shareClasses.value[shareIndex].series[i].removed = true
     }
   }
 }
 
 const undoDelete = (index: number) => {
   const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
+  const { shareIndex, seriesIndex } = getIndexFromRowIndex(index)
   if (isSeries) {
-    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
-    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
-      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-    })
     shareClasses.value[shareIndex].series[seriesIndex].removed = false
     return
   }
-  const realIndex = shareClasses.value.findIndex((s) => {
-    return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
-  })
-  shareClasses.value[realIndex].removed = false
-  for (let i = 0; i < shareClasses.value[realIndex].series.length; i++) {
-    shareClasses.value[realIndex].series[i].removed = false
+
+  shareClasses.value[shareIndex].removed = false
+  for (let i = 0; i < shareClasses.value[shareIndex].series.length; i++) {
+    shareClasses.value[shareIndex].series[i].removed = false
   }
 }
 
@@ -376,9 +377,17 @@ const addASeries = (row: Row<Share>) => {
   row.toggleExpanded()
 }
 
-const getIndexes = () => {
+const getIndexes = (deleteMoveIndexes: boolean = false) => {
   let shareIndex = -1
   let seriesIndex = -1
+
+  if (deleteMoveIndexes) {
+    const shareIndex = flattenedShareClasses.value[index].parentShareIndex
+    const seriesIndex = shareClasses.value[shareIndex].series.findIndex((s) => {
+      return JSON.stringify(s) === JSON.stringify(flattenedShareClasses.value[index])
+    })
+    return { shareIndex, seriesIndex }
+  }
 
   if (editingSeriesParent.value !== -1) {
     shareIndex = editingSeriesParent.value

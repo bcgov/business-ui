@@ -226,6 +226,27 @@ test.describe('Share Series', () => {
     await checkHelper([1, 2, 3])
   })
 
+  test('Can\'t add a series to a series', async({ page }) => {
+    const longId = 'BC0000002'
+    await mockForIdentifier(page, longId)
+    await page.goto(`./en-CA/${longId}`)
+    const sv = JSON.parse(JSON.stringify(series))
+    const restSeries = sv.shares.splice(0, sv.shares.length - 1)
+    await fillSeries(page, sv)
+
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByTestId('modal-date-cancel').click()
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+
+    sv.shares = restSeries
+    await fillSeries(page, sv)
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+
+    await page.locator('[aria-label="Actions"]').nth(1).click()
+    await expect(page.getByText(i18en.label.addSeries)).toBeDisabled()
+    
+  })
+
   // delete shares / series
   test('Delete and Undo Shares/sSeries', async ({ page }) => {
     const longId = 'BC0000002'

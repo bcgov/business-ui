@@ -6,13 +6,13 @@ export default {
     // Ordered by how they appear on the page
     title: 'Post Restoration Transition Application',
     subtitle: {
-      reviewAndConfirm: '1. Review and Confirm',
-      documentDelivery: '2. Document Delivery',
-      courtOrder: '3. Court Order and Plan of Arrangement',
-      folio: '4. Folio or Reference Number',
-      companyProvisions: '5. Pre-existing Company Provisions',
-      certify: '6. Certify',
-      staffPayment: '7. Staff Payment'
+      reviewAndConfirm: 'Review and Confirm',
+      documentDelivery: 'Document Delivery',
+      courtOrder: 'Court Order and Plan of Arrangement',
+      folio: 'Folio or Reference Number',
+      companyProvisions: 'Pre-existing Company Provisions',
+      certify: 'Certify',
+      staffPayment: 'Staff Payment'
     }
   },
   label: {
