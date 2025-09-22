@@ -1,7 +1,7 @@
 import type { ApiResolutions } from '~/interfaces/articles'
 
 export const useLegalApi2 = () => {
-  const { $legalApi } = useNuxtApp()
+  const { $businessApi: $legalApi } = useNuxtApp()
 
   /**
    * Retrieves a list of addresses associated with a given business ID.
@@ -35,7 +35,7 @@ export const useLegalApi2 = () => {
   }
 
   return {
-    ...useLegalApi(),
+    ...useBusinessApi(),
     getAddresses,
     getResolutions,
     getShareClasses
