@@ -375,6 +375,18 @@ const saveModalDate = async () => {
   }
   pickDateModalOpen.value = false
 }
+
+const getArticlesCurrentDateError = computed(() => {
+  const key = articlesErrors.value?.currentDate?.[0]
+  const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
+
+  return condition
+    ? $t(key, {
+      incorpDate: fromIsoToUsDateFormat(new Date(articles.value.incorpDate).toISOString()),
+      today: fromIsoToUsDateFormat(new Date().toISOString())
+    })
+    : ''
+})
 </script>
 
 <template>
@@ -397,17 +409,7 @@ const saveModalDate = async () => {
             </p>
           </div>
           <div>
-            <UFormField
-              :error="articlesErrors?.currentDate?.[0] !== 'errors.articles' || submittedModal
-                && $te(articlesErrors?.currentDate?.[0])
-                ? $t(articlesErrors?.currentDate?.[0],
-                     {
-                       incorpDate: fromIsoToUsDateFormat(new Date(articles.incorpDate).toISOString()),
-                       today: fromIsoToUsDateFormat(new Date().toISOString())
-                     }
-                )
-                : ''"
-            >
+            <UFormField :error="getArticlesCurrentDateError">
               <FormDateInput
                 id="modal-date-input"
                 v-model="modalDate"
