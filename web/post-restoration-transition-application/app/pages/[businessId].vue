@@ -5,7 +5,7 @@ import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
-// const { setButtonControl } = useButtonControl()
+const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
 const t = useNuxtApp().$i18n.t
@@ -352,25 +352,25 @@ const verify = (verifyMethod: (args) => void, args) => {
   verifyMethod(args)
 }
 
-// const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
+const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
-  // { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-  // { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+  { 'onClick': () => saveFiling(), 'label': t('btn.save'), 'variant': 'outline', 'data-testid': 'save-button' },
+  { 'onClick': () => saveFiling(true), 'label': t('btn.saveExit'), 'variant': 'outline', 'data-testid': 'save-button' }
 ]
 const rightButtons = [
-  // { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-  // { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+  { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'save-button' },
+  {
+    'onClick': submitFiling,
+    'label': t('btn.submit'),
+    'trailingIcon': 'i-mdi-chevron-right',
+    'data-testid': 'save-button'
+  }
 ]
 
-// leftButtons[0]['data-testid'] = 'save-button'
-// leftButtons[1]['data-testid'] = 'saveExit-button'
-// rightButtons[0]['data-testid'] = 'cancel-button'
-// rightButtons[1]['data-testid'] = 'submit-button'
-
-// setButtonControl({
-//   leftButtons: leftButtons,
-//   rightButtons: rightButtons
-// })
+setButtonControl({
+  leftGroup: { buttons: leftButtons },
+  rightGroup: { buttons: rightButtons }
+})
 
 const closeArticleDateEntryAndValidate = () => {
   editFormClosed(ARTICLES_CURRENT_DATE_FORM_ID)
@@ -391,9 +391,6 @@ const saveModalDate = async () => {
 </script>
 
 <template>
-  <!-- NB: this is temporary so that tw pulls in needed classes for extended comps -->
-  <!-- z-10 lg:shadow-sm bg-midnightBlue-900 divide-bcGovGray-300 justify-between -->
-  <!-- border-b border-t border-bcGovGray-300 border-gray-300 ml-[5px] -->
   <div class="py-10 space-y-10">
     <UModal
       :open="pickDateModalOpen"
@@ -825,19 +822,5 @@ const saveModalDate = async () => {
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
-
-    <!-- NB: needed so that the tw classes are loaded -->
-    <!-- <main class="app-inner-container app-body">
-      <div class="flex flex-col lg:flex-row lg:gap-6 grow">
-        <div class="grow max-w-full overflow-hidden">
-          <slot />
-        </div>
-
-        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10">
-          <ConnectFeeWidget class="sticky lg:top-10" />
-          <div class="md:justify-end md:justify-start md:grid-cols-2 ring rounded-md">CSS for page buttons</div>
-        </div>
-      </div>
-    </main> -->
   </div>
 </template>

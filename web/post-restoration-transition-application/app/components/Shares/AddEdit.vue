@@ -247,7 +247,7 @@ const done = () => {
       return
     }
 
-    if (Object.keys(shareErrors.value[getErrorIndex()]).length > 0) {
+    if (shareErrors.value.length > 0 && Object.keys(shareErrors.value[getErrorIndex()]).length > 0) {
       return
     }
     shareValues.value.name = shareName.value + SHARES_TEXT

@@ -17,6 +17,7 @@ export interface Series {
 }
 
 export interface Share extends Series {
+    isShareClass: boolean
     series: Series[]
 }
 
@@ -106,6 +107,5 @@ const baseShareSeriesSchema = z.object({
 export const seriesSchema = baseShareSeriesSchema.superRefine(refine)
 
 export const shareSchema = baseShareSeriesSchema.extend({
-    isShareClass: true,
     series: z.array(seriesSchema).optional()
 }).superRefine(refine)

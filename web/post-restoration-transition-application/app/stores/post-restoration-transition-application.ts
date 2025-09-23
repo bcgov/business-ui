@@ -81,28 +81,8 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
-    console.log('~~~~~~~> init store ', businessId)
-
     filingTombstone.value.loading = true
-    // // get business auth info for masthead
-    // // get current business officers
-    // const [authInfo] = await Promise.all([
-    //   legalApi.getAuthInfo(businessId),
-    // ])
-    //
-    // // activeBusinessAuthInfo.value = authInfo
-    // // set masthead data
-    // setFilingDefault(business, authInfo)
-    // const authInfo = await legalApi.getAuthInfo(businessId)
-    // console.log('~~~ 1')
-    // const shareClassesResponse = await legalApi.getShareClasses(businessId)
-    // console.log('~~~ 2')
-    // const business = await legalApi.getBusiness(businessId, true)
-    // console.log('~~~ 3')
-    // const apiAddresses = await legalApi.getAddresses(businessId)
-    // console.log('~~~ 4')
-    // const apiDirectors = await legalApi.getParties(businessId, { type: 'director' })
-    // console.log('~~~ 5')
+
     const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
       legalApi.getAuthInfo(businessId),
       legalApi.getShareClasses(businessId),
@@ -182,21 +162,9 @@ export const usePostRestorationTransitionApplicationStore
       })
     }
 
-    // set masthead data
     const contact = authInfo.contacts[0]
-    const ext = contact?.extension ?? contact?.phoneExtension
-    const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
     regOfficeEmail.value = contact?.email
     folio.value = authInfo.folioNumber
-
-    // detailsHeaderStore.title = { el: 'span', text: business.legalName }
-    // detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-    // detailsHeaderStore.sideDetails = [
-    //   { label: t('label.businessNumber'), value: business.taxId ?? '' },
-    //   { label: t('label.incorporationNumber'), value: business.identifier },
-    //   { label: t('label.email'), value: contact?.email ?? '' },
-    //   { label: t('label.phone'), value: phoneLabel }
-    // ]
 
     // if user is client, autopopulate legalName
     if (!isStaffOrSbcStaff.value) {

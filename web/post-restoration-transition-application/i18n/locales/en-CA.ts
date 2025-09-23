@@ -156,5 +156,11 @@ export default {
     parValue: 'Par Value is required, when has par value is selected',
     required: 'This field is required',
     shareNameExists: 'Share name already exists'
+  },
+  btn: {
+    cancel: 'Cancel',
+    save: 'Save',
+    saveExit: 'Save and Resume Later',
+    submit: 'Submit'
   }
 }
