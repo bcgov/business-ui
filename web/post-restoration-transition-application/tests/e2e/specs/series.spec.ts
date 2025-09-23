@@ -27,6 +27,12 @@ const fillSeries = async (page: Page, values: object) => {
   }
 }
 
+const waitInFireFox = async (page: Page, browserName: string, waitTime: number) => {
+  if (browserName === 'firefox') {
+    await page.waitForTimeout(waitTime)
+  }
+}
+
 test.describe('Share Series', () => {
   const identifier = 'BC0000001'
   test.beforeEach(async ({ page }) => {
@@ -168,7 +174,7 @@ test.describe('Share Series', () => {
   })
 
   // this test tests reordering series on a share
-  test('Reorder Just Series', async ({ page }) => {
+  test('Reorder Just Series', async ({ page, browserName }) => {
     const longId = 'BC0000002'
     await mockForIdentifier(page, longId)
     await page.goto(`./en-CA/${longId}`)
@@ -217,10 +223,14 @@ test.describe('Share Series', () => {
 
     await checkHelper([2, 3, 1])
     await page.locator('[aria-label="Actions"]').nth(3).click()
+    // TODO: This is requierd for firefox but shouldn't be
+    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveUp).first().click()
 
     await checkHelper([2, 1, 3])
     await page.locator('[aria-label="Actions"]').nth(2).click()
+    // TODO: This is requierd for firefox but shouldn't be
+    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveUp).first().click()
 
     await checkHelper([1, 2, 3])
@@ -247,7 +257,7 @@ test.describe('Share Series', () => {
   })
 
   // delete shares / series
-  test('Delete and Undo Shares/Series', async ({ page }) => {
+  test('Delete and Undo Shares/Series', async ({ page, browserName }) => {
     const longId = 'BC0000002'
     await mockForIdentifier(page, longId)
     await page.goto(`./en-CA/${longId}`)
@@ -334,7 +344,7 @@ test.describe('Share Series', () => {
     await page.locator('[aria-label="Actions"]').nth(0).click()
 
     // TODO: This is requierd for firefox but shouldn't be
-    await page.waitForTimeout(3000)
+    await waitInFireFox(page, browserName, 3000)
     await page.getByRole('menuitem', { name: i18en.label.delete }).click()
     await page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first().click()
     for (let i = 0; i < deletedRows.length; i++) {
