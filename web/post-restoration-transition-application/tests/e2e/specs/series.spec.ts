@@ -334,7 +334,7 @@ test.describe('Share Series', () => {
     await page.locator('[aria-label="Actions"]').nth(0).click()
 
     // TODO: This is requierd for firefox but shouldn't be
-    await page.waitForTimeout(1000)
+    await page.waitForTimeout(3000)
     await page.getByRole('menuitem', { name: i18en.label.delete }).click()
     await page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first().click()
     for (let i = 0; i < deletedRows.length; i++) {
