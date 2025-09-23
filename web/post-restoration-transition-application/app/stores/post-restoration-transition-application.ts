@@ -15,6 +15,7 @@ export const usePostRestorationTransitionApplicationStore
   const feeStore = useConnectFeeStore()
   const accountStore = useConnectAccountStore()
   // const detailsHeaderStore = useConnectDetailsHeaderStore()
+  const { setFilingDefault, filingTombstone } = useFilingTombstone()
   const { userFullName } = storeToRefs(accountStore)
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const articles = ref<Articles>(EmptyArticles())
@@ -82,6 +83,7 @@ export const usePostRestorationTransitionApplicationStore
   async function init(businessId: string) {
     console.log('~~~~~~~> init store ', businessId)
 
+    filingTombstone.value.loading = true
     // // get business auth info for masthead
     // // get current business officers
     // const [authInfo] = await Promise.all([
@@ -102,11 +104,11 @@ export const usePostRestorationTransitionApplicationStore
     // const apiDirectors = await legalApi.getParties(businessId, { type: 'director' })
     // console.log('~~~ 5')
     const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
-    //   legalApi.getAuthInfo(businessId),
-    //   legalApi.getShareClasses(businessId),
-    //   legalApi.getBusiness(businessId, true),
-    //   legalApi.getAddresses(businessId),
-    //   legalApi.getParties(businessId, { type: 'director' })
+      legalApi.getAuthInfo(businessId),
+      legalApi.getShareClasses(businessId),
+      legalApi.getBusiness(businessId, true),
+      legalApi.getAddresses(businessId),
+      legalApi.getParties(businessId, { type: 'director' })
     ]).catch((error) => {
     //   console.log('~~~~~~~~~~1', authInfo)
     //   // const modal = useModal()
@@ -140,6 +142,8 @@ export const usePostRestorationTransitionApplicationStore
     //   feeStore.addReplaceFee(transitionFees)
     // }
 
+    setFilingDefault(business, authInfo)
+    filingTombstone.value.loading = false
     activeBusiness.value = business
     directors.value = apiDirectors
     shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))

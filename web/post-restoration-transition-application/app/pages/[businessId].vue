@@ -646,10 +646,10 @@ const saveModalDate = async () => {
           {{ regOfficeEmail }}
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.completingParty')" :error="hasCompletingPartyErrors">
-          <ConnectFormInput
+          <ConnectInput
             v-model="compPartyEmail"
             data-testid="compPartyEmail-input"
-            :error="completingPartyErrors?.['email']?.[0]"
+            :error="completingPartyErrors?.['email']?.[0] || ''"
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
@@ -674,7 +674,7 @@ const saveModalDate = async () => {
         :has-errors="hasCourtOrderErrors"
       >
         <ConnectFormSection :title="$t('label.courtOrderNumber')" :error="hasCourtOrderErrors">
-          <ConnectFormInput
+          <ConnectInput
             v-model="courtOrderNumber"
             data-testid="courtOrderNumber-input"
             :error="courtOrderErrors?.['courtOrderNumber']?.[0]"
@@ -711,7 +711,7 @@ const saveModalDate = async () => {
           :title="$t('label.folioOrReferenceNumber')"
           :error="hasFolioErrors"
         >
-          <ConnectFormInput
+          <ConnectInput
             v-model="folio"
             data-testid="folio-input"
             :error="folioErrors?.['folio']?.[0]"
@@ -770,7 +770,7 @@ const saveModalDate = async () => {
           :title="$t('label.legalName')"
           :error="certifyErrors?.['name']?.[0] !== undefined"
         >
-          <ConnectFormInput
+          <ConnectInput
             v-model="legalName"
             data-testid="legalName-input"
             :error="certifyErrors?.['name']?.[0]"
