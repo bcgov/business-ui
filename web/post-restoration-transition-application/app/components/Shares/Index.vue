@@ -259,6 +259,13 @@ const toggleShareExpanded = (row: Row<Share | Series>, skipValidations?: boolean
   row.toggleExpanded()
 }
 
+// This takes a table row Index and returns the indexes for the unflattened data.
+// series index is the index the series is in the share's series array (if applicable)
+// and share index is the index that the share is in the unflattened array
+// the flattened array is e.g. given the following
+// shares [ a: { series: [ b, c ] }, d ]
+// the flattened array would be [ a, b, c, d ]
+// given row index 1 the function would return { shareIndex: 0, seriesIndex: 0 }
 const getIndexFromRowIndex = (rowIndex: number) => {
   const isSeries = Object.keys(flattenedShareClasses.value[rowIndex]).includes('parentShareIndex')
   if (isSeries) {
@@ -317,10 +324,15 @@ const moveShare = (index: number, moveUp: boolean) => {
   arr.splice(newIndex, 0, temp)
 }
 
+// This function determines how to delete the given share/series
+// If it's added on this visit then it gets truly removed
+// If it's previously saved it gets marked as removed
+// additionally if its a share class that has series the delete has to cascade down to the series that it has
 const deleteShare = (index: number) => {
   const isSeries = Object.keys(flattenedShareClasses.value[index]).includes('parentShareIndex')
   const { shareIndex, seriesIndex } = getIndexFromRowIndex(index)
   if (isSeries) {
+    // for series if added, remove and otherwise mark as removed
     if (shareClasses.value[shareIndex].series[seriesIndex].added) {
       shareClasses.value[shareIndex].series.splice(seriesIndex, 1)
       return
@@ -329,10 +341,13 @@ const deleteShare = (index: number) => {
     return
   }
 
+  //if it's a share class remove it if it's added (note this also removed any (also added) series)
   if (shareClasses.value[shareIndex]?.added === true) {
     shareClasses.value.splice(shareIndex, 1)
     return
   }
+  //otherwise mark it as removed and cascade down to any series it has either removing (newly added)
+  // or marking as removed (previously saved)
   shareClasses.value[shareIndex].removed = true
   for (let i = 0; i < shareClasses.value[shareIndex]?.series.length; i++) {
     if (shareClasses.value[shareIndex]?.series[i].added === true) {
@@ -391,6 +406,8 @@ const addASeries = (row: Row<Share>) => {
   row.toggleExpanded()
 }
 
+// this function returns the shareIndex and series index as they are expected in the updated function
+// this requires them to be set in the store as opposed to looked up in the flat/unflattened array
 const getIndexes = () => {
   let shareIndex = -1
   let seriesIndex = -1
@@ -412,9 +429,12 @@ const getIndexes = () => {
   return { shareIndex, seriesIndex }
 }
 
+// this function handles updates of shares or series as well as adding a new SERIES only
+// it does not handle adding a share class
 const updated = (row: Row<Share | Series>) => {
   const { shareIndex, seriesIndex } = getIndexes()
 
+  //if adding a series simply set it as added, set it's parent to modified and force a reactivity update
   if (addSeries.value) {
     // adding a series
     shareClasses.value[shareIndex].series[seriesIndex].added = true
@@ -426,6 +446,8 @@ const updated = (row: Row<Share | Series>) => {
     // updating either a series or a share
     const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex])
     const current = JSON.stringify(shareClasses.value[shareIndex])
+    // it's updated if it has changed from the original form, this allows it to go back to unmodified
+    // if the user changes it back to it's original state
     shareClasses.value[shareIndex].modified = original !== current
     if (addEditSeries.value) {
       // updating a series
@@ -435,7 +457,10 @@ const updated = (row: Row<Share | Series>) => {
     }
   }
 
+  // ensure the series closes when series is updated
   const forceClose = addEditSeries.value
+
+  //if it's a share and it has child series then update the parvalue information to match
   if (
     (Object.keys(shareClasses.value[shareIndex]).includes('series'))
     && shareClasses.value[shareIndex]?.series?.length > 0) {
@@ -449,6 +474,8 @@ const updated = (row: Row<Share | Series>) => {
       shareClasses.value[shareIndex].series[i].currency = currency
     }
   }
+
+  //reset the store values and close the row
   addEditSeries.value = false
   addingShare.value = false
   editingSeriesParent.value = -1
