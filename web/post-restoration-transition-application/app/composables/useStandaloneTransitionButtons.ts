@@ -159,7 +159,7 @@ export const useStandaloneTransitionButtons = () => {
     // prevent save if there are no changes
     if (!hasChanges) {
       // todo: update this
-      // setAlertText(false, 'left', t('text.noChangesToSave'))
+      await buttonControl.setAlertText(false, 'left', t('text.noChangesToSave'))
       return
     }
     try {

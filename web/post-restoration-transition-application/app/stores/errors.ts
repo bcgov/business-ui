@@ -37,7 +37,7 @@ export const usePostRestorationErrorsStore
   }
 
   const verifyShareClasses = (shareClasses: (Share | Series)[]) => {
-    shareErrors.value = []
+    shareErrors.value.splice(0)
     for (let i = 0; i < shareClasses.length; i++) {
       let shareResult = null
       if (Object.keys(shareClasses[i]).includes('series')) {
@@ -47,8 +47,6 @@ export const usePostRestorationErrorsStore
       }
       if (!shareResult.success) {
         shareErrors.value.push(shareResult.error.flatten().fieldErrors)
-      } else {
-        shareErrors.value.push({})
       }
     }
   }
@@ -126,9 +124,18 @@ export const usePostRestorationErrorsStore
   }
 
   const hasErrors = computed(() => {
+    console.log(
+      '~~~~~~',
+      Object.keys(certifyErrors.value), '|',
+      Object.keys(folioErrors.value), '|',
+      shareErrors.value, '|',
+      Object.keys(courtOrderErrors.value), '|',
+      Object.keys(completingPartyErrors.value), '|',
+      Object.keys(articlesErrors.value)
+    )
     return Object.keys(certifyErrors.value).length > 0
       || Object.keys(folioErrors.value).length > 0
-      || Object.keys(shareErrors.value).length > 0
+      || shareErrors.value?.length > 0
       || Object.keys(courtOrderErrors.value).length > 0
       || Object.keys(completingPartyErrors.value).length > 0
       || Object.keys(articlesErrors.value).length > 0
