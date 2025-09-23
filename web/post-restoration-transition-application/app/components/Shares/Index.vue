@@ -213,7 +213,7 @@ const getDropdownActions = (row: Row<Share>) => {
         }
         deleteShare(rowIndex)
       },
-      color: 'primary'
+      color: 'primary',
     }
   ]
 }
@@ -506,6 +506,7 @@ const shareAddEditDoneHandler = () => {
     <UTable
       :key="`share-table-${shareTableKey}`"
       :data="flattenedShareClasses"
+      data-testid="share-table"
       :columns="columns"
       :ui="{
         thead: 'rounded-t-md',

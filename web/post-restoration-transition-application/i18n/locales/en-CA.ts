@@ -73,6 +73,7 @@ export default {
     recordsOffice: 'Records Office',
     refresh: 'Refresh Page',
     registeredOffice: 'Registered Office',
+    remove: 'Remove',
     removeSeries: 'Remove Series',
     resolutionOr: 'Resolution or',
     resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
