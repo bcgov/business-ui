@@ -315,11 +315,11 @@ test.describe('Share Series', () => {
     // delete a share (and it's child series) - there is a modal to click through
     await page.locator('[aria-label="Actions"]').nth(2).click()
     await page.locator('button').getByText(i18en.label.delete).first().click()
-    
-    //without this expect Firefox specifically doesn't wait long enough for the modal
+
+    // without this expect Firefox specifically doesn't wait long enough for the modal
     await expect(page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first()).toBeVisible()
     await page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first().click()
-    
+
     deletedRows.push(2)
     deletedRows.push(3)
     await checkHelper(deletedRows, expectedRows)
@@ -332,7 +332,7 @@ test.describe('Share Series', () => {
 
     // delete a modified share should clear added series
     await page.locator('[aria-label="Actions"]').nth(0).click()
-    
+
     // TODO: This is requierd for firefox but shouldn't be
     await page.waitForTimeout(1000)
     await page.getByRole('menuitem', { name: i18en.label.delete }).click()

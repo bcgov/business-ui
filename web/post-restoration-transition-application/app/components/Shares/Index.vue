@@ -213,7 +213,7 @@ const getDropdownActions = (row: Row<Share>) => {
         }
         deleteShare(rowIndex)
       },
-      color: 'primary',
+      color: 'primary'
     }
   ]
 }
