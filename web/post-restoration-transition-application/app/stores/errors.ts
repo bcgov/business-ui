@@ -125,10 +125,14 @@ export const usePostRestorationErrorsStore
     return hasErrors.value
   }
 
+  const _hasShareErrors = (): boolean => {
+    return shareErrors.value.some(error => Object.keys(error).length > 0)
+  }
+
   const hasErrors = computed(() => {
     return Object.keys(certifyErrors.value).length > 0
       || Object.keys(folioErrors.value).length > 0
-      || Object.keys(shareErrors.value).length > 0
+      || _hasShareErrors()
       || Object.keys(courtOrderErrors.value).length > 0
       || Object.keys(completingPartyErrors.value).length > 0
       || Object.keys(articlesErrors.value).length > 0
