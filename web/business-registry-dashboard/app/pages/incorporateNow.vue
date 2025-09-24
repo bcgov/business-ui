@@ -12,7 +12,8 @@ const ELIGIBLE_CORP_TYPES = [
   CorpTypes.COOP,
   CorpTypes.BC_CCC,
   CorpTypes.BC_COMPANY,
-  CorpTypes.BC_ULC_COMPANY
+  CorpTypes.BC_ULC_COMPANY,
+  CorpTypes.SOLE_PROP
 ]
 
 definePageMeta({ order: 0 })
