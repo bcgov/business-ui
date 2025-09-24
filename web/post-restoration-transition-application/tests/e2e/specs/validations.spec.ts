@@ -125,6 +125,8 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.locator('[aria-label="No Fee"]').click()
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    // fixme: right now we are getting popup that tells us we do not have permission to submit
+    // but all tests hitting submit should account for moving away from the page on submission
   })
 
   test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {

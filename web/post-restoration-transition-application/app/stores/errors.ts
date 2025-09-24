@@ -136,6 +136,7 @@ export const usePostRestorationErrorsStore
       || Object.keys(courtOrderErrors.value).length > 0
       || Object.keys(completingPartyErrors.value).length > 0
       || Object.keys(articlesErrors.value).length > 0
+      || Object.keys(staffPayErrors.value).length > 0
   })
 
   return {
