@@ -341,12 +341,12 @@ const deleteShare = (index: number) => {
     return
   }
 
-  //if it's a share class remove it if it's added (note this also removed any (also added) series)
+  // if it's a share class remove it if it's added (note this also removed any (also added) series)
   if (shareClasses.value[shareIndex]?.added === true) {
     shareClasses.value.splice(shareIndex, 1)
     return
   }
-  //otherwise mark it as removed and cascade down to any series it has either removing (newly added)
+  // otherwise mark it as removed and cascade down to any series it has either removing (newly added)
   // or marking as removed (previously saved)
   shareClasses.value[shareIndex].removed = true
   for (let i = 0; i < shareClasses.value[shareIndex]?.series.length; i++) {
@@ -434,7 +434,7 @@ const getIndexes = () => {
 const updated = (row: Row<Share | Series>) => {
   const { shareIndex, seriesIndex } = getIndexes()
 
-  //if adding a series simply set it as added, set it's parent to modified and force a reactivity update
+  // if adding a series simply set it as added, set it's parent to modified and force a reactivity update
   if (addSeries.value) {
     // adding a series
     shareClasses.value[shareIndex].series[seriesIndex].added = true
@@ -460,7 +460,7 @@ const updated = (row: Row<Share | Series>) => {
   // ensure the series closes when series is updated
   const forceClose = addEditSeries.value
 
-  //if it's a share and it has child series then update the parvalue information to match
+  // if it's a share and it has child series then update the parvalue information to match
   if (
     (Object.keys(shareClasses.value[shareIndex]).includes('series'))
     && shareClasses.value[shareIndex]?.series?.length > 0) {
@@ -475,7 +475,7 @@ const updated = (row: Row<Share | Series>) => {
     }
   }
 
-  //reset the store values and close the row
+  // reset the store values and close the row
   addEditSeries.value = false
   addingShare.value = false
   editingSeriesParent.value = -1
