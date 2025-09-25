@@ -57,8 +57,8 @@ export const useStandaloneTransitionButtons = () => {
         if (share.series) {
           share.series = share.series.filter(share => !share.removed)
         }
-      }  
-      
+      }
+
       standAloneTransitionData.shareStructure.shareClasses = shares
 
       const payload = legalApi.createFilingPayload<StandaloneTransitionFiling>(
