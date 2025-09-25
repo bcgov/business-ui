@@ -62,7 +62,7 @@ export const useStandaloneTransitionButtons = () => {
           delete shareClassesData[i].removed
           delete shareClassesData[i].parentShareIndex
           if (shareClassesData[i].series) {
-            for (let j = shareClassesData[i].series.length - 1; j >= 0; j++) {
+            for (let j = shareClassesData[i].series.length - 1; j >= 0; j--) {
               if (shareClassesData[i].series[j].removed === true) {
                 shareClassesData[i].series.splice(j, 1)
               } else {
