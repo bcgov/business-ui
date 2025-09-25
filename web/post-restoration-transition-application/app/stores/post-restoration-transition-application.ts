@@ -8,6 +8,7 @@ const transitionApplicationIncompleteHook = 'app:transition-application-form:inc
 
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
+  const { errorModal } = useModal()
   const t = useNuxtApp().$i18n.t
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
@@ -90,30 +91,27 @@ export const usePostRestorationTransitionApplicationStore
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
     ]).catch((error) => {
-    //   console.log('~~~~~~~~~~1', authInfo)
-    //   // const modal = useModal()
-    //   // const router = useRouter()
-    //   // const rtc = useRuntimeConfig().public
-    //   // const buttons: ModalButtonProps[] = []
-    //   // const errorStatus = error.statusCode || 404
-    //   // if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
-    //   //   buttons.push({
-    //   //     label: t('label.goToMyBusinessRegistry'),
-    //   //     to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
-    //   //   })
-    //   // } else if (errorStatus > 499 && errorStatus < 600) {
-    //   //   buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
-    //   //   buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
-    //   // } else {
-    //   //   buttons.push({ label: t('label.close'), shouldClose: true })
-    //   // }
-    //   // modal.openBaseErrorModal(
-    //   //   error,
-    //   //   'modal.error.initOfficerStore',
-    //   //   buttons
-    //   // )
+      const router = useRouter()
+      const rtc = useRuntimeConfig().public
+      const buttons = []
+      const errorStatus = error.statusCode || 404
+      if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
+        buttons.push({
+          label: t('label.goToMyBusinessRegistry'),
+          to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+        })
+      } else if (errorStatus > 499 && errorStatus < 600) {
+        buttons.push({ label: t('label.goBack'), onClick: async () => router.back() })
+        buttons.push({ label: t('label.refresh'), onClick: async () => window.location.reload() })
+      } else {
+        buttons.push({ label: t('label.close'), shouldClose: true })
+      }
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.initStore',
+        buttons: buttons
+      })
     })
-    console.log('~~~~~~~~~~', authInfo)
     // setFilingDefault(business, authInfo)
     // FUTURE: error handling on fees #29114
     // const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
@@ -138,11 +136,10 @@ export const usePostRestorationTransitionApplicationStore
         articles.value.incorpDate = business.foundingDate
       }
     } catch (error) {
-      // const modal = useModal()
-      // modal.openBaseErrorModal(
-      //   error,
-      //   'modal.error.initOfficerStore'
-      // )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.initOfficerStore'
+      })
     }
 
     // reset offices so when pushing they are not duplicated (on refresh and similar)
