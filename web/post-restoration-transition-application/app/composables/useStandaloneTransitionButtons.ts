@@ -61,6 +61,18 @@ export const useStandaloneTransitionButtons = () => {
           delete shareClassesData[i].modified
           delete shareClassesData[i].removed
           delete shareClassesData[i].parentShareIndex
+          if (shareClassesData[i].series) {
+            for (let j=0; j<shareClassesData[i].series.length; j++) {
+              if (shareClassesData[i].series[j].removed === true) {
+                shareClassesData[i].series.splice(j, 1)
+              } else {
+                delete shareClassesData[i].series[j].added
+                delete shareClassesData[i].series[j].modified
+                delete shareClassesData[i].series[j].removed
+                delete shareClassesData[i].series[j].parentShareIndex
+              }
+            }
+          }
         }
       }
       standAloneTransitionData.shareStructure.shareClasses = shareClassesData
