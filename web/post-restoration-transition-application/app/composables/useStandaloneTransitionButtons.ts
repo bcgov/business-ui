@@ -51,6 +51,18 @@ export const useStandaloneTransitionButtons = () => {
       }
       const businessIdentifier = filingStore.activeBusiness.identifier
 
+      const shareClassesData = standAloneTransitionData.shareStructure.shareClasses.value
+      for (let i = 0; i < shareClassesData.length; i++) {
+        if (shareClassesData[i].removed === true) {
+          shareClassesData.splice(i, 1)
+        } else {
+          delete shareClassesData[i].added
+          delete shareClassesData[i].modified
+          delete shareClassesData[i].removed
+          delete shareClassesData[i].parentShareIndex
+        }
+      }
+
       const payload = legalApi.createFilingPayload<StandaloneTransitionFiling>(
         filingStore.activeBusiness,
         'transition',

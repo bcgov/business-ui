@@ -226,19 +226,6 @@ export const usePostRestorationTransitionApplicationStore
     if (officesData === undefined) {
       return undefined
     }
-
-    const shareClassesData = shareClasses.value
-    for (let i = 0; i < shareClassesData.length; i++) {
-      if (shareClassesData[i].removed === true) {
-        shareClassesData.splice(i, 1)
-      } else {
-        delete shareClassesData[i].added
-        delete shareClassesData[i].modified
-        delete shareClassesData[i].removed
-        delete shareClassesData[i].parentShareIndex
-      }
-    }
-
     const transitionFiling = {
       transition: {
         nameTranslations: activeBusiness.value.alternateNames,
@@ -248,7 +235,7 @@ export const usePostRestorationTransitionApplicationStore
         contactPoint: {
           email: compPartyEmail.value || regOfficeEmail.value || '' // todo: find out correct details for this
         },
-        shareStructure: { shareClasses: shareClassesData }
+        shareStructure: { shareClasses: shareClasses.value }
       }
     }
     console.info(transitionFiling)
