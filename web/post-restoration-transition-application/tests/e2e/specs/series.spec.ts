@@ -219,6 +219,7 @@ test.describe('Share Series', () => {
 
     await checkHelper([2, 1, 3])
     await page.locator('[aria-label="Actions"]').nth(2).click()
+    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveDown).first().click()
 
     await checkHelper([2, 3, 1])
