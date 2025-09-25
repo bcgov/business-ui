@@ -49,13 +49,15 @@ describe('useOfficerNavigation', () => {
     })
 
     it('should return the correct breadcrumbs for a non-draft filing', () => {
-      const { breadcrumbs, editUrl } = useOfficerNavigation()
+      const { breadcrumbs, editUrl, dashboardUrl } = useOfficerNavigation()
       const breadcrumbItems = breadcrumbs.value
 
-      expect(breadcrumbItems).toHaveLength(4)
+      expect(breadcrumbItems).toHaveLength(5)
 
-      expect(breadcrumbItems[2]!.label).toBe('Company Information Page')
-      expect(breadcrumbItems[2]!.to).toBe(editUrl.value)
+      expect(breadcrumbItems[2]!.label).toBe('Test Business Inc.')
+      expect(breadcrumbItems[2]!.to).toBe(dashboardUrl.value)
+      expect(breadcrumbItems[3]!.label).toBe('Company Information Page')
+      expect(breadcrumbItems[3]!.to).toBe(editUrl.value)
     })
   })
 
@@ -87,10 +89,14 @@ describe('useOfficerNavigation', () => {
 
   describe('Computeds', () => {
     it('should update URLs and breadcrumbs when the route query changes', async () => {
-      const { isDraft, dashboardOrEditUrl, breadcrumbs, editUrl } = useOfficerNavigation()
+      const { isDraft, dashboardOrEditUrl, dashboardUrl, breadcrumbs, editUrl } = useOfficerNavigation()
       expect(isDraft.value).toBe(false)
       expect(dashboardOrEditUrl.value).toBe(editUrl.value)
-      expect(breadcrumbs.value[2]!.label).toBe('Company Information Page')
+      expect(breadcrumbs.value[2]!.label).toBe('Test Business Inc.')
+      expect(breadcrumbs.value[2]!.to).toBe(dashboardUrl.value)
+      expect(breadcrumbs.value[3]!.label).toBe('Company Information Page')
+      expect(breadcrumbs.value[3]!.to).toBe(editUrl.value)
+      expect(breadcrumbs.value).toHaveLength(5)
 
       mockRoute.query = { draft: 'filing-123' }
       await nextTick()
@@ -98,6 +104,7 @@ describe('useOfficerNavigation', () => {
       expect(isDraft.value).toBe(true)
       expect(dashboardOrEditUrl.value).not.toBe(editUrl.value)
       expect(breadcrumbs.value[2]!.label).toBe('Test Business Inc.')
+      expect(breadcrumbs.value).toHaveLength(4)
     })
   })
 })
