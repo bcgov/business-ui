@@ -51,7 +51,8 @@ export const useStandaloneTransitionButtons = () => {
       }
       const businessIdentifier = filingStore.activeBusiness.identifier
 
-      const shareClassesData = standAloneTransitionData.shareStructure.shareClasses.value
+      // clear ui properties (this is here to prevent them from being sent to the API)
+      const shareClassesData = standAloneTransitionData.shareStructure.shareClasses
       for (let i = 0; i < shareClassesData.length; i++) {
         if (shareClassesData[i].removed === true) {
           shareClassesData.splice(i, 1)
@@ -62,6 +63,7 @@ export const useStandaloneTransitionButtons = () => {
           delete shareClassesData[i].parentShareIndex
         }
       }
+      standAloneTransitionData.shareStructure.shareClasses = shareClassesData
 
       const payload = legalApi.createFilingPayload<StandaloneTransitionFiling>(
         filingStore.activeBusiness,
