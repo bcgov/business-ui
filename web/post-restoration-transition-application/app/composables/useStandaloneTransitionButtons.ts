@@ -53,7 +53,7 @@ export const useStandaloneTransitionButtons = () => {
 
       // clear ui properties (this is here to prevent them from being sent to the API)
       const shareClassesData = standAloneTransitionData.shareStructure.shareClasses
-      for (let i = 0; i < shareClassesData.length; i++) {
+      for (let i = shareClassesData.length - 1; i >= 0; i--) {
         if (shareClassesData[i].removed === true) {
           shareClassesData.splice(i, 1)
         } else {
@@ -62,7 +62,7 @@ export const useStandaloneTransitionButtons = () => {
           delete shareClassesData[i].removed
           delete shareClassesData[i].parentShareIndex
           if (shareClassesData[i].series) {
-            for (let j = 0; j < shareClassesData[i].series.length; j++) {
+            for (let j = shareClassesData[i].series.length - 1; j >= 0; j++) {
               if (shareClassesData[i].series[j].removed === true) {
                 shareClassesData[i].series.splice(j, 1)
               } else {
