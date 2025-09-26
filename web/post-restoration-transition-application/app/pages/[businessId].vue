@@ -27,8 +27,9 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
+const businessId = route.par ams.businessId as string
 const filingStore = usePostRestorationTransitionApplicationStore()
-const businessId = route.params.businessId as string
+
 filingStore.init(businessId)
 const {
   activeBusiness,

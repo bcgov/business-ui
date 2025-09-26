@@ -1,8 +1,8 @@
+import { isEmpty } from 'es-toolkit/compat'
 import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
 import type { PageSection } from '~/enum/page_sections'
-import { isEmpty } from 'es-toolkit/compat'
 
 const transitionApplicationIncompleteHook = 'app:transition-application-form:incomplete'
 
@@ -13,7 +13,6 @@ export const usePostRestorationTransitionApplicationStore
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
   // const authApi = useAuthApi()
-  const feeStore = useConnectFeeStore()
   const accountStore = useConnectAccountStore()
   // const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
@@ -112,13 +111,6 @@ export const usePostRestorationTransitionApplicationStore
         buttons: buttons
       })
     })
-    // setFilingDefault(business, authInfo)
-    // FUTURE: error handling on fees #29114
-    // const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
-    // feeStore.feeOptions.showServiceFees = true
-    // if (transitionFees) {
-    //   feeStore.addReplaceFee(transitionFees)
-    // }
 
     setFilingDefault(business, authInfo)
     filingTombstone.value.loading = false

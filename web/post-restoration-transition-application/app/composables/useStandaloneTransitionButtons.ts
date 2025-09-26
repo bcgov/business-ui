@@ -128,7 +128,7 @@ export const useStandaloneTransitionButtons = () => {
             size: 'xl',
             onClick: async () => {
               await navigateTo(businessDashboardUrlWithBusinessAndAccount.value, {
-                external: true,
+                external: true
               })
             }
           }
