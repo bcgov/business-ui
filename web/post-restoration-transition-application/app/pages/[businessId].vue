@@ -12,7 +12,6 @@ const { editFormOpen, editFormClosed } = useEditFormHandlers()
 await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
-const te = useNuxtApp().$i18n.te
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
 const route = useRoute()
@@ -51,21 +50,6 @@ const {
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
 const submittedModal = ref<boolean>(false)
-
-const modalDateError = () => {
-  const dateError = articlesErrors?.value?.currentDate?.[0]
-  const submit = submittedModal.value
-  const articleDate = articles?.value?.incorpDate
-  return dateError !== undefined && (dateError !== 'errors.articles' || submit)
-    && te(dateError)
-    ? t(dateError,
-        {
-          incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
-          today: fromIsoToUsDateFormat(new Date().toISOString())
-        }
-    )
-    : ''
-}
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -113,10 +97,9 @@ useHead({
   title: t('transitionApplication.title')
 })
 
-const route = useRoute()
-
 definePageMeta({
-  layout: 'filing' //,
+  layout: 'filing'
+  // , todo this
   // middleware: async () => {
   //   // redirect to reg home with return url if user unauthenticated
   //   const { $keycloak, $config } = useNuxtApp()
@@ -397,13 +380,12 @@ const saveModalDate = async () => {
 }
 
 const getArticlesCurrentDateError = computed(() => {
-  // todo: verify that includes changes from : modalDateError
   const key = articlesErrors.value?.currentDate?.[0]
   const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
 
   return condition
     ? $t(key, {
-      incorpDate: fromIsoToUsDateFormat(new Date(articles.value.incorpDate).toISOString()),
+      incorpDate: fromIsoToUsDateFormat(new Date(articles?.value?.incorpDate).toISOString()),
       today: fromIsoToUsDateFormat(new Date().toISOString())
     })
     : ''
