@@ -54,6 +54,9 @@ const resetData = () => {
     }
     if (props.isSeries && editingSeriesParent.value !== -1) {
       shareValues.value.parentShareIndex = editingSeriesParent.value
+      shareValues.value.hasParValue = editingSeriesParent.value.hasParValue || false
+      shareValues.value.currency = editingSeriesParent.value.currency || ''
+      shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
     } else {
       shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
     }
@@ -124,6 +127,9 @@ const shareValues = ref<Share | Series>(
 
 if (props.isSeries && editingSeriesParent.value !== -1) {
   shareValues.value.parentShareIndex = editingSeriesParent.value
+  shareValues.value.hasParValue = editingSeriesParent.value.hasParValue || false
+  shareValues.value.currency = editingSeriesParent.value.currency || ''
+  shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
 } else {
   shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
 }

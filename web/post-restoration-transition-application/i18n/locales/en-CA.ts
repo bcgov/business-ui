@@ -6,13 +6,13 @@ export default {
     // Ordered by how they appear on the page
     title: 'Post Restoration Transition Application',
     subtitle: {
-      reviewAndConfirm: '1. Review and Confirm',
-      documentDelivery: '2. Document Delivery',
-      courtOrder: '3. Court Order and Plan of Arrangement',
-      folio: '4. Folio or Reference Number',
-      companyProvisions: '5. Pre-existing Company Provisions',
-      certify: '6. Certify',
-      staffPayment: '7. Staff Payment'
+      reviewAndConfirm: 'Review and Confirm',
+      documentDelivery: 'Document Delivery',
+      courtOrder: 'Court Order and Plan of Arrangement',
+      folio: 'Folio or Reference Number',
+      companyProvisions: 'Pre-existing Company Provisions',
+      certify: 'Certify',
+      staffPayment: 'Staff Payment'
     }
   },
   label: {
@@ -73,6 +73,7 @@ export default {
     recordsOffice: 'Records Office',
     refresh: 'Refresh Page',
     registeredOffice: 'Registered Office',
+    remove: 'Remove',
     removeSeries: 'Remove Series',
     resolutionOr: 'Resolution or',
     resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
@@ -94,6 +95,7 @@ export default {
     shareColumnRightsRestrictions: 'Special Rights or Restrictions',
     shares: 'Shares',
     shareSeriesRightsRestrictions: 'Remove Share Series',
+    shareSeriesRightsRestrictionsWithClass: 'Remove Share Series with Class',
     to: 'to',
     yes: 'Yes'
   },
@@ -127,6 +129,7 @@ export default {
     reviewAndConfirmDescription: 'Office addresses, current directors and share structure must be correct before filing your transition application.',
     sharesDescription: 'To make changes to a class or series of shares with special rights or restrictions, you must have passed a resolution or have a court order. Only enter changes related to a single resolution or court order date. ',
     shareSeriesRightsRestrictions: 'This share class has one or more share series. If you remove the special rights and restrictions of this share class, all associated share series will be removed.',
+    shareSeriesRightsRestrictionsWithClass: 'This share class has one or more share series. Removing this share class will also remove any associated share series.',
     sharesTitle: 'Share Structure',
     transitionYourBusiness: 'Transition your business so that it operates under the new {businessCorporationsAct}.'
   },

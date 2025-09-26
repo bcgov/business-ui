@@ -9,7 +9,6 @@ import i18en from '~~/i18n/locales/en-CA'
 const fillBasic = async (page: Page, values: object) => {
   await page.getByTestId('legalName-input').locator('input').first().fill(values.legalName)
   await page.getByTestId('compPartyEmail-input').locator('input').first().fill(values.email)
-  await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(values.courtOrderNumber)
   await page.getByTestId('folio-input').locator('input').first().fill(values.folio)
   if (values.certify) {
     await page.getByTestId('certify-section-checkbox').click()
@@ -98,17 +97,19 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, invalid)
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(4)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
   })
 
-  test('Staff, Pay Section', async ({ page }) => {
+  test('Staff, Pay Section and Court Section', async ({ page }) => {
     await impersonateUser(page, 'staff')
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, valid)
+    await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
+
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await expect(page.locator('p.text-red-600').getByText('Payment')).toHaveCount(1)
@@ -124,6 +125,8 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.locator('[aria-label="No Fee"]').click()
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    // fixme: right now we are getting popup that tells us we do not have permission to submit
+    // but all tests hitting submit should account for moving away from the page on submission
   })
 
   test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {

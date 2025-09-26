@@ -12,8 +12,10 @@ const { editFormOpen, editFormClosed } = useEditFormHandlers()
 await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
+const te = useNuxtApp().$i18n.te
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
+const route = useRoute()
 const errorStore = usePostRestorationErrorsStore()
 const {
   certifyErrors,
@@ -25,9 +27,45 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
+const businessId = route.params.businessId as string
+
+const filingStore = usePostRestorationTransitionApplicationStore()
+filingStore.init(businessId)
+const {
+  activeBusiness,
+  articles,
+  certifiedByLegalName,
+  compPartyEmail,
+  courtOrderNumber,
+  directors,
+  folio,
+  isStaffOrSbcStaff,
+  legalName,
+  offices,
+  planOfArrangement,
+  regOfficeEmail,
+  shareWithSpecialRightsModified,
+  modifiedDirectors
+} = storeToRefs(filingStore)
+
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
 const submittedModal = ref<boolean>(false)
+
+const modalDateError = () => {
+  const dateError = articlesErrors?.value?.currentDate?.[0]
+  const submit = submittedModal.value
+  const articleDate = articles?.value?.incorpDate
+  return dateError !== undefined && (dateError !== 'errors.articles' || submit)
+    && te(dateError)
+    ? t(dateError,
+        {
+          incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
+          today: fromIsoToUsDateFormat(new Date().toISOString())
+        }
+    )
+    : ''
+}
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -114,27 +152,6 @@ definePageMeta({
 })
 
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
-
-const businessId = route.params.businessId as string
-
-const filingStore = usePostRestorationTransitionApplicationStore()
-filingStore.init(businessId)
-const {
-  activeBusiness,
-  articles,
-  certifiedByLegalName,
-  compPartyEmail,
-  courtOrderNumber,
-  directors,
-  folio,
-  isStaffOrSbcStaff,
-  legalName,
-  offices,
-  planOfArrangement,
-  regOfficeEmail,
-  shareWithSpecialRightsModified,
-  modifiedDirectors
-} = storeToRefs(filingStore)
 
 const sectionHasErrors = computed(() => (section: PageSection): boolean => {
   /* eslint-disable vue/script-indent */
@@ -380,6 +397,7 @@ const saveModalDate = async () => {
 }
 
 const getArticlesCurrentDateError = computed(() => {
+  // todo: verify that includes changes from : modalDateError
   const key = articlesErrors.value?.currentDate?.[0]
   const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
 
@@ -397,6 +415,8 @@ const getArticlesCurrentDateError = computed(() => {
     <UModal
       :open="pickDateModalOpen"
       class="overflow-visible"
+      title="dateModal"
+      description="pick date for special rights"
     >
       <template #content>
         <div class="p-10 flex flex-col gap-6">
@@ -458,7 +478,7 @@ const getArticlesCurrentDateError = computed(() => {
       </i18n-t>
     </section>
     <FormSection
-      :title="$t('transitionApplication.subtitle.reviewAndConfirm')"
+      :title="`1. ${$t('transitionApplication.subtitle.reviewAndConfirm')}`"
       :description="$t('text.reviewAndConfirmDescription')"
       :has-errors="false"
       class="space-y-4"
@@ -627,7 +647,7 @@ const getArticlesCurrentDateError = computed(() => {
       </div>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.documentDelivery')"
+      :title="`2. ${$t('transitionApplication.subtitle.documentDelivery')}`"
       :description="$t('text.documentDelivery')"
       :has-errors="false"
       class="space-y-4"
@@ -657,7 +677,8 @@ const getArticlesCurrentDateError = computed(() => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.courtOrder')"
+      v-if="isStaffOrSbcStaff"
+      :title="`3. ${$t('transitionApplication.subtitle.courtOrder')}`"
       :description="$t('text.courtOrder')"
       :has-errors="false"
       class="space-y-4"
@@ -691,7 +712,7 @@ const getArticlesCurrentDateError = computed(() => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.folio')"
+      :title="`${isStaffOrSbcStaff ? '4' : '3'}. ${$t('transitionApplication.subtitle.folio')}`"
       :description="$t('text.folioOrReferenceNumber')"
       :has-errors="false"
       class="space-y-4"
@@ -718,7 +739,7 @@ const getArticlesCurrentDateError = computed(() => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.companyProvisions')"
+      :title="`${isStaffOrSbcStaff ? '5' : '4'}. ${$t('transitionApplication.subtitle.companyProvisions')}`"
       :has-errors="false"
     >
       <FormSubSection
@@ -750,7 +771,7 @@ const getArticlesCurrentDateError = computed(() => {
       </FormSubSection>
     </FormSection>
     <FormSection
-      :title="$t('transitionApplication.subtitle.certify')"
+      :title="`${isStaffOrSbcStaff ? '6' : '5'}. ${$t('transitionApplication.subtitle.certify')}`"
       :description="$t('text.certifySectionDescription')"
       :has-errors="false"
       class="space-y-4"
@@ -803,7 +824,7 @@ const getArticlesCurrentDateError = computed(() => {
 
     <FormSection
       v-if="isStaffOrSbcStaff"
-      :title="$t('transitionApplication.subtitle.staffPayment')"
+      :title="`7. ${$t('transitionApplication.subtitle.staffPayment')}`"
       :has-errors="false"
     >
       <FormSubSection
