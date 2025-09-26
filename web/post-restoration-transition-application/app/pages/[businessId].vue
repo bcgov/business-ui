@@ -5,8 +5,11 @@ import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
 import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
-const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
+const { setButtonControl } = useButtonControl()
+const feeStore = useStandaloneTransitionFeeStore()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
+
+await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
 const te = useNuxtApp().$i18n.te
