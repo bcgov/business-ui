@@ -5,7 +5,7 @@ export const useStandaloneTransitionButtons = () => {
   const { scrollToOpenForm } = useEditFormHandlers()
   // submit final filing
   async function submitFiling() {
-    const modal = useModal()
+    const { errorModal } = useModal()
     const buttonControl = useButtonControl()
     const rtc = useRuntimeConfig().public
     const urlParams = useUrlSearchParams()
@@ -93,17 +93,17 @@ export const useStandaloneTransitionButtons = () => {
         { external: true }
       )
     } catch (error) {
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.submitFiling'
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.submitFiling'
+      })
     } finally {
       buttonControl.handleButtonLoading(true)
     }
   }
 
   async function cancelFiling() {
-    const modal = useModal()
+    const { baseModal } = useModal()
     const rtc = useRuntimeConfig().public
     const t = useNuxtApp().$i18n.t
 
@@ -117,11 +117,11 @@ export const useStandaloneTransitionButtons = () => {
     )
 
     if (await filingStore.checkHasChanges('save')) {
-      await modal.openBaseModal(
-        t('modal.unsavedChanges.title'),
-        t('modal.unsavedChanges.description'),
-        false,
-        [
+      await baseModal.open({
+        title: t('modal.unsavedChanges.title'),
+        description: t('modal.unsavedChanges.description'),
+        dismissible: false,
+        buttons: [
           { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
           {
             label: t('btn.exitWithoutSaving'),
@@ -133,7 +133,7 @@ export const useStandaloneTransitionButtons = () => {
             }
           }
         ]
-      )
+      })
     } else {
       await navigateTo(
         businessDashboardUrlWithBusinessAndAccount.value,
@@ -143,7 +143,7 @@ export const useStandaloneTransitionButtons = () => {
   }
 
   const saveFiling = async (resumeLater = false, disableActiveFormCheck = false) => {
-    const modal = useModal()
+    const { errorModal } = useModal()
     const buttonControl = useButtonControl()
     const rtc = useRuntimeConfig().public
     const urlParams = useUrlSearchParams()
@@ -169,7 +169,7 @@ export const useStandaloneTransitionButtons = () => {
     // prevent save if there are no changes
     if (!hasChanges) {
       // todo: update this
-      // setAlertText(false, 'left', t('text.noChangesToSave'))
+      await buttonControl.setAlertText(false, 'left', t('text.noChangesToSave'))
       return
     }
     try {
@@ -188,10 +188,10 @@ export const useStandaloneTransitionButtons = () => {
         // TODO: how granular do we want to be with our error messages?
         // we check pending tasks on page mount
         // this will only occur if a pending task has been created after the initial page mount
-        modal.openBaseErrorModal(
-          undefined,
-          'modal.error.pendingTaskOnSaveOrSubmit'
-        )
+        errorModal.open({
+          error: undefined,
+          i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
+        })
         return
       }
 
@@ -235,10 +235,10 @@ export const useStandaloneTransitionButtons = () => {
         )
       }
     } catch (error) {
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.submitFiling'
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.submitFiling'
+      })
     } finally {
       buttonControl.handleButtonLoading(true)
     }

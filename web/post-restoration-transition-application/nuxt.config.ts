@@ -28,13 +28,11 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
-    'nuxt-anchorscroll',
-    'nuxt-lodash'
+    'nuxt-anchorscroll'
   ],
 
   extends: [
-    'github:bcgov/business-ui/web/person-roles',
-    ['@sbc-connect/nuxt-core-layer-beta', { install: true }]
+    '@sbc-connect/nuxt-business-base'
   ],
 
   router: {
