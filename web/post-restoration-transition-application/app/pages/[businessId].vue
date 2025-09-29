@@ -124,20 +124,23 @@ definePageMeta({
         name: 'TestFirst TestLast',
         username: 'testUsername',
         email: 'testEmail@test.com',
-        sub: 'test',
+        sub: 'testSub',
         loginSource: 'IDIR',
         realm_access: { roles: ['public_user'] }
       }
-
-      // set account stuff (normally would happen after kc init in 'setupAuth')
+      $connectAuth.authenticated = true
       const account = useConnectAccountStore()
       const { currentAccount, userAccounts } = storeToRefs(account)
-      const resp = await account.getUserAccounts('test')
-      if (resp && resp[0]) {
-        Object.assign(currentAccount.value, resp[0])
-        Object.assign(userAccounts.value, resp)
-        $connectAuth.authenticated = true
+      currentAccount.value = {
+        id: 1,
+        label: 'Playwright',
+        accountStatus: AccountStatus.ACTIVE,
+        accountType: AccountType.PREMIUM,
+        type: UserSettingsType.ACCOUNT,
+        urlorigin: '',
+        urlpath: ''
       }
+      userAccounts.value = [currentAccount.value]
     } else if (!$connectAuth.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
@@ -359,15 +362,15 @@ const verify = (verifyMethod: (args) => void, args) => {
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
   { 'onClick': () => saveFiling(), 'label': t('btn.save'), 'variant': 'outline', 'data-testid': 'save-button' },
-  { 'onClick': () => saveFiling(true), 'label': t('btn.saveExit'), 'variant': 'outline', 'data-testid': 'save-button' }
+  { 'onClick': () => saveFiling(true), 'label': t('btn.saveExit'), 'variant': 'outline', 'data-testid': 'saveExit-button' }
 ]
 const rightButtons = [
-  { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'save-button' },
+  { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'cancel-button' },
   {
     'onClick': submitFiling,
     'label': t('btn.submit'),
     'trailingIcon': 'i-mdi-chevron-right',
-    'data-testid': 'save-button'
+    'data-testid': 'submit-button'
   }
 ]
 
@@ -647,7 +650,8 @@ const saveModalDate = async () => {
           {{ regOfficeEmail }}
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.completingParty')" :error="hasCompletingPartyErrors">
-          <ConnectInput
+          <ConnectFormInput
+            id="compPartyEmail-input"
             v-model="compPartyEmail"
             data-testid="compPartyEmail-input"
             :error="completingPartyErrors?.['email']?.[0] || ''"
@@ -675,10 +679,10 @@ const saveModalDate = async () => {
         :has-errors="hasCourtOrderErrors"
       >
         <ConnectFormSection :title="$t('label.courtOrderNumber')" :error="hasCourtOrderErrors">
-          <ConnectInput
+          <ConnectFormInput
             v-model="courtOrderNumber"
             data-testid="courtOrderNumber-input"
-            :error="courtOrderErrors?.['courtOrderNumber']?.[0]"
+            :error="courtOrderErrors?.['courtOrderNumber']?.[0] || ''"
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
@@ -712,10 +716,10 @@ const saveModalDate = async () => {
           :title="$t('label.folioOrReferenceNumber')"
           :error="hasFolioErrors"
         >
-          <ConnectInput
+          <ConnectFormInput
             v-model="folio"
             data-testid="folio-input"
-            :error="folioErrors?.['folio']?.[0]"
+            :error="folioErrors?.['folio']?.[0] || ''"
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
@@ -771,10 +775,10 @@ const saveModalDate = async () => {
           :title="$t('label.legalName')"
           :error="certifyErrors?.['name']?.[0] !== undefined"
         >
-          <ConnectInput
+          <ConnectFormInput
             v-model="legalName"
             data-testid="legalName-input"
-            :error="certifyErrors?.['name']?.[0]"
+            :error="certifyErrors?.['name']?.[0] || ''"
             :invalid="certifyErrors?.['name']?.[0] !== undefined"
             :name="'certify.legalName'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
