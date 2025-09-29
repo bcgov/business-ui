@@ -592,7 +592,8 @@ const shareAddEditDoneHandler = () => {
           :label="$t('label.undo')"
           color="primary"
           class="inline-block mr-0 px-3"
-          :disabled="row.original.parentShareIndex !== undefined && shareClasses[row.original.parentShareIndex]?.hasRightsOrRestrictions === false"
+          :disabled="row.original.parentShareIndex !== undefined
+            && shareClasses[row.original.parentShareIndex]?.hasRightsOrRestrictions === false"
           variant="ghost"
           :aria-label="$t('label.undo')"
           @click="undoDelete(row.index)"
