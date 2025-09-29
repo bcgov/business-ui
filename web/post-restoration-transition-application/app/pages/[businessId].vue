@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import type { ButtonProps } from '@nuxt/ui'
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
@@ -14,7 +15,6 @@ await feeStore.initFeeStore()
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
-const route = useRoute()
 const errorStore = usePostRestorationErrorsStore()
 const {
   certifyErrors,
@@ -26,10 +26,7 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
-const businessId = route.params.businessId as string
-
 const filingStore = usePostRestorationTransitionApplicationStore()
-filingStore.init(businessId)
 const {
   activeBusiness,
   articles,
@@ -98,38 +95,8 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'filing',
-  middleware: async () => {
-    // redirect to reg home with return url if user unauthenticated
-    const { $connectAuth, $config } = useNuxtApp()
-    if (useRuntimeConfig().public.ci) {
-      $connectAuth.tokenParsed = {
-        firstname: 'TestFirst',
-        lastname: 'TestLast',
-        name: 'TestFirst TestLast',
-        username: 'testUsername',
-        email: 'testEmail@test.com',
-        sub: 'test',
-        loginSource: 'IDIR',
-        realm_access: { roles: ['public_user'] }
-      }
-      $connectAuth.authenticated = true
-      const account = useConnectAccountStore()
-      const { currentAccount, userAccounts } = storeToRefs(account)
-      const resp = await account.getUserAccounts('test')
-      if (resp && resp[0]) {
-        currentAccount.value = resp[0]
-        userAccounts.value = resp
-        $connectAuth.authenticated = true
-      }
-    } else if (!$connectAuth.authenticated) {
-      const returnUrl = encodeURIComponent(window.location.href)
-      return navigateTo(
-        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
-        { external: true }
-      )
-    }
-  }
+  layout: 'form',
+  middleware: ['auth-check', 'filing-init']
 })
 
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
@@ -387,11 +354,16 @@ const getArticlesCurrentDateError = computed(() => {
   const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
 
   return condition
-    ? $t(key, {
+    ? t(key, {
       incorpDate: fromIsoToUsDateFormat(new Date(articles?.value?.incorpDate).toISOString()),
       today: fromIsoToUsDateFormat(new Date().toISOString())
     })
     : ''
+})
+
+onMounted(async () => {
+  filingStore.setTransitionBreadcrumbs()
+  await filingStore.initFees()
 })
 </script>
 

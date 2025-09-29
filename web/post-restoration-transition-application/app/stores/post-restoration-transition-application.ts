@@ -9,8 +9,8 @@ const transitionApplicationIncompleteHook = 'app:transition-application-form:inc
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
   const { errorModal } = useModal()
-  const t = useNuxtApp().$i18n.t
   const nuxtApp = useNuxtApp()
+  const t = nuxtApp.$i18n.t
   const legalApi = useLegalApi2()
   const accountStore = useConnectAccountStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
@@ -27,6 +27,7 @@ export const usePostRestorationTransitionApplicationStore
   const formIdSectionMapping = ref<{ [key: string]: PageSection }>({})
   const offices = ref<Office[]>([])
   const directors = ref<OrgPerson[]>([])
+  const ORIGINAL_DIRECTORS = ref<OrgPerson[]>([])
   const legalName = ref<string | undefined>(undefined)
   const shareClasses = ref<Share[]>([])
   const ORIGINAL_SHARE_CLASSES = ref<Share[]>([])
@@ -36,6 +37,7 @@ export const usePostRestorationTransitionApplicationStore
   const openEditComponentId = ref<string | undefined>(undefined)
   const modifiedDirectors = ref<number[]>([])
   const editingSeriesParent = ref<number>(-1)
+  const draftFilingId = ref<string | undefined>(undefined)
 
   const isStaffOrSbcStaff = computed(() => {
     return accountStore.hasRoles(['STAFF'])
@@ -51,7 +53,7 @@ export const usePostRestorationTransitionApplicationStore
     return activeBusiness.value?.legalName || alternateName || undefined
   })
 
-  const _updateBreadcrumbs = async (businessId: string) => {
+  const setTransitionBreadcrumbs = () => {
     const rtc = useRuntimeConfig().public
 
     setBreadcrumbs([
@@ -62,13 +64,13 @@ export const usePostRestorationTransitionApplicationStore
       },
       {
         label: t('label.myBusinessRegistry'),
-        to: `${rtc.businessRegistryDashboardUrl}account/${businessId}`,
+        to: `${rtc.brdUrl}account/${activeBusiness.value.identifier}`,
         appendAccountId: true,
         external: true
       },
       {
-        label: businessName.value || businessId,
-        to: `${rtc.businessDashboardUrl + businessId}`,
+        label: businessName.value || activeBusiness.value.identifier,
+        to: `${rtc.businessDashboardUrl + activeBusiness.value.identifier}`,
         appendAccountId: true,
         external: true
       },
@@ -78,87 +80,143 @@ export const usePostRestorationTransitionApplicationStore
     ])
   }
 
-  async function init(businessId: string) {
-    filingTombstone.value.loading = true
-
-    const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
-      legalApi.getAuthInfo(businessId),
-      legalApi.getShareClasses(businessId),
-      legalApi.getBusiness(businessId, true),
-      legalApi.getAddresses(businessId),
-      legalApi.getParties(businessId, { type: 'director' })
-    ]).catch((error) => {
-      const router = useRouter()
-      const rtc = useRuntimeConfig().public
-      const buttons = []
-      const errorStatus = error.statusCode || 404
-      if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
-        buttons.push({
-          label: t('label.goToMyBusinessRegistry'),
-          to: `${rtc.businessRegistryDashboardUrl}account/${accountStore.currentAccount.id}`
-        })
-      } else if (errorStatus > 499 && errorStatus < 600) {
-        buttons.push({ label: t('label.goBack'), onClick: async () => router.back() })
-        buttons.push({ label: t('label.refresh'), onClick: async () => window.location.reload() })
-      } else {
-        buttons.push({ label: t('label.close'), shouldClose: true })
-      }
-      errorModal.open({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const _openInitErrorModal = (error: any) => {
+    const router = useRouter()
+    const rtc = useRuntimeConfig().public
+    const buttons: ModalButtonProps[] = []
+    const errorStatus = error.statusCode || 404
+    if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
+      buttons.push({
+        label: t('label.goToMyBusinessRegistry'),
+        to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+      })
+    } else if (errorStatus > 499 && errorStatus < 600) {
+      buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
+      buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
+    } else {
+      buttons.push({ label: t('label.close'), shouldClose: true })
+    }
+    errorModal.open({
         error: error,
         i18nPrefix: 'modal.error.initStore',
         buttons: buttons
       })
-    })
+  }
 
-    setFilingDefault(business, authInfo)
-    filingTombstone.value.loading = false
-    activeBusiness.value = business
-    directors.value = apiDirectors
-    shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
-    ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
-
-    try {
-      const resolutions = await legalApi.getResolutions(businessId)
-      if (resolutions.resolutions?.length > 0) {
-        articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
-      }
-      if (business.foundingDate) {
-        articles.value.incorpDate = business.foundingDate
-      }
-    } catch (error) {
-      errorModal.open({
-        error: error,
-        i18nPrefix: 'modal.error.initOfficerStore'
-      })
-    }
-
+  const _initOffices = (addresses: IncorporationAddress) => {
     // reset offices so when pushing they are not duplicated (on refresh and similar)
     offices.value = []
-    if (apiAddresses?.registeredOffice) {
+    if (addresses.registeredOffice) {
       offices.value.push({
         officeType: 'registeredOffice',
-        deliveryAddress: formatAddressUi(apiAddresses.registeredOffice.deliveryAddress),
-        mailingAddress: formatAddressUi(apiAddresses.registeredOffice.mailingAddress)
+        deliveryAddress: formatAddressUi(addresses.registeredOffice.deliveryAddress),
+        mailingAddress: formatAddressUi(addresses.registeredOffice.mailingAddress)
       })
     }
-    if (apiAddresses.recordsOffice) {
+    if (addresses.recordsOffice) {
       offices.value.push({
         officeType: 'recordsOffice',
-        deliveryAddress: formatAddressUi(apiAddresses.recordsOffice.deliveryAddress),
-        mailingAddress: formatAddressUi(apiAddresses.recordsOffice.mailingAddress)
+        deliveryAddress: formatAddressUi(addresses.recordsOffice.deliveryAddress),
+        mailingAddress: formatAddressUi(addresses.recordsOffice.mailingAddress)
       })
     }
+  }
 
-    const contact = authInfo.contacts[0]
-    regOfficeEmail.value = contact?.email
-    folio.value = authInfo.folioNumber
+  const _loadDraft = (draft: FilingSubmissionBody<StandaloneTransitionFiling>) => {
+    directors.value = draft.filing.transition.parties
+    for (let i = 0; i < directors.value.length; i++) {
+      // compare the draft director mailing / delivery to the original to see if there are any changes
+      const mailingAddresses = [directors.value[i]?.mailingAddress, ORIGINAL_DIRECTORS.value[i]?.mailingAddress]
+      const deliveryAddresses = [directors.value[i]?.deliveryAddress, ORIGINAL_DIRECTORS.value[i]?.deliveryAddress]
+      for (const addresses of [mailingAddresses, deliveryAddresses]) {
+        const currentAddress = addresses[0]
+        const originalAddress = addresses[1]
+        if (
+          // one address is undefined and the other is not
+          ((!currentAddress && originalAddress) || (currentAddress && !originalAddress))
+          // both addresses are defined, but at least one field is different
+          || (currentAddress && originalAddress && !areApiAddressesEqual(currentAddress, originalAddress))
+        ) {
+          // one of the addresses is changed so add director to modified index list
+          modifiedDirectors.value.push(i)
+          // continue to next director
+          break
+        }
+      }
+    }
+    shareClasses.value = draft.filing.transition.shareStructure.shareClasses
+    // TODO: resolution dates #30846
+    // articles.value.resolutionDates =
+    // TODO: court order details #30849
+    // courtOrderNumber.value =
+    // planOfArrangement.value =
+    folio.value = draft.filing.header.folioNumber
+    const contactEmail = draft.filing.transition.contactPoint?.email
+    if (contactEmail && contactEmail !== regOfficeEmail.value) {
+      compPartyEmail.value = contactEmail
+    }
+  }
 
+  async function init(businessId: string, draftId?: string) {
+    filingTombstone.value.loading = true
+    draftFilingId.value = draftId
     // if user is client, autopopulate legalName
     if (!isStaffOrSbcStaff.value) {
       legalName.value = userFullName.value
     }
 
-    await _updateBreadcrumbs(businessId)
+    const [
+      authInfo,
+      shareClassesResponse,
+      business,
+      apiAddresses,
+      apiDirectors,
+      resolutions,
+      draft
+    ] = await Promise.all([
+      legalApi.getAuthInfo(businessId),
+      legalApi.getShareClasses(businessId),
+      legalApi.getBusiness(businessId, true),
+      legalApi.getAddresses(businessId),
+      legalApi.getParties(businessId, { type: 'director' }),
+      legalApi.getResolutions(businessId),
+      draftId ? legalApi.getFilingById<StandaloneTransitionFiling>(businessId, draftId) : undefined
+    ]).catch((error) => {
+      _openInitErrorModal(error)
+      return [undefined, undefined, undefined, undefined, undefined, undefined, undefined]
+    })
+    if (authInfo && shareClassesResponse && business && apiAddresses && apiDirectors && resolutions) {
+      activeBusiness.value = business
+      directors.value = apiDirectors
+      ORIGINAL_DIRECTORS.value = JSON.parse(JSON.stringify(apiDirectors))
+      shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
+      ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
+
+      if (resolutions.resolutions?.length > 0) {
+        articles.value.resolutionDates = resolutions?.resolutions.map(resolution => resolution.date)
+      }
+      _initOffices(apiAddresses)
+      setFilingDefault(business, authInfo)
+
+      if (draft) {
+        _loadDraft(draft)
+      }
+    }
+    filingTombstone.value.loading = false
+  }
+
+  const initFees = async () => {
+    // NOTE: needs to happen in setup
+    // FUTURE: error handling on fees #29114
+    // - add in loading state too
+    const feeStore = useConnectFeeStore()
+    const transitionFees = await feeStore.getFee(activeBusiness.value.legalType, 'TRANP')
+    feeStore.feeOptions.showServiceFees = true
+    if (transitionFees) {
+      transitionFees.total = transitionFees.filingFees + transitionFees.serviceFees
+      feeStore.addReplaceFee(transitionFees)
+    }
   }
 
   const shareWithSpecialRightsModified = computed(() => {
@@ -256,8 +314,10 @@ export const usePostRestorationTransitionApplicationStore
     planOfArrangement,
     regOfficeEmail,
     sectionHasOpenForm,
+    setTransitionBreadcrumbs,
     registerFormIdToSection,
     init,
+    initFees,
     checkHasActiveForm,
     checkHasChanges,
     getFilingPayload,
@@ -268,6 +328,7 @@ export const usePostRestorationTransitionApplicationStore
     editingDirector,
     openEditComponentId,
     modifiedDirectors,
-    editingSeriesParent
+    editingSeriesParent,
+    draftFilingId
   }
 })

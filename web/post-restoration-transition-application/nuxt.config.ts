@@ -106,12 +106,12 @@ export default defineNuxtConfig({
     compatibilityVersion: 4
   },
 
-  compatibilityDate: '2024-11-27',
+  compatibilityDate: '2025-08-25',
 
   runtimeConfig: {
     public: {
-      version: `Post Restoration Transition Application UI v${process.env.npm_package_version || ''}`,
-      ci: process.env.CI === 'true'
+      preexistingCompanyProvisions: '',
+      playwright: process.env.playwright === 'true'
     }
   }
 })
