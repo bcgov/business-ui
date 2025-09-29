@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import { TRANP } from '../../mocks/pay/fee'
+import draft from '../../mocks/filingData/draft.json' with { type: 'json' }
 
 import * as entities from '../../mocks/auth/entities'
 import * as businesses from '../../mocks/lear/business'
@@ -53,6 +54,9 @@ export const mockForIdentifier = async (page: Page, identifier: string) => {
   })
   await page.route(`*/**/businesses/${identifier}/resolutions`, async (route) => {
     await route.fulfill({ json: resolution })
+  })
+  await page.route(`*/**/businesses/${identifier}/filings/*`, async (route) => {
+    await route.fulfill({ json: draft })
   })
 }
 

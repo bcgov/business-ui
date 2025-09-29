@@ -1,49 +1,49 @@
 export const base = {
   recordsOffice: {
       deliveryAddress: {
-          addressCity: 'delivery_address city',
+          addressCity: 'records delivery_address city',
           addressCountry: 'CA',
           addressRegion: 'BC',
           addressType: 'delivery',
           deliveryInstructions: '',
           id: 3304513,
           postalCode: 'H0H 0H0',
-          streetAddress: 'delivery_address - address line one',
+          streetAddress: 'records delivery_address - address line one',
           streetAddressAdditional: ''
       },
       mailingAddress: {
-          addressCity: 'mailing_address city',
+          addressCity: 'records mailing_address city',
           addressCountry: 'CA',
           addressRegion: 'BC',
           addressType: 'mailing',
           deliveryInstructions: '',
           id: 3304512,
           postalCode: 'H0H 0H0',
-          streetAddress: 'mailing_address - address line one',
+          streetAddress: 'records mailing_address - address line one',
           streetAddressAdditional: ''
       }
   },
   registeredOffice: {
       deliveryAddress: {
-          addressCity: 'delivery_address city',
+          addressCity: 'registered delivery_address city',
           addressCountry: 'CA',
           addressRegion: 'BC',
           addressType: 'delivery',
           deliveryInstructions: '',
           id: 3304515,
           postalCode: 'H0H 0H0',
-          streetAddress: 'delivery_address - address line one',
+          streetAddress: 'registered delivery_address - address line one',
           streetAddressAdditional: ''
       },
       mailingAddress: {
-          addressCity: 'mailing_address city',
+          addressCity: 'registered mailing_address city',
           addressCountry: 'CA',
           addressRegion: 'BC',
           addressType: 'mailing',
           deliveryInstructions: '',
           id: 3304514,
           postalCode: 'H0H 0H0',
-          streetAddress: 'mailing_address - address line one',
+          streetAddress: 'registered mailing_address - address line one',
           streetAddressAdditional: ''
       }
   }

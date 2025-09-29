@@ -196,12 +196,12 @@ const directorsColumns = ref([
         return [
           h(
             'div',
-            { class: 'text-left font-bold text-bgGovColor-midGray' },
+            { class: 'text-left font-bold text-bgGovColor-midGray', ['data-testid']: 'director-name' },
             `${row.original.officer.firstName} ${row.original.officer.lastName}`
           ),
           h(
             UBadge,
-            { color: 'primary', class: 'rounded-sm' },
+            { color: 'primary', class: 'rounded-sm', ['data-testid']: 'director-badge' },
             t('label.changed')
           )
         ]
@@ -209,7 +209,7 @@ const directorsColumns = ref([
       return [
         h(
           'div',
-          { class: 'text-left font-bold text-bgGovColor-midGray' },
+          { class: 'text-left font-bold text-bgGovColor-midGray', ['data-testid']: 'director-name' },
           `${row.original.officer.firstName} ${row.original.officer.lastName}`
         )
       ]
@@ -219,7 +219,9 @@ const directorsColumns = ref([
     accessorKey: 'mailingAddress',
     header: t('label.mailingAddress'),
     cell: ({ row }) => {
-      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.mailingAddress) })
+      return h(
+        ConnectAddressDisplay,
+        { address: formatAddressUi(row.original.mailingAddress), ['data-testid']: 'director-mailing' })
     }
   },
   {
@@ -229,7 +231,9 @@ const directorsColumns = ref([
       if (areApiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
         return t('label.sameAsMailingAddress')
       }
-      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.deliveryAddress) })
+      return h(
+        ConnectAddressDisplay,
+        { address: formatAddressUi(row.original.deliveryAddress), ['data-testid']: 'director-delivery' })
     }
   },
   {
@@ -445,6 +449,7 @@ onMounted(async () => {
           icon="i-mdi-domain"
           :title="$t('label.officeAddresses')"
           class="pb-6"
+          data-testid="section-addresses"
         >
           <FormDataList
             :data="offices"
@@ -469,6 +474,7 @@ onMounted(async () => {
           :title="$t('label.currentDirectors')"
           :has-errors="sectionHasErrors(PageSection.DIRECTORS)"
           class="pb-6"
+          data-testid="section-directors"
         >
           <FormDataList
             :data="directors"
@@ -503,6 +509,7 @@ onMounted(async () => {
           icon="i-mdi-sitemap"
           :has-errors="sectionHasErrors(PageSection.SHARES)"
           class="pb-6"
+          data-testid="section-shares"
         >
           <Shares
             form-id="shares-section"
@@ -608,6 +615,7 @@ onMounted(async () => {
       :description="$t('text.documentDelivery')"
       :has-errors="false"
       class="space-y-4"
+      data-testid="section-contact"
     >
       <FormSubSection
         title=""
