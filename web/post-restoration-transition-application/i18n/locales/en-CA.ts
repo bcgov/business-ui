@@ -216,7 +216,7 @@ export default {
         },
         500: {
           title: 'An Error Occurred',
-          description: "We couldn't complete your request due to an internal error. Please try again later."
+          description: 'We couldn\'t complete your request due to an internal error. Please try again later.'
         },
         undefined: {
           title: 'Unknown Error',

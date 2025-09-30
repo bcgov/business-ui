@@ -362,7 +362,12 @@ const verify = (verifyMethod: (args) => void, args) => {
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
   { 'onClick': () => saveFiling(), 'label': t('btn.save'), 'variant': 'outline', 'data-testid': 'save-button' },
-  { 'onClick': () => saveFiling(true), 'label': t('btn.saveExit'), 'variant': 'outline', 'data-testid': 'saveExit-button' }
+  { 'onClick': () => saveFiling(true),
+    'label': t('btn.saveExit'),
+    'variant': 'outline',
+    'data-testid':
+      'saveExit-button'
+  }
 ]
 const rightButtons = [
   { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'cancel-button' },
@@ -654,7 +659,7 @@ const saveModalDate = async () => {
             id="compPartyEmail-input"
             v-model="compPartyEmail"
             data-testid="compPartyEmail-input"
-            :error="completingPartyErrors?.['email']?.[0] || ''"
+            :error="completingPartyErrors?.['email']?.[0] || false"
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
@@ -682,7 +687,7 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="courtOrderNumber"
             data-testid="courtOrderNumber-input"
-            :error="courtOrderErrors?.['courtOrderNumber']?.[0] || ''"
+            :error="courtOrderErrors?.['courtOrderNumber']?.[0] || false"
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
@@ -719,7 +724,7 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="folio"
             data-testid="folio-input"
-            :error="folioErrors?.['folio']?.[0] || ''"
+            :error="folioErrors?.['folio']?.[0] || false"
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
@@ -778,7 +783,7 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="legalName"
             data-testid="legalName-input"
-            :error="certifyErrors?.['name']?.[0] || ''"
+            :error="certifyErrors?.['name']?.[0] || false"
             :invalid="certifyErrors?.['name']?.[0] !== undefined"
             :name="'certify.legalName'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
