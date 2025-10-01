@@ -12,9 +12,7 @@ export const usePostRestorationTransitionApplicationStore
   const t = useNuxtApp().$i18n.t
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
-  // const authApi = useAuthApi()
   const accountStore = useConnectAccountStore()
-  // const detailsHeaderStore = useConnectDetailsHeaderStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
   const { userFullName } = storeToRefs(accountStore)
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
@@ -40,7 +38,7 @@ export const usePostRestorationTransitionApplicationStore
   const editingSeriesParent = ref<number>(-1)
 
   const isStaffOrSbcStaff = computed(() => {
-    accountStore.hasRoles(['staff'])
+    return accountStore.hasRoles(['STAFF'])
   })
 
   const editState = computed(() => editingShareIndex.value !== -1)

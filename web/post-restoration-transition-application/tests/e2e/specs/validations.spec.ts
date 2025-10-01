@@ -103,33 +103,6 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
   })
 
-  test('Staff, Pay Section and Court Section', async ({ page }) => {
-    await impersonateUser(page, 'staff')
-    await page.goto(`./en-CA/${identifier}`)
-    await expect(page.getByTestId('legalName-input')).toBeVisible()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
-    await fill(page, valid)
-    await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
-
-    await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
-    await expect(page.locator('p.text-red-600').getByText('Payment')).toHaveCount(1)
-
-    await page.locator('[aria-label="Cash or Cheque"]').click()
-    await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(1)
-
-    await page.locator('[aria-label="BC Online"]').click()
-    await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
-
-    await page.locator('[aria-label="No Fee"]').click()
-    await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
-    // fixme: right now we are getting popup that tells us we do not have permission to submit
-    // but all tests hitting submit should account for moving away from the page on submission
-  })
-
   test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
@@ -166,5 +139,39 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
     await page.getByTestId('submit-button').click()
     await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
+  })
+})
+
+test.describe('Post restoration Transition Application Filing - staff', () => {
+  const identifier = 'CP1002605'
+  test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'staff')
+    await mockForIdentifier(page, identifier)
+  })
+
+  test('Staff, Pay Section and Court Section', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await fill(page, valid)
+    await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
+
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await expect(page.locator('p.text-red-600').getByText('Payment')).toHaveCount(1)
+
+    await page.locator('[aria-label="Cash or Cheque"]').click()
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(1)
+
+    await page.locator('[aria-label="BC Online"]').click()
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
+
+    await page.locator('[aria-label="No Fee"]').click()
+    await page.getByTestId('submit-button').click()
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    // fixme: right now we are getting popup that tells us we do not have permission to submit
+    // but all tests hitting submit should account for moving away from the page on submission
   })
 })

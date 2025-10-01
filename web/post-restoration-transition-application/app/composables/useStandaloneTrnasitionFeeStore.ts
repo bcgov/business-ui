@@ -15,7 +15,7 @@ export const useStandaloneTransitionFeeStore = () => {
       { label: t(feeLangkey), matchServiceFeeToCode: standaloneTransitionFeeCode }
     )
 
-    feeStore.addReplaceFee(standaloneTransitionFeeCode, {})
+    feeStore.addReplaceFee(standaloneTransitionFeeCode)
   }
 
   return {
