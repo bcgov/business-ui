@@ -377,7 +377,7 @@ test.describe('Share Series', () => {
     await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).toBeChecked()
     await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1).click()
     await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
-    
+
     await page.locator('button').getByText(i18en.label.removeSeries).click()
     await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
     await expect(page.getByText(i18en.label.deleted)).toHaveCount(0)
