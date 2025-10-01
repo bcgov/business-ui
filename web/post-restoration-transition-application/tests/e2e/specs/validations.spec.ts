@@ -78,6 +78,7 @@ const fill = async (page: Page, values: object) => {
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
     await mockForIdentifier(page, identifier)
   })
   // use saved login state

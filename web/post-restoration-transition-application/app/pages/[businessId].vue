@@ -124,23 +124,19 @@ definePageMeta({
         name: 'TestFirst TestLast',
         username: 'testUsername',
         email: 'testEmail@test.com',
-        sub: 'testSub',
+        sub: 'test',
         loginSource: 'IDIR',
         realm_access: { roles: ['public_user'] }
       }
       $connectAuth.authenticated = true
       const account = useConnectAccountStore()
       const { currentAccount, userAccounts } = storeToRefs(account)
-      currentAccount.value = {
-        id: 1,
-        label: 'Playwright',
-        accountStatus: AccountStatus.ACTIVE,
-        accountType: AccountType.PREMIUM,
-        type: UserSettingsType.ACCOUNT,
-        urlorigin: '',
-        urlpath: ''
+      const resp = await account.getUserAccounts('test')
+      if (resp && resp[0]) {
+        currentAccount.value = resp[0]
+        userAccounts.value = resp
+        $connectAuth.authenticated = true
       }
-      userAccounts.value = [currentAccount.value]
     } else if (!$connectAuth.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
