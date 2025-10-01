@@ -28,8 +28,8 @@ const {
 } = storeToRefs(errorStore)
 
 const businessId = route.params.businessId as string
-const filingStore = usePostRestorationTransitionApplicationStore()
 
+const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
   activeBusiness,
@@ -51,20 +51,6 @@ const {
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
 const submittedModal = ref<boolean>(false)
-const modalDateError = () => {
-  const dateError = articlesErrors?.value?.currentDate?.[0]
-  const submit = submittedModal.value
-  const articleDate = articles?.value?.incorpDate
-  return dateError !== undefined && (dateError !== 'errors.articles' || submit)
-    && te(dateError)
-    ? t(dateError,
-        {
-          incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
-          today: fromIsoToUsDateFormat(new Date().toISOString())
-        }
-    )
-    : ''
-}
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -396,6 +382,18 @@ const saveModalDate = async () => {
   }
   pickDateModalOpen.value = false
 }
+
+const getArticlesCurrentDateError = computed(() => {
+  const key = articlesErrors.value?.currentDate?.[0]
+  const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
+
+  return condition
+    ? $t(key, {
+      incorpDate: fromIsoToUsDateFormat(new Date(articles?.value?.incorpDate).toISOString()),
+      today: fromIsoToUsDateFormat(new Date().toISOString())
+    })
+    : ''
+})
 </script>
 
 <template>
@@ -420,9 +418,7 @@ const saveModalDate = async () => {
             </p>
           </div>
           <div>
-            <UFormField
-              :error="modalDateError()"
-            >
+            <UFormField :error="getArticlesCurrentDateError">
               <FormDateInput
                 id="modal-date-input"
                 v-model="modalDate"
