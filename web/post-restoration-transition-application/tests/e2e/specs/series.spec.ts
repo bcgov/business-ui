@@ -331,7 +331,7 @@ test.describe('Share Series Long', () => {
     await page.locator('button').getByText(i18en.label.delete).first().click()
 
     // without this expect Firefox specifically doesn't wait long enough for the modal
-    // await expect(page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first()).toBeVisible()
+    await expect(page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first()).toBeVisible()
     await page.getByRole('dialog').locator('button').getByText(i18en.label.remove).first().click()
 
     deletedRows.push(2)

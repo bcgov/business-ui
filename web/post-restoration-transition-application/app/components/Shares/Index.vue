@@ -198,17 +198,22 @@ const getDropdownActions = (row: Row<Share>) => {
       onClick: () => {
         const rowIndex = row.index
         if (row.original.series && row.original.series.length > 0) {
-          useModal().openBaseModal(
-            t('label.shareSeriesRightsRestrictionsWithClass'),
-            t('text.shareSeriesRightsRestrictionsWithClass'),
-            false,
-            [
+          useModal().baseModal.open({
+            title: t('label.shareSeriesRightsRestrictionsWithClass'),
+            description: t('text.shareSeriesRightsRestrictionsWithClass'),
+            dismissible: false,
+            buttons: [
               { label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true },
-              { label: t('label.remove'), size: 'xl', shouldClose: true, onClick: () => {
-                deleteShare(rowIndex)
-              } }
+              {
+                label: t('label.remove'), size:
+                  'xl', shouldClose:
+                  true, onClick:
+                  () => {
+                    deleteShare(rowIndex)
+                  }
+              }
             ]
-          )
+          })
           return
         }
         deleteShare(rowIndex)
