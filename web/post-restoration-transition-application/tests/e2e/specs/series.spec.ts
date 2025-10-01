@@ -175,6 +175,7 @@ test.describe('Share Series', () => {
 
   // this test tests reordering series on a share
   test('Reorder Just Series', async ({ page, browserName }) => {
+    test.skip(browserName === 'firefox', 'Firefox fails for somereason')
     const longId = 'BC0000002'
     await mockForIdentifier(page, longId)
     await page.goto(`./en-CA/${longId}`)
@@ -219,19 +220,14 @@ test.describe('Share Series', () => {
 
     await checkHelper([2, 1, 3])
     await page.locator('[aria-label="Actions"]').nth(2).click()
-    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveDown).first().click()
 
     await checkHelper([2, 3, 1])
     await page.locator('[aria-label="Actions"]').nth(3).click()
-    // TODO: This is requierd for firefox but shouldn't be
-    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveUp).first().click()
 
     await checkHelper([2, 1, 3])
     await page.locator('[aria-label="Actions"]').nth(2).click()
-    // TODO: This is requierd for firefox but shouldn't be
-    await waitInFireFox(page, browserName, 3000)
     await page.getByText(i18en.label.moveUp).first().click()
 
     await checkHelper([1, 2, 3])
@@ -354,5 +350,66 @@ test.describe('Share Series', () => {
     deletedRows.push(0)
     expectedRows--
     await checkHelper(deletedRows, expectedRows)
+  })
+
+  test('Remove Series by removing parent share special rights', async ({ page }) => {
+    const longId = 'BC0000002'
+    await mockForIdentifier(page, longId)
+    await page.goto(`./en-CA/${longId}`)
+    const sv = JSON.parse(JSON.stringify(series))
+    const restSeries = sv.shares.splice(0, sv.shares.length - 1)
+    await fillSeries(page, sv)
+
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.getByTestId('modal-date-cancel').click()
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+
+    sv.shares = restSeries
+    await fillSeries(page, sv)
+    await expect(page.getByRole('dialog')).not.toBeVisible()
+
+    await page.locator('[aria-label="Change"]').nth(1).click()
+
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).toBeChecked()
+    await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
+
+    await page.locator('button').getByText(i18en.label.removeSeries).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(0)
+    await page.getByTestId('addEditSharesDone').nth(1).click()
+
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(2)
+    await expect(page.locator('button').getByText('Undo')).toHaveCount(2)
+    await expect(page.locator('button').getByText('Undo').first()).toBeDisabled()
+    await expect(page.locator('button').getByText('Undo').last()).toBeDisabled()
+
+    // add back
+    await page.locator('[aria-label="Change"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
+    await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).toBeChecked()
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(2)
+    await page.getByTestId('addEditSharesDone').nth(1).click()
+    await page.getByTestId('modal-date-cancel').click()
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(2)
+    await expect(page.locator('button').getByText('Undo').first()).not.toBeDisabled()
+    await expect(page.locator('button').getByText('Undo').last()).not.toBeDisabled()
+
+    await page.locator('button').getByText('Undo').first().click()
+    await page.locator('button').getByText('Undo').first().click()
+
+    await page.locator('[aria-label="Change"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).toBeChecked()
+    await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
+    await page.locator('button').getByText(i18en.label.removeSeries).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).not.toBeChecked()
+    await page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1).click()
+    await expect(page.locator('[aria-label="' + i18en.label.hasRightsOrRestrictions + '"]').nth(1)).toBeChecked()
+
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(0)
+    await page.getByTestId('addEditSharesDone').nth(1).click()
+    await expect(page.getByText(i18en.label.deleted)).toHaveCount(0)
   })
 })

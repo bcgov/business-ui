@@ -58,7 +58,7 @@ const resetData = () => {
       shareValues.value.currency = editingSeriesParent.value.currency || ''
       shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
     } else {
-      shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
+      shareValues.value.series = JSON.parse(JSON.stringify(shareClasses.value[editingShareIndex.value]?.series || []))
     }
     shareName.value = ''
   }
@@ -127,7 +127,7 @@ if (props.isSeries && editingSeriesParent.value !== -1) {
   shareValues.value.currency = editingSeriesParent.value.currency || ''
   shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
 } else {
-  shareValues.value.series = shareClasses.value[editingShareIndex.value]?.series || []
+  shareValues.value.series = JSON.parse(JSON.stringify(shareClasses.value[editingShareIndex.value]?.series || []))
 }
 
 const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : t('label.noMax'))
