@@ -175,7 +175,7 @@ test.describe('Share Series', () => {
 
   // this test tests reordering series on a share
   test('Reorder Just Series', async ({ page, browserName }) => {
-    test.skip(browserName === 'firefox', 'Firefox fails for somereason');
+    test.skip(browserName === 'firefox', 'Firefox fails for somereason')
     const longId = 'BC0000002'
     await mockForIdentifier(page, longId)
     await page.goto(`./en-CA/${longId}`)
