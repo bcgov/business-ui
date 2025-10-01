@@ -25,7 +25,8 @@ export default defineConfig<ConfigOptions>({
   globalSetup: './tests/e2e/setup',
   testDir: './tests/e2e',
   testMatch: '*.spec.ts',
-  workers: process.env.CI ? 1 : undefined, // needs investigation why multiple workers fails
+  // workers: process.env.CI ? 1 : undefined, // needs investigation why multiple workers fails
+  workers: 1,
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
   use: {
     nuxt: {

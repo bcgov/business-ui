@@ -107,7 +107,6 @@ test.describe('Share Series', () => {
 
     await expect(page.getByText('$10')).toHaveCount(4)
   })
-
 })
 
 test.describe('Share Series Long', () => {
