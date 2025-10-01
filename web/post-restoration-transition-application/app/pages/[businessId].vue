@@ -12,7 +12,6 @@ const { editFormOpen, editFormClosed } = useEditFormHandlers()
 await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
-const te = useNuxtApp().$i18n.te
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
 const route = useRoute()
