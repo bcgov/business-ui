@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { mockForIdentifier } from '../test-utils/helpers'
+import { impersonateUser, mockForIdentifier } from '../test-utils/helpers'
 import enI18n from '~~/i18n/locales/en-CA'
 
 // This spec validates the behaviour introduced in 29620-stop-on-open-form:
@@ -10,6 +10,7 @@ test.describe('Stop-on-open-form behaviour', () => {
   const identifier = 'CP1002605'
 
   test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
     await mockForIdentifier(page, identifier)
   })
 

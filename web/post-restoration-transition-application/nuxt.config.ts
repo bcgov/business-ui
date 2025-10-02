@@ -28,13 +28,11 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/test-utils/module',
-    'nuxt-anchorscroll',
-    'nuxt-lodash'
+    'nuxt-anchorscroll'
   ],
 
   extends: [
-    'github:bcgov/business-ui/web/person-roles',
-    ['@sbc-connect/nuxt-core-layer-beta', { install: true }]
+    '@sbc-connect/nuxt-business-base'
   ],
 
   router: {
@@ -113,13 +111,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Post Restoration Transition Application UI v${process.env.npm_package_version || ''}`,
-      preexistingCompanyProvisions: process.env.PREEXISTING_COMPANY_PROVISIONS_URL
-        || 'https://www.corporateonline.gov.bc.ca/WebHelp/provisions.htm',
-      addressCompleteKey: process.env.NUXT_ADDRESS_COMPLETE_KEY,
-      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
-      businessDashboardUrl: process.env.NUXT_BUSINESS_DASHBOARD_URL,
-      registryHomeUrl: process.env.NUXT_REGISTRY_HOME_URL,
-      brdUrl: process.env.NUXT_BUSINESS_REGISTRY_DASHBOARD_URL,
       ci: process.env.CI === 'true'
     }
   }

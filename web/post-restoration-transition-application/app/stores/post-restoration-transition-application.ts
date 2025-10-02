@@ -1,3 +1,4 @@
+import { isEmpty } from 'es-toolkit/compat'
 import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
@@ -7,14 +8,13 @@ const transitionApplicationIncompleteHook = 'app:transition-application-form:inc
 
 export const usePostRestorationTransitionApplicationStore
   = defineStore('post-restoration-transition-application-store', () => {
+  const { errorModal } = useModal()
   const t = useNuxtApp().$i18n.t
   const nuxtApp = useNuxtApp()
   const legalApi = useLegalApi2()
-  const authApi = useAuthApi()
-  const feeStore = useConnectFeeStore()
   const accountStore = useConnectAccountStore()
-  const detailsHeaderStore = useConnectDetailsHeaderStore()
-  const { isStaffOrSbcStaff, userFullName } = storeToRefs(useConnectAccountStore())
+  const { setFilingDefault, filingTombstone } = useFilingTombstone()
+  const { userFullName } = storeToRefs(accountStore)
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const articles = ref<Articles>(EmptyArticles())
   const regOfficeEmail = ref<string | undefined>(undefined)
@@ -37,6 +37,10 @@ export const usePostRestorationTransitionApplicationStore
   const modifiedDirectors = ref<number[]>([])
   const editingSeriesParent = ref<number>(-1)
 
+  const isStaffOrSbcStaff = computed(() => {
+    return accountStore.hasRoles(['STAFF'])
+  })
+
   const editState = computed(() => editingShareIndex.value !== -1)
 
   const businessName = computed(() => {
@@ -58,7 +62,7 @@ export const usePostRestorationTransitionApplicationStore
       },
       {
         label: t('label.myBusinessRegistry'),
-        to: `${rtc.brdUrl}account/${businessId}`,
+        to: `${rtc.businessRegistryDashboardUrl}account/${businessId}`,
         appendAccountId: true,
         external: true
       },
@@ -75,43 +79,39 @@ export const usePostRestorationTransitionApplicationStore
   }
 
   async function init(businessId: string) {
+    filingTombstone.value.loading = true
+
     const [authInfo, shareClassesResponse, business, apiAddresses, apiDirectors] = await Promise.all([
-      authApi.getAuthInfo(businessId),
+      legalApi.getAuthInfo(businessId),
       legalApi.getShareClasses(businessId),
       legalApi.getBusiness(businessId, true),
       legalApi.getAddresses(businessId),
       legalApi.getParties(businessId, { type: 'director' })
     ]).catch((error) => {
-      const modal = useModal()
       const router = useRouter()
       const rtc = useRuntimeConfig().public
-      const buttons: ModalButtonProps[] = []
+      const buttons = []
       const errorStatus = error.statusCode || 404
       if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
         buttons.push({
           label: t('label.goToMyBusinessRegistry'),
-          to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+          to: `${rtc.businessRegistryDashboardUrl}account/${accountStore.currentAccount.id}`
         })
       } else if (errorStatus > 499 && errorStatus < 600) {
-        buttons.push({ label: t('label.goBack'), onClick: () => router.back() })
-        buttons.push({ label: t('label.refresh'), onClick: () => window.location.reload() })
+        buttons.push({ label: t('label.goBack'), onClick: async () => router.back() })
+        buttons.push({ label: t('label.refresh'), onClick: async () => window.location.reload() })
       } else {
         buttons.push({ label: t('label.close'), shouldClose: true })
       }
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.initOfficerStore',
-        buttons
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.initStore',
+        buttons: buttons
+      })
     })
-    // FUTURE: error handling on fees #29114
-    const transitionFees = await feeStore.getFee(business.legalType, 'TRANP')
-    feeStore.feeOptions.showServiceFees = true
-    if (transitionFees) {
-      transitionFees.total = transitionFees.filingFees + transitionFees.serviceFees
-      feeStore.addReplaceFee(transitionFees)
-    }
 
+    setFilingDefault(business, authInfo)
+    filingTombstone.value.loading = false
     activeBusiness.value = business
     directors.value = apiDirectors
     shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
@@ -126,11 +126,10 @@ export const usePostRestorationTransitionApplicationStore
         articles.value.incorpDate = business.foundingDate
       }
     } catch (error) {
-      const modal = useModal()
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.initOfficerStore'
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.initOfficerStore'
+      })
     }
 
     // reset offices so when pushing they are not duplicated (on refresh and similar)
@@ -150,21 +149,9 @@ export const usePostRestorationTransitionApplicationStore
       })
     }
 
-    // set masthead data
     const contact = authInfo.contacts[0]
-    const ext = contact?.extension ?? contact?.phoneExtension
-    const phoneLabel = ext ? `${contact?.phone ?? ''} Ext: ${ext}` : contact?.phone ?? ''
     regOfficeEmail.value = contact?.email
     folio.value = authInfo.folioNumber
-
-    detailsHeaderStore.title = { el: 'span', text: business.legalName }
-    detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-    detailsHeaderStore.sideDetails = [
-      { label: t('label.businessNumber'), value: business.taxId ?? '' },
-      { label: t('label.incorporationNumber'), value: business.identifier },
-      { label: t('label.email'), value: contact?.email ?? '' },
-      { label: t('label.phone'), value: phoneLabel }
-    ]
 
     // if user is client, autopopulate legalName
     if (!isStaffOrSbcStaff.value) {

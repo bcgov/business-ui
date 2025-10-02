@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { mockForIdentifier } from '../test-utils/helpers'
+import { impersonateUser, mockForIdentifier } from '../test-utils/helpers'
 import series from '../../mocks/filingData/series.json' with { type: 'json' }
 
 import i18en from '~~/i18n/locales/en-CA'
@@ -36,6 +36,7 @@ const waitInFireFox = async (page: Page, browserName: string, waitTime: number) 
 test.describe('Share Series', () => {
   const identifier = 'BC0000001'
   test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
     await mockForIdentifier(page, identifier)
   })
 
@@ -106,13 +107,18 @@ test.describe('Share Series', () => {
 
     await expect(page.getByText('$10')).toHaveCount(4)
   })
+})
 
+test.describe('Share Series Long', () => {
+  const identifier = 'BC0000002'
+  test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
+    await mockForIdentifier(page, identifier)
+  })
   // this test tests that the badges are updated when the shares and series are reordered
   // and up down works as expected in shares with series
   test('Reorder Shares with Series, Verify Badges', async ({ page }) => {
-    const longId = 'BC0000002'
-    await mockForIdentifier(page, longId)
-    await page.goto(`./en-CA/${longId}`)
+    await page.goto(`./en-CA/${identifier}`)
     const sv = JSON.parse(JSON.stringify(series))
     const restSeries = sv.shares.splice(0, sv.shares.length - 1)
     await fillSeries(page, sv)

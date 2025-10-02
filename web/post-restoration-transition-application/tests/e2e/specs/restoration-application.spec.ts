@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { mockForIdentifier } from '../test-utils/helpers'
+import { impersonateUser, mockForIdentifier } from '../test-utils/helpers'
 import enI18n from '~~/i18n/locales/en-CA'
 
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
     await mockForIdentifier(page, identifier)
   })
   // use saved login state

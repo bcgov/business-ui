@@ -6,10 +6,12 @@ import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
 const { setButtonControl } = useButtonControl()
+const feeStore = useStandaloneTransitionFeeStore()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
 
+await feeStore.initFeeStore()
+
 const t = useNuxtApp().$i18n.t
-const te = useNuxtApp().$i18n.te
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
 const route = useRoute()
@@ -24,8 +26,9 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
-const filingStore = usePostRestorationTransitionApplicationStore()
 const businessId = route.params.businessId as string
+
+const filingStore = usePostRestorationTransitionApplicationStore()
 filingStore.init(businessId)
 const {
   activeBusiness,
@@ -47,20 +50,6 @@ const {
 const modalDate = ref<string | undefined>(undefined)
 const pickDateModalOpen = ref<boolean>(false)
 const submittedModal = ref<boolean>(false)
-const modalDateError = () => {
-  const dateError = articlesErrors?.value?.currentDate?.[0]
-  const submit = submittedModal.value
-  const articleDate = articles?.value?.incorpDate
-  return dateError !== undefined && (dateError !== 'errors.articles' || submit)
-    && te(dateError)
-    ? t(dateError,
-        {
-          incorpDate: fromIsoToUsDateFormat(new Date(articleDate).toISOString()),
-          today: fromIsoToUsDateFormat(new Date().toISOString())
-        }
-    )
-    : ''
-}
 
 const hasCertifyErrors = computed(() => {
   if (!certifyErrors?.value) {
@@ -109,12 +98,12 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'form',
+  layout: 'filing',
   middleware: async () => {
     // redirect to reg home with return url if user unauthenticated
-    const { $keycloak, $config } = useNuxtApp()
+    const { $connectAuth, $config } = useNuxtApp()
     if (useRuntimeConfig().public.ci) {
-      $keycloak.tokenParsed = {
+      $connectAuth.tokenParsed = {
         firstname: 'TestFirst',
         lastname: 'TestLast',
         name: 'TestFirst TestLast',
@@ -124,17 +113,16 @@ definePageMeta({
         loginSource: 'IDIR',
         realm_access: { roles: ['public_user'] }
       }
-
-      // set account stuff (normally would happen after kc init in 'setupAuth')
+      $connectAuth.authenticated = true
       const account = useConnectAccountStore()
       const { currentAccount, userAccounts } = storeToRefs(account)
       const resp = await account.getUserAccounts('test')
       if (resp && resp[0]) {
-        Object.assign(currentAccount.value, resp[0])
-        Object.assign(userAccounts.value, resp)
-        $keycloak.authenticated = true
+        currentAccount.value = resp[0]
+        userAccounts.value = resp
+        $connectAuth.authenticated = true
       }
-    } else if (!$keycloak.authenticated) {
+    } else if (!$connectAuth.authenticated) {
       const returnUrl = encodeURIComponent(window.location.href)
       return navigateTo(
         `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
@@ -354,22 +342,27 @@ const verify = (verifyMethod: (args) => void, args) => {
 
 const { cancelFiling, saveFiling, submitFiling } = useStandaloneTransitionButtons()
 const leftButtons = [
-  { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-  { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
+  { 'onClick': () => saveFiling(), 'label': t('btn.save'), 'variant': 'outline', 'data-testid': 'save-button' },
+  { 'onClick': () => saveFiling(true),
+    'label': t('btn.saveExit'),
+    'variant': 'outline',
+    'data-testid':
+      'saveExit-button'
+  }
 ]
 const rightButtons = [
-  { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-  { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
+  { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'cancel-button' },
+  {
+    'onClick': submitFiling,
+    'label': t('btn.submit'),
+    'trailingIcon': 'i-mdi-chevron-right',
+    'data-testid': 'submit-button'
+  }
 ]
 
-leftButtons[0]['data-testid'] = 'save-button'
-leftButtons[1]['data-testid'] = 'saveExit-button'
-rightButtons[0]['data-testid'] = 'cancel-button'
-rightButtons[1]['data-testid'] = 'submit-button'
-
 setButtonControl({
-  leftButtons: leftButtons,
-  rightButtons: rightButtons
+  leftGroup: { buttons: leftButtons },
+  rightGroup: { buttons: rightButtons }
 })
 
 const closeArticleDateEntryAndValidate = () => {
@@ -388,12 +381,21 @@ const saveModalDate = async () => {
   }
   pickDateModalOpen.value = false
 }
+
+const getArticlesCurrentDateError = computed(() => {
+  const key = articlesErrors.value?.currentDate?.[0]
+  const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
+
+  return condition
+    ? $t(key, {
+      incorpDate: fromIsoToUsDateFormat(new Date(articles?.value?.incorpDate).toISOString()),
+      today: fromIsoToUsDateFormat(new Date().toISOString())
+    })
+    : ''
+})
 </script>
 
 <template>
-  <!-- NB: this is temporary so that tw pulls in needed classes for extended comps -->
-  <!-- z-10 lg:shadow-sm bg-midnightBlue-900 divide-bcGovGray-300 justify-between -->
-  <!-- border-b border-t border-bcGovGray-300 border-gray-300 ml-[5px] -->
   <div class="py-10 space-y-10">
     <UModal
       :open="pickDateModalOpen"
@@ -415,9 +417,7 @@ const saveModalDate = async () => {
             </p>
           </div>
           <div>
-            <UFormField
-              :error="modalDateError()"
-            >
+            <UFormField :error="getArticlesCurrentDateError">
               <FormDateInput
                 id="modal-date-input"
                 v-model="modalDate"
@@ -647,9 +647,10 @@ const saveModalDate = async () => {
         </ConnectFormSection>
         <ConnectFormSection :title="$t('label.completingParty')" :error="hasCompletingPartyErrors">
           <ConnectFormInput
+            id="compPartyEmail-input"
             v-model="compPartyEmail"
             data-testid="compPartyEmail-input"
-            :error="completingPartyErrors?.['email']?.[0]"
+            :error="completingPartyErrors?.['email']?.[0] || false"
             :invalid="hasCompletingPartyErrors"
             :name="'documentDelivery.completingPartyEmail'"
             :label="$t('label.emailAddressOptional')"
@@ -677,7 +678,7 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="courtOrderNumber"
             data-testid="courtOrderNumber-input"
-            :error="courtOrderErrors?.['courtOrderNumber']?.[0]"
+            :error="courtOrderErrors?.['courtOrderNumber']?.[0] || false"
             :invalid="hasCourtOrderErrors"
             :name="'courtOrder.number'"
             :label="$t('label.courtOrderNumberOptional')"
@@ -714,7 +715,7 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="folio"
             data-testid="folio-input"
-            :error="folioErrors?.['folio']?.[0]"
+            :error="folioErrors?.['folio']?.[0] || false"
             :invalid="hasFolioErrors"
             :name="'business.folio'"
             :label="$t('label.folioOrReferenceNumberOptional')"
@@ -773,9 +774,9 @@ const saveModalDate = async () => {
           <ConnectFormInput
             v-model="legalName"
             data-testid="legalName-input"
-            :error="certifyErrors?.['name']?.[0]"
+            :error="certifyErrors?.['name']?.[0] || false"
             :invalid="certifyErrors?.['name']?.[0] !== undefined"
-            :name="'documentDelivery.completingPartyEmail'"
+            :name="'certify.legalName'"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
             @update:model-value="verify(
@@ -825,19 +826,5 @@ const saveModalDate = async () => {
         </ConnectFormSection>
       </FormSubSection>
     </FormSection>
-
-    <!-- NB: needed so that the tw classes are loaded -->
-    <!-- <main class="app-inner-container app-body">
-      <div class="flex flex-col lg:flex-row lg:gap-6 grow">
-        <div class="grow max-w-full overflow-hidden">
-          <slot />
-        </div>
-
-        <div class="shrink-0 lg:w-[300px] lg:static sticky lg:mt-10">
-          <ConnectFeeWidget class="sticky lg:top-10" />
-          <div class="md:justify-end md:justify-start md:grid-cols-2 ring rounded-md">CSS for page buttons</div>
-        </div>
-      </div>
-    </main> -->
   </div>
 </template>
