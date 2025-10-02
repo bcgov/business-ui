@@ -62,7 +62,7 @@ export const usePostRestorationTransitionApplicationStore
       },
       {
         label: t('label.myBusinessRegistry'),
-        to: `${rtc.brdUrl}account/${businessId}`,
+        to: `${rtc.businessRegistryDashboardUrl}account/${businessId}`,
         appendAccountId: true,
         external: true
       },
@@ -95,7 +95,7 @@ export const usePostRestorationTransitionApplicationStore
       if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
         buttons.push({
           label: t('label.goToMyBusinessRegistry'),
-          to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`
+          to: `${rtc.businessRegistryDashboardUrl}account/${accountStore.currentAccount.id}`
         })
       } else if (errorStatus > 499 && errorStatus < 600) {
         buttons.push({ label: t('label.goBack'), onClick: async () => router.back() })
