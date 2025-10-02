@@ -111,6 +111,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Post Restoration Transition Application UI v${process.env.npm_package_version || ''}`,
+      preexistingCompanyProvisions: process.env.NUXT_PUBLIC_PREEXISTING_COMPANY_PROVISIONS_URL
+        || 'https://www.corporateonline.gov.bc.ca/WebHelp/provisions.htm',
+      businessRegistryDashboardUrl: process.env.NUXT_PUBLIC_BUSINESS_REGISTRY_DASHBOARD_URL,
       ci: process.env.CI === 'true'
     }
   }

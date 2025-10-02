@@ -3,7 +3,7 @@ const model = defineModel<string>()
 defineProps({
   name: { type: String, required: true },
   help: { type: String, default: '' },
-  error: { type: String, default: '' },
+  error: { type: [String, Boolean], default: '' },
   invalid: { type: Boolean, default: false },
   label: { type: String, default: '' },
   placeholder: { type: String, default: '' }
