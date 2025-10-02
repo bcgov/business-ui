@@ -33,7 +33,6 @@
     "@nuxt/eslint": "^1.2.0",
     "@nuxt/image": "^1.10.0",
     "@nuxt/test-utils": "^3.19.2",
-    "@nuxtjs/i18n": "^10.1.0",
     "@playwright/test": "^1.51.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^22.13.14",
