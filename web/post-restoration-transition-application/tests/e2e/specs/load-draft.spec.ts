@@ -4,7 +4,7 @@ import draft from '../../mocks/filingData/draft.json' with { type: 'json' }
 import { base as baseAddress } from '../../mocks/lear/addresses'
 import { base as baseParties } from '../../mocks/lear/directors'
 
-test.describe('Post restoration Transition Application Filing', () => {
+test.describe('Draft Filing Tests', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
     await mockForIdentifier(page, identifier)
