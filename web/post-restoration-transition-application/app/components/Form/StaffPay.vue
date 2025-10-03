@@ -4,10 +4,6 @@ import { STAFF_PAY_PAYMENT_METHODS } from '~/enum/staff_pay_methods'
 const FEE_CODE = 'TRANP'
 const filingStore = usePostRestorationTransitionApplicationStore()
 const feeStore = useConnectFeeStore()
-const {
-  feeOptions,
-  fees
-} = storeToRefs(feeStore)
 const errorStore = usePostRestorationErrorsStore()
 const {
   staffPayErrors
@@ -26,11 +22,11 @@ const getError = (errorField: string) => {
 }
 
 const updatePriority = async () => {
-  feeStore.addReplaceFee(FEE_CODE, {priority: staffPay.value.priority})
+  feeStore.addReplaceFee(FEE_CODE, { priority: staffPay.value.priority })
 }
 
 const updatePaymentMethod = () => {
-  feeStore.addReplaceFee(FEE_CODE, {waived: true})
+  feeStore.addReplaceFee(FEE_CODE, { waived: true })
 }
 </script>
 

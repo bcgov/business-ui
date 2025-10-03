@@ -78,7 +78,7 @@ const fill = async (page: Page, values: object) => {
   await fillShares(page, values)
 }
 
-const nonStaffUserName = "TestFirst TestLast"
+const nonStaffUserName = 'TestFirst TestLast'
 
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'
