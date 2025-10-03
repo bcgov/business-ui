@@ -26,7 +26,7 @@ const updatePriority = async () => {
 }
 
 const updatePaymentMethod = () => {
-  feeStore.addReplaceFee(FEE_CODE, { waived: true })
+  feeStore.addReplaceFee(FEE_CODE, { waived: staffPay.value.paymentMethod === STAFF_PAY_PAYMENT_METHODS.NONE })
 }
 </script>
 

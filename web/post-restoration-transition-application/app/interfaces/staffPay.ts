@@ -4,24 +4,22 @@ import { STAFF_PAY_PAYMENT_METHODS } from '../enum/staff_pay_methods'
 const message = 'errors.maxLength30'
 
 const refine = (input, ctx) => {
-  // intentionally double equals to catch undef/false/empty
-  if ((input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.CASH) && (input.routingSlipNumber == '')) {
+  if ((input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.CASH)
+      && (input.routingSlipNumber === undefined || input.routingSlipNumber === '')) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ['routingSlipNumber'],
       message: 'errors.required'
     })
   } else if (input.paymentMethod === STAFF_PAY_PAYMENT_METHODS.BCONLINE) {
-    // intentionally double equals to catch undef/false/empty
-    if (input.bcOnlineAccountNumber == '') {
+    if (input.bcOnlineAccountNumber === undefined || input.bcOnlineAccountNumber === '') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['bcOnlineAccountNumber'],
         message: 'errors.required'
       })
     }
-    // intentionally double equals to catch undef/false/empty
-    if (input.datNumber == '') {
+    if (input.datNumber === undefined || input.datNumber === '') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['datNumber'],
