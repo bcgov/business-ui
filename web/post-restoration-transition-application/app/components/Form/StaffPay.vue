@@ -26,23 +26,11 @@ const getError = (errorField: string) => {
 }
 
 const updatePriority = async () => {
-  feeOptions.value.showPriorityFees = staffPay.value.priority
-  const fee = JSON.parse(JSON.stringify(fees.value[FEE_CODE]))
-  fee.priorityFees = staffPay.value.priority ? 100 : 0
-  fee.serviceFees = 0
-  fee.total = fee.filingFees + fee.priorityFees
-  feeStore.addReplaceFee(fee)
+  feeStore.addReplaceFee(FEE_CODE, {priority: staffPay.value.priority})
 }
 
 const updatePaymentMethod = () => {
-  const fee = JSON.parse(JSON.stringify(fees.value[FEE_CODE]))
-  if (staffPay.value.paymentMethod === STAFF_PAY_PAYMENT_METHODS.NONE) {
-    fee.waived = true
-  }
-  else {
-    fee.waived = false
-  }
-  feeStore.addReplaceFee(fee)
+  feeStore.addReplaceFee(FEE_CODE, {waived: true})
 }
 </script>
 

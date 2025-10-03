@@ -52,14 +52,16 @@ export const useStandaloneTransitionButtons = () => {
       const businessIdentifier = filingStore.activeBusiness.identifier
 
       // clear ui properties (this is here to prevent them from being sent to the API)
-      const shares = standAloneTransitionData.shareStructure.shareClasses.filter(share => !share.removed)
-      for (const share in shares) {
-        if (share.series) {
-          share.series = share.series.filter(share => !share.removed)
+      if (standAloneTransitionData.shareStructure?.shareClasses !== undefined) {
+        const shares = standAloneTransitionData.shareStructure.shareClasses.filter(share => !share.removed)
+        for (const share in shares) {
+          if (share.series) {
+            share.series = share.series.filter(share => !share.removed)
+          }
         }
-      }
 
-      standAloneTransitionData.shareStructure.shareClasses = shares
+        standAloneTransitionData.shareStructure.shareClasses = shares
+      }
 
       const payload = legalApi.createFilingPayload<StandaloneTransitionFiling>(
         filingStore.activeBusiness,
@@ -70,7 +72,7 @@ export const useStandaloneTransitionButtons = () => {
         // todo: throw modal warning
         return undefined
       }
-      // payload.filing.header.certifiedBy = filingStore.legalName
+      payload.filing.header.certifiedBy = filingStore.legalName
       // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
       if (draftId) {
         await legalApi.saveOrUpdateDraftFiling(

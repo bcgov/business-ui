@@ -78,6 +78,8 @@ const fill = async (page: Page, values: object) => {
   await fillShares(page, values)
 }
 
+const nonStaffUserName = "TestFirst TestLast"
+
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
@@ -91,6 +93,7 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fill(page, valid)
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await page.getByTestId('submit-button').click()
@@ -102,6 +105,7 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fill(page, invalid)
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
     await page.getByTestId('submit-button').click()
@@ -112,6 +116,7 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
@@ -127,6 +132,7 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
