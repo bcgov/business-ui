@@ -6,7 +6,8 @@ defineProps({
   error: { type: String, default: '' },
   invalid: { type: Boolean, default: false },
   label: { type: String, default: '' },
-  placeholder: { type: String, default: '' }
+  placeholder: { type: String, default: '' },
+  disabled: { type: Boolean, default: false }
 })
 </script>
 
@@ -24,6 +25,7 @@ defineProps({
       :label
       :invalid="invalid"
       :aria-placeholder="placeholder"
+      :disabled="disabled"
     />
   </UFormField>
 </template>

@@ -777,6 +777,7 @@ const getArticlesCurrentDateError = computed(() => {
             :error="certifyErrors?.['name']?.[0] || false"
             :invalid="certifyErrors?.['name']?.[0] !== undefined"
             :name="'certify.legalName'"
+            :disabled="!isStaffOrSbcStaff"
             :label="$t('text.legalNameOfAuthorizedPerson')"
             :placeholder="$t('text.legalNameOfAuthorizedPerson')"
             @update:model-value="verify(

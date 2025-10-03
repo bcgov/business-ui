@@ -7,7 +7,10 @@ import invalid from '../../mocks/filingData/invalid.json' with { type: 'json' }
 import i18en from '~~/i18n/locales/en-CA'
 
 const fillBasic = async (page: Page, values: object) => {
-  await page.getByTestId('legalName-input').locator('input').first().fill(values.legalName)
+  const legalNameField = page.getByTestId('legalName-input').locator('input').first()
+  if (await legalNameField.isEnabled()) {
+    await legalNameField.fill(values.legalName)
+  }
   await page.getByTestId('compPartyEmail-input').locator('input').first().fill(values.email)
   await page.getByTestId('folio-input').locator('input').first().fill(values.folio)
   if (values.certify) {
@@ -87,6 +90,7 @@ test.describe('Post restoration Transition Application Filing', () => {
   test('Valid', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
     await fill(page, valid)
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await page.getByTestId('submit-button').click()
@@ -97,15 +101,17 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
     await fill(page, invalid)
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
   })
 
   test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
@@ -120,6 +126,7 @@ test.describe('Post restoration Transition Application Filing', () => {
   test('Test save pop up for date when share with special rights added/edited', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
@@ -152,6 +159,7 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
   test('Staff, Pay Section and Court Section', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeEnabled()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, valid)
     await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
