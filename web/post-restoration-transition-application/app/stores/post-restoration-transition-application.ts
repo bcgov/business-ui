@@ -209,19 +209,6 @@ export const usePostRestorationTransitionApplicationStore
     filingTombstone.value.loading = false
   }
 
-  const initFees = async () => {
-    // NOTE: needs to happen in setup
-    // FUTURE: error handling on fees #29114
-    // - add in loading state too
-    const feeStore = useConnectFeeStore()
-    const transitionFees = await feeStore.getFee(activeBusiness.value.legalType, 'TRANP')
-    feeStore.feeOptions.showServiceFees = true
-    if (transitionFees) {
-      transitionFees.total = transitionFees.filingFees + transitionFees.serviceFees
-      feeStore.addReplaceFee(transitionFees)
-    }
-  }
-
   const shareWithSpecialRightsModified = computed(() => {
     for (const share of shareClasses.value) {
       if (share.hasRightsOrRestrictions && (share.added || share.modified)) {
@@ -320,7 +307,6 @@ export const usePostRestorationTransitionApplicationStore
     setTransitionBreadcrumbs,
     registerFormIdToSection,
     init,
-    initFees,
     checkHasActiveForm,
     checkHasChanges,
     getFilingPayload,

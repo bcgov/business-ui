@@ -1,5 +1,5 @@
 import { test, expect, type Locator } from '@playwright/test'
-import { mockForIdentifier } from '../test-utils/helpers'
+import { impersonateUser, mockForIdentifier } from '../test-utils/helpers'
 import draft from '../../mocks/filingData/draft.json' with { type: 'json' }
 import { base as baseAddress } from '../../mocks/lear/addresses'
 import { base as baseParties } from '../../mocks/lear/directors'
@@ -7,6 +7,7 @@ import { base as baseParties } from '../../mocks/lear/directors'
 test.describe('Draft Filing Tests', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
+    await impersonateUser(page, 'business')
     await mockForIdentifier(page, identifier)
   })
   test('Loading a draft populates filing as expected', async ({ page }) => {

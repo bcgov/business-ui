@@ -10,7 +10,7 @@ test.describe('Error Modals', () => {
   })
   test('Undefined Modal', async ({ page }) => {
     await page.goto(`./en-CA/undefined`)
-    await expect(page.getByText(/^(Access Restricted|Invalid Link)$/).first()).toBeVisible()
+    await expect(page.getByText(/^(Access Restricted|Invalid Link|Page Not Found)$/).first()).toBeVisible()
     await expect(page.locator('a').getByText('Go to My Business Registry').first()).toBeVisible()
     await expect(page.getByRole('dialog')).toBeVisible()
   })

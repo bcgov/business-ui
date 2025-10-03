@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { ButtonProps } from '@nuxt/ui'
 import { h, resolveComponent } from 'vue'
 import { fromIsoToUsDateFormat } from '~/utils/uidate'
 import { areUiAddressesEqual, areApiAddressesEqual } from '~/utils/address'
