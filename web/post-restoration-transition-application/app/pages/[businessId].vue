@@ -7,10 +7,7 @@ import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
 const { setButtonControl } = useButtonControl()
-const feeStore = useStandaloneTransitionFeeStore()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
-
-await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
@@ -95,7 +92,7 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'form',
+  layout: 'filing',
   middleware: ['auth-check', 'filing-init']
 })
 
@@ -317,10 +314,9 @@ const leftButtons = [
   { 'onClick': () => saveFiling(true),
     'label': t('btn.saveExit'),
     'variant': 'outline',
-    'data-testid':
-      'saveExit-button'
+    'data-testid': 'saveExit-button'
   }
-]
+] as unknown as ConnectButton[]
 const rightButtons = [
   { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'cancel-button' },
   {
@@ -329,7 +325,7 @@ const rightButtons = [
     'trailingIcon': 'i-mdi-chevron-right',
     'data-testid': 'submit-button'
   }
-]
+] as unknown as ConnectButton[]
 
 setButtonControl({
   leftGroup: { buttons: leftButtons },
@@ -367,7 +363,7 @@ const getArticlesCurrentDateError = computed(() => {
 
 onMounted(async () => {
   filingStore.setTransitionBreadcrumbs()
-  await filingStore.initFees()
+  await useStandaloneTransitionFees().initFees()
 })
 </script>
 

@@ -84,7 +84,7 @@ export const usePostRestorationTransitionApplicationStore
   const _openInitErrorModal = (error: any) => {
     const router = useRouter()
     const rtc = useRuntimeConfig().public
-    const buttons: ModalButtonProps[] = []
+    const buttons: ConnectModalButton[] = []
     const errorStatus = error.statusCode || 404
     if (errorStatus === 401 || errorStatus === 403 || errorStatus === 404) {
       buttons.push({

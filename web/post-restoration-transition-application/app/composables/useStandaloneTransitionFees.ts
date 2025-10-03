@@ -1,4 +1,4 @@
-export const useStandaloneTransitionFeeStore = () => {
+export const useStandaloneTransitionFees = () => {
   const feeStore = useConnectFeeStore()
 
   const standaloneTransitionFeeCode = 'TRANP'
@@ -6,7 +6,7 @@ export const useStandaloneTransitionFeeStore = () => {
 
   const { t } = useI18n()
 
-  const initFeeStore = async () => {
+  const initFees = async () => {
     await feeStore.initFees(
       [
         { code: standaloneTransitionFeeCode, entityType: 'BC', label: t(feeLangkey) },
@@ -19,6 +19,6 @@ export const useStandaloneTransitionFeeStore = () => {
   }
 
   return {
-    initFeeStore
+    initFees
   }
 }
