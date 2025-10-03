@@ -368,6 +368,8 @@ onMounted(async () => {
 
 <template>
   <div class="py-10 space-y-10">
+    <!-- NOTE: not coming through the layers -->
+    <!-- sm:w-1/4 @container @3xl:justify-start @3xl:justify-end -->
     <UModal
       :open="pickDateModalOpen"
       class="overflow-visible"
