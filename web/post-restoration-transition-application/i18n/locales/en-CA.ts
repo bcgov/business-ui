@@ -47,6 +47,7 @@ export default {
     edited: 'Edited',
     effectiveDates: 'Effective Dates',
     emailAddressOptional: 'Email Address (Optional)',
+    folioNumber: 'Folio Number (Optional)',
     folioNumberOptional: 'Folio Number (Optional)',
     folioOrReferenceNumber: 'Folio or Reference Number',
     folioOrReferenceNumberOptional: 'Folio or Reference Number (Optional)',

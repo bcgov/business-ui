@@ -3,11 +3,17 @@ import { mockForIdentifier, impersonateUser } from '../test-utils/helpers'
 import valid from '../../mocks/filingData/valid.json' with { type: 'json' }
 import validSpecial from '../../mocks/filingData/validSpecial.json' with { type: 'json' }
 import invalid from '../../mocks/filingData/invalid.json' with { type: 'json' }
+import { base as baseBusiness } from '../../mocks/lear/business.ts'
+import { base as baseAddress } from '../../mocks/lear/addresses.ts'
+import { base as baseDirectors } from '../../mocks/lear/directors.ts'
 
 import i18en from '~~/i18n/locales/en-CA'
 
 const fillBasic = async (page: Page, values: object) => {
-  await page.getByTestId('legalName-input').locator('input').first().fill(values.legalName)
+  const legalNameField = page.getByTestId('legalName-input').locator('input').first()
+  if (await legalNameField.isEnabled()) {
+    await legalNameField.fill(values.legalName)
+  }
   await page.getByTestId('compPartyEmail-input').locator('input').first().fill(values.email)
   await page.getByTestId('folio-input').locator('input').first().fill(values.folio)
   if (values.certify) {
@@ -75,6 +81,8 @@ const fill = async (page: Page, values: object) => {
   await fillShares(page, values)
 }
 
+const nonStaffUserName = 'TestFirst TestLast'
+
 test.describe('Post restoration Transition Application Filing', () => {
   const identifier = 'CP1002605'
   test.beforeEach(async ({ page }) => {
@@ -87,6 +95,8 @@ test.describe('Post restoration Transition Application Filing', () => {
   test('Valid', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fill(page, valid)
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await page.getByTestId('submit-button').click()
@@ -97,15 +107,19 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fill(page, invalid)
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(3)
+    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
   })
 
   test('Test cancel pop up for date when share with special rights added/edited', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
@@ -120,6 +134,8 @@ test.describe('Post restoration Transition Application Filing', () => {
   test('Test save pop up for date when share with special rights added/edited', async ({ page }) => {
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeDisabled()
+    await expect(page.getByTestId('legalName-input').locator('input')).toHaveValue(nonStaffUserName)
     await fillBasic(page, validSpecial)
     await fillShares(page, validSpecial)
     await expect(page.getByTestId('modal-date-input')).toBeVisible()
@@ -150,11 +166,17 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
   })
 
   test('Staff, Pay Section and Court Section', async ({ page }) => {
+    let payload = {}
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await expect(page.getByTestId('legalName-input').locator('input').first()).toBeEnabled()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
     await fill(page, valid)
     await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
+    await page.route(`**/**/businesses/${identifier}/filings`, async (route) => {
+      payload = route.request().postDataJSON()
+      await route.fulfill({ json: {} })
+    })
 
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
@@ -169,9 +191,71 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(2)
 
     await page.locator('[aria-label="No Fee"]').click()
+
     await page.getByTestId('submit-button').click()
-    await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
-    // fixme: right now we are getting popup that tells us we do not have permission to submit
-    // but all tests hitting submit should account for moving away from the page on submission
+
+    await expect(payload.filing.header.name).toBe('transition')
+    await expect(payload.filing.header.certifiedBy).toBe(valid.legalName)
+    // await expect(payload.filing.header.accountId).toBe(3040)
+    const d = new Date()
+    const expectedD = d.getFullYear() + '-'
+      + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '-'
+      + (d.getDate() < 10 ? '0' : '') + d.getDate()
+    await expect(payload.filing.header.date).toBe(expectedD)
+
+    await expect(payload.filing.header.type).toBe('LEGAL')
+    await expect(payload.filing.business.identifier).toBe(identifier)
+    await expect(payload.filing.business.foundingDate).toBe(baseBusiness.business.foundingDate)
+    await expect(payload.filing.business.legalName).toBe(baseBusiness.business.legalName)
+    await expect(payload.filing.business.legalType).toBe(baseBusiness.business.legalType)
+    await expect(payload.filing.transition.nameTranslations).toStrictEqual([])
+
+    const expectedA = JSON.parse(JSON.stringify(baseAddress))
+    delete expectedA.recordsOffice.deliveryAddress.addressType
+    delete expectedA.recordsOffice.deliveryAddress.id
+    delete expectedA.recordsOffice.mailingAddress.addressType
+    delete expectedA.recordsOffice.mailingAddress.id
+    delete expectedA.registeredOffice.deliveryAddress.addressType
+    delete expectedA.registeredOffice.deliveryAddress.id
+    delete expectedA.registeredOffice.mailingAddress.addressType
+    delete expectedA.registeredOffice.mailingAddress.id
+    await expect(payload.filing.transition.offices).toStrictEqual(expectedA)
+
+    await expect(payload.filing.transition.parties).toStrictEqual(baseDirectors.parties)
+    await expect(payload.filing.transition.hasProvisions).toBe(false)
+    await expect(payload.filing.transition.contactPoint).toStrictEqual({ email: valid.email })
+
+    const expectedShares = {
+      shareClasses: [
+        {
+          currency: null,
+          hasMaximumShares: false,
+          hasParValue: false,
+          hasRightsOrRestrictions: false,
+          id: 474535,
+          maxNumberOfShares: null,
+          name: 'Sample Shares',
+          parValue: null,
+          priority: 1,
+          series: []
+        },
+        {
+          added: true,
+          currency: 'CAD',
+          hasMaximumShares: true,
+          hasParValue: true,
+          hasRightsOrRestrictions: false,
+          maxNumberOfShares: 1000000,
+          name: 'Test Shares Shares',
+          parValue: 1,
+          priority: 2,
+          series: []
+        }
+      ]
+    }
+    await expect(payload.filing.transition.shareStructure).toStrictEqual(expectedShares)
+
+    // you are not logged in actually and get sent to login instead of dashboard
+    await page.waitForURL(`**/login`)
   })
 })
