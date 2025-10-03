@@ -25,8 +25,7 @@ export default defineConfig<ConfigOptions>({
   globalSetup: './tests/e2e/setup',
   testDir: './tests/e2e',
   testMatch: '*.spec.ts',
-  // workers: process.env.CI ? 1 : undefined, // needs investigation why multiple workers fails
-  workers: 1,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
   use: {
     nuxt: {
@@ -46,6 +45,9 @@ export default defineConfig<ConfigOptions>({
     command: 'pnpm build:test',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 60000
+    timeout: 60000,
+    env: {
+      playwright: 'true'
+    }
   }
 })

@@ -1,24 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-import { createResolver } from 'nuxt/kit'
-
-const { resolve } = createResolver(import.meta.url)
-
 export default defineNuxtConfig({
+  compatibilityDate: '2025-08-25',
+
   ssr: false,
 
   devtools: { enabled: false },
-
-  app: {
-    head: {
-      link: [
-        { rel: 'stylesheet', href: '/css/addresscomplete-2.50.min.css' }
-      ],
-      script: [
-        { src: '/js/addresscomplete-2.50.min.js', type: 'text/javascript', defer: true }
-      ]
-    }
-  },
 
   css: [
     '~/assets/css/tw.css',
@@ -75,17 +62,7 @@ export default defineNuxtConfig({
         dir: 'ltr',
         file: 'fr-CA.ts'
       }
-    ],
-    strategy: 'prefix',
-    lazy: true,
-    langDir: 'locales',
-    defaultLocale: 'en-CA',
-    detectBrowserLanguage: false,
-    vueI18n: resolve('./i18n.config.ts'),
-    bundle: {
-      onlyLocales: ['en-CA'], // disable fr-CA
-      optimizeTranslationDirective: false // we recommend disabling this feature as it causes issues and will be deprecated in v10.
-    }
+    ]
   },
 
   // full options
@@ -102,16 +79,10 @@ export default defineNuxtConfig({
     }
   },
 
-  future: {
-    compatibilityVersion: 4
-  },
-
-  compatibilityDate: '2024-11-27',
-
   runtimeConfig: {
     public: {
-      version: `Post Restoration Transition Application UI v${process.env.npm_package_version || ''}`,
-      ci: process.env.CI === 'true'
+      preexistingCompanyProvisions: '',
+      playwright: process.env.playwright === 'true'
     }
   }
 })

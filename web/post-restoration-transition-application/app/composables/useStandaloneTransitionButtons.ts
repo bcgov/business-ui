@@ -8,11 +8,11 @@ export const useStandaloneTransitionButtons = () => {
     const { errorModal } = useModal()
     const buttonControl = useButtonControl()
     const rtc = useRuntimeConfig().public
-    const urlParams = useUrlSearchParams()
     const legalApi = useLegalApi2()
 
     const accountStore = useConnectAccountStore()
     const filingStore = usePostRestorationTransitionApplicationStore()
+    const { draftFilingId } = storeToRefs(filingStore)
 
     const hasErrors = validate()
 
@@ -39,9 +39,6 @@ export const useStandaloneTransitionButtons = () => {
 
       // set submit button as loading, disable all other bottom buttons
       buttonControl.handleButtonLoading(false, 'right', 1)
-
-      // pull draft id from url or mark as undefined
-      const draftId = (urlParams.draft as string) ?? undefined
 
       // format payload
       const standAloneTransitionData = filingStore.getFilingPayload()
@@ -72,12 +69,12 @@ export const useStandaloneTransitionButtons = () => {
       }
       // payload.filing.header.certifiedBy = filingStore.legalName
       // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
-      if (draftId) {
+      if (draftFilingId.value) {
         await legalApi.saveOrUpdateDraftFiling(
           businessIdentifier,
           payload,
           true,
-          draftId
+          draftFilingId.value
         )
       } else {
         // submit as normal if no draft id
@@ -151,6 +148,7 @@ export const useStandaloneTransitionButtons = () => {
 
     const accountStore = useConnectAccountStore()
     const filingStore = usePostRestorationTransitionApplicationStore()
+    const { draftFilingId } = storeToRefs(filingStore)
 
     const businessId = filingStore.activeBusiness.identifier
 
@@ -180,26 +178,11 @@ export const useStandaloneTransitionButtons = () => {
         buttonControl.handleButtonLoading(false, 'left', 0)
       }
 
-      // pull draft id from url or mark as undefined
-      const draftId = (urlParams.draft as string) ?? undefined
-      // check if the business has a pending filing before submit
-      const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
-      if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
-        // TODO: how granular do we want to be with our error messages?
-        // we check pending tasks on page mount
-        // this will only occur if a pending task has been created after the initial page mount
-        errorModal.open({
-          error: undefined,
-          i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
-        })
-        return
-      }
-
       // format payload
       const standAloneTransitionData = filingStore.getFilingPayload()
       if (!standAloneTransitionData) {
-        // todo: failed to validate form properly ?
-        return undefined
+        // Should never get here
+        throw new Error('Error validating filing information.')
       }
 
       // save table state
@@ -219,13 +202,14 @@ export const useStandaloneTransitionButtons = () => {
         filingStore.activeBusiness.identifier,
         payload,
         false,
-        draftId
+        draftFilingId.value as string
       )
 
       // update url with filing id
       // required if it's the first time 'save draft' was clicked
       // if page refreshes, the correct data will be reloaded
-      urlParams.draft = String(res.filing.header.filingId)
+      draftFilingId.value = String(res.filing.header.filingId)
+      urlParams.filingId = draftFilingId.value
 
       // if resume later, navigate back to business dashboard
       if (resumeLater) {

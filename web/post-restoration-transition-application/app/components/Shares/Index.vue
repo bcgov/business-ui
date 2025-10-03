@@ -550,7 +550,7 @@ const shareAddEditDoneHandler = () => {
     >
       <template #name-cell="{ row }">
         <span v-if="!row.original.series" class="mx-2">&bull;</span> {{ row.original.name }}
-        <div>
+        <div data-testid="share-badge">
           <UBadge
             v-if="row.original.removed"
             class="rounded-sm bg-[#E0E0E0] text-[#5F6163]"

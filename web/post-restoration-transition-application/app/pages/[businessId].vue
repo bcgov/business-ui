@@ -6,15 +6,11 @@ import { UButton, UBadge } from '#components'
 import { PageSection } from '~/enum/page_sections'
 
 const { setButtonControl } = useButtonControl()
-const feeStore = useStandaloneTransitionFeeStore()
 const { editFormOpen, editFormClosed } = useEditFormHandlers()
-
-await feeStore.initFeeStore()
 
 const t = useNuxtApp().$i18n.t
 const rtc = useRuntimeConfig().public
 const preexistingCompanyProvisions = rtc.preexistingCompanyProvisions as string
-const route = useRoute()
 const errorStore = usePostRestorationErrorsStore()
 const {
   certifyErrors,
@@ -26,10 +22,7 @@ const {
   completingPartyErrors
 } = storeToRefs(errorStore)
 
-const businessId = route.params.businessId as string
-
 const filingStore = usePostRestorationTransitionApplicationStore()
-filingStore.init(businessId)
 const {
   activeBusiness,
   articles,
@@ -99,37 +92,7 @@ useHead({
 
 definePageMeta({
   layout: 'filing',
-  middleware: async () => {
-    // redirect to reg home with return url if user unauthenticated
-    const { $connectAuth, $config } = useNuxtApp()
-    if (useRuntimeConfig().public.ci) {
-      $connectAuth.tokenParsed = {
-        firstname: 'TestFirst',
-        lastname: 'TestLast',
-        name: 'TestFirst TestLast',
-        username: 'testUsername',
-        email: 'testEmail@test.com',
-        sub: 'test',
-        loginSource: 'IDIR',
-        realm_access: { roles: ['public_user'] }
-      }
-      $connectAuth.authenticated = true
-      const account = useConnectAccountStore()
-      const { currentAccount, userAccounts } = storeToRefs(account)
-      const resp = await account.getUserAccounts('test')
-      if (resp && resp[0]) {
-        currentAccount.value = resp[0]
-        userAccounts.value = resp
-        $connectAuth.authenticated = true
-      }
-    } else if (!$connectAuth.authenticated) {
-      const returnUrl = encodeURIComponent(window.location.href)
-      return navigateTo(
-        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
-        { external: true }
-      )
-    }
-  }
+  middleware: ['auth-check', 'filing-init']
 })
 
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
@@ -229,12 +192,12 @@ const directorsColumns = ref([
         return [
           h(
             'div',
-            { class: 'text-left font-bold text-bgGovColor-midGray' },
+            { class: 'text-left font-bold text-bgGovColor-midGray', ['data-testid']: 'director-name' },
             `${row.original.officer.firstName} ${row.original.officer.lastName}`
           ),
           h(
             UBadge,
-            { color: 'primary', class: 'rounded-sm' },
+            { color: 'primary', class: 'rounded-sm', ['data-testid']: 'director-badge' },
             t('label.changed')
           )
         ]
@@ -242,7 +205,7 @@ const directorsColumns = ref([
       return [
         h(
           'div',
-          { class: 'text-left font-bold text-bgGovColor-midGray' },
+          { class: 'text-left font-bold text-bgGovColor-midGray', ['data-testid']: 'director-name' },
           `${row.original.officer.firstName} ${row.original.officer.lastName}`
         )
       ]
@@ -252,7 +215,9 @@ const directorsColumns = ref([
     accessorKey: 'mailingAddress',
     header: t('label.mailingAddress'),
     cell: ({ row }) => {
-      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.mailingAddress) })
+      return h(
+        ConnectAddressDisplay,
+        { address: formatAddressUi(row.original.mailingAddress), ['data-testid']: 'director-mailing' })
     }
   },
   {
@@ -262,7 +227,9 @@ const directorsColumns = ref([
       if (areApiAddressesEqual(row.original.deliveryAddress, row.original.mailingAddress)) {
         return t('label.sameAsMailingAddress')
       }
-      return h(ConnectAddressDisplay, { address: formatAddressUi(row.original.deliveryAddress) })
+      return h(
+        ConnectAddressDisplay,
+        { address: formatAddressUi(row.original.deliveryAddress), ['data-testid']: 'director-delivery' })
     }
   },
   {
@@ -346,10 +313,9 @@ const leftButtons = [
   { 'onClick': () => saveFiling(true),
     'label': t('btn.saveExit'),
     'variant': 'outline',
-    'data-testid':
-      'saveExit-button'
+    'data-testid': 'saveExit-button'
   }
-]
+] as unknown as ConnectButton[]
 const rightButtons = [
   { 'onClick': cancelFiling, 'label': t('btn.cancel'), 'variant': 'outline', 'data-testid': 'cancel-button' },
   {
@@ -358,7 +324,7 @@ const rightButtons = [
     'trailingIcon': 'i-mdi-chevron-right',
     'data-testid': 'submit-button'
   }
-]
+] as unknown as ConnectButton[]
 
 setButtonControl({
   leftGroup: { buttons: leftButtons },
@@ -387,16 +353,23 @@ const getArticlesCurrentDateError = computed(() => {
   const condition = (key && key !== 'errors.articles') || (submittedModal.value && $te(key))
 
   return condition
-    ? $t(key, {
+    ? t(key, {
       incorpDate: fromIsoToUsDateFormat(new Date(articles?.value?.incorpDate).toISOString()),
       today: fromIsoToUsDateFormat(new Date().toISOString())
     })
     : ''
 })
+
+onMounted(async () => {
+  filingStore.setTransitionBreadcrumbs()
+  await useStandaloneTransitionFees().initFees()
+})
 </script>
 
 <template>
   <div class="py-10 space-y-10">
+    <!-- NOTE: not coming through the layers -->
+    <!-- sm:w-1/4 @container @3xl:justify-start @3xl:justify-end -->
     <UModal
       :open="pickDateModalOpen"
       class="overflow-visible"
@@ -473,6 +446,7 @@ const getArticlesCurrentDateError = computed(() => {
           icon="i-mdi-domain"
           :title="$t('label.officeAddresses')"
           class="pb-6"
+          data-testid="section-addresses"
         >
           <FormDataList
             :data="offices"
@@ -497,6 +471,7 @@ const getArticlesCurrentDateError = computed(() => {
           :title="$t('label.currentDirectors')"
           :has-errors="sectionHasErrors(PageSection.DIRECTORS)"
           class="pb-6"
+          data-testid="section-directors"
         >
           <FormDataList
             :data="directors"
@@ -531,6 +506,7 @@ const getArticlesCurrentDateError = computed(() => {
           icon="i-mdi-sitemap"
           :has-errors="sectionHasErrors(PageSection.SHARES)"
           class="pb-6"
+          data-testid="section-shares"
         >
           <Shares
             form-id="shares-section"
@@ -636,6 +612,7 @@ const getArticlesCurrentDateError = computed(() => {
       :description="$t('text.documentDelivery')"
       :has-errors="false"
       class="space-y-4"
+      data-testid="section-contact"
     >
       <FormSubSection
         title=""

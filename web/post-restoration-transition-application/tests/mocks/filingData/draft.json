@@ -1,0 +1,149 @@
+{
+    "commentsCount": 0,
+    "commentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0887504/filings/206524/comments",
+    "displayLedger": true,
+    "documentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0887504/filings/206524/documents",
+    "filing": {
+        "business": {
+            "foundingDate": "2025-01-20T18:47:00.620451+00:00",
+            "identifier": "BC0887504",
+            "legalName": "PROLONG ULC",
+            "legalType": "ULC"
+        },
+        "header": {
+            "accountId": 3040,
+            "affectedFilings": [],
+            "availableOnPaperOnly": false,
+            "certifiedBy": "Tester",
+            "colinIds": [],
+            "comments": [],
+            "date": "2025-09-25T16:54:09.395353+00:00",
+            "deletionLocked": false,
+            "effectiveDate": "2025-09-25T16:54:09.395394+00:00",
+            "filingId": 206524,
+            "inColinOnly": false,
+            "isCorrected": false,
+            "isCorrectionPending": false,
+            "name": "transition",
+            "status": "DRAFT",
+            "submitter": "Tester",
+            "type": "NON_LEGAL"
+        },
+        "transition": {
+            "contactPoint": {
+                "email": "compparty@testemail.com"
+            },
+            "hasProvisions": false,
+            "nameTranslations": [],
+            "offices": {
+                "recordsOffice": {
+                    "deliveryAddress": {
+                        "addressCity": "Victoria",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "postalCode": "V8Z 4W5",
+                        "streetAddress": "4069 Hatfield Rd",
+                        "streetAddressAdditional": ""
+                    },
+                    "mailingAddress": {
+                        "addressCity": "Victoria",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "postalCode": "V8Z 4W5",
+                        "streetAddress": "4069 Hatfield Rd",
+                        "streetAddressAdditional": ""
+                    }
+                },
+                "registeredOffice": {
+                    "deliveryAddress": {
+                        "addressCity": "Victoria",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "postalCode": "V8Z 4W5",
+                        "streetAddress": "4069 Hatfield Rd",
+                        "streetAddressAdditional": ""
+                    },
+                    "mailingAddress": {
+                        "addressCity": "Victoria",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "postalCode": "V8Z 4W5",
+                        "streetAddress": "4069 Hatfield Rd",
+                        "streetAddressAdditional": ""
+                    }
+                }
+            },
+            "parties": [
+                {
+                    "deliveryAddress": {
+                        "addressCity": "AB1",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "id": 3056007,
+                        "postalCode": "V8X 5J8",
+                        "streetAddress": "delivery_address city changed",
+                        "streetAddressAdditional": "PENTHOUSE"
+                    },
+                    "mailingAddress": {
+                        "addressCity": "AB1",
+                        "addressCountry": "CA",
+                        "addressRegion": "BC",
+                        "deliveryInstructions": "",
+                        "id": 3056008,
+                        "postalCode": "V8X 5J8",
+                        "streetAddress": "mailing_address city changed",
+                        "streetAddressAdditional": "PENTHOUSE"
+                    },
+                    "officer": {
+                        "email": "apiSpec@example.com",
+                        "firstName": "FIRST",
+                        "id": 595819,
+                        "lastName": "LAST",
+                        "partyType": "person"
+                    },
+                    "roles": [
+                        {
+                            "appointmentDate": "2025-06-09",
+                            "cessationDate": null,
+                            "roleType": "Director"
+                        }
+                    ]
+                }
+            ],
+            "shareStructure": {
+                "shareClasses": [
+                    {
+                        "added": true,
+                        "hasMaximumShares": false,
+                        "hasParValue": false,
+                        "hasRightsOrRestrictions": false,
+                        "name": "test new Shares",
+                        "priority": 1,
+                        "series": []
+                    },
+                    {
+                        "currency": null,
+                        "hasMaximumShares": false,
+                        "hasParValue": false,
+                        "hasRightsOrRestrictions": false,
+                        "id": 474535,
+                        "maxNumberOfShares": null,
+                        "name": "Sample Shares",
+                        "parValue": null,
+                        "priority": 1,
+                        "series": [],
+                        "removed": true
+                    }
+                ]
+            }
+        }
+    },
+    "filingLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0887504/filings/206524",
+    "isFutureEffective": false,
+    "withdrawalPending": false
+}
