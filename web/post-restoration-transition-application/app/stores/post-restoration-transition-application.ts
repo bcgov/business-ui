@@ -61,7 +61,7 @@ export const usePostRestorationTransitionApplicationStore
   const _cleanDirectors = (directors: OrgPerson[]) => {
     // if officer email is empty string or spaces, remove email attribute from the object
     return directors
-      .map(director => {
+      .map((director) => {
         if (director?.officer?.email?.trim() === '') {
           delete director.officer.email
         }
@@ -96,12 +96,12 @@ export const usePostRestorationTransitionApplicationStore
     ])
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const _setContactPoint = (authInfo: AuthInformation) => {
     regOfficeEmail.value = _getContactPointEmail(authInfo)
   }
 
-  const _openInitErrorModal = (error: any) => {
+  // linter, giving minimal required attributes object has to have to fit as the params for this function
+  const _openInitErrorModal = (error: { statusCode: number }) => {
     const router = useRouter()
     const rtc = useRuntimeConfig().public
     const buttons: ConnectModalButton[] = []
