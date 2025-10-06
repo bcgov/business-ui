@@ -61,6 +61,7 @@ export const usePostRestorationTransitionApplicationStore
   const _cleanDirectors = (directors: OrgPerson[]) => {
     // if officer email is empty string or spaces, remove email attribute from the object
     return directors
+      .slice()
       .map((director) => {
         if (director?.officer?.email?.trim() === '') {
           delete director.officer.email
@@ -94,10 +95,6 @@ export const usePostRestorationTransitionApplicationStore
         label: t('transitionApplication.title')
       }
     ])
-  }
-
-  const _setContactPoint = (authInfo: AuthInformation) => {
-    regOfficeEmail.value = _getContactPointEmail(authInfo)
   }
 
   // linter, giving minimal required attributes object has to have to fit as the params for this function
@@ -209,9 +206,9 @@ export const usePostRestorationTransitionApplicationStore
     if (authInfo && shareClassesResponse && business && apiAddresses && apiDirectors && resolutions) {
       regOfficeEmail.value = _getContactPointEmail(authInfo)
       activeBusiness.value = business
-      _cleanDirectors(apiDirectors)
-      directors.value = apiDirectors
-      ORIGINAL_DIRECTORS.value = JSON.parse(JSON.stringify(apiDirectors))
+      const cleanedDirectors = _cleanDirectors(apiDirectors)
+      directors.value = cleanedDirectors
+      ORIGINAL_DIRECTORS.value = JSON.parse(JSON.stringify(cleanedDirectors))
       shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
       ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
