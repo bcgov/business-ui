@@ -53,6 +53,23 @@ export const usePostRestorationTransitionApplicationStore
     return activeBusiness.value?.legalName || alternateName || undefined
   })
 
+  const _getContactPointEmail = (authInfo: AuthInformation): string | undefined => {
+    // find first contact with email and return it, otherwise return undefined
+    return authInfo?.contacts?.find(contact => contact.email)?.email
+  }
+
+  const _cleanDirectors = (directors: OrgPerson[]) => {
+    // if officer email is empty string or spaces, remove email attribute from the object
+    return directors
+      .slice()
+      .map((director) => {
+        if (director?.officer?.email?.trim() === '') {
+          delete director.officer.email
+        }
+        return director
+      })
+  }
+
   const setTransitionBreadcrumbs = () => {
     const rtc = useRuntimeConfig().public
 
@@ -80,8 +97,8 @@ export const usePostRestorationTransitionApplicationStore
     ])
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const _openInitErrorModal = (error: any) => {
+  // linter, giving minimal required attributes object has to have to fit as the params for this function
+  const _openInitErrorModal = (error: { statusCode: number }) => {
     const router = useRouter()
     const rtc = useRuntimeConfig().public
     const buttons: ConnectModalButton[] = []
@@ -187,9 +204,11 @@ export const usePostRestorationTransitionApplicationStore
       return [undefined, undefined, undefined, undefined, undefined, undefined, undefined]
     })
     if (authInfo && shareClassesResponse && business && apiAddresses && apiDirectors && resolutions) {
+      regOfficeEmail.value = _getContactPointEmail(authInfo)
       activeBusiness.value = business
-      directors.value = apiDirectors
-      ORIGINAL_DIRECTORS.value = JSON.parse(JSON.stringify(apiDirectors))
+      const cleanedDirectors = _cleanDirectors(apiDirectors)
+      directors.value = cleanedDirectors
+      ORIGINAL_DIRECTORS.value = JSON.parse(JSON.stringify(cleanedDirectors))
       shareClasses.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
       ORIGINAL_SHARE_CLASSES.value = JSON.parse(JSON.stringify(shareClassesResponse.shareClasses))
 
@@ -268,7 +287,7 @@ export const usePostRestorationTransitionApplicationStore
         parties: directors.value,
         hasProvisions: false, // todo: find out hot wo fill this out
         contactPoint: {
-          email: compPartyEmail.value || regOfficeEmail.value || '' // todo: find out correct details for this
+          email: compPartyEmail.value || regOfficeEmail.value || undefined // todo: find out correct details for this
         },
         shareStructure: { shareClasses: shareClasses.value }
       }
