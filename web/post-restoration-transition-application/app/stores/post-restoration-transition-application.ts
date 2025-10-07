@@ -3,6 +3,7 @@ import { useLegalApi2 } from '~/composables/useLegalApi'
 import { type Articles, EmptyArticles } from '~/interfaces/articles'
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
 import type { PageSection } from '~/enum/page_sections'
+import { compare } from '~/utils/compare'
 
 const transitionApplicationIncompleteHook = 'app:transition-application-form:incomplete'
 
@@ -15,6 +16,7 @@ export const usePostRestorationTransitionApplicationStore
   const accountStore = useConnectAccountStore()
   const { setFilingDefault, filingTombstone } = useFilingTombstone()
   const { userFullName } = storeToRefs(accountStore)
+
   const activeBusiness = shallowRef<BusinessDataSlim>({} as BusinessDataSlim)
   const articles = ref<Articles>(EmptyArticles())
   const regOfficeEmail = ref<string | undefined>(undefined)
@@ -38,6 +40,51 @@ export const usePostRestorationTransitionApplicationStore
   const modifiedDirectors = ref<number[]>([])
   const editingSeriesParent = ref<number>(-1)
   const draftFilingId = ref<string | undefined>(undefined)
+  const DEFAULT_STATE = ref<object>({})
+
+  const getValuesInDefStateFormat = () => {
+    const articleVal = JSON.parse(JSON.stringify(articles.value))
+    const officeEmail = regOfficeEmail.value === undefined ? '' : regOfficeEmail.value
+    const partyEmail = compPartyEmail.value === undefined ? '' : compPartyEmail.value
+    const coNum = courtOrderNumber.value === undefined ? '' : courtOrderNumber.value
+    const plan = planOfArrangement.value === undefined ? false : planOfArrangement.value
+    const fol = folio.value === undefined ? '' : folio.value
+    const staffPayVal = JSON.parse(JSON.stringify(staffPay.value))
+    const officeVal = JSON.parse(JSON.stringify(offices.value))
+    const legalNameVal = legalName.value === undefined ? '' : legalName.value
+    const draftFilingIdVal = draftFilingId.value === undefined ? '' : draftFilingId.value
+    const shareClassesVal = JSON.parse(JSON.stringify(shareClasses.value))
+    shareClassesVal.map((share: Share) => {
+      delete share.modified
+      delete share.removed
+      delete share.added
+      share.series.map((series: Series) => {
+        delete series.modified
+        delete series.removed
+        delete series.added
+      })
+    })
+
+    // offices stored already
+    // does not includecertifiedByLegalName as this is a checkbox that is not saved
+    return {
+      articles: articleVal,
+      regOfficeEmail: officeEmail,
+      compPartyEmail: partyEmail,
+      courtOrderNumber: coNum,
+      planOfArrangement: plan,
+      folio: fol,
+      staffPay: staffPayVal,
+      offices: officeVal,
+      legalName: legalNameVal,
+      shareClasses: shareClassesVal,
+      draftFilingId: draftFilingIdVal
+    }
+  }
+
+  const setDefaultState = () => {
+    DEFAULT_STATE.value = getValuesInDefStateFormat()
+  }
 
   const isStaffOrSbcStaff = computed(() => {
     return accountStore.hasRoles(['STAFF'])
@@ -206,6 +253,7 @@ export const usePostRestorationTransitionApplicationStore
         _loadDraft(draft)
       }
     }
+    setDefaultState()
     filingTombstone.value.loading = false
   }
 
@@ -245,6 +293,13 @@ export const usePostRestorationTransitionApplicationStore
     }
     return false
   }
+
+  const hasAnyChanges = computed(() => {
+    const currState = getValuesInDefStateFormat()
+    const equalStates = compare(currState, DEFAULT_STATE.value)
+    const equalDirectors = compare(directors.value, ORIGINAL_DIRECTORS.value)
+    return !equalStates || !equalDirectors
+  })
 
   const checkHasChanges = async (opt: 'save' | 'submit' | 'change') => {
     if (await checkHasActiveForm(opt)) {
@@ -318,6 +373,9 @@ export const usePostRestorationTransitionApplicationStore
     openEditComponentId,
     modifiedDirectors,
     editingSeriesParent,
-    draftFilingId
+    draftFilingId,
+    DEFAULT_STATE,
+    setDefaultState,
+    hasAnyChanges
   }
 })

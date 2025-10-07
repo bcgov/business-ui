@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { PageSection } from '~/enum/page_sections'
+import { compare } from '~/utils/compare'
 
 const t = useNuxtApp().$i18n.t
 const anyExpanded = ref(false)
@@ -449,16 +450,22 @@ const updated = (row: Row<Share | Series>) => {
     shareClasses.value.push()
   } else {
     // updating either a series or a share
-    const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex])
-    const current = JSON.stringify(shareClasses.value[shareIndex])
+    const original = JSON.parse(JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex]))
+    const current = JSON.parse(JSON.stringify(shareClasses.value[shareIndex]))
+    delete current.modified
+    delete current.removed
+    delete current.added
     // it's updated if it has changed from the original form, this allows it to go back to unmodified
     // if the user changes it back to it's original state
-    shareClasses.value[shareIndex].modified = original !== current
+    shareClasses.value[shareIndex].modified = !compare(original, current)
     if (addEditSeries.value) {
       // updating a series
-      const original = JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex].series[seriesIndex])
-      const current = JSON.stringify(shareClasses.value[shareIndex].series[seriesIndex])
-      shareClassses.value[shareIndex].series[seriesIndex].modified = original !== current
+      const original = JSON.parse(JSON.stringify(ORIGINAL_SHARE_CLASSES.value[shareIndex].series[seriesIndex]))
+      const current = JSON.parse(JSON.stringify(shareClasses.value[shareIndex].series[seriesIndex]))
+      delete current.modified
+      delete current.removed
+      delete current.added
+      shareClasses.value[shareIndex].series[seriesIndex].modified = !compare(original, current)
     }
   }
 

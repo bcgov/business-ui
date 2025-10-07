@@ -156,6 +156,25 @@ test.describe('Post restoration Transition Application Filing', () => {
     await page.getByTestId('submit-button').click()
     await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
   })
+
+  test('Cancel save -- no changes', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
+  })
+
+  test('Cancel save -- with changes', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await page.getByTestId('compPartyEmail-input').locator('input').first().fill('a')
+    await page.getByTestId('cancel-button').click()
+    await page.locator('button').getByText(i18en.btn.keepEditing).click()
+    await expect(page.getByTestId('compPartyEmail-input').locator('input').first()).toHaveValue('a')
+    await page.getByTestId('compPartyEmail-input').locator('input').first().clear()
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
+  })
 })
 
 test.describe('Post restoration Transition Application Filing - staff', () => {
