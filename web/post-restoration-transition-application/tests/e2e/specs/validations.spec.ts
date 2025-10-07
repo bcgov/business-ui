@@ -244,6 +244,10 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
     await expect(payload.filing.transition.hasProvisions).toBe(false)
     await expect(payload.filing.transition.contactPoint).toStrictEqual({ email: valid.email })
 
+    // header validation
+    await expect(payload.filing.header.folioNumber).toBe(valid.folio)
+    await expect(payload.filing.header.certifiedBy).toBe(valid.legalName)
+
     const expectedShares = {
       shareClasses: [
         {

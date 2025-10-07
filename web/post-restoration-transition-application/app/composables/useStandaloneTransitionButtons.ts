@@ -3,6 +3,21 @@ import { validate } from '~/utils/validate'
 
 export const useStandaloneTransitionButtons = () => {
   const { scrollToOpenForm } = useEditFormHandlers()
+
+  // gave minimum attributes object has to have to fit as the params for this function (it can be moved to utils)
+  const _updatePayloadHeader = (
+    payload: { filing: { header: { certifiedBy: string, folioNumber?: string } } },
+    filingStore: { legalName: string, folio?: string }
+  ) => {
+    // certified by
+    payload.filing.header.certifiedBy = filingStore.legalName
+
+    // folio number
+    if (filingStore?.folio) {
+      payload.filing.header.folioNumber = filingStore.folio
+    }
+  }
+
   // submit final filing
   async function submitFiling() {
     const { errorModal } = useModal()
@@ -69,7 +84,9 @@ export const useStandaloneTransitionButtons = () => {
         // todo: throw modal warning
         return undefined
       }
-      payload.filing.header.certifiedBy = filingStore.legalName
+
+      _updatePayloadHeader(payload, filingStore)
+
       // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
       if (draftFilingId.value) {
         await legalApi.saveOrUpdateDraftFiling(
@@ -194,10 +211,7 @@ export const useStandaloneTransitionButtons = () => {
         standAloneTransitionData
       )
 
-      // add folio number // TODO: validation?
-      // todo: add folio ?
-      // payload.filing.header.folioNumber = filingStore.folioNumber
-      payload.filing.header.type = FilingHeaderType.NON_LEGAL
+      _updatePayloadHeader(payload, filingStore)
 
       // save filing as draft
       const res = await legalApi.saveOrUpdateDraftFiling(
