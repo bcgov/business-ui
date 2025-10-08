@@ -212,9 +212,8 @@ export const usePostRestorationTransitionApplicationStore
     shareClasses.value = draft.filing.transition.shareStructure.shareClasses
     // TODO: resolution dates #30846
     // articles.value.resolutionDates =
-    // TODO: court order details #30849
-    // courtOrderNumber.value =
-    // planOfArrangement.value =
+    courtOrderNumber.value = draft.filing?.transition?.courtOrder?.fileNumber
+    planOfArrangement.value = draft.filing?.transition?.courtOrder?.effectOfOrder === 'planOfArrangement'
     folio.value = draft.filing.header.folioNumber
     const contactEmail = draft.filing.transition.contactPoint?.email
     if (contactEmail && contactEmail !== regOfficeEmail.value) {
@@ -347,6 +346,14 @@ export const usePostRestorationTransitionApplicationStore
         shareStructure: { shareClasses: shareClasses.value }
       }
     }
+
+    if (courtOrderNumber.value) {
+      transitionFiling.transition.courtOrder = { fileNumber: courtOrderNumber.value }
+      if (planOfArrangement.value) {
+        transitionFiling.transition.courtOrder.effectOfOrder = 'planOfArrangement'
+      }
+    }
+
     console.info(transitionFiling)
     return transitionFiling
   }
