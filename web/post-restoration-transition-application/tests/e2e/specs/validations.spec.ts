@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { mockForIdentifier, impersonateUser } from '../test-utils/helpers'
 import valid from '../../mocks/filingData/valid.json' with { type: 'json' }
 import validSpecial from '../../mocks/filingData/validSpecial.json' with { type: 'json' }
@@ -8,6 +8,23 @@ import { base as baseAddress } from '../../mocks/lear/addresses.ts'
 import { base as baseDirectors } from '../../mocks/lear/directors.ts'
 
 import i18en from '~~/i18n/locales/en-CA'
+
+const selectPlanOfArrangement = async (page: Page, isSelected: boolean) => {
+  await page.getByTestId('planOfArrangement-checkbox').setChecked(isSelected)
+}
+
+const fillOutCourtOrderNumber = async (page: Page, courOrderNumber: string) => {
+  await page.getByTestId('courtOrder.number').fill(courOrderNumber)
+}
+
+const fillOutOptionalFields = async (page: Page, values: object) => {
+  if (values.courtOrderNumber !== undefined) {
+    fillOutCourtOrderNumber(page, values.courtOrderNumber)
+  }
+  if (values.planOfArrangement !== undefined) {
+    selectPlanOfArrangement(page, values.planOfArrangement)
+  }
+}
 
 const fillBasic = async (page: Page, values: object) => {
   const legalNameField = page.getByTestId('legalName-input').locator('input').first()
@@ -167,16 +184,19 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
 
   test('Staff, Pay Section and Court Section', async ({ page }) => {
     let payload = {}
+    const validValues = { ...valid, planOfArrangement: true }
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeEnabled()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
-    await fill(page, valid)
-    await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(valid.courtOrderNumber)
+    await fill(page, validValues)
+    await page.getByTestId('courtOrderNumber-input').locator('input').first().fill(validValues.courtOrderNumber)
     await page.route(`**/**/businesses/${identifier}/filings`, async (route) => {
       payload = route.request().postDataJSON()
       await route.fulfill({ json: {} })
     })
+
+    await fillOutOptionalFields(page, validValues)
 
     await page.getByTestId('submit-button').click()
     await expect(page.locator('.text-\\(--ui-error\\)')).toHaveCount(0)
@@ -195,7 +215,7 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
     await page.getByTestId('submit-button').click()
 
     await expect(payload.filing.header.name).toBe('transition')
-    await expect(payload.filing.header.certifiedBy).toBe(valid.legalName)
+    await expect(payload.filing.header.certifiedBy).toBe(validValues.legalName)
     // await expect(payload.filing.header.accountId).toBe(3040)
     const d = new Date()
     const expectedD = d.getFullYear() + '-'
@@ -223,11 +243,19 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
 
     await expect(payload.filing.transition.parties).toStrictEqual(baseDirectors.parties)
     await expect(payload.filing.transition.hasProvisions).toBe(false)
-    await expect(payload.filing.transition.contactPoint).toStrictEqual({ email: valid.email })
+    await expect(payload.filing.transition.contactPoint).toStrictEqual({ email: validValues.email })
+
+    // optional fields validation
+    await expect(payload.filing.transition.courtOrder?.fileNumber).toBe(validValues.courtOrderNumber)
+    if (validValues.planOfArrangement) {
+      await expect(payload.filing.transition.courtOrder?.effectOfOrder).toBe('planOfArrangement')
+    } else {
+      await expect(payload.filing.transition.courtOrder?.effectOfOrder).toBe('')
+    }
 
     // header validation
-    await expect(payload.filing.header.folioNumber).toBe(valid.folio)
-    await expect(payload.filing.header.certifiedBy).toBe(valid.legalName)
+    await expect(payload.filing.header.folioNumber).toBe(validValues.folio)
+    await expect(payload.filing.header.certifiedBy).toBe(validValues.legalName)
 
     const expectedShares = {
       shareClasses: [
