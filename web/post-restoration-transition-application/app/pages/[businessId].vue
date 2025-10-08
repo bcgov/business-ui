@@ -668,6 +668,7 @@ onMounted(async () => {
         <ConnectFormSection :title="$t('label.planOfArrangement')">
           <UCheckbox
             v-model="planOfArrangement"
+            data-testid="planOfArrangement-checkbox"
             :label="$t('label.planOfArrangement')"
             :ui="{ base: 'cursor-pointer mt-1', label: 'cursor-pointer pl-2', wrapper: 'w-fit' }"
           />
