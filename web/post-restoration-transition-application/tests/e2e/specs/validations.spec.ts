@@ -185,7 +185,6 @@ test.describe('Post restoration Transition Application Filing - staff', () => {
   test('Staff, Pay Section and Court Section', async ({ page }) => {
     let payload = {}
     const validValues = { ...valid, planOfArrangement: true }
-    console.log('~~~~', validValues, valid)
     await page.goto(`./en-CA/${identifier}`)
     await expect(page.getByTestId('legalName-input')).toBeVisible()
     await expect(page.getByTestId('legalName-input').locator('input').first()).toBeEnabled()
