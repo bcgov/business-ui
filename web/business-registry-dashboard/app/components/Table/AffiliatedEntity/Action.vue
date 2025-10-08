@@ -50,8 +50,30 @@ const checkPrimaryActionAuthorization = (item: Business): boolean => {
 
   if (isTemporaryBusiness(item)) {
     requiredAction = AuthorizedActions.RESUME_DRAFT
+    if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
+      if ([EntityStates.DRAFT, EntityStates.APPROVED].includes(item.draftStatus)) {
+        requiredAction = AuthorizedActions.CONTINUATION_IN_FILING
+      }
+    }
+    if (item.corpType.code === CorpTypes.AMALGAMATION_APPLICATION) {
+      requiredAction = AuthorizedActions.AMALGAMATION_FILING
+    }
   } else if (isNameRequest(item)) {
     requiredAction = AuthorizedActions.MANAGE_NR
+    const nrStatus = affiliationStatus(item)
+    if (nrStatus === NrDisplayStates.APPROVED) {
+      const nrRequestActionCd = item.nameRequest?.requestActionCd
+      switch (nrRequestActionCd) {
+        case NrRequestActionCodes.AMALGAMATE:
+          requiredAction = AuthorizedActions.AMALGAMATION_FILING
+          break
+        case NrRequestActionCodes.MOVE:
+          requiredAction = AuthorizedActions.CONTINUATION_IN_FILING
+          break
+        default:
+          break
+      }
+    }
   } else if (isSocieties(item)) {
     requiredAction = AuthorizedActions.MANAGE_SOCIETY
   } else {
