@@ -9,6 +9,7 @@ import { base as baseDirectors } from '../../mocks/lear/directors.ts'
 
 import i18en from '~~/i18n/locales/en-CA'
 
+const WAIT_TIME = 1000
 const selectPlanOfArrangement = async (page: Page, isSelected: boolean) => {
   await page.getByTestId('planOfArrangement-checkbox').setChecked(isSelected)
 }
@@ -172,6 +173,73 @@ test.describe('Post restoration Transition Application Filing', () => {
     await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
     await page.getByTestId('submit-button').click()
     await expect(page.getByText(i18en.errors.articles)).not.toBeVisible()
+  })
+
+  test('Cancel save -- no changes', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
+  })
+
+  test('Cancel save -- with changes', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await page.getByTestId('compPartyEmail-input').locator('input').first().fill('a')
+    await page.getByTestId('cancel-button').click()
+    await page.locator('button').getByText(i18en.btn.keepEditing).click()
+    await page.waitForTimeout(WAIT_TIME)
+    await expect(page.getByTestId('compPartyEmail-input').locator('input').first()).toHaveValue('a')
+    await page.getByTestId('compPartyEmail-input').locator('input').first().clear()
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
+  })
+
+  test('Cancel save -- with changes after a save', async ({ page }) => {
+    await page.route(`**/**/api/v2/businesses/${identifier}/filings?draft=true`, async (route) => {
+      await route.fulfill({ json: {
+        filing: {
+          header: {
+            filingId: 1
+          }
+        }
+      } })
+    })
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+    await page.getByTestId('compPartyEmail-input').locator('input').first().fill('a')
+    await page.getByTestId('cancel-button').click()
+    await expect(page.locator('button').getByText(i18en.btn.keepEditing)).toBeVisible()
+    await page.locator('button').getByText(i18en.btn.keepEditing).click()
+    await page.waitForTimeout(WAIT_TIME)
+    await expect(page.getByTestId('compPartyEmail-input').locator('input').first()).toHaveValue('a')
+    await page.getByTestId('save-button').click()
+    // shouldn't require a modal as it was just saved
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
+  })
+
+  test('Cancel -- with and without changes to shares', async ({ page }) => {
+    await page.goto(`./en-CA/${identifier}`)
+    await expect(page.getByTestId('legalName-input')).toBeVisible()
+
+    // change share
+    await page.locator('[aria-label="Change"]').nth(1).click()
+    await page.locator('input[placeholder="' + i18en.label.shareName + '"]').nth(1).fill('changed value')
+    await page.getByTestId('addEditSharesDone').nth(1).click()
+
+    await page.getByTestId('cancel-button').click()
+    await expect(page.locator('button').getByText(i18en.btn.keepEditing)).toBeVisible()
+    await page.locator('button').getByText(i18en.btn.keepEditing).click()
+    await page.waitForTimeout(WAIT_TIME)
+
+    await page.locator('[aria-label="Change"]').nth(1).click()
+    await page.locator('input[placeholder="' + i18en.label.shareName + '"]').nth(1).fill('Sample')
+    await page.getByTestId('addEditSharesDone').nth(1).click()
+
+    // shouldn't require a modal as it was just saved
+    await page.getByTestId('cancel-button').click()
+    await page.waitForURL(`**/login`)
   })
 })
 

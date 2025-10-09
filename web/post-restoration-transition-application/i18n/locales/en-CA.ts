@@ -162,7 +162,9 @@ export default {
     cancel: 'Cancel',
     save: 'Save',
     saveExit: 'Save and Resume Later',
-    submit: 'Submit'
+    submit: 'Submit',
+    exitWithoutSaving: 'Exit without saving',
+    keepEditing: 'Keep Editing'
   },
   modal: {
     error: {

@@ -132,7 +132,7 @@ export const useStandaloneTransitionButtons = () => {
       `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
     )
 
-    if (await filingStore.checkHasChanges('save')) {
+    if (await filingStore.checkHasChanges('save') && filingStore.hasAnyChanges) {
       await baseModal.open({
         title: t('modal.unsavedChanges.title'),
         description: t('modal.unsavedChanges.description'),
@@ -234,6 +234,7 @@ export const useStandaloneTransitionButtons = () => {
           { external: true }
         )
       }
+      filingStore.setDefaultState()
     } catch (error) {
       errorModal.open({
         error: error,
