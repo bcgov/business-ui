@@ -63,7 +63,10 @@ export const usePostRestorationTransitionApplicationStore
     return directors
       .slice()
       .map((director) => {
-        if (director?.officer?.email?.trim() === '') {
+        // we might think about removing email whenever present, as our filing does not have a field to change
+        // which means that any error in email field will break the filing
+        const email = director?.officer?.email
+        if (typeof email !== 'string' || email.trim().length < 3) {
           delete director.officer.email
         }
         return director
