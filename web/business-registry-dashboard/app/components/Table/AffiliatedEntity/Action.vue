@@ -248,6 +248,7 @@ function getPrimaryActionLabel (item: Business): string {
       if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
         switch (item.draftStatus) {
           case (EntityStates.DRAFT):
+          case (EntityStates.PENDING):
             return t('labels.resumeDraft')
           case (EntityStates.AWAITING_REVIEW):
           case (EntityStates.REJECTED) :
