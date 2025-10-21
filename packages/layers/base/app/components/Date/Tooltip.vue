@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { toDateStr, toPacificDateTime } from '#imports'
+import { DateTime } from 'luxon'
+import { toFormattedDateStr, toPacificDateTime } from '#imports'
 
 defineProps<{ date: Date, disabled?: boolean }>()
 </script>
@@ -12,7 +13,7 @@ defineProps<{ date: Date, disabled?: boolean }>()
     :text="toPacificDateTime(date)"
   >
     <span :class="{ 'underline decoration-dotted': !disabled }">
-      {{ toDateStr(date) }}
+      {{ toFormattedDateStr(date, DateTime.DATE_MED) }}
     </span>
   </UTooltip>
 </template>

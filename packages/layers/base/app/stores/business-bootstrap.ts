@@ -1,7 +1,9 @@
 /** Manages business bootstrap (temp reg) data */
 export const useBusinessBootstrapStore = defineStore('business-bootstrap', () => {
   const { t } = useI18n()
+  const { businessApiUrl, businessApiVersion } = useRuntimeConfig().public
   const { getBootstrapFiling, getLinkedNameRequest } = useBusinessApi()
+  const { getFilingName } = useFiling()
 
   const bootstrapFiling = ref<FilingGetByIdResponse<BootstrapFiling> | undefined>(undefined)
 
@@ -97,10 +99,104 @@ export const useBusinessBootstrapStore = defineStore('business-bootstrap', () =>
     }
   }
 
+  const getBootstrapLedgerItems = () => {
+    if (!bootstrapFiling.value || isTodo.value || isPending.value) {
+      return []
+    }
+    const header = bootstrapFiling.value.filing.header
+    const data = (header.name in bootstrapFiling.value.filing
+      // @ts-expect-error we know header.name will be in the bootstrapFiling.value.filing in this case
+      ? bootstrapFiling.value.filing[header.name]
+      : undefined
+    )
+    const status = header?.status
+    const description = getCorpFullDescription(data.nameRequest.legalType)
+    const filingName = getFilingName(header?.name as FilingType, data.type, undefined, status)
+    const displayName = header?.name === FilingType.AMALGAMATION_APPLICATION
+      ? filingName
+      : `${description} ${filingName}`
+    // @ts-expect-error FUTURE properly type notice of withdrawal
+    const noticeOfWithdrawal = bootstrapFiling.value?.filing.noticeOfWithdrawal?.filing || null
+
+    const effectiveDate = toDate(header?.effectiveDate || '')
+    const paymentDate = toDate(header?.date || '')
+    const submittedDate = toDate(header?.date || '')
+    const ledgerItems = [{
+      availableOnPaperOnly: header?.availableOnPaperOnly,
+      businessIdentifier: bootstrapFiling.value?.filing.business.identifier,
+      commentsCount: bootstrapFiling.value?.commentsCount,
+      commentsLink: bootstrapFiling.value?.commentsLink,
+      displayLedger: bootstrapFiling.value?.displayLedger,
+      displayName,
+      documentsLink: bootstrapFiling.value?.documentsLink,
+      effectiveDate: effectiveDate ? effectiveDate.toUTCString() : undefined,
+      filingId: header?.filingId,
+      filingLink: bootstrapFiling.value?.filingLink,
+      filingSubType: data.type,
+      isFutureEffective: bootstrapFiling.value?.isFutureEffective,
+      name: header?.name,
+      paymentDate: paymentDate ? paymentDate.toUTCString() : undefined,
+      status: status,
+      submittedDate: submittedDate ? submittedDate.toUTCString() : undefined,
+      submitter: header?.submitter,
+      withdrawalPending: bootstrapFiling.value?.withdrawalPending,
+      data: {
+        applicationDate: submittedDate ? toDateStr(submittedDate) : undefined,
+        legalFilings: [header?.name],
+        order: data.courtOrder,
+        withdrawnDate: noticeOfWithdrawal?.header.effectiveDate || null
+      },
+      latestReviewComment: header?.latestReviewComment
+    }] as BusinessLedgerItem[]
+
+    if (noticeOfWithdrawal) {
+      const header = noticeOfWithdrawal.header
+      const business = noticeOfWithdrawal.business
+      const displayName = getFilingName(header.name, undefined, undefined, header.status)
+      const legalApiURL = businessApiUrl + businessApiVersion
+      const filingLink = `${legalApiURL}/businesses/${business.identifier}/filings/${header.filingId}`
+      const commentsLink = `${filingLink}/comments`
+      const documentsLink = `${filingLink}/documents`
+
+      // If the NoW is not in draft status, add it to the filings history list
+      const effectiveDate = toDate(header?.effectiveDate || '')
+      const paymentDate = toDate(header?.date || '')
+      const submittedDate = toDate(header?.date || '')
+      if (header.status !== FilingStatus.DRAFT && header.status !== FilingStatus.PENDING) {
+        ledgerItems.unshift({
+          availableOnPaperOnly: header.availableOnPaperOnly,
+          businessIdentifier: business.identifier,
+          commentsCount: header.comments?.length,
+          commentsLink,
+          displayLedger: bootstrapFiling.value?.displayLedger,
+          displayName,
+          documentsLink,
+          effectiveDate: effectiveDate ? effectiveDate.toUTCString() : undefined,
+          filingId: header.filingId,
+          filingLink,
+          isFutureEffective: false,
+          name: header.name,
+          paymentDate: paymentDate ? paymentDate.toUTCString() : undefined,
+          status: header.status,
+          submittedDate: submittedDate ? submittedDate.toUTCString() : undefined,
+          submitter: header.submitter,
+          data: {
+            applicationDate: submittedDate ? toDateStr(submittedDate) : undefined,
+            legalFilings: [header?.name],
+            order: noticeOfWithdrawal.noticeOfWithdrawal.courtOrder
+          },
+          latestReviewComment: header.latestReviewComment
+        } as BusinessLedgerItem)
+      }
+    }
+    return ledgerItems
+  }
+
   return {
     bootstrapFiling,
     bootstrapIdentifier,
     bootstrapName,
-    loadBootstrap
+    loadBootstrap,
+    getBootstrapLedgerItems
   }
 })

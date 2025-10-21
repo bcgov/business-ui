@@ -9,6 +9,9 @@ export interface ApiPerson {
   alternateName?: string
   lastName?: string // required when partyType="person"
   organizationName?: string // required when partyType="organization"
+  prevFirstName?: string
+  prevLastName?: string
+  prevMiddleInitial?: string
   email?: string
   identifier?: string // aka Incorporation/Registration number
   taxId?: string

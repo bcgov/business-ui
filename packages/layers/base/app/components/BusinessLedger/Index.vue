@@ -17,7 +17,6 @@ const permissionsStore = useBusinessPermissionsStore()
 const drsStore = useDocumentRecordServiceStore()
 onMounted(async () => {
   await Promise.all([
-    // TODO: might make sense to move the permissions init further up
     permissionsStore.init(),
     drsStore.init({ consumerIdentifier: props.businessIdentifier })
   ])

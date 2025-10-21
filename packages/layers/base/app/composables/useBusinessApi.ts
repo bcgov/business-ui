@@ -284,13 +284,18 @@ export const useBusinessApi = () => {
    * @param businessId the identifier of the business
    * @returns a promise to return the ledger for this business
    */
-  async function getBusinessLedger(businessId: string): Promise<BusinessLedgerItem[] | undefined> {
+  async function getBusinessLedger(
+    businessId: string,
+    includeNonLedgerItems = false
+  ): Promise<BusinessLedgerItem[] | undefined> {
     if (isTempRegIdentifier(businessId)) {
       console.error('Attempting to get business ledger with a temp reg id:', businessId)
       return
     }
     const response = await $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`)
-    return response.filings
+    return includeNonLedgerItems
+      ? response.filings
+      : response.filings.filter(filing => filing.displayLedger)
   }
 
   /**

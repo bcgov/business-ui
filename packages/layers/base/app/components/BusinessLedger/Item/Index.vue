@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FilingStatus, FilingType, getFilingName } from '#imports'
+import { FilingStatus, FilingType } from '#imports'
 
 const props = defineProps<{
   filing: BusinessLedgerItem
@@ -18,6 +18,8 @@ const {
   loadComments,
   loadDocuments
 } = useBusinessLedger(props.filing)
+
+const { getFilingName } = useFiling()
 
 const showBody = ref(false)
 const loadingDetails = ref(false)
@@ -67,7 +69,7 @@ onMounted(() => {
             class="mr-1"
             name="i-mdi-gavel"
           />
-          {{ getFilingName(filing.name, filing.filingSubType, year, filing.status) }}
+          {{ getFilingName(filing.name, filing.filingSubType, year, filing.status) || filing.displayName }}
         </strong>
         <div class="text-sm">
           <BusinessLedgerItemSubtitleStaff v-if="isStaffFiling" />

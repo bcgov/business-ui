@@ -29,7 +29,7 @@ onMounted(async () => {
       <BusinessLedgerItemBodyDocumentsRecordButton v-if="documentId" v-model:document-id="documentId" />
       <BusinessLedgerItemBodyDetails
         v-if="filing.commentsCount"
-        class="border-t border-line-muted mt-6 pt-6"
+        :class="{ 'border-t border-line-muted mt-6 pt-6': !filing.availableOnPaperOnly || documentId }"
       />
     </div>
   </div>

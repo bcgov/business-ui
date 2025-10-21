@@ -5,9 +5,9 @@ export interface FilingHeaderResponse {
   certifiedBy: string
   colinIds: Array<unknown>
   comments: Array<unknown>
-  date: string // isodate
+  date: ApiDateTimeUtc
   deletionLocked: boolean
-  effectiveDate: string // isodate
+  effectiveDate: ApiDateTimeUtc
   filingId: number
   inColinOnly: boolean
   isCorrected: boolean
@@ -19,6 +19,8 @@ export interface FilingHeaderResponse {
   paymentToken: string
   status: FilingStatus
   submitter: string
+  latestReviewComment?: string
+  paymentDate?: ApiDateTimeUtc
   paymentMethod?: ConnectPayMethod
   folioNumber?: string
   type?: FilingHeaderType
