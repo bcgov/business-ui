@@ -1,5 +1,4 @@
-/** A comment from the API. */
-export interface Comment {
+export interface BusinessComment {
   businessId?: string
   comment: string
   filingId?: string

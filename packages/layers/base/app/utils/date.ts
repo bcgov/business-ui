@@ -1,5 +1,6 @@
 // https://moment.github.io/luxon/#/formatting?id=table-of-tokens
 import { DateTime } from 'luxon'
+import type { DateTimeFormatOptions } from 'luxon'
 
 /**
  * Gets todays date, can customize timezone and output format.
@@ -28,4 +29,54 @@ export function getToday(timezone = 'UTC', format?: string): string {
   }
 
   return dt.toISODate()
+}
+
+/**
+ * Converts an iso date string to a Date object at 12 am in the specified timezone (defaults to pacific time).
+ */
+export const toDate = (dateStr: IsoDatePacific | ApiDateTimeUtc, timezone = 'America/Vancouver'): Date | undefined => {
+  const newDate = DateTime.fromISO(dateStr, { zone: timezone })
+  return newDate.isValid ? newDate.toJSDate() : undefined
+}
+
+/**  Return the date as a string in iso date format */
+export function toDateStr(date: Date, timezone = 'America/Vancouver'): IsoDatePacific | undefined {
+  const newDate = DateTime.fromJSDate(date, { zone: timezone })
+  return newDate.isValid ? newDate.toISODate() : undefined
+}
+
+/**
+ * Return the date as a string in the desired format.
+ * Documentation: https://moment.github.io/luxon/#/formatting
+ */
+export function toFormattedDateStr(
+  date: Date,
+  format?: DateTimeFormatOptions,
+  timezone = 'America/Vancouver'
+): IsoDatePacific | undefined {
+  const newDate = DateTime.fromJSDate(date, { zone: timezone })
+  return newDate.isValid ? newDate.toLocaleString(format) : undefined
+}
+
+/**
+ * Converts a Date object to a date and time string (Month Day, Year at HH:MM am/pm
+ * Pacific time).
+ * @example "2021-01-01 07:00:00 GMT" -> "December 31, 2020 at 11:00 pm Pacific time"
+ * @example "2021-01-01 08:00:00 GMT" -> "January 1, 2021 at 12:00 pm Pacific time"
+ */
+export function toPacificDateTime(date: Date): string | undefined {
+  const dateStr = toFormattedDateStr(date, { ...DateTime.DATETIME_FULL, timeZoneName: undefined })
+  const { t } = useI18n()
+  return dateStr
+    ? `${dateStr.replace('AM', 'am').replace('PM', 'pm')} ${t('label.pacificTime')}`
+    : undefined
+}
+
+/**
+ * Returns the difference in days between two Date objects.
+ */
+export function daysBetween(startDate: Date, endDate: Date) {
+  const date1 = DateTime.fromJSDate(startDate)
+  const date2 = DateTime.fromJSDate(endDate)
+  return date1.isValid && date2.isValid ? date2.diff(date1, 'days').toObject().days : undefined
 }

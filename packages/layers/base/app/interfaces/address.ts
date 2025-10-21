@@ -43,3 +43,9 @@ export interface IncorporationAddress {
   // Records Address may be optional for other app types.
   recordsOffice?: ApiBaseAddressObj
 }
+
+export interface EntityOfficeAddress {
+  registeredOffice?: ApiBaseAddressObj
+  recordsOffice?: ApiBaseAddressObj
+  businessOffice?: ApiBaseAddressObj
+}

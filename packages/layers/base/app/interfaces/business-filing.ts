@@ -13,7 +13,7 @@ export interface FilingHeaderResponse {
   isCorrected: boolean
   isCorrectionPending: boolean
   isPaymentActionRequired: boolean
-  name: string
+  name: FilingType
   paymentAccount: string
   paymentStatusCode: PaymentStatus
   paymentToken: string

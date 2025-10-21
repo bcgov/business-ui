@@ -1,4 +1,5 @@
 export enum FilingStatus {
+  CANCELLED = 'CANCELLED',
   COMPLETED = 'COMPLETED',
   CORRECTED = 'CORRECTED',
   DRAFT = 'DRAFT',

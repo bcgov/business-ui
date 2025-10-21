@@ -5,8 +5,9 @@ export const useBusinessApi = () => {
 
   function createFilingPayload<F extends Record<string, unknown>>(
     business: BusinessData | BusinessDataSlim,
-    filingName: string,
-    filings: F
+    filingName: FilingType,
+    filingData: F,
+    headerData: Partial<FilingHeaderSubmission> = {}
   ): FilingSubmissionBody<F> {
     return {
       filing: {
@@ -15,7 +16,8 @@ export const useBusinessApi = () => {
           certifiedBy: authUser.value.fullName,
           accountId,
           date: getToday(),
-          type: FilingHeaderType.LEGAL
+          type: FilingHeaderType.LEGAL,
+          ...headerData
         },
         business: {
           identifier: business.identifier,
@@ -23,7 +25,7 @@ export const useBusinessApi = () => {
           legalName: business.legalName,
           legalType: business.legalType
         },
-        ...filings
+        ...filingData
       }
     }
   }
@@ -180,19 +182,65 @@ export const useBusinessApi = () => {
   }
 
   /**
+   * Fetches authorized actions (aka permissions) from the Legal API.
+   * @returns a promise to return authorized actions list
+   */
+  async function getAuthorizedActions(): Promise<AuthorizedAction[]> {
+    const response = await $businessApi<{ authorizedPermissions: AuthorizedAction[] }>('/permissions')
+    return response.authorizedPermissions
+  }
+
+  /**
    * Fetches the business info of the current business.
    * @param businessId the identifier of the business
    * @returns a promise to return business data
    */
   function getBusiness(businessId: string, slim: true): Promise<BusinessDataSlim> // tell TS return type is slim if true
   function getBusiness(businessId: string, slim?: false): Promise<BusinessData>
-
-  async function getBusiness(businessId: string, slim: boolean = false): Promise<BusinessData | BusinessDataSlim> {
+  async function getBusiness(businessId: string, slim = false): Promise<BusinessData | BusinessDataSlim> {
     const response = await $businessApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
       query: slim ? { slim: true } : undefined
     })
 
     return response.business
+  }
+
+  /**
+   * Fetches the list of documents grouped by types.
+   * @param url the full URL to fetch the comments
+   * @returns a promise to return the comments list for the url
+   */
+  const getFilingComments = async (url: string): Promise<BusinessComment[]> => {
+    const options = { baseURL: url }
+    const response = await $businessApi<{ comments: { comment: BusinessComment }[] }>('', options)
+    return response.comments.map(comment => comment.comment).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  }
+
+  /**
+   * Fetches documents object.
+   * @param url the full URL to fetch the documents
+   * @param options the options to fetch the documents
+   * @returns the fetch documents object
+   */
+  async function getBusinessDocument(url: string): Promise<Blob> {
+    const options = {
+      baseURL: url, responseType: 'blob', headers: { Accept: 'application/pdf' }
+    }
+    // @ts-expect-error doesn't like responseType as a string
+    return await $businessApi<Blob>('', options)
+  }
+
+  /**
+   * Fetches the parties of the current business.
+   * @param businessId the identifier of the business
+   * @param query the query to add to the request (e.g., { role: 'director' })
+   * @returns a promise to return the data
+   */
+  async function getFilingDocumentUrls(businessId: string, filingId: string): Promise<BusinessFilingDocumentUrls> {
+    const response = await $businessApi<{ documents: BusinessFilingDocumentUrls }>(
+      `businesses/${businessId}/filings/${filingId}/documents`)
+
+    return response.documents
   }
 
   /**
@@ -210,6 +258,42 @@ export const useBusinessApi = () => {
   }
 
   /**
+   * Fetches a bootstrap filing by its temporary business identifier.
+   * @param tempRegId the temporary identifier of the business
+   * @returns a promise to return the filing information for this temporary business
+   */
+  async function getBootstrapFiling(tempRegId: string): Promise<FilingGetByIdResponse<BootstrapFiling> | undefined> {
+    if (!isTempRegIdentifier(tempRegId)) {
+      console.error('Attempting to get bootstrap filing with invalid temp reg id:', tempRegId)
+      return
+    }
+    return await $businessApi<FilingGetByIdResponse<BootstrapFiling>>(`businesses/${tempRegId}/filings`)
+  }
+
+  /**
+   * Fetches a business linked Name Request by its NR number.
+   * @param nrNumber the Name Request number
+   * @returns a promise to return the Name Request information for this temporary business
+   */
+  async function getLinkedNameRequest(nrNumber: string): Promise<NameRequest> {
+    return await $businessApi<NameRequest>(`nameRequests/${nrNumber}/validate`)
+  }
+
+  /**
+   * Fetches a business ledger by its business identifier.
+   * @param businessId the identifier of the business
+   * @returns a promise to return the ledger for this business
+   */
+  async function getBusinessLedger(businessId: string): Promise<BusinessLedgerItem[] | undefined> {
+    if (isTempRegIdentifier(businessId)) {
+      console.error('Attempting to get business ledger with a temp reg id:', businessId)
+      return
+    }
+    const response = await $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`)
+    return response.filings
+  }
+
+  /**
    * Fetches the auth info of the given business.
    * @returns a promise to return the data
    */
@@ -219,7 +303,14 @@ export const useBusinessApi = () => {
 
   return {
     // business api queries
+    getAuthorizedActions,
+    getBootstrapFiling,
+    getBusinessDocument,
+    getBusinessLedger,
     getFilingById,
+    getFilingComments,
+    getFilingDocumentUrls,
+    getLinkedNameRequest,
     deleteFilingById,
     postFiling,
     saveOrUpdateDraftFiling,
