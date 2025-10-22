@@ -33,16 +33,16 @@ const dissolutionDatePacific = dissolutionDate ? toPacificDateTime(dissolutionDa
 
 const effectiveDate = filing.effectiveDate ? toPacificDateTime(new Date(filing.effectiveDate)) : unknownStr
 
-const text = t(isEntityFirm ? 'dissolutionCompletedFirm' : 'dissolutionCompletedNonFirm',
+const text = t(isEntityFirm ? 'text.dissolutionCompletedFirm' : 'text.dissolutionCompletedNonFirm',
   {
     boldStart: '<strong>',
     boldEnd: '</strong>',
-    entityTitle,
+    entityTitle: entityTitle.value,
     name: companyName,
     effectiveDate: effectiveDate,
     submittedDate: paidSubmittedDatePacific,
     dissolutionDate: dissolutionDatePacific,
-    actTitle
+    actTitle: actTitle.value
   })
 </script>
 

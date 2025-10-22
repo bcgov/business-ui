@@ -17,6 +17,7 @@ export const saveBlob = (blob: Blob, fileName: string) => {
 }
 
 /** Download the file as the given filename. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const downloadFile = (data: any, fileName: string) => {
   const blob = new Blob([data])
   saveBlob(blob, fileName)

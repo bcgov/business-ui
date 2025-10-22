@@ -26,10 +26,11 @@ const showCommentDialog = (show: boolean) => {
             size="large"
           />
           <span class="ml-1">
-            {{ $t('label.details') }} ({{ comments.length || 0 }})</span>
+            {{ $t('label.details') }} ({{ comments.length || 0 }})
+          </span>
         </strong>
       </div>
-      <div class="ml-auto pr-2 order-2">
+      <div class="ml-auto">
         <UButton
           v-if="!isDisableNonBenCorps() && isAuthorizedDetailComments"
           class="rounded-sm px-3 py-2"
@@ -41,19 +42,18 @@ const showCommentDialog = (show: boolean) => {
       </div>
     </div>
     <!-- the detail comments list -->
-    <div class="mt-3 flex flex-col gap-5 text-sm" data-testid="detail-comments-list">
+    <div class="mt-3 space-y-5 text-sm" data-testid="detail-comments-list">
       <div
         v-for="(comment, index) in comments"
         :key="index"
-        class="pl-0 pr-0 detail-body"
       >
         <div class="flex flex-col gap-0.5">
-          <div class="body-2">
+          <div>
             <strong v-if="!isAuthorizedDetailComments">{{ $t('label.bcRegistriesStaff') }}</strong>
             <strong v-else>{{ comment.submitterDisplayName || 'N/A' }}</strong>
             ({{ toPacificDateTime(new Date(comment.timestamp)) || $t('label.unknown') }})
           </div>
-          <div class="body-2">
+          <div>
             <div class="whitespace-pre-line break-words">
               {{ comment.comment }}
             </div>

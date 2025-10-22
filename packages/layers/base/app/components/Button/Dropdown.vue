@@ -2,33 +2,39 @@
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 defineProps<{
+  buttonAttrs?: object
   dropdownItems?: DropdownMenuItem[]
   dropdownAttrs?: object
   dropdownButtonAttrs?: object
-  wrapperAttrs?: object
+  hideSeparator?: boolean
 }>()
 </script>
 
 <template>
-  <div class="flex items-start" v-bind="wrapperAttrs">
+  <div class="flex items-start divide-x divide-line-muted *:px-3">
     <!-- the main button -->
     <UButton
-      v-bind="$attrs"
-      class="px-3 py-2"
+      v-bind="buttonAttrs"
+      :class="!hideSeparator && dropdownItems ? 'rounded-r-none' : 'border-none'"
       variant="ghost"
     />
-    <!-- the drop-down menu TBD -->
     <UDropdownMenu
       v-if="dropdownItems"
       :items="dropdownItems"
       :content="{
-        align: 'start',
+        align: 'end',
         side: 'bottom',
         sideOffset: 8
       }"
+      :ui="{ item: 'text-primary' }"
       v-bind="dropdownAttrs"
     >
-      <UButton icon="i-mdi-chevron-down" v-bind="dropdownButtonAttrs" />
+      <UButton
+        :class="{ 'rounded-l-none': !hideSeparator }"
+        icon="i-mdi-chevron-down"
+        variant="ghost"
+        v-bind="dropdownButtonAttrs"
+      />
     </UDropdownMenu>
   </div>
 </template>

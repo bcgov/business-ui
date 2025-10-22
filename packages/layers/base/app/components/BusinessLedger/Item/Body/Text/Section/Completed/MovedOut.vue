@@ -17,17 +17,17 @@ onMounted(() => {
   if (isFilingType(FilingType.CONTINUATION_OUT)) {
     title.value = t('label.continuedOutComplete')
     textPath = 'text.theCompanyWasSuccessfullyContinuedOut'
-    const continuedDate = filing.data?.continuationOut?.continuationOutDate
+    const continuedDate = toDate(filing.data?.continuationOut?.continuationOutDate || '')
     date = continuedDate
-      ? toFormattedDateStr(new Date(continuedDate), DateTime.DATE_MED) || `[${t('text.unknown')}]`
+      ? toFormattedDateStr(continuedDate, DateTime.DATE_MED) || `[${t('text.unknown')}]`
       : `[${t('text.unknown')}]`
     newBusinessName = filing.data?.continuationOut?.legalName || `[${t('text.unknown')}]`
   } else {
     title.value = t('label.amalgamationOutComplete')
     textPath = 'text.theCompanyWasSuccessfullyAmalgamatedOut'
-    const amalgamatedDate = filing.data?.amalgamationOut?.amalgamationOutDate
+    const amalgamatedDate = toDate(filing.data?.amalgamationOut?.amalgamationOutDate || '')
     date = amalgamatedDate
-      ? toFormattedDateStr(new Date(amalgamatedDate), DateTime.DATE_MED) || `[${t('text.unknown')}]`
+      ? toFormattedDateStr(amalgamatedDate, DateTime.DATE_MED) || `[${t('text.unknown')}]`
       : `[${t('text.unknown')}]`
     newBusinessName = filing.data?.amalgamationOut?.legalName || `[${t('text.unknown')}]`
   }
@@ -37,7 +37,7 @@ onMounted(() => {
       boldStart: '<strong>',
       boldEnd: '</strong>',
       date,
-      foreignJurisdiction,
+      foreignJurisdiction: foreignJurisdiction.value,
       name: businessName || t('text.ThisCompany'),
       newName: newBusinessName
     })

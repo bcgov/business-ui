@@ -33,6 +33,16 @@ provide<string>(
   'lockedDocumentsText',
   'Configurable tooltip text over locked documents.')
 
+/** good dev examples:
+ * BC0887698 (continuationOut, consentContinuationOut, Alteration from bc to ben)
+ * C9900770 (continuationIn, agmExtension, courtOrder, registrars notation+order, dissolution[admin], putBackOn)
+ * TUVSVVR7Ko (bootstrap ben incorporation)
+ * BC0870917 (restoration[limited], correction)
+ * CP3490209 (courtOrder[plan of arrangement])
+ * BC0883823 (dissolution[voluntary])
+ * BC0873420 (amalgamationApplication, consentContinuationOut, alterations)
+ * BC0887748 (consentAmalgamationOut, amalgamationOut)
+*/
 const identifier = ref('')
 const filings = ref<BusinessLedgerItem[]>([])
 

@@ -14,7 +14,6 @@ const companyName = businessName || t('test.ThisCompany')
     <p>
       <strong>{{ $t('label.alterationComplete') }}</strong>
     </p>
-    <!-- TODO: test -->
     <p v-if="fromLegalType !== toLegalType">
       {{ $t('text.alterationWasSuccessfullyAlteredToTypeOn', { name: companyName, fromLegalType, toLegalType }) }}
       <DateTooltip :date="new Date(filing.effectiveDate)" />.

@@ -69,7 +69,7 @@ onMounted(() => {
             class="mr-1"
             name="i-mdi-gavel"
           />
-          {{ getFilingName(filing.name, filing.filingSubType, year, filing.status) || filing.displayName }}
+          {{ filing.displayName || getFilingName(filing.name, filing.filingSubType, year, filing.status) }}
         </strong>
         <div class="text-sm">
           <BusinessLedgerItemSubtitleStaff v-if="isStaffFiling" />
@@ -93,12 +93,15 @@ onMounted(() => {
           />
         </div>
       </div>
+      <!-- FUTURE: add the drop-down items for staff here using dropdownItems prop -->
       <ButtonDropdown
-        :label="actionBtnLabel"
-        :loading="loadingDetails"
-        :wrapper-attrs="{ class: 'sm:ml-auto' }"
-        :ui="{ label: 'font-bold' }"
-        @click.stop="toggleDetails"
+        class="sm:ml-auto"
+        :button-attrs="{
+          label: actionBtnLabel,
+          loading: loadingDetails,
+          ui: { label: 'font-bold' },
+          onClick: toggleDetails
+        }"
       />
     </div>
     <ConnectTransitionCollapse>

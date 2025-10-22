@@ -4,15 +4,15 @@ const { t } = useI18n()
 const filing = inject<BusinessLedgerItem>('filing')!
 const { foreignJurisdiction, isFilingType } = useBusinessLedger(filing)
 
-const expiryDate = filing.data?.consentAmalgamationOut?.expiry || filing.data?.consentContinuationOut?.expiry
+const expiryDate = toDate(
+  filing.data?.consentAmalgamationOut?.expiry || filing.data?.consentContinuationOut?.expiry || '')
 
-const expiry = expiryDate ? toPacificDateTime(new Date(expiryDate)) : null
+const expiry = expiryDate ? toPacificDateTime(expiryDate) : null
 
 /** Check if Consent is Expired. (Assumes expiry is not empty.) */
 const isConsentExpired: Ref<boolean> = computed(() => {
   if (expiryDate) {
-    const date = new Date(expiryDate)
-    const daysToExpire = daysBetween(new Date(), date)
+    const daysToExpire = daysBetween(new Date(), expiryDate)
     if (daysToExpire !== undefined && daysToExpire < 0) {
       return true
     }
@@ -26,16 +26,19 @@ const name = isFilingType(FilingType.CONSENT_AMALGAMATION_OUT)
 
 const notExpiredText = t(
   'text.thisConsentToIsValidUntilDate',
-  { boldStart: '<strong>', boldEnd: '</strong>', date: expiry, foreignJurisdiction, name }
+  { boldStart: '<strong>', boldEnd: '</strong>', date: expiry, foreignJurisdiction: foreignJurisdiction.value, name }
 )
 </script>
 
 <template>
   <div>
-    <p v-if="isConsentExpired">
-      <UIcon name="i-mdi-alert" class="text-warning" />
-      {{ $t('text.expiredConsent', { name }) }}
-    </p>
+    <!-- TODO test BC0887698 -->
+    <div v-if="isConsentExpired" class="flex gap-2 items-start">
+      <UIcon name="i-mdi-alert" class="text-warning text-xl" />
+      <p>
+        {{ $t('text.expiredConsent', { name }) }}
+      </p>
+    </div>
     <!-- NOTE: no user inputted values are used below -->
     <!-- eslint-disable-next-line vue/no-v-html  -->
     <p v-else v-html="notExpiredText" />
