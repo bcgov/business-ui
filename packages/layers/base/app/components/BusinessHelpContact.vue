@@ -8,7 +8,7 @@ const contact: ConnectContactItem[] = [
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4" data-testid="business-help-contact">
     <div>
       <p>
         <strong>

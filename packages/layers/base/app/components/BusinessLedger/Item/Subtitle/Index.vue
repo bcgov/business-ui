@@ -25,7 +25,7 @@ const hideTooltip = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div data-testid="business-ledger-item-header-subtitle">
     <slot>
       <span v-if="!isChangeOfOfficers">
         {{ $t('label.FILEDANDPAID') }}

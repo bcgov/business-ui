@@ -15,7 +15,7 @@ onMounted(() => {
   let textPath = ''
   let date = ''
   if (isFilingType(FilingType.CONTINUATION_OUT)) {
-    title.value = t('label.continuedOutComplete')
+    title.value = t('label.continuationOutComplete')
     textPath = 'text.theCompanyWasSuccessfullyContinuedOut'
     const continuedDate = toDate(filing.data?.continuationOut?.continuationOutDate || '')
     date = continuedDate

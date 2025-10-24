@@ -1,0 +1,31 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0870917",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/148680/comments",
+    "data": {
+        "annualReport": {
+            "annualGeneralMeetingDate": null,
+            "annualReportDate": "2024-02-07",
+            "annualReportFilingYear": 2024
+        },
+        "applicationDate": "2024-02-07",
+        "legalFilings": [
+            "annualReport"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Annual Report (2024)",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/148680/documents",
+    "effectiveDate": "Wed, 07 Feb 2024 08:00:00 GMT",
+    "filingId": 148680,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/148680",
+    "isFutureEffective": false,
+    "name": "annualReport",
+    "paymentDate": "Mon, 18 Mar 2024 20:43:15 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Mon, 18 Mar 2024 20:43:15 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

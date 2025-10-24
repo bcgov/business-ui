@@ -42,10 +42,11 @@ const showCommentDialog = (show: boolean) => {
       </div>
     </div>
     <!-- the detail comments list -->
-    <div class="mt-3 space-y-5 text-sm" data-testid="detail-comments-list">
+    <div class="mt-3 space-y-5 text-sm">
       <div
         v-for="(comment, index) in comments"
         :key="index"
+        data-testid="ledger-comment"
       >
         <div class="flex flex-col gap-0.5">
           <div>

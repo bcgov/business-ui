@@ -1,0 +1,32 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0887698",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/185944/comments",
+    "data": {
+        "applicationDate": "2025-03-26T17:45:29.949520+00:00",
+        "continuationOut": {
+            "continuationOutDate": "2025-03-26",
+            "country": "AF",
+            "legalName": "0887698 B.C. LTD.",
+            "region": null
+        },
+        "legalFilings": [
+            "continuationOut"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Continuation Out",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/185944/documents",
+    "effectiveDate": "Wed, 26 Mar 2025 17:45:31 GMT",
+    "filingId": 185944,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/185944",
+    "isFutureEffective": false,
+    "name": "continuationOut",
+    "paymentDate": "Wed, 26 Mar 2025 17:45:31 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Wed, 26 Mar 2025 17:45:29 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

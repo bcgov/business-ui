@@ -72,7 +72,11 @@ const componentIsNotEmpty = (
 </script>
 
 <template>
-  <div v-if="componentIsNotEmpty" class="space-y-4">
+  <div
+    v-if="componentIsNotEmpty"
+    class="space-y-4"
+    data-testid="business-ledger-item-body-text"
+  >
     <p v-if="filing.availableOnPaperOnly">
       {{ $t('text.filingAvailableOnPaperOnly') }}
     </p>

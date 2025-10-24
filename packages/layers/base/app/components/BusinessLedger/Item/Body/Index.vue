@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{ loading: boolean }>()
+const showDocumentRecords = inject<Ref<boolean>>('showDocumentRecords')
 
 const filing = inject<BusinessLedgerItem>('filing')!
 const drsStore = useDocumentRecordServiceStore()
@@ -12,12 +13,17 @@ const hasExtraDocsOrDetails = computed(() => (
 ))
 
 onMounted(async () => {
-  documentId.value = drsStore.getDocIdByFilingId(filing.filingId)
+  if (showDocumentRecords?.value && drsStore.enableDocumentRecords) {
+    documentId.value = drsStore.getDocIdByFilingId(filing.filingId)
+  }
 })
 </script>
 
 <template>
-  <div class="mt-3 py-3 divide-y divide-line-muted border-t border-line-muted *:first:mt-0 *:first:pt-0 *:my-4 *:py-4">
+  <div
+    class="mt-3 py-3 divide-y divide-line-muted border-t border-line-muted *:first:mt-0 *:first:pt-0 *:my-4 *:py-4"
+    data-testid="business-ledger-item-body"
+  >
     <BusinessLedgerItemBodyText />
     <div v-if="loading" class="space-y-3">
       <USkeleton class="h-5 w-50 rounded" />

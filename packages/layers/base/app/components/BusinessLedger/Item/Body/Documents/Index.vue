@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const filing = inject<BusinessLedgerItem>('filing')!
-const isLocked = inject<Ref<boolean>>('isLocked')
+const isLocked = inject<Ref<boolean>>('lockedDocuments')
 const lockedDocumentsText = inject<string>('lockedDocumentsText')
 
 const { documents } = useBusinessLedger(filing)
@@ -28,7 +28,6 @@ const downloadAll = async () => {
 <template>
   <div data-testid="document-list">
     <p v-if="!documents.length" class="ml-7 text-sm">
-      <!-- NOTE: should never get here. -->
       {{ $t('text.noDocumentsAvailable') }}
     </p>
     <div v-for="(document, index) in documents" :key="index">

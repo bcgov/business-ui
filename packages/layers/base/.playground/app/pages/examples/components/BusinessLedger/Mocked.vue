@@ -21,11 +21,9 @@ setBreadcrumbs([
   }
 ])
 
-const isLocked = ref(false)
-provide<Ref<boolean>>('isLocked', isLocked)
-provide<string>(
-  'lockedDocumentsText',
-  'Select Business Summary and Filing History Documents above and complete payment to access document.')
+// set permissions manually to prevent it calling out to the api
+const { authorizedActions } = storeToRefs(useBusinessPermissionsStore())
+authorizedActions.value = [AuthorizedAction.DETAIL_COMMENTS]
 
 const today = DateTime.fromJSDate(new Date())
 const tomorrow = today.plus({ days: 1 })
@@ -35,12 +33,12 @@ const filings: BusinessLedgerItem[] = [
   {
     availableOnPaperOnly: false,
     businessIdentifier: identifier,
-    commentsCount: 1,
+    commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
-    effectiveDate: `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} 2025 08:01:00 GMT`,
+    effectiveDate: `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} ${tomorrow.year} 08:01:00 GMT`,
     filingId: 206591,
     filingLink: '',
     isFutureEffective: true,
@@ -56,7 +54,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} 2025 08:01:00 GMT`,
@@ -75,7 +73,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: 'Officer Change - name set from displayName',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 9 Oct 2025 14:00:27 GMT',
@@ -101,7 +99,7 @@ const filings: BusinessLedgerItem[] = [
         annualReportFilingYear: 2025
       }
     },
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 9 Oct 2025 13:00:27 GMT',
@@ -120,7 +118,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 5 Sep 2025 14:00:27 GMT',
@@ -151,7 +149,7 @@ const filings: BusinessLedgerItem[] = [
         year: '2025'
       }
     },
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Sun, 4 Sep 2025 05:00:27 GMT',
@@ -170,7 +168,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 21 Sep 2025 13:00:27 GMT',
@@ -189,7 +187,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 20 Sep 2025 13:00:27 GMT',
@@ -208,7 +206,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Tue, 26 Nov 2024 08:01:00 GMT',
@@ -228,7 +226,7 @@ const filings: BusinessLedgerItem[] = [
     commentsCount: 0,
     commentsLink: '',
     data: { withdrawnDate: '2024-11-24T20:18:41.056922+00:00' },
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Tue, 24 Nov 2024 21:01:00 GMT',
@@ -248,7 +246,7 @@ const filings: BusinessLedgerItem[] = [
     commentsCount: 0,
     commentsLink: '',
     data: { withdrawnDate: '2024-11-24T20:18:41.056922+00:00' },
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Tue, 25 Nov 2024 08:01:00 GMT',
@@ -267,7 +265,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Fri, 23 Dec 2023 17:00:27 GMT',
@@ -286,7 +284,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 21 November 2023 13:00:27 GMT',
@@ -305,7 +303,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 21 November 2022 13:00:27 GMT',
@@ -324,7 +322,7 @@ const filings: BusinessLedgerItem[] = [
     businessIdentifier: identifier,
     commentsCount: 0,
     commentsLink: '',
-    displayName: 'Display Name from API',
+    displayName: '',
     displayLedger: true,
     documentsLink: '',
     effectiveDate: 'Mon, 21 November 2021 13:00:27 GMT',
@@ -360,13 +358,13 @@ const ledgerItems = computed(() => {
 
     <ConnectPageSection
       :heading="{
-        label: 'Mocked Example (No comments or documents or anything else requiring connection to an API)'
+        label: 'Mocked Example (No comments or documents, ledger items are hardcoded)'
       }"
       ui-body="p-4 space-y-4"
     >
-      <div class="space-x-3">
-        <UButton label="Toggle court order" @click="includeCourtOrder = !includeCourtOrder" />
-        <UButton label="Toggle no filings" @click="noFilings = !noFilings" />
+      <div class="space-y-3">
+        <USwitch v-model="includeCourtOrder" label="Court Order" />
+        <USwitch v-model="noFilings" label="No Filings" />
       </div>
       <div class="bg-shade p-5 mt-3">
         <BusinessLedger :business-identifier="identifier" :filings="ledgerItems" />

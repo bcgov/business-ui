@@ -28,10 +28,7 @@ const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstra
 const hideReceipts = ref(false)
 
 const isLocked = ref(false)
-provide<Ref<boolean>>('isLocked', isLocked)
-provide<string>(
-  'lockedDocumentsText',
-  'Configurable tooltip text over locked documents.')
+const showDocumentRecords = ref(true)
 
 /** good dev examples:
  * BC0887698 (continuationOut, consentContinuationOut, Alteration from bc to ben)
@@ -82,7 +79,7 @@ const loadLedger = async () => {
 
     <ConnectPageSection
       :heading="{
-        label: 'Example (fully integrated with the backend APIs)'
+        label: 'Example (login and API integration setup required)'
       }"
       ui-body="p-4 space-y-4"
     >
@@ -106,8 +103,12 @@ const loadLedger = async () => {
       </div>
       <ConnectTransitionCollapse>
         <div v-if="!loading && (businessIdentifier || bootstrapIdentifier)">
-          <div class="space-x-3">
-            <UButton label="Toggle locked" @click="isLocked = !isLocked" />
+          <div class="space-y-3">
+            <USwitch v-model="isLocked" label="Documents Locked" />
+            <USwitch
+              v-model="showDocumentRecords"
+              label="Show Manage Document Records (FF must also be on for these to show)"
+            />
           </div>
           <div class="bg-shade p-5 mt-3">
             <BusinessLedger
@@ -115,6 +116,9 @@ const loadLedger = async () => {
               :filings="ledgerItems"
               :hide-receipts="hideReceipts"
               :incomplete-business="!businessIdentifier"
+              :locked-documents="isLocked"
+              locked-documents-tooltip="Configurable tooltip text over locked documents."
+              :show-document-records="showDocumentRecords"
             />
           </div>
         </div>

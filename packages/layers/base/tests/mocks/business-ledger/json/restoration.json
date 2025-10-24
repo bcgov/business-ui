@@ -1,0 +1,35 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0870917",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/145014/comments",
+    "data": {
+        "applicationDate": "2023-05-12T22:04:37.691559+00:00",
+        "legalFilings": [
+            "restoration"
+        ],
+        "order": {
+            "fileNumber": "54321"
+        },
+        "restoration": {
+            "expiry": "2025-05-12",
+            "fromLegalName": "SEVERIN RESTORE BEN AGAIN LTD.",
+            "toLegalName": "0870917 B.C. LTD."
+        }
+    },
+    "displayLedger": true,
+    "displayName": "Limited Restoration Application",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/145014/documents",
+    "effectiveDate": "Fri, 12 May 2023 22:04:38 GMT",
+    "filingId": 145014,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0870917/filings/145014",
+    "filingSubType": "limitedRestoration",
+    "isFutureEffective": false,
+    "name": "restoration",
+    "paymentDate": "Fri, 12 May 2023 22:04:38 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Fri, 12 May 2023 22:04:37 GMT",
+    "submitter": "Severin Beauvais",
+    "withdrawalPending": false
+}

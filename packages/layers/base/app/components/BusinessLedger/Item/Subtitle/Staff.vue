@@ -26,7 +26,7 @@ const date = computed(() => new Date(filing.paymentDate || filing.submittedDate)
         </span>
       </BusinessLedgerItemSubtitle>
     </template>
-    <span v-else>
+    <span v-else data-testid="business-ledger-item-header-subtitle">
       {{ $t('text.FiledBySubmitterOn', { submitter: filing.submitter }) }}
       <DateTooltip :date />
     </span>

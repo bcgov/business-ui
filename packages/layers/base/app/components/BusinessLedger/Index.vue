@@ -2,9 +2,16 @@
 const props = defineProps<{
   businessIdentifier: string
   filings: BusinessLedgerItem[]
-  incompleteBusiness?: boolean
   hideReceipts?: boolean
+  incompleteBusiness?: boolean
+  lockedDocuments?: boolean
+  lockedDocumentsTooltip?: string
+  showDocumentRecords?: boolean
 }>()
+
+provide<Ref<boolean>>('lockedDocuments', computed(() => props.lockedDocuments))
+provide<string | undefined>('lockedDocumentsText', props.lockedDocumentsTooltip)
+provide<Ref<boolean>>('showDocumentRecords', computed(() => props.showDocumentRecords))
 
 const hasCourtOrders = computed(() => (
   props.filings.findIndex(filing => filing.name === FilingType.COURT_ORDER)) !== -1)
@@ -26,7 +33,7 @@ onMounted(async () => {
 <template>
   <div
     class="flex flex-col gap-1.5"
-    data-testid="filing-history-list"
+    data-testid="business-ledger"
   >
     <!-- Court order notification -->
     <div
@@ -50,7 +57,7 @@ onMounted(async () => {
     <div
       v-if="!filings.length"
       class="flex flex-col w-full bg-shade-inverted p-5 rounded"
-      data-testid="filing-history-empty"
+      data-testid="business-ledger-empty"
     >
       <div v-if="incompleteBusiness" class="flex justify-center">
         <p>{{ $t('text.completeYourFilingToDisplay') }}</p>

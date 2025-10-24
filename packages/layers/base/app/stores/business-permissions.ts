@@ -113,6 +113,7 @@ export const useBusinessPermissionsStore = defineStore('business-permissions', (
   }
 
   return {
+    authorizedActions,
     init,
     isAuthorized,
     isAuthorizedByFilingType,

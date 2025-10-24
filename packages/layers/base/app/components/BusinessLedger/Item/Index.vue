@@ -60,10 +60,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="w-full bg-shade-inverted px-6 py-3 rounded-sm" data-testid="filing-history-item">
-    <div class="flex flex-col sm:flex-row" data-testid="filing-history-item-header">
+  <div class="w-full bg-shade-inverted px-6 py-3 rounded-sm" data-testid="business-ledger-item">
+    <div class="flex flex-col sm:flex-row" data-testid="business-ledger-item-header">
       <div class="flex flex-col">
-        <strong>
+        <strong data-testid="business-ledger-item-header-title">
           <UIcon
             v-if="isCourtOrder"
             class="mr-1"
@@ -89,6 +89,7 @@ onMounted(() => {
             leading-icon="i-mdi-message-text-outline"
             :loading="loadingDetails"
             variant="link"
+            data-testid="business-ledger-item-header-details-btn"
             @click.stop="toggleDetails"
           />
         </div>
@@ -102,13 +103,13 @@ onMounted(() => {
           ui: { label: 'font-bold' },
           onClick: toggleDetails
         }"
+        data-testid="business-ledger-item-header-dropdown-btn"
       />
     </div>
     <ConnectTransitionCollapse>
       <BusinessLedgerItemBody
         v-if="showBody"
         :loading="loadingDetails"
-        data-testid="filing-history-item-body"
       />
     </ConnectTransitionCollapse>
   </div>
