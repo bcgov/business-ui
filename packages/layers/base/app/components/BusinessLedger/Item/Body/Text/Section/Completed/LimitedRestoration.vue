@@ -13,16 +13,9 @@ const expiryDate = date ? toFormattedDateStr(date, DateTime.DATE_MED) : `[${t('t
 const title = isFilingType(undefined, FilingSubType.LIMITED_RESTORATION)
   ? t('label.limitedRestorationPeriod')
   : t('label.extensionOfLimitedRestoration')
-const text = t(
-  isFilingType(undefined, FilingSubType.LIMITED_RESTORATION)
-    ? 'text.limitedRestorationWasSuccessful'
-    : 'text.limitedRestorationExtensionWasSuccessful',
-  {
-    boldStart: '<strong>',
-    boldEnd: '</strong>',
-    expiryDate,
-    name: businessName || t('test.thisCompany')
-  })
+const textPath = isFilingType(undefined, FilingSubType.LIMITED_RESTORATION)
+  ? 'text.limitedRestorationWasSuccessful'
+  : 'text.limitedRestorationExtensionWasSuccessful'
 </script>
 
 <template>
@@ -30,8 +23,12 @@ const text = t(
     <p>
       <strong>{{ title }}</strong>
     </p>
-    <!-- NOTE: no user inputted values are used below -->
-    <!-- eslint-disable-next-line vue/no-v-html  -->
-    <p v-html="text" />
+    <p>
+      <ConnectI18nHelper
+        :translation-path="textPath"
+        :date="expiryDate"
+        :name="businessName || $t('test.thisCompany')"
+      />
+    </p>
   </div>
 </template>

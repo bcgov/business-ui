@@ -18,9 +18,10 @@ const download = async (document: BusinessDocument, index: number) => {
 
 const downloadAll = async () => {
   downloadingAll.value = true
-  for (const document of documents.value) {
-    await download(document, -1)
-  }
+  const promises = documents.value.map(document =>
+    download(document, -1)
+  )
+  await Promise.all(promises)
   downloadingAll.value = false
 }
 </script>
@@ -70,7 +71,7 @@ const downloadAll = async () => {
         :leading-icon="isLocked ? 'i-mdi-download-locked' : 'i-mdi-download'"
         :loading="downloadingAll"
         variant="ghost"
-        @click="downloadAll()"
+        @click="downloadAll"
       />
     </div>
   </div>

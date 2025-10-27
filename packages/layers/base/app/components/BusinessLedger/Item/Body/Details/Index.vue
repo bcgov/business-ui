@@ -7,6 +7,7 @@ const filing = inject<BusinessLedgerItem>('filing')!
 
 const { comments } = useBusinessLedger(filing)
 
+// FUTURE: add in staff add comment ability
 const isDisableNonBenCorps = () => false
 const isAuthorizedDetailComments = false
 

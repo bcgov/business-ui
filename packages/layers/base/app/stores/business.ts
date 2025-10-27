@@ -5,7 +5,7 @@ export const useBusinessStore = defineStore('business', () => {
   const { getBusiness } = useBusinessApi()
   const { getStoredFlag } = useConnectLaunchDarkly()
 
-  const business = ref<BusinessDataSlim | BusinessData | undefined>(undefined)
+  const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
 
   const businessIdentifier = computed(() => business.value?.identifier)
 
@@ -78,7 +78,7 @@ export const useBusinessStore = defineStore('business', () => {
     return alertList
   })
 
-  async function loadBusiness(identifier: string, slim = false, force = false) {
+  async function init(identifier: string, slim = false, force = false) {
     const businessCached = businessIdentifier.value && identifier === businessIdentifier.value
 
     if (!businessCached || force) {
@@ -129,7 +129,7 @@ export const useBusinessStore = defineStore('business', () => {
     businessAlerts,
     businessIdentifier,
     businessName,
-    loadBusiness,
+    init,
     isLegalType,
     isFirm,
     isBaseCompany,

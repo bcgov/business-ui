@@ -19,8 +19,8 @@ setBreadcrumbs([
   }
 ])
 
-const { loadBusiness, $reset: businessReset } = useBusinessStore()
-const { loadBootstrap, getBootstrapLedgerItems, $reset: bootstrapReset } = useBusinessBootstrapStore()
+const { init: initBusiness, $reset: resetBusiness } = useBusinessStore()
+const { init: initBootstrap, getBootstrapLedgerItems, $reset: resetBootstrap } = useBusinessBootstrapStore()
 const { getBusinessLedger } = useBusinessApi()
 const { business, businessIdentifier } = storeToRefs(useBusinessStore())
 const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstrapStore())
@@ -61,18 +61,18 @@ const loadLedger = async () => {
   business.value = undefined
   bootstrapFiling.value = undefined
   if (isTempRegIdentifier(identifier.value)) {
-    await loadBootstrap(identifier.value)
+    await initBootstrap(identifier.value)
     filings.value = getBootstrapLedgerItems()
   } else {
-    await loadBusiness(identifier.value, true)
+    await initBusiness(identifier.value, true)
     filings.value = await getBusinessLedger(identifier.value) || []
   }
   loading.value = false
 }
 
 onMounted(() => {
-  businessReset()
-  bootstrapReset()
+  resetBusiness()
+  resetBootstrap()
 })
 </script>
 

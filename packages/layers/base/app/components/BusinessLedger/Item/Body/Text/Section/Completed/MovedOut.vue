@@ -8,39 +8,29 @@ const { foreignJurisdiction, isFilingType } = useBusinessLedger(filing)
 const { businessName } = useBusinessStore()
 
 const title = ref('')
-const text = ref('')
+const textPath = ref('')
+const date = ref('')
+const newBusinessName = ref('')
 
 onMounted(() => {
-  let newBusinessName = ''
-  let textPath = ''
-  let date = ''
   if (isFilingType(FilingType.CONTINUATION_OUT)) {
     title.value = t('label.continuationOutComplete')
-    textPath = 'text.theCompanyWasSuccessfullyContinuedOut'
+    textPath.value = 'text.theCompanyWasSuccessfullyContinuedOut'
     const continuedDate = toDate(filing.data?.continuationOut?.continuationOutDate || '')
-    date = continuedDate
+    date.value = continuedDate
       ? toFormattedDateStr(continuedDate, DateTime.DATE_MED) || `[${t('text.unknown')}]`
       : `[${t('text.unknown')}]`
-    newBusinessName = filing.data?.continuationOut?.legalName || `[${t('text.unknown')}]`
+    newBusinessName.value = filing.data?.continuationOut?.legalName || `[${t('text.unknown')}]`
   } else {
+    // amalgamation
     title.value = t('label.amalgamationOutComplete')
-    textPath = 'text.theCompanyWasSuccessfullyAmalgamatedOut'
+    textPath.value = 'text.theCompanyWasSuccessfullyAmalgamatedOut'
     const amalgamatedDate = toDate(filing.data?.amalgamationOut?.amalgamationOutDate || '')
-    date = amalgamatedDate
+    date.value = amalgamatedDate
       ? toFormattedDateStr(amalgamatedDate, DateTime.DATE_MED) || `[${t('text.unknown')}]`
       : `[${t('text.unknown')}]`
-    newBusinessName = filing.data?.amalgamationOut?.legalName || `[${t('text.unknown')}]`
+    newBusinessName.value = filing.data?.amalgamationOut?.legalName || `[${t('text.unknown')}]`
   }
-  text.value = t(
-    textPath,
-    {
-      boldStart: '<strong>',
-      boldEnd: '</strong>',
-      date,
-      foreignJurisdiction: foreignJurisdiction.value,
-      name: businessName || t('text.ThisCompany'),
-      newName: newBusinessName
-    })
 })
 </script>
 
@@ -49,8 +39,14 @@ onMounted(() => {
     <p>
       <strong>{{ title }}</strong>
     </p>
-    <!-- NOTE: no user inputted values are used below -->
-    <!-- eslint-disable-next-line vue/no-v-html  -->
-    <p v-html="text" />
+    <p>
+      <ConnectI18nHelper
+        :translation-path="textPath"
+        :date
+        :foreignjurisdiction="foreignJurisdiction"
+        :name="businessName || $t('text.ThisCompany')"
+        :newname="newBusinessName"
+      />
+    </p>
   </div>
 </template>

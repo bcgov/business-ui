@@ -5,7 +5,7 @@ const { bootstrapName } = useBusinessBootstrapStore()
 
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const filingLabel = computed(() => {
+const getFilingLabel = () => {
   switch (filing.name) {
     case FilingType.AMALGAMATION_APPLICATION:
       return t('label.amalgamation')
@@ -17,11 +17,12 @@ const filingLabel = computed(() => {
     default:
       return t('label.filing')
   }
-})
+}
+const filingLabel = getFilingLabel()
 
 const entityName = businessName || bootstrapName || t('text.ThisCompany')
 
-const bootstrapText = computed(() => {
+const getBootstrapText = () => {
   switch (filing.name) {
     case FilingType.AMALGAMATION_APPLICATION:
       return t('text.successfullyAmalgamated', { name: entityName })
@@ -34,7 +35,9 @@ const bootstrapText = computed(() => {
     default:
       return undefined
   }
-})
+}
+
+const bootstrapText = getBootstrapText()
 
 const goToCompletedBusiness = () => {
   const businessIdentifier = filing.businessIdentifier

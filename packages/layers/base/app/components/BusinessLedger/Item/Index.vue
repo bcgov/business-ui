@@ -34,13 +34,10 @@ const toggleDetails = async () => {
   loadingDetails.value = false
 }
 
-const year = computed(() => {
-  const year = (
-    props.filing.data?.annualReport?.annualReportFilingYear
-    || (new Date(props.filing.effectiveDate)).getFullYear()
-  )
-  return `(${year})`
-})
+const year = `(${
+  props.filing.data?.annualReport?.annualReportFilingYear
+  || (new Date(props.filing.effectiveDate)).getFullYear()
+})`
 
 const actionBtnLabel = computed(() => (
   props.filing.availableOnPaperOnly

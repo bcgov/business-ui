@@ -5,13 +5,11 @@ const filing = inject<BusinessLedgerItem>('filing')!
 
 const { isFilingStatus, isFilingType } = useBusinessLedger(filing)
 
-const putBackOnOrAdminDissolution = computed(() => (
-  isFilingType(FilingType.PUT_BACK_ON)
+const putBackOnOrAdminDissolution = isFilingType(FilingType.PUT_BACK_ON)
   || isFilingType(undefined, FilingSubType.DISSOLUTION_ADMINISTRATIVE)
-))
 
 /** Date to use for Filed and Paid. */
-const date = computed(() => new Date(filing.paymentDate || filing.submittedDate))
+const date = new Date(filing.paymentDate || filing.submittedDate)
 </script>
 
 <template>

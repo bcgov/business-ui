@@ -24,6 +24,9 @@ test.describe('Business Ledger Tests (advanced)', () => {
         await page.goto('./examples/components/BusinessLedger')
       }
       await page.waitForLoadState('networkidle')
+      if (test.info().title.includes('docs locked')) {
+        await page.getByRole('switch', { name: 'Documents Locked' }).click()
+      }
       if (test.info().title.includes('receipts not included')) {
         await page.getByRole('switch', { name: 'Hide Receipts' }).click()
       }
@@ -151,7 +154,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(ledgerItemBody.getByTestId('comments-list')).toBeVisible()
   })
 
-  test('Documents list shows as expected (unlocked, receipts included)', async ({ page }) => {
+  test('Documents list shows as expected (docs unlocked, receipts included)', async ({ page }) => {
     const businessLedger = page.getByTestId('business-ledger')
     // verify starting state
     await expect(page.getByRole('switch', { name: 'Hide Receipts' })).toBeVisible()
@@ -183,7 +186,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(documents[3]!).toBeEnabled()
   })
 
-  test('Documents list shows as expected (unlocked, receipts not included)', async ({ page }) => {
+  test('Documents list shows as expected (docs unlocked, receipts not included)', async ({ page }) => {
     const businessLedger = page.getByTestId('business-ledger')
     // verify starting state
     await expect(page.getByRole('switch', { name: 'Hide Receipts' })).toBeVisible()
@@ -215,16 +218,11 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(documents[2]!).toBeEnabled()
   })
 
-  test('Documents list shows as expected (locked, receipts not included)', async ({ page }) => {
+  test('Documents list shows as expected (docs locked, receipts not included)', async ({ page }) => {
     const businessLedger = page.getByTestId('business-ledger')
     // verify starting state
-    await expect(page.getByRole('switch', { name: 'Hide Receipts' })).toBeVisible()
     await expect(page.getByRole('switch', { name: 'Hide Receipts' })).toBeChecked()
-    const lockedSwitch = page.getByRole('switch', { name: 'Documents Locked' })
-    await expect(lockedSwitch).toBeVisible()
-    await expect(lockedSwitch).not.toBeChecked()
-    await lockedSwitch.click()
-    await expect(lockedSwitch).toBeChecked()
+    await expect(page.getByRole('switch', { name: 'Documents Locked' })).toBeChecked()
     await expect(businessLedger).toBeVisible()
     // expand item
     const ledgerItems = await businessLedger.getByTestId('business-ledger-item').all()

@@ -225,7 +225,7 @@ export const useBusinessApi = () => {
       baseURL: url, responseType: 'blob', headers: { Accept: 'application/pdf' }
     }
     // @ts-expect-error doesn't like responseType as a string
-    return await $businessApi<Blob>('', options)
+    return await $businessApi('', options)
   }
 
   /**

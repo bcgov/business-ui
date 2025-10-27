@@ -11,7 +11,7 @@ export const useDocumentRecordServiceStore = defineStore('document-record-servic
   ))
 
   /** Array of DocumentRecord objects returned from the DRS API */
-  const documents = ref<DocumentRecord[]>([])
+  const documents = shallowRef<DocumentRecord[]>([])
 
   const init = async (params: DocumentRecordRequest) => {
     if (enableDocumentRecords.value) {

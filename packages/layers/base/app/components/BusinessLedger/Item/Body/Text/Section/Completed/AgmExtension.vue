@@ -13,12 +13,14 @@ const formattedDateStr = date ? toFormattedDateStr(date, DateTime.DATE_MED) : un
 const agmDueDate = formattedDateStr
   ? `${formattedDateStr} ${t('text.at1159PacificTime')}`
   : `[${t('label.unknown').toLowerCase()}]`
-
-const agmText = t('filingText.agmExtension', { boldStart: '<strong>', boldEnd: '</strong>', agmYear, agmDueDate })
 </script>
 
 <template>
-  <!-- NOTE: no user inputted values are used below (invalid dates will return undefined) -->
-  <!-- eslint-disable-next-line vue/no-v-html  -->
-  <p v-html="agmText" />
+  <p>
+    <ConnectI18nHelper
+      translation-path="filingText.agmExtension"
+      :agmduedate="agmDueDate"
+      :agmyear="agmYear"
+    />
+  </p>
 </template>

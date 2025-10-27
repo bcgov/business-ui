@@ -42,20 +42,16 @@ const hasCompletedText = (
 
 const orderDetails = filing.data?.order?.orderDetails?.split('\n')
 
-const courtOrderNumber = computed(() => filing.data?.order?.fileNumber)
+const courtOrderNumber = filing.data?.order?.fileNumber
 
-const hasEffectOfOrder = computed(() => !!filing.data?.order?.effectOfOrder)
+const hasEffectOfOrder = !!filing.data?.order?.effectOfOrder
 
-const showBcregContact = computed(() => {
-  return (
-    filing.availableOnPaperOnly
-    || isFutureEffective
-    || isFutureEffectiveAndPending
-    || isFilingPaidOrApproved
-    || isFilingType(undefined, FilingSubType.LIMITED_RESTORATION)
-    || isFilingType(undefined, FilingSubType.LIMITED_RESTORATION_EXTENSION)
-  )
-})
+const showBcregContact = filing.availableOnPaperOnly
+  || isFutureEffective
+  || isFutureEffectiveAndPending
+  || isFilingPaidOrApproved
+  || isFilingType(undefined, FilingSubType.LIMITED_RESTORATION)
+  || isFilingType(undefined, FilingSubType.LIMITED_RESTORATION_EXTENSION)
 
 const componentIsNotEmpty = (
   filing.availableOnPaperOnly

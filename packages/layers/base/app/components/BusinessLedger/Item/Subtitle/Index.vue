@@ -6,22 +6,19 @@ const filing = inject<BusinessLedgerItem>('filing')!
 const { isChangeOfOfficers, isFilingStatus, isFilingType } = useBusinessLedger(filing)
 
 /** Date to use for Filed and Paid. */
-const filedAndPaidDate = computed(() => new Date(filing.paymentDate || filing.submittedDate))
+const filedAndPaidDate = new Date(filing.paymentDate || filing.submittedDate)
 
-const showEffectiveAs = computed(() => {
-  // consider converting to which ones to show
-  const hideEffectiveDateFilings = [
-    FilingType.REGISTRARS_NOTATION,
-    FilingType.REGISTRARS_ORDER,
-    FilingType.COURT_ORDER
-  ]
-  return !hideEffectiveDateFilings.includes(filing.name) && !isFilingStatus(FilingStatus.WITHDRAWN)
-})
+// consider converting to which ones to show
+const hideEffectiveDateFilings = [
+  FilingType.REGISTRARS_NOTATION,
+  FilingType.REGISTRARS_ORDER,
+  FilingType.COURT_ORDER
+]
+const showEffectiveAs = !hideEffectiveDateFilings.includes(filing.name)
+  && !isFilingStatus(FilingStatus.WITHDRAWN)
 
 /** Whether to hide the tooltip (which effectively hides the effective time). */
-const hideTooltip = computed(() => {
-  return isFilingType(FilingType.CHANGE_OF_DIRECTORS)
-})
+const hideTooltip = isFilingType(FilingType.CHANGE_OF_DIRECTORS)
 </script>
 
 <template>

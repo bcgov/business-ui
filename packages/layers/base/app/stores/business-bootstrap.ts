@@ -5,9 +5,9 @@ export const useBusinessBootstrapStore = defineStore('business-bootstrap', () =>
   const { getBootstrapFiling, getLinkedNameRequest } = useBusinessApi()
   const { getFilingName } = useFiling()
 
-  const bootstrapFiling = ref<FilingGetByIdResponse<BootstrapFiling> | undefined>(undefined)
+  const bootstrapFiling = shallowRef<FilingGetByIdResponse<BootstrapFiling> | undefined>(undefined)
 
-  const linkedNr = ref<NameRequest | undefined>(undefined)
+  const linkedNr = shallowRef<NameRequest | undefined>(undefined)
   const linkedNrInvalid = ref(false)
   const linkedNrInvalidType = ref<NameRequestState | undefined>(undefined)
 
@@ -89,7 +89,7 @@ export const useBusinessBootstrapStore = defineStore('business-bootstrap', () =>
     linkedNr.value = nameRequest
   }
 
-  const loadBootstrap = async (tempRegId: string, force = false) => {
+  const init = async (tempRegId: string, force = false) => {
     const bootstrapCached = bootstrapIdentifier.value === tempRegId
     if (!bootstrapCached || force) {
       bootstrapFiling.value = await getBootstrapFiling(tempRegId)
@@ -203,8 +203,8 @@ export const useBusinessBootstrapStore = defineStore('business-bootstrap', () =>
     bootstrapFiling,
     bootstrapIdentifier,
     bootstrapName,
-    loadBootstrap,
     getBootstrapLedgerItems,
+    init,
     $reset
   }
 })

@@ -6,11 +6,9 @@ const filing = inject<BusinessLedgerItem>('filing')!
 const drsStore = useDocumentRecordServiceStore()
 const documentId = ref<string | undefined>(undefined)
 
-const hasExtraDocsOrDetails = computed(() => (
-  !filing.availableOnPaperOnly
+const hasExtraDocsOrDetails = !filing.availableOnPaperOnly
   || !!documentId.value
   || filing.commentsCount
-))
 
 onMounted(async () => {
   if (showDocumentRecords?.value && drsStore.enableDocumentRecords) {

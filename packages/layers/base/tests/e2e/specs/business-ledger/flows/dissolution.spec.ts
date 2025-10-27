@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 import { FilingType } from '../../../../../app/enums/filing-type'
 import { mockApiCallsForLedger } from '../../../../mocks/mock-helpers'
 
-test.describe('Business Ledger Tests (consent out)', () => {
+test.describe('Business Ledger Tests (dissolution)', () => {
   test.beforeEach(async ({ page }) => {
     const identifier = 'BC1234567'
     const adminOverrideData = {

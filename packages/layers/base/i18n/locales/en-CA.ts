@@ -34,7 +34,7 @@ export default {
       label: 'Missing Information'
     },
     transitionrequired: {
-      content: 'A new {italicizedStart}Business Corporations Act{italicizedEnd} came into effect while this business was dissolved. To restore good standing, transition this business so that it operates under this new legislation.',
+      content: 'A new {italicStart}Business Corporations Act{italicEnd} came into effect while this business was dissolved. To restore good standing, transition this business so that it operates under this new legislation.',
       contentExtra: ['If you don’t file a post restoration transition application within a year of your restoration date, this business will be dissolved.'],
       label: 'This business is not in good standing'
     }
@@ -232,7 +232,7 @@ export default {
   },
   /* Mappings here are based from the FilingType enum */
   filingText: {
-    agmExtension: 'The {agmYear} AGM must be held by {boldStart}{agmDueDate}{boldEnd}.'
+    agmExtension: 'The {agmyear} AGM must be held by {boldStart}{agmduedate}{boldEnd}.'
   },
   text: {
     addressChange: 'address change',
@@ -246,8 +246,8 @@ export default {
     continueOut: 'continue out',
     courtOrdersHaveBeenFiled: 'Court order(s) have been filed on this company. Review the filing history for impacts to business information.',
     dissolution: 'dissolution',
-    dissolutionCompletedFirm: 'The statement of dissolution for {entityTitle} {name} was successfully submitted on {boldStart}{submittedDate}{boldEnd} with dissolution date of {boldStart}{dissolutionDate}{boldEnd}. The {entityTitle} has been struck from the register and dissolved, and ceased to be a registered {entityTitle} under the {actTitle} Act.',
-    dissolutionCompletedNonFirm: 'The {entityTitle} {name} was successfully {boldStart}dissolved on {effectiveDate}{boldEnd}. The {entityTitle} has been struck from the register and dissolved, and ceased to be a registered {entityTitle} under the {actTitle} Act.',
+    dissolutionCompletedFirm: 'The statement of dissolution for {entitytitle} {name} was successfully submitted on {boldStart}{submitteddate}{boldEnd} with dissolution date of {boldStart}{dissolutiondate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
+    dissolutionCompletedNonFirm: 'The {entitytitle} {name} was successfully {boldStart}dissolved on {effectivedate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
     effectiveAsOf: 'EFFECTIVE as of',
     expiredConsent: 'This consent is expired. Please resubmit the {name} application for authorization to become a foreign corporation.',
     FiledBySubmitterOn: 'Filed by {submitter} on',
@@ -258,10 +258,10 @@ export default {
     filingWillTakeEffectOnDate: 'The {filing} will take effect on {boldStart}{date}{boldEnd}.',
     incorporation: 'incorporation',
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',
-    limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {expiryDate} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
-    limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {expiryDate}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
+    limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
+    limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
     noDocumentsAvailable: 'No documents available',
-    noLongerWishToFileWithdraw: 'If you no longer wish to file this {filing}, you must submit aLINKand a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.',
+    noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
     paidButNotCompletedByRegistry: 'This {name} is paid, but the filing has not been completed by the Business Registry yet. Some filings may take longer than expected.',
     pendingButNotCompletedByRegistry: 'Your submission is still being processed.',
     pendingButNotCompletedByRegistry1: 'Some submissions may take longer than usual to complete. If this issue continues, please contact us.',
@@ -277,10 +277,10 @@ export default {
     successfullyRegistered: '{name} has been successfully registered.',
     systemCompletedProcessingFiling: 'The system has completed processing your filing. You can now retrieve the business information.',
     ThisCompany: 'This company',
-    theCompanyWasSuccessfullyAmalgamatedOut: 'The Company {name} was successfully {boldStart}Amalgamated Out on {date}, to {foreignJurisdiction} under the name "{newName}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Amalgamation Out documents in your records books.',
-    theCompanyWasSuccessfullyContinuedOut: 'The Company {name} was successfully {boldStart}Continued Out on {date}, to {foreignJurisdiction} under the name "{newName}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Continuation Out documents in your records books.',
+    theCompanyWasSuccessfullyAmalgamatedOut: 'The Company {name} was successfully {boldStart}Amalgamated Out on {date}, to {foreignjurisdiction} under the name "{newname}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Amalgamation Out documents in your records books.',
+    theCompanyWasSuccessfullyContinuedOut: 'The Company {name} was successfully {boldStart}Continued Out on {date}, to {foreignjurisdiction} under the name "{newname}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Continuation Out documents in your records books.',
     thisCompany: 'this company',
-    thisConsentToIsValidUntilDate: 'This consent to {name} to {foreignJurisdiction} is valid {boldStart}until {date}{boldEnd}.',
+    thisConsentToIsValidUntilDate: 'This consent to {name} to {foreignjurisdiction} is valid {boldStart}until {date}{boldEnd}.',
     undefinedStaffRejectionMessage: 'Staff rejection message unavailable',
     unknown: 'unknown',
     withdrawnOn: 'WITHDRAWN on',

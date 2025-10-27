@@ -109,7 +109,7 @@ export interface BusinessLedgerItem {
 
     order?: {
       effectOfOrder?: 'planOfArrangement'
-      fileNumber: string // may be null
+      fileNumber: string | null
       orderDate?: string
       orderDetails?: string
     }

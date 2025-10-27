@@ -19,8 +19,8 @@ setBreadcrumbs([
   }
 ])
 
-const { loadBusiness } = useBusinessStore()
-const { loadBootstrap } = useBusinessBootstrapStore()
+const { init: initBusiness } = useBusinessStore()
+const { init: initBootstrap } = useBusinessBootstrapStore()
 const { business, businessAlerts, businessIdentifier } = storeToRefs(useBusinessStore())
 const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstrapStore())
 
@@ -35,9 +35,9 @@ const loadAlerts = async () => {
   business.value = undefined
   bootstrapFiling.value = undefined
   if (isTempRegIdentifier(identifier.value)) {
-    await loadBootstrap(identifier.value)
+    await initBootstrap(identifier.value)
   } else {
-    await loadBusiness(identifier.value, true)
+    await initBusiness(identifier.value, true)
   }
   loading.value = false
 }

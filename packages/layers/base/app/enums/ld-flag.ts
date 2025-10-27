@@ -18,6 +18,5 @@ export enum LDFlag {
   SupportedCorrectionEntities = 'supported-correction-entities',
   SupportedDissolutionEntities = 'supported-dissolution-entities',
   SupportedRestorationEntities = 'supported-restoration-entities',
-  SupportedPutBackOnEntities = 'supported-put-back-on-entities',
-  UseBusinessApiGwURL = 'use-business-api-gw-url'
+  SupportedPutBackOnEntities = 'supported-put-back-on-entities'
 }
