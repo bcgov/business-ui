@@ -32,7 +32,7 @@ onMounted(async () => {
     </div>
     <div v-else-if="hasExtraDocsOrDetails">
       <BusinessLedgerItemBodyDocuments v-if="!filing.availableOnPaperOnly" />
-      <BusinessLedgerItemBodyDocumentsRecordButton v-if="documentId" v-model:document-id="documentId" />
+      <BusinessLedgerItemBodyDocumentsRecordButton v-if="documentId" :document-id="documentId" />
       <BusinessLedgerItemBodyDetails
         v-if="filing.commentsCount"
         :class="{ 'border-t border-line-muted mt-6 pt-6': !filing.availableOnPaperOnly || documentId }"

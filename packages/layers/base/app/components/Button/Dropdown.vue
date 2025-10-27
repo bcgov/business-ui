@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { ButtonProps, DropdownMenuItem, DropdownMenuProps } from '@nuxt/ui'
 
 defineProps<{
-  buttonAttrs?: object
+  buttonAttrs?: ButtonProps
   dropdownItems?: DropdownMenuItem[]
-  dropdownAttrs?: object
-  dropdownButtonAttrs?: object
+  dropdownAttrs?: DropdownMenuProps
+  dropdownButtonAttrs?: ButtonProps
   hideSeparator?: boolean
 }>()
 </script>

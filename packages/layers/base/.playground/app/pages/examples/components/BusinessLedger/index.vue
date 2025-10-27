@@ -19,8 +19,8 @@ setBreadcrumbs([
   }
 ])
 
-const { loadBusiness } = useBusinessStore()
-const { loadBootstrap, getBootstrapLedgerItems } = useBusinessBootstrapStore()
+const { loadBusiness, $reset: businessReset } = useBusinessStore()
+const { loadBootstrap, getBootstrapLedgerItems, $reset: bootstrapReset } = useBusinessBootstrapStore()
 const { getBusinessLedger } = useBusinessApi()
 const { business, businessIdentifier } = storeToRefs(useBusinessStore())
 const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstrapStore())
@@ -69,6 +69,11 @@ const loadLedger = async () => {
   }
   loading.value = false
 }
+
+onMounted(() => {
+  businessReset()
+  bootstrapReset()
+})
 </script>
 
 <template>
@@ -76,7 +81,9 @@ const loadLedger = async () => {
     <h1>
       BusinessLedger
     </h1>
-
+    <NuxtLink class="text-primary" :to="localePath('/examples/components/BusinessLedger/Mocked')">
+      Go to Mocked version of component
+    </NuxtLink>
     <ConnectPageSection
       :heading="{
         label: 'Example (login and API integration setup required)'
@@ -88,6 +95,16 @@ const loadLedger = async () => {
           v-model="hideReceipts"
           :disabled="!!businessIdentifier || !!bootstrapIdentifier"
           label="Hide Receipts"
+        />
+        <USwitch
+          v-model="isLocked"
+          :disabled="!!businessIdentifier || !!bootstrapIdentifier"
+          label="Documents Locked"
+        />
+        <USwitch
+          v-model="showDocumentRecords"
+          :disabled="!!businessIdentifier || !!bootstrapIdentifier"
+          label="Show Manage Document Records (FF must also be on for these to show)"
         />
         <ConnectInput
           id="identifier-input"
@@ -103,13 +120,6 @@ const loadLedger = async () => {
       </div>
       <ConnectTransitionCollapse>
         <div v-if="!loading && (businessIdentifier || bootstrapIdentifier)">
-          <div class="space-y-3">
-            <USwitch v-model="isLocked" label="Documents Locked" />
-            <USwitch
-              v-model="showDocumentRecords"
-              label="Show Manage Document Records (FF must also be on for these to show)"
-            />
-          </div>
           <div class="bg-shade p-5 mt-3">
             <BusinessLedger
               :business-identifier="identifier"

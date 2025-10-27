@@ -192,11 +192,19 @@ export const useBusinessBootstrapStore = defineStore('business-bootstrap', () =>
     return ledgerItems
   }
 
+  const $reset = () => {
+    bootstrapFiling.value = undefined
+    linkedNr.value = undefined
+    linkedNrInvalid.value = false
+    linkedNrInvalidType.value = undefined
+  }
+
   return {
     bootstrapFiling,
     bootstrapIdentifier,
     bootstrapName,
     loadBootstrap,
-    getBootstrapLedgerItems
+    getBootstrapLedgerItems,
+    $reset
   }
 })

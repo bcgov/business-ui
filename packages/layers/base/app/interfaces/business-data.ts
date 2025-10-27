@@ -15,6 +15,7 @@ export interface BusinessDataSlim {
   lastModified: ApiDateTimeUtc
   state: EntityState
   taxId?: string // incorporation number
+  warnings?: BusinessWarning[]
 }
 
 export interface BusinessData extends BusinessDataSlim {
@@ -39,7 +40,6 @@ export interface BusinessData extends BusinessDataSlim {
   nextAnnualReport: ApiDateTimeUtc
   noDissolution: boolean
   submitter: string
-  warnings: BusinessWarning[]
   // nrNumber?: string // TODO: include these values
   // startDate?: IsoDatePacific // YYYY-MM-DD
   // stateFiling?: string

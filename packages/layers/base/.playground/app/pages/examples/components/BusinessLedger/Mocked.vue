@@ -17,7 +17,11 @@ setBreadcrumbs([
     label: 'Examples'
   },
   {
-    label: 'BusinessLedgerMocked'
+    to: localePath('/examples/components/BusinessLedger'),
+    label: 'BusinessLedger'
+  },
+  {
+    label: 'Mocked'
   }
 ])
 
@@ -355,7 +359,9 @@ const ledgerItems = computed(() => {
     <h1>
       BusinessLedger Mocked
     </h1>
-
+    <NuxtLink class="text-primary" :to="localePath('/examples/components/BusinessLedger')">
+      Go to API Integrated version of component
+    </NuxtLink>
     <ConnectPageSection
       :heading="{
         label: 'Mocked Example (No comments or documents, ledger items are hardcoded)'

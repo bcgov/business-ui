@@ -13,6 +13,9 @@ provide<Ref<boolean>>('lockedDocuments', computed(() => props.lockedDocuments))
 provide<string | undefined>('lockedDocumentsText', props.lockedDocumentsTooltip)
 provide<Ref<boolean>>('showDocumentRecords', computed(() => props.showDocumentRecords))
 
+// reset any existing ledger state
+clearNuxtState(key => key.includes('businessLedgerItem'))
+
 const hasCourtOrders = computed(() => (
   props.filings.findIndex(filing => filing.name === FilingType.COURT_ORDER)) !== -1)
 

@@ -1,5 +1,8 @@
 <script setup lang="ts">
+defineProps<{ hideHeader?: boolean }>()
+
 const { t } = useI18n()
+
 const contact: ConnectContactItem[] = [
   { type: 'phone', title: t('contactInfo.tollFree.title'), value: t('contactInfo.tollFree.value') },
   { type: 'phone', title: t('contactInfo.victoriaOffice.title'), value: t('contactInfo.victoriaOffice.value') },
@@ -9,7 +12,7 @@ const contact: ConnectContactItem[] = [
 
 <template>
   <div class="space-y-4" data-testid="business-help-contact">
-    <div>
+    <div v-if="!hideHeader">
       <p>
         <strong>
           {{ $t('label.bcRegistriesContactInformation') }}

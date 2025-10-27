@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const documentId = defineModel('documentId', { type: String, required: true })
+defineProps<{ documentId: string }>()
 const openDocumentRecord = (documentId: string) => {
   const url = `${useRuntimeConfig().public.documentsUiUrl}/document-records/${documentId}`
   window.open(url, '_blank')

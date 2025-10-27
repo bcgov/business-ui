@@ -32,9 +32,12 @@ export function getToday(timezone = 'UTC', format?: string): string {
 }
 
 /**
- * Converts an iso date string to a Date object at 12 am in the specified timezone (defaults to pacific time).
+ * Converts a date string to a Date object in the specified timezone (defaults to pacific time).
  */
-export const toDate = (dateStr: IsoDatePacific | ApiDateTimeUtc, timezone = 'America/Vancouver'): Date | undefined => {
+export const toDate = (
+  dateStr: IsoDatePacific | ApiDateTimeUtc,
+  timezone = 'America/Vancouver'
+): Date | undefined => {
   const newDate = DateTime.fromISO(dateStr, { zone: timezone })
   return newDate.isValid ? newDate.toJSDate() : undefined
 }

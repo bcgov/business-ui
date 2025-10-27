@@ -10,7 +10,7 @@ export const useBusinessLedger = (filing: BusinessLedgerItem) => {
     documents: filing.documents || []
   })
 
-  const ledgerItem = useState<BusinessLedgerItem>(String(filing.filingId), createFilingState)
+  const ledgerItem = useState<BusinessLedgerItem>(`businessLedgerItem-${filing.filingId}`, createFilingState)
 
   const isFilingType = (
     filingType?: FilingType,

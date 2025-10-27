@@ -3,4 +3,8 @@ export interface BusinessWarning {
   message: string
   warningType: string
   filing: string
+  data?: {
+    amalgamationDate?: FormattedDateTimeGmt
+    targetDissolutionDate?: IsoDatePacific
+  }
 }

@@ -2,6 +2,43 @@
 
 export default {
   /* Ordering should be alphabetical unless otherwise specified */
+  businessAlert: {
+    /* Alert text based on BusinessAlert enum */
+    amalgamation: {
+      content: 'If you have any questions, please contact BC Registries staff:',
+      label: 'This corporation is part of an amalgamation and is scheduled to become historical on {date}'
+    },
+    disabled: {
+      content: 'This business is disabled.',
+      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      label: 'This business is disabled'
+    },
+    dissolution: {
+      content: 'This means that the business will be struck from the Corporate Registry in {boldStart}{days} days{boldEnd} due to overdue annual reports. Please file the annual reports immediately to bring this business back into good standing or request a delay of dissolution if more time is needed.',
+      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      label: 'Urgent - this business is in the process of being dissolved'
+    },
+    frozen: {
+      content: 'This business is frozen and therefore no filings can be completed at this time.',
+      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      label: 'This business is frozen'
+    },
+    goodstanding: {
+      content: 'The most common reason a business is not in good standing is an overdue annual report. Any outstanding annual reports must filed to bring the business back into good standing.',
+      contentExtra: ['If further action is required, please contact BC Registries staff:'],
+      label: 'This business is not in good standing'
+    },
+    missinginfo: {
+      content: 'BC Registries is missing information about your business (e.g., business start date, nature of business, business address, etc.). Please contact BC Registries to input any missing business information. Missing information must be entered before you can file changes or dissolve this business.',
+      contentExtra: ['If further action is required, please contact BC Registries staff:'],
+      label: 'Missing Information'
+    },
+    transitionrequired: {
+      content: 'A new {italicizedStart}Business Corporations Act{italicizedEnd} came into effect while this business was dissolved. To restore good standing, transition this business so that it operates under this new legislation.',
+      contentExtra: ['If you don’t file a post restoration transition application within a year of your restoration date, this business will be dissolved.'],
+      label: 'This business is not in good standing'
+    }
+  },
   businessConfig: {
     /* Configured text based on legal type */
     corp: {
@@ -52,6 +89,7 @@ export default {
   label: {
     actions: 'Actions',
     addDetail: 'Add Detail',
+    alerts: 'Alerts',
     alterationComplete: 'Alteration Complete',
     alterationPending: 'Alteration Pending',
     amalgamation: 'Amalgamation',
@@ -64,6 +102,7 @@ export default {
     cancel: 'Cancel',
     change: 'Change',
     close: 'Close',
+    closeDetails: 'Close Details',
     companyInformationPage: 'Company Information Page',
     continuationPending: 'Continuation Pending',
     continuationOutComplete: 'Continuation Out Complete',
@@ -133,6 +172,7 @@ export default {
     submit: 'Submit',
     undo: 'Undo',
     unknown: 'Unknown',
+    viewDetails: 'View Details',
     viewDocuments: 'View Documents',
     voluntaryDissolutionPending: 'Voluntary Dissolution Pending',
     WITHDRAWN: 'WITHDRAWN'

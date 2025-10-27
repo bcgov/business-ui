@@ -47,7 +47,6 @@ const text = t(isEntityFirm ? 'text.dissolutionCompletedFirm' : 'text.dissolutio
 </script>
 
 <template>
-  <!-- TODO: test -->
   <div class="space-y-4">
     <p>
       <strong>{{ $t('label.dissolutionCompleted') }}</strong>
