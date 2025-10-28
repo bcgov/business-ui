@@ -1,0 +1,30 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "C9900770",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/150124/comments",
+    "data": {
+        "applicationDate": "2024-07-16T22:29:08.846743+00:00",
+        "legalFilings": [
+            "courtOrder"
+        ],
+        "order": {
+            "fileNumber": "BBBBBBBBB",
+            "orderDetails": "TEST"
+        }
+    },
+    "displayLedger": true,
+    "displayName": "Court Order",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/150124/documents",
+    "effectiveDate": "Tue, 16 Jul 2024 22:29:10 GMT",
+    "filingId": 150124,
+    "filingLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/150124",
+    "isFutureEffective": false,
+    "name": "courtOrder",
+    "paymentDate": "Tue, 16 Jul 2024 22:29:10 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Tue, 16 Jul 2024 22:29:08 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

@@ -60,7 +60,12 @@ export default defineNuxtConfig({
       businessApiVersion: '',
       businessDashboardUrl: '',
       brdUrl: '',
-      businessEditUrl: ''
+      businessEditUrl: '',
+      docApiUrl: '',
+      docApiVersion: '',
+      docApiKey: '',
+      documentsUiUrl: '',
+      noticeOfWithdrawalFormUrl: ''
     }
   }
 })

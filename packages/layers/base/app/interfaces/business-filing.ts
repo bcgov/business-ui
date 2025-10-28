@@ -5,20 +5,22 @@ export interface FilingHeaderResponse {
   certifiedBy: string
   colinIds: Array<unknown>
   comments: Array<unknown>
-  date: string // isodate
+  date: ApiDateTimeUtc
   deletionLocked: boolean
-  effectiveDate: string // isodate
+  effectiveDate: ApiDateTimeUtc
   filingId: number
   inColinOnly: boolean
   isCorrected: boolean
   isCorrectionPending: boolean
   isPaymentActionRequired: boolean
-  name: string
+  name: FilingType
   paymentAccount: string
   paymentStatusCode: PaymentStatus
   paymentToken: string
   status: FilingStatus
   submitter: string
+  latestReviewComment?: string
+  paymentDate?: ApiDateTimeUtc
   paymentMethod?: ConnectPayMethod
   folioNumber?: string
   type?: FilingHeaderType
@@ -28,10 +30,8 @@ export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
   'name'
   | 'certifiedBy'
   | 'accountId'
-  | 'date'
   | 'paymentMethod'
   | 'folioNumber'
-  | 'type'
 >
 
 export type FilingBusiness = Pick<BusinessData,

@@ -20,6 +20,14 @@ const layoutExamples: DropdownMenuItem[] = [
 
 const componentExamples: DropdownMenuItem[] = [
   {
+    label: 'BusinessAlerts',
+    to: localePath('/examples/components/BusinessAlerts')
+  },
+  {
+    label: 'BusinessLedger',
+    to: localePath('/examples/components/BusinessLedger')
+  },
+  {
     label: 'ModalError',
     to: localePath('/examples/components/Modal/Error')
   }

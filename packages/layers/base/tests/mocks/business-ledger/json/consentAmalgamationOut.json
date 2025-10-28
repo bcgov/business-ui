@@ -1,0 +1,34 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0887748",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/184928/comments",
+    "data": {
+        "applicationDate": "2025-03-20T19:26:24.725842+00:00",
+        "consentAmalgamationOut": {
+            "country": "AL",
+            "expiry": "2025-09-21T06:59:00+00:00",
+            "region": null
+        },
+        "legalFilings": [
+            "consentAmalgamationOut"
+        ],
+        "order": {
+            "fileNumber": "TT0010045"
+        }
+    },
+    "displayLedger": true,
+    "displayName": "6-Month Consent to Amalgamate Out",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/184928/documents",
+    "effectiveDate": "Thu, 20 Mar 2025 19:26:26 GMT",
+    "filingId": 184928,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/184928",
+    "isFutureEffective": false,
+    "name": "consentAmalgamationOut",
+    "paymentDate": "Thu, 20 Mar 2025 19:26:26 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Thu, 20 Mar 2025 19:26:24 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

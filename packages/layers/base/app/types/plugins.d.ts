@@ -7,6 +7,7 @@ declare module '#app' {
   interface NuxtApp {
     $businessApi: $Fetch
     $authApi: $Fetch
+    $documentRecordServiceApi: $Fetch
   }
 }
 export {}

@@ -1,0 +1,31 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0887698",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184540/comments",
+    "data": {
+        "applicationDate": "2025-03-06T18:04:33.318202+00:00",
+        "consentContinuationOut": {
+            "country": "AF",
+            "expiry": "2025-09-07T06:59:00+00:00",
+            "region": null
+        },
+        "legalFilings": [
+            "consentContinuationOut"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "6-Month Consent to Continue Out",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184540/documents",
+    "effectiveDate": "Thu, 06 Mar 2025 18:04:34 GMT",
+    "filingId": 184540,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184540",
+    "isFutureEffective": false,
+    "name": "consentContinuationOut",
+    "paymentDate": "Thu, 06 Mar 2025 18:04:34 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Thu, 06 Mar 2025 18:04:33 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

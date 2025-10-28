@@ -8,11 +8,11 @@
   "private": false,
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "dev": "nuxi dev .playground",
+    "dev": "nuxi dev .playground --dotenv ../.env",
     "prepare": "nuxt prepare .playground",
     "build": "nuxt build .playground",
     "build:test": "pnpm generate && npx serve .playground/.output/public",
-    "generate": "nuxt generate .playground",
+    "generate": "nuxt generate .playground --dotenv ../.env",
     "preview": "npx serve .playground/.output/public",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -25,15 +25,17 @@
     "typecheck": "npx nuxt typecheck"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-forms": "^0.1.23",
-    "@sbc-connect/nuxt-pay": "^0.1.23",
+    "@sbc-connect/nuxt-forms": "^0.1.24",
+    "@sbc-connect/nuxt-pay": "^0.1.24",
     "http-status-codes": "^2.3.0",
+    "iso-3166-2": "^1.0.0",
     "luxon": "^3.6.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
+    "@types/iso-3166-2": "^1.0.4",
     "@types/luxon": "^3.6.2",
     "nuxt": "catalog:",
     "typescript": "catalog:",

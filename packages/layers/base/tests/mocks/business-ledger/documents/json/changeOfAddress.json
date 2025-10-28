@@ -1,0 +1,11 @@
+{
+    "documents": {
+        "legalFilings": [
+            {
+                "changeOfAddress": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591/documents/changeOfAddress"
+            }
+        ],
+        "noticeOfArticles": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591/documents/noticeOfArticles",
+        "receipt": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591/documents/receipt"
+    }
+}

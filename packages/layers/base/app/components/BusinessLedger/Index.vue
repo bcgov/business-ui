@@ -1,0 +1,74 @@
+<script setup lang="ts">
+const props = defineProps<{
+  businessIdentifier: string
+  filings: BusinessLedgerItem[]
+  hideReceipts?: boolean
+  incompleteBusiness?: boolean
+  lockedDocuments?: boolean
+  lockedDocumentsTooltip?: string
+  showDocumentRecords?: boolean
+}>()
+
+provide<Ref<boolean>>('lockedDocuments', computed(() => props.lockedDocuments))
+provide<string | undefined>('lockedDocumentsText', props.lockedDocumentsTooltip)
+provide<Ref<boolean>>('showDocumentRecords', computed(() => props.showDocumentRecords))
+
+// reset any existing ledger state
+clearNuxtState(key => key.includes('businessLedgerItem'))
+
+const hasCourtOrders = computed(() => (
+  props.filings.findIndex(filing => filing.name === FilingType.COURT_ORDER)) !== -1)
+
+const urlFilingId = useRequestURL().searchParams.get('filing_id')
+
+const downloading = ref(false)
+
+const permissionsStore = useBusinessPermissionsStore()
+const drsStore = useDocumentRecordServiceStore()
+onMounted(async () => {
+  await Promise.all([
+    permissionsStore.init(),
+    drsStore.init({ consumerIdentifier: props.businessIdentifier })
+  ])
+})
+</script>
+
+<template>
+  <div
+    class="flex flex-col gap-1.5"
+    data-testid="business-ledger"
+  >
+    <!-- Court order notification -->
+    <div
+      v-if="hasCourtOrders"
+      class="flex gap-2 w-full bg-shade-inverted p-5 rounded mb-5 items-center"
+      data-testid="court-order-notification"
+    >
+      <UIcon name="i-mdi-gavel" class="text-xl text-black" />
+      <span class="ml-1 text-base">{{ $t('text.courtOrdersHaveBeenFiled') }}</span>
+    </div>
+
+    <BusinessLedgerItem
+      v-for="filing in filings"
+      :key="filing.filingId"
+      :downloading
+      :filing
+      :hide-receipts
+      :set-expanded="urlFilingId === filing.filingId.toString()"
+    />
+
+    <div
+      v-if="!filings.length"
+      class="flex flex-col w-full bg-shade-inverted p-5 rounded"
+      data-testid="business-ledger-empty"
+    >
+      <div v-if="incompleteBusiness" class="flex justify-center">
+        <p>{{ $t('text.completeYourFilingToDisplay') }}</p>
+      </div>
+      <div v-else>
+        <p><strong>{{ $t('text.youHaveNoBusinessLedger') }}</strong></p>
+        <p>{{ $t('text.yourFilingsWillAppearHere') }}</p>
+      </div>
+    </div>
+  </div>
+</template>

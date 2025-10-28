@@ -41,7 +41,7 @@ describe('useBusinessApi', () => {
       } as BusinessData
 
       test('should construct a valid payload for a single filing type', () => {
-        const filingName = 'changeOfOfficers'
+        const filingName = FilingType.CHANGE_OF_OFFICERS
         const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
 
         const result = businessApi.createFilingPayload(business, filingName, { [filingName]: payload })
@@ -52,7 +52,6 @@ describe('useBusinessApi', () => {
         expect(filing.header.name).toBe('changeOfOfficers')
         expect(filing.header.certifiedBy).toBe('Test User')
         expect(filing.header.accountId).toBe(123)
-        expect(filing.header.type).toBe(FilingHeaderType.LEGAL)
 
         expect(filing.business.identifier).toBe(business.identifier)
         expect(filing.business.foundingDate).toBe(business.foundingDate)
@@ -70,7 +69,7 @@ describe('useBusinessApi', () => {
           changeOfAddress: { deliveryAddress: { street: '123 Main' } }
         }
 
-        const result = businessApi.createFilingPayload(business, 'changeOfOfficers', filings)
+        const result = businessApi.createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
         const filing = result.filing
 
         expect(filing.header.name).toBe('changeOfOfficers')
@@ -121,7 +120,7 @@ describe('useBusinessApi', () => {
         } as BusinessData
         const payload = businessApi.createFilingPayload(
           business,
-          'changeOfOfficers',
+          FilingType.CHANGE_OF_OFFICERS,
           { changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] } }
         )
 
@@ -152,7 +151,7 @@ describe('useBusinessApi', () => {
 
       const payload = businessApi.createFilingPayload(
         business,
-        'changeOfOfficers',
+        FilingType.CHANGE_OF_OFFICERS,
         { data: 'test' }
       )
 
