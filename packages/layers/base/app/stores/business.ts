@@ -111,15 +111,6 @@ export const useBusinessStore = defineStore('business', () => {
     ])
   }
 
-  /**
-   * Is True for any business in the FF list, else False.
-   * Used to apply special pre-go-live functionality.
-   */
-  function isDisableNonBenCorps(): boolean {
-    return !!business?.value?.identifier && getStoredFlag<string>(
-      LDFlag.BusinessesToManageInColin).value?.includes(business.value.identifier)
-  }
-
   function $reset() {
     business.value = undefined
   }
