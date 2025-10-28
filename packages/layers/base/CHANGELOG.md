@@ -1,5 +1,13 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.12
+
+### Patch Changes
+
+- [#273](https://github.com/bcgov/business-ui/pull/273) [`6bed0a7`](https://github.com/bcgov/business-ui/commit/6bed0a74959abb8842682a6e964241d2733bd7a6) Thanks [@kialj876](https://github.com/kialj876)! - Tickets: 30910, 30835 (business ledger and business alert components)
+
+- [#275](https://github.com/bcgov/business-ui/pull/275) [`242ec02`](https://github.com/bcgov/business-ui/commit/242ec024063bd3a76c09c48683c3d1d7564cd159) Thanks [@kialj876](https://github.com/kialj876)! - 30835 - added test
+
 ## 0.1.11
 
 ### Patch Changes
