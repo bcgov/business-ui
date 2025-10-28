@@ -37,7 +37,7 @@ const loadAlerts = async () => {
   if (isTempRegIdentifier(identifier.value)) {
     await initBootstrap(identifier.value)
   } else {
-    await initBusiness(identifier.value, true)
+    await initBusiness(identifier.value)
   }
   loading.value = false
 }

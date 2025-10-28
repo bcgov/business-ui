@@ -11,6 +11,25 @@ import { getBusinessLedgerMock } from './business-ledger'
 import { getPermissionsMock } from './business-permissions'
 import { getLdarklyFlagsMock } from './ldarkly'
 
+export const mockApiCallsForAlerts = async (
+  page: Page,
+  identifier = 'BC1234567'
+) => {
+  page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
+    await route.fulfill({ json: getLdarklyFlagsMock() })
+  })
+  page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
+    await route.fulfill({ json: getBusinessMock(
+      [
+        { key: 'adminFreeze', value: true },
+        { key: 'goodStanding', value: false },
+        { key: 'inDissolution', value: true },
+        { key: 'warnings', value: [] }
+      ],
+      false) })
+  })
+}
+
 export const mockApiCallsForLedger = async (
   page: Page,
   identifier = 'BC1234567',
