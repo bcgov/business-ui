@@ -66,7 +66,7 @@ test.describe('Business Ledger Tests (bootstrap)', () => {
     await expect(bodyText.getByText(
       'The system has completed processing your filing. You can now retrieve the business information.')).toBeVisible()
     // FUTURE - stub redirect and verify button click
-    await expect(bodyText.getByRole('button', { name: 'Retrieve Business Information' })).toBeVisible()
+    await expect(bodyText.getByRole('link', { name: 'Retrieve Business Information' })).toBeVisible()
     // Document list
     await expect(ledgerItemBody.getByTestId('document-list')).toBeVisible()
     // Comments list

@@ -3,7 +3,6 @@ import { DateTime } from 'luxon'
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
   const { getBusiness } = useBusinessApi()
-  const { getStoredFlag } = useConnectLaunchDarkly()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
 
