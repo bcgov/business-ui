@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
+const localePath = useLocalePath()
 const { businessName } = useBusinessStore()
 const { bootstrapName } = useBusinessBootstrapStore()
 
@@ -38,13 +39,6 @@ const getBootstrapText = () => {
 }
 
 const bootstrapText = getBootstrapText()
-
-const goToCompletedBusiness = () => {
-  const businessIdentifier = filing.businessIdentifier
-  const url = new URL(window.location.href)
-  url.pathname = `/${businessIdentifier}`
-  window.location.assign(url.toString())
-}
 </script>
 
 <template>
@@ -60,6 +54,9 @@ const goToCompletedBusiness = () => {
         {{ $t('text.systemCompletedProcessingFiling') }}
       </p>
     </div>
-    <UButton :label="$t('label.retrieveBusinessInformation')" @click.stop="goToCompletedBusiness()" />
+    <UButton
+      :label="$t('label.retrieveBusinessInformation')"
+      :to="localePath(`/${filing.businessIdentifier}`)"
+    />
   </div>
 </template>

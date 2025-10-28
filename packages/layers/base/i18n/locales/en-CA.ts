@@ -70,14 +70,17 @@ export default {
   /* Common translations only */
   contactInfo: {
     tollFree: {
+      href: 'tel:+1-877-370-1033',
       title: 'Toll Free:',
       value: '1-877-370-1033'
     },
     victoriaOffice: {
+      href: 'tel:+1-250-387-7848',
       title: 'Victoria Office:',
       value: '1-250-370-1033'
     },
     email: {
+      href: "mailto:bcregistries{'@'}gov.bc.ca",
       title: 'Email:',
       value: "BCRegistries{'@'}gov.bc.ca"
     },

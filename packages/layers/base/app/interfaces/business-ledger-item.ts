@@ -18,7 +18,7 @@ export interface BusinessLedgerItem {
   submitter: string
   withdrawalPending: boolean
 
-  // correction filings only - TODO: figure out which one is right
+  // correction related filings only
   correctedFilingId?: string // ID of filing this filing corrects
   correctedLink?: string // URL to fetch filing this filing corrects
   correctionFilingId?: string // ID of this filing's correction

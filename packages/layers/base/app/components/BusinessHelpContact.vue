@@ -4,9 +4,24 @@ defineProps<{ hideHeader?: boolean }>()
 const { t } = useI18n()
 
 const contact: ConnectContactItem[] = [
-  { type: 'phone', title: t('contactInfo.tollFree.title'), value: t('contactInfo.tollFree.value') },
-  { type: 'phone', title: t('contactInfo.victoriaOffice.title'), value: t('contactInfo.victoriaOffice.value') },
-  { type: 'email', title: t('contactInfo.email.title'), value: t('contactInfo.email.value') }
+  {
+    type: 'phone',
+    title: t('contactInfo.tollFree.title'),
+    value: t('contactInfo.tollFree.value'),
+    href: t('contactInfo.tollFree.href')
+  },
+  {
+    type: 'phone',
+    title: t('contactInfo.victoriaOffice.title'),
+    value: t('contactInfo.victoriaOffice.value'),
+    href: t('contactInfo.victoriaOffice.href')
+  },
+  {
+    type: 'email',
+    title: t('contactInfo.email.title'),
+    value: t('contactInfo.email.value'),
+    href: t('contactInfo.email.href')
+  }
 ]
 </script>
 
