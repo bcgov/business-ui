@@ -6,7 +6,7 @@ on:
       - main
       - develop
       - release/**
-      - business-layer
+      - feature-business-layer
     paths:
       - "packages/**"
 
