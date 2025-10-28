@@ -32,7 +32,7 @@ const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => 
 </script>
 
 <template>
-  <div>
+  <div data-testid="business-alerts">
     <h2>
       {{ $t('label.alerts') }} ({{ alerts.length }})
     </h2>

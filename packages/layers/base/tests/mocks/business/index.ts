@@ -3,7 +3,7 @@ import { createResolver } from 'nuxt/kit'
 
 const { resolve } = createResolver(import.meta.url)
 
-type BusinessOverride = { key: string, value: string | boolean | number }
+type BusinessOverride = { key: string, value: string | boolean | number | object[] }
 
 export const getBusinessMock = (overrides: BusinessOverride[] = [], slim = false) => {
   const json: BusinessDataSlim = JSON.parse(fs.readFileSync(
