@@ -124,7 +124,6 @@ export const useBusinessStore = defineStore('business', () => {
     isLegalType,
     isFirm,
     isBaseCompany,
-    isDisableNonBenCorps,
     $reset
   }
 })
