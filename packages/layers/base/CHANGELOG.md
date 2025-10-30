@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.13
+
+### Patch Changes
+
+- [#277](https://github.com/bcgov/business-ui/pull/277) [`c0542be`](https://github.com/bcgov/business-ui/commit/c0542bec40e6cbf7dac6559ee7a43e0bba1cd9ed) Thanks [@deetz99](https://github.com/deetz99)! - chore: Update dependencies.
+
 ## 0.1.12
 
 ### Patch Changes
