@@ -65,6 +65,55 @@ This project requires certain environment variables to be set to run correctly.
 
 Create a file named .env in the root of the project.
 
+### Testing
+
+Run all tests (unit & e2e):
+
+```bash
+pnpm test
+```
+
+#### Unit Tests
+
+Run unit tests once:
+
+```bash
+pnpm test:unit
+```
+
+Run unit tests in watch mode:
+
+```bash
+pnpm test:unit:watch
+```
+
+Run unit test coverage:
+
+```bash
+pnpm test:unit:cov
+```
+
+#### E2E Tests
+
+> [!IMPORTANT]
+> All env values are required for E2E tests to pass locally (even if they're empty).
+> If a test depends on an env variable, it must be added to the .env.example file to pass in the CI.
+
+> [!NOTE]
+> Failed E2E tests can be viewed using the [Playwright Trace Viewer](https://trace.playwright.dev/). Upload the generated trace.zip file to review the full test run.
+
+Run E2E tests in terminal:
+
+```bash
+pnpm test:e2e
+```
+
+Run E2E tests in playwright UI mode:
+
+```bash
+pnpm test:e2e:ui
+```
+
 #### Local Development
 Copy the contents of the **.env.example** file into your new .env file.
 

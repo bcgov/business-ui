@@ -1,6 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [
+    { to: '/', label: 'Examples' },
+    { label: 'BusinessLedger' }
+  ]
 })
 
 useHead({
@@ -8,16 +12,6 @@ useHead({
 })
 
 const localePath = useLocalePath()
-
-setBreadcrumbs([
-  {
-    to: localePath('/'),
-    label: 'Examples'
-  },
-  {
-    label: 'BusinessLedger'
-  }
-])
 
 const { init: initBusiness, $reset: resetBusiness } = useBusinessStore()
 const { init: initBootstrap, getBootstrapLedgerItems, $reset: resetBootstrap } = useBusinessBootstrapStore()
