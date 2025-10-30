@@ -34,12 +34,17 @@ const loadAlerts = async () => {
   loading.value = true
   business.value = undefined
   bootstrapFiling.value = undefined
-  if (isTempRegIdentifier(identifier.value)) {
-    await initBootstrap(identifier.value)
-  } else {
-    await initBusiness(identifier.value)
+  try {
+    if (isTempRegIdentifier(identifier.value)) {
+      await initBootstrap(identifier.value)
+    } else {
+      await initBusiness(identifier.value)
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 </script>
 

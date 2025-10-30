@@ -1,30 +1,25 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'filing',
-  buttonControl: {
-    leftGroup: { buttons: [{ label: 'Left Button', onClick: () => window.alert('Left Button!') }] },
-    rightGroup: { buttons: [{ label: 'Right Button', onClick: () => window.alert('Right Button!') }] }
-  }
+  breadcrumbs: [
+    { to: '/', label: 'Examples' },
+    { label: 'Filing Layout' }
+  ]
 })
 
 useHead({
   title: 'Filing Layout Example'
 })
 
-const localePath = useLocalePath()
-
 const { filingTombstone } = useFilingTombstone()
 filingTombstone.value.title = { text: 'Business Filing Layout', as: 'h1' }
 
-setBreadcrumbs([
-  {
-    to: localePath('/'),
-    label: 'Examples'
-  },
-  {
-    label: 'Filing Layout'
-  }
-])
+const { setButtonControl } = useConnectButtonControl()
+
+setButtonControl({
+  leftGroup: { buttons: [{ label: 'Left Button', onClick: () => window.alert('Left Button!') }] },
+  rightGroup: { buttons: [{ label: 'Right Button', onClick: () => window.alert('Right Button!') }] }
+})
 </script>
 
 <template>
