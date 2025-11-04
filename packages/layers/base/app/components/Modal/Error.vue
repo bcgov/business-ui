@@ -6,7 +6,8 @@ const isSmallScreen = useMediaQuery('(max-width: 640px)')
 interface ErrorModalProps {
   error: unknown
   i18nPrefix: string
-  buttons?: ConnectModalButton[]
+  buttons?: ConnectModalButton[],
+  showHelpContact?: boolean
 }
 
 const {
@@ -45,6 +46,7 @@ const description = te(descKey) ? t(descKey) : t(`${i18nPrefix}.undefined.descri
           <p>{{ $t('text.ifIssuePersistsContactUs') }}</p>
           <ConnectContactInfoBcros />
         </div> -->
+        <BusinessHelpContact v-if="showHelpContact" />
         <div class="flex flex-wrap items-center justify-center gap-4">
           <template
             v-for="button in buttons"

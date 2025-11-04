@@ -89,6 +89,14 @@ export default {
       value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
     }
   },
+  errorModal: {
+    documentDownload: {
+      500: {
+        title: 'Unable to Download Documents',
+        description: 'We are currently unable to retrieve this document. Please try again later.'
+      }
+    }
+  },
   label: {
     actions: 'Actions',
     addDetail: 'Add Detail',

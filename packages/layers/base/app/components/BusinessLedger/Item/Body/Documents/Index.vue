@@ -12,13 +12,23 @@ const downloadingAll = ref(false)
 
 const download = async (document: BusinessDocument, index: number) => {
   downloadingIndex.value = index
-  const documentBlob = overrideGetDocumentFn
-    ? await overrideGetDocumentFn(document, filing.businessIdentifier, filing.filingId)
-    : await getBusinessDocument(document.link)
-  if (documentBlob) {
+  try {
+    const documentBlob = overrideGetDocumentFn
+      ? await overrideGetDocumentFn(document, filing.businessIdentifier, filing.filingId)
+      : await getBusinessDocument(document.link)
     downloadFile(documentBlob, document.filename)
+  } catch {
+    useModal().errorModal.open({
+      error: { statusCode: 500 },
+      i18nPrefix: 'errorModal.documentDownload',
+      buttons: [
+        {
+          label: 'OK', shouldClose: true
+        }
+      ],
+      showHelpContact: true
+    })
   }
-  // TODO error modal
   downloadingIndex.value = -1
 }
 
