@@ -1,28 +1,32 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'connect-auth',
-  breadcrumbs: [
-    { to: '/', label: 'Examples' },
-    { label: 'BusinessLedger' }
-  ]
+  layout: 'connect-auth'
 })
 
 useHead({
-  title: 'Business Ledger Example'
+  title: 'Business Ledger Wrapper Example'
 })
 
 const localePath = useLocalePath()
 
+setBreadcrumbs([
+  {
+    to: localePath('/'),
+    label: 'Examples'
+  },
+  {
+    label: 'BusinessLedgerWrapper'
+  }
+])
+
 const { init: initBusiness, $reset: resetBusiness } = useBusinessStore()
-const { init: initBootstrap, getBootstrapLedgerItems, $reset: resetBootstrap } = useBusinessBootstrapStore()
-const { getBusinessLedger } = useBusinessApi()
+const { init: initBootstrap, $reset: resetBootstrap } = useBusinessBootstrapStore()
 const { business, businessIdentifier } = storeToRefs(useBusinessStore())
 const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstrapStore())
 
 const hideReceipts = ref(false)
 
 const isLocked = ref(false)
-const showDocumentRecords = ref(true)
 
 /** good dev examples:
  * BC0887698 (continuationOut, consentContinuationOut, Alteration from bc to ben)
@@ -34,21 +38,19 @@ const showDocumentRecords = ref(true)
  * BC0873420 (amalgamationApplication, consentContinuationOut, alterations)
  * BC0887748 (consentAmalgamationOut, amalgamationOut)
 */
+
 const identifier = ref('')
-const filings = ref<BusinessLedgerItem[]>([])
+const beforeDate = ref('')
 
 const loading = ref(false)
 const loadLedger = async () => {
   loading.value = true
-  filings.value = []
   business.value = undefined
   bootstrapFiling.value = undefined
   if (isTempRegIdentifier(identifier.value)) {
     await initBootstrap(identifier.value)
-    filings.value = getBootstrapLedgerItems()
   } else {
     await initBusiness(identifier.value, true)
-    filings.value = await getBusinessLedger(identifier.value) || []
   }
   loading.value = false
 }
@@ -62,11 +64,8 @@ onMounted(() => {
 <template>
   <div class="py-8 space-y-6">
     <h1>
-      BusinessLedger
+      BusinessLedgerWrapper
     </h1>
-    <NuxtLink class="text-primary" :to="localePath('/examples/components/BusinessLedger/Mocked')">
-      Go to Mocked version of component
-    </NuxtLink>
     <ConnectPageSection
       :heading="{
         label: 'Example (login and API integration setup required)'
@@ -84,16 +83,19 @@ onMounted(() => {
           :disabled="!!businessIdentifier || !!bootstrapIdentifier"
           label="Documents Locked"
         />
-        <USwitch
-          v-model="showDocumentRecords"
-          :disabled="!!businessIdentifier || !!bootstrapIdentifier"
-          label="Show Manage Document Records (FF must also be on for these to show)"
-        />
         <ConnectInput
           id="identifier-input"
           v-model="identifier"
           label="Business Identifier"
         />
+        <UFormField help="yyyy-mm-dd">
+          <ConnectInput
+            id="before-date-input"
+            v-model="beforeDate"
+            label="Before Date (Optional)"
+            hint="yyyy-mm-dd"
+          />
+        </UFormField>
         <UButton
           :disabled="!identifier"
           label="Load Business Ledger"
@@ -104,14 +106,12 @@ onMounted(() => {
       <ConnectTransitionCollapse>
         <div v-if="!loading && (businessIdentifier || bootstrapIdentifier)">
           <div class="bg-shade p-5 mt-3">
-            <BusinessLedger
-              :business-identifier="identifier"
-              :filings
+            <BusinessLedgerWrapper
+              :business-id="identifier"
+              :date="beforeDate ?? undefined"
               :hide-receipts="hideReceipts"
-              :incomplete-business="!businessIdentifier"
               :locked-documents="isLocked"
               locked-documents-tooltip="Configurable tooltip text over locked documents."
-              :show-document-records="showDocumentRecords"
             />
           </div>
         </div>

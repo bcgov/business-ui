@@ -3,7 +3,7 @@ import { FilingStatus } from '#imports'
 
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const { isChangeOfOfficers, isFilingStatus, isFilingType } = useBusinessLedger(filing)
+const { isChangeOfOfficers, isFilingStatus, isFilingType } = useBusinessLedgerFiling(filing)
 
 /** Date to use for Filed and Paid. */
 const filedAndPaidDate = new Date(filing.paymentDate || filing.submittedDate)

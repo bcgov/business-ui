@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 const { t } = useI18n()
 
 const filing = inject<BusinessLedgerItem>('filing')!
-const { isFilingType } = useBusinessLedger(filing)
+const { isFilingType } = useBusinessLedgerFiling(filing)
 const { businessName } = useBusinessStore()
 
 /** The expiry date of the limited restoration filing as a Pacific date. */

@@ -17,7 +17,7 @@ const {
   isStaffFiling,
   loadComments,
   loadDocuments
-} = useBusinessLedger(props.filing)
+} = useBusinessLedgerFiling(props.filing)
 
 const { getFilingName } = useFiling()
 

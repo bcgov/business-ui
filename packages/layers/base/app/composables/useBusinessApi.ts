@@ -284,13 +284,16 @@ export const useBusinessApi = () => {
    */
   async function getBusinessLedger(
     businessId: string,
-    includeNonLedgerItems = false
+    includeNonLedgerItems = false,
+    effectiveDate?: IsoDatePacific
   ): Promise<BusinessLedgerItem[] | undefined> {
     if (isTempRegIdentifier(businessId)) {
       console.error('Attempting to get business ledger with a temp reg id:', businessId)
       return
     }
-    const response = await $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`)
+    const config = { params: effectiveDate ? { effective_date: effectiveDate } : {} }
+
+    const response = await $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`, config)
     return includeNonLedgerItems
       ? response.filings
       : response.filings.filter(filing => filing.displayLedger)

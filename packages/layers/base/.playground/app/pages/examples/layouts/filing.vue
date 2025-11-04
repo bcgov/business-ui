@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'filing',
+  layout: 'connect-pay-tombstone-buttons',
   breadcrumbs: [
     { to: '/', label: 'Examples' },
     { label: 'Filing Layout' }
@@ -11,10 +11,22 @@ useHead({
   title: 'Filing Layout Example'
 })
 
-const { filingTombstone } = useFilingTombstone()
-filingTombstone.value.title = { text: 'Business Filing Layout', as: 'h1' }
+const { businessTombstone } = useBusinessTombstone()
+businessTombstone.value.title = { text: 'Business Filing Layout', as: 'h1' }
 
 const { setButtonControl } = useConnectButtonControl()
+
+const localePath = useLocalePath()
+
+setBreadcrumbs([
+  {
+    to: localePath('/'),
+    label: 'Examples'
+  },
+  {
+    label: 'Filing Layout'
+  }
+])
 
 setButtonControl({
   leftGroup: { buttons: [{ label: 'Left Button', onClick: () => window.alert('Left Button!') }] },

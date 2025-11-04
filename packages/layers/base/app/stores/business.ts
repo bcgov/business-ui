@@ -2,9 +2,10 @@ import { DateTime } from 'luxon'
 
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
-  const { getBusiness } = useBusinessApi()
+  const { getBusiness, getAuthInfo } = useBusinessApi()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
+  const businessContact = shallowRef<ContactPoint | undefined>(undefined)
 
   const businessIdentifier = computed(() => business.value?.identifier)
 
@@ -77,12 +78,18 @@ export const useBusinessStore = defineStore('business', () => {
     return alertList
   })
 
-  async function init(identifier: string, slim = false, force = false) {
+  async function init(identifier: string, slim = false, force = false, includeContact = false) {
     const businessCached = businessIdentifier.value && identifier === businessIdentifier.value
 
     if (!businessCached || force) {
-      // @ts-expect-error ts doesn't capture slim true/false properly
-      business.value = await getBusiness(identifier, slim)
+      const [businessResp, contactResp] = await Promise.all([
+        // @ts-expect-error ts doesn't capture slim true/false properly
+        getBusiness(identifier, slim),
+        ...(includeContact ? [getAuthInfo(identifier)] : [])
+      ])
+
+      business.value = businessResp
+      businessContact.value = contactResp?.contacts[0]
     }
   }
 
@@ -112,11 +119,13 @@ export const useBusinessStore = defineStore('business', () => {
 
   function $reset() {
     business.value = undefined
+    businessContact.value = undefined
   }
 
   return {
     business,
     businessAlerts,
+    businessContact,
     businessIdentifier,
     businessName,
     init,

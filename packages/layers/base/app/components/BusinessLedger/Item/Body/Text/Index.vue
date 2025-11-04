@@ -10,7 +10,7 @@ const {
   isFilingType,
   isFutureEffective,
   isFutureEffectiveAndPending
-} = useBusinessLedger(filing)
+} = useBusinessLedgerFiling(filing)
 
 const { businessIdentifier } = useBusinessStore()
 const { bootstrapIdentifier } = useBusinessBootstrapStore()

@@ -3,7 +3,7 @@ import type { MessageFunction, VueMessageType } from 'vue-i18n'
 
 const { t, tm, rt } = useI18n()
 const filing = inject<BusinessLedgerItem>('filing')!
-const { isFutureEffective, isFilingType } = useBusinessLedger(filing)
+const { isFutureEffective, isFilingType } = useBusinessLedgerFiling(filing)
 const { businessName } = useBusinessStore()
 
 const getSubtitle = () => {
