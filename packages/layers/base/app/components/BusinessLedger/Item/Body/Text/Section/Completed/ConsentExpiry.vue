@@ -2,7 +2,7 @@
 const { t } = useI18n()
 
 const filing = inject<BusinessLedgerItem>('filing')!
-const { foreignJurisdiction, isFilingType } = useBusinessLedgerFiling(filing)
+const { foreignJurisdiction, isFilingType } = useBusinessLedger(filing)
 
 const expiryDate = toDate(
   filing.data?.consentAmalgamationOut?.expiry || filing.data?.consentContinuationOut?.expiry || '')

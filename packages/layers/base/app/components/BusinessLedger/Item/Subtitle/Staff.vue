@@ -3,7 +3,7 @@ import { FilingStatus } from '#imports'
 
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const { isFilingStatus, isFilingType } = useBusinessLedgerFiling(filing)
+const { isFilingStatus, isFilingType } = useBusinessLedger(filing)
 
 const putBackOnOrAdminDissolution = isFilingType(FilingType.PUT_BACK_ON)
   || isFilingType(undefined, FilingSubType.DISSOLUTION_ADMINISTRATIVE)

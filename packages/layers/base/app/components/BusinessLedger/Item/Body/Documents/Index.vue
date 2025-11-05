@@ -4,7 +4,7 @@ const isLocked = inject<Ref<boolean>>('lockedDocuments')
 const lockedDocumentsText = inject<string>('lockedDocumentsText')
 const overrideGetDocumentFn = inject<OverrideGetDocumentFn>('overrideGetDocumentFn')
 
-const { documents } = useBusinessLedgerFiling(filing)
+const { documents } = useBusinessLedger(filing)
 const { getBusinessDocument } = useBusinessApi()
 
 const downloadingIndex = ref(-1)

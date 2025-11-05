@@ -48,7 +48,9 @@ const loadLedger = async () => {
     filings.value = getBootstrapLedgerItems()
   } else {
     await initBusiness(identifier.value, true)
-    filings.value = await getBusinessLedger(identifier.value) || []
+    const ledgerQuery = await getBusinessLedger(identifier.value)
+    await ledgerQuery?.refresh()
+    filings.value = ledgerQuery?.data.value?.filings || []
   }
   loading.value = false
 }

@@ -1,6 +1,6 @@
 import * as iso3166 from 'iso-3166-2'
 
-export const useBusinessLedgerFiling = (filing: BusinessLedgerItem) => {
+export const useBusinessLedger = (filing: BusinessLedgerItem) => {
   const { t, te } = useNuxtApp().$i18n
   const { getFilingComments, getFilingDocumentUrls } = useBusinessApi()
 

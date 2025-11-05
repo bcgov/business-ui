@@ -5,7 +5,7 @@ const isCommentOpen = ref(false)
 
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const { comments } = useBusinessLedgerFiling(filing)
+const { comments } = useBusinessLedger(filing)
 
 // FUTURE: add in staff add comment ability
 const isDisableNonBenCorps = () => false

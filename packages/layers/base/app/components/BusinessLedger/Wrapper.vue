@@ -5,19 +5,18 @@ const props = defineProps<{
   hideReceipts?: boolean
   lockedDocuments?: boolean
   lockedDocumentsTooltip?: string
+  includeNonLedgerItems?: boolean
   overrideGetDocumentFn?: OverrideGetDocumentFn
 }>()
 
-const ledgerStore = useBusinessLedgerStore()
-const { ledger } = storeToRefs(ledgerStore)
-
-const loadingLedger = ref(false)
-
-onMounted(async () => {
-  loadingLedger.value = true
-  await ledgerStore.init(props.businessId, props.date)
-  loadingLedger.value = false
+const { getBusinessLedger } = useBusinessApi()
+const ledgerQuery = await getBusinessLedger(props.businessId, props.date)
+const ledger = computed(() => {
+  return props.includeNonLedgerItems
+    ? ledgerQuery?.data.value?.filings || []
+    : ledgerQuery?.data.value?.filings.filter(filing => filing.displayLedger) || []
 })
+const loadingLedger = computed(() => !ledgerQuery?.status.value || ledgerQuery?.status.value === 'pending')
 </script>
 
 <template>

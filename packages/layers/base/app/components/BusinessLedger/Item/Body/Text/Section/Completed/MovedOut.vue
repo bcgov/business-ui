@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 const { t } = useI18n()
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const { foreignJurisdiction, isFilingType } = useBusinessLedgerFiling(filing)
+const { foreignJurisdiction, isFilingType } = useBusinessLedger(filing)
 const { businessName } = useBusinessStore()
 
 const title = ref('')

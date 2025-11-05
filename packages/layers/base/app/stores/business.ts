@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon'
-import { useQuery } from '@pinia/colada'
 
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
@@ -80,34 +79,34 @@ export const useBusinessStore = defineStore('business', () => {
   })
 
   async function init(identifier: string, slim = false, force = false, includeContact = false) {
-    const { state: businessResp, refresh: businessRefresh } = useQuery({
-      key: () => ['business', identifier, slim],
-      // @ts-expect-error ts doesn't capture slim true/false properly
-      query: () => getBusiness(identifier, slim)
-    })
-    const { state: contactResp, refresh: contactRefresh } = useQuery({
-      key: () => ['businessContact', identifier],
-      query: () => getAuthInfo(identifier)
-    })
+    const {
+      state: businessResp,
+      refresh: businessRefresh,
+      refetch: businessRefetch
+    } = await getBusiness(identifier, slim as true)
 
     const fetches = []
-    if (businessResp.value.status === 'pending' || force) {
-      fetches.push(await businessRefresh().then(({ error }) => {
-        if (error) {
-          handleError(error, 'errorModal.business.init')
-        }
-      }))
-    }
-    if ((contactResp.value.status === 'pending' || force) && includeContact) {
-      fetches.push(await contactRefresh().then(({ error }) => {
+
+    fetches.push((force ? businessRefetch() : businessRefresh()).then((state) => {
+      if (state.error) {
+        handleError(state.error, 'errorModal.business.init')
+      } else {
+        business.value = businessResp.value.data?.business
+      }
+    }))
+
+    if (includeContact) {
+      // NOTE: define within block so that it doesn't make an initial call when includeContact is false
+      const { state: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
+      fetches.push(contactRefresh().then(({ error }) => {
         if (error) {
           handleError(error, 'errorModal.business.contact')
+        } else {
+          businessContact.value = contactResp.value.data?.contacts[0]
         }
       }))
     }
     await Promise.all(fetches)
-    business.value = businessResp.value.data
-    businessContact.value = contactResp.value.data?.contacts[0]
   }
 
   /** Whether the entity belongs to one of the passed-in legal types */

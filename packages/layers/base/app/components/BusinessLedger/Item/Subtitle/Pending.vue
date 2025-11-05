@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const filing = inject<BusinessLedgerItem>('filing')!
-const { isChangeOfOfficers, isFutureEffective } = useBusinessLedgerFiling(filing)
+const { isChangeOfOfficers, isFutureEffective } = useBusinessLedger(filing)
 </script>
 
 <template>
