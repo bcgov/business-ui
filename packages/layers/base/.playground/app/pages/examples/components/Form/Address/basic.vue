@@ -25,7 +25,7 @@ const state = reactive<AddressSchema>({
     country: 'CA',
     locationDescription: ''
   },
-  sameAsDelivery: false
+  sameAs: false
 })
 
 const formRef = useTemplateRef<InstanceType<typeof FormAddress>>('form-ref')
@@ -55,7 +55,7 @@ function onCancel() {
         ref="form-ref"
         v-model="state"
         @submit="onSubmit"
-        @error="onFormError"
+        @error="onFormSubmitError"
         @cancel="onCancel"
       />
     </ConnectPageSection>

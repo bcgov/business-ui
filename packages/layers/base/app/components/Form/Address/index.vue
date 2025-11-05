@@ -3,10 +3,12 @@ import type { FormError, Form } from '@nuxt/ui'
 
 defineProps<{
   nested?: boolean
+  name?: string
 }>()
 
 defineEmits<{
-  cancel: []
+  'cancel': []
+  'should-validate': []
 }>()
 
 const addressSchema = getAddressSchema()
@@ -26,11 +28,11 @@ const formErrors = computed<{
   }
 })
 
-// reset mailing address if 'sameAsDelivery' is checked and the user makes changes to delivery address
+// reset mailing address if 'sameAs' is checked and the user makes changes to delivery address
 watchDebounced(
   model.value.deliveryAddress,
   () => {
-    if (model.value.sameAsDelivery) {
+    if (model.value.sameAs) {
       model.value.mailingAddress = {
         street: '',
         streetAdditional: '',
@@ -40,7 +42,7 @@ watchDebounced(
         country: '',
         locationDescription: ''
       }
-      model.value.sameAsDelivery = false
+      model.value.sameAs = false
     }
   },
   { debounce: 100 }
@@ -48,7 +50,7 @@ watchDebounced(
 
 // sync mailing address with delivery address on 'same as' checkbox click
 watch(
-  () => model.value.sameAsDelivery,
+  () => model.value.sameAs,
   (v) => {
     if (v) {
       model.value.mailingAddress = { ...model.value.deliveryAddress }
@@ -68,6 +70,7 @@ defineExpose({
     :state="model"
     :schema="addressSchema"
     :nested
+    :name
     class="flex flex-col gap-6"
   >
     <ConnectFieldset :label="$t('label.deliveryAddress')" :error="formErrors?.delivery">
@@ -77,7 +80,7 @@ defineExpose({
         schema-prefix="deliveryAddress"
         street-help-text="no-po"
         required
-        :form-ref="formRef"
+        @should-validate="$emit('should-validate')"
       />
     </ConnectFieldset>
     <ConnectFieldset
@@ -86,16 +89,16 @@ defineExpose({
     >
       <div class="flex flex-col gap-6">
         <UCheckbox
-          v-model="model.sameAsDelivery"
+          v-model="model.sameAs"
           :label="$t('label.sameAsDeliveryAddress')"
         />
         <ConnectFormAddress
-          v-if="!model.sameAsDelivery"
+          v-if="!model.sameAs"
           id="mailing-address"
           v-model="model.mailingAddress"
           schema-prefix="mailingAddress"
           street-help-text="allow-po"
-          :form-ref="formRef"
+          @should-validate="$emit('should-validate')"
         />
       </div>
     </ConnectFieldset>

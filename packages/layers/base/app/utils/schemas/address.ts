@@ -7,7 +7,7 @@ export function getAddressSchema() {
   return z.object({
     deliveryAddress: reqSchema,
     mailingAddress: nonReqSchema,
-    sameAsDelivery: z.boolean()
+    sameAs: z.boolean()
   })
 }
 
