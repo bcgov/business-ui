@@ -2,9 +2,10 @@ import { DateTime } from 'luxon'
 
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
-  const { getBusiness } = useBusinessApi()
+  const { getBusiness, getAuthInfo, handleError } = useBusinessApi()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
+  const businessContact = shallowRef<ContactPoint | undefined>(undefined)
 
   const businessIdentifier = computed(() => business.value?.identifier)
 
@@ -77,13 +78,35 @@ export const useBusinessStore = defineStore('business', () => {
     return alertList
   })
 
-  async function init(identifier: string, slim = false, force = false) {
-    const businessCached = businessIdentifier.value && identifier === businessIdentifier.value
+  async function init(identifier: string, slim = false, force = false, includeContact = false) {
+    const {
+      state: businessResp,
+      refresh: businessRefresh,
+      refetch: businessRefetch
+    } = await getBusiness(identifier, slim as true)
 
-    if (!businessCached || force) {
-      // @ts-expect-error ts doesn't capture slim true/false properly
-      business.value = await getBusiness(identifier, slim)
+    const fetches = []
+
+    fetches.push((force ? businessRefetch() : businessRefresh()).then((state) => {
+      if (state.error) {
+        handleError(state.error, 'errorModal.business.init')
+      } else {
+        business.value = businessResp.value.data?.business
+      }
+    }))
+
+    if (includeContact) {
+      // NOTE: define within block so that it doesn't make an initial call when includeContact is false
+      const { state: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
+      fetches.push(contactRefresh().then(({ error }) => {
+        if (error) {
+          handleError(error, 'errorModal.business.contact')
+        } else {
+          businessContact.value = contactResp.value.data?.contacts[0]
+        }
+      }))
     }
+    await Promise.all(fetches)
   }
 
   /** Whether the entity belongs to one of the passed-in legal types */
@@ -112,11 +135,13 @@ export const useBusinessStore = defineStore('business', () => {
 
   function $reset() {
     business.value = undefined
+    businessContact.value = undefined
   }
 
   return {
     business,
     businessAlerts,
+    businessContact,
     businessIdentifier,
     businessName,
     init,

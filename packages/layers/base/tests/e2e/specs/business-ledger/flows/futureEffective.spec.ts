@@ -7,7 +7,7 @@ import { mockApiCallsForLedger } from '../../../../mocks/mock-helpers'
 
 const today = DateTime.fromJSDate(new Date(), { zone: 'America/Vancouver' })
 const tomorrow = (today.plus({ days: 1 })).set({ hour: 0, minute: 1 })
-const futureDateStr = `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} ${tomorrow.year} 00:01:00 PDT`
+const futureDateStr = `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} ${tomorrow.year} 01:01:00 PDT`
 
 test.describe('Business Ledger Tests (future effective)', () => {
   test.beforeEach(async ({ page }) => {

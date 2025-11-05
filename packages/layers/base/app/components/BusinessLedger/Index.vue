@@ -6,12 +6,14 @@ const props = defineProps<{
   incompleteBusiness?: boolean
   lockedDocuments?: boolean
   lockedDocumentsTooltip?: string
+  overrideGetDocumentFn?: OverrideGetDocumentFn
   showDocumentRecords?: boolean
 }>()
 
 provide<Ref<boolean>>('lockedDocuments', computed(() => props.lockedDocuments))
 provide<string | undefined>('lockedDocumentsText', props.lockedDocumentsTooltip)
 provide<Ref<boolean>>('showDocumentRecords', computed(() => props.showDocumentRecords))
+provide<OverrideGetDocumentFn | undefined>('overrideGetDocumentFn', props.overrideGetDocumentFn)
 
 // reset any existing ledger state
 clearNuxtState(key => key.includes('businessLedgerItem'))

@@ -325,9 +325,9 @@ describe('useBusinessApi', () => {
         mockAuthApi.mockResolvedValue(mockResponse)
 
         const result = await businessApi.getAuthInfo(businessId)
-
-        expect(result).toEqual(mockResponse)
-        expect(result.corpType.desc).toBe('BC Company')
+        await result.refresh()
+        expect(result.data.value).toEqual(mockResponse)
+        expect(result.data.value?.corpType.desc).toBe('BC Company')
       })
     })
   })

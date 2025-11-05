@@ -28,8 +28,16 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/BusinessLedger')
   },
   {
+    label: 'BusinessLedgerWrapper',
+    to: localePath('/examples/components/BusinessLedger/Wrapper')
+  },
+  {
     label: 'ModalError',
     to: localePath('/examples/components/Modal/Error')
+  },
+  {
+    label: 'ModalStaffPay',
+    to: localePath('/examples/components/Modal/StaffPay')
   }
 ]
 </script>

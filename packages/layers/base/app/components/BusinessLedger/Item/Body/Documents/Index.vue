@@ -2,6 +2,7 @@
 const filing = inject<BusinessLedgerItem>('filing')!
 const isLocked = inject<Ref<boolean>>('lockedDocuments')
 const lockedDocumentsText = inject<string>('lockedDocumentsText')
+const overrideGetDocumentFn = inject<OverrideGetDocumentFn>('overrideGetDocumentFn')
 
 const { documents } = useBusinessLedger(filing)
 const { getBusinessDocument } = useBusinessApi()
@@ -11,8 +12,23 @@ const downloadingAll = ref(false)
 
 const download = async (document: BusinessDocument, index: number) => {
   downloadingIndex.value = index
-  const documentBlob = await getBusinessDocument(document.link)
-  downloadFile(documentBlob, document.filename)
+  try {
+    const documentBlob = overrideGetDocumentFn
+      ? await overrideGetDocumentFn(document, filing.businessIdentifier, filing.filingId)
+      : await getBusinessDocument(document.link)
+    downloadFile(documentBlob, document.filename)
+  } catch {
+    useModal().errorModal.open({
+      error: { statusCode: 500 },
+      i18nPrefix: 'errorModal.documentDownload',
+      buttons: [
+        {
+          label: 'OK', shouldClose: true
+        }
+      ],
+      showHelpContact: true
+    })
+  }
   downloadingIndex.value = -1
 }
 

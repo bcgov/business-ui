@@ -1,3 +1,6 @@
+import type { UseQueryReturn } from '@pinia/colada'
+import { defineQuery } from '@pinia/colada'
+
 export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
@@ -193,14 +196,20 @@ export const useBusinessApi = () => {
    * @param businessId the identifier of the business
    * @returns a promise to return business data
    */
-  function getBusiness(businessId: string, slim: true): Promise<BusinessDataSlim> // tell TS return type is slim if true
-  function getBusiness(businessId: string, slim?: false): Promise<BusinessData>
-  async function getBusiness(businessId: string, slim = false): Promise<BusinessData | BusinessDataSlim> {
-    const response = await $businessApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
-      query: slim ? { slim: true } : undefined
+  function getBusiness(businessId: string, slim: true): Promise<UseQueryReturn<{ business: BusinessDataSlim }>> // tell TS return type is slim if true
+  function getBusiness(businessId: string, slim?: false): Promise<UseQueryReturn<{ business: BusinessData }>>
+  async function getBusiness(
+    businessId: string,
+    slim = false
+  ): Promise<UseQueryReturn<{ business: BusinessDataSlim | BusinessData }>> {
+    const query = defineQuery({
+      key: ['business', businessId, slim],
+      query: () => $businessApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
+        query: slim ? { slim: true } : undefined
+      }),
+      staleTime: 60000
     })
-
-    return response.business
+    return query()
   }
 
   /**
@@ -284,24 +293,39 @@ export const useBusinessApi = () => {
    */
   async function getBusinessLedger(
     businessId: string,
-    includeNonLedgerItems = false
-  ): Promise<BusinessLedgerItem[] | undefined> {
+    effectiveDate?: IsoDatePacific
+  ) {
     if (isTempRegIdentifier(businessId)) {
       console.error('Attempting to get business ledger with a temp reg id:', businessId)
       return
     }
-    const response = await $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`)
-    return includeNonLedgerItems
-      ? response.filings
-      : response.filings.filter(filing => filing.displayLedger)
+    const config = { params: effectiveDate ? { effective_date: effectiveDate } : {} }
+
+    const query = defineQuery({
+      key: ['businessContact', businessId],
+      query: () => $businessApi<{ filings: BusinessLedgerItem[] }>(`businesses/${businessId}/filings`, config),
+      staleTime: 60000
+    })
+    return query()
   }
 
   /**
    * Fetches the auth info of the given business.
    * @returns a promise to return the data
    */
-  async function getAuthInfo(businessId: string): Promise<AuthInformation> {
-    return $authApi(`/entities/${businessId}`)
+  async function getAuthInfo(businessId: string) {
+    const query = defineQuery({
+      key: ['businessContact', businessId],
+      query: () => $authApi<AuthInformation>(`/entities/${businessId}`),
+      staleTime: 60000
+    })
+    return query()
+  }
+
+  function handleError(error: unknown, i18nPrefix: string) {
+    // FUTURE: update as needed for different error flows (i.e. button action)
+    console.error('Error fetching business data:', error)
+    useModal().errorModal.open({ error, i18nPrefix })
   }
 
   return {
@@ -323,6 +347,7 @@ export const useBusinessApi = () => {
     getPendingTask,
     getAndValidateDraftFiling,
     createFilingPayload,
+    handleError,
     // auth/entity queries
     getAuthInfo
   }
