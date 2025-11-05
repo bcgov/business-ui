@@ -80,7 +80,7 @@ defineExpose({
         schema-prefix="deliveryAddress"
         street-help-text="no-po"
         required
-        @should-validate="$emit('should-validate')"
+        @should-validate="formRef?.clear(/^deliveryAddress.*/)"
       />
     </ConnectFieldset>
     <ConnectFieldset
@@ -98,7 +98,7 @@ defineExpose({
           v-model="model.mailingAddress"
           schema-prefix="mailingAddress"
           street-help-text="allow-po"
-          @should-validate="$emit('should-validate')"
+          @should-validate="formRef?.clear(/^mailingAddress.*/)"
         />
       </div>
     </ConnectFieldset>
