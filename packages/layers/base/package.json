@@ -26,9 +26,8 @@
   },
   "dependencies": {
     "@pinia/colada-nuxt": "^0.2.4",
-    "@sbc-connect/nuxt-forms": "^0.1.27",
-    "@sbc-connect/nuxt-pay": "^0.1.29",
-    "add": "^2.0.6",
+    "@sbc-connect/nuxt-forms": "^0.1.30",
+    "@sbc-connect/nuxt-pay": "^0.1.30",
     "http-status-codes": "^2.3.0",
     "iso-3166-2": "^1.0.0",
     "luxon": "^3.7.2"
