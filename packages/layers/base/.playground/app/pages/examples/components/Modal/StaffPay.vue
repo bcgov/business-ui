@@ -1,23 +1,15 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'connect-pay'
+  layout: 'connect-pay',
+  breadcrumbs: [
+    { to: '/', label: 'Examples' },
+    { label: 'ModalStaffPay' }
+  ]
 })
 
 useHead({
   title: 'ModalStaffPay Example'
 })
-
-const localePath = useLocalePath()
-
-setBreadcrumbs([
-  {
-    to: localePath('/'),
-    label: 'Examples'
-  },
-  {
-    label: 'ModalStaffPay'
-  }
-])
 
 const feeStore = useConnectFeeStore()
 

@@ -8,10 +8,11 @@ export const useBusinessTombstone = () => {
   const { business, businessContact, businessName } = storeToRefs(businessStore)
 
   async function setFilingDefault(businessId: string): Promise<void> {
+    businessTombstone.value.loading = true
+
     if (!business.value) {
       await businessStore.init(businessId, true, false, true)
     }
-    businessTombstone.value.loading = true
 
     const ext = businessContact.value?.extension || businessContact.value?.phoneExtension
     const phoneLabel = ext
@@ -34,10 +35,11 @@ export const useBusinessTombstone = () => {
   }
 
   async function setPublicDefault(businessId: string): Promise<void> {
+    businessTombstone.value.loading = true
+
     if (!business.value) {
       await businessStore.init(businessId, true)
     }
-    businessTombstone.value.loading = true
 
     businessTombstone.value.title = { as: 'h1', text: businessName.value || `[${t('text.unknown')}]` }
     businessTombstone.value.subtitles = business.value
@@ -65,6 +67,7 @@ export const useBusinessTombstone = () => {
       },
       { label: t('label.businessNumber'), value: business.value?.taxId ?? t('label.notAvailable') }
     ]
+    businessTombstone.value.loading = false
   }
 
   return {

@@ -2,7 +2,12 @@
 import { DateTime } from 'luxon'
 
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [
+    { to: '/', label: 'Examples' },
+    { to: '/examples/components/BusinessLedger', label: 'BusinessLedger' },
+    { label: 'Mocked' }
+  ]
 })
 
 useHead({
@@ -10,20 +15,6 @@ useHead({
 })
 
 const localePath = useLocalePath()
-
-setBreadcrumbs([
-  {
-    to: localePath('/'),
-    label: 'Examples'
-  },
-  {
-    to: localePath('/examples/components/BusinessLedger'),
-    label: 'BusinessLedger'
-  },
-  {
-    label: 'Mocked'
-  }
-])
 
 // set permissions manually to prevent it calling out to the api
 const { authorizedActions } = storeToRefs(useBusinessPermissionsStore())

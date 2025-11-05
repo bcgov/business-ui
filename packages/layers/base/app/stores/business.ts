@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
+import { useQuery } from '@pinia/colada'
 
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
-  const { getBusiness, getAuthInfo } = useBusinessApi()
+  const { getBusiness, getAuthInfo, handleError } = useBusinessApi()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
@@ -79,18 +80,34 @@ export const useBusinessStore = defineStore('business', () => {
   })
 
   async function init(identifier: string, slim = false, force = false, includeContact = false) {
-    const businessCached = businessIdentifier.value && identifier === businessIdentifier.value
+    const { state: businessResp, refresh: businessRefresh } = useQuery({
+      key: () => ['business', identifier, slim],
+      // @ts-expect-error ts doesn't capture slim true/false properly
+      query: () => getBusiness(identifier, slim)
+    })
+    const { state: contactResp, refresh: contactRefresh } = useQuery({
+      key: () => ['businessContact', identifier],
+      query: () => getAuthInfo(identifier)
+    })
 
-    if (!businessCached || force) {
-      const [businessResp, contactResp] = await Promise.all([
-        // @ts-expect-error ts doesn't capture slim true/false properly
-        getBusiness(identifier, slim),
-        ...(includeContact ? [getAuthInfo(identifier)] : [])
-      ])
-
-      business.value = businessResp
-      businessContact.value = contactResp?.contacts[0]
+    const fetches = []
+    if (businessResp.value.status === 'pending' || force) {
+      fetches.push(await businessRefresh().then(({ error }) => {
+        if (error) {
+          handleError(error, 'errorModal.business.init')
+        }
+      }))
     }
+    if ((contactResp.value.status === 'pending' || force) && includeContact) {
+      fetches.push(await contactRefresh().then(({ error }) => {
+        if (error) {
+          handleError(error, 'errorModal.business.contact')
+        }
+      }))
+    }
+    await Promise.all(fetches)
+    business.value = businessResp.value.data
+    businessContact.value = contactResp.value.data?.contacts[0]
   }
 
   /** Whether the entity belongs to one of the passed-in legal types */

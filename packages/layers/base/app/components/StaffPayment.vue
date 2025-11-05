@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RadioGroupItem } from '@nuxt/ui'
+import type { Form, RadioGroupItem } from '@nuxt/ui'
 
 const staffPayment = defineModel<StaffPayment>({ required: true })
 defineProps<{ showPriority?: boolean }>()
@@ -9,17 +9,14 @@ const { t } = useI18n()
 const feeStore = useConnectFeeStore()
 
 const staffPayStore = useStaffPaymentStore()
-// const { staffPayment } = storeToRefs(staffPayStore)
 
-const radioItems = ref<RadioGroupItem[]>(
-  [
-    { label: t('label.cashOrCheque'), value: StaffPaymentOption.FAS },
-    { label: t('label.bcOnLine'), value: StaffPaymentOption.BCOL },
-    { label: t('label.noFee'), value: StaffPaymentOption.NO_FEE }
-  ]
-)
+const radioItems: RadioGroupItem[] = [
+  { label: t('label.cashOrCheque'), value: StaffPaymentOption.FAS },
+  { label: t('label.bcOnLine'), value: StaffPaymentOption.BCOL },
+  { label: t('label.noFee'), value: StaffPaymentOption.NO_FEE }
+]
 
-const staffPaymentForm = useTemplateRef('staffPaymentForm')
+const staffPaymentForm = useTemplateRef<Form<StaffPayment>>('staffPaymentForm')
 watch(() => staffPayment.value.option, async (val) => {
   feeStore.updateAllFees(staffPayment.value.isPriority, val === StaffPaymentOption.NO_FEE)
   staffPayStore.$clearOptionData()

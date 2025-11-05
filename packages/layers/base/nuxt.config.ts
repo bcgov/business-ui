@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     '@sbc-connect/nuxt-forms'
   ],
 
-  modules: [],
+  modules: ['@pinia/colada-nuxt'],
 
   // For more details on i18n in layers: https://i18n.nuxtjs.org/docs/guide/layers
   // For more details on config: https://i18n.nuxtjs.org/docs/api/options

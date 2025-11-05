@@ -307,6 +307,15 @@ export const useBusinessApi = () => {
     return $authApi(`/entities/${businessId}`)
   }
 
+  function handleError(error: unknown, i18nPrefix: string, statusCode?: number) {
+    // FUTURE: update as needed for different error flows (i.e. button action)
+    console.error('Error fetching business data:', error)
+    useModal().errorModal.open({
+      error: { statusCode: statusCode || 500 },
+      i18nPrefix
+    })
+  }
+
   return {
     // business api queries
     getAuthorizedActions,
@@ -326,6 +335,7 @@ export const useBusinessApi = () => {
     getPendingTask,
     getAndValidateDraftFiling,
     createFilingPayload,
+    handleError,
     // auth/entity queries
     getAuthInfo
   }

@@ -1,16 +1,24 @@
+import { useQuery } from '@pinia/colada'
+
 /** Manages business ledger data */
 export const useBusinessLedgerStore = defineStore('business-ledger', () => {
-  const { getBusinessLedger } = useBusinessApi()
+  const { getBusinessLedger, handleError } = useBusinessApi()
 
   const ledger = ref<BusinessLedgerItem[]>([])
-  const cacheKey = ref('')
 
   const init = async (businessId: string, date?: IsoDatePacific) => {
-    const key = businessId + (date || '')
-    if (cacheKey.value !== key) {
-      ledger.value = await getBusinessLedger(businessId, false, date) || []
-      cacheKey.value = key
+    const { state: ledgerResp, refresh: businessRefresh } = useQuery({
+      key: () => ['businessLedger', businessId, date || ''],
+      query: () => getBusinessLedger(businessId, false, date)
+    })
+    if (ledgerResp.value.status === 'pending') {
+      await businessRefresh().then(({ error }) => {
+        if (error) {
+          handleError(error, 'errorModal.business.ledger')
+        }
+      })
     }
+    ledger.value = ledgerResp.value.data || []
   }
 
   const $reset = () => {

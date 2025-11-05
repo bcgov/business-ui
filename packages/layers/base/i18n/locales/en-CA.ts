@@ -90,8 +90,28 @@ export default {
     }
   },
   errorModal: {
+    business: {
+      contact: {
+        undefined: {
+          title: 'Unable to retrieve business contact information',
+          description: 'We are currently unable to retrieve the business contact. Please try again later.'
+        }
+      },
+      init: {
+        undefined: {
+          title: 'Unable to retrieve business information',
+          description: 'We are currently unable to retrieve this business. Please try again later.'
+        }
+      },
+      ledger: {
+        undefined: {
+          title: 'Unable to retrieve business ledger',
+          description: 'We are currently unable to retrieve the business ledger information. Please try again later.'
+        }
+      }
+    },
     documentDownload: {
-      500: {
+      undefined: {
         title: 'Unable to Download Documents',
         description: 'We are currently unable to retrieve this document. Please try again later.'
       }

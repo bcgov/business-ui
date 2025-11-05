@@ -1,6 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [
+    { to: '/', label: 'Examples' },
+    { label: 'ModalError' }
+  ]
 })
 
 useHead({
@@ -8,7 +12,6 @@ useHead({
 })
 
 const { errorModal } = useModal()
-const localePath = useLocalePath()
 
 function openExample(error: unknown) {
   errorModal.open({
@@ -24,16 +27,6 @@ function openExample(error: unknown) {
     ]
   })
 }
-
-setBreadcrumbs([
-  {
-    to: localePath('/'),
-    label: 'Examples'
-  },
-  {
-    label: 'ModalError'
-  }
-])
 </script>
 
 <template>
