@@ -60,7 +60,8 @@ test.describe('FormAddress (default)', () => {
     const getMailingAddress = () => page.getByTestId('mailing-address-container')
     await expect(getMailingAddress()).toBeVisible()
 
-    await page.getByRole('checkbox', { name: 'Same as Delivery Address' }).click()
+    await page.getByRole('checkbox', { name: 'Same as Delivery Address' }).focus()
+    await page.keyboard.press('Space')
 
     await expect(getMailingAddress()).not.toBeVisible()
   })
@@ -80,7 +81,8 @@ test.describe('FormAddress (default)', () => {
     const getCheckbox = () => page.getByRole('checkbox', { name: 'Same as Delivery Address' })
     await expect(getMailingAddress()).toBeVisible()
 
-    await getCheckbox().click({ force: true })
+    await getCheckbox().focus()
+    await page.keyboard.press('Space')
 
     await expect(getCheckbox()).toHaveAttribute('aria-checked', 'true')
     await expect(getMailingAddress()).not.toBeVisible()
