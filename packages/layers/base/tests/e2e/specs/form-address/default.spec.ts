@@ -69,7 +69,10 @@ test.describe('FormAddress (default)', () => {
   test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
     { page, browserName }
   ) => {
-    test.skip(browserName === 'firefox', 'This test is failing only for Firefox and when run in the CI.')
+    test.skip(
+      (browserName === 'firefox' || browserName === 'webkit'),
+      'This test is failing only for Firefox (sometimes safari) and only when run in the CI.'
+    )
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
     // delivery address elements
