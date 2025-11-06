@@ -29,11 +29,11 @@ mockNuxtImport('useConnectAccountStore', () => {
 })
 
 // Mock useNuxtApp to provide the plugins
-const mockLegalApi = vi.fn()
+const mockBusinessApi = vi.fn()
 const mockAuthApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => ({
-    $legalApi: mockLegalApi,
+    $businessApi: mockBusinessApi,
     $authApiBRD: mockAuthApi
   })
 })
@@ -225,10 +225,8 @@ describe('business utils', () => {
     it('should create a draft filing for an amalgamation application', async () => {
       const mockResponse = { filing: { business: { identifier: 'BC1234567' } } }
 
-      // Mock the $legalApi call to succeed
-      mockLegalApi.mockResolvedValue(mockResponse)
-      // Ensure the flag is off so it uses legalApiUrl
-      mockGetStoredFlag.mockReturnValue(false)
+      // Mock the $businessApi call to succeed
+      mockBusinessApi.mockResolvedValue(mockResponse)
 
       const business = {
         corpType: { code: CorpTypes.BC_COMPANY },
@@ -237,7 +235,7 @@ describe('business utils', () => {
 
       const response = await createNamedBusiness({ filingType: FilingTypes.AMALGAMATION_APPLICATION, business })
 
-      expect(mockLegalApi).toHaveBeenCalledWith('/businesses?draft=true', expect.objectContaining({
+      expect(mockBusinessApi).toHaveBeenCalledWith('/businesses?draft=true', expect.objectContaining({
         method: 'POST',
         body: expect.objectContaining({
           filing: expect.objectContaining({
@@ -254,11 +252,9 @@ describe('business utils', () => {
     })
 
     it('should attempt to delete affiliation if draft creation fails', async () => {
-      // Mock the $legalApi call to return undefined (simulating failure)
-      mockLegalApi.mockResolvedValue(undefined)
+      // Mock the $businessApi call to return undefined (simulating failure)
+      mockBusinessApi.mockResolvedValue(undefined)
       mockAuthApi.mockResolvedValue({})
-      // Ensure the flag is off so it uses legalApiUrl
-      mockGetStoredFlag.mockReturnValue(false)
 
       const business = {
         businessIdentifier: 'BC1234567',
@@ -269,7 +265,7 @@ describe('business utils', () => {
       const response = await createNamedBusiness({ filingType: FilingTypes.AMALGAMATION_APPLICATION, business })
 
       // Verify both API calls were made
-      expect(mockLegalApi).toHaveBeenCalledWith('/businesses?draft=true', expect.any(Object))
+      expect(mockBusinessApi).toHaveBeenCalledWith('/businesses?draft=true', expect.any(Object))
       expect(mockAuthApi).toHaveBeenCalledWith('/orgs/12345/affiliations/BC1234567', expect.objectContaining({
         method: 'DELETE',
         body: expect.objectContaining({
