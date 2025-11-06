@@ -18,13 +18,11 @@ export default defineNuxtConfig({
   },
 
   extends: [
-    // "@sbc-connect/nuxt-core-layer-beta": "^0.0.13",
-    // '@sbc-connect/nuxt-core-layer-beta',
     '@sbc-connect/nuxt-pay',
     '@sbc-connect/nuxt-forms'
   ],
 
-  modules: [],
+  modules: ['@pinia/colada-nuxt'],
 
   // For more details on i18n in layers: https://i18n.nuxtjs.org/docs/guide/layers
   // For more details on config: https://i18n.nuxtjs.org/docs/api/options
