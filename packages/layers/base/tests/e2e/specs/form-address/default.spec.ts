@@ -80,7 +80,7 @@ test.describe('FormAddress (default)', () => {
     const getCheckbox = () => page.getByRole('checkbox', { name: 'Same as Delivery Address' })
     await expect(getMailingAddress()).toBeVisible()
 
-    await getCheckbox().check({ force: true })
+    await getCheckbox().click({ force: true })
 
     await expect(getCheckbox()).toHaveAttribute('aria-checked', 'true')
     await expect(getMailingAddress()).not.toBeVisible()
