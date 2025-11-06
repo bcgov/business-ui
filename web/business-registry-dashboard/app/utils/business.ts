@@ -250,9 +250,9 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
     }
   }
 
-  const { $authApiBRD, $legalApi } = useNuxtApp()
+  const { $authApiBRD, $businessApi } = useNuxtApp()
 
-  const response = await $legalApi('/businesses?draft=true', {
+  const response = await $businessApi('/businesses?draft=true', {
     method: 'POST',
     body: filingBody
   })
@@ -279,10 +279,10 @@ export async function createNamedBusiness ({ filingType, business }: { filingTyp
  * @returns Promise<boolean> - True if the business exists, false otherwise
  */
 export async function checkBusinessExistsInLear (corpNum: string): Promise<boolean> {
-  const { $legalApi } = useNuxtApp()
+  const { $businessApi } = useNuxtApp()
 
   try {
-    const response = await $legalApi(`/businesses/${corpNum}?slim=true`)
+    const response = await $businessApi(`/businesses/${corpNum}?slim=true`)
     // If we get a response, the business exists
     return !!response
   } catch (error) {
@@ -312,10 +312,10 @@ export async function checkBusinessExistsInLear (corpNum: string): Promise<boole
 export async function fetchNameRequest (nrNumber: string, phone = '', email = ''): Promise<NameRequest> {
   if (!nrNumber) { throw new Error('Invalid parameter \'nrNumber\'') }
 
-  const { $legalApi } = useNuxtApp()
+  const { $businessApi } = useNuxtApp()
 
   try {
-    const response = await $legalApi(`nameRequests/${nrNumber}/validate?phone=${phone}&email=${email}`) as NameRequest
+    const response = await $businessApi(`nameRequests/${nrNumber}/validate?phone=${phone}&email=${email}`) as NameRequest
     if (!response) { throw new Error('Invalid API response') }
     return response
   } catch (error) {

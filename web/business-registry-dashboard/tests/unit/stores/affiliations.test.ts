@@ -13,7 +13,7 @@ vi.mock('~~/app/utils/isAuthorized', () => ({
 
 let mockAuthenticated = true
 const mockAuthApi = vi.fn()
-const mockLegalApi = vi.fn()
+const mockBusinessApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => (
     {
@@ -22,7 +22,7 @@ mockNuxtImport('useNuxtApp', () => {
         token: 'mock-token'
       },
       $authApiBRD: mockAuthApi,
-      $legalApi: mockLegalApi
+      $businessApi: mockBusinessApi
     }
   )
 })
@@ -180,7 +180,7 @@ describe('useAffiliationsStore', () => {
     }
 
     // Set up default mock for loadAuthorizedActions for all tests - after clearing mocks
-    mockLegalApi.mockResolvedValue({ authorizedPermissions: [] })
+    mockBusinessApi.mockResolvedValue({ authorizedPermissions: [] })
   })
 
   afterEach(() => {
@@ -945,24 +945,24 @@ describe('useAffiliationsStore', () => {
   })
 
   describe('getFilings', () => {
-    it('should call $legalApi with correct options', async () => {
+    it('should call $businessApi with correct options', async () => {
       const businessNumber = 'BN123456'
       const affStore = useAffiliationsStore()
 
       await affStore.getFilings(businessNumber)
-      expect(mockLegalApi).toHaveBeenCalledWith(`/businesses/${businessNumber}/filings`)
+      expect(mockBusinessApi).toHaveBeenCalledWith(`/businesses/${businessNumber}/filings`)
     })
   })
 
   describe('deleteBusinessFiling', () => {
-    it('should call $legalApi with correct options', async () => {
+    it('should call $businessApi with correct options', async () => {
       const businessNumber = 'BN123456'
       const filingId = 'FILING001'
       const affStore = useAffiliationsStore()
 
       await affStore.deleteBusinessFiling(businessNumber, filingId)
 
-      expect(mockLegalApi).toHaveBeenCalledWith(
+      expect(mockBusinessApi).toHaveBeenCalledWith(
         `/businesses/${businessNumber}/filings/${filingId}`,
         { method: 'DELETE' }
       )
@@ -977,7 +977,7 @@ describe('useAffiliationsStore', () => {
     })
 
     it('should remove business filing if business is an INCORPORATION_APPLICATION and a filing exists', async () => {
-      mockLegalApi.mockResolvedValueOnce({ status: 200, filing: { header: { filingId: 'filing-123' } } }) // mock getFiling api call
+      mockBusinessApi.mockResolvedValueOnce({ status: 200, filing: { header: { filingId: 'filing-123' } } }) // mock getFiling api call
       mockAuthApi.mockResolvedValueOnce(undefined) // mock removeAffiliation api call
 
       const payload = {
@@ -992,13 +992,13 @@ describe('useAffiliationsStore', () => {
 
       await affStore.removeBusiness(payload)
 
-      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
-      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings/filing-123', { method: 'DELETE' }) // should call deleteBusinessFiling
+      expect(mockBusinessApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
+      expect(mockBusinessApi).toHaveBeenCalledWith('/businesses/biz-123/filings/filing-123', { method: 'DELETE' }) // should call deleteBusinessFiling
       expect(mockAuthApi).not.toHaveBeenCalled()
     })
 
     it('should remove affiliation if business is an INCORPORATION_APPLICATION and no filing exists', async () => {
-      mockLegalApi.mockResolvedValueOnce({ status: 200, filing: null }) // mock getFilings api call
+      mockBusinessApi.mockResolvedValueOnce({ status: 200, filing: null }) // mock getFilings api call
       mockAuthApi.mockResolvedValueOnce(undefined) // mock removeAffiliation api call
 
       const payload = {
@@ -1013,7 +1013,7 @@ describe('useAffiliationsStore', () => {
 
       await affStore.removeBusiness(payload)
 
-      expect(mockLegalApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
+      expect(mockBusinessApi).toHaveBeenCalledWith('/businesses/biz-123/filings') // should call getFilings
       expect(mockAuthApi).toHaveBeenCalledWith('/orgs/org-123/affiliations/biz-123', { // should call removeAffiliation
         method: 'DELETE',
         body: { data: { passcodeResetEmail: 'email@example.com', resetPasscode: true, logDeleteDraft: true } }
@@ -1039,12 +1039,12 @@ describe('useAffiliationsStore', () => {
         method: 'DELETE',
         body: { data: { passcodeResetEmail: 'email@example.com', resetPasscode: true, logDeleteDraft: true } }
       })
-      expect(mockLegalApi).not.toHaveBeenCalled()
+      expect(mockBusinessApi).not.toHaveBeenCalled()
     })
 
     it('should remove affiliation with name request nrNumber if businessIdentifier is missing', async () => {
       mockAuthApi.mockResolvedValue({ status: 200 })
-      mockLegalApi.mockResolvedValue({ status: 200, filing: { header: { filingId: 'filing-123' } } })
+      mockBusinessApi.mockResolvedValue({ status: 200, filing: { header: { filingId: 'filing-123' } } })
 
       const payload = {
         business: {
@@ -1068,7 +1068,7 @@ describe('useAffiliationsStore', () => {
           }
         })
       )
-      expect(mockLegalApi).not.toHaveBeenCalled() // should not call deleteBusinessFiling
+      expect(mockBusinessApi).not.toHaveBeenCalled() // should not call deleteBusinessFiling
     })
   })
 

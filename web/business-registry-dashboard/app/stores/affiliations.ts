@@ -4,7 +4,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
-  const { $keycloak, $authApiBRD, $legalApi } = useNuxtApp()
+  const { $keycloak, $authApiBRD, $businessApi } = useNuxtApp()
   const { t, locale } = useI18n()
   const toast = useToast()
   const brdModal = useBrdModals()
@@ -84,11 +84,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   function getFilings (businessNumber: string) {
-    return $legalApi(`/businesses/${businessNumber}/filings`)
+    return $businessApi(`/businesses/${businessNumber}/filings`)
   }
 
   function deleteBusinessFiling (businessNumber: string, filingId: string) {
-    return $legalApi(`/businesses/${businessNumber}/filings/${filingId}`, { method: 'DELETE' })
+    return $businessApi(`/businesses/${businessNumber}/filings/${filingId}`, { method: 'DELETE' })
   }
 
   // Interface for filing response to fix typing issue
@@ -863,7 +863,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
   }
 
   async function loadAuthorizedActions () {
-    const actions = await $legalApi<{ authorizedPermissions: AuthorizedActions[] }>('/permissions')
+    const actions = await $businessApi<{ authorizedPermissions: AuthorizedActions[] }>('/permissions')
     authorizedActions.value = actions.authorizedPermissions
   }
 

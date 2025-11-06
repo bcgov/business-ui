@@ -82,12 +82,13 @@ export default defineNuxtConfig({
         'mdi:phone',
         'mdi:email',
         'mdi:arrow-left',
-        'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
-        'heroicons:check-20-solid',
         'heroicons:chevron-down-20-solid',
         'heroicons:chevron-right-20-solid',
-        'heroicons:chevron-left-20-solid'
+        'heroicons:chevron-left-20-solid',
+        'heroicons:chevron-double-left-20-solid',
+        'heroicons:chevron-double-right-20-solid',
+        'heroicons:x-mark-20-solid'
       ]
     }
   },
@@ -137,7 +138,6 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Keys within public, will be also exposed to the client-side
-      payApiURL: `${process.env.NUXT_PAY_API_URL || ''}${process.env.NUXT_PAY_API_VERSION || ''}`,
       registryHomeURL: process.env.NUXT_REGISTRY_HOME_URL,
       appURL: process.env.NUXT_APP_URL,
       paymentPortalUrl: process.env.NUXT_PAYMENT_PORTAL_URL,
@@ -157,7 +157,6 @@ export default defineNuxtConfig({
       corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL,
       authApiGwUrl: `${process.env.NUXT_AUTH_API_GW_URL}${process.env.NUXT_AUTH_API_VERSION}`,
       authApiKey: process.env.NUXT_AUTH_API_KEY,
-      legalApiUrl: `${process.env.NUXT_LEGAL_API_URL}${process.env.NUXT_LEGAL_API_VERSION}`,
       businessApiGwUrl: `${process.env.NUXT_BUSINESS_API_GW_URL}${process.env.NUXT_BUSINESS_API_VERSION_2}`,
       businessApiKey: process.env.NUXT_BUSINESS_API_KEY,
       regSearchApiUrl: `${process.env.NUXT_REGISTRIES_SEARCH_API_URL}${process.env.NUXT_REGISTRIES_SEARCH_API_VERSION}`,
