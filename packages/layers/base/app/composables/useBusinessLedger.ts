@@ -102,12 +102,16 @@ export const useBusinessLedger = (filing: BusinessLedgerItem) => {
    * If the filing has documentsLink but the documents list is empty, load the documents list
    * @param filing the filing object
    */
-  const loadDocuments = async (hideReceipts?: boolean): Promise<void> => {
+  const loadDocuments = async (
+    hideReceipts?: boolean,
+    overrideGetFilingDocumentsFn?: OverrideGetFilingDocumentUrlsFn
+  ): Promise<void> => {
     const unknownStr = `[${t('label.unknown')}]`
     const businessIdentifier = ledgerItem.value.businessIdentifier
     if (!ledgerItem.value.documents?.length && ledgerItem.value.documentsLink) {
       try {
-        const documentUrls = await getFilingDocumentUrls(
+        const getUrlsFn = overrideGetFilingDocumentsFn || getFilingDocumentUrls
+        const documentUrls = await getUrlsFn(
           businessIdentifier,
           String(ledgerItem.value.filingId)
         )

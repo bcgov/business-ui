@@ -9,6 +9,8 @@ const props = defineProps<{
 
 provide<BusinessLedgerItem>('filing', props.filing)
 
+const overrideGetFilingDocumentsFn = inject<OverrideGetFilingDocumentUrlsFn>('overrideGetFilingDocumentsFn')
+
 const {
   isFilingStatus,
   isFilingType,
@@ -29,7 +31,7 @@ const toggleDetails = async () => {
   showBody.value = !showBody.value
   await Promise.all([
     loadComments(),
-    loadDocuments(props.hideReceipts)
+    loadDocuments(props.hideReceipts, overrideGetFilingDocumentsFn)
   ])
   loadingDetails.value = false
 }
