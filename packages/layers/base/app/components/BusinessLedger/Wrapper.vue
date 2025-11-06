@@ -6,7 +6,8 @@ const props = defineProps<{
   lockedDocuments?: boolean
   lockedDocumentsTooltip?: string
   includeNonLedgerItems?: boolean
-  overrideGetDocumentFn?: OverrideGetDocumentFn
+  overrideGetDocumentFn?: OverrideGetDocumentDownloadFn
+  overrideGetFilingDocumentsFn?: OverrideGetFilingDocumentUrlsFn
 }>()
 
 const { getBusinessLedger } = useBusinessApi()
@@ -36,6 +37,7 @@ const loadingLedger = computed(() => !ledgerQuery?.status.value || ledgerQuery?.
           :locked-documents
           :locked-documents-tooltip
           :override-get-document-fn
+          :override-get-filing-documents-fn
         />
       </div>
       <div v-else class="space-y-5">
