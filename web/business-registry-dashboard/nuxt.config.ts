@@ -82,12 +82,13 @@ export default defineNuxtConfig({
         'mdi:phone',
         'mdi:email',
         'mdi:arrow-left',
-        'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
-        'heroicons:check-20-solid',
         'heroicons:chevron-down-20-solid',
         'heroicons:chevron-right-20-solid',
-        'heroicons:chevron-left-20-solid'
+        'heroicons:chevron-left-20-solid',
+        'heroicons:chevron-double-left-20-solid',
+        'heroicons:chevron-double-right-20-solid',
+        'heroicons:x-mark-20-solid'
       ]
     }
   },
