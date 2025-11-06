@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import * as z from 'zod'
+
 defineProps<{
   onSubmit: () => void
   showPriority?: boolean
@@ -9,6 +11,8 @@ defineEmits<{ close: [], submit: [] }>()
 const { t } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
 const title = t('label.staffPayment')
+
+const emptySchema = z.object<Partial<StaffPayment>>({})
 
 const { staffPayment } = storeToRefs(useStaffPaymentStore())
 </script>
@@ -26,7 +30,11 @@ const { staffPayment } = storeToRefs(useStaffPaymentStore())
         <h2 class="text-2xl font-semibold text-neutral-highlighted">
           {{ title }}
         </h2>
-        <UForm :state="staffPayment" @submit="onSubmit">
+        <UForm
+          :schema="emptySchema"
+          :state="staffPayment"
+          @submit="onSubmit"
+        >
           <StaffPayment v-model="staffPayment" :show-priority />
           <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
             <UButton

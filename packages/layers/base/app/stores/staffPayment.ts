@@ -70,22 +70,14 @@ export const useStaffPaymentStore = defineStore('staff-payment', () => {
 
   const staffPayment = ref<StaffPayment>(getEmptyStaffPayment())
 
-  const $clearOptionData = () => {
-    staffPayment.value = {
-      ...getEmptyStaffPayment(),
-      isPriority: staffPayment.value.isPriority,
-      option: staffPayment.value.option
-    }
-  }
-
   const $reset = () => {
     staffPayment.value = getEmptyStaffPayment()
   }
 
   return {
+    getEmptyStaffPayment,
     staffPayment,
     staffPaymentSchema,
-    $clearOptionData,
     $reset
   }
 })

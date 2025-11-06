@@ -10,6 +10,14 @@ const feeStore = useConnectFeeStore()
 
 const staffPayStore = useStaffPaymentStore()
 
+const clearOptionData = () => {
+  staffPayment.value = {
+    ...staffPayStore.getEmptyStaffPayment(),
+    isPriority: staffPayment.value.isPriority,
+    option: staffPayment.value.option
+  }
+}
+
 const radioItems: RadioGroupItem[] = [
   { label: t('label.cashOrCheque'), value: StaffPaymentOption.FAS },
   { label: t('label.bcOnLine'), value: StaffPaymentOption.BCOL },
@@ -19,7 +27,7 @@ const radioItems: RadioGroupItem[] = [
 const staffPaymentForm = useTemplateRef<Form<StaffPayment>>('staffPaymentForm')
 watch(() => staffPayment.value.option, async (val) => {
   feeStore.updateAllFees(staffPayment.value.isPriority, val === StaffPaymentOption.NO_FEE)
-  staffPayStore.$clearOptionData()
+  clearOptionData()
   // NB: needs to render in the dom before clearing the validation.
   await nextTick()
   staffPaymentForm.value?.clear()
