@@ -11,9 +11,9 @@ definePageMeta({
 
 const schema = z.object({
   name: z.object({
-    first: z.string().min(2, t('connect.validation.maxChars', { count: 2 })),
-    middle: z.string().min(2, t('connect.validation.maxChars', { count: 2 })),
-    last: z.string().min(2, t('connect.validation.maxChars', { count: 2 }))
+    first: z.string().min(1, t('connect.validation.fieldRequired')),
+    middle: z.string().min(1, t('connect.validation.fieldRequired')),
+    last: z.string().min(1, t('connect.validation.fieldRequired'))
   })
 })
 
@@ -85,6 +85,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
         ref="form-ref"
         :state="state"
         :schema="schema"
+        novalidate
         class="gap-6 flex flex-col"
         @submit="onSubmit"
         @error="onFormSubmitError"
@@ -96,18 +97,21 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
               label="First Name"
               input-id="first-name-input"
               name="name.first"
+              required
             />
             <ConnectFormInput
               v-model="state.name.middle"
               label="Middle Name"
               input-id="middle-name-input"
               name="name.middle"
+              required
             />
             <ConnectFormInput
               v-model="state.name.last"
               label="Last Name"
               input-id="last-name-input"
               name="name.last"
+              required
             />
           </div>
         </ConnectFieldset>

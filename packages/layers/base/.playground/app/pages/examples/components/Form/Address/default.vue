@@ -47,7 +47,7 @@ function onCancel() {
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Address Form (basic)' }"
+      :heading="{ label: 'Address Form (default)' }"
       :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="max-w-3xl"
     >

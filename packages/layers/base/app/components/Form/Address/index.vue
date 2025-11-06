@@ -71,6 +71,7 @@ defineExpose({
     :schema="addressSchema"
     :nested
     :name
+    novalidate
     class="flex flex-col gap-6"
   >
     <ConnectFieldset :label="$t('label.deliveryAddress')" :error="formErrors?.delivery">
@@ -97,7 +98,6 @@ defineExpose({
           id="mailing-address"
           v-model="model.mailingAddress"
           schema-prefix="mailingAddress"
-          street-help-text="allow-po"
           @should-validate="formRef?.clear(/^mailingAddress.*/)"
         />
       </div>
