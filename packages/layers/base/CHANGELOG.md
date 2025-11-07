@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.16
+
+### Patch Changes
+
+- [#289](https://github.com/bcgov/business-ui/pull/289) [`4fce5a5`](https://github.com/bcgov/business-ui/commit/4fce5a5695597b7c7d272498e5ecc517ac3da8b1) Thanks [@kialj876](https://github.com/kialj876)! - Business layer - staff modal on submit enhancements
+
 ## 0.1.15
 
 ### Patch Changes
