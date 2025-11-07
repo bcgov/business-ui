@@ -13,7 +13,7 @@ const formRef = useTemplateRef<Form<FolioSchema>>('folio-form')
 
 const formError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
-  return errors?.find(e => e.name?.startsWith('folioNumber'))
+  return errors && errors[0]
 })
 
 defineExpose({
