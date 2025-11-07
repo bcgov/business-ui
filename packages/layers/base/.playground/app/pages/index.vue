@@ -40,15 +40,6 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Modal/StaffPay')
   }
 ]
-
-const state = reactive<FolioSchema>({
-  folioNumber: ''
-})
-
-const certify = reactive<CertifySchema>({
-  isCertified: false,
-  legalName: ''
-})
 </script>
 
 <template>
@@ -79,13 +70,5 @@ const certify = reactive<CertifySchema>({
         />
       </UDropdownMenu>
     </div>
-
-    <UForm :state>
-      <FormFolio v-model="state" />
-    </UForm>
-
-    <UForm :state="certify">
-      <FormCertify v-model="certify" />
-    </UForm>
   </div>
 </template>
