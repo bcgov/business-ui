@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { delay } from 'es-toolkit'
+
 definePageMeta({
   layout: 'connect-pay',
   breadcrumbs: [
@@ -23,7 +25,10 @@ feeStore.addReplaceFee(exampleFeeCode)
 
 const { staffPaymentModal } = useModal()
 
-const onSubmit = () => {
+const onSubmit = async () => {
+  await delay(2000)
+  staffPaymentModal.close()
+  await delay(100)
   alert('submitted')
 }
 

@@ -36,6 +36,10 @@ watch(() => staffPayment.value.option, async (val) => {
 watch(() => staffPayment.value.isPriority, (val) => {
   feeStore.updateAllFees(val, staffPayment.value.option === StaffPaymentOption.NO_FEE)
 })
+
+onMounted(() => {
+  staffPayment.value = staffPayStore.getEmptyStaffPayment()
+})
 </script>
 
 <template>
