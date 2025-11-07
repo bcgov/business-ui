@@ -3,6 +3,7 @@ import type { FormError, Form } from '@nuxt/ui'
 
 defineProps<{
   name?: string
+  order?: string | number
 }>()
 
 const folioSchema = getFolioSchema()
@@ -29,19 +30,19 @@ defineExpose({
     :name
   >
     <ConnectFieldset
-      label="1. Folio or Reference Number"
-      description="This is meant for your own tracking purposes and will appear on your receipt."
+      :label="order ? `${order}. ${$t('label.folioOrRefNumber')}` : $t('label.folioOrRefNumber')"
+      :description="$t('text.folioDescription')"
       body-variant="card"
     >
       <ConnectFormFieldWrapper
-        label="Folio or Reference Number"
+        :label="$t('label.folioOrRefNumber')"
         orientation="horizontal"
         :error="formError"
       >
         <ConnectFormInput
           v-model="model.folioNumber"
           input-id="folio-input"
-          label="Folio or Reference Number (Optional)"
+          :label="$t('label.folioOrRefNumberOpt')"
           name="folioNumber"
         />
       </ConnectFormFieldWrapper>

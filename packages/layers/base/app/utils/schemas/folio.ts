@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { FormFolio } from '#components'
 
 export function getFolioSchema() {
   const t = useNuxtApp().$i18n.t
@@ -9,3 +10,5 @@ export function getFolioSchema() {
 }
 
 export type FolioSchema = z.output<ReturnType<typeof getFolioSchema>>
+
+export type FolioFormRef = InstanceType<typeof FormFolio>

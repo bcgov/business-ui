@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { FormAddress } from '#components'
 
 definePageMeta({
   layout: 'connect-auth'
@@ -28,7 +27,7 @@ const state = reactive<AddressSchema>({
   sameAs: false
 })
 
-const formRef = useTemplateRef<InstanceType<typeof FormAddress>>('form-ref')
+const formRef = useTemplateRef<AddressFormRef>('form-ref')
 const hasErrors = computed(() => {
   const errors = formRef.value?.formRef?.getErrors()
   return errors && errors.length > 0

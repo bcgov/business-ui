@@ -44,6 +44,11 @@ const componentExamples: DropdownMenuItem[] = [
 const state = reactive<FolioSchema>({
   folioNumber: ''
 })
+
+const certify = reactive<CertifySchema>({
+  isCertified: false,
+  legalName: ''
+})
 </script>
 
 <template>
@@ -77,6 +82,10 @@ const state = reactive<FolioSchema>({
 
     <UForm :state>
       <FormFolio v-model="state" />
+    </UForm>
+
+    <UForm :state="certify">
+      <FormCertify v-model="certify" />
     </UForm>
   </div>
 </template>
