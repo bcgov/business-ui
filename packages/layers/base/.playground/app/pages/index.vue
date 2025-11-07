@@ -40,6 +40,10 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Modal/StaffPay')
   }
 ]
+
+const state = reactive<FolioSchema>({
+  folioNumber: ''
+})
 </script>
 
 <template>
@@ -70,5 +74,9 @@ const componentExamples: DropdownMenuItem[] = [
         />
       </UDropdownMenu>
     </div>
+
+    <UForm :state>
+      <FormFolio v-model="state" />
+    </UForm>
   </div>
 </template>
