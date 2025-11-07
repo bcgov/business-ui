@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import * as z from 'zod'
 
-defineProps<{
-  onSubmit: () => void
+const props = defineProps<{
+  onSubmit: () => Promise<void>
   showPriority?: boolean
 }>()
 
@@ -15,6 +15,13 @@ const title = t('label.staffPayment')
 const emptySchema = z.object<Partial<StaffPayment>>({})
 
 const { staffPayment } = storeToRefs(useStaffPaymentStore())
+
+const loading = ref(false)
+const submit = async () => {
+  loading.value = true
+  await props.onSubmit()
+  loading.value = false
+}
 </script>
 
 <template>
@@ -33,12 +40,13 @@ const { staffPayment } = storeToRefs(useStaffPaymentStore())
         <UForm
           :schema="emptySchema"
           :state="staffPayment"
-          @submit="onSubmit"
+          @submit="submit"
         >
           <StaffPayment v-model="staffPayment" :show-priority />
           <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
             <UButton
               :block="isSmallScreen"
+              :disabled="loading"
               :label="$t('label.cancel')"
               size="xl"
               variant="outline"
@@ -46,7 +54,9 @@ const { staffPayment } = storeToRefs(useStaffPaymentStore())
             />
             <UButton
               :block="isSmallScreen"
+              :disabled="loading"
               :label="$t('label.continueToPayment')"
+              :loading
               size="xl"
               type="submit"
             />
