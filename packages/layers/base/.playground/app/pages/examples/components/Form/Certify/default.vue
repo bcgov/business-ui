@@ -102,6 +102,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
           <FormCertify
             ref="certify-ref"
             v-model="state.certify"
+            :description="$t('text.certifyPRTADescription')"
             name="certify"
             order="X"
           />

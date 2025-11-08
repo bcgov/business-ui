@@ -290,7 +290,6 @@ export default {
     amalgamation: 'amalgamation',
     at1159PacificTime: 'at 11:59 pm Pacific time',
     certifyIsAuthorized: 'I, {boldStart}{legalname}{boldEnd} certify that I have relevant knowledge of the business and am authorized to make this filing.',
-    certifyDescription: 'Confirm the legal name of the person authorized to complete and submit this post restoration transition application.',
     completeYourFilingToDisplay: 'Complete your filing to display',
     continuation: 'continuation',
     continueOut: 'continue out',

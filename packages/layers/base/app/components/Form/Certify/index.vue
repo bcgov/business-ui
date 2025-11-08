@@ -4,6 +4,7 @@ import type { FormError, Form } from '@nuxt/ui'
 defineProps<{
   name?: string
   order?: string | number
+  description?: string
 }>()
 
 const certifySchema = getCertifySchema()
@@ -17,7 +18,7 @@ const legalNameError = computed<FormError | undefined>(() => {
   return errors?.find(e => e.name === 'legalName')
 })
 
-const today = computed(() => getToday('America/Vancouver'))
+const today = getToday('America/Vancouver')
 
 defineExpose({
   formRef
@@ -33,7 +34,7 @@ defineExpose({
   >
     <ConnectFieldset
       :label="order ? `${order}. ${$t('label.certify')}` : $t('label.certify')"
-      :description="$t('text.certifyDescription')"
+      :description
       body-variant="card"
     >
       <ConnectFormFieldWrapper
