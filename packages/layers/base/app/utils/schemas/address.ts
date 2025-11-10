@@ -1,3 +1,4 @@
+import type { FormAddress } from '#components'
 import { z } from 'zod'
 
 export function getAddressSchema() {
@@ -12,3 +13,5 @@ export function getAddressSchema() {
 }
 
 export type AddressSchema = z.output<ReturnType<typeof getAddressSchema>>
+
+export type AddressFormRef = InstanceType<typeof FormAddress>

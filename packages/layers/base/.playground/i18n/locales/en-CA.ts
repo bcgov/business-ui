@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export default {
   /* Ordering should be alphabetical unless otherwise specified */
   /* Common translations only */
@@ -22,5 +23,8 @@ export default {
       title: 'Fallback',
       description: 'Error status not defined'
     }
+  },
+  text: {
+    certifyPRTADescription: 'Confirm the legal name of the person authorized to complete and submit this post restoration transition application.'
   }
 }

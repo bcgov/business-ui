@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, Form, FormError } from '@nuxt/ui'
 import * as z from 'zod'
-import type { FormAddress } from '#components'
 
 const { t } = useI18n()
 
@@ -18,47 +17,30 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-type FullSchema = { contact: AddressSchema } & Schema
+type FullSchema = { certify: CertifySchema } & Schema
 
 const state = reactive<FullSchema>({
-  contact: {
-    deliveryAddress: {
-      street: '',
-      streetAdditional: '',
-      city: '',
-      region: '',
-      postalCode: '',
-      country: 'CA',
-      locationDescription: ''
-    },
-    mailingAddress: {
-      street: '',
-      streetAdditional: '',
-      city: '',
-      region: '',
-      postalCode: '',
-      country: 'CA',
-      locationDescription: ''
-    },
-    sameAs: false
-  },
   name: {
     first: '',
     middle: '',
     last: ''
+  },
+  certify: {
+    isCertified: false,
+    legalName: ''
   }
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const addressRef = useTemplateRef<AddressFormRef>('address-ref')
+const certifyRef = useTemplateRef<CertifyFormRef>('certify-ref')
 
 const hasErrors = computed<boolean | undefined>(() => {
   const errors = formRef.value?.getErrors()
   // nested doesnt propagate errors reactively
   // but will propagate on submit
   // workaround - check nested ref as well
-  const addressErrors = addressRef.value?.formRef?.getErrors()
-  return (errors && errors.length > 0) || (addressErrors && addressErrors.length > 0)
+  const certifyErrors = certifyRef.value?.formRef?.getErrors()
+  return (errors && errors.length > 0) || (certifyErrors && certifyErrors.length > 0)
 })
 const nameError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
@@ -77,7 +59,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Address Form (nested)' }"
+      :heading="{ label: 'Certify (default/nested)' }"
       :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="max-w-3xl"
     >
@@ -116,12 +98,15 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
           </div>
         </ConnectFieldset>
 
-        <FormAddress
-          ref="address-ref"
-          v-model="state.contact"
-          name="contact"
-          nested
-        />
+        <div class="p-10 bg-shade">
+          <FormCertify
+            ref="certify-ref"
+            v-model="state.certify"
+            :description="$t('text.certifyPRTADescription')"
+            name="certify"
+            order="X"
+          />
+        </div>
         <div class="flex gap-6 justify-end">
           <UButton type="submit" :label="$t('label.done')" />
           <UButton

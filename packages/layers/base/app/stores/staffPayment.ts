@@ -13,14 +13,15 @@ export const useStaffPaymentStore = defineStore('staff-payment', () => {
   })
 
   const validStaffSelection = [StaffPaymentOption.BCOL, StaffPaymentOption.FAS, StaffPaymentOption.NO_FEE]
+  const folioSchema = getFolioSchema()
   const staffPaymentSchema = z.object({
     option: z.enum(StaffPaymentOption).refine(
       v => validStaffSelection.includes(v), { error: t('validation.selectAPaymentOption') }),
     bcolAccountNumber: z.string(),
     datNumber: z.string(),
-    folioNumber: z.string(),
     isPriority: z.boolean().optional(),
-    routingSlipNumber: z.string()
+    routingSlipNumber: z.string(),
+    ...folioSchema.shape
   }).superRefine((val, ctx) => {
     switch (val.option) {
       case StaffPaymentOption.BCOL:
