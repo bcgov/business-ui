@@ -7,7 +7,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const t = na.$i18n.t
   const modal = useOfficerModals()
   const businessApi = useBusinessApi()
-  const { setFilingDefault, filingTombstone } = useFilingTombstone()
+  const businessStore = useBusinessStore()
+  const { business, businessContact, businessFolio } = storeToRefs(businessStore)
+  const { setFilingDefault, businessTombstone } = useBusinessTombstone()
   const ld = useConnectLaunchDarkly()
   const rtc = useRuntimeConfig().public
 
@@ -29,13 +31,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      filingTombstone.value.loading = true
-
+      businessTombstone.value.loading = true
       // throw error and show modal if invalid business ID
       if (businessId === 'undefined') {
         throw createError({ statusCode: 404 })
       }
-
+      const businessInit = businessStore.init(businessId, false, false, true)
       // if filing ID provided, get and validate the filing structure, return early if invalid
       if (draftId) {
         try {
@@ -57,44 +58,39 @@ export const useOfficerStore = defineStore('officer-store', () => {
           return
         }
       }
-
+      const partiesQuery = businessApi.getParties(businessId, { classType: 'officer' })
       // get full business data
-      const business = await businessApi.getBusiness(businessId)
+      const [_, parties] = await Promise.all([businessInit, partiesQuery])
 
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
           await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
-        ).split(' ')
-
-        if (!allowedBusinessTypes.includes(business.legalType)) {
+        ).split(' ') as CorpTypeCd[]
+        if (!business.value || !allowedBusinessTypes.includes(business.value.legalType)) {
           await modal.openFilingNotAvailableModal()
           return
         }
       }
 
       // set business ref
-      activeBusiness.value = business
+      activeBusiness.value = business.value as BusinessData
 
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
       // return early if the filing is not allowed or the business has pending tasks
-      if (!isFilingAllowed(business, 'changeOfOfficers') && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
+      if (!isFilingAllowed(activeBusiness.value, 'changeOfOfficers') && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
         await modal.openFilingNotAllowedErrorModal()
         return
       }
 
-      // get business auth info for masthead
-      // get current business officers
-      const [authInfo, parties] = await Promise.all([
-        businessApi.getAuthInfo(businessId),
-        businessApi.getParties(businessId, { classType: 'officer' })
-      ])
-
-      activeBusinessAuthInfo.value = authInfo
+      activeBusinessAuthInfo.value = {
+        contacts: businessContact.value ? [businessContact.value] : [],
+        folioNumber: businessFolio.value
+      } as AuthInformation
       // set masthead data
-      setFilingDefault(business, authInfo)
+      setFilingDefault(businessId)
 
       // map current/existing officers
-      const officers = parties.map((p) => {
+      const officers = parties.data.value?.parties.map((p) => {
         const mailingAddress = formatAddressUi(p.mailingAddress)
         const deliveryAddress = formatAddressUi(p.deliveryAddress)
         const id = p.officer.id ? String(p.officer.id) : undefined
@@ -122,7 +118,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         }
       })
 
-      initialOfficers.value = officers // retain initial officer state before changes
+      initialOfficers.value = officers || [] // retain initial officer state before changes
 
       // set table to returned draft state if exists
       if (draftId && filingDraftState.value.filing.changeOfOfficers.length) {
@@ -131,10 +127,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
       }
 
       // map intitial officers data to display in table if no draft officers
-      officerTableState.value = officers.map(o => ({
+      officerTableState.value = officers?.map(o => ({
         new: o,
         old: o
-      }))
+      })) || []
     } catch (error) {
       await modal.openInitOfficerStoreErrorModal(error)
     } finally {
