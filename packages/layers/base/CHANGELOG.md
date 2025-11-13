@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.17
+
+### Patch Changes
+
+- [#288](https://github.com/bcgov/business-ui/pull/288) [`aa26296`](https://github.com/bcgov/business-ui/commit/aa26296522f80dcf6ce5f030e630175320a78594) Thanks [@deetz99](https://github.com/deetz99)! - feat: Reusable folio and certify nested forms
+
 ## 0.1.16
 
 ### Patch Changes
