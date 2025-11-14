@@ -6,6 +6,7 @@ export const useBusinessStore = defineStore('business', () => {
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
+  const businessFolio = ref('')
 
   const businessIdentifier = computed(() => business.value?.identifier)
 
@@ -103,6 +104,7 @@ export const useBusinessStore = defineStore('business', () => {
           handleError(error, 'errorModal.business.contact')
         } else {
           businessContact.value = contactResp.value.data?.contacts[0]
+          businessFolio.value = contactResp.value.data?.folioNumber || ''
         }
       }))
     }
@@ -142,6 +144,7 @@ export const useBusinessStore = defineStore('business', () => {
     business,
     businessAlerts,
     businessContact,
+    businessFolio,
     businessIdentifier,
     businessName,
     init,

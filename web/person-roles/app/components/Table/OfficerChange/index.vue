@@ -7,7 +7,7 @@ const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
-const UButtonGroup = resolveComponent('UButtonGroup')
+const UButtonGroup = resolveComponent('UFieldGroup')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 

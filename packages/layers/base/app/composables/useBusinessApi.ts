@@ -256,12 +256,15 @@ export const useBusinessApi = () => {
    * @param query the query to add to the request (e.g., { role: 'director' })
    * @returns a promise to return the data
    */
-  async function getParties(businessId: string, query?: Record<string, unknown>): Promise<OrgPerson[]> {
-    const response = await $businessApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
-      query
+  async function getParties(businessId: string, query?: Record<string, unknown>) {
+    const apiQuery = defineQuery({
+      key: ['parties', businessId, `${query?.classType}${query?.role}${query?.date}`],
+      query: () => $businessApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
+        query
+      }),
+      staleTime: 60000
     })
-
-    return response.parties
+    return apiQuery()
   }
 
   /**

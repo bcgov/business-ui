@@ -32,6 +32,7 @@ export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
   | 'accountId'
   | 'paymentMethod'
   | 'folioNumber'
+  | 'type'
 >
 
 export type FilingBusiness = Pick<BusinessData,

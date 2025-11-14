@@ -8,7 +8,7 @@ const route = useRoute()
 const officerStore = useOfficerStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
-const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
+const { setButtonControl, handleButtonLoading, setAlertText } = useConnectButtonControl()
 const modal = useOfficerModals()
 const businessApi = useBusinessApi()
 const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
@@ -18,7 +18,7 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'filing',
+  layout: 'connect-pay-tombstone-buttons',
   middleware: [
     // Mock auth if playwright is running
     'mock-connect-auth',
@@ -57,7 +57,7 @@ async function onAddOfficerClick() {
   }
   officerStore.addingOfficer = true
   // reset any alert text in button control component
-  await setAlertText(true)
+  await setAlertText()
 }
 
 // submit final filing
@@ -71,7 +71,7 @@ async function submitFiling() {
 
     // prevent submit if there are no changes
     if (!officerStore.checkHasChanges('submit')) {
-      setAlertText(false, 'right', undefined, t('text.noChangesToSubmit'))
+      setAlertText(t('text.noChangesToSubmit'), 'right')
       return
     }
 
@@ -101,7 +101,7 @@ async function submitFiling() {
     const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
     const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
       officerStore.activeBusiness,
-      'changeOfOfficers',
+      FilingType.CHANGE_OF_OFFICERS,
       officerData
     )
     // add folio number if it exists
@@ -159,7 +159,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
   // prevent save if there are no changes
   if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', undefined, t('text.noChangesToSave'))
+    setAlertText(t('text.noChangesToSave'), 'left')
     return
   }
 
@@ -196,7 +196,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     // create filing payload
     const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
       officerStore.activeBusiness,
-      'changeOfOfficers',
+      FilingType.CHANGE_OF_OFFICERS,
       { changeOfOfficers: officerTableSnapshot }
     )
 
@@ -335,7 +335,7 @@ watch(
         @cancel="officerStore.addingOfficer = false"
       />
 
-      <TableOfficerChange @table-action="setAlertText(true)" />
+      <TableOfficerChange @table-action="setAlertText()" />
     </section>
 
     <section class="flex flex-col gap-4">
@@ -367,7 +367,7 @@ watch(
             name="number"
             :label="$t('label.folioOrRefNumberOpt')"
             input-id="folio-number"
-            @focusin="setAlertText(true)"
+            @focusin="setAlertText()"
           />
         </ConnectFormFieldWrapper>
       </UForm>
