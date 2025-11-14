@@ -11,4 +11,4 @@ export function getFolioSchema() {
 
 export type FolioSchema = z.output<ReturnType<typeof getFolioSchema>>
 
-export type FolioFormRef = InstanceType<typeof FormFolio>
+export type FormFolioRef = InstanceType<typeof FormFolio>

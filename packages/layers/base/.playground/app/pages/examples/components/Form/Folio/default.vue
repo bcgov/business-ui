@@ -31,7 +31,7 @@ const state = reactive<FullSchema>({
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const folioRef = useTemplateRef<FolioFormRef>('folio-ref')
+const folioRef = useTemplateRef<FormFolioRef>('folio-ref')
 
 const hasErrors = computed<boolean | undefined>(() => {
   const errors = formRef.value?.getErrors()
