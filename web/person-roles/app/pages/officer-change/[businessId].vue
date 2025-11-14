@@ -237,15 +237,15 @@ const folioSchema = z.object({
   number: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).optional()
 })
 type FolioSchema = z.output<typeof folioSchema>
-const FormFolioRef = useTemplateRef<Form<FolioSchema>>('folio-form')
+const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
 const folioErrors = computed<FormError[] | undefined>(() => {
-  const errors = FormFolioRef.value?.getErrors()
+  const errors = folioFormRef.value?.getErrors()
   return errors
 })
 async function validateFolioNumber() {
-  const errors = FormFolioRef.value?.getErrors()
+  const errors = folioFormRef.value?.getErrors()
   if (errors && errors[0]) {
-    await FormFolioRef.value?.validate({ silent: true })
+    await folioFormRef.value?.validate({ silent: true })
     const el = document.getElementById('folio-number')
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' })

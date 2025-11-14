@@ -15,7 +15,7 @@ export function getPartyNameSchema() {
   const orgNameSchema = z.object({
     businessName: z.string()
       .min(1, t('validation.fieldRequired'))
-      .max(90, t('connect.validation.maxChars', { count: 90 }))
+      .max(150, t('connect.validation.maxChars', { count: 150 }))
   })
 
   return z.object({
