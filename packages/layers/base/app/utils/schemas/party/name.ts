@@ -18,6 +18,11 @@ export function getPartyNameSchema() {
       .max(150, t('connect.validation.maxChars', { count: 150 }))
   })
 
+  const schemaMap = {
+    [PartyType.PERSON]: personNameSchema,
+    [PartyType.ORGANIZATION]: orgNameSchema
+  }
+
   return z.object({
     partyType: z.enum(PartyType),
     firstName: z.string().optional(),
@@ -28,28 +33,13 @@ export function getPartyNameSchema() {
     businessName: z.string().optional()
   }).superRefine((val, ctx) => {
     const partyType = val.partyType
+    const schema = schemaMap[partyType]
 
-    switch (partyType) {
-      case PartyType.PERSON: {
-        const result = personNameSchema.safeParse(val)
-        if (!result.success) {
-          result.error.issues.forEach((issue) => {
-            ctx.addIssue({ ...issue })
-          })
-        }
-        break
-      }
-      case PartyType.ORGANIZATION: {
-        const result = orgNameSchema.safeParse(val)
-        if (!result.success) {
-          result.error.issues.forEach((issue) => {
-            ctx.addIssue({ ...issue })
-          })
-        }
-        break
-      }
-      default:
-        break
+    const result = schema.safeParse(val)
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        ctx.addIssue({ ...issue })
+      })
     }
   })
 }
