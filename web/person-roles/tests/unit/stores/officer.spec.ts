@@ -109,7 +109,6 @@ describe('useOfficerStore', () => {
 
         // assert
         expect(store.initializing).toBe(false)
-        expect(store.activeBusiness.legalName).toBe('Test Inc.')
         expect(store.initialOfficers).toHaveLength(1)
         expect(store.initialOfficers[0]!.firstName).toBe('Initial')
         expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
@@ -489,7 +488,6 @@ describe('useOfficerStore', () => {
       store.addingOfficer = true
       store.initialOfficers = [{ firstName: 'Test' }] as unknown as Officer[]
       store.officerTableState = [{ state: {} }] as unknown as OfficerTableState[]
-      store.activeBusiness = { legalName: 'Test Inc' } as unknown as BusinessData
       store.folio.number = '123'
 
       store.$reset()
@@ -497,7 +495,6 @@ describe('useOfficerStore', () => {
       expect(store.addingOfficer).toBe(false)
       expect(store.initialOfficers).toEqual([])
       expect(store.officerTableState).toEqual([])
-      expect(store.activeBusiness).toEqual({})
       expect(store.folio.number).toEqual('')
     })
   })

@@ -3,7 +3,7 @@ export const useOfficerNavigation = () => {
   const route = useRoute()
   const rtc = useRuntimeConfig().public
   const accountStore = useConnectAccountStore()
-  const officerStore = useOfficerStore()
+  const businessStore = useBusinessStore()
 
   const businessId = route.params.businessId as string
 
@@ -33,7 +33,7 @@ export const useOfficerNavigation = () => {
     },
     {
       label: isDraft.value
-        ? officerStore.activeBusiness.legalName
+        ? businessStore.business?.legalName
         : t('label.companyInformationPage'),
       to: dashboardOrEditUrl.value,
       external: true
