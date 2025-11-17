@@ -79,8 +79,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
         return
       }
 
-      if (parties.error) {
-        businessApi.handleError(parties.error, 'errorModal.business.parties')
+      if (parties.error.value) {
+        businessApi.handleError(parties.error.value, 'errorModal.business.parties')
         return
       }
       // map current/existing officers

@@ -5,6 +5,7 @@ export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
+  const { errorModal } = useModal()
 
   function createFilingPayload<F extends Record<string, unknown>>(
     business: BusinessData | BusinessDataSlim,
@@ -328,7 +329,7 @@ export const useBusinessApi = () => {
   function handleError(error: unknown, i18nPrefix: string) {
     // FUTURE: update as needed for different error flows (i.e. button action)
     console.error('Error fetching business data:', error)
-    useModal().errorModal.open({ error, i18nPrefix })
+    errorModal.open({ error, i18nPrefix })
   }
 
   return {
