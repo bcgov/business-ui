@@ -9,7 +9,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
-  const { setFilingDefault, businessTombstone } = useBusinessTombstone()
+  const { setFilingDefault } = useBusinessTombstone()
   const ld = useConnectLaunchDarkly()
   const rtc = useRuntimeConfig().public
 
@@ -79,6 +79,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
         return
       }
 
+      if (parties.error) {
+        businessApi.handleError(parties.error, 'errorModal.business.parties')
+        return
+      }
       // map current/existing officers
       const officers = parties.data.value?.parties.map((p) => {
         const mailingAddress = formatAddressUi(p.mailingAddress)

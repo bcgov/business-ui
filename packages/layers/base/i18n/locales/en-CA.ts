@@ -92,12 +92,60 @@ export default {
   errorModal: {
     business: {
       contact: {
+        400: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        401: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        403: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        404: {
+          title: 'Invalid Link',
+          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+        },
+        500: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        503: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
         undefined: {
           title: 'Unable to retrieve business contact information',
           description: 'We are currently unable to retrieve the business contact. Please try again later.'
         }
       },
       init: {
+        400: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        401: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        403: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        404: {
+          title: 'Invalid Link',
+          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+        },
+        500: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        503: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
         undefined: {
           title: 'Unable to retrieve business information',
           description: 'We are currently unable to retrieve this business. Please try again later.'
@@ -107,6 +155,32 @@ export default {
         undefined: {
           title: 'Unable to retrieve business ledger',
           description: 'We are currently unable to retrieve the business ledger information. Please try again later.'
+        }
+      },
+      parties: {
+        400: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        401: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        403: {
+          title: 'Access Restricted',
+          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        },
+        404: {
+          title: 'Invalid Link',
+          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+        },
+        500: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        503: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
         }
       }
     },

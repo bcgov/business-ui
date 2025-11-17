@@ -6,9 +6,10 @@ const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const officerStore = useOfficerStore()
+const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
-const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
+const { setButtonControl, setAlertText } = useConnectButtonControl()
 const modal = useOfficerModals()
 const businessApi = useBusinessApi()
 const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
@@ -18,7 +19,7 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'filing',
+  layout: 'connect-pay-tombstone-buttons',
   middleware: [
     // Mock auth if playwright is running
     'mock-connect-auth',
@@ -57,7 +58,7 @@ async function onAddOfficerClick() {
   }
   officerStore.addingOfficer = true
   // reset any alert text in button control component
-  await setAlertText(true)
+  await setAlertText()
 }
 
 // submit final filing
@@ -71,7 +72,7 @@ async function submitFiling() {
 
     // prevent submit if there are no changes
     if (!officerStore.checkHasChanges('submit')) {
-      setAlertText(false, 'right', undefined, t('text.noChangesToSubmit'))
+      setAlertText(t('text.noChangesToSubmit'), 'right')
       return
     }
 
@@ -80,9 +81,6 @@ async function submitFiling() {
     if (!isFolioValid) {
       return
     }
-
-    // set submit button as loading, disable all other bottom buttons
-    handleButtonLoading(false, 'right', 1)
 
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
@@ -99,24 +97,18 @@ async function submitFiling() {
 
     // format payload
     const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
+    const folioNumber = officerStore.folio.number ?? businessStore.businessFolio
     const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
-      officerStore.activeBusiness,
-      'changeOfOfficers',
-      officerData
+      businessStore.business!,
+      FilingType.CHANGE_OF_OFFICERS,
+      officerData,
+      (folioNumber ? { folioNumber } : {})
     )
-    // add folio number if it exists
-    if (officerStore.folio.number) {
-      payload.filing.header.folioNumber = officerStore.folio.number
-    } else if (officerStore.activeBusinessAuthInfo.folioNumber) { // if not, use entity folio number if available
-      payload.filing.header.folioNumber = officerStore.activeBusinessAuthInfo.folioNumber
-    }
-    // set as non legal filing
-    payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
       await businessApi.saveOrUpdateDraftFiling(
-        officerStore.activeBusiness.identifier,
+        businessStore.businessIdentifier!,
         payload,
         true,
         draftId
@@ -124,7 +116,7 @@ async function submitFiling() {
     } else {
       // submit as normal if no draft id
       await businessApi.postFiling(
-        officerStore.activeBusiness.identifier,
+        businessStore.businessIdentifier!,
         payload
       )
     }
@@ -134,8 +126,6 @@ async function submitFiling() {
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
-  } finally {
-    handleButtonLoading(true)
   }
 }
 
@@ -159,7 +149,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
   // prevent save if there are no changes
   if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', undefined, t('text.noChangesToSave'))
+    setAlertText(t('text.noChangesToSave'), 'left')
     return
   }
 
@@ -170,13 +160,6 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 
   try {
-    // set appropriate button loading state
-    if (resumeLater) {
-      handleButtonLoading(false, 'left', 1)
-    } else {
-      handleButtonLoading(false, 'left', 0)
-    }
-
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
 
@@ -195,18 +178,15 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
     // create filing payload
     const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
-      officerStore.activeBusiness,
-      'changeOfOfficers',
-      { changeOfOfficers: officerTableSnapshot }
+      businessStore.business!,
+      FilingType.CHANGE_OF_OFFICERS,
+      { changeOfOfficers: officerTableSnapshot },
+      { folioNumber: officerStore.folio.number }
     )
-
-    // add folio number & set as non legal filing
-    payload.filing.header.folioNumber = officerStore.folio.number
-    payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // save filing as draft
     const res = await businessApi.saveOrUpdateDraftFiling(
-      officerStore.activeBusiness.identifier,
+      businessStore.businessIdentifier!,
       payload,
       false,
       draftId
@@ -227,8 +207,6 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     }
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
-  } finally {
-    handleButtonLoading(true)
   }
 }
 
@@ -266,12 +244,12 @@ watch(
     await officerStore.initOfficerStore(businessId, draftId)
 
     // load fees
-    if (officerStore.activeBusiness.legalType !== undefined) {
+    if (businessStore.business?.legalType !== undefined) {
       try {
         const officerFeeCode = 'NOCOI'
         await feeStore.initFees(
           [
-            { code: officerFeeCode, entityType: officerStore.activeBusiness.legalType, label: t('label.officerChange') }
+            { code: officerFeeCode, entityType: businessStore.business.legalType, label: t('label.officerChange') }
           ],
           { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
         )
@@ -335,7 +313,7 @@ watch(
         @cancel="officerStore.addingOfficer = false"
       />
 
-      <TableOfficerChange @table-action="setAlertText(true)" />
+      <TableOfficerChange @table-action="setAlertText()" />
     </section>
 
     <section class="flex flex-col gap-4">
@@ -367,7 +345,7 @@ watch(
             name="number"
             :label="$t('label.folioOrRefNumberOpt')"
             input-id="folio-number"
-            @focusin="setAlertText(true)"
+            @focusin="setAlertText()"
           />
         </ConnectFormFieldWrapper>
       </UForm>
