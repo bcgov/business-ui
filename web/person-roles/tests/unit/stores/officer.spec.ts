@@ -13,11 +13,9 @@ const mockRoute = reactive({
 mockNuxtImport('useRoute', () => () => mockRoute)
 
 const mockLegalApi = {
-  getBusiness: vi.fn(),
   getParties: vi.fn(),
   getPendingTask: vi.fn(),
   getAndValidateDraftFiling: vi.fn(),
-  getAuthInfo: vi.fn(),
   getTasks: vi.fn()
 }
 mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
@@ -70,6 +68,16 @@ mockNuxtImport('useConnectLaunchDarkly', () => () => ({
   getFeatureFlag: mockGetFeatureFlag
 }))
 
+const businessId = 'BC123'
+const mockBusiness = { identifier: businessId, legalName: 'Test Inc.', legalType: 'CC' } as BusinessData
+mockNuxtImport('useBusinessStore', () => () => ({
+  business: ref(mockBusiness),
+  businessName: ref(mockBusiness.legalName),
+  businessContact: ref({ contacts: [], corpType: {} }),
+  businessFolio: ref(''),
+  init: vi.fn()
+}))
+
 describe('useOfficerStore', () => {
   let store: ReturnType<typeof useOfficerStore>
 
@@ -90,26 +98,22 @@ describe('useOfficerStore', () => {
   })
 
   describe('initOfficerStore', () => {
-    const businessId = 'BC123'
-    const mockBusiness = { identifier: businessId, legalName: 'Test Inc.', legalType: 'CC' } as BusinessData
-    const mockParties = [{ officer: { id: 1, firstName: 'Initial' }, roles: [] }] as unknown as OrgPerson[]
+    const mockParties = { parties: [{ officer: { id: 1, firstName: 'Initial' }, roles: [] }] as unknown as OrgPerson[] }
 
     // Starting a new filing (no draftId)
     describe('when starting a new filing', () => {
       test('should fully initialize state if filing is allowed and no pending tasks exist', async () => {
         // mock API calls and permissions
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
         vi.mocked(isFilingAllowed).mockReturnValue(true) // Filing is allowed
-        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
-        mockLegalApi.getParties.mockResolvedValue(mockParties)
+        mockLegalApi.getParties.mockResolvedValue(
+          { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
 
         // init store
         await store.initOfficerStore(businessId)
 
         // assert
         expect(store.initializing).toBe(false)
-        expect(store.activeBusiness.legalName).toBe('Test Inc.')
         expect(store.initialOfficers).toHaveLength(1)
         expect(store.initialOfficers[0]!.firstName).toBe('Initial')
         expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
@@ -118,7 +122,6 @@ describe('useOfficerStore', () => {
 
       test('should show modal and return early if filing is not allowed', async () => {
         // mock that the filing is NOT allowed
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
         vi.mocked(isFilingAllowed).mockReturnValue(false)
 
@@ -127,16 +130,14 @@ describe('useOfficerStore', () => {
 
         // assert
         expect(mockErrorModalOpen).toHaveBeenCalled()
-        expect(mockLegalApi.getParties).not.toHaveBeenCalled() // should return early
         expect(store.officerTableState).toHaveLength(0)
       })
 
       test('should initialize with an empty state for a business with no officers', async () => {
         // mock no parties
-        mockLegalApi.getBusiness.mockResolvedValue(businessBC1234567.business)
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
-        mockLegalApi.getParties.mockResolvedValue([]) // No parties
+        mockLegalApi.getParties.mockResolvedValue(
+          { data: { value: { parties: [] } }, error: { value: undefined }, status: { value: 'success' } }) // No parties
         vi.mocked(isFilingAllowed).mockReturnValue(true)
 
         // init store
@@ -165,9 +166,8 @@ describe('useOfficerStore', () => {
 
         // mocks
         mockLegalApi.getAndValidateDraftFiling.mockResolvedValue(draftResponse)
-        mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
-        mockLegalApi.getParties.mockResolvedValue(mockParties) // Still fetches initial parties
-        mockLegalApi.getAuthInfo.mockResolvedValue({ contacts: [], corpType: {} })
+        mockLegalApi.getParties.mockResolvedValue(
+          { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
 
         // init store
         await store.initOfficerStore(businessId, draftId)
@@ -191,7 +191,6 @@ describe('useOfficerStore', () => {
           i18nPrefix: 'modal.error.getDraftFiling',
           buttons: expect.any(Array)
         }))
-        expect(mockLegalApi.getBusiness).not.toHaveBeenCalled() // Should return early after draft check
         expect(store.officerTableState).toHaveLength(0)
       })
 
@@ -217,7 +216,7 @@ describe('useOfficerStore', () => {
     test('should show a generic error modal if an API call fails', async () => {
       // mock api error
       const apiError = new Error('Network Failed')
-      mockLegalApi.getBusiness.mockRejectedValue(apiError)
+      mockLegalApi.getParties.mockRejectedValue(apiError)
 
       // init store
       await store.initOfficerStore(businessId)
@@ -234,7 +233,6 @@ describe('useOfficerStore', () => {
     test('should show "Page not available" modal if feature flag doesnt match business type', async () => {
       // mock API calls and permissions
       mockGetFeatureFlag.mockResolvedValue('') // add empty response for FF
-      mockLegalApi.getBusiness.mockResolvedValue(mockBusiness)
       mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
 
       // init store
@@ -489,7 +487,6 @@ describe('useOfficerStore', () => {
       store.addingOfficer = true
       store.initialOfficers = [{ firstName: 'Test' }] as unknown as Officer[]
       store.officerTableState = [{ state: {} }] as unknown as OfficerTableState[]
-      store.activeBusiness = { legalName: 'Test Inc' } as unknown as BusinessData
       store.folio.number = '123'
 
       store.$reset()
@@ -497,7 +494,6 @@ describe('useOfficerStore', () => {
       expect(store.addingOfficer).toBe(false)
       expect(store.initialOfficers).toEqual([])
       expect(store.officerTableState).toEqual([])
-      expect(store.activeBusiness).toEqual({})
       expect(store.folio.number).toEqual('')
     })
   })

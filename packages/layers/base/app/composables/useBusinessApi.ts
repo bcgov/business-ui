@@ -5,6 +5,7 @@ export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
+  const { errorModal } = useModal()
 
   function createFilingPayload<F extends Record<string, unknown>>(
     business: BusinessData | BusinessDataSlim,
@@ -256,12 +257,15 @@ export const useBusinessApi = () => {
    * @param query the query to add to the request (e.g., { role: 'director' })
    * @returns a promise to return the data
    */
-  async function getParties(businessId: string, query?: Record<string, unknown>): Promise<OrgPerson[]> {
-    const response = await $businessApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
-      query
+  async function getParties(businessId: string, query?: Record<string, unknown>) {
+    const apiQuery = defineQuery({
+      key: ['parties', businessId, `${query?.classType}${query?.role}${query?.date}`],
+      query: () => $businessApi<{ parties: OrgPerson[] }>(`businesses/${businessId}/parties`, {
+        query
+      }),
+      staleTime: 60000
     })
-
-    return response.parties
+    return apiQuery()
   }
 
   /**
@@ -325,7 +329,7 @@ export const useBusinessApi = () => {
   function handleError(error: unknown, i18nPrefix: string) {
     // FUTURE: update as needed for different error flows (i.e. button action)
     console.error('Error fetching business data:', error)
-    useModal().errorModal.open({ error, i18nPrefix })
+    errorModal.open({ error, i18nPrefix })
   }
 
   return {

@@ -21,8 +21,8 @@ mockNuxtImport('useConnectAccountStore', () => () => ({
   currentAccount: { id: testAccountId }
 }))
 
-mockNuxtImport('useOfficerStore', () => () => ({
-  activeBusiness: { legalName: 'Test Business Inc.' }
+mockNuxtImport('useBusinessStore', () => () => ({
+  business: { legalName: 'Test Business Inc.', identifier: 'BC1234567' }
 }))
 
 describe('useOfficerNavigation', () => {

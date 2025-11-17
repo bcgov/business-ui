@@ -26,6 +26,10 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   await page.route(`*/**/entities/${identifier}`, async (route) => {
     await route.fulfill({ json: authInfoBC1234567 })
   })
+  // business api business info GET slim
+  await page.route(`*/**/businesses/${identifier}?slim=true`, async (route) => {
+    await route.fulfill({ json: businessBC1234567 })
+  })
   // business api business info GET
   await page.route(`*/**/businesses/${identifier}`, async (route) => {
     await route.fulfill({ json: businessBC1234567 })
