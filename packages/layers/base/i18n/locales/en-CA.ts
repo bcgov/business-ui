@@ -181,6 +181,10 @@ export default {
         503: {
           title: 'Page Not Found',
           description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        },
+        undefined: {
+          title: 'Page Not Found',
+          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
         }
       }
     },

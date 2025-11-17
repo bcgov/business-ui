@@ -133,7 +133,7 @@ test.describe('Adding Officers', () => {
     await page.getByRole('button', { name: 'Submit' }).click()
 
     // should display error/alert text stating no data to submit
-    await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to submit.')
+    await expect(page.getByTestId('connect-button-control')).toContainText('There are no changes to submit.')
   })
 
   test('should be able to remove a newly added officer', async ({ page }) => {
@@ -155,7 +155,7 @@ test.describe('Adding Officers', () => {
     await page.getByRole('button', { name: 'Submit' }).click()
 
     // should display error/alert text stating no data to submit
-    await expect(page.getByTestId('business-filing-button-control')).toContainText('There are no changes to submit.')
+    await expect(page.getByTestId('connect-button-control')).toContainText('There are no changes to submit.')
   })
 
   test('should display an error modal if the filing POST request fails', async ({ page }) => {

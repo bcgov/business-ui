@@ -79,6 +79,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
         return
       }
 
+      // TODO: common parties store will remove the need for this
+      if (parties.status.value === 'pending') {
+        await parties.refresh()
+      }
       if (parties.error.value) {
         businessApi.handleError(parties.error.value, 'errorModal.business.parties')
         return
