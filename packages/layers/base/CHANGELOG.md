@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.19
+
+### Patch Changes
+
+- [#301](https://github.com/bcgov/business-ui/pull/301) [`3fd8fb1`](https://github.com/bcgov/business-ui/commit/3fd8fb12a9372ab3db347950bd70d03d4facc303) Thanks [@kialj876](https://github.com/kialj876)! - Business Alerts component bug fix for unknown days
+
 ## 0.1.18
 
 ### Patch Changes
