@@ -141,6 +141,10 @@ export default {
     }
   },
   page: {
+    manageReceivers: {
+      title: 'Manage Receivers - People Roles - BC Registries and Online Services',
+      h1: 'Manage Receivers'
+    },
     officerChange: {
       title: 'Officer Change - People Roles - BC Registries and Online Services',
       h1: 'Officer Change'

@@ -24,6 +24,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    // TODO: redirect to 404 page?
     '/': { redirect: '/en-CA' },
     '/en-CA': { redirect: '/en-CA/officer-change' },
     '/en-CA/officer-change': { redirect: '/en-CA/officer-change/undefined' }, // if no slug redirect to undefined, this will display error modal instead of 404 page
