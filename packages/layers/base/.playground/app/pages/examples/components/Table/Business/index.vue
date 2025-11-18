@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// NOTE: This is an example of using the TableBusiness component in a 'party' configuration
 definePageMeta({
   layout: 'connect-auth'
 })
