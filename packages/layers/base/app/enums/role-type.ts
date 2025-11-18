@@ -7,7 +7,7 @@ export enum RoleType {
   LIQUIDATOR = 'Liquidator',
   PARTNER = 'Partner',
   PROPRIETOR = 'Proprietor',
-  RECEIVER = 'receiver',
+  RECEIVER = 'Receiver',
   OFFICER = 'Officer',
   CEO = 'Ceo',
   CFO = 'Cfo',
