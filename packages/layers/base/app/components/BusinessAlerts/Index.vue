@@ -22,7 +22,7 @@ const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => 
   {
     alertType: alert.type,
     contentExtra: parseContentExtra(alert.type) || [],
-    days: alert.days,
+    days: alert.days || unknownText,
     icon: 'i-mdi-alert',
     label: t(`businessAlert.${alert.type}.label`, { date: alert.date || unknownText }),
     showContact: !alert.hideContact,
