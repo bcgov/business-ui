@@ -61,7 +61,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
     <ConnectPageSection
       :heading="{ label: 'Court Order and Plan of Arrangement Form (default/nested)' }"
       :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
-      class="max-w-3xl"
+      class="max-w-4xl"
     >
       <UForm
         ref="form-ref"
