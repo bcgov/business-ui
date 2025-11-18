@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
+import type { ExpandedState } from '@tanstack/vue-table'
+
 defineProps<{
   data?: TableBusinessState<T>[]
   columns: TableBusinessColumn<T>[]
@@ -13,7 +15,7 @@ defineEmits<{
   'remove': [row: TableBusinessRow<T>]
 }>()
 
-const { expanded } = useBusinessTable()
+const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
 // apply border to top of table row if expanded except for 1st row
 const expandedTrClass = computed(() =>

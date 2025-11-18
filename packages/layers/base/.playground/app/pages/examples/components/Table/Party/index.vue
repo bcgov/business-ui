@@ -1,45 +1,31 @@
 <script setup lang="ts">
 import type { ExpandedState } from '@tanstack/vue-table'
-// NOTE: This is an example of using the TableBusiness component in a 'party' configuration
+
 definePageMeta({
   layout: 'connect-auth'
 })
 
-type SomeState = {
-  someState: {
-    item1: string
-    item2: string
-    item3: string
-  }
-}
-
-type TableDataState = SomeState & PartyStateBase
-
-const partyColumns = getPartyTableColumns<TableDataState>()
 const expanded = ref<ExpandedState | undefined>(undefined)
 
-function removeFn(row: TableBusinessRow<TableDataState>) {
+function removeFn(row: TableBusinessRow<PartyStateBase>) {
   console.info('remove: ', row)
   // row.original.new.actions - typed
-  // row.original.new.someState - typed
+  // row.original.new.roles - typed
+  // row.original.new.address - typed
+  // row.original.new.name - typed
 }
-function undoFn(row: TableBusinessRow<TableDataState>) {
+function undoFn(row: TableBusinessRow<PartyStateBase>) {
   console.info('undo: ', row)
 }
 
-function initEditFn(row: TableBusinessRow<TableDataState>) {
+function initEditFn(row: TableBusinessRow<PartyStateBase>) {
   console.info('init edit: ', row)
   expanded.value = { [row.index]: true }
 }
 
-const data: TableBusinessState<TableDataState>[] = [
+const data: TableBusinessState<PartyStateBase>[] = [
   {
     new: {
-      someState: {
-        item1: '',
-        item2: '',
-        item3: ''
-      },
       actions: [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
       name: {
         partyType: PartyType.PERSON,
@@ -78,11 +64,6 @@ const data: TableBusinessState<TableDataState>[] = [
       ]
     },
     old: {
-      someState: {
-        item1: '',
-        item2: '',
-        item3: ''
-      },
       actions: [ActionType.ADDED],
       name: {
         partyType: PartyType.PERSON,
@@ -125,11 +106,10 @@ const data: TableBusinessState<TableDataState>[] = [
 </script>
 
 <template>
-  <div class="p-20 space-y-20">
-    <TableBusiness
+  <div class="p-20">
+    <TableParty
       v-model:expanded="expanded"
       :data
-      :columns="partyColumns"
       @init-edit="initEditFn"
       @remove="removeFn"
       @undo="undoFn"
@@ -139,6 +119,6 @@ const data: TableBusinessState<TableDataState>[] = [
           {{ row }}
         </div>
       </template>
-    </TableBusiness>
+    </TableParty>
   </div>
 </template>
