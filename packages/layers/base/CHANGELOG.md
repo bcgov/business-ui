@@ -1,5 +1,13 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.18
+
+### Patch Changes
+
+- [#296](https://github.com/bcgov/business-ui/pull/296) [`3bfcc34`](https://github.com/bcgov/business-ui/commit/3bfcc3417c3f4cf1c72526a379b183d9f960fb27) Thanks [@kialj876](https://github.com/kialj876)! - Business layer: useBusinessApi composable - updates to getParties, useBusinessStore - add folio, errorModal - add error more default config" -s
+
+- [#297](https://github.com/bcgov/business-ui/pull/297) [`5ab625e`](https://github.com/bcgov/business-ui/commit/5ab625ead9abb59cc69a7f086da2afe0c4b7c0b1) Thanks [@deetz99](https://github.com/deetz99)! - feat: FormPartyName component
+
 ## 0.1.17
 
 ### Patch Changes
