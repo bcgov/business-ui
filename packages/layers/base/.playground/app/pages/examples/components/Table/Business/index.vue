@@ -11,23 +11,27 @@ type SomeState = {
   }
 }
 
-const { defaultColumns, expanded } = usePartyTable<SomeState>()
+type TableDataState = SomeState & PartyStateBase
 
-function removeFn(row: TablePartyRow<SomeState>) {
+const partyColumns = getPartyTableColumns<TableDataState>()
+
+const { expanded } = useBusinessTable()
+
+function removeFn(row: TableBusinessRow<TableDataState>) {
   console.info('remove: ', row)
   // row.original.new.actions - typed
   // row.original.new.someState - typed
 }
-function undoFn(row: TablePartyRow) {
+function undoFn(row: TableBusinessRow<TableDataState>) {
   console.info('undo: ', row)
 }
 
-function initEditFn(row: TablePartyRow) {
+function initEditFn(row: TableBusinessRow<TableDataState>) {
   console.info('init edit: ', row)
   expanded.value = { [row.index]: true }
 }
 
-const data: TablePartyState<SomeState>[] = [
+const data: TableBusinessState<TableDataState>[] = [
   {
     new: {
       someState: {
@@ -35,16 +39,16 @@ const data: TablePartyState<SomeState>[] = [
         item2: '',
         item3: ''
       },
-      actions: [ActionType.ADDED],
+      actions: [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
       name: {
         partyType: PartyType.PERSON,
-        firstName: 'First',
+        firstName: 'First New',
         middleName: 'Middle',
         lastName: 'Last'
       },
       address: {
         deliveryAddress: {
-          street: '123 Main St',
+          street: '12345 Main St',
           streetAdditional: '',
           city: 'Victoria',
           region: 'BC',
@@ -115,53 +119,15 @@ const data: TablePartyState<SomeState>[] = [
         }
       ]
     }
-    // old: {
-    //   actions: [ActionType.ADDED],
-    //   name: {
-    //     partyType: PartyType.PERSON,
-    //     firstName: 'First',
-    //     middleName: 'Middle',
-    //     lastName: 'Last'
-    //   },
-    //   address: {
-    //     deliveryAddress: {
-    //       street: '123 Main St',
-    //       streetAdditional: '',
-    //       city: 'Victoria',
-    //       region: 'BC',
-    //       postalCode: 'V1X 1X1',
-    //       country: 'CA',
-    //       locationDescription: 'Location Description'
-    //     },
-    //     mailingAddress: {
-    //       street: 'test',
-    //       streetAdditional: 'test',
-    //       city: 'test',
-    //       region: 'test',
-    //       postalCode: 'test',
-    //       country: 'test',
-    //       locationDescription: 'test'
-    //     },
-    //     sameAs: true
-    //   },
-    //   roles: [
-    //     {
-    //       roleType: RoleType.LIQUIDATOR,
-    //       appointmentDate: '2022-10-10',
-    //       cessationDate: null,
-    //       roleClass: 'AGENT'
-    //     }
-    //   ]
-    // }
   }
 ]
 </script>
 
 <template>
   <div class="p-20">
-    <TableParty
+    <TableBusiness
       :data
-      :columns="defaultColumns"
+      :columns="partyColumns"
       @init-edit="initEditFn"
       @remove="removeFn"
       @undo="undoFn"
@@ -171,6 +137,6 @@ const data: TablePartyState<SomeState>[] = [
           {{ row }}
         </div>
       </template>
-    </TableParty>
+    </TableBusiness>
   </div>
 </template>

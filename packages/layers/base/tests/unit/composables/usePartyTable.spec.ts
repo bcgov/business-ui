@@ -47,29 +47,29 @@ const createMockRow = (
       new: defaultNew,
       old: oldVal ? oldVal : undefined
     }
-  } as TablePartyRow
+  } as TableBusinessRow
 }
 
-describe('usePartyTable', () => {
+describe('useBusinessTable', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('should init an expanded state with useState', () => {
-    const { expanded } = usePartyTable()
+    const { expanded } = useBusinessTable()
     expect(expanded.value).toBe(undefined)
     expect(mockUseState).toHaveBeenCalledWith('party-table-expanded-row', expect.any(Function))
   })
 
   describe('getIsRowRemoved', () => {
     it('should return true if REMOVED action exists', () => {
-      const { getIsRowRemoved } = usePartyTable()
+      const { getIsRowRemoved } = useBusinessTable()
       const row = createMockRow([ActionType.REMOVED])
       expect(getIsRowRemoved(row)).toBe(true)
     })
 
     it('should return false for all other actions', () => {
-      const { getIsRowRemoved } = usePartyTable()
+      const { getIsRowRemoved } = useBusinessTable()
       const row = createMockRow([
         ActionType.ADDED,
         ActionType.ADDRESS_CHANGED,
@@ -86,13 +86,13 @@ describe('usePartyTable', () => {
 
   describe('getIsRowEdited', () => {
     it('should return true when old and new values do not match', () => {
-      const { getIsRowEdited } = usePartyTable()
+      const { getIsRowEdited } = useBusinessTable()
       const row = createMockRow([], { name: { firstName: 'Old' } }, { name: { firstName: 'New' } })
       expect(getIsRowEdited(row)).toBe(true)
     })
 
     it('should return false when old and new values do match', () => {
-      const { getIsRowEdited } = usePartyTable()
+      const { getIsRowEdited } = useBusinessTable()
       const same = { name: { firstName: 'Same' } }
       const row = createMockRow([], same, same)
       vi.mocked(isEqual).mockReturnValue(true)
@@ -100,7 +100,7 @@ describe('usePartyTable', () => {
     })
 
     it('should return false when old value is undefined', () => {
-      const { getIsRowEdited } = usePartyTable()
+      const { getIsRowEdited } = useBusinessTable()
       const row = createMockRow([ActionType.ADDED], undefined, { name: { firstName: 'New' } })
       expect(getIsRowEdited(row)).toBe(false)
     })
@@ -109,7 +109,7 @@ describe('usePartyTable', () => {
   describe('Columns', () => {
     describe('Default Columns', () => {
       it('should return correct columns', () => {
-        const { defaultColumns, nameColumn, mailingColumn, deliveryColumn, actionsColumn } = usePartyTable()
+        const { defaultColumns, nameColumn, mailingColumn, deliveryColumn, actionsColumn } = useBusinessTable()
 
         expect(defaultColumns).toEqual([
           nameColumn,
@@ -122,7 +122,7 @@ describe('usePartyTable', () => {
 
     describe('Name Column', () => {
       it('sets correct props for name and address changed', () => {
-        const { nameColumn } = usePartyTable()
+        const { nameColumn } = useBusinessTable()
         const mockRowData = { name: { firstName: 'John' } }
         const mockRow = createMockRow(
           [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
@@ -143,7 +143,7 @@ describe('usePartyTable', () => {
       })
 
       it('sets correct props for added action', () => {
-        const { nameColumn } = usePartyTable()
+        const { nameColumn } = useBusinessTable()
         const mockRow = createMockRow([ActionType.ADDED], null)
 
         const vnode = (nameColumn as any).cell({ row: mockRow })
@@ -155,7 +155,7 @@ describe('usePartyTable', () => {
       })
 
       it('sets correct props for removed action', () => {
-        const { nameColumn } = usePartyTable()
+        const { nameColumn } = useBusinessTable()
         const mockRow = createMockRow([ActionType.REMOVED])
 
         const vnode = (nameColumn as any).cell({ row: mockRow })
@@ -167,14 +167,14 @@ describe('usePartyTable', () => {
       })
 
       it('sets correct header text', () => {
-        const { nameColumn } = usePartyTable()
+        const { nameColumn } = useBusinessTable()
         expect(nameColumn.header).toBe('label.name')
       })
     })
 
     describe('Delivery Column', () => {
       it('sets correct props', () => {
-        const { deliveryColumn } = usePartyTable()
+        const { deliveryColumn } = useBusinessTable()
         const mockRowData = { address: { street: '123 Main St' } }
         const mockRow = createMockRow([ActionType.ADDRESS_CHANGED], null, mockRowData)
 
@@ -186,14 +186,14 @@ describe('usePartyTable', () => {
       })
 
       it('sets correct header text', () => {
-        const { deliveryColumn } = usePartyTable()
+        const { deliveryColumn } = useBusinessTable()
         expect(deliveryColumn.header).toBe('label.deliveryAddress')
       })
     })
 
     describe('Mailing Column', () => {
       it('sets correct props', () => {
-        const { mailingColumn } = usePartyTable()
+        const { mailingColumn } = useBusinessTable()
         const mockRowData = { address: { street: '123 Main St' } }
         const mockRow = createMockRow([ActionType.ADDRESS_CHANGED], null, mockRowData)
 
@@ -205,14 +205,14 @@ describe('usePartyTable', () => {
       })
 
       it('sets correct header text', () => {
-        const { mailingColumn } = usePartyTable()
+        const { mailingColumn } = useBusinessTable()
         expect(mailingColumn.header).toBe('label.mailingAddress')
       })
     })
 
     describe('Actions Column', () => {
       it('sets correct props', () => {
-        const { actionsColumn } = usePartyTable()
+        const { actionsColumn } = useBusinessTable()
 
         const vnode = (actionsColumn as any).header()
 

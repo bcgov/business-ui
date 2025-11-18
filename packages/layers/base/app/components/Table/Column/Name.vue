@@ -4,7 +4,6 @@ import type { BadgeProps } from '@nuxt/ui'
 const props = defineProps<{
   party: PartyNameSchema
   badges: BadgeProps[]
-  isRemoved: boolean
 }>()
 
 const name = computed<string>(() => {
@@ -26,13 +25,7 @@ const name = computed<string>(() => {
 </script>
 
 <template>
-  <div
-    :class="[
-      { 'opacity-50': isRemoved },
-      'pl-6 pr-2 py-4 font-bold min-w-48 max-w-48 whitespace-normal flex flex-col gap-2 text-neutral-highlighted',
-      'text-sm'
-    ]"
-  >
+  <div>
     <span>{{ name }}</span>
     <ul v-if="badges.length > 0" class="flex flex-col gap-2">
       <UBadge

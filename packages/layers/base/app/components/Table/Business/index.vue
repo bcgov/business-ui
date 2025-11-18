@@ -1,19 +1,19 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends { actions: ActionType[] }">
 defineProps<{
-  data?: TablePartyState<T>[]
-  columns: TablePartyColumn<T>[]
+  data?: TableBusinessState<T>[]
+  columns: TableBusinessColumn<T>[]
   loading?: boolean
   emptyText?: string
 }>()
 
 defineEmits<{
-  'init-edit': [row: TablePartyRow<T>]
-  'undo': [row: TablePartyRow<T>]
+  'init-edit': [row: TableBusinessRow<T>]
+  'undo': [row: TableBusinessRow<T>]
   'table-action': []
-  'remove': [row: TablePartyRow<T>]
+  'remove': [row: TableBusinessRow<T>]
 }>()
 
-const { expanded, getIsRowRemoved, getIsRowEdited } = usePartyTable()
+const { expanded } = useBusinessTable()
 
 // apply border to top of table row if expanded except for 1st row
 const expandedTrClass = computed(() =>
@@ -34,15 +34,13 @@ const expandedTrClass = computed(() =>
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'px-0 py-0 text-neutral-highlighted align-top',
+      td: 'px-2 py-4 text-neutral-highlighted align-top text-sm whitespace-normal',
       tr: expandedTrClass
     }"
   >
     <template #actions-cell="{ row }">
       <TableColumnActions
         :row
-        :is-removed="getIsRowRemoved(row)"
-        :is-edited="getIsRowEdited(row)"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"
