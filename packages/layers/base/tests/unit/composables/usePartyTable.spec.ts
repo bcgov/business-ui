@@ -9,20 +9,18 @@ import {
   TableColumnDeliveryAddress
 } from '#components'
 
-vi.mock('#components', () => ({
-  TableColumnName: 'MockedTableColumnName',
-  TableColumnMailingAddress: 'MockedTableColumnMailingAddress',
-  TableColumnDeliveryAddress: 'MockedTableColumnDeliveryAddress'
-}))
-
 const stateMap = new Map<string, Ref<any>>()
-mockNuxtImport('useState', () => {
-  return vi.fn((key: string, init: () => any) => {
+const { mockUseState } = vi.hoisted(() => {
+  return { mockUseState: vi.fn((key: string, init: () => any) => {
     if (!stateMap.has(key)) {
       stateMap.set(key, ref(init()))
     }
     return stateMap.get(key)
-  })
+  }) }
+})
+
+mockNuxtImport('useState', () => {
+  return mockUseState
 })
 
 mockNuxtImport('useNuxtApp', () => () => ({
@@ -60,6 +58,7 @@ describe('usePartyTable', () => {
   it('should init an expanded state with useState', () => {
     const { expanded } = usePartyTable()
     expect(expanded.value).toBe(undefined)
+    expect(mockUseState).toHaveBeenCalledWith('party-table-expanded-row', expect.any(Function))
   })
 
   describe('getIsRowRemoved', () => {
