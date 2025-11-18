@@ -8,11 +8,11 @@ export type PartyStateBase = {
   roles: Role[]
 }
 
-export interface TablePartyState<T extends PartyStateBase = PartyStateBase> {
-  old?: T
-  new: T
+export interface TablePartyState<T = unknown> {
+  old?: (T & PartyStateBase)
+  new: (T & PartyStateBase)
 }
 
-export type TablePartyRow<T extends PartyStateBase = PartyStateBase> = Row<TablePartyState<T>>
+export type TablePartyRow<T = unknown> = Row<TablePartyState<T>>
 
-export type TablePartyColumn<T extends PartyStateBase = PartyStateBase> = TableColumn<TablePartyState<T>>
+export type TablePartyColumn<T = unknown> = TableColumn<TablePartyState<T>>

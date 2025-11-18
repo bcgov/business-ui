@@ -3,10 +3,20 @@ definePageMeta({
   layout: 'connect-auth'
 })
 
-const { defaultColumns, expanded } = usePartyTable()
+type SomeState = {
+  someState: {
+    item1: string
+    item2: string
+    item3: string
+  }
+}
 
-function removeFn(row: TablePartyRow) {
+const { defaultColumns, expanded } = usePartyTable<SomeState>()
+
+function removeFn(row: TablePartyRow<SomeState>) {
   console.info('remove: ', row)
+  // row.original.new.actions - typed
+  // row.original.new.someState - typed
 }
 function undoFn(row: TablePartyRow) {
   console.info('undo: ', row)
@@ -17,9 +27,14 @@ function initEditFn(row: TablePartyRow) {
   expanded.value = { [row.index]: true }
 }
 
-const data: TablePartyState[] = [
+const data: TablePartyState<SomeState>[] = [
   {
     new: {
+      someState: {
+        item1: '',
+        item2: '',
+        item3: ''
+      },
       actions: [ActionType.ADDED],
       name: {
         partyType: PartyType.PERSON,
@@ -58,6 +73,11 @@ const data: TablePartyState[] = [
       ]
     },
     old: {
+      someState: {
+        item1: '',
+        item2: '',
+        item3: ''
+      },
       actions: [ActionType.ADDED],
       name: {
         partyType: PartyType.PERSON,

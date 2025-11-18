@@ -8,7 +8,7 @@ import {
   TableColumnDeliveryAddress
 } from '#components'
 
-export const usePartyTable = <T extends PartyStateBase>() => {
+export const usePartyTable = <T>() => {
   const t = useNuxtApp().$i18n.t
   const expanded = useState<ExpandedState | undefined>('party-table-expanded-row', () => undefined)
 

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends PartyStateBase">
+<script setup lang="ts" generic="T">
 defineProps<{
   data?: TablePartyState<T>[]
   columns: TablePartyColumn<T>[]
