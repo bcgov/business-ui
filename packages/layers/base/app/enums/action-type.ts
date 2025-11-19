@@ -1,7 +1,7 @@
 /**
  * Enums for action types, used by:
  * - Name Translations (Edit UI)
- * - People And Roles (Edit UI)
+ * - People And Roles (Edit UI, Officers, Receivers, Liquidators)
  * - Share Structure (Edit UI)
  */
 export enum ActionType {
@@ -12,5 +12,6 @@ export enum ActionType {
   EMAIL_CHANGED = 'EMAIL CHANGED',
   NAME_CHANGED = 'NAME CHANGED',
   REMOVED = 'REMOVED',
-  REPLACED = 'REPLACED'
+  REPLACED = 'REPLACED',
+  ROLES_CHANGED = 'ROLES_CHANGED'
 }

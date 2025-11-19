@@ -1,5 +1,3 @@
-import type { PartyType } from '~/enums'
-
 export interface ApiPerson {
   id?: number // used by UI only
   partyType: PartyType

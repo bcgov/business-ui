@@ -1,7 +1,17 @@
 /* eslint-disable max-len */
-
 export default {
   /* Ordering should be alphabetical unless otherwise specified */
+  badge: {
+    added: 'ADDED',
+    addressChanged: 'ADDRESS CHANGED',
+    corrected: 'CORRECTED',
+    edited: 'EDITED',
+    emailChanged: 'EMAIL CHANGED',
+    nameChanged: 'NAME CHANGED',
+    removed: 'REMOVED',
+    replaced: 'REPLACED',
+    rolesChanged: 'ROLES CHANGED'
+  },
   businessAlert: {
     /* Alert text based on BusinessAlert enum */
     amalgamation: {
@@ -397,6 +407,7 @@ export default {
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',
     limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
     limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
+    noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
     noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
     offenceToMakeMisleadingStatement: '{boldStart}Note:{boldEnd} It is an offence to make a false or misleading statement in respect of a material fact in a record submitted to the Corporate Registry for filing. See section 427 of the Business Corporations Act.',
