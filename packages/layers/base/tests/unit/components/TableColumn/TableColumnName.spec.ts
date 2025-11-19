@@ -11,7 +11,6 @@ describe('TableColumnName', () => {
       lastName: 'Doe',
       businessName: 'Acme Corporation'
     },
-    isRemoved: false,
     badges: []
   }
 
@@ -40,28 +39,6 @@ describe('TableColumnName', () => {
 
     const span = wrapper.find('span')
     expect(span.text()).toBe('ACME CORPORATION')
-  })
-
-  it('should add opacity when isRemoved is true', async () => {
-    const wrapper = await mountSuspended(TableColumnName, {
-      props: {
-        ...defaultProps,
-        isRemoved: true
-      }
-    })
-
-    expect(wrapper.classes()).toContain('opacity-50')
-  })
-
-  it('should not add opacity when isRemoved is false', async () => {
-    const wrapper = await mountSuspended(TableColumnName, {
-      props: {
-        ...defaultProps,
-        isRemoved: false
-      }
-    })
-
-    expect(wrapper.classes()).not.toContain('opacity-50')
   })
 
   it('should not render badge ul if no badges', async () => {

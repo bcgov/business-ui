@@ -17,39 +17,13 @@ describe('TableColumnMailingAddress', () => {
     data: {
       deliveryAddress: mockAddress,
       mailingAddress: mockAddress,
-      sameAs: false
-    },
-    isRemoved: false
+      sameAs: true
+    }
   }
-
-  it('should add opacity when isRemoved is true', async () => {
-    const wrapper = await mountSuspended(TableColumnMailingAddress, {
-      props: {
-        ...defaultProps,
-        isRemoved: true
-      }
-    })
-
-    expect(wrapper.classes()).toContain('opacity-50')
-  })
-
-  it('should not add opacity when isRemoved is false', async () => {
-    const wrapper = await mountSuspended(TableColumnMailingAddress, {
-      props: defaultProps
-    })
-
-    expect(wrapper.classes()).not.toContain('opacity-50')
-  })
 
   it('should display "Same as delivery address" when sameAs is true', async () => {
     const wrapper = await mountSuspended(TableColumnMailingAddress, {
-      props: {
-        ...defaultProps,
-        data: {
-          ...defaultProps.data,
-          sameAs: true
-        }
-      }
+      props: defaultProps
     })
 
     const span = wrapper.find('span')
@@ -63,7 +37,6 @@ describe('TableColumnMailingAddress', () => {
   it('should display "Not Entered" when mailing address is invalid', async () => {
     const wrapper = await mountSuspended(TableColumnMailingAddress, {
       props: {
-        isRemoved: false,
         data: {
           deliveryAddress: defaultProps.data.deliveryAddress,
           mailingAddress: {
@@ -85,7 +58,16 @@ describe('TableColumnMailingAddress', () => {
 
   it('should render ConnectAddressDisplay with a valid address', async () => {
     const wrapper = await mountSuspended(TableColumnMailingAddress, {
-      props: defaultProps
+      props: {
+        data: {
+          deliveryAddress: defaultProps.data.deliveryAddress,
+          mailingAddress: {
+            ...defaultProps.data.deliveryAddress,
+            street: 'Different Main St'
+          },
+          sameAs: false
+        }
+      }
     })
 
     const addressDisplay = wrapper.findComponent({ name: 'ConnectAddressDisplay' })

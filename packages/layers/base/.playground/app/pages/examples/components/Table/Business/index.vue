@@ -50,7 +50,7 @@ const data: TableBusinessState<TableDataState>[] = [
       address: {
         deliveryAddress: {
           street: '12345 Main St',
-          streetAdditional: '',
+          streetAdditional: 'Additional Street Info',
           city: 'Victoria',
           region: 'BC',
           postalCode: 'V1X 1X1',
@@ -58,13 +58,13 @@ const data: TableBusinessState<TableDataState>[] = [
           locationDescription: 'Location Description'
         },
         mailingAddress: {
-          street: 'test',
-          streetAdditional: 'test',
-          city: 'test',
-          region: 'test',
-          postalCode: 'test',
-          country: 'test',
-          locationDescription: 'test'
+          street: '12345 Main St',
+          streetAdditional: 'Additional Street Info',
+          city: 'Victoria',
+          region: 'BC',
+          postalCode: 'V1X 1X1',
+          country: 'CA',
+          locationDescription: 'Location Description'
         },
         sameAs: true
       },

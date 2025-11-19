@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { TableColumnActions, UButton, UDropdownMenu } from '#components'
+import { mockGetIsRowEdited, mockGetIsRowRemoved } from '../../mocks/business-table-utils'
 
 const mockT = vi.fn((key: string) => key)
 vi.mock('vue-i18n', () => ({
@@ -10,9 +11,8 @@ vi.mock('vue-i18n', () => ({
   })
 }))
 
-function mountComponent(props = { isRemoved: false, isEdited: false }) {
+function mountComponent() {
   return mountSuspended(TableColumnActions, {
-    props,
     global: {
       mocks: {
         $t: mockT
@@ -28,6 +28,8 @@ describe('TableColumnActions', () => {
 
   describe('Main Action', () => {
     it('should render "Change" button when not removed or edited', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
       const wrapper = await mountComponent()
       const mainButton = wrapper.findComponent(UButton)
 
@@ -37,7 +39,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should render "Undo" button when edited', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: true })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent()
       const mainButton = wrapper.findComponent(UButton)
 
       expect(mainButton.exists()).toBe(true)
@@ -46,7 +50,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should render "Undo" button when removed', async () => {
-      const wrapper = await mountComponent({ isRemoved: true, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(true)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const mainButton = wrapper.findComponent(UButton)
 
       expect(mainButton.exists()).toBe(true)
@@ -55,7 +61,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should emit "init-edit" on click in default state', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const mainButton = wrapper.find('button')
 
       await mainButton.trigger('click')
@@ -65,7 +73,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should emit "undo" on click when edited', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: true })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent()
       const mainButton = wrapper.find('button')
 
       await mainButton.trigger('click')
@@ -75,7 +85,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should emit "undo" on click when removed', async () => {
-      const wrapper = await mountComponent({ isRemoved: true, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(true)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const mainButton = wrapper.find('button')
 
       await mainButton.trigger('click')
@@ -86,22 +98,28 @@ describe('TableColumnActions', () => {
   })
 
   describe('Dropdown Menu', () => {
-    it('should render the dropdown menu when not removed', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: false })
+    it('should render the dropdown menu when not removed or edited', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
 
       expect(dropdown.exists()).toBe(true)
     })
 
     it('should not render the dropdown menu when removed', async () => {
-      const wrapper = await mountComponent({ isRemoved: true, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(true)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
 
       expect(dropdown.exists()).toBe(false)
     })
 
     it('should only have removed action when not edited', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
       const items = dropdown.props('items')
 
@@ -111,7 +129,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should have change and remove actions when edited', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: true })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
       const items = dropdown.props('items')
 
@@ -123,7 +143,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should emit "remove" when remove action is selected', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: false })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
       const items = dropdown.props('items')
 
@@ -133,7 +155,9 @@ describe('TableColumnActions', () => {
     })
 
     it('should emit "init-edit" when change action is selected', async () => {
-      const wrapper = await mountComponent({ isRemoved: false, isEdited: true })
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent()
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
       const items = dropdown.props('items')
 

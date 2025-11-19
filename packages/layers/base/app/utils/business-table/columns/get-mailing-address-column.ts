@@ -7,9 +7,9 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
 
-  const deliveryColumn: TableBusinessColumn<T> = {
-    id: 'deliveryAddress',
-    header: t('label.deliveryAddress'),
+  const mailingColumn: TableBusinessColumn<T> = {
+    id: 'mailingAddress',
+    header: t('label.mailingAddress'),
     meta,
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
@@ -27,5 +27,5 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
     }
   }
 
-  return deliveryColumn
+  return mailingColumn
 }

@@ -15,7 +15,8 @@ export function getTableBadges<T extends { actions: ActionType[] }>(row: TableBu
     [ActionType.ROLES_CHANGED]: { label: t('badge.rolesChanged') }
   }
 
-  const rowActions = row.original.new.actions
+  // get unique actions
+  const rowActions = Array.from(new Set(row.original.new.actions))
 
   if (rowActions.includes(ActionType.ADDED)) {
     return [badgeMap.ADDED]
