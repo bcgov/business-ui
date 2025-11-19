@@ -451,10 +451,10 @@ watch(() => props.authOptions, (newOptions) => {
     />
 
     <div class="pt-6">
-      <div class="place-content-start justify-start">
+      <div class="place-content-start">
         <HelpBusinessContact />
       </div>
-      <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
+      <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:place-self-end">
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"

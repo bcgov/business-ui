@@ -201,12 +201,12 @@ onMounted(async () => {
         </template>
 
         <div class="grid auto-cols-auto">
-          <div class="grid-flow-col place-content-start justify-start">
+          <div class="grid-flow-col place-content-start">
             <HelpBusinessContact />
           </div>
         </div>
         <div class="grid grid-rows-subgrid">
-          <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
+          <div class="col-span-full max-w-xl place-content-end place-self-end">
             <UButton
               :label="$t('btn.close')"
               class="mx-auto px-3 py-2"

@@ -1,7 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: true,
+
+  ssr: false,
 
   future: {
     compatibilityVersion: 4
@@ -94,28 +95,23 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    strategy: 'prefix_except_default',
     locales: [
       {
         name: 'English',
         code: 'en-CA',
-        iso: 'en-CA',
+        language: 'en-CA',
         dir: 'ltr',
         file: 'en-CA.ts'
       },
       {
         name: 'Français',
         code: 'fr-CA',
-        iso: 'fr-CA',
+        language: 'fr-CA',
         dir: 'ltr',
         file: 'fr-CA.ts'
       }
-    ],
-    strategy: 'prefix_except_default',
-    lazy: true,
-    langDir: 'locales',
-    defaultLocale: 'en-CA',
-    detectBrowserLanguage: false,
-    vueI18n: './i18n.config.ts'
+    ]
   },
 
   colorMode: {
@@ -189,10 +185,6 @@ export default defineNuxtConfig({
   // Ensure proper cache busting for assets
   experimental: {
     payloadExtraction: false
-  },
-
-  piniaPersistedstate: {
-    storage: 'sessionStorage'
   },
 
   content: {
