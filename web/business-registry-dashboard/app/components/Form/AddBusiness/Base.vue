@@ -10,7 +10,7 @@ interface AuthOption {
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
-const { $authApiBRD } = useNuxtApp()
+const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
 const toast = useToast()
 const { t } = useI18n()
@@ -133,7 +133,7 @@ async function handleEmailOption () {
       type: 'EMAIL'
     }
 
-    await $authApiBRD('/affiliationInvitations', {
+    await $authApi('/affiliationInvitations', {
       method: 'POST',
       body: payload
     })
@@ -156,7 +156,7 @@ async function handleDelegationOption () {
       additionalMessage: formState.delegation.message
     }
 
-    await $authApiBRD('/affiliationInvitations', {
+    await $authApi('/affiliationInvitations', {
       method: 'POST',
       body: payload
     })

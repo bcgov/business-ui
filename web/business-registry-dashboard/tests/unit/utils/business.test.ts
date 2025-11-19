@@ -34,7 +34,7 @@ const mockAuthApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => ({
     $businessApi: mockBusinessApi,
-    $authApiBRD: mockAuthApi
+    $authApi: mockAuthApi
   })
 })
 
