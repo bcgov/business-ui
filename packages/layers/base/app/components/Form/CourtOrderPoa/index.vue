@@ -36,18 +36,6 @@ defineExpose({
     >
       <div class="flex flex-col gap-4">
         <ConnectFormFieldWrapper
-          :label="$t('label.courtOrderNumber')"
-          orientation="horizontal"
-          :error="courtOrderNumberError"
-        >
-          <ConnectFormInput
-            v-model="model.courtOrderNumber"
-            input-id="court-order-number-input"
-            :label="$t('label.courtOrderNumberOpt')"
-            name="courtOrderNumber"
-          />
-        </ConnectFormFieldWrapper>
-        <ConnectFormFieldWrapper
           :label="$t('label.planOfArrangement')"
           orientation="horizontal"
         >
@@ -57,6 +45,19 @@ defineExpose({
               :label="$t('label.filingPursuantToPlanOfArrangement')"
             />
           </UFormField>
+        </ConnectFormFieldWrapper>
+        <ConnectFormFieldWrapper
+          :label="$t('label.courtOrderNumber')"
+          orientation="horizontal"
+          :error="courtOrderNumberError"
+        >
+          <ConnectFormInput
+            v-model="model.courtOrderNumber"
+            input-id="court-order-number-input"
+            :label="model.hasPoa ? $t('label.courtOrderNumber') : $t('label.courtOrderNumberOpt')"
+            name="courtOrderNumber"
+            :required="model.hasPoa"
+          />
         </ConnectFormFieldWrapper>
       </div>
     </ConnectFieldset>
