@@ -1,4 +1,5 @@
 export * from './address'
 export * from './certify'
+export * from './court-order-poa'
 export * from './folio'
 export * from './party'
