@@ -21,8 +21,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@iconify-json/mdi": "^1.2.3",
-    "@nuxt/devtools": "^2.7.0",
-    "@nuxt/image": "^1.7.0",
+    "@nuxt/devtools": "^3.1.0",
+    "@nuxt/image": "^1.11.0",
     "@nuxt/test-utils": "^3.20.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/eslint-module": "^4.1.0",
@@ -30,7 +30,7 @@
     "@playwright/test": "^1.56.1",
     "@testing-library/vue": "^8.1.0",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/parser": "^7.15.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.6",
     "@zadigetvoltaire/nuxt-gtm": "^0.0.13",
@@ -41,21 +41,21 @@
     "nuxt-gtag": "3.0.3",
     "nuxt-lodash": "^2.5.3",
     "playwright-core": "^1.56.1",
-    "sass": "^1.94.0",
+    "sass": "^1.94.1",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
     "vue": "^3.5.24",
     "vue-router": "^4.6.3"
   },
   "dependencies": {
-    "@bcrs-shared-components/enums": "1.1.20",
-    "@bcrs-shared-components/interfaces": "1.1.16",
+    "@bcrs-shared-components/enums": "1.1.30",
+    "@bcrs-shared-components/interfaces": "1.1.36",
     "@daxiom/nuxt-core-layer-test": "^0.0.28",
     "@vuepic/vue-datepicker": "^8.8.1",
-    "firebase": "^10.12.3",
+    "firebase": "^10.14.1",
     "http-status-codes": "^2.3.0",
-    "launchdarkly-vue-client-sdk": "^2.2.0",
-    "moment-timezone": "^0.5.47",
+    "launchdarkly-vue-client-sdk": "^2.4.1",
+    "moment-timezone": "^0.5.48",
     "uuid": "^10.0.0"
   }
 }
