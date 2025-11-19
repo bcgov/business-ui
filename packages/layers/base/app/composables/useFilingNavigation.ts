@@ -1,4 +1,4 @@
-export const useOfficerNavigation = () => {
+export const useFilingNavigation = () => {
   const t = useNuxtApp().$i18n.t
   const route = useRoute()
   const rtc = useRuntimeConfig().public

@@ -14,7 +14,7 @@ export interface BusinessPartyTableState {
   old?: BusinessParty
 }
 
-export interface ReceiverPayload {
+export interface ReceiverPayload extends Record<string, unknown> {
   // NOTE: these may change depending on the API
   appointReceiver?: {
     parties: OrgPerson[]
@@ -22,4 +22,9 @@ export interface ReceiverPayload {
   ceaseReceiver?: {
     parties: OrgPerson[]
   }
+}
+
+export interface ReceiverPayloadDraft extends Record<string, unknown> {
+  parties: BusinessPartyTableState[]
+  // TODO: court order, staff payment?
 }

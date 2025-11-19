@@ -7,10 +7,13 @@ export const useBusinessTombstone = () => {
   const businessStore = useBusinessStore()
   const { business, businessContact, businessName } = storeToRefs(businessStore)
 
-  async function setFilingDefault(businessId: string): Promise<void> {
+  async function setFilingDefault(businessId: string, slim = true) {
     businessTombstone.value.loading = true
 
-    await businessStore.init(businessId, true, false, true)
+    const [businessError, businessContactError] = await businessStore.init(businessId, slim, false, true)
+    if (businessError || businessContactError) {
+      return businessError ?? businessContactError
+    }
 
     const ext = businessContact.value?.extension || businessContact.value?.phoneExtension
     const phoneLabel = ext

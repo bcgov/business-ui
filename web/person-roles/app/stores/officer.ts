@@ -5,7 +5,7 @@ import { isEmpty } from 'es-toolkit/compat'
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
-  const modal = useOfficerModals()
+  const modal = useFilingModals()
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
@@ -84,7 +84,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         await parties.refresh()
       }
       if (parties.error.value) {
-        businessApi.handleError(parties.error.value, 'errorModal.business.parties')
+        businessApi.handleError(parties.error.value, 'modal.error.business.parties')
         return
       }
       // map current/existing officers
@@ -130,7 +130,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       })) || []
     } catch (error) {
-      await modal.openInitOfficerStoreErrorModal(error)
+      await modal.openInitFilingErrorModal(error)
     } finally {
       initializing.value = false
     }

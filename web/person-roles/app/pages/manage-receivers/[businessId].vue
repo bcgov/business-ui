@@ -10,8 +10,8 @@ const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl } = useConnectButtonControl()
-const modal = useOfficerModals()
-const { dashboardUrl } = useOfficerNavigation()
+const modal = useFilingModals()
+const { dashboardUrl } = useFilingNavigation()
 const rtc = useRuntimeConfig().public
 
 useHead({

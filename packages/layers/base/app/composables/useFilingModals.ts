@@ -1,9 +1,9 @@
-export const useOfficerModals = () => {
+export const useFilingModals = () => {
   const { baseModal, errorModal } = useModal()
   const t = useNuxtApp().$i18n.t
   const rtc = useRuntimeConfig().public
   const accountStore = useConnectAccountStore()
-  const { dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
+  const { dashboardUrl, dashboardOrEditUrl } = useFilingNavigation()
 
   async function openUnsavedChangesModal(revokeBeforeUnloadEvent: () => void) {
     await baseModal.open({
@@ -29,21 +29,21 @@ export const useOfficerModals = () => {
   async function openPendingTaskOnSaveOrSubmitModal() {
     await errorModal.open({
       error: undefined,
-      i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit'
+      i18nPrefix: 'modal.error.filing.pendingTaskOnSaveOrSubmit'
     })
   }
 
   async function openSaveFilingErrorModal(error: unknown) {
     await errorModal.open({
       error,
-      i18nPrefix: 'modal.error.submitFiling'
+      i18nPrefix: 'modal.error.submit'
     })
   }
 
   async function openFilingNotAllowedErrorModal() {
     await errorModal.open({
       error: undefined,
-      i18nPrefix: 'modal.error.filingNotAllowed',
+      i18nPrefix: 'modal.error.notAllowed',
       buttons: [
         {
           label: t('label.goBack'),
@@ -59,7 +59,7 @@ export const useOfficerModals = () => {
   async function openGetDraftFilingErrorModal(error: unknown) {
     await errorModal.open({
       error,
-      i18nPrefix: 'modal.error.getDraftFiling',
+      i18nPrefix: 'modal.error.filing.getDraft',
       buttons: [
         {
           label: t('label.goBack'),
@@ -72,12 +72,12 @@ export const useOfficerModals = () => {
     })
   }
 
-  async function openInitOfficerStoreErrorModal(error: unknown) {
+  async function openInitFilingErrorModal(error: unknown) {
     const status = getErrorStatus(error)
     const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
     await errorModal.open({
       error,
-      i18nPrefix: 'modal.error.initOfficerStore',
+      i18nPrefix: 'modal.error.filing.init',
       buttons: isUnauthorizedOrBusinessNotFound
         ? [
           {
@@ -100,8 +100,8 @@ export const useOfficerModals = () => {
 
   async function openFilingNotAvailableModal() {
     await baseModal.open({
-      title: t('modal.filingNotAvailable.title'),
-      description: t('modal.filingNotAvailable.description'),
+      title: t('modal.error.filing.notAvailable.title'),
+      description: t('modal.error.filing.notAvailable.description'),
       buttons: [
         {
           label: t('label.goBack'),
@@ -119,7 +119,7 @@ export const useOfficerModals = () => {
     openSaveFilingErrorModal,
     openFilingNotAllowedErrorModal,
     openGetDraftFilingErrorModal,
-    openInitOfficerStoreErrorModal,
+    openInitFilingErrorModal,
     openFilingNotAvailableModal
   }
 }

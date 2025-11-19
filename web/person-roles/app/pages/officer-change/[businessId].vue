@@ -10,9 +10,9 @@ const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, setAlertText } = useConnectButtonControl()
-const modal = useOfficerModals()
+const modal = useFilingModals()
 const businessApi = useBusinessApi()
-const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation()
 
 useHead({
   title: t('page.officerChange.title')

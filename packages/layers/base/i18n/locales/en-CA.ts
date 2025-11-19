@@ -99,110 +99,198 @@ export default {
       value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
     }
   },
-  errorModal: {
-    business: {
-      contact: {
-        400: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+  modal: {
+    error: {
+      business: {
+        contact: {
+          400: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          401: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          403: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          404: {
+            title: 'Invalid Link',
+            description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+          },
+          500: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          503: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          undefined: {
+            title: 'Unable to retrieve business contact information',
+            description: 'We are currently unable to retrieve the business contact. Please try again later.'
+          }
         },
-        401: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        init: {
+          400: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          401: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          403: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          404: {
+            title: 'Invalid Link',
+            description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+          },
+          500: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          503: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          undefined: {
+            title: 'Unable to retrieve business information',
+            description: 'We are currently unable to retrieve this business. Please try again later.'
+          }
         },
-        403: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        ledger: {
+          undefined: {
+            title: 'Unable to retrieve business ledger',
+            description: 'We are currently unable to retrieve the business ledger information. Please try again later.'
+          }
         },
-        404: {
-          title: 'Invalid Link',
-          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
-        },
-        500: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        503: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        undefined: {
-          title: 'Unable to retrieve business contact information',
-          description: 'We are currently unable to retrieve the business contact. Please try again later.'
+        parties: {
+          400: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          401: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          403: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          404: {
+            title: 'Invalid Link',
+            description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+          },
+          500: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          503: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          undefined: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          }
         }
       },
-      init: {
-        400: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        401: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
-        },
-        403: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
-        },
-        404: {
-          title: 'Invalid Link',
-          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
-        },
-        500: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        503: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
+      documentDownload: {
         undefined: {
-          title: 'Unable to retrieve business information',
-          description: 'We are currently unable to retrieve this business. Please try again later.'
+          title: 'Unable to Download Documents',
+          description: 'We are currently unable to retrieve this document. Please try again later.'
         }
       },
-      ledger: {
-        undefined: {
-          title: 'Unable to retrieve business ledger',
-          description: 'We are currently unable to retrieve the business ledger information. Please try again later.'
-        }
-      },
-      parties: {
-        400: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+      filing: {
+        init: {
+          401: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          403: {
+            title: 'Access Restricted',
+            description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+          },
+          404: {
+            title: 'Invalid Link',
+            description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+          },
+          500: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          },
+          undefined: {
+            title: 'Page Not Found',
+            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+          }
         },
-        401: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        getDraft: {
+          undefined: {
+            title: 'Page not found',
+            description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
+          }
         },
-        403: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
+        submit: {
+          400: {
+            title: 'Invalid Submission',
+            description: 'There was an issue with the data submitted. Please review the form and try again.'
+          },
+          401: {
+            title: 'Permission Denied',
+            description: 'You do not have permission to perform this action for this business.'
+          },
+          403: {
+            title: 'Permission Denied',
+            description: 'You do not have permission to perform this action for this business.'
+          },
+          404: {
+            title: 'Business Not Found',
+            description: 'This business could not be found in our records.'
+          },
+          422: {
+            title: 'Invalid Submission',
+            description: 'There was an issue with the data submitted. Please review the form and try again.'
+          },
+          500: {
+            title: 'An Error Occurred',
+            description: "We couldn't complete your request due to an internal error. Please try again later."
+          },
+          undefined: {
+            title: 'Unknown Error',
+            description: 'An unknown error occured while trying to submit this filing, please try again later.'
+          }
         },
-        404: {
-          title: 'Invalid Link',
-          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+        notAllowed: {
+          undefined: {
+            title: 'Page not available',
+            description: 'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
+          }
         },
-        500: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        notAvailable: {
+          title: 'Page not available',
+          description: 'This filing is not available for this type of business. If you believe this is an error, please contact support.'
         },
-        503: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        undefined: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
+        pendingTaskOnSaveOrSubmit: {
+          undefined: {
+            title: 'Unable to submit filing',
+            description: 'Another draft filing already exists. Please complete it before creating a new filing.'
+          }
         }
       }
     },
-    documentDownload: {
+    padConfirmationPeriod: {
       undefined: {
-        title: 'Unable to Download Documents',
-        description: 'We are currently unable to retrieve this document. Please try again later.'
+        title: 'PAD Account in Confirmation Period',
+        description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
       }
+    },
+    unsavedChanges: {
+      title: 'Unsaved changes',
+      description: 'You have unsaved changes. Are you sure you want to exit your filing?'
     }
   },
   label: {

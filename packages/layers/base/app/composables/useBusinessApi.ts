@@ -81,8 +81,13 @@ export const useBusinessApi = () => {
   async function getFilingById<F extends Record<string, unknown>>(
     businessId: string,
     filingId: number | string
-  ): Promise<FilingGetByIdResponse<F>> {
-    return $businessApi(`businesses/${businessId}/filings/${filingId}`)
+  ) {
+    const query = defineQuery({
+      key: ['business', filingId],
+      query: () => $businessApi<FilingGetByIdResponse<F>>(`businesses/${businessId}/filings/${filingId}`),
+      staleTime: 60000
+    })
+    return query()
   }
 
   /**
@@ -96,16 +101,17 @@ export const useBusinessApi = () => {
   async function getAndValidateDraftFiling<F extends Record<string, unknown>>(
     businessId: string,
     draftId: number | string,
-    filingName: string
-  ): Promise<{ isValid: boolean, data: FilingGetByIdResponse<F> | null }> {
-    const response = await getFilingById<F>(businessId, draftId)
-    const isValid = isValidDraft<F>(filingName, response)
-
-    if (!isValid) {
-      return { isValid, data: null }
+    filingName: FilingType
+  ) {
+    const filingQuery = await getFilingById<F>(businessId, draftId)
+    await filingQuery.refresh()
+    if (!filingQuery.error.value) {
+      const isValid = isValidDraft<F>(filingName, filingQuery.data.value)
+      if (!isValid) {
+        filingQuery.error.value = new Error('Draft filing invalid')
+      }
     }
-
-    return { isValid, data: response }
+    return filingQuery
   }
 
   /**

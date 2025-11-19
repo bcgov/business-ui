@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 
 /** Manages business data */
 export const useBusinessStore = defineStore('business', () => {
-  const { getBusiness, getAuthInfo, handleError } = useBusinessApi()
+  const { getBusiness, getAuthInfo } = useBusinessApi()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
@@ -86,29 +86,33 @@ export const useBusinessStore = defineStore('business', () => {
       refetch: businessRefetch
     } = await getBusiness(identifier, slim as true)
 
-    const fetches = []
+    const asyncs = []
 
-    fetches.push((force ? businessRefetch() : businessRefresh()).then((state) => {
+    asyncs.push((force ? businessRefetch() : businessRefresh()).then((state) => {
       if (state.error) {
-        handleError(state.error, 'errorModal.business.init')
+        // handleError(state.error, 'modal.error.business.init')
+        return state.error
       } else {
         business.value = businessResp.value.data?.business
       }
     }))
 
+    let contactAsync = undefined
     if (includeContact) {
       // NOTE: define within block so that it doesn't make an initial call when includeContact is false
       const { state: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
-      fetches.push(contactRefresh().then(({ error }) => {
+      contactAsync = contactRefresh().then(({ error }) => {
         if (error) {
-          handleError(error, 'errorModal.business.contact')
+          // handleError(error, 'modal.error.business.contact')
+          return error
         } else {
           businessContact.value = contactResp.value.data?.contacts[0]
           businessFolio.value = contactResp.value.data?.folioNumber || ''
         }
-      }))
+      })
     }
-    await Promise.all(fetches)
+    asyncs.push(contactAsync)
+    return await Promise.all(asyncs)
   }
 
   /** Whether the entity belongs to one of the passed-in legal types */
