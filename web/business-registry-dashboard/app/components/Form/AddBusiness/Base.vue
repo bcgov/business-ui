@@ -339,7 +339,7 @@ watch(() => props.authOptions, (newOptions) => {
                       class="text-sm"
                       :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
                     >
-                      <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                      <ConnectI18nHelper translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
                     </span>
                   </template>
                 </UCheckbox>

@@ -148,10 +148,10 @@ onMounted(async () => {
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
+          <ConnectI18nHelper class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" :translation-path="businessIdentifierLabel" :number="business.identifier" />
+          <ConnectI18nHelper class="text-bcGovColor-darkGray" :translation-path="businessIdentifierLabel" :number="business.identifier" />
         </li>
       </ul>
 
