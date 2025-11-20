@@ -1,6 +1,6 @@
 export interface Role {
   roleType?: RoleType
   appointmentDate?: IsoDatePacific
-  cessationDate?: IsoDatePacific | null
+  cessationDate?: IsoDatePacific
   roleClass?: RoleClass
 }

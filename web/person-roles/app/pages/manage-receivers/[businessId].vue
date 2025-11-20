@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { UIcon } from '#components'
 import { useReceiverStore } from '~/stores/receivers'
 
 const { t } = useI18n()
@@ -11,11 +12,11 @@ const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl } = useConnectButtonControl()
 const modal = useFilingModals()
-const { dashboardUrl } = useFilingNavigation()
+const { dashboardUrl } = useFilingNavigation(t('page.manageReceivers.h1'))
 const rtc = useRuntimeConfig().public
 
 useHead({
-  title: t('page.officerChange.title')
+  title: t('page.manageReceivers.title')
 })
 
 definePageMeta({

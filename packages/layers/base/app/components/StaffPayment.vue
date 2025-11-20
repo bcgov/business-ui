@@ -10,6 +10,8 @@ const feeStore = useConnectFeeStore()
 
 const staffPayStore = useStaffPaymentStore()
 
+const schema = getStaffPaymentSchema()
+
 const clearOptionData = () => {
   staffPayment.value = {
     ...staffPayStore.getEmptyStaffPayment(),
@@ -24,7 +26,7 @@ const radioItems: RadioGroupItem[] = [
   { label: t('label.noFee'), value: StaffPaymentOption.NO_FEE }
 ]
 
-const staffPaymentForm = useTemplateRef<Form<StaffPayment>>('staffPaymentForm')
+const staffPaymentForm = useTemplateRef<Form<StaffPaymentSchema>>('staffPaymentForm')
 watch(() => staffPayment.value.option, async (val) => {
   feeStore.updateAllFees(staffPayment.value.isPriority, val === StaffPaymentOption.NO_FEE)
   clearOptionData()
@@ -46,7 +48,7 @@ onMounted(() => {
   <UForm
     ref="staffPaymentForm"
     class="space-y-4"
-    :schema="staffPayStore.staffPaymentSchema"
+    :schema
     nested
   >
     <Divide class="*:pt-8" orientation="vertical">

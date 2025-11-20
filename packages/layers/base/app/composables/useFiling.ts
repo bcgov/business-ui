@@ -44,7 +44,7 @@ export const useFiling = () => {
     }
   }
 
-  async function init<T extends Record<string, unknown>>(
+  async function init<T extends FilingRecord>(
     businessId: string,
     filingName: FilingType,
     draftId?: string,

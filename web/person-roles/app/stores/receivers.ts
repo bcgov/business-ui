@@ -1,23 +1,14 @@
 import * as z from 'zod'
+import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
 
 export const useReceiverStore = defineStore('receiver-store', () => {
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
-  const { staffPaymentSchema } = useStaffPaymentStore()
 
   const initializing = ref<boolean>(false) // officer store loading state
-  const draftFilingState = shallowRef<ReceiverPayloadDraft>({} as ReceiverPayloadDraft) // filing state saved as draft
+  const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
 
-  function formSchema() {
-    // TODO: update
-    return z.object({
-      staffPayment: staffPaymentSchema,
-      parties: z.array(z.object({}))
-    })
-  }
-  type ReceiverFilingSchema = z.output<ReturnType<typeof formSchema>>
-
-  function getEmptyFormState(): ReceiverFilingSchema {
+  function getEmptyFormState(): ManageReceiversSchema {
     return {
       staffPayment: {
         option: StaffPaymentOption.NONE,
@@ -27,8 +18,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         folioNumber: '',
         isPriority: false
       },
-      parties: []
-      // TODO - court order
+      parties: [],
+      courtOrder: {
+        hasPoa: undefined,
+        courtOrderNumber: undefined
+      }
     }
   }
 
@@ -44,7 +38,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     $reset()
     const { draftFiling, parties } = await useFiling().init<ReceiverPayloadDraft>(
       businessId,
-      FilingType.CHANGE_OF_RECEIVER,
+      FilingType.CHANGE_OF_RECEIVERS,
       draftId,
       { roleType: RoleType.RECEIVER })
 

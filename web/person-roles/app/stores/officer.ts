@@ -43,7 +43,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           >(
             businessId,
             draftId,
-            'changeOfOfficers'
+            FilingType.CHANGE_OF_OFFICERS
           )
           if (!isValid) {
             throw new Error('Draft filing invalid')

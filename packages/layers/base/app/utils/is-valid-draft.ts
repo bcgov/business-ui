@@ -20,8 +20,8 @@
  * const officers = rawResponse.filing.changeOfOfficers;
  * }
 */
-export function isValidDraft<F extends Record<string, unknown>>(
-  filingName: string,
+export function isValidDraft<F extends FilingRecord>(
+  filingName: FilingType,
   response: any
 ): response is FilingGetByIdResponse<F> {
   const isDraft = response?.filing?.header?.status === FilingStatus.DRAFT

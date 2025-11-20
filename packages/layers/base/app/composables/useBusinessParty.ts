@@ -7,7 +7,10 @@ export const useBusinessParty = () => {
     businessId: string,
     roleClass?: RoleClass,
     roleType?: RoleType
-  ) {
+  ): Promise<{
+    error: Error | undefined | null
+    data: TableBusinessState<PartySchema>[] | undefined
+  }> {
     const resp = await businessApi.getParties(businessId, {
       ...(roleClass ? { roleClass } : {}),
       ...(roleType ? { role: roleType } : {})
@@ -20,17 +23,27 @@ export const useBusinessParty = () => {
           const deliveryAddress = formatAddressUi(p.deliveryAddress)
           const roles = p.roles.filter(role => roleType ? role.roleType === roleType : true)
           const id = p.officer.id ? String(p.officer.id) : undefined
-
-          return {
-            old: {
-              id,
-              officer: p.officer,
+          const party: PartyStateBase = {
+            id,
+            name: {
+              firstName: p.officer.firstName ?? '',
+              middleName: p.officer.middleInitial ?? '',
+              lastName: p.officer.lastName ?? '',
+              businessName: p.officer.organizationName,
+              partyType: p.officer.partyType
+            },
+            address: {
               mailingAddress,
               deliveryAddress,
-              sameAsDelivery: isEqual(mailingAddress, deliveryAddress),
-              roles
-            }
-          } as BusinessPartyTableState
+              sameAs: isEqual(mailingAddress, deliveryAddress)
+            },
+            roles,
+            actions: []
+          }
+          return {
+            new: party,
+            old: party
+          }
         })
       }
     })

@@ -12,7 +12,7 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl, setAlertText } = useConnectButtonControl()
 const modal = useFilingModals()
 const businessApi = useBusinessApi()
-const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation()
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.officerChange.h1'))
 
 useHead({
   title: t('page.officerChange.title')
