@@ -43,7 +43,7 @@ export const useFilingModals = () => {
   async function openFilingNotAllowedErrorModal() {
     await errorModal.open({
       error: undefined,
-      i18nPrefix: 'modal.error.notAllowed',
+      i18nPrefix: 'modal.error.filing.notAllowed',
       buttons: [
         {
           label: t('label.goBack'),

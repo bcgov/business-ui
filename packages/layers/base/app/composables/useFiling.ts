@@ -61,6 +61,7 @@ export const useFiling = () => {
 
       let draftFilingResp = undefined
       let partiesResp = undefined
+      console.log(draftId)
       if (draftId) {
         draftFilingResp = businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
       } else if (partiesParams) {

@@ -1,4 +1,3 @@
-import * as z from 'zod'
 import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
 
 export const useReceiverStore = defineStore('receiver-store', () => {
@@ -36,7 +35,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     initializing.value = true
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await useFiling().init<ReceiverPayloadDraft>(
+    const { draftFiling, parties } = await useFiling().init<ManageReceiversSchema>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
       draftId,
@@ -44,7 +43,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
 
     if (draftFiling?.data.value?.filing) {
       draftFilingState.value = draftFiling.data.value.filing
-      formState.value.parties = draftFiling.data.value.filing.parties
+      formState.value = draftFiling.data.value.filing
     } else if (parties?.data) {
       formState.value.parties = parties.data
     }
@@ -52,10 +51,10 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<ReceiverPayload>(
+    const payload = businessApi.createFilingPayload<ManageReceiversSchema>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
-      { parties: formState.value.parties },
+      { ...formState.value },
       formState.value.staffPayment
     )
 
@@ -68,13 +67,15 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   async function submit(draftId?: string) {
-    const receiverPayload = {
-      // TODO - conversion function for addresses and anything else
-      ...(newParties.value ? { appointedReceivers: newParties.value.map(p => p.new) } : {}),
-      ...(newParties.value ? { ceaseReceivers: ceasedParties.value.map(p => p.new) } : {})
-    } as ReceiverPayload
+    const receiverPayload: ReceiverPayload = {
+      ...(newParties.value
+        ? { appointedReceivers: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        : {}),
+      ...(newParties.value
+        ? { ceasedReceivers: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        : {})
+    }
 
-    // TODO: fix typing in base so that we can pass in the payload interface directly
     const payload = businessApi.createFilingPayload<ReceiverPayload>(
       businessStore.business!,
       // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
@@ -105,7 +106,6 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   // undoParty
 
   return {
-    formSchema,
     formState,
     initializing,
     init,

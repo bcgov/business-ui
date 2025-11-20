@@ -9,7 +9,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
-  const { setFilingDefault } = useBusinessTombstone()
   const ld = useConnectLaunchDarkly()
   const rtc = useRuntimeConfig().public
 
@@ -29,32 +28,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      // throw error and show modal if invalid business ID
-      if (businessId === 'undefined') {
-        throw createError({ statusCode: 404 })
-      }
-      // set masthead data
-      setFilingDefault(businessId)
-      // if filing ID provided, get and validate the filing structure, return early if invalid
-      if (draftId) {
-        try {
-          const { isValid, data } = await businessApi.getAndValidateDraftFiling<
-            { changeOfOfficers: OfficerTableState[] }
-          >(
-            businessId,
-            draftId,
-            FilingType.CHANGE_OF_OFFICERS
-          )
-          if (!isValid) {
-            throw new Error('Draft filing invalid')
-          } else {
-            filingDraftState.value = { filing: data?.filing, errors: [] } as OfficersDraftFiling
-            folio.number = data?.filing.header?.folioNumber || ''
-          }
-        } catch (error) {
-          await modal.openGetDraftFilingErrorModal(error)
-          return
-        }
+
+      // TODO: add in parties to init call once officers is updated to use party table
+      const { draftFiling } = await useFiling().init(businessId, FilingType.CHANGE_OF_OFFICERS, draftId)
+      if (draftFiling?.error.value) {
+        await modal.openGetDraftFilingErrorModal(draftFiling?.error.value)
+      } else if (draftFiling?.data.value?.filing) {
+        filingDraftState.value = { filing: draftFiling.data.value.filing, errors: [] } as OfficersDraftFiling
+        folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
       }
 
       const [_, parties] = await Promise.all([
