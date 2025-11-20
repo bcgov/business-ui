@@ -185,17 +185,6 @@ export default defineNuxtConfig({
   // Ensure proper cache busting for assets
   experimental: {
     payloadExtraction: false
-  },
-
-  content: {
-    locales: [
-      'en-CA',
-      'fr-CA'
-    ],
-    contentHead: false,
-    markdown: {
-      anchorLinks: false
-    }
   }
   // compatibilityDate: '2024-07-03' add compatibility date?
 })
