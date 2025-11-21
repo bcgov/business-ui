@@ -219,10 +219,6 @@ export default {
             title: 'Invalid Link',
             description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
           },
-          500: {
-            title: 'Page Not Found',
-            description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-          },
           undefined: {
             title: 'Page Not Found',
             description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'

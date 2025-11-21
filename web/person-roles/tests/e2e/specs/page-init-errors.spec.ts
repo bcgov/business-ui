@@ -94,12 +94,15 @@ test.describe('Page init errors', () => {
     // assert modal content
     const modal = page.getByRole('dialog')
     await expect(modal).toBeVisible()
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.title)
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.description)
+    await expect(modal).toContainText('Page not available')
+    await expect(modal).toContainText(
+      // eslint-disable-next-line max-len
+      'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
+    )
   })
 
   test.describe('Draft Filing Fetch Errors', () => {
-    test('should display "Page not Found" modal if draft filing returns 404', async ({ page }) => {
+    test('should display "Invalid Link" modal if draft filing returns 404', async ({ page }) => {
       await page.route(`*/**/businesses/${identifier}/filings/123`, async (route) => {
         await route.fulfill({ status: 404 })
       })
@@ -112,8 +115,10 @@ test.describe('Page init errors', () => {
       // assert modal content
       const modal = page.getByRole('dialog')
       await expect(modal).toBeVisible()
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.title)
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.description)
+      await expect(modal).toContainText('Invalid Link')
+      await expect(modal).toContainText(
+        'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+      )
     })
 
     test('should display "Page not Found" modal if draft filing has invalid structure', async ({ page }) => {
@@ -144,8 +149,10 @@ test.describe('Page init errors', () => {
       // assert modal content
       const modal = page.getByRole('dialog')
       await expect(modal).toBeVisible()
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.title)
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.description)
+      await expect(modal).toContainText('Page Not Found')
+      await expect(modal).toContainText(
+        'We cannot display this information right now. Please try refreshing the page.'
+      )
     })
   })
 })

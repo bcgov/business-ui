@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { UIcon } from '#components'
 import { useReceiverStore } from '~/stores/receivers'
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const receiverStore = useReceiverStore()
-const { formSchema, formState, initializing } = storeToRefs(receiverStore)
+const { formState, initializing } = storeToRefs(receiverStore)
 const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
@@ -22,8 +21,6 @@ useHead({
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
   middleware: [
-    // Mock auth if playwright is running
-    'mock-connect-auth',
     // Check for login redirect
     'connect-auth'
   ],
@@ -80,7 +77,7 @@ async function cancelFiling() {
   // }
 }
 
-async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
+async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
   // TODO: consolidate with officers - break out common functionality
   try {
     // pull draft id from url or mark as undefined
@@ -97,12 +94,10 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 }
 
-// init officers on mount and when account changes
-// update breadcrumbs and bottom buttons when account changes
+// TODO: consolidate with officers
 watch(
   () => accountStore.currentAccount.id,
   async () => {
-    // load officer info
     const draftId = (urlParams.draft as string) ?? undefined
     await receiverStore.init(businessId, draftId)
 

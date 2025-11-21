@@ -44,7 +44,7 @@ export const useFiling = () => {
     }
   }
 
-  async function init<T extends FilingRecord>(
+  async function initFiling<T extends FilingRecord>(
     businessId: string,
     filingName: FilingType,
     draftId?: string,
@@ -61,7 +61,6 @@ export const useFiling = () => {
 
       let draftFilingResp = undefined
       let partiesResp = undefined
-      console.log(draftId)
       if (draftId) {
         draftFilingResp = businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
       } else if (partiesParams) {
@@ -104,6 +103,6 @@ export const useFiling = () => {
 
   return {
     getFilingName,
-    init
+    initFiling
   }
 }

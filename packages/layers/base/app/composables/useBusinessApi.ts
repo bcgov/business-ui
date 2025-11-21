@@ -332,12 +332,6 @@ export const useBusinessApi = () => {
     return query()
   }
 
-  function handleError(error: unknown, i18nPrefix: string) {
-    // FUTURE: update as needed for different error flows (i.e. button action)
-    console.error('Error fetching business data:', error)
-    errorModal.open({ error, i18nPrefix })
-  }
-
   return {
     // business api queries
     getAuthorizedActions,
@@ -357,7 +351,6 @@ export const useBusinessApi = () => {
     getPendingTask,
     getAndValidateDraftFiling,
     createFilingPayload,
-    handleError,
     // auth/entity queries
     getAuthInfo
   }

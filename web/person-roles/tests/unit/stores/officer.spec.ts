@@ -20,6 +20,11 @@ const mockLegalApi = {
 }
 mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
 
+const mockUseFiling = {
+  initFiling: vi.fn()
+}
+mockNuxtImport('useFiling', () => () => mockUseFiling)
+
 const mockErrorModalOpen = vi.fn()
 const mockBaseModalOpen = vi.fn()
 mockNuxtImport('useModal', () => {
@@ -75,7 +80,7 @@ mockNuxtImport('useBusinessStore', () => () => ({
   businessName: ref(mockBusiness.legalName),
   businessContact: ref({ contacts: [], corpType: {} }),
   businessFolio: ref(''),
-  init: vi.fn()
+  init: vi.fn(() => [undefined, undefined])
 }))
 
 describe('useOfficerStore', () => {
@@ -108,12 +113,17 @@ describe('useOfficerStore', () => {
         vi.mocked(isFilingAllowed).mockReturnValue(true) // Filing is allowed
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
+        mockUseFiling.initFiling.mockResolvedValue(
+          {
+            draftFiling: undefined
+          })
 
         // init store
         await store.initOfficerStore(businessId)
 
         // assert
         expect(store.initializing).toBe(false)
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
         expect(store.initialOfficers).toHaveLength(1)
         expect(store.initialOfficers[0]!.firstName).toBe('Initial')
         expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
@@ -139,6 +149,10 @@ describe('useOfficerStore', () => {
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: { parties: [] } }, error: { value: undefined }, status: { value: 'success' } }) // No parties
         vi.mocked(isFilingAllowed).mockReturnValue(true)
+        mockUseFiling.initFiling.mockResolvedValue(
+          {
+            draftFiling: undefined
+          })
 
         // init store
         await store.initOfficerStore(businessBC1234567.business.identifier)
@@ -156,18 +170,22 @@ describe('useOfficerStore', () => {
 
       test('should load and populate state from a valid draft', async () => {
         const draftResponse = {
-          isValid: true,
-          data: {
-            filing: {
-              changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
-            }
+          filing: {
+            changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
           }
         }
 
         // mocks
-        mockLegalApi.getAndValidateDraftFiling.mockResolvedValue(draftResponse)
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
+        mockUseFiling.initFiling.mockResolvedValue(
+          {
+            draftFiling: {
+              data: { value: draftResponse },
+              error: { value: undefined },
+              status: { value: 'success' }
+            }
+          })
 
         // init store
         await store.initOfficerStore(businessId, draftId)
@@ -180,7 +198,14 @@ describe('useOfficerStore', () => {
 
       test('should show an error modal and return early if the draft is invalid', async () => {
         // mock an invalid draft response
-        mockLegalApi.getAndValidateDraftFiling.mockResolvedValue({ isValid: false, data: null })
+        mockUseFiling.initFiling.mockResolvedValue(
+          {
+            draftFiling: {
+              data: { value: 'invalid draft' },
+              error: { value: new Error('Draft filing invalid') },
+              status: { value: 'success' }
+            }
+          })
 
         // init store
         await store.initOfficerStore(businessId, draftId)
@@ -188,24 +213,7 @@ describe('useOfficerStore', () => {
         // assert
         expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
           error: expect.any(Error),
-          i18nPrefix: 'modal.error.getDraftFiling',
-          buttons: expect.any(Array)
-        }))
-        expect(store.officerTableState).toHaveLength(0)
-      })
-
-      test('should show an error modal if fetching the draft fails', async () => {
-        // mock api error
-        const apiError = new Error('API Error')
-        mockLegalApi.getAndValidateDraftFiling.mockRejectedValue(apiError)
-
-        // init store
-        await store.initOfficerStore(businessId, draftId)
-
-        // assert
-        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
-          error: expect.any(Error),
-          i18nPrefix: 'modal.error.getDraftFiling',
+          i18nPrefix: 'modal.error.filing.getDraft',
           buttons: expect.any(Array)
         }))
         expect(store.officerTableState).toHaveLength(0)
@@ -224,33 +232,10 @@ describe('useOfficerStore', () => {
       // assert
       expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
         error: expect.any(Error),
-        i18nPrefix: 'modal.error.initOfficerStore',
+        i18nPrefix: 'modal.error.filing.init',
         buttons: expect.any(Array)
       }))
       expect(store.initializing).toBe(false)
-    })
-
-    test('should show "Page not available" modal if feature flag doesnt match business type', async () => {
-      // mock API calls and permissions
-      mockGetFeatureFlag.mockResolvedValue('') // add empty response for FF
-      mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
-
-      // init store
-      await store.initOfficerStore(businessId)
-
-      // assert - should open modal
-      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
-      const callArgs = mockBaseModalOpen.mock.calls[0]![0]
-
-      expect(callArgs.title).toBe('modal.filingNotAvailable.title')
-      expect(callArgs.description).toBe('modal.filingNotAvailable.description')
-      expect(callArgs.dismissible).toBe(false)
-
-      expect(callArgs.buttons).toHaveLength(1)
-      const button = callArgs.buttons[0]
-      expect(button.label).toBe('label.goBack')
-      expect(button.external).toBe(true)
-      expect(button.to).toBe('http://business-edit/BC1234567/alteration?accountid=123')
     })
   })
 

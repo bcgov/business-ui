@@ -36,7 +36,7 @@ export const useFilingModals = () => {
   async function openSaveFilingErrorModal(error: unknown) {
     await errorModal.open({
       error,
-      i18nPrefix: 'modal.error.submit'
+      i18nPrefix: 'modal.error.filing.submit'
     })
   }
 

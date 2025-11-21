@@ -103,7 +103,7 @@ describe('useFilingModals', () => {
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       expect(mockErrorModalOpen).toHaveBeenCalledWith(
-        expect.objectContaining({ i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit' })
+        expect.objectContaining({ i18nPrefix: 'modal.error.filing.pendingTaskOnSaveOrSubmit' })
       )
     })
   })
@@ -118,7 +118,7 @@ describe('useFilingModals', () => {
       expect(mockErrorModalOpen).toHaveBeenCalledWith(
         expect.objectContaining({
           error: mockError,
-          i18nPrefix: 'modal.error.submitFiling'
+          i18nPrefix: 'modal.error.filing.submit'
         })
       )
     })
@@ -132,7 +132,7 @@ describe('useFilingModals', () => {
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.notAllowed')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
@@ -151,7 +151,7 @@ describe('useFilingModals', () => {
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.notAllowed')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -167,7 +167,7 @@ describe('useFilingModals', () => {
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.getDraftFiling')
+      expect(callArgs.i18nPrefix).toBe('modal.error.filing.getDraft')
       expect(callArgs.buttons).toHaveLength(2)
       expect(callArgs.buttons[0].label).toBe('Go Back')
       expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -183,7 +183,7 @@ describe('useFilingModals', () => {
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+      expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
       expect(callArgs.buttons).toHaveLength(1)
       expect(callArgs.buttons[0].label).toBe('Go to My Business Registry')
       expect(callArgs.buttons[0].to).toBe('http://brd-example/account/test-account-id')
@@ -221,7 +221,7 @@ describe('useFilingModals', () => {
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
@@ -253,7 +253,7 @@ describe('useFilingModals', () => {
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -287,7 +287,7 @@ describe('useFilingModals', () => {
         const callArgs = mockBaseModalOpen.mock.calls[0]![0]
         expect(callArgs.title).toBe('Page not available')
         // eslint-disable-next-line
-        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.description).toBe('This filing is not available for this type of business. If you believe this is an error, please contact support.')
         expect(callArgs.dismissible).toBe(false)
 
         expect(callArgs.buttons).toHaveLength(1)
@@ -314,7 +314,7 @@ describe('useFilingModals', () => {
         const callArgs = mockBaseModalOpen.mock.calls[0]![0]
         expect(callArgs.title).toBe('Page not available')
         // eslint-disable-next-line
-        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.description).toBe('This filing is not available for this type of business. If you believe this is an error, please contact support.')
         expect(callArgs.dismissible).toBe(false)
 
         expect(callArgs.buttons).toHaveLength(1)

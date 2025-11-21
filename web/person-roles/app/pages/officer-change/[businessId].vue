@@ -21,8 +21,6 @@ useHead({
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
   middleware: [
-    // Mock auth if playwright is running
-    'mock-connect-auth',
     // Check for login redirect
     'connect-auth'
   ],

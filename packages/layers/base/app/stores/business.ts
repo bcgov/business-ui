@@ -90,7 +90,6 @@ export const useBusinessStore = defineStore('business', () => {
 
     asyncs.push((force ? businessRefetch() : businessRefresh()).then((state) => {
       if (state.error) {
-        // handleError(state.error, 'modal.error.business.init')
         return state.error
       } else {
         business.value = businessResp.value.data?.business
@@ -103,7 +102,6 @@ export const useBusinessStore = defineStore('business', () => {
       const { state: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
       contactAsync = contactRefresh().then(({ error }) => {
         if (error) {
-          // handleError(error, 'modal.error.business.contact')
           return error
         } else {
           businessContact.value = contactResp.value.data?.contacts[0]

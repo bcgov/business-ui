@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 export default {
   badge: {
     rolesChanged: 'ROLES CHANGED',

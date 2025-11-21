@@ -35,7 +35,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     initializing.value = true
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await useFiling().init<ManageReceiversSchema>(
+    const { draftFiling, parties } = await useFiling().initFiling<ManageReceiversSchema>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
       draftId,

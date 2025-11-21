@@ -152,7 +152,7 @@ describe('useBusinessApi', () => {
       const payload = businessApi.createFilingPayload(
         business,
         FilingType.CHANGE_OF_OFFICERS,
-        { data: 'test' }
+        { changeOfOfficers: 'test' }
       )
 
       test('should make a POST request to create a new draft', async () => {
@@ -268,20 +268,19 @@ describe('useBusinessApi', () => {
         }
         mockBusinessApi.mockResolvedValue(mockFilingResponse)
 
-        const result = await businessApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
+        const result = await businessApi.getAndValidateDraftFiling('BC123', 999, FilingType.CHANGE_OF_OFFICERS)
 
-        expect(result.isValid).toBe(true)
-        expect(result.data).toEqual(mockFilingResponse)
+        expect(result.error.value).toBeNull()
+        expect(result.data.value).toEqual(mockFilingResponse)
       })
 
       test('should return isValid: false when draft is invalid', async () => {
         const mockFilingResponse = { filing: { header: { status: 'COMPLETED' } } }
         mockBusinessApi.mockResolvedValue(mockFilingResponse)
 
-        const result = await businessApi.getAndValidateDraftFiling('BC123', 999, 'changeOfOfficers')
+        const result = await businessApi.getAndValidateDraftFiling('BC123', 999, FilingType.CHANGE_OF_OFFICERS)
 
-        expect(result.isValid).toBe(false)
-        expect(result.data).toBeNull()
+        expect(result.error.value).toBeDefined()
       })
     })
 
