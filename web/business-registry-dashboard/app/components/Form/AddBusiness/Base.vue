@@ -10,10 +10,10 @@ interface AuthOption {
 const brdModal = useBrdModals()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
-const { $authApiBRD } = useNuxtApp()
+const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
 const toast = useToast()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 const props = defineProps<{
   authOptions: AuthOption[]
@@ -133,7 +133,7 @@ async function handleEmailOption () {
       type: 'EMAIL'
     }
 
-    await $authApiBRD('/affiliationInvitations', {
+    await $authApi('/affiliationInvitations', {
       method: 'POST',
       body: payload
     })
@@ -156,7 +156,7 @@ async function handleDelegationOption () {
       additionalMessage: formState.delegation.message
     }
 
-    await $authApiBRD('/affiliationInvitations', {
+    await $authApi('/affiliationInvitations', {
       method: 'POST',
       body: payload
     })
@@ -339,7 +339,7 @@ watch(() => props.authOptions, (newOptions) => {
                       class="text-sm"
                       :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
                     >
-                      <ConnectI18nBold translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                      <ConnectI18nHelper translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
                     </span>
                   </template>
                 </UCheckbox>
@@ -451,10 +451,10 @@ watch(() => props.authOptions, (newOptions) => {
     />
 
     <div class="pt-6">
-      <div class="place-content-start justify-start">
+      <div class="place-content-start">
         <HelpBusinessContact />
       </div>
-      <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:justify-end md:place-self-end">
+      <div class="xs:mt-6 flex max-w-xl sm:mt-6 sm:justify-center md:-mt-6 md:place-content-end md:place-self-end">
         <UButton
           :label="$t('btn.cancel')"
           variant="outline"

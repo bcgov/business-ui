@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 interface Message {
   message: string // The message to display

@@ -1,5 +1,5 @@
 function getAuthApi () {
-  return useNuxtApp().$authApiBRD
+  return useNuxtApp().$authApi
 }
 /**
  * Checks if the given account ID matches the ID of the current account in the store.

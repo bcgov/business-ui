@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { UInput } from '#components'
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 const props = defineProps<{
   searchFn:(query: string) => Promise<any[]>

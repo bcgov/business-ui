@@ -3,7 +3,7 @@ import { FetchError } from 'ofetch'
 const affStore = useAffiliationsStore()
 const toast = useToast()
 const brdModal = useBrdModals()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 const props = defineProps<{
   removeBusinessPayload: RemoveBusinessPayload

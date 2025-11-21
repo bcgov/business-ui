@@ -18,3 +18,4 @@ jobs:
       app_name: "business-registry-ui"
       working_directory: "./web/business-registry-dashboard"
       codecov_flag: "businessregistryui"
+      node_version: 22

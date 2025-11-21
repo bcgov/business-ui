@@ -1,7 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  ssr: true,
+
+  ssr: false,
 
   future: {
     compatibilityVersion: 4
@@ -67,6 +68,7 @@ export default defineNuxtConfig({
         'mdi:checkbox-multiple-blank-outline',
         'mdi:caret-down',
         'mdi:account-cog',
+        'mdi:information',
         'mdi:information-outline',
         'mdi:account-group-outline',
         'mdi:account-outline',
@@ -82,6 +84,7 @@ export default defineNuxtConfig({
         'mdi:phone',
         'mdi:email',
         'mdi:arrow-left',
+        'heroicons:arrow-path-20-solid',
         'heroicons:circle-stack-20-solid',
         'heroicons:chevron-down-20-solid',
         'heroicons:chevron-right-20-solid',
@@ -94,28 +97,23 @@ export default defineNuxtConfig({
   },
 
   i18n: {
+    strategy: 'prefix_except_default',
     locales: [
       {
         name: 'English',
         code: 'en-CA',
-        iso: 'en-CA',
+        language: 'en-CA',
         dir: 'ltr',
         file: 'en-CA.ts'
       },
       {
         name: 'Français',
         code: 'fr-CA',
-        iso: 'fr-CA',
+        language: 'fr-CA',
         dir: 'ltr',
         file: 'fr-CA.ts'
       }
-    ],
-    strategy: 'prefix_except_default',
-    lazy: true,
-    langDir: 'locales',
-    defaultLocale: 'en-CA',
-    detectBrowserLanguage: false,
-    vueI18n: './i18n.config.ts'
+    ]
   },
 
   colorMode: {
@@ -189,21 +187,6 @@ export default defineNuxtConfig({
   // Ensure proper cache busting for assets
   experimental: {
     payloadExtraction: false
-  },
-
-  piniaPersistedstate: {
-    storage: 'sessionStorage'
-  },
-
-  content: {
-    locales: [
-      'en-CA',
-      'fr-CA'
-    ],
-    contentHead: false,
-    markdown: {
-      anchorLinks: false
-    }
   }
   // compatibilityDate: '2024-07-03' add compatibility date?
 })

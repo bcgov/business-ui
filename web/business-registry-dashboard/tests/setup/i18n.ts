@@ -1,11 +1,13 @@
 import { config } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import en from '~/app/locales/en-CA'
+import en from '~~/i18n/locales/en-CA'
+import fr from '~~/i18n/locales/fr-CA'
 
 export const mockedI18n = createI18n({
   locale: 'en-CA',
   messages: {
-    'en-CA': en
+    'en-CA': en,
+    'fr-CA': fr
   }
 })
 

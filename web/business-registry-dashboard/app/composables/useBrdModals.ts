@@ -3,7 +3,7 @@ import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusi
 
 export const useBrdModals = () => {
   const modal = useModal()
-  const { t } = useI18n()
+  const { t } = useNuxtApp().$i18n
   const config = useRuntimeConfig().public
   const accountStore = useConnectAccountStore()
 

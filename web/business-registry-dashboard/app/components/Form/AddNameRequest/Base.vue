@@ -5,7 +5,7 @@ import { FetchError } from 'ofetch'
 
 const brdModal = useBrdModals()
 const toast = useToast()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 
 const props = defineProps<{

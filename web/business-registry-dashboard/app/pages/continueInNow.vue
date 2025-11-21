@@ -4,7 +4,7 @@ import {
   FilingTypes
 } from '@bcrs-shared-components/enums'
 
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 // Define eligible corporation types for continuation in
 const ELIGIBLE_CORP_TYPES = [

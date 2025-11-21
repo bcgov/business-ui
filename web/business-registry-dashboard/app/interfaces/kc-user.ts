@@ -1,4 +1,4 @@
-import { LoginSource } from '~/app/enums/login-source'
+import { LoginSource } from '~/enums/login-source'
 
 export interface KCUser {
   firstName: string

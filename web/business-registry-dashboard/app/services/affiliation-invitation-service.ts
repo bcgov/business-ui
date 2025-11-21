@@ -7,7 +7,7 @@ export default class AffiliationInvitationService {
    * outside the Nuxt lifecycle.
    */
   private static getAuthApi () {
-    return useNuxtApp().$authApiBRD
+    return useNuxtApp().$authApi
   }
 
   /**

@@ -64,8 +64,8 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
     <template #header-left>
       <h2 class="text-base font-normal">
         <template v-if="ldStore.ldInitialized">
-          <ConnectI18nBold v-if="!affStore.enablePagination" translation-path="labels.myList" :count="affStore.affiliations.count" />
-          <ConnectI18nBold v-else translation-path="labels.myListWithPagination" />
+          <ConnectI18nHelper v-if="!affStore.enablePagination" translation-path="labels.myList" :count="affStore.affiliations.count" />
+          <ConnectI18nHelper v-else translation-path="labels.myListWithPagination" />
         </template>
       </h2>
     </template>

@@ -12,7 +12,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string[]]
 }>()
 
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 const query = ref('')
 const isOpen = ref(false)

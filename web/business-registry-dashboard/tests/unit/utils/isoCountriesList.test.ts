@@ -28,8 +28,8 @@ describe('isoCountriesList Util', () => {
         expect(item).toHaveProperty('code')
         expect(item).toHaveProperty('name')
       })
-      expect(countrySubdivisions.ca[0].code).toBe('AB')
-      expect(countrySubdivisions.ca[0].name).toBe('Alberta')
+      expect(countrySubdivisions.ca[0]!.code).toBe('AB')
+      expect(countrySubdivisions.ca[0]!.name).toBe('Alberta')
     })
 
     it('should have correct data structure for US subdivisions', () => {
@@ -37,8 +37,8 @@ describe('isoCountriesList Util', () => {
         expect(item).toHaveProperty('code')
         expect(item).toHaveProperty('name')
       })
-      expect(countrySubdivisions.us[0].code).toBe('AL')
-      expect(countrySubdivisions.us[0].name).toBe('Alabama')
+      expect(countrySubdivisions.us[0]!.code).toBe('AL')
+      expect(countrySubdivisions.us[0]!.name).toBe('Alabama')
     })
   })
 })
