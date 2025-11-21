@@ -6,7 +6,7 @@ import { isEqual } from 'lodash'
 import { UForm } from '#components'
 
 const na = useNuxtApp()
-const { t } = useNuxtApp().$i18n
+const { t } = useI18n()
 const officerStore = useOfficerStore()
 
 const props = withDefaults(defineProps<{

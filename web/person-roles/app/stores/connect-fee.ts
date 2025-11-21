@@ -1,6 +1,6 @@
 export const useConnectFeeStore = defineStore('connect/fee', () => {
   const { $payApi } = useNuxtApp()
-  const { t } = useNuxtApp().$i18n
+  const { t } = useI18n()
 
   const feeOptions = ref({
     showFutureEffectiveFees: false,

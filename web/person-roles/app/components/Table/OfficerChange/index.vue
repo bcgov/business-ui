@@ -3,7 +3,7 @@ import { h } from 'vue'
 import type { TableColumn, BadgeProps } from '@nuxt/ui'
 import type { Row } from '@tanstack/vue-table'
 
-const { t } = useNuxtApp().$i18n
+const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')

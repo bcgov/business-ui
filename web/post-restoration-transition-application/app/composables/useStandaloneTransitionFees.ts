@@ -4,7 +4,7 @@ export const useStandaloneTransitionFees = () => {
   const standaloneTransitionFeeCode = 'TRANP'
   const feeLangkey = 'ConnectFeeWidget.feeSummary.itemLabels.TRANP'
 
-  const { t } = useNuxtApp().$i18n
+  const { t } = useI18n()
 
   const initFees = async () => {
     await feeStore.initFees(

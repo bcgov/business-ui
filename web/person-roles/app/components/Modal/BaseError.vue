@@ -2,7 +2,7 @@
 import { FetchError } from 'ofetch'
 
 // https://vue-i18n.intlify.dev/api/composition.html#te-key-locale
-const { t, te } = useNuxtApp().$i18n
+const { t, te } = useI18n()
 const isSmallScreen = useMediaQuery('(max-width: 640px)')
 
 const {

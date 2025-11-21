@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { Form, FormError } from '@nuxt/ui'
 
-const { t } = useNuxtApp().$i18n
+const { t } = useI18n()
 const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
 const route = useRoute()

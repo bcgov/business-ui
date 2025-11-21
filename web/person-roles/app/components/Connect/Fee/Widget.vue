@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { t } = useNuxtApp().$i18n
+const { t } = useI18n()
 // const fwConfig = useAppConfig().strrBaseLayer.feeWidget
 // const rtc = useRuntimeConfig().public
 const {
