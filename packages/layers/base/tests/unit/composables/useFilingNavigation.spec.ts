@@ -25,7 +25,7 @@ mockNuxtImport('useBusinessStore', () => () => ({
   business: { legalName: 'Test Business Inc.', identifier: 'BC1234567' }
 }))
 
-describe('useOfficerNavigation', () => {
+describe('useFilingNavigation', () => {
   beforeEach(() => {
     mockRoute.query = {}
     vi.clearAllMocks()
@@ -33,23 +33,23 @@ describe('useOfficerNavigation', () => {
 
   describe('when NOT in draft mode (route.query.draft is undefined)', () => {
     it('should correctly return that it is not a draft', () => {
-      const { isDraft } = useOfficerNavigation()
+      const { isDraft } = useFilingNavigation()
       expect(isDraft.value).toBe(false)
     })
 
     it('should return the correct dashboard and edit URLs', () => {
-      const { dashboardUrl, editUrl } = useOfficerNavigation()
+      const { dashboardUrl, editUrl } = useFilingNavigation()
       expect(dashboardUrl.value).toBe(`http://dashboard/${identifier}?accountid=${testAccountId}`)
       expect(editUrl.value).toBe(`http://edit/${identifier}/alteration?accountid=${testAccountId}`)
     })
 
     it('dashboardOrEditUrl should return the edit URL', () => {
-      const { dashboardOrEditUrl, editUrl } = useOfficerNavigation()
+      const { dashboardOrEditUrl, editUrl } = useFilingNavigation()
       expect(dashboardOrEditUrl.value).toBe(editUrl.value)
     })
 
     it('should return the correct breadcrumbs for a non-draft filing', () => {
-      const { breadcrumbs, editUrl } = useOfficerNavigation()
+      const { breadcrumbs, editUrl } = useFilingNavigation()
       const breadcrumbItems = breadcrumbs.value
 
       expect(breadcrumbItems).toHaveLength(4)
@@ -65,17 +65,17 @@ describe('useOfficerNavigation', () => {
     })
 
     it('should correctly return that it is a draft', () => {
-      const { isDraft } = useOfficerNavigation()
+      const { isDraft } = useFilingNavigation()
       expect(isDraft.value).toBe(true)
     })
 
     it('dashboardOrEditUrl should return the dashboard URL', () => {
-      const { dashboardOrEditUrl, dashboardUrl } = useOfficerNavigation()
+      const { dashboardOrEditUrl, dashboardUrl } = useFilingNavigation()
       expect(dashboardOrEditUrl.value).toBe(dashboardUrl.value)
     })
 
     it('should return the correct breadcrumbs for a draft filing', () => {
-      const { breadcrumbs, dashboardUrl } = useOfficerNavigation()
+      const { breadcrumbs, dashboardUrl } = useFilingNavigation()
       const breadcrumbItems = breadcrumbs.value
 
       expect(breadcrumbItems).toHaveLength(4)
@@ -87,7 +87,7 @@ describe('useOfficerNavigation', () => {
 
   describe('Computeds', () => {
     it('should update URLs and breadcrumbs when the route query changes', async () => {
-      const { isDraft, dashboardOrEditUrl, breadcrumbs, editUrl } = useOfficerNavigation()
+      const { isDraft, dashboardOrEditUrl, breadcrumbs, editUrl } = useFilingNavigation()
       expect(isDraft.value).toBe(false)
       expect(dashboardOrEditUrl.value).toBe(editUrl.value)
       expect(breadcrumbs.value[2]!.label).toBe('Company Information Page')

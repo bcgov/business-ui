@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { setupOfficerChangePage, navigateToOfficerChangePage } from '../test-utils'
 import { businessBC1234567 } from '~~/tests/mocks'
-import en from '~~/i18n/locales/en-CA'
 
 const identifier = businessBC1234567.business.identifier
 
@@ -94,12 +93,15 @@ test.describe('Page init errors', () => {
     // assert modal content
     const modal = page.getByRole('dialog')
     await expect(modal).toBeVisible()
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.title)
-    await expect(modal).toContainText(en.modal.error.filingNotAllowed.undefined.description)
+    await expect(modal).toContainText('Page not available')
+    await expect(modal).toContainText(
+      // eslint-disable-next-line max-len
+      'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
+    )
   })
 
   test.describe('Draft Filing Fetch Errors', () => {
-    test('should display "Page not Found" modal if draft filing returns 404', async ({ page }) => {
+    test('should display "Page Not Found" modal if draft filing returns 404', async ({ page }) => {
       await page.route(`*/**/businesses/${identifier}/filings/123`, async (route) => {
         await route.fulfill({ status: 404 })
       })
@@ -112,8 +114,11 @@ test.describe('Page init errors', () => {
       // assert modal content
       const modal = page.getByRole('dialog')
       await expect(modal).toBeVisible()
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.title)
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.description)
+      await expect(modal).toContainText('Page not found')
+      await expect(modal).toContainText(
+        // eslint-disable-next-line max-len
+        'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.Page not foundWe cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
+      )
     })
 
     test('should display "Page not Found" modal if draft filing has invalid structure', async ({ page }) => {
@@ -144,8 +149,10 @@ test.describe('Page init errors', () => {
       // assert modal content
       const modal = page.getByRole('dialog')
       await expect(modal).toBeVisible()
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.title)
-      await expect(modal).toContainText(en.modal.error.getDraftFiling.undefined.description)
+      await expect(modal).toContainText('Page Not Found')
+      await expect(modal).toContainText(
+        'We cannot display this information right now. Please try refreshing the page.'
+      )
     })
   })
 })

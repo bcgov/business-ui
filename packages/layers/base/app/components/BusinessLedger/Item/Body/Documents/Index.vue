@@ -20,7 +20,7 @@ const download = async (document: BusinessDocument, index: number) => {
   } catch {
     useModal().errorModal.open({
       error: { statusCode: 500 },
-      i18nPrefix: 'errorModal.documentDownload',
+      i18nPrefix: 'modal.error.documentDownload',
       buttons: [
         {
           label: 'OK', shouldClose: true

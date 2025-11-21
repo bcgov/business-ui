@@ -10,9 +10,9 @@ const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
 const { setButtonControl, setAlertText } = useConnectButtonControl()
-const modal = useOfficerModals()
+const modal = useFilingModals()
 const businessApi = useBusinessApi()
-const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useOfficerNavigation()
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.officerChange.h1'))
 
 useHead({
   title: t('page.officerChange.title')
@@ -21,8 +21,6 @@ useHead({
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
   middleware: [
-    // Mock auth if playwright is running
-    'mock-connect-auth',
     // Check for login redirect
     'connect-auth'
   ],

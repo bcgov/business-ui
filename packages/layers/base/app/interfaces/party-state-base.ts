@@ -5,4 +5,5 @@ export type PartyStateBase = {
   address: AddressSchema
   name: PartyNameSchema
   roles: Role[]
+  id?: string
 }

@@ -51,15 +51,17 @@ export interface FilingSubmissionBaseData {
   business: FilingBusiness
 }
 
-export interface FilingSubmissionBody<F extends Record<string, unknown>> {
+export type FilingRecord = Partial<Record<FilingType, unknown>>
+
+export interface FilingSubmissionBody<F extends FilingRecord> {
   filing: FilingSubmissionBaseData & F
 }
 
-export interface FilingPostResponse<F extends Record<string, unknown>> {
+export interface FilingPostResponse<F extends FilingRecord> {
   filing: FilingBaseData & F
 }
 
-export interface FilingPutResponse<F extends Record<string, unknown>> {
+export interface FilingPutResponse<F extends FilingRecord> {
   filing: FilingBaseData & F
   errors: Array<unknown>
 }

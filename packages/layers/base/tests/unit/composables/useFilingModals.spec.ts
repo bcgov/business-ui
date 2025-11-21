@@ -33,7 +33,7 @@ mockNuxtImport('useConnectAccountStore', () => () => ({
   currentAccount: { id: 'test-account-id' }
 }))
 
-describe('useOfficerModals', () => {
+describe('useFilingModals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockRoute.query = {}
@@ -41,7 +41,7 @@ describe('useOfficerModals', () => {
 
   describe('openUnsavedChangesModal', () => {
     it('should open the base modal with correct titles and buttons', async () => {
-      const { openUnsavedChangesModal } = useOfficerModals()
+      const { openUnsavedChangesModal } = useFilingModals()
       const mockRevokeEvent = vi.fn()
 
       await openUnsavedChangesModal(mockRevokeEvent)
@@ -57,7 +57,7 @@ describe('useOfficerModals', () => {
 
     describe('When draft is NOT present', () => {
       it('should call revoke event and navigate to business edit when "Exit" button is clicked', async () => {
-        const { openUnsavedChangesModal } = useOfficerModals()
+        const { openUnsavedChangesModal } = useFilingModals()
         const mockRevokeEvent = vi.fn()
 
         await openUnsavedChangesModal(mockRevokeEvent)
@@ -79,7 +79,7 @@ describe('useOfficerModals', () => {
       })
 
       it('should call revoke event and navigate to business dashboard when "Exit" button is clicked', async () => {
-        const { openUnsavedChangesModal } = useOfficerModals()
+        const { openUnsavedChangesModal } = useFilingModals()
         const mockRevokeEvent = vi.fn()
 
         await openUnsavedChangesModal(mockRevokeEvent)
@@ -98,19 +98,19 @@ describe('useOfficerModals', () => {
 
   describe('openPendingTaskOnSaveOrSubmitModal', () => {
     it('should open the error modal with the correct prefix', async () => {
-      const { openPendingTaskOnSaveOrSubmitModal } = useOfficerModals()
+      const { openPendingTaskOnSaveOrSubmitModal } = useFilingModals()
       await openPendingTaskOnSaveOrSubmitModal()
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       expect(mockErrorModalOpen).toHaveBeenCalledWith(
-        expect.objectContaining({ i18nPrefix: 'modal.error.pendingTaskOnSaveOrSubmit' })
+        expect.objectContaining({ i18nPrefix: 'modal.error.filing.pendingTaskOnSaveOrSubmit' })
       )
     })
   })
 
   describe('openSaveFilingErrorModal', () => {
     it('should open the error modal with the correct prefix and error object', async () => {
-      const { openSaveFilingErrorModal } = useOfficerModals()
+      const { openSaveFilingErrorModal } = useFilingModals()
       const mockError = new Error('API Failed')
       await openSaveFilingErrorModal(mockError)
 
@@ -118,7 +118,7 @@ describe('useOfficerModals', () => {
       expect(mockErrorModalOpen).toHaveBeenCalledWith(
         expect.objectContaining({
           error: mockError,
-          i18nPrefix: 'modal.error.submitFiling'
+          i18nPrefix: 'modal.error.filing.submit'
         })
       )
     })
@@ -127,12 +127,12 @@ describe('useOfficerModals', () => {
   describe('openFilingNotAllowedErrorModal', () => {
     describe('When draft is NOT present', () => {
       it('should open the error modal with the correct buttons and prefix', async () => {
-        const { openFilingNotAllowedErrorModal } = useOfficerModals()
+        const { openFilingNotAllowedErrorModal } = useFilingModals()
         await openFilingNotAllowedErrorModal()
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.notAllowed')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
@@ -146,12 +146,12 @@ describe('useOfficerModals', () => {
       })
 
       it('should open the error modal with the correct buttons and prefix', async () => {
-        const { openFilingNotAllowedErrorModal } = useOfficerModals()
+        const { openFilingNotAllowedErrorModal } = useFilingModals()
         await openFilingNotAllowedErrorModal()
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.filingNotAllowed')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.notAllowed')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -162,12 +162,12 @@ describe('useOfficerModals', () => {
 
   describe('openGetDraftFilingErrorModal', () => {
     it('should open the error modal with the correct buttons and prefix', async () => {
-      const { openGetDraftFilingErrorModal } = useOfficerModals()
+      const { openGetDraftFilingErrorModal } = useFilingModals()
       await openGetDraftFilingErrorModal(new Error('Draft not found'))
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.getDraftFiling')
+      expect(callArgs.i18nPrefix).toBe('modal.error.filing.getDraft')
       expect(callArgs.buttons).toHaveLength(2)
       expect(callArgs.buttons[0].label).toBe('Go Back')
       expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -175,24 +175,24 @@ describe('useOfficerModals', () => {
     })
   })
 
-  describe('openInitOfficerStoreErrorModal', () => {
+  describe('openInitFilingErrorModal', () => {
     it('should show "Go to My Business Registry" button for a 404 error', async () => {
-      const { openInitOfficerStoreErrorModal } = useOfficerModals()
+      const { openInitFilingErrorModal } = useFilingModals()
       const mockError = { statusCode: 404, message: 'Not Found' }
-      await openInitOfficerStoreErrorModal(mockError)
+      await openInitFilingErrorModal(mockError)
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-      expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+      expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
       expect(callArgs.buttons).toHaveLength(1)
       expect(callArgs.buttons[0].label).toBe('Go to My Business Registry')
       expect(callArgs.buttons[0].to).toBe('http://brd-example/account/test-account-id')
     })
 
     it('should show "Go to My Business Registry" button for a 401 error', async () => {
-      const { openInitOfficerStoreErrorModal } = useOfficerModals()
+      const { openInitFilingErrorModal } = useFilingModals()
       const mockError = { statusCode: 401, message: 'Unauthorized' }
-      await openInitOfficerStoreErrorModal(mockError)
+      await openInitFilingErrorModal(mockError)
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
@@ -202,9 +202,9 @@ describe('useOfficerModals', () => {
     })
 
     it('should show "Go to My Business Registry" button for a 403 error', async () => {
-      const { openInitOfficerStoreErrorModal } = useOfficerModals()
+      const { openInitFilingErrorModal } = useFilingModals()
       const mockError = { statusCode: 403, message: 'Forbidden' }
-      await openInitOfficerStoreErrorModal(mockError)
+      await openInitFilingErrorModal(mockError)
 
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
@@ -215,13 +215,13 @@ describe('useOfficerModals', () => {
 
     describe('When draft is NOT present', () => {
       it('should show "Go Back" and "Refresh" buttons for a 500 error', async () => {
-        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const { openInitFilingErrorModal } = useFilingModals()
         const mockError = { statusCode: 500, message: 'Server Error' }
-        await openInitOfficerStoreErrorModal(mockError)
+        await openInitFilingErrorModal(mockError)
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
@@ -229,9 +229,9 @@ describe('useOfficerModals', () => {
       })
 
       it('should show "Go Back" and "Refresh" buttons for an unknown error', async () => {
-        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const { openInitFilingErrorModal } = useFilingModals()
         const mockError = new Error('Network Failed') // An error without a statusCode
-        await openInitOfficerStoreErrorModal(mockError)
+        await openInitFilingErrorModal(mockError)
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
@@ -247,13 +247,13 @@ describe('useOfficerModals', () => {
       })
 
       it('should show "Go Back" and "Refresh" buttons for a 500 error', async () => {
-        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const { openInitFilingErrorModal } = useFilingModals()
         const mockError = { statusCode: 500, message: 'Server Error' }
-        await openInitOfficerStoreErrorModal(mockError)
+        await openInitFilingErrorModal(mockError)
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
-        expect(callArgs.i18nPrefix).toBe('modal.error.initOfficerStore')
+        expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
         expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
@@ -261,9 +261,9 @@ describe('useOfficerModals', () => {
       })
 
       it('should show "Go Back" and "Refresh" buttons for an unknown error', async () => {
-        const { openInitOfficerStoreErrorModal } = useOfficerModals()
+        const { openInitFilingErrorModal } = useFilingModals()
         const mockError = new Error('Network Failed') // An error without a statusCode
-        await openInitOfficerStoreErrorModal(mockError)
+        await openInitFilingErrorModal(mockError)
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
@@ -277,7 +277,7 @@ describe('useOfficerModals', () => {
   describe('openFilingNotAvailableModal', () => {
     describe('When draft is NOT present', () => {
       it('should open the base modal with the correct title, description, and button', async () => {
-        const { openFilingNotAvailableModal } = useOfficerModals()
+        const { openFilingNotAvailableModal } = useFilingModals()
 
         await openFilingNotAvailableModal()
 
@@ -287,7 +287,7 @@ describe('useOfficerModals', () => {
         const callArgs = mockBaseModalOpen.mock.calls[0]![0]
         expect(callArgs.title).toBe('Page not available')
         // eslint-disable-next-line
-        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.description).toBe('This filing is not available for this type of business. If you believe this is an error, please contact support.')
         expect(callArgs.dismissible).toBe(false)
 
         expect(callArgs.buttons).toHaveLength(1)
@@ -304,7 +304,7 @@ describe('useOfficerModals', () => {
       })
 
       it('should open the base modal with the correct title, description, and button', async () => {
-        const { openFilingNotAvailableModal } = useOfficerModals()
+        const { openFilingNotAvailableModal } = useFilingModals()
 
         await openFilingNotAvailableModal()
 
@@ -314,7 +314,7 @@ describe('useOfficerModals', () => {
         const callArgs = mockBaseModalOpen.mock.calls[0]![0]
         expect(callArgs.title).toBe('Page not available')
         // eslint-disable-next-line
-        expect(callArgs.description).toBe('The Change of Officers filing is not available for this type of business. If you believe this is an error, please contact support.')
+        expect(callArgs.description).toBe('This filing is not available for this type of business. If you believe this is an error, please contact support.')
         expect(callArgs.dismissible).toBe(false)
 
         expect(callArgs.buttons).toHaveLength(1)

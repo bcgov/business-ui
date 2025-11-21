@@ -1,4 +1,4 @@
-export const useOfficerNavigation = () => {
+export const useFilingNavigation = (filingLabel?: string) => {
   const t = useNuxtApp().$i18n.t
   const route = useRoute()
   const rtc = useRuntimeConfig().public
@@ -39,7 +39,7 @@ export const useOfficerNavigation = () => {
       external: true
     },
     {
-      label: t('page.officerChange.h1')
+      label: filingLabel
     }
   ])
 

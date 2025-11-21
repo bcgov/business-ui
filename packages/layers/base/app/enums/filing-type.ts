@@ -11,6 +11,7 @@ export enum FilingType {
   CHANGE_OF_DIRECTORS = 'changeOfDirectors',
   CHANGE_OF_NAME = 'changeOfName',
   CHANGE_OF_OFFICERS = 'changeOfOfficers',
+  CHANGE_OF_RECEIVERS = 'changeOfReceivers',
   CHANGE_OF_REGISTRATION = 'changeOfRegistration',
   CONSENT_AMALGAMATION_OUT = 'consentAmalgamationOut',
   CONSENT_CONTINUATION_OUT = 'consentContinuationOut',

@@ -5,9 +5,8 @@ export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
-  const { errorModal } = useModal()
 
-  function createFilingPayload<F extends Record<string, unknown>>(
+  function createFilingPayload<F extends FilingRecord>(
     business: BusinessData | BusinessDataSlim,
     filingName: FilingType,
     filingData: F,
@@ -78,11 +77,16 @@ export const useBusinessApi = () => {
    * @param filingId the id of the filing
    * @returns a promise to return the filing
    */
-  async function getFilingById<F extends Record<string, unknown>>(
+  async function getFilingById<F extends FilingRecord>(
     businessId: string,
     filingId: number | string
-  ): Promise<FilingGetByIdResponse<F>> {
-    return $businessApi(`businesses/${businessId}/filings/${filingId}`)
+  ) {
+    const query = defineQuery({
+      key: ['business', filingId],
+      query: () => $businessApi<FilingGetByIdResponse<F>>(`businesses/${businessId}/filings/${filingId}`),
+      staleTime: 60000
+    })
+    return query()
   }
 
   /**
@@ -93,19 +97,20 @@ export const useBusinessApi = () => {
    * @param filingName The name of the filing to validate for.
    * @returns A promise that resolves the draft filing response and if the filing is of the expected type.
   */
-  async function getAndValidateDraftFiling<F extends Record<string, unknown>>(
+  async function getAndValidateDraftFiling<F extends FilingRecord>(
     businessId: string,
     draftId: number | string,
-    filingName: string
-  ): Promise<{ isValid: boolean, data: FilingGetByIdResponse<F> | null }> {
-    const response = await getFilingById<F>(businessId, draftId)
-    const isValid = isValidDraft<F>(filingName, response)
-
-    if (!isValid) {
-      return { isValid, data: null }
+    filingName: FilingType
+  ) {
+    const filingQuery = await getFilingById<F>(businessId, draftId)
+    await filingQuery.refresh()
+    if (!filingQuery.error.value) {
+      const isValid = isValidDraft<F>(filingName, filingQuery.data.value)
+      if (!isValid) {
+        filingQuery.error.value = new Error('Draft filing invalid')
+      }
     }
-
-    return { isValid, data: response }
+    return filingQuery
   }
 
   /**
@@ -115,7 +120,7 @@ export const useBusinessApi = () => {
    * @param body The data payload for the filing creation.
    * @returns A promise that resolves to the full API response, including the filing payload.
   */
-  async function postFiling<F extends Record<string, unknown>>(
+  async function postFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>
   ): Promise<FilingPostResponse<F>> {
@@ -139,20 +144,20 @@ export const useBusinessApi = () => {
     * @returns A promise that resolves the API response.
   */
   // will return Promise<FilingPutResponse<F> if filingId is provided
-  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>,
     isSubmission: boolean,
     filingId: string | number
   ): Promise<FilingPutResponse<F>>
   // will return Promise<FilingPostResponse<F> if no filingId is provided
-  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>,
     isSubmission: boolean,
   ): Promise<FilingPostResponse<F>>
   // main function
-  async function saveOrUpdateDraftFiling<F extends Record<string, unknown>>(
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>,
     isSubmission = false,
@@ -326,12 +331,6 @@ export const useBusinessApi = () => {
     return query()
   }
 
-  function handleError(error: unknown, i18nPrefix: string) {
-    // FUTURE: update as needed for different error flows (i.e. button action)
-    console.error('Error fetching business data:', error)
-    errorModal.open({ error, i18nPrefix })
-  }
-
   return {
     // business api queries
     getAuthorizedActions,
@@ -351,7 +350,6 @@ export const useBusinessApi = () => {
     getPendingTask,
     getAndValidateDraftFiling,
     createFilingPayload,
-    handleError,
     // auth/entity queries
     getAuthInfo
   }

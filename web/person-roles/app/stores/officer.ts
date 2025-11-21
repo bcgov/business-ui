@@ -5,11 +5,11 @@ import { isEmpty } from 'es-toolkit/compat'
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
-  const modal = useOfficerModals()
+  const modal = useFilingModals()
+  const errorModal = useModal().errorModal
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
-  const { setFilingDefault } = useBusinessTombstone()
   const ld = useConnectLaunchDarkly()
   const rtc = useRuntimeConfig().public
 
@@ -29,39 +29,31 @@ export const useOfficerStore = defineStore('officer-store', () => {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      // throw error and show modal if invalid business ID
-      if (businessId === 'undefined') {
-        throw createError({ statusCode: 404 })
-      }
-      // set masthead data
-      setFilingDefault(businessId)
-      // if filing ID provided, get and validate the filing structure, return early if invalid
-      if (draftId) {
-        try {
-          const { isValid, data } = await businessApi.getAndValidateDraftFiling<
-            { changeOfOfficers: OfficerTableState[] }
-          >(
-            businessId,
-            draftId,
-            'changeOfOfficers'
-          )
-          if (!isValid) {
-            throw new Error('Draft filing invalid')
-          } else {
-            filingDraftState.value = { filing: data?.filing, errors: [] } as OfficersDraftFiling
-            folio.number = data?.filing.header?.folioNumber || ''
-          }
-        } catch (error) {
-          await modal.openGetDraftFilingErrorModal(error)
-          return
-        }
+
+      // TODO: add in parties to init call once officers is updated to use party table
+      const { draftFiling } = await useFiling().initFiling(businessId, FilingType.CHANGE_OF_OFFICERS, draftId)
+      if (draftFiling?.error.value) {
+        await modal.openGetDraftFilingErrorModal(draftFiling.error.value)
+        return
+      } else if (draftFiling?.data.value?.filing) {
+        filingDraftState.value = { filing: draftFiling.data.value.filing, errors: [] } as OfficersDraftFiling
+        folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
       }
 
-      const [_, parties] = await Promise.all([
+      const [[businessError, contactError], parties] = await Promise.all([
         businessStore.init(businessId, false, false, true),
         businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
+      if (businessError) {
+        errorModal.open({ error: businessError, i18nPrefix: 'modal.error.business.init' })
+        return
+      }
+
+      if (contactError) {
+        errorModal.open({ error: contactError, i18nPrefix: 'modal.error.business.contact' })
+        return
+      }
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
           await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
@@ -84,7 +76,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         await parties.refresh()
       }
       if (parties.error.value) {
-        businessApi.handleError(parties.error.value, 'errorModal.business.parties')
+        errorModal.open({ error: parties.error.value, i18nPrefix: 'modal.error.business.parties' })
         return
       }
       // map current/existing officers
@@ -119,7 +111,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       initialOfficers.value = officers || [] // retain initial officer state before changes
 
       // set table to returned draft state if exists
-      if (draftId && filingDraftState.value.filing.changeOfOfficers.length) {
+      if (draftId && filingDraftState.value?.filing.changeOfOfficers.length) {
         officerTableState.value = JSON.parse(JSON.stringify(filingDraftState.value.filing.changeOfOfficers))
         return
       }
@@ -130,7 +122,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       })) || []
     } catch (error) {
-      await modal.openInitOfficerStoreErrorModal(error)
+      await modal.openInitFilingErrorModal(error)
     } finally {
       initializing.value = false
     }
