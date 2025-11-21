@@ -19,7 +19,7 @@ interface BusinessResponse {
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const ldStore = useConnectLaunchdarklyStore()
 const brdModal = useBrdModals()
 

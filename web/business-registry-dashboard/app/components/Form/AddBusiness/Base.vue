@@ -13,7 +13,7 @@ const affStore = useAffiliationsStore()
 const { $authApi } = useNuxtApp()
 const keycloak = reactive(useKeycloak())
 const toast = useToast()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 const props = defineProps<{
   authOptions: AuthOption[]

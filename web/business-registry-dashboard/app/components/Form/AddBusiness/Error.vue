@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 import { StatusCodes } from 'http-status-codes'
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const brdModal = useBrdModals()
 
 const props = defineProps<{

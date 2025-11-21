@@ -4,7 +4,7 @@ import { FormAddBusiness } from '#components'
 const brdModal = useBrdModals()
 const toast = useToast()
 const affStore = useAffiliationsStore()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const { $authApi } = useNuxtApp()
 const ldStore = useConnectLaunchdarklyStore()
 

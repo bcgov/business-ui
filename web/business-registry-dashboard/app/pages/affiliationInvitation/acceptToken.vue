@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StatusCodes } from 'http-status-codes'
 
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 const route = useRoute()

@@ -2,7 +2,7 @@
 const toast = useToast()
 const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 defineProps<{
   email: string

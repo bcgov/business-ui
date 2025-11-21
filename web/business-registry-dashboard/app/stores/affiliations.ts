@@ -5,7 +5,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
   const { $keycloak, $authApi, $businessApi } = useNuxtApp()
-  const { t, locale } = useI18n()
+  const { t, locale } = useNuxtApp().$i18n
   const toast = useToast()
   const brdModal = useBrdModals()
   const ldStore = useConnectLaunchdarklyStore()

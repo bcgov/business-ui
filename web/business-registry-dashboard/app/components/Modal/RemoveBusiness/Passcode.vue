@@ -2,7 +2,7 @@
 import { z } from 'zod'
 import type { Form } from '#ui/types'
 
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 
 defineProps<{
   removeBusinessPayload: RemoveBusinessPayload
