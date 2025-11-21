@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.20
+
+### Patch Changes
+
+- [#303](https://github.com/bcgov/business-ui/pull/303) [`bce6cfc`](https://github.com/bcgov/business-ui/commit/bce6cfcd7e2ec497d21ecfd2073b6bf61a70a4cf) Thanks [@deetz99](https://github.com/deetz99)! - feat: CourtOrderPoa component and schema
+
+- [#299](https://github.com/bcgov/business-ui/pull/299) [`4d82f2d`](https://github.com/bcgov/business-ui/commit/4d82f2d5be3d54d02adc5ba72acf917427ae5430) Thanks [@deetz99](https://github.com/deetz99)! - feat: Generic editable TableBusiness, TableParty and child components
+
+- [#300](https://github.com/bcgov/business-ui/pull/300) [`29f393d`](https://github.com/bcgov/business-ui/commit/29f393de5458e41f6df16cd5bdc87d309e0585ef) Thanks [@kialj876](https://github.com/kialj876)! - Common filing composable, common business party code, moved filing nav/modals from officers into base layer
+
 ## 0.1.19
 
 ### Patch Changes
