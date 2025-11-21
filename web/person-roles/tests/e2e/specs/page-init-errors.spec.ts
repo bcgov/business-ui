@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { setupOfficerChangePage, navigateToOfficerChangePage } from '../test-utils'
 import { businessBC1234567 } from '~~/tests/mocks'
-import en from '~~/i18n/locales/en-CA'
 
 const identifier = businessBC1234567.business.identifier
 

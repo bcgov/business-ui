@@ -5,7 +5,6 @@ export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
   const { authUser } = useConnectAuth()
   const accountId = useConnectAccountStore().currentAccount.id
-  const { errorModal } = useModal()
 
   function createFilingPayload<F extends FilingRecord>(
     business: BusinessData | BusinessDataSlim,
