@@ -43,10 +43,10 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
-      expect(modalComponent.__name).toBe('ManageNameRequest')
+      expect(modalComponent.__name).toBe('ModalManageNameRequest')
       expect(modalProps).toEqual(
         expect.objectContaining({
           nameRequest: {
@@ -63,10 +63,10 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
-      expect(modalComponent.__name).toBe('Base')
+      expect(modalComponent.__name).toBe('ModalBase')
       expect(modalProps).toEqual(
         expect.objectContaining({
           actions: [{
@@ -87,10 +87,10 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
-      expect(modalComponent.__name).toBe('Base')
+      expect(modalComponent.__name).toBe('ModalBase')
       expect(modalProps).toEqual(
         expect.objectContaining({
           actions: [{
@@ -112,10 +112,10 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
-      expect(modalComponent.__name).toBe('Base')
+      expect(modalComponent.__name).toBe('ModalBase')
       expect(modalProps).toEqual(
         expect.objectContaining({
           actions: [{
@@ -136,10 +136,10 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
-      expect(modalComponent.__name).toBe('Base')
+      expect(modalComponent.__name).toBe('ModalBase')
       expect(modalProps).toEqual(
         expect.objectContaining({
           actions: [{
@@ -184,8 +184,8 @@ describe('useBrdModals', () => {
 
         const callArgs = mockOpenModal.mock.calls[0]
 
-        // const modalComponent = callArgs[0]
-        const modalProps = callArgs[1]
+        // const modalComponent = callArgs![0]
+        const modalProps = callArgs![1]
 
         // expect(modalComponent.__name).toBe('RemoveBusiness') // TODO: why is this returning index instead of RemoveBusiness
         expect(modalProps).toEqual(
@@ -218,8 +218,8 @@ describe('useBrdModals', () => {
 
       const callArgs = mockOpenModal.mock.calls[0]
 
-      // const modalComponent = callArgs[0]
-      const modalProps = callArgs[1]
+      // const modalComponent = callArgs![0]
+      const modalProps = callArgs![1]
 
       // expect(modalComponent.__name).toBe('RemoveBusiness') // TODO: why is this returning index instead of RemoveBusiness
       expect(modalProps).toEqual(

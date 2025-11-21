@@ -358,7 +358,7 @@ describe('useAffiliationsStore', () => {
     await flushPromises()
 
     expect(mockAuthApi).toHaveBeenCalledTimes(2)
-    expect(mockAuthApi.mock.calls[0][0]).toBe('/orgs/123/affiliations?new=true')
+    expect(mockAuthApi.mock.calls[0]![0]).toBe('/orgs/123/affiliations?new=true')
 
     // Change account ID
     store.currentAccount.id = '456'
@@ -369,7 +369,7 @@ describe('useAffiliationsStore', () => {
     await flushPromises()
 
     expect(mockAuthApi).toHaveBeenCalledTimes(4)
-    expect(mockAuthApi.mock.calls[2][0]).toBe('/orgs/456/affiliations?new=true')
+    expect(mockAuthApi.mock.calls[2]![0]).toBe('/orgs/456/affiliations?new=true')
   })
 
   describe('affiliation columns', () => {
