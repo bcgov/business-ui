@@ -22,7 +22,11 @@ mockNuxtImport('useNuxtApp', () => {
         token: 'mock-token'
       },
       $authApi: mockAuthApi,
-      $businessApi: mockBusinessApi
+      $businessApi: mockBusinessApi,
+      $i18n: {
+        t: (key: string) => key,
+        locale: { value: 'en-CA' }
+      }
     }
   )
 })
@@ -92,17 +96,6 @@ mockNuxtImport('useWindowSize', () => {
   return () => (
     {
       width: mockWindowSize
-    }
-  )
-})
-
-mockNuxtImport('useI18n', () => {
-  return () => (
-    {
-      t: (key: string) => key,
-      locale: {
-        value: 'en-CA'
-      }
     }
   )
 })

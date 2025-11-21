@@ -12,12 +12,12 @@ mockNuxtImport('useModal', () => {
   )
 })
 
-mockNuxtImport('useI18n', () => {
+mockNuxtImport('useNuxtApp', () => {
   return () => (
     {
-      t: (key: string) => key,
-      locale: {
-        value: 'en-CA'
+      $i18n: {
+        t: (key: string) => key,
+        locale: { value: 'en-CA' }
       }
     }
   )
