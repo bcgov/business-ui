@@ -12,7 +12,6 @@ const accountStore = useConnectAccountStore()
 const { setButtonControl } = useConnectButtonControl()
 const modal = useFilingModals()
 const { dashboardUrl } = useFilingNavigation(t('page.manageReceivers.h1'))
-const rtc = useRuntimeConfig().public
 
 useHead({
   title: t('page.manageReceivers.title')
@@ -23,37 +22,10 @@ definePageMeta({
   middleware: [
     // Check for login redirect
     'connect-auth'
-  ],
-  buttonControl: {
-    leftGroup: { buttons: [] },
-    rightGroup: { buttons: [] }
-  }
+  ]
 })
 
 const businessId = route.params.businessId as string
-
-// TODO: consolidate code with officers / make common
-const breadcrumbs = computed(() => [
-  {
-    label: t('label.bcRegistriesDashboard'),
-    to: `${rtc.registryHomeUrl}dashboard`,
-    external: true,
-    appendAccountId: true
-  },
-  {
-    label: t('label.myBusinessRegistry'),
-    to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`,
-    external: true
-  },
-  {
-    label: businessStore.business?.legalName,
-    to: dashboardUrl.value,
-    external: true
-  },
-  {
-    label: t('page.manageReceivers.h1')
-  }
-])
 
 // submit final filing
 async function submitFiling() {
@@ -118,6 +90,7 @@ watch(
       }
     }
 
+    const { breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
     setBreadcrumbs(breadcrumbs.value)
 
     setButtonControl({

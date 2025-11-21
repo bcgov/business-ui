@@ -101,7 +101,7 @@ test.describe('Page init errors', () => {
   })
 
   test.describe('Draft Filing Fetch Errors', () => {
-    test('should display "Invalid Link" modal if draft filing returns 404', async ({ page }) => {
+    test('should display "Page Not Found" modal if draft filing returns 404', async ({ page }) => {
       await page.route(`*/**/businesses/${identifier}/filings/123`, async (route) => {
         await route.fulfill({ status: 404 })
       })
@@ -114,9 +114,10 @@ test.describe('Page init errors', () => {
       // assert modal content
       const modal = page.getByRole('dialog')
       await expect(modal).toBeVisible()
-      await expect(modal).toContainText('Invalid Link')
+      await expect(modal).toContainText('Page not found')
       await expect(modal).toContainText(
-        'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
+        // eslint-disable-next-line max-len
+        'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.Page not foundWe cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
       )
     })
 

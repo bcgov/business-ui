@@ -1,4 +1,4 @@
-export const useFilingNavigation = (filingLabel: string) => {
+export const useFilingNavigation = (filingLabel?: string) => {
   const t = useNuxtApp().$i18n.t
   const route = useRoute()
   const rtc = useRuntimeConfig().public

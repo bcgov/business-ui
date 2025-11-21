@@ -85,7 +85,7 @@ export const useFiling = () => {
         }
       }
       if (draftFiling?.error.value) {
-        throw draftFiling.error.value
+        modal.openGetDraftFilingErrorModal(draftFiling.error.value)
       }
 
       return {
