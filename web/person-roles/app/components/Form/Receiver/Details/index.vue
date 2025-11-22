@@ -3,6 +3,7 @@ import { z } from 'zod'
 // import type { Form, FormError } from '@nuxt/ui'
 
 defineProps<{
+  variant: 'add' | 'edit'
   name?: string
 }>()
 
@@ -58,10 +59,19 @@ async function onDone() {
     :name
     nested
     :state="model"
-    class="p-6 bg-white rounded shadow"
+    class="bg-white"
+    :class="{
+      'p-6 rounded shadow': variant === 'add',
+      'pl-4 py-2 pr-6': variant === 'edit'
+    }"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset label="Add Receiver" orientation="horizontal">
+    <ConnectFieldset
+      :label="variant === 'add'
+        ? 'Add Receiver'
+        : 'Edit Receiver'"
+      orientation="horizontal"
+    >
       <div class="space-y-4">
         <FormPartyName
           ref="party-name-form"
