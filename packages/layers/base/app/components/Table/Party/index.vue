@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends PartyStateBase = PartyStateBase">
+<script setup lang="ts" generic="T extends PartySchema = PartySchema">
 import type { ExpandedState } from '@tanstack/vue-table'
 
 defineProps<{

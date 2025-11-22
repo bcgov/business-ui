@@ -1,17 +1,25 @@
 <script setup lang="ts">
-import { useReceiverStore } from '~/stores/receivers'
+import type { FormSubmitEvent } from '@nuxt/ui'
+import { tableData } from './data'
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
+const { setButtonControl } = useConnectButtonControl()
+const modal = useFilingModals()
+const { dashboardUrl, breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
+const receiverSchema = getReceiversSchema()
 const receiverStore = useReceiverStore()
-const { formState, initializing } = storeToRefs(receiverStore)
 const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
-const { setButtonControl } = useConnectButtonControl()
-const modal = useFilingModals()
-const { dashboardUrl } = useFilingNavigation(t('page.manageReceivers.h1'))
+
+// TODO: remove - this is for local testing only
+watchEffect(() => {
+  if (!receiverStore.initializing) {
+    receiverStore.receiverTableState = tableData
+  }
+})
 
 useHead({
   title: t('page.manageReceivers.title')
@@ -28,13 +36,14 @@ definePageMeta({
 const businessId = route.params.businessId as string
 
 // submit final filing
-async function submitFiling() {
+async function submitFiling(e: FormSubmitEvent<unknown>) {
   try {
+    console.info('RECEIVER FILING DATA: ', e.data) // This does not include the table data
     // pull draft id from url or mark as undefined
-    const draftId = (urlParams.draft as string) ?? undefined
-    await receiverStore.submit(draftId)
+    // const draftId = (urlParams.draft as string) ?? undefined
+    // await receiverStore.submit(draftId)
     // navigate to business dashboard if filing does *not* fail
-    await navigateTo(dashboardUrl.value, { external: true })
+    // await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
   }
@@ -90,7 +99,6 @@ watch(
       }
     }
 
-    const { breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
     setBreadcrumbs(breadcrumbs.value)
 
     setButtonControl({
@@ -102,7 +110,14 @@ watch(
       rightGroup: {
         buttons: [
           { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
-          { onClick: submitFiling, label: t('label.submit'), trailingIcon: 'i-mdi-chevron-right' }
+          {
+            label: t('label.submit'),
+            type: 'submit',
+            trailingIcon: 'i-mdi-chevron-right',
+            // @ts-expect-error - form attr will be typed once this change has been published
+            // https://github.com/nuxt/ui/pull/5348
+            form: 'receiver-filing'
+          }
         ]
       }
     })
@@ -117,22 +132,86 @@ watch(
 </script>
 
 <template>
-  <div class="py-10 space-y-8">
-    <!-- TODO: dynamic header? Single catch all heading? -->
-    <h1>{{ $t('page.manageReceivers.h1') }}</h1>
-
-    <div v-if="initializing" class="space-y-10 *:h-30 *:w-full *:rounded">
-      <USkeleton />
-      <USkeleton />
-      <USkeleton />
+  <UForm
+    id="receiver-filing"
+    ref="receiver-filing"
+    :state="receiverStore.formState"
+    :schema="receiverSchema"
+    class="py-10 flex flex-col gap-10"
+    novalidate
+    :aria-label="t('page.manageReceivers.h1')"
+    @submit="submitFiling"
+    @error="(e) => console.info('validation errors: ', e.errors)"
+  >
+    <div class="flex flex-col gap-1">
+      <h1>{{ t('page.manageReceivers.h1') }}</h1>
+      <p>Some receiver descriptive text</p>
     </div>
-    <UForm
-      v-else
-      ref="receiver-form"
-      data-testid="receiver-form"
-      :state="formState"
-    >
-      <!-- TODO: add schema etc. -->
-    </UForm>
-  </div>
+
+    <section class="flex flex-col gap-4">
+      <h2 class="text-base">
+        1. Receiver Information
+      </h2>
+
+      <UButton
+        label="Add Receiver"
+        variant="outline"
+        icon="i-mdi-account-plus-outline"
+        class="w-min"
+        @click="receiverStore.initAddReceiver"
+      />
+
+      <FormReceiverDetails
+        v-if="receiverStore.addingReceiver && receiverStore.formState.activeParty"
+        v-model="receiverStore.formState.activeParty"
+        name="activeParty"
+        variant="add"
+        @done="receiverStore.addNewReceiver"
+        @cancel="receiverStore.cancelAddReceiver"
+      />
+
+      <TableParty
+        v-model:expanded="receiverStore.expandedReceiver"
+        :data="receiverStore.receiverTableState"
+        :loading="receiverStore.initializing"
+        :empty-text="receiverStore.initializing ? 'Loading current receivers' : 'There are currently no Receivers'"
+        @init-edit="receiverStore.initEditReceiver"
+        @remove="receiverStore.removeReceiver"
+        @undo="receiverStore.undoReceiver"
+      >
+        <template #expanded="{ row }">
+          <FormReceiverDetails
+            v-if="receiverStore.formState.activeParty"
+            v-model="receiverStore.formState.activeParty"
+            name="activeParty"
+            variant="edit"
+            @done="() => receiverStore.applyReceiverEdits(row)"
+            @cancel="receiverStore.cancelEditReceiver"
+          />
+        </template>
+      </TableParty>
+    </section>
+
+    <FormCourtOrderPoa
+      ref="court-order-poa-ref"
+      v-model="receiverStore.formState.courtOrder"
+      name="courtOrder"
+      order="2"
+      :state="receiverStore.formState.courtOrder"
+    />
+
+    <div class="border-2 border-black w-full p-10 font-bold">
+      DOCUMENT SCANNING
+    </div>
+
+    <ConnectFieldset label="4. Staff Payment" body-variant="card">
+      <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
+        <StaffPayment
+          v-model="receiverStore.formState.staffPayment"
+          :state="receiverStore.formState.staffPayment"
+          :show-priority="true"
+        />
+      </ConnectFormFieldWrapper>
+    </ConnectFieldset>
+  </UForm>
 </template>

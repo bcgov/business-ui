@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Form, RadioGroupItem } from '@nuxt/ui'
 
-const staffPayment = defineModel<StaffPayment>({ required: true })
+const staffPayment = defineModel<StaffPaymentSchema>({ required: true })
 defineProps<{ showPriority?: boolean }>()
 
 const { t } = useI18n()

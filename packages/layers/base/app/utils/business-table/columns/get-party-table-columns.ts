@@ -1,4 +1,4 @@
-export function getPartyTableColumns<T extends PartyStateBase = PartyStateBase>(): TableBusinessColumn<T>[] {
+export function getPartyTableColumns<T extends PartySchema = PartySchema>(): TableBusinessColumn<T>[] {
   const nameColumn = getNameColumn<T>()
   const deliveryColumn = getDeliveryAddressColumn<T>()
   const mailingColumn = getMailingAddressColumn<T>()
