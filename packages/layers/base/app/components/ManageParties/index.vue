@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const {
-  stateKey = 'party-table'
+  stateKey = 'manage-parties'
 } = defineProps<{
   loading?: boolean
   emptyText?: string
