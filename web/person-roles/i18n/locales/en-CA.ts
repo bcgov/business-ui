@@ -22,16 +22,21 @@ export default {
   },
   label: {
     addOfficer: 'Add Officer',
+    addReceiver: 'Add Receiver',
     changeAddress: 'Change Address',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
-    roles: 'Roles',
+    editReceiver: 'Edit Receiver',
     haspreferredName: 'This person also has another name they prefer to use',
+    loading: 'Loading',
+    officerChange: 'Officer Change',
     officerInfo: 'Officer Information',
-    officerChange: 'Officer Change'
+    receiverInfo: 'Receiver Information',
+    roles: 'Roles'
   },
   text: {
     noOfficers: 'There are currently no officers.',
+    noReceivers: 'There are currently no Receivers.',
     ifIssuePersistsContactUs: 'If this issue persists, please contact us.',
     trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
     finishTaskBeforeSubmit: 'Finish this task before submitting.',

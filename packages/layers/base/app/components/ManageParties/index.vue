@@ -1,9 +1,12 @@
 <script setup lang="ts">
-defineProps<{
+const {
+  stateKey = 'party-table'
+} = defineProps<{
   loading?: boolean
   emptyText?: string
   addLabel: string
   editLabel: string
+  stateKey?: string
 }>()
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
@@ -16,7 +19,7 @@ const {
   removeParty,
   undoParty,
   applyTableEdits
-} = usePartyTable()
+} = useManageParties(stateKey)
 
 const activePartySchema = getActivePartySchema()
 

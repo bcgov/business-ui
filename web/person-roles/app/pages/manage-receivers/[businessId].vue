@@ -137,59 +137,22 @@ watch(
   >
     <div class="space-y-1">
       <h1>{{ t('page.manageReceivers.h1') }}</h1>
+      <!-- TODO: add text/translation -->
       <p>Some receiver descriptive text</p>
     </div>
 
     <section class="space-y-4">
       <h2 class="text-base">
-        1. Receiver Information
+        1. {{ $t('label.receiverInfo') }}
       </h2>
 
-      <TableReceiver
+      <ManageParties
         v-model:active-party="receiverStore.formState.activeParty"
         :loading="receiverStore.initializing"
-        :empty-text="receiverStore.initializing ? 'Loading current receivers' : 'There are currently no Receivers'"
-        add-label="Add Receiver"
-        edit-label="Edit Receiver"
+        :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
+        :add-label="$t('label.addReceiver')"
+        :edit-label="$t('label.editReceiver')"
       />
-
-      <!-- <UButton
-        label="Add Receiver"
-        variant="outline"
-        icon="i-mdi-account-plus-outline"
-        class="w-min"
-        @click="receiverStore.initAddReceiver"
-      />
-
-      <FormReceiverDetails
-        v-if="receiverStore.addingReceiver && receiverStore.formState.activeParty"
-        v-model="receiverStore.formState.activeParty"
-        name="activeParty"
-        variant="add"
-        @done="receiverStore.addNewReceiver"
-        @cancel="receiverStore.cancelAddReceiver"
-      />
-
-      <TableParty
-        v-model:expanded="receiverStore.expandedReceiver"
-        :data="receiverStore.receiverTableState"
-        :loading="receiverStore.initializing"
-        :empty-text="receiverStore.initializing ? 'Loading current receivers' : 'There are currently no Receivers'"
-        @init-edit="receiverStore.initEditReceiver"
-        @remove="receiverStore.removeReceiver"
-        @undo="receiverStore.undoReceiver"
-      >
-        <template #expanded="{ row }">
-          <FormReceiverDetails
-            v-if="receiverStore.formState.activeParty"
-            v-model="receiverStore.formState.activeParty"
-            name="activeParty"
-            variant="edit"
-            @done="() => receiverStore.applyReceiverEdits(row)"
-            @cancel="receiverStore.cancelEditReceiver"
-          />
-        </template>
-      </TableParty> -->
     </section>
 
     <FormCourtOrderPoa
@@ -204,12 +167,13 @@ watch(
       DOCUMENT SCANNING
     </div>
 
+    <!-- TODO: add text/translation -->
     <ConnectFieldset label="4. Staff Payment" body-variant="card">
       <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
         <StaffPayment
           v-model="receiverStore.formState.staffPayment"
-          :state="receiverStore.formState.staffPayment"
           :show-priority="true"
+          name="staffPayment"
         />
       </ConnectFormFieldWrapper>
     </ConnectFieldset>

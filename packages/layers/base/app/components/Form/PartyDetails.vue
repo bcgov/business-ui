@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { z } from 'zod'
-// import type { Form, FormError } from '@nuxt/ui'
 
 defineProps<{
   variant: 'add' | 'edit'
@@ -13,16 +12,16 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-type ReceiverDetails = Pick<PartyStateBase, 'name' | 'address'>
+type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
 
 const schema = z.object({
   name: getPartyNameSchema(),
   address: getAddressSchema()
 })
 
-const model = defineModel<ReceiverDetails>({ required: true })
+const model = defineModel<PartyDetails>({ required: true })
 
-// const formRef = useTemplateRef<Form<ReceiverDetails>>('receiver-details-form')
+// const formRef = useTemplateRef<Form<PartyDetails>>('party-details-form')
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 
@@ -55,11 +54,10 @@ async function onDone() {
 
 <template>
   <UForm
-    ref="receiver-details-form"
+    ref="party-details-form"
     :schema
     :name
     nested
-    :state="model"
     class="bg-white"
     :class="{
       'p-6 rounded shadow': variant === 'add',
