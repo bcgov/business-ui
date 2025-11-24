@@ -89,7 +89,8 @@ export const tableData: TableBusinessState<PartySchema>[] = [
         partyType: PartyType.PERSON,
         firstName: 'First Edited',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {
@@ -128,7 +129,8 @@ export const tableData: TableBusinessState<PartySchema>[] = [
         partyType: PartyType.PERSON,
         firstName: 'First Original',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {

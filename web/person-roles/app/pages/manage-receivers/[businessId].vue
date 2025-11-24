@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import { tableData } from './data'
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
@@ -13,13 +12,6 @@ const receiverStore = useReceiverStore()
 const businessStore = useBusinessStore()
 const feeStore = useConnectFeeStore()
 const accountStore = useConnectAccountStore()
-
-// TODO: remove - this is for local testing only
-watchEffect(() => {
-  if (!receiverStore.initializing) {
-    receiverStore.receiverTableState = tableData
-  }
-})
 
 useHead({
   title: t('page.manageReceivers.title')
@@ -137,23 +129,31 @@ watch(
     ref="receiver-filing"
     :state="receiverStore.formState"
     :schema="receiverSchema"
-    class="py-10 flex flex-col gap-10"
+    class="py-10 space-y-10"
     novalidate
     :aria-label="t('page.manageReceivers.h1')"
     @submit="submitFiling"
     @error="(e) => console.info('validation errors: ', e.errors)"
   >
-    <div class="flex flex-col gap-1">
+    <div class="space-y-1">
       <h1>{{ t('page.manageReceivers.h1') }}</h1>
       <p>Some receiver descriptive text</p>
     </div>
 
-    <section class="flex flex-col gap-4">
+    <section class="space-y-4">
       <h2 class="text-base">
         1. Receiver Information
       </h2>
 
-      <UButton
+      <TableReceiver
+        v-model:active-party="receiverStore.formState.activeParty"
+        :loading="receiverStore.initializing"
+        :empty-text="receiverStore.initializing ? 'Loading current receivers' : 'There are currently no Receivers'"
+        add-label="Add Receiver"
+        edit-label="Edit Receiver"
+      />
+
+      <!-- <UButton
         label="Add Receiver"
         variant="outline"
         icon="i-mdi-account-plus-outline"
@@ -189,7 +189,7 @@ watch(
             @cancel="receiverStore.cancelEditReceiver"
           />
         </template>
-      </TableParty>
+      </TableParty> -->
     </section>
 
     <FormCourtOrderPoa

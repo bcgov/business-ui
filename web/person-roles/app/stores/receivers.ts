@@ -1,18 +1,26 @@
 import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
-import type { ExpandedState } from '@tanstack/vue-table'
+import { tableData } from '../pages/manage-receivers/data'
+// import type { ExpandedState } from '@tanstack/vue-table'
 
 export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
-  const activePartySchema = getActivePartySchema()
+  // const activePartySchema = getActivePartySchema()
+  const { tableState } = usePartyTable()
 
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false) // receiver store loading state
   const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
-  const addingReceiver = ref<boolean>(false) // flag to show/hide Add Receiver form
-  const receiverTableState = shallowRef<TableBusinessState<PartySchema>[]>([]) // receiver state displayed in table
-  const expandedReceiver = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
+  // const addingReceiver = ref<boolean>(false) // flag to show/hide Add Receiver form
+  // const receiverTableState = shallowRef<TableBusinessState<PartySchema>[]>([]) // receiver state displayed in table
+  // const expandedReceiver = ref<ExpandedState | undefined>(undefined) // what table rows are expanded
+
+  watch(initializing, (v) => {
+    if (v) {
+      tableState.value = tableData
+    }
+  })
 
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
@@ -109,105 +117,105 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   // TODO: common party composable for (maybe this should be in the usePartyTableComposable?):
-  function updateReceiverTable(newState: TableBusinessState<PartySchema>, row: TableBusinessRow<PartySchema>): void {
-    const index = row.index
+  // function updateReceiverTable(newState: TableBusinessState<PartySchema>, row: TableBusinessRow<PartySchema>): void {
+  //   const index = row.index
 
-    receiverTableState.value = [
-      ...receiverTableState.value.slice(0, index),
-      newState,
-      ...receiverTableState.value.slice(index + 1)
-    ]
-  }
-  function initAddReceiver() {
-    formState.activeParty = activePartySchema.parse({})
-    addingReceiver.value = true
-  }
-  function cancelAddReceiver() {
-    addingReceiver.value = false
-    formState.activeParty = undefined
-  }
-  function initEditReceiver(row: TableBusinessRow<PartySchema>) {
-    formState.activeParty = activePartySchema.parse({ ...row.original.new })
-    expandedReceiver.value = { [row.index]: true }
-  }
-  function cancelEditReceiver() {
-    expandedReceiver.value = undefined
-    formState.activeParty = undefined
-  }
-  function addNewReceiver() {
-    const newState = {
-      new: {
-        ...formState.activeParty!,
-        actions: [ActionType.ADDED]
-      },
-      old: undefined
-    }
-    receiverTableState.value = [
-      ...receiverTableState.value,
-      newState
-    ]
-    addingReceiver.value = false
-    formState.activeParty = activePartySchema.parse({})
-  }
-  function removeReceiver(row: TableBusinessRow<PartySchema>): void {
-    const oldReceiver = row.original.old
-    const newReceiver = row.original.new
+  //   receiverTableState.value = [
+  //     ...receiverTableState.value.slice(0, index),
+  //     newState,
+  //     ...receiverTableState.value.slice(index + 1)
+  //   ]
+  // }
+  // function initAddReceiver() {
+  //   formState.activeParty = activePartySchema.parse({})
+  //   addingReceiver.value = true
+  // }
+  // function cancelAddReceiver() {
+  //   addingReceiver.value = false
+  //   formState.activeParty = undefined
+  // }
+  // function initEditReceiver(row: TableBusinessRow<PartySchema>) {
+  //   formState.activeParty = activePartySchema.parse({ ...row.original.new })
+  //   expandedReceiver.value = { [row.index]: true }
+  // }
+  // function cancelEditReceiver() {
+  //   expandedReceiver.value = undefined
+  //   formState.activeParty = undefined
+  // }
+  // function addNewReceiver() {
+  //   const newState = {
+  //     new: {
+  //       ...formState.activeParty!,
+  //       actions: [ActionType.ADDED]
+  //     },
+  //     old: undefined
+  //   }
+  //   receiverTableState.value = [
+  //     ...receiverTableState.value,
+  //     newState
+  //   ]
+  //   addingReceiver.value = false
+  //   formState.activeParty = activePartySchema.parse({})
+  // }
+  // function removeReceiver(row: TableBusinessRow<PartySchema>): void {
+  //   const oldReceiver = row.original.old
+  //   const newReceiver = row.original.new
 
-    if (oldReceiver === undefined) {
-      receiverTableState.value = [
-        ...receiverTableState.value.slice(0, row.index),
-        ...receiverTableState.value.slice(row.index + 1)
-      ]
-    } else {
-      const newState = JSON.parse(JSON.stringify({
-        new: { ...newReceiver, actions: [ActionType.REMOVED] },
-        old: oldReceiver
-      }))
+  //   if (oldReceiver === undefined) {
+  //     receiverTableState.value = [
+  //       ...receiverTableState.value.slice(0, row.index),
+  //       ...receiverTableState.value.slice(row.index + 1)
+  //     ]
+  //   } else {
+  //     const newState = JSON.parse(JSON.stringify({
+  //       new: { ...newReceiver, actions: [ActionType.REMOVED] },
+  //       old: oldReceiver
+  //     }))
 
-      updateReceiverTable(newState, row)
-    }
-  }
-  function undoReceiver(row: TableBusinessRow<PartySchema>): void {
-    const oldReceiver = row.original.old
+  //     updateReceiverTable(newState, row)
+  //   }
+  // }
+  // function undoReceiver(row: TableBusinessRow<PartySchema>): void {
+  //   const oldReceiver = row.original.old
 
-    if (oldReceiver) {
-      const newState = JSON.parse(JSON.stringify({
-        new: oldReceiver,
-        old: oldReceiver
-      }))
-      updateReceiverTable(newState, row)
-    }
-  }
-  function applyReceiverEdits(row: TableBusinessRow<PartySchema>): void {
-    const oldReceiver = row.original.old
+  //   if (oldReceiver) {
+  //     const newState = JSON.parse(JSON.stringify({
+  //       new: oldReceiver,
+  //       old: oldReceiver
+  //     }))
+  //     updateReceiverTable(newState, row)
+  //   }
+  // }
+  // function applyReceiverEdits(row: TableBusinessRow<PartySchema>): void {
+  //   const oldReceiver = row.original.old
 
-    // TODO: still need to map new actions
-    const newState = JSON.parse(JSON.stringify({
-      old: oldReceiver,
-      new: formState.activeParty
-    }))
+  //   // TODO: still need to map new actions
+  //   const newState = JSON.parse(JSON.stringify({
+  //     old: oldReceiver,
+  //     new: formState.activeParty
+  //   }))
 
-    updateReceiverTable(newState, row)
-    cancelEditReceiver()
-  }
+  //   updateReceiverTable(newState, row)
+  //   cancelEditReceiver()
+  // }
 
   return {
     formState,
     initializing,
-    addingReceiver,
-    receiverTableState,
-    expandedReceiver,
+    // addingReceiver,
+    // receiverTableState,
+    // expandedReceiver,
     init,
     save,
     submit,
-    initAddReceiver,
-    cancelAddReceiver,
-    initEditReceiver,
-    cancelEditReceiver,
-    addNewReceiver,
-    removeReceiver,
-    undoReceiver,
-    applyReceiverEdits,
+    // initAddReceiver,
+    // cancelAddReceiver,
+    // initEditReceiver,
+    // cancelEditReceiver,
+    // addNewReceiver,
+    // removeReceiver,
+    // undoReceiver,
+    // applyReceiverEdits,
     $reset
   }
 })

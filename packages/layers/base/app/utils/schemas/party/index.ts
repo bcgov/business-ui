@@ -43,6 +43,14 @@ export function getPartySchema() {
   })
 }
 
+// .default({
+//       partyType: PartyType.PERSON,
+//       firstName: '',
+//       middleName: '',
+//       lastName: '',
+//       businessName: ''
+//     })
+
 export type PartySchema = z.output<ReturnType<typeof getPartySchema>>
 
 export function getActivePartySchema() {
