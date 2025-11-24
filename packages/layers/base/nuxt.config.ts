@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-// import { createResolver } from 'nuxt/kit'
+import { createResolver } from 'nuxt/kit'
 
-// const { resolve } = createResolver(import.meta.url)
+const { resolve } = createResolver(import.meta.url)
 export default defineNuxtConfig({
   ssr: false,
 
@@ -50,6 +50,11 @@ export default defineNuxtConfig({
     clientBundle: {
       icons: []
     }
+  },
+
+  alias: {
+    '#business': resolve('./'),
+    '#testMocks': resolve('./tests/mocks')
   },
 
   runtimeConfig: {

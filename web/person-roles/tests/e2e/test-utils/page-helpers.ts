@@ -21,6 +21,15 @@ export async function navigateToOfficerChangePage(page: Page) {
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }
 
+export async function navigateToManageReceiversPage(page: Page) {
+  // navigate to page
+  await page.goto(`./en-CA/manage-receivers/${identifier}`)
+  // wait for api response to settle
+  await page.waitForResponse('*/**/businesses/**/*')
+  // wait for heading, this will wait for the loading state to finish on initial page mount
+  await expect(page.getByText('Manage Receivers').first()).toBeVisible()
+}
+
 export async function setupOfficerChangePage(page: Page, includeNavigation = true) {
   // auth api business info GET
   await page.route(`*/**/entities/${identifier}`, async (route) => {

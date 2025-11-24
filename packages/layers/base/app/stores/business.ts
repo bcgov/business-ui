@@ -81,7 +81,7 @@ export const useBusinessStore = defineStore('business', () => {
 
   async function init(identifier: string, slim = false, force = false, includeContact = false) {
     const {
-      state: businessResp,
+      data: businessResp,
       refresh: businessRefresh,
       refetch: businessRefetch
     } = await getBusiness(identifier, slim as true)
@@ -92,20 +92,20 @@ export const useBusinessStore = defineStore('business', () => {
       if (state.error) {
         return state.error
       } else {
-        business.value = businessResp.value.data?.business
+        business.value = businessResp.value?.business
       }
     }))
 
     let contactAsync = undefined
     if (includeContact) {
       // NOTE: define within block so that it doesn't make an initial call when includeContact is false
-      const { state: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
+      const { data: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
       contactAsync = contactRefresh().then(({ error }) => {
         if (error) {
           return error
         } else {
-          businessContact.value = contactResp.value.data?.contacts[0]
-          businessFolio.value = contactResp.value.data?.folioNumber || ''
+          businessContact.value = contactResp.value?.contacts[0]
+          businessFolio.value = contactResp.value?.folioNumber || ''
         }
       })
     }
