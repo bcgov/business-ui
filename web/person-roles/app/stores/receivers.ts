@@ -1,5 +1,4 @@
 import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
-import { tableData } from '../pages/manage-receivers/data'
 
 export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
@@ -11,17 +10,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const initializing = ref<boolean>(false) // receiver store loading state
   const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
 
-  watch(initializing, (v) => {
-    if (v) {
-      tableState.value = tableData
-    }
-  })
-
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
   // TODO: watcher on these that updates fee summary OR added as part of compute fns
-  // const newParties = computed(() => formState.value.parties.filter(p => p.new?.actions.includes(ActionType.ADDED)))
-  // const ceasedParties = computed(() => formState.value.parties.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
+  const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
+  const ceasedParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
@@ -35,37 +28,38 @@ export const useReceiverStore = defineStore('receiver-store', () => {
 
     if (draftFiling?.data.value?.filing) {
       draftFilingState.value = draftFiling.data.value.filing
-      // formState.value = draftFiling.data.value.filing
+      formState.courtOrder = draftFilingState.value.courtOrder
+      formState.staffPayment = draftFilingState.value.staffPayment
     } else if (parties?.data) {
-      // formState.value.parties = parties.data
+      tableState.value = parties.data
     }
     initializing.value = false
   }
 
   async function save(draftId?: string) {
-    // const payload = businessApi.createFilingPayload<ManageReceiversSchema>(
-    //   businessStore.business!,
-    //   FilingType.CHANGE_OF_RECEIVERS,
-    //   { ...formState.value },
-    //   formState.value.staffPayment
-    // )
+    const payload = businessApi.createFilingPayload<ManageReceiversSchema>(
+      businessStore.business!,
+      FilingType.CHANGE_OF_RECEIVERS,
+      { ...formState, parties: tableState.value },
+      formState.staffPayment
+    )
 
-    // await businessApi.saveOrUpdateDraftFiling(
-    //   businessStore.businessIdentifier!,
-    //   payload,
-    //   false,
-    //   draftId as string | number
-    // )
+    await businessApi.saveOrUpdateDraftFiling(
+      businessStore.businessIdentifier!,
+      payload,
+      false,
+      draftId as string | number
+    )
   }
 
   async function submit(draftId?: string) {
     const receiverPayload: ReceiverPayload = {
-      // ...(newParties.value
-      //   ? { appointedReceivers: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
-      //   : {}),
-      // ...(newParties.value
-      //   ? { ceasedReceivers: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
-      //   : {})
+      ...(newParties.value
+        ? { appointedReceivers: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        : {}),
+      ...(newParties.value
+        ? { ceasedReceivers: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        : {})
     }
 
     const payload = businessApi.createFilingPayload<ReceiverPayload>(
