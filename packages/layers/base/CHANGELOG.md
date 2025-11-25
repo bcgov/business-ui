@@ -1,5 +1,33 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.1.20
+
+### Patch Changes
+
+- [#303](https://github.com/bcgov/business-ui/pull/303) [`bce6cfc`](https://github.com/bcgov/business-ui/commit/bce6cfcd7e2ec497d21ecfd2073b6bf61a70a4cf) Thanks [@deetz99](https://github.com/deetz99)! - feat: CourtOrderPoa component and schema
+
+- [#299](https://github.com/bcgov/business-ui/pull/299) [`4d82f2d`](https://github.com/bcgov/business-ui/commit/4d82f2d5be3d54d02adc5ba72acf917427ae5430) Thanks [@deetz99](https://github.com/deetz99)! - feat: Generic editable TableBusiness, TableParty and child components
+
+- [#300](https://github.com/bcgov/business-ui/pull/300) [`29f393d`](https://github.com/bcgov/business-ui/commit/29f393de5458e41f6df16cd5bdc87d309e0585ef) Thanks [@kialj876](https://github.com/kialj876)! - Common filing composable, common business party code, moved filing nav/modals from officers into base layer
+
+- [#306](https://github.com/bcgov/business-ui/pull/306) [`0bd309a`](https://github.com/bcgov/business-ui/commit/0bd309a803dd1cdbe5d8db80a2916d3ab38eb8d3) Thanks [@deetz99](https://github.com/deetz99)! - **New Components:**
+
+  - PartyDetails sub form
+  - ManageParties form/table
+
+  **Composables:**
+
+  - useManageParties - controls ManageParties component state/actions
+
+  **CourtOrderPoa**
+
+  - clear validation errors when hasPoa state changes
+
+  **StaffPayment**
+
+  - set required attribute
+  - expose method to scroll and move focus to "NO_FEE" radio on form submit error
+
 ## 0.1.19
 
 ### Patch Changes
