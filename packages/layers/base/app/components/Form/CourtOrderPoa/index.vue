@@ -43,6 +43,7 @@ defineExpose({
             <UCheckbox
               v-model="model.hasPoa"
               :label="$t('label.filingPursuantToPlanOfArrangement')"
+              @update:model-value="formRef?.clear()"
             />
           </UFormField>
         </ConnectFormFieldWrapper>

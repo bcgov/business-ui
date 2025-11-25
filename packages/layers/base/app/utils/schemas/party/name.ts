@@ -24,13 +24,13 @@ export function getPartyNameSchema() {
   }
 
   return z.object({
-    partyType: z.enum(PartyType),
-    firstName: z.string().optional(),
-    middleName: z.string().optional(),
-    lastName: z.string().optional(),
+    partyType: z.enum(PartyType).default(PartyType.PERSON),
+    firstName: z.string().default(''),
+    middleName: z.string().default(''),
+    lastName: z.string().default(''),
     // preferredName: z.string().optional(),
     // hasPreferredName: z.boolean().optional(),
-    businessName: z.string().optional()
+    businessName: z.string().default('')
   }).superRefine((val, ctx) => {
     const partyType = val.partyType
     const schema = schemaMap[partyType]

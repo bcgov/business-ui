@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Form, RadioGroupItem } from '@nuxt/ui'
 
-const staffPayment = defineModel<StaffPayment>({ required: true })
+const staffPayment = defineModel<StaffPaymentSchema>({ required: true })
 defineProps<{ showPriority?: boolean }>()
 
 const { t } = useI18n()
@@ -42,6 +42,25 @@ watch(() => staffPayment.value.isPriority, (val) => {
 onMounted(() => {
   staffPayment.value = staffPayStore.getEmptyStaffPayment()
 })
+
+function setFocusOnError() {
+  // @ts-expect-error - $el not typed on form ref
+  const form = staffPaymentForm.value?.$el as HTMLDivElement | undefined
+
+  if (form) {
+    const radio = form.querySelector('button[role="radio"][value="NO_FEE"]')
+    if (radio) {
+      radio.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setTimeout(() => {
+        (radio as HTMLButtonElement).focus({ preventScroll: true })
+      }, 0)
+    }
+  }
+}
+
+defineExpose({
+  setFocusOnError
+})
 </script>
 
 <template>
@@ -57,6 +76,7 @@ onMounted(() => {
           v-model="staffPayment.option"
           :items="radioItems"
           size="xl"
+          required
           :ui="{ base: 'cursor-pointer', label: 'cursor-pointer w-fit' }"
         >
           <template #description="{ item }">

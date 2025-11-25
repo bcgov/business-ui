@@ -1,35 +1,20 @@
 import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
 
 export const useReceiverStore = defineStore('receiver-store', () => {
+  const receiverSchema = getReceiversSchema()
+  const { tableState } = useManageParties()
+
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
-  const initializing = ref<boolean>(false) // officer store loading state
+  const initializing = ref<boolean>(false) // receiver store loading state
   const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
 
-  function getEmptyFormState(): ManageReceiversSchema {
-    return {
-      staffPayment: {
-        option: StaffPaymentOption.NONE,
-        bcolAccountNumber: '',
-        datNumber: '',
-        routingSlipNumber: '',
-        folioNumber: '',
-        isPriority: false
-      },
-      parties: [],
-      courtOrder: {
-        hasPoa: undefined,
-        courtOrderNumber: undefined
-      }
-    }
-  }
-
-  const formState = ref(getEmptyFormState())
+  const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
   // TODO: watcher on these that updates fee summary OR added as part of compute fns
-  const newParties = computed(() => formState.value.parties.filter(p => p.new?.actions.includes(ActionType.ADDED)))
-  const ceasedParties = computed(() => formState.value.parties.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
+  const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
+  const ceasedParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
@@ -43,19 +28,21 @@ export const useReceiverStore = defineStore('receiver-store', () => {
 
     if (draftFiling?.data.value?.filing) {
       draftFilingState.value = draftFiling.data.value.filing
-      formState.value = draftFiling.data.value.filing
+      formState.courtOrder = draftFilingState.value.courtOrder
+      formState.staffPayment = draftFilingState.value.staffPayment
+      tableState.value = draftFilingState.value.parties
     } else if (parties?.data) {
-      formState.value.parties = parties.data
+      tableState.value = parties.data
     }
     initializing.value = false
   }
 
   async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<ManageReceiversSchema>(
+    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ManageReceiversSchema }>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
-      { ...formState.value },
-      formState.value.staffPayment
+      { changeOfReceivers: { ...formState, parties: tableState.value } },
+      formState.staffPayment
     )
 
     await businessApi.saveOrUpdateDraftFiling(
@@ -76,12 +63,12 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         : {})
     }
 
-    const payload = businessApi.createFilingPayload<ReceiverPayload>(
+    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ReceiverPayload }>(
       businessStore.business!,
       // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
       FilingType.CHANGE_OF_RECEIVERS,
-      receiverPayload,
-      formState.value.staffPayment
+      { changeOfReceivers: receiverPayload },
+      formState.staffPayment
     )
     if (draftId) {
       await businessApi.saveOrUpdateDraftFiling(
@@ -96,14 +83,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   function $reset() {
-    formState.value = getEmptyFormState()
+    const emptyObj = receiverSchema.parse({})
+    formState.activeParty = undefined
+    formState.courtOrder = emptyObj.courtOrder
+    formState.staffPayment = emptyObj.staffPayment
   }
-
-  // TODO: common party composable for (maybe this should be in the usePartyTableComposable?):
-  // addParty
-  // removeParty
-  // updateParty
-  // undoParty
 
   return {
     formState,
