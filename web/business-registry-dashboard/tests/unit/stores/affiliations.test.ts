@@ -21,8 +21,12 @@ mockNuxtImport('useNuxtApp', () => {
         authenticated: mockAuthenticated,
         token: 'mock-token'
       },
-      $authApiBRD: mockAuthApi,
-      $businessApi: mockBusinessApi
+      $authApi: mockAuthApi,
+      $businessApi: mockBusinessApi,
+      $i18n: {
+        t: (key: string) => key,
+        locale: { value: 'en-CA' }
+      }
     }
   )
 })
@@ -92,17 +96,6 @@ mockNuxtImport('useWindowSize', () => {
   return () => (
     {
       width: mockWindowSize
-    }
-  )
-})
-
-mockNuxtImport('useI18n', () => {
-  return () => (
-    {
-      t: (key: string) => key,
-      locale: {
-        value: 'en-CA'
-      }
     }
   )
 })
@@ -365,7 +358,7 @@ describe('useAffiliationsStore', () => {
     await flushPromises()
 
     expect(mockAuthApi).toHaveBeenCalledTimes(2)
-    expect(mockAuthApi.mock.calls[0][0]).toBe('/orgs/123/affiliations?new=true')
+    expect(mockAuthApi.mock.calls[0]![0]).toBe('/orgs/123/affiliations?new=true')
 
     // Change account ID
     store.currentAccount.id = '456'
@@ -376,7 +369,7 @@ describe('useAffiliationsStore', () => {
     await flushPromises()
 
     expect(mockAuthApi).toHaveBeenCalledTimes(4)
-    expect(mockAuthApi.mock.calls[2][0]).toBe('/orgs/456/affiliations?new=true')
+    expect(mockAuthApi.mock.calls[2]![0]).toBe('/orgs/456/affiliations?new=true')
   })
 
   describe('affiliation columns', () => {

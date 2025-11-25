@@ -9,17 +9,13 @@ mockNuxtImport('useNuxtApp', () => {
       $keycloak: {
         authenticated: mockAuthenticated,
         token: 'mock-token'
+      },
+      $i18n: {
+        t: vi.fn((key: string) => key),
+        locale: { value: 'en-CA' }
       }
     }
   )
-})
-
-// Mock useI18n to prevent "Must be called at the top of a setup function" error
-mockNuxtImport('useI18n', () => {
-  return () => ({
-    t: vi.fn((key: string) => key),
-    locale: { value: 'en-CA' }
-  })
 })
 
 // Mock useToast to prevent any additional errors from affiliations store

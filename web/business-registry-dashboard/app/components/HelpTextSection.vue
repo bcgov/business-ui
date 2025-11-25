@@ -70,13 +70,13 @@ const toggleHelpText = () => {
           </div>
           <ul>
             <li>
-              <ConnectI18nBold translation-path="startManageBusinessHelp.steps.requestName.namedBusiness.content1" />
+              <ConnectI18nHelper translation-path="startManageBusinessHelp.steps.requestName.namedBusiness.content1" />
             </li>
             <li>{{ $t('startManageBusinessHelp.steps.requestName.namedBusiness.content2') }}</li>
             <li>{{ $t('startManageBusinessHelp.steps.requestName.namedBusiness.content3') }}</li>
             <li>{{ $t('startManageBusinessHelp.steps.requestName.namedBusiness.content4') }}</li>
             <li>
-              <ConnectI18nBold translation-path="startManageBusinessHelp.steps.requestName.namedBusiness.content5" />
+              <ConnectI18nHelper translation-path="startManageBusinessHelp.steps.requestName.namedBusiness.content5" />
             </li>
           </ul>
 
@@ -85,7 +85,7 @@ const toggleHelpText = () => {
           </div>
           <ul>
             <li>
-              <ConnectI18nBold translation-path="startManageBusinessHelp.steps.requestName.numberedCompany.content1" />
+              <ConnectI18nHelper translation-path="startManageBusinessHelp.steps.requestName.numberedCompany.content1" />
             </li>
           </ul>
         </li>
@@ -97,7 +97,7 @@ const toggleHelpText = () => {
           </div>
           <ul>
             <li>
-              <ConnectI18nBold translation-path="startManageBusinessHelp.steps.incorporateRegister.content1" />
+              <ConnectI18nHelper translation-path="startManageBusinessHelp.steps.incorporateRegister.content1" />
               <ul class="ml-4 mt-2">
                 <li>{{ $t('startManageBusinessHelp.steps.incorporateRegister.content2') }}</li>
                 <li>{{ $t('startManageBusinessHelp.steps.incorporateRegister.content3') }}</li>
@@ -116,7 +116,7 @@ const toggleHelpText = () => {
           <ul>
             <li>{{ $t('startManageBusinessHelp.steps.manageMaintain.content1') }}</li>
             <li>
-              <ConnectI18nBold translation-path="startManageBusinessHelp.steps.manageMaintain.content2" />
+              <ConnectI18nHelper translation-path="startManageBusinessHelp.steps.manageMaintain.content2" />
               <ul class="ml-4 mt-2">
                 <li>{{ $t('startManageBusinessHelp.steps.manageMaintain.content3') }}</li>
                 <li>{{ $t('startManageBusinessHelp.steps.manageMaintain.content4') }}</li>
