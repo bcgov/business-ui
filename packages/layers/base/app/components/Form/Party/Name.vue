@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FormError, Form, RadioGroupItem } from '@nuxt/ui'
-import { PartyType } from '#imports'
 
 defineProps<{
   name?: string

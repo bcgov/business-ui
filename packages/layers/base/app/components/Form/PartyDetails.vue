@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { z } from 'zod'
-
 defineProps<{
   variant: 'add' | 'edit'
   name?: string
@@ -14,14 +12,8 @@ const emit = defineEmits<{
 
 type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
 
-const schema = z.object({
-  name: getPartyNameSchema(),
-  address: getAddressSchema()
-})
-
 const model = defineModel<PartyDetails>({ required: true })
 
-// const formRef = useTemplateRef<Form<PartyDetails>>('party-details-form')
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 
@@ -54,8 +46,6 @@ async function onDone() {
 
 <template>
   <UForm
-    ref="party-details-form"
-    :schema
     :name
     nested
     class="bg-white"
@@ -73,13 +63,11 @@ async function onDone() {
         <FormPartyName
           ref="party-name-form"
           v-model="model.name"
-          :state="model.name"
           name="name"
         />
         <FormAddress
           ref="address-form"
           v-model="model.address"
-          :state="model.address"
           nested
           name="address"
         />

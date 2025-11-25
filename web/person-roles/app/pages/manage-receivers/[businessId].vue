@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FormSubmitEvent, FormErrorEvent } from '@nuxt/ui'
+import { z } from 'zod'
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
@@ -26,6 +27,7 @@ definePageMeta({
 })
 
 const businessId = route.params.businessId as string
+const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
 async function submitFiling(e: FormSubmitEvent<unknown>) {
@@ -54,6 +56,11 @@ async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) 
   // TODO: consolidate with officers - break out common functionality
   try {
     // pull draft id from url or mark as undefined
+    const result = receiverSchema.safeParse(receiverStore.formState)
+    if (result.error) {
+      // TODO: do not save if there are validation errors
+      return
+    }
     const draftId = (urlParams.draft as string) ?? undefined
 
     await receiverStore.save(draftId)
@@ -64,6 +71,16 @@ async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) 
     }
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
+  }
+}
+
+function onError(event: FormErrorEvent) {
+  const firstError = event?.errors?.[0]
+
+  if (firstError?.name === 'staffPayment.option') {
+    staffPayFormRef.value?.setFocusOnError()
+  } else {
+    onFormSubmitError(event)
   }
 }
 
@@ -128,12 +145,12 @@ watch(
     id="receiver-filing"
     ref="receiver-filing"
     :state="receiverStore.formState"
-    :schema="receiverSchema"
-    class="py-10 space-y-10"
+    :schema="z.any()"
     novalidate
+    class="py-10 space-y-10"
     :aria-label="t('page.manageReceivers.h1')"
     @submit="submitFiling"
-    @error="(e) => console.info('validation errors: ', e.errors)"
+    @error="onError"
   >
     <div class="space-y-1">
       <h1>{{ t('page.manageReceivers.h1') }}</h1>
@@ -171,6 +188,7 @@ watch(
     <ConnectFieldset label="4. Staff Payment" body-variant="card">
       <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
         <StaffPayment
+          ref="staff-pay-ref"
           v-model="receiverStore.formState.staffPayment"
           :show-priority="true"
           name="staffPayment"
