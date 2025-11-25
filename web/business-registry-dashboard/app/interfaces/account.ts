@@ -1,6 +1,6 @@
-import { AccountType } from '~/app/enums/account-type'
-import { AccountStatus } from '~/app/enums/account-status'
-import { UserSettingsType } from '~/app/enums/user-settings-type'
+import { AccountType } from '~/enums/account-type'
+import { AccountStatus } from '~/enums/account-status'
+import { UserSettingsType } from '~/enums/user-settings-type'
 
 export interface Account {
   id: string

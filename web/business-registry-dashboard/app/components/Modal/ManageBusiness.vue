@@ -4,8 +4,8 @@ import { FormAddBusiness } from '#components'
 const brdModal = useBrdModals()
 const toast = useToast()
 const affStore = useAffiliationsStore()
-const { t } = useI18n()
-const { $authApiBRD } = useNuxtApp()
+const { t } = useNuxtApp().$i18n
+const { $authApi } = useNuxtApp()
 const ldStore = useConnectLaunchdarklyStore()
 
 const props = defineProps<{
@@ -95,6 +95,10 @@ const authOptions = computed<AccordionItem[]>(() => {
   return options
 })
 
+const businessIdentifierLabel = computed(() => {
+  return businessDetails.value.isFirm ? 'form.manageBusiness.businessIdentifier.firm' : 'form.manageBusiness.businessIdentifier.default'
+})
+
 async function handleEmailAuthSentStateClosed () {
   if (formAddBusinessRef.value?.currentState === 'FormAddBusinessEmailAuthSent') {
     toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
@@ -106,7 +110,7 @@ async function handleEmailAuthSentStateClosed () {
 onMounted(async () => {
   // try loading contact info
   try {
-    const response = await $authApiBRD<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
+    const response = await $authApi<{ email: string }>(`/entities/${props.business.identifier}/contacts`)
     contactEmail.value = response.email
   } catch (error) {
     logFetchError(error, 'Error retrieving business contacts')
@@ -114,7 +118,7 @@ onMounted(async () => {
 
   // try loading affiliated accounts
   try {
-    const response = await $authApiBRD<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
+    const response = await $authApi<AffiliatedAccounts>(`/orgs/affiliation/${props.business.identifier}`)
     affiliatedAccounts.value = response.orgsDetails
   } catch (error) {
     logFetchError(error, 'Error retrieving affiliated accounts')
@@ -122,7 +126,7 @@ onMounted(async () => {
 
   // try loading business passcode
   try {
-    const response = await $authApiBRD<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
+    const response = await $authApi<{ contactEmail: string, hasValidPassCode: boolean }>(`/entities/${props.business.identifier}/authentication`)
     hasBusinessAuthentication.value = response.hasValidPassCode
   } catch (error) {
     hasBusinessAuthentication.value = false
@@ -144,10 +148,10 @@ onMounted(async () => {
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
+          <ConnectI18nHelper class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessName" :name="business.name" />
         </li>
         <li>
-          <ConnectI18nBold class="text-bcGovColor-darkGray" translation-path="form.manageBusiness.businessNumber" :number="business.identifier" />
+          <ConnectI18nHelper class="text-bcGovColor-darkGray" :translation-path="businessIdentifierLabel" :number="business.identifier" />
         </li>
       </ul>
 
@@ -197,12 +201,12 @@ onMounted(async () => {
         </template>
 
         <div class="grid auto-cols-auto">
-          <div class="grid-flow-col place-content-start justify-start">
+          <div class="grid-flow-col place-content-start">
             <HelpBusinessContact />
           </div>
         </div>
         <div class="grid grid-rows-subgrid">
-          <div class="col-span-full max-w-xl place-content-end justify-end place-self-end">
+          <div class="col-span-full max-w-xl place-content-end place-self-end">
             <UButton
               :label="$t('btn.close')"
               class="mx-auto px-3 py-2"

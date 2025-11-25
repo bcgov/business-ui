@@ -50,7 +50,7 @@ export const useConnectLaunchdarklyStore = defineStore('brd-connect-ld-store', (
     }
 
     // Default org to user key if no account
-    let org = { key: user.key, appSource: appName }
+    let org: any = { key: user.key, appSource: appName }
 
     // Use account info if available
     if (accountStore.currentAccount.id) {

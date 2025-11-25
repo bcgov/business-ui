@@ -11,7 +11,7 @@ defineProps<{
       {{ $t('form.manageBusiness.emailSent.heading') }}
     </h2>
     <p>
-      <ConnectI18nBold translation-path="form.manageBusiness.emailSent.p1" :email="contactEmail" />
+      <ConnectI18nHelper translation-path="form.manageBusiness.emailSent.p1" :email="contactEmail" />
     </p>
     <p>{{ $t('form.manageBusiness.emailSent.p2') }}</p>
     <div class="flex content-end items-end gap-2">

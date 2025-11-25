@@ -8,6 +8,7 @@ defineProps<{
   isDisabled?: boolean | undefined
 }>()
 
+const filingStore = usePostRestorationTransitionApplicationStore()
 const errorsStore = usePostRestorationErrorsStore()
 
 const { certifyErrors } = storeToRefs(errorsStore)
@@ -26,11 +27,14 @@ const hasError = computed(() => {
         v-model="certified"
         name="certification"
         :disabled="isDisabled"
-        data-test="certify-section-checkbox"
+        data-testid="certify-section-checkbox"
+        @update:model-value="(newVal) => {
+          errorsStore.verifyCertify({ certified: newVal, name: filingStore.legalName })
+        }"
       >
         <template #label>
           <div class="flex flex-col text-base space-y-2">
-            <div>
+            <div class="pl-2">
               <slot name="certifyText">
                 <i18n-t
                   keypath="text.certifiesItHasRelevantKnowledgeClient"
@@ -45,14 +49,14 @@ const hasError = computed(() => {
                 </i18n-t>
               </slot>
             </div>
-            <div>
+            <div class="pl-2">
               <slot name="certifyDate">
                 <span class="font-bold">
                   {{ $t('label.date') }}:
                 </span>{{ nowAsIsoDate() }}
               </slot>
             </div>
-            <div>
+            <div class="pl-2">
               <slot name="certifyNote">
                 <span class="font-bold">
                   {{ $t('label.note') }}:

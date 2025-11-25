@@ -11,16 +11,52 @@ export interface Series {
     parValue?: number
     priority: number
     removed?: boolean // UI property - tracking if the share got removed
+    parentShareIndex?: number // UI property - tracking the parent share index
+    added?: boolean // UI property - tracking if the share got added
+    modified?: boolean // UI property - tracking if the share got modified
 }
 
 export interface Share extends Series {
+    isShareClass: boolean
     series: Series[]
 }
 
+const seriesRefine = (input, ctx) => {
+  const filingStore = usePostRestorationTransitionApplicationStore()
+  // is true if no errors, false otherwise
+  let noErrors = true
+  const parent = filingStore.shareClasses[input.parentShareIndex]
+
+  if (!parent) {
+    throw new Error('errors.parentShareRequired')
+  }
+
+  if (parent?.hasMaximumShares && parent?.maxNumberOfShares !== undefined) {
+    const totalShareMax = parent.maxNumberOfShares
+    let runningTotal = input.maxNumberOfShares || 0
+    for (const series of parent.series) {
+      if (series.maxNumberOfShares !== undefined) {
+        runningTotal += series.maxNumberOfShares
+      }
+    }
+    if (runningTotal > totalShareMax) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['maxNumberOfShares'],
+        message: 'errors.exceedsNumberOfShares'
+      })
+      noErrors = false
+    }
+  }
+
+  return noErrors
+}
+
 const refine = (input, ctx) => {
-  let goodStanding = true
+  // is true if no errors, false otherwise
+  let noErrors = true
   if (input.hasMaximumShares) {
-      goodStanding = goodStanding && input.maxNumberOfShares !== undefined
+    noErrors = noErrors && input.maxNumberOfShares !== undefined
       if (input.maxNumberOfShares === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -31,8 +67,8 @@ const refine = (input, ctx) => {
   }
 
   if (input.hasParValue) {
-      goodStanding = goodStanding && input.parValue !== undefined
-      goodStanding = goodStanding && input.currency !== undefined
+    noErrors = noErrors && input.parValue !== undefined
+    noErrors = noErrors && input.currency !== undefined
       if (input.parValue === undefined) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -49,10 +85,14 @@ const refine = (input, ctx) => {
       }
   }
 
-  return goodStanding
+  if (Object.keys(input).includes('parentShareIndex')) {
+    noErrors = noErrors && seriesRefine(input, ctx)
+  }
+
+  return noErrors
 }
 
-export const seriesSchema = z.object({
+const baseShareSeriesSchema = z.object({
     name: z.string().min(1, 'errors.required'),
     currency: z.string().optional().nullable(),
     hasMaximumShares: z.boolean(),
@@ -60,9 +100,12 @@ export const seriesSchema = z.object({
     hasRightsOrRestrictions: z.boolean(),
     maxNumberOfShares: z.number().optional().nullable(),
     parValue: z.number().optional().nullable(),
-    priority: z.number()
-}).superRefine(refine)
+    priority: z.number(),
+    parentShareIndex: z.number().optional().nullable() // UI property - tracking the parent share index
+})
 
-export const shareSchema = seriesSchema.sourceType().extend({
+export const seriesSchema = baseShareSeriesSchema.superRefine(refine)
+
+export const shareSchema = baseShareSeriesSchema.extend({
     series: z.array(seriesSchema).optional()
 }).superRefine(refine)

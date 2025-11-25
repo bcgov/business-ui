@@ -6,9 +6,9 @@ defineProps({
   error: { type: String, default: '' },
   invalid: { type: Boolean, default: false },
   label: { type: String, default: '' },
-  placeholder: { type: String, default: '' }
+  placeholder: { type: String, default: '' },
+  disabled: { type: Boolean, default: false }
 })
-const emit = defineEmits(['blur'])
 </script>
 
 <template>
@@ -17,6 +17,7 @@ const emit = defineEmits(['blur'])
     :help
     :error="$te(error) ? $t(error) : error"
     class="pb-[22px]"
+    :class="error ? 'mb-[-22px]' : ''"
   >
     <ConnectInput
       :id="name"
@@ -24,7 +25,7 @@ const emit = defineEmits(['blur'])
       :label
       :invalid="invalid"
       :aria-placeholder="placeholder"
-      @blur="emit('blur')"
+      :disabled="disabled"
     />
   </UFormField>
 </template>
