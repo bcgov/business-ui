@@ -1,0 +1,27 @@
+{
+    "affiliations": [
+        {
+            "created": "2023-07-13T05:19:05+00:00",
+            "id": 19550
+        }
+    ],
+    "businessIdentifier": "BC0871434",
+    "contacts": [
+        {
+            "email": "fake.email@gov.bc.ca",
+            "phone": "(778) 996-7591",
+            "phoneExtension": ""
+        }
+    ],
+    "corpType": {
+        "code": "BEN",
+        "default": false,
+        "desc": "Benefit Company"
+    },
+    "created": "2023-07-13T05:19:04+00:00",
+    "folioNumber": "folio-1234",
+    "isLoadedLear": true,
+    "modified": "2024-02-21T17:30:55+00:00",
+    "name": "0871434 B.C. LTD.",
+    "passCodeClaimed": true
+}

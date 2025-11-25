@@ -1,0 +1,93 @@
+{
+    "commentsCount": 0,
+    "commentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0223072/filings/206789/comments",
+    "displayLedger": true,
+    "documentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0223072/filings/206789/documents",
+    "filing": {
+        "business": {
+            "foundingDate": "1980-12-23T08:00:00+00:00",
+            "identifier": "BC0223072",
+            "legalName": "MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST",
+            "legalType": "BC"
+        },
+        "changeOfOfficers": [
+            {
+                "new": {
+                    "deliveryAddress": {
+                        "city": "North York",
+                        "country": "CA",
+                        "locationDescription": "",
+                        "postalCode": "M6B 1W8",
+                        "region": "ON",
+                        "street": "123-160 Tycos Dr",
+                        "streetAdditional": ""
+                    },
+                    "firstName": "Tetster",
+                    "hasPreferredName": false,
+                    "lastName": "Test",
+                    "mailingAddress": {
+                        "city": "North York",
+                        "country": "CA",
+                        "locationDescription": "",
+                        "postalCode": "M6B 1W8",
+                        "region": "ON",
+                        "street": "123-160 Tycos Dr",
+                        "streetAdditional": ""
+                    },
+                    "middleName": "",
+                    "preferredName": "",
+                    "roles": [
+                        {
+                            "appointmentDate": "2025-11-12",
+                            "cessationDate": null,
+                            "roleClass": "OFFICER",
+                            "roleType": "CEO"
+                        },
+                        {
+                            "appointmentDate": "2025-11-12",
+                            "cessationDate": null,
+                            "roleClass": "OFFICER",
+                            "roleType": "TREASURER"
+                        },
+                        {
+                            "appointmentDate": "2025-11-12",
+                            "cessationDate": null,
+                            "roleClass": "OFFICER",
+                            "roleType": "SECRETARY"
+                        },
+                        {
+                            "appointmentDate": "2025-11-12",
+                            "cessationDate": null,
+                            "roleClass": "OFFICER",
+                            "roleType": "CFO"
+                        }
+                    ],
+                    "sameAsDelivery": true
+                }
+            }
+        ],
+        "header": {
+            "accountId": 3040,
+            "affectedFilings": [],
+            "availableOnPaperOnly": false,
+            "certifiedBy": "Tester Testing",
+            "colinIds": [],
+            "comments": [],
+            "date": "2025-11-12T18:41:07.615170+00:00",
+            "deletionLocked": false,
+            "effectiveDate": "2025-11-12T18:41:07.615199+00:00",
+            "filingId": 206789,
+            "folioNumber": "",
+            "inColinOnly": false,
+            "isCorrected": false,
+            "isCorrectionPending": false,
+            "name": "changeOfOfficers",
+            "status": "DRAFT",
+            "submitter": "Tester Testing",
+            "type": "NON_LEGAL"
+        }
+    },
+    "filingLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0223072/filings/206789",
+    "isFutureEffective": false,
+    "withdrawalPending": false
+}

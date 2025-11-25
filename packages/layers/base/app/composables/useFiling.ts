@@ -1,5 +1,5 @@
 export const useFiling = () => {
-  const { t, te } = useI18n()
+  const { t, te } = useNuxtApp().$i18n
   const businessApi = useBusinessApi()
   const { setFilingDefault } = useBusinessTombstone()
   const { getBusinessParties } = useBusinessParty()

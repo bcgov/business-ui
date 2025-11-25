@@ -14,3 +14,12 @@ export const getBusinessMock = (overrides: BusinessOverride[] = [], slim = false
   }
   return { business: json }
 }
+
+export const getBusinessSettingsMock = (overrides: BusinessOverride[] = []) => {
+  const json: AuthInformation = JSON.parse(fs.readFileSync(resolve('./json/businessSettings.json'), 'utf8'))
+  for (const override of overrides) {
+    // @ts-expect-error assume that we are giving allowable keys in the overrides
+    json[override.key] = override.value
+  }
+  return json
+}
