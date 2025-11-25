@@ -26,7 +26,24 @@ const titleKey = `${i18nPrefix}.${status}.title`
 const descKey = `${i18nPrefix}.${status}.description`
 
 const title = te(titleKey) ? t(titleKey) : t(`${i18nPrefix}.undefined.title`)
-const description = te(descKey) ? t(descKey) : t(`${i18nPrefix}.undefined.description`)
+const defaultDescription = te(descKey) ? t(descKey) : t(`${i18nPrefix}.undefined.description`)
+let apiErrorDescription: string | undefined
+if (error instanceof FetchError) {
+  const responseData = error.response
+  if (Array.isArray(responseData) && responseData.length > 0 && responseData[0].message) {
+    apiErrorDescription = responseData[0].message
+  } else if (responseData?.error) {
+    apiErrorDescription = responseData.error
+  }
+  else if (typeof responseData === 'string') {
+    apiErrorDescription = responseData
+  }
+  else if (responseData?.message) {
+    apiErrorDescription = responseData.message
+  }
+}
+
+const description = defaultDescription || apiErrorDescription
 </script>
 
 <template>
