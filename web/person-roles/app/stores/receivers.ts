@@ -30,6 +30,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       draftFilingState.value = draftFiling.data.value.filing
       formState.courtOrder = draftFilingState.value.courtOrder
       formState.staffPayment = draftFilingState.value.staffPayment
+      tableState.value = draftFilingState.value.parties
     } else if (parties?.data) {
       tableState.value = parties.data
     }
