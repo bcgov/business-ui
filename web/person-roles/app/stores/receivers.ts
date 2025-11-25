@@ -38,10 +38,10 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<ManageReceiversSchema>(
+    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ManageReceiversSchema }>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
-      { ...formState, parties: tableState.value },
+      { changeOfReceivers: { ...formState, parties: tableState.value } },
       formState.staffPayment
     )
 
@@ -63,11 +63,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         : {})
     }
 
-    const payload = businessApi.createFilingPayload<ReceiverPayload>(
+    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ReceiverPayload }>(
       businessStore.business!,
       // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
       FilingType.CHANGE_OF_RECEIVERS,
-      receiverPayload,
+      { changeOfReceivers: receiverPayload },
       formState.staffPayment
     )
     if (draftId) {
