@@ -38,6 +38,10 @@ const componentExamples: DropdownMenuItem[] = [
   {
     label: 'ModalStaffPay',
     to: localePath('/examples/components/Modal/StaffPay')
+  },
+  {
+    label: 'FormDocumentId',
+    to: localePath('/examples/components/Form/DocumentId')
   }
 ]
 </script>

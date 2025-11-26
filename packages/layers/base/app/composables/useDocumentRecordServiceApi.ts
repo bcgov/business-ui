@@ -10,7 +10,18 @@ export const useDocumentRecordServiceApi = () => {
     return await $documentRecordServiceApi('/searches/CORP', { params })
   }
 
+  /**
+   * Verifies a document ID by making a request to the document record service API.
+   *
+   * @param {string} documentId - The document ID to verify.
+   * @returns A promise to return a status code indicating whether the document ID is valid.
+   */
+  const getDocumentId = async (documentId: string): boolean => {
+    return await $documentRecordServiceApi(`/documents/verify/${documentId}`)
+  }
+
   return {
-    getCorpDocuments
+    getCorpDocuments,
+    getDocumentId
   }
 }
