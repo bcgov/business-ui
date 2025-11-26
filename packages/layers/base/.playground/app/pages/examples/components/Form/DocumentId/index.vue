@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, Form, FormError } from '@nuxt/ui'
 import * as z from 'zod'
-import type { DocumentIdSchema, FormDocumentIdRef } from '../../../../../../../app/utils'
 
 const { t } = useI18n()
 
