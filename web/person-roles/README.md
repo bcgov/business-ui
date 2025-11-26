@@ -120,3 +120,5 @@ NUXT_BASE_URL=""
 - A maximum of 4 workers seems to be the sweet spot for tests to pass without colliding with each other.
 - Setting to 1 worker will fully disable running tests in parallel.
 - Using the Playwright extension/testing tab does not execute the global setup and save the auth state. You must run `pnpm:e2e` to at least create the auth files before running tests with the extension.
+
+tmp to trigger ci
