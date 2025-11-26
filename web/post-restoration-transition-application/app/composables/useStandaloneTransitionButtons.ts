@@ -1,47 +1,39 @@
 import type { StandaloneTransitionFiling } from '~/interfaces/standalone-transition'
+import { validate } from '~/utils/validate'
 
 export const useStandaloneTransitionButtons = () => {
+  const { scrollToOpenForm } = useEditFormHandlers()
+
+  // gave minimum attributes object has to have to fit as the params for this function (it can be moved to utils)
+  const _updatePayloadHeader = (
+    payload: { filing: { header: { certifiedBy: string, folioNumber?: string } } },
+    filingStore: { legalName: string, folio?: string }
+  ) => {
+    // certified by
+    payload.filing.header.certifiedBy = filingStore.legalName
+
+    // folio number
+    if (filingStore?.folio) {
+      payload.filing.header.folioNumber = filingStore.folio
+    }
+  }
+
   // submit final filing
   async function submitFiling() {
-    const modal = useModal()
+    const { errorModal } = useModal()
     const buttonControl = useButtonControl()
     const rtc = useRuntimeConfig().public
-    const urlParams = useUrlSearchParams()
     const legalApi = useLegalApi2()
 
     const accountStore = useConnectAccountStore()
     const filingStore = usePostRestorationTransitionApplicationStore()
-    const errorStore = usePostRestorationErrorsStore()
+    const { draftFilingId } = storeToRefs(filingStore)
 
-    const certifiedValues: certify = {
-      certified: filingStore.certifiedByLegalName || false,
-      name: filingStore.legalName || ''
-    }
-    const shareValues: Share[] = filingStore.shareClasses
-    const folioValues: folioReference = {
-      folio: filingStore.folio || ''
-    }
-    const courtOrderValues: courtOrder = {
-      courtOrderNumber: filingStore.courtOrderNumber || ''
-    }
-    const completingPartyValues: completingParty = {
-      email: filingStore.compPartyEmail || ''
-    }
+    const hasErrors = validate()
 
-    const articlesValues: Articles = {
-      currentDate: filingStore.articles.currentDate || '',
-      resolutionDates: filingStore.articles.resolutionDates || [],
-      specialResolutionChanges: filingStore.articles.specialResolutionChanges || false
+    if (scrollToOpenForm('submit')) {
+      return
     }
-
-    const hasErrors = errorStore.verifyThenHasErrors(
-      certifiedValues,
-      shareValues,
-      folioValues,
-      courtOrderValues,
-      completingPartyValues,
-      articlesValues
-    )
 
     if (hasErrors) {
       return
@@ -63,9 +55,6 @@ export const useStandaloneTransitionButtons = () => {
       // set submit button as loading, disable all other bottom buttons
       buttonControl.handleButtonLoading(false, 'right', 1)
 
-      // pull draft id from url or mark as undefined
-      const draftId = (urlParams.draft as string) ?? undefined
-
       // format payload
       const standAloneTransitionData = filingStore.getFilingPayload()
       if (!standAloneTransitionData) {
@@ -73,6 +62,18 @@ export const useStandaloneTransitionButtons = () => {
         return undefined
       }
       const businessIdentifier = filingStore.activeBusiness.identifier
+
+      // clear ui properties (this is here to prevent them from being sent to the API)
+      if (standAloneTransitionData.shareStructure?.shareClasses !== undefined) {
+        const shares = standAloneTransitionData.shareStructure.shareClasses.filter(share => !share.removed)
+        for (const share in shares) {
+          if (share.series) {
+            share.series = share.series.filter(share => !share.removed)
+          }
+        }
+
+        standAloneTransitionData.shareStructure.shareClasses = shares
+      }
 
       const payload = legalApi.createFilingPayload<StandaloneTransitionFiling>(
         filingStore.activeBusiness,
@@ -83,14 +84,16 @@ export const useStandaloneTransitionButtons = () => {
         // todo: throw modal warning
         return undefined
       }
-      // payload.filing.header.certifiedBy = filingStore.legalName
+
+      _updatePayloadHeader(payload, filingStore)
+
       // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
-      if (draftId) {
+      if (draftFilingId.value) {
         await legalApi.saveOrUpdateDraftFiling(
           businessIdentifier,
           payload,
           true,
-          draftId
+          draftFilingId.value
         )
       } else {
         // submit as normal if no draft id
@@ -106,17 +109,17 @@ export const useStandaloneTransitionButtons = () => {
         { external: true }
       )
     } catch (error) {
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.submitFiling'
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.submitFiling'
+      })
     } finally {
       buttonControl.handleButtonLoading(true)
     }
   }
 
   async function cancelFiling() {
-    const modal = useModal()
+    const { baseModal } = useModal()
     const rtc = useRuntimeConfig().public
     const t = useNuxtApp().$i18n.t
 
@@ -129,12 +132,12 @@ export const useStandaloneTransitionButtons = () => {
       `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
     )
 
-    if (await filingStore.checkHasChanges('save')) {
-      await modal.openBaseModal(
-        t('modal.unsavedChanges.title'),
-        t('modal.unsavedChanges.description'),
-        false,
-        [
+    if (await filingStore.checkHasChanges('save') && filingStore.hasAnyChanges) {
+      await baseModal.open({
+        title: t('modal.unsavedChanges.title'),
+        description: t('modal.unsavedChanges.description'),
+        dismissible: false,
+        buttons: [
           { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
           {
             label: t('btn.exitWithoutSaving'),
@@ -146,7 +149,7 @@ export const useStandaloneTransitionButtons = () => {
             }
           }
         ]
-      )
+      })
     } else {
       await navigateTo(
         businessDashboardUrlWithBusinessAndAccount.value,
@@ -156,7 +159,7 @@ export const useStandaloneTransitionButtons = () => {
   }
 
   const saveFiling = async (resumeLater = false, disableActiveFormCheck = false) => {
-    const modal = useModal()
+    const { errorModal } = useModal()
     const buttonControl = useButtonControl()
     const rtc = useRuntimeConfig().public
     const urlParams = useUrlSearchParams()
@@ -164,6 +167,7 @@ export const useStandaloneTransitionButtons = () => {
 
     const accountStore = useConnectAccountStore()
     const filingStore = usePostRestorationTransitionApplicationStore()
+    const { draftFilingId } = storeToRefs(filingStore)
 
     const businessId = filingStore.activeBusiness.identifier
 
@@ -182,7 +186,7 @@ export const useStandaloneTransitionButtons = () => {
     // prevent save if there are no changes
     if (!hasChanges) {
       // todo: update this
-      // setAlertText(false, 'left', t('text.noChangesToSave'))
+      await buttonControl.setAlertText(false, 'left', t('text.noChangesToSave'))
       return
     }
     try {
@@ -193,26 +197,11 @@ export const useStandaloneTransitionButtons = () => {
         buttonControl.handleButtonLoading(false, 'left', 0)
       }
 
-      // pull draft id from url or mark as undefined
-      const draftId = (urlParams.draft as string) ?? undefined
-      // check if the business has a pending filing before submit
-      const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
-      if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
-        // TODO: how granular do we want to be with our error messages?
-        // we check pending tasks on page mount
-        // this will only occur if a pending task has been created after the initial page mount
-        modal.openBaseErrorModal(
-          undefined,
-          'modal.error.pendingTaskOnSaveOrSubmit'
-        )
-        return
-      }
-
       // format payload
       const standAloneTransitionData = filingStore.getFilingPayload()
       if (!standAloneTransitionData) {
-        // todo: failed to validate form properly ?
-        return undefined
+        // Should never get here
+        throw new Error('Error validating filing information.')
       }
 
       // save table state
@@ -222,23 +211,21 @@ export const useStandaloneTransitionButtons = () => {
         standAloneTransitionData
       )
 
-      // add folio number // TODO: validation?
-      // todo: add folio ?
-      // payload.filing.header.folioNumber = filingStore.folioNumber
-      payload.filing.header.type = FilingHeaderType.NON_LEGAL
+      _updatePayloadHeader(payload, filingStore)
 
       // save filing as draft
       const res = await legalApi.saveOrUpdateDraftFiling(
         filingStore.activeBusiness.identifier,
         payload,
         false,
-        draftId
+        draftFilingId.value as string
       )
 
       // update url with filing id
       // required if it's the first time 'save draft' was clicked
       // if page refreshes, the correct data will be reloaded
-      urlParams.draft = String(res.filing.header.filingId)
+      draftFilingId.value = String(res.filing.header.filingId)
+      urlParams.filingId = draftFilingId.value
 
       // if resume later, navigate back to business dashboard
       if (resumeLater) {
@@ -247,11 +234,12 @@ export const useStandaloneTransitionButtons = () => {
           { external: true }
         )
       }
+      filingStore.setDefaultState()
     } catch (error) {
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.submitFiling'
-      )
+      errorModal.open({
+        error: error,
+        i18nPrefix: 'modal.error.submitFiling'
+      })
     } finally {
       buttonControl.handleButtonLoading(true)
     }

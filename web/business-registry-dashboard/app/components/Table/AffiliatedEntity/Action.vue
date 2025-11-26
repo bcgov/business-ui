@@ -19,7 +19,7 @@ interface BusinessResponse {
 const affNav = useAffiliationNavigation()
 const accountStore = useConnectAccountStore()
 const affStore = useAffiliationsStore()
-const { t } = useI18n()
+const { t } = useNuxtApp().$i18n
 const ldStore = useConnectLaunchdarklyStore()
 const brdModal = useBrdModals()
 
@@ -50,8 +50,30 @@ const checkPrimaryActionAuthorization = (item: Business): boolean => {
 
   if (isTemporaryBusiness(item)) {
     requiredAction = AuthorizedActions.RESUME_DRAFT
+    if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
+      if ([EntityStates.DRAFT, EntityStates.APPROVED].includes(item.draftStatus)) {
+        requiredAction = AuthorizedActions.CONTINUATION_IN_FILING
+      }
+    }
+    if (item.corpType.code === CorpTypes.AMALGAMATION_APPLICATION) {
+      requiredAction = AuthorizedActions.AMALGAMATION_FILING
+    }
   } else if (isNameRequest(item)) {
     requiredAction = AuthorizedActions.MANAGE_NR
+    const nrStatus = affiliationStatus(item)
+    if (nrStatus === NrDisplayStates.APPROVED) {
+      const nrRequestActionCd = item.nameRequest?.requestActionCd
+      switch (nrRequestActionCd) {
+        case NrRequestActionCodes.AMALGAMATE:
+          requiredAction = AuthorizedActions.AMALGAMATION_FILING
+          break
+        case NrRequestActionCodes.MOVE:
+          requiredAction = AuthorizedActions.CONTINUATION_IN_FILING
+          break
+        default:
+          break
+      }
+    }
   } else if (isSocieties(item)) {
     requiredAction = AuthorizedActions.MANAGE_SOCIETY
   } else {
@@ -226,6 +248,7 @@ function getPrimaryActionLabel (item: Business): string {
       if (item.corpType.code === CorpTypes.CONTINUATION_IN) {
         switch (item.draftStatus) {
           case (EntityStates.DRAFT):
+          case (EntityStates.PENDING):
             return t('labels.resumeDraft')
           case (EntityStates.AWAITING_REVIEW):
           case (EntityStates.REJECTED) :

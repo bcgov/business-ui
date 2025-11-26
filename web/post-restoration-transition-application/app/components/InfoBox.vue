@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import OfficersInfoBox from '~/components/OfficersInfoBox.vue'
+
 defineProps<{
   title: string
   text?: string
@@ -21,7 +23,8 @@ defineProps<{
         />
       </div>
     </slot>
-    <ConnectInfoBox
+    <!-- todo: find replacement -->
+    <OfficersInfoBox
       :title="title"
       :title-class="titleClass"
       :content="text"

@@ -1,11 +1,20 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import currencySymbolMap from 'currency-symbol-map/map'
+import { PageSection } from '~/enum/page_sections'
+
+// NOTE: if isASeries is set then editingSeriesParent must not be -1
+const props = defineProps<{
+  isSeries?: boolean
+  formId: string
+  formError?: string | undefined
+}>()
 
 const t = useNuxtApp().$i18n.t
 const filingStore = usePostRestorationTransitionApplicationStore()
 const {
   shareClasses,
-  editingShareIndex
+  editingShareIndex,
+  editingSeriesParent
 } = storeToRefs(filingStore)
 
 const errorStore = usePostRestorationErrorsStore()
@@ -13,8 +22,12 @@ const {
   shareErrors
 } = storeToRefs(errorStore)
 
-const emit = defineEmits(['cancel', 'done'])
+const emit = defineEmits(['cancel', 'done', 'force-redraw'])
+
 const SHARES_TEXT = ' Shares'
+const hasDeletedSeries = ref(false)
+
+const translationPath = props.isSeries ? 'series' : 'share'
 
 const resetData = () => {
   shareErrors.value = []
@@ -37,8 +50,15 @@ const resetData = () => {
       hasRightsOrRestrictions: false,
       maxNumberOfShares: undefined,
       parValue: undefined,
-      priority: shareClasses.value.length + 1,
-      series: []
+      priority: shareClasses.value.length + 1
+    }
+    if (props.isSeries && editingSeriesParent.value !== -1) {
+      shareValues.value.parentShareIndex = editingSeriesParent.value
+      shareValues.value.hasParValue = editingSeriesParent.value.hasParValue || false
+      shareValues.value.currency = editingSeriesParent.value.currency || ''
+      shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
+    } else {
+      shareValues.value.series = JSON.parse(JSON.stringify(shareClasses.value[editingShareIndex.value]?.series || []))
     }
     shareName.value = ''
   }
@@ -47,12 +67,46 @@ const resetData = () => {
   hasNoParValue.value = shareValues.value.hasParValue ? '' : t('label.noPar')
 }
 
+const rightsChangeHandler = (newVal: boolean | indeterminate) => {
+  if (shareValues.value.series && shareValues.value.series.length > 0) {
+    if (!newVal) {
+      useModal().baseModal.open({
+        title: t('label.shareSeriesRightsRestrictions'),
+        description: t('text.shareSeriesRightsRestrictions'),
+        dismissible: false,
+        buttons: [
+          {
+            label: t('btn.cancel'), variant: 'outline', size: 'xl', shouldClose: true, onClick: () => {
+              shareValues.value.hasRightsOrRestrictions = true
+            }
+          },
+          {
+            label: t('label.removeSeries'), size: 'xl', shouldClose: true, onClick: () => {
+              for (let i = 0; i < shareValues.value.series.length; i++) {
+                shareValues.value.series[i].removed = true
+              }
+              // const copy = JSON.parse(JSON.stringify(shareValues.value))
+              // Object.assign(shareValues.value, copy)
+              hasDeletedSeries.value = true
+            }
+          }
+        ]
+      })
+    } else if (hasDeletedSeries.value) {
+      for (let i = 0; i < shareValues.value.series.length; i++) {
+        delete shareValues.value.series[i].removed
+      }
+      hasDeletedSeries.value = false
+    }
+  }
+}
+
 watch(shareClasses, resetData, { deep: true })
 
 const firstParChange = ref(true)
 const firstMaxChange = ref(true)
 
-const shareValues = ref<Share>(
+const shareValues = ref<Share | Series>(
   JSON.parse(
     JSON.stringify(
       shareClasses?.value?.[editingShareIndex.value]
@@ -65,12 +119,20 @@ const shareValues = ref<Share>(
           hasRightsOrRestrictions: false,
           maxNumberOfShares: undefined,
           parValue: undefined,
-          priority: shareClasses.value.length + 1,
-          series: []
+          priority: shareClasses.value.length + 1
         }
     )
   )
 )
+
+if (props.isSeries && editingSeriesParent.value !== -1) {
+  shareValues.value.parentShareIndex = editingSeriesParent.value
+  shareValues.value.hasParValue = editingSeriesParent.value.hasParValue || false
+  shareValues.value.currency = editingSeriesParent.value.currency || ''
+  shareValues.value.parValue = editingSeriesParent.value.parValue || undefined
+} else {
+  shareValues.value.series = JSON.parse(JSON.stringify(shareClasses.value[editingShareIndex.value]?.series || []))
+}
 
 const hasNoMaxShares = ref<string>(shareValues.value.hasMaximumShares ? '' : t('label.noMax'))
 const hasNoParValue = ref<string>(shareValues.value.hasParValue ? '' : t('label.noPar'))
@@ -81,7 +143,7 @@ const shareName = ref<string>(
   || ''
 )
 
-const maxSharesChangeHandler = () => {
+const maxSharesFocusInHandler = () => {
   shareValues.value.hasMaximumShares = true
   if (firstMaxChange.value) {
     shareValues.value.maxNumberOfShares = undefined
@@ -90,12 +152,23 @@ const maxSharesChangeHandler = () => {
   hasNoMaxShares.value = ''
 }
 
-const noMaxSharesChangeHandler = () => {
+const maxSharesChangeHandler = () => {
+  clearErrors('maxNumberOfShares')
+  maxSharesFocusInHandler()
+}
+
+const noMaxSharesFocusInHandler = () => {
+  clearErrors('maxNumberOfShares')
   shareValues.value.hasMaximumShares = false
   firstMaxChange.value = false
   hasNoMaxShares.value = t('label.noMax') }
 
-const parValueChangeHandler = () => {
+const noMaxSharesChangeHandler = () => {
+  clearErrors('maxNumberOfShares')
+  noMaxSharesFocusInHandler()
+}
+
+const parValueFocusInHandler = () => {
   shareValues.value.hasParValue = true
   if (firstParChange.value) {
     shareValues.value.parValue = undefined
@@ -105,7 +178,15 @@ const parValueChangeHandler = () => {
   hasNoParValue.value = ''
 }
 
+const parValueChangeHandler = () => {
+  clearErrors('parValue')
+  clearErrors('currency')
+  parValueFocusInHandler()
+}
+
 const noParValueChangeHandler = () => {
+  clearErrors('parValue')
+  clearErrors('currency')
   shareValues.value.hasParValue = false
   firstParChange.value = false
   hasNoParValue.value = t('label.noPar')
@@ -129,11 +210,9 @@ const cancel = () => {
   }
 }
 
-const revalidateIfHasErrors = (errorField: string) => {
+const clearErrors = (errorField: string) => {
   if (shareErrors.value[getErrorIndex()]?.[errorField]?.[0]) {
-    shareValues.value.name = shareName.value
-    cleanData()
-    errorStore.verifyShareClasses(getWorkingShareClasses())
+    shareErrors.value[getErrorIndex()][errorField] = []
   }
 }
 
@@ -172,12 +251,14 @@ const done = () => {
       return
     }
 
-    if (Object.keys(shareErrors.value[getErrorIndex()]).length > 0) {
+    if (shareErrors.value.length > 0 && Object.keys(shareErrors.value[getErrorIndex()]).length > 0) {
       return
     }
     shareValues.value.name = shareName.value + SHARES_TEXT
     if (editingShareIndex.value !== -1) {
       shareClasses.value[editingShareIndex.value] = shareValues.value
+    } else if (props.isSeries && editingSeriesParent.value !== -1) {
+      shareClasses.value[editingSeriesParent.value].series.push(shareValues.value)
     } else {
       shareClasses.value.push(shareValues.value)
     }
@@ -202,89 +283,99 @@ const cleanData = () => {
 </script>
 
 <template>
-  <div>
-    <div class="flex">
-      <div class="font-bold inline-flex text-sm flex-1">
+  <ConnectFormSection
+    :title="$t('label.officeAddresses')"
+    class="pb-6"
+  >
+    <template #title>
+      <p :class="formError ? 'text-red-600' : ''" class="mb-2 sm:mb-0 sm:font-bold">
         {{ editingShareIndex === -1 ? $t('label.add') : $t('label.edit') }}
-        {{ $t('label.shareClass') }}
+        {{ $t(`label.${translationPath}`) }}
+      </p>
+    </template>
+
+    <div :id="formId" class="inline-block flex-auto space-y-6 w-full">
+      <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
+        <!--          @blur="revalidateIfHasErrors('name')" -->
+        <UInput
+          v-model="shareName"
+          :placeholder="$t(`label.${translationPath}Name`)"
+          class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+
+          @keydown="clearErrors('name')"
+        >
+          <template #trailing>
+            <div class="text-base text-bcGovColor-midGray">
+              {{ $t('label.shares') }}
+            </div>
+          </template>
+        </UInput>
+      </UFormField>
+      <div class="text-sm text-gray-500 -mt-6 ml-4">
+        {{ $t(`text.helperText.${translationPath}Name`) }}
       </div>
 
-      <div class="inline-block ml-6 flex-auto space-y-6">
-        <UFormField :error="$te(getError('name')) ? $t(getError('name')) : getError('name')">
-          <UInput
-            v-model="shareName"
-            :placeholder="$t('label.shareClassName')"
-            class="w-full"
-            @blur="revalidateIfHasErrors('name')"
+      <hr class="border-bcGovGray-300">
+
+      <div class="flex grow">
+        <URadioGroup
+          v-model="hasNoMaxShares"
+          data-testid="maxShares-radio"
+          :items="['']"
+          class="flex-0 mr-3 align-bottom text-base"
+          :ui="{
+            container: 'text-base h-[56px]'
+          }"
+          @change="maxSharesChangeHandler()"
+        />
+        <UFormField
+          :error="
+            $te(getError('maxNumberOfShares'))
+              ? $t(getError('maxNumberOfShares'))
+              : getError('maxNumberOfShares')"
+          class="w-full"
+        >
+          <UInputNumber
+            v-model="shareValues.maxNumberOfShares"
+            :placeholder="$t(`label.${translationPath}MaximumNumberOf`)"
+            :disable-wheel-change="true"
+            :ui="{
+              base: 'w-full rounded-md border-0 placeholder:text-dimmed'
+                + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+            }"
+            class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+            @keydown="clearErrors('maxNumberOfShares')"
+            @focusin="maxSharesFocusInHandler()"
           >
-            <template #trailing>
-              <div class="text-[16px] text-bcGovColor-midGray">
-                {{ $t('label.shares') }}
-              </div>
+            <template #decrement>
+              <span />
             </template>
-          </UInput>
+            <template #increment>
+              <span />
+            </template>
+          </UInputNumber>
         </UFormField>
-        <div class="text-sm text-gray-500 -mt-6 ml-4">
-          {{ $t('text.helperText.shareClassName') }}
-        </div>
+      </div>
+      <URadioGroup
+        v-model="hasNoMaxShares"
+        data-testid="noMaxShares-radio"
+        :items="[$t('label.noMax')]"
+        :ui="{
+          label: 'text-base'
+        }"
+        @change="noMaxSharesChangeHandler()"
+      />
 
-        <hr class="border-bcGovGray-300">
+      <hr class="border-bcGovGray-300">
 
-        <div class="flex">
-          <URadioGroup
-            v-model="hasNoMaxShares"
-            :items="['']"
-            class="flex-0 mr-3 align-bottom text-base"
-            :ui="{
-              container: 'text-base h-[56px]'
-            }"
-            @change="maxSharesChangeHandler()"
-          />
-          <UFormField
-            :error="
-              $te(getError('maxNumberOfShares'))
-                ? $t(getError('maxNumberOfShares'))
-                : getError('maxNumberOfShares')"
-          >
-            <UInputNumber
-              v-model="shareValues.maxNumberOfShares"
-              :placeholder="$t('label.maximumNumberOfShares')"
-              :disable-wheel-change="true"
-              class="flex-auto"
-              :ui="{
-                base: 'w-full rounded-md border-0 placeholder:text-dimmed'
-                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
-                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
-                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
-                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
-              }"
-              @update:model-value="revalidateIfHasErrors('maxNumberOfShares')"
-            >
-              <template #decrement>
-                <span />
-              </template>
-              <template #increment>
-                <span />
-              </template>
-            </UInputNumber>
-          </UFormField>
-        </div>
-        <div>
-          <URadioGroup
-            v-model="hasNoMaxShares"
-            :items="[$t('label.noMax')]"
-            :ui="{
-              label: 'text-base'
-            }"
-            @change="noMaxSharesChangeHandler()"
-          />
-        </div>
-
-        <hr class="border-bcGovGray-300">
-
+      <div v-if="!isSeries">
         <div class="flex">
           <URadioGroup
             v-model="hasNoParValue"
+            data-testid="parValue-radio"
             :items="['']"
             class="flex-0 mr-3 align-bottom text-base"
             :ui="{
@@ -292,7 +383,7 @@ const cleanData = () => {
             }"
             @change="parValueChangeHandler()"
           />
-          <div class="flex flex-auto">
+          <div class="flex gap-4 w-full">
             <UFormField
               :error="
                 $te(getError('parValue'))
@@ -304,7 +395,6 @@ const cleanData = () => {
                 v-model="shareValues.parValue"
                 :placeholder="$t('label.parValue')"
                 :disable-wheel-change="true"
-                class="flex-auto"
                 :ui="{
                   base: 'w-full rounded-md border-0 placeholder:text-dimmed'
                     + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
@@ -312,8 +402,11 @@ const cleanData = () => {
                     + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
                     + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
                 }"
-                @update:model-value="revalidateIfHasErrors('parValue')"
+                class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+                @focusin="parValueFocusInHandler()"
+                @keydown="clearErrors('parValue')"
               >
+                <!--                  @update:model-value="revalidateIfHasErrors('parValue')" -->
                 <template #decrement>
                   <span />
                 </template>
@@ -324,25 +417,24 @@ const cleanData = () => {
             </UFormField>
             <UFormField
               :error="$te(getError('currency')) ? $t(getError('currency')) : getError('currency')"
-              class="h-full w-[70%]"
-              :ui="{
-                root: 'h-11 max-h-11',
-                content: 'h-12 max-h-12'
-              }"
+              class="h-full flex-1 w-full"
             >
               <USelect
                 v-model="shareValues.currency"
+                data-testid="currency-select"
                 :placeholder="$t('label.currency')"
                 :items="currencies"
-                class="h-[56px] w-full pl-2"
-                @update:model-value="revalidateIfHasErrors('currency')"
+                class="p-[18px] w-full pl-2"
+                @focus="parValueFocusInHandler()"
+                @change="clearErrors('currency')"
               />
             </UFormField>
           </div>
         </div>
-        <div>
+        <div class="mt-6">
           <URadioGroup
             v-model="hasNoParValue"
+            data-testid="noParValue-radio"
             :items="[$t('label.noPar')]"
             :ui="{
               label: 'text-base'
@@ -350,28 +442,80 @@ const cleanData = () => {
             @change="noParValueChangeHandler()"
           />
         </div>
+      </div>
+      <div v-else>
+        <!-- is a series -->
+        <div v-if="shareClasses?.[editingSeriesParent]?.hasParValue !== false" class="flex gap-4 w-full">
+          <UFormField class="mr-4 w-[30%]">
+            <UInput
+              :value="shareClasses?.[editingSeriesParent]?.parValue"
+              :readonly="true"
+              :disable-wheel-change="true"
+              :disabled="true"
+              variant="ghost"
+              :ui="{
+                base: 'w-full rounded-md border-0 border-b-1 border-dashed placeholder:text-dimmed'
+                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+              }"
+              class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+            />
+          </UFormField>
+          <UFormField class="h-full flex-1 w-full">
+            <UInput
+              :value="shareClasses?.[editingSeriesParent]?.currency"
+              :readonly="true"
+              :disabled="true"
+              variant="ghost"
+              :ui="{
+                base: 'w-full rounded-md border-0 border-b-1 border-dashed placeholder:text-dimmed'
+                  + ' disabled:cursor-not-allowed disabled:opacity-75 transition-colors'
+                  + ' px-2.5 pb-2 pt-6 text-base gap-1.5 ring-0 ring-transparent peer rounded-t-sm'
+                  + ' rounded-b-none bg-bcGovGray-100 shadow-bcGovInput focus:ring-0 focus:outline-none'
+                  + ' focus:shadow-bcGovInputFocus text-bcGovGray-900 focus-visible:ring-0 text-left'
+              }"
+              class="w-full text-center [&>input]:text-left [&>input]:p-[18px]"
+            />
+          </UFormField>
+        </div>
+        {{ shareClasses?.[editingSeriesParent]?.hasParValue === false ? $t('label.noPar') : '' }}
+      </div>
 
-        <hr class="border-bcGovGray-300">
+      <hr class="border-bcGovGray-300">
 
-        <UCheckbox
-          v-model="shareValues.hasRightsOrRestrictions"
-          :label="$t('label.hasRightsOrRestrictions')"
+      <UCheckbox
+        v-model="shareValues.hasRightsOrRestrictions"
+        :label="$t('label.hasRightsOrRestrictions')"
+        :ui=" {
+          base: 'mt-1',
+          label: 'pl-2'
+        }"
+        @update:model-value="rightsChangeHandler"
+      />
+      <div class="flex justify-end space-x-4 pl-2 items-center">
+        <div
+          v-if="formError && filingStore.sectionHasOpenForm(PageSection.SHARES)"
+          class="text-outcomes-error text-sm"
+        >
+          {{ $t(formError) }}
+        </div>
+        <UButton
+          :label="$t('label.done')"
+          color="primary"
+          class="rounded"
+          data-testid="addEditSharesDone"
+          @click="done()"
+        />
+        <UButton
+          :label="$t('label.cancel')"
+          variant="outline"
+          class="rounded"
+          data-testid="addEditSharesCancel"
+          @click="cancel()"
         />
       </div>
     </div>
-    <div class="flex justify-end space-x-4">
-      <UButton
-        :label="$t('label.done')"
-        color="primary"
-        class="rounded"
-        @click="done()"
-      />
-      <UButton
-        :label="$t('label.cancel')"
-        variant="outline"
-        class="rounded"
-        @click="cancel()"
-      />
-    </div>
-  </div>
+  </ConnectFormSection>
 </template>

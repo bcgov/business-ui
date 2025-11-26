@@ -1,0 +1,24 @@
+{
+  "shares": [
+    {
+      "parentShare": 0,
+      "shareClassName": "Test Series 1",
+      "shareParValueCurrency": "CAD",
+      "shareParValue": 1,
+      "shareHasParValue": true,
+      "shareHasMaxShares": true,
+      "shareMax": 10,
+      "shareColumnRightsRestrictions": false
+    },
+    {
+      "parentShare": 0,
+      "shareClassName": "Test Series 2",
+      "shareParValueCurrency": "CAD",
+      "shareParValue": 1,
+      "shareHasParValue": true,
+      "shareHasMaxShares": true,
+      "shareMax": 20,
+      "shareColumnRightsRestrictions": false
+    }
+  ]
+}

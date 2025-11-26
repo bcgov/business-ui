@@ -1,7 +1,7 @@
 import type { ApiResolutions } from '~/interfaces/articles'
 
 export const useLegalApi2 = () => {
-  const { $legalApi } = useNuxtApp()
+  const { $businessApi: $legalApi } = useNuxtApp()
 
   /**
    * Retrieves a list of addresses associated with a given business ID.
@@ -28,14 +28,14 @@ export const useLegalApi2 = () => {
    * Retrieves a list of share classes associated with a given business ID.
    *
    * @param {string} businessId - The unique identifier of the business whose share classes are being requested.
-   * @return {Promise<Share>} A promise that resolves to the response containing the share classes.
+   * @return {Promise<ShareStructure>} A promise that resolves to the response containing the share classes.
    */
-  async function getShareClasses(businessId: string): Promise<Share> {
-    return await $legalApi<Share>(`businesses/${businessId}/share-classes`)
+  async function getShareClasses(businessId: string): Promise<ShareStructure> {
+    return await $legalApi<ShareStructure>(`businesses/${businessId}/share-classes`)
   }
 
   return {
-    ...useLegalApi(),
+    ...useBusinessApi(),
     getAddresses,
     getResolutions,
     getShareClasses
