@@ -531,6 +531,9 @@ export default {
     fieldRequired: 'This field is required',
     routingSlipNumber: 'Routing Slip Number must be 9 digits',
     routingSlipNumberEmpty: 'Enter FAS Routing Slip Number',
-    selectAPaymentOption: 'Select a payment option'
+    selectAPaymentOption: 'Select a payment option',
+    exactDocIDChars: 'Document ID must be 8 characters',
+    duplicateDocId: 'A document record already exists with this document ID',
+    invalidDocId: 'The number entered is not recognized in our system'
   }
 }

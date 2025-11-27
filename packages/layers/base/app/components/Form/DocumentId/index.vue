@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormError, Form } from '@nuxt/ui'
-import type { DocumentIdSchema } from '../../../utils'
+
 const { getDocumentId } = useDocumentRecordServiceApi()
 
 defineProps<{

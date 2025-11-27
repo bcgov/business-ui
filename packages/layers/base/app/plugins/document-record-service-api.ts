@@ -27,7 +27,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   const apiWithStatus = async <T>(url: string, opts?: any) => {
     const response = await api.raw<T>(url, opts)
     // Merge status into the data object so pre-existing code still works
-    return Object.assign(response._data, { status: response.status })
+    return Object.assign(
+      response._data as Record<string, unknown>,
+      { status: response.status }
+    ) as T & { status: number }
   }
 
   return {
