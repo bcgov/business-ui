@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.2.0
+
+### Minor Changes
+
+- [#311](https://github.com/bcgov/business-ui/pull/311) [`1ef56ca`](https://github.com/bcgov/business-ui/commit/1ef56caefd3b319095480cfb48d1b95023bc8d30) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Document ID component and schema
+
 ## 0.1.20
 
 ### Patch Changes
