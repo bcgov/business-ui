@@ -17,7 +17,7 @@ export const useDocumentRecordServiceApi = () => {
    * @returns A promise to return a status code indicating whether the document ID is valid.
    */
   const getDocumentId = async (documentId: string): boolean => {
-    return await $documentRecordServiceApi(`/documents/verify/${documentId}`)
+    return await $documentRecordServiceApi.raw(`/documents/verify/${documentId}`)
   }
 
   return {

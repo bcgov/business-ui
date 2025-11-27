@@ -43,7 +43,7 @@ watch(
         isLoading.value = false
         // Trigger validation after statusCode changes
         nextTick(() => {
-          formRef.value?.validate()
+          formRef.value?.validate().catch(() => {})
         })
       }
     } else {
