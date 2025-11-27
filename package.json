@@ -20,5 +20,17 @@
     "@nuxt/eslint-config": "1.5.2",
     "dotenv": "catalog:",
     "eslint": "9.31.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@sbc-connect/nuxt-auth",
+      "@sbc-connect/nuxt-base",
+      "@sbc-connect/nuxt-business-base",
+      "@sbc-connect/nuxt-forms",
+      "@sbc-connect/nuxt-pay",
+      "@parcel/watcher",
+      "esbuild",
+      "vue-demi"
+    ]
   }
 }
