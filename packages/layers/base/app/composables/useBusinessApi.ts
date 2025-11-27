@@ -154,7 +154,7 @@ export const useBusinessApi = () => {
   async function saveOrUpdateDraftFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>,
-    isSubmission: boolean,
+    isSubmission: boolean
   ): Promise<FilingPostResponse<F>>
   // main function
   async function saveOrUpdateDraftFiling<F extends FilingRecord>(

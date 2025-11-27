@@ -8,7 +8,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // $fetch not being recognized
   const api = ($fetch as $Fetch).create({
-    baseURL: baseURL,
+    baseURL,
     async onRequest({ options }) {
       const auth = useConnectAuth()
       const accountStore = useConnectAccountStore()
