@@ -24,8 +24,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   // Wrap api to include status without breaking existing usage
-  const apiWithStatus = async <T>(url: string, opts?: any) => {
-    const response = await api.raw<T>(url, opts)
+  const apiWithStatus = async <T>(url: string) => {
+    const response = await api.raw<T>(url)
     // Merge status into the data object so pre-existing code still works
     return Object.assign(
       response._data as Record<string, unknown>,

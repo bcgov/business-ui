@@ -37,7 +37,7 @@ watch(
       try {
         const response = await getDocumentId(newVal)
         statusCode.value = response.status
-      } catch (err: any) {
+      } catch (err: Error) {
         statusCode.value = err?.response?.status || 500
       } finally {
         isLoading.value = false
@@ -54,7 +54,7 @@ watch(
 
 // Compute UInput props based on loading state and status code
 const uInputProps = computed<InputProps>(() => {
-  const iconMap: Record<number, { class: string; name: string }> = {
+  const iconMap: Record<number, { class: string, name: string }> = {
     404: { class: 'text-success size-7', name: 'i-mdi-check' },
     400: { class: 'text-error size-7', name: 'i-mdi-close' },
     200: { class: 'text-error size-7', name: 'i-mdi-close' }
@@ -72,7 +72,6 @@ const uInputProps = computed<InputProps>(() => {
     maxLength: 8
   }
 })
-
 
 // Provide custom props for UInput
 provide('UInput-props-document-id-number-input', uInputProps)
@@ -97,8 +96,8 @@ provide('UInput-props-document-id-number-input', uInputProps)
           :error="documentIdError"
         >
           <ConnectFormInput
-            name="documentIdNumber"
             v-model="model.documentIdNumber"
+            name="documentIdNumber"
             input-id="document-id-number-input"
             :label="$t('label.documentIdOpt')"
           />
