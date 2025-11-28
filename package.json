@@ -29,6 +29,7 @@
       "@sbc-connect/nuxt-forms",
       "@sbc-connect/nuxt-pay",
       "@parcel/watcher",
+      "@tailwindcss/oxide",
       "esbuild",
       "vue-demi"
     ]
