@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
+    "@iconify-json/mdi": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
     "@types/iso-3166-2": "^1.0.4",
