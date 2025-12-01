@@ -4,6 +4,7 @@ packages:
 
 catalog:
   '@axe-core/playwright': ^4.10.2
+  '@iconify-json/mdi': ^1.2.3
   '@nuxt/test-utils': ^3.19.1
   '@vitest/coverage-v8': ^3.2.4
   dotenv: ^17.2.1

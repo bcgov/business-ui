@@ -10,15 +10,8 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   modules: [
-    '@nuxt/icon',
     '@nuxt/test-utils/module'
   ],
-
-  icon: {
-    serverBundle: {
-      collections: ['mdi']
-    }
-  },
 
   extends: [
     '@sbc-connect/nuxt-business-base'

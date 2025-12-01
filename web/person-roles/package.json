@@ -29,6 +29,7 @@
   "devDependencies": {
     "@axe-core/playwright": "catalog:",
     "@faker-js/faker": "^10.0.0",
+    "@iconify-json/mdi": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
     "@types/node": "^24.0.10",
