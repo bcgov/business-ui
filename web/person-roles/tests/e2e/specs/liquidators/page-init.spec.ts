@@ -5,7 +5,7 @@ const identifier = 'BC1234567'
 
 test.describe('Manage Liquidators - Page init', () => {
   test.beforeEach(async ({ page }) => {
-    await mockApiCallsForFiling(page, identifier)
+    await mockApiCallsForFiling(page, identifier, 'Liquidator')
     await navigateToManageLiquidatorsPage(page)
     await page.waitForLoadState('networkidle')
   })

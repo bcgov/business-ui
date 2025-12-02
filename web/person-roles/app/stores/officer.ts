@@ -59,7 +59,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
           await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
         ).split(' ') as CorpTypeCd[]
         if (!business.value || !allowedBusinessTypes.includes(business.value.legalType)) {
-          // await modal.openFilingNotAvailableModal()
+          await modal.openFilingNotAvailableModal()
           return
         }
       }

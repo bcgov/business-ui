@@ -6,7 +6,8 @@ import { getLdarklyFlagsMock } from '#testMocks/ldarkly'
 
 export const mockApiCallsForFiling = async (
   page: Page,
-  identifier = 'BC1234567'
+  identifier = 'BC1234567',
+  roleType: RoleType | string
 ) => {
   page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
@@ -18,7 +19,7 @@ export const mockApiCallsForFiling = async (
     await route.fulfill({ json: getBusinessSettingsMock() })
   })
   // FUTURE: make this configurable for other filings
-  page.route(`**/api/v2/businesses/${identifier}/parties?role=Receiver`, async (route) => {
+  page.route(`**/api/v2/businesses/${identifier}/parties?role=${roleType}`, async (route) => {
     // FUTURE: update roles of parties to match the configurables
     await route.fulfill({ json: getPartiesMock() })
   })
