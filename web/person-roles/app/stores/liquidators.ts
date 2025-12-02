@@ -1,16 +1,16 @@
-import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
+import type { ManageLiquidatorsSchema } from '~/utils/schemas/forms/manage-liquidators'
 
-export const useReceiverStore = defineStore('receiver-store', () => {
-  const receiverSchema = getReceiversSchema()
+export const useLiquidatorStore = defineStore('liquidator-store', () => {
+  const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
 
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
-  const initializing = ref<boolean>(false) // receiver store loading state
-  const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
+  const initializing = ref<boolean>(false) // liquidator store loading state
+  const draftFilingState = shallowRef<ManageLiquidatorsSchema>({} as ManageLiquidatorsSchema) // filing state saved as draft
 
-  const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
+  const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
 
   // TODO: watcher on these that updates fee summary OR added as part of compute fns
   const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
@@ -20,11 +20,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     initializing.value = true
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await useFiling().initFiling<ManageReceiversSchema>(
+    const { draftFiling, parties } = await useFiling().initFiling<ManageLiquidatorsSchema>(
       businessId,
-      FilingType.CHANGE_OF_RECEIVERS,
+      FilingType.CHANGE_OF_LIQUIDATORS,
       draftId,
-      { roleType: RoleType.RECEIVER })
+      { roleType: RoleType.LIQUIDATOR })
 
     if (draftFiling?.data.value?.filing) {
       draftFilingState.value = draftFiling.data.value.filing
@@ -39,10 +39,10 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ManageReceiversSchema }>(
+    const payload = businessApi.createFilingPayload<{ changeOfLiquidators: ManageLiquidatorsSchema }>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
-      { changeOfReceivers: { ...formState, parties: tableState.value } },
+      { changeOfLiquidators: { ...formState, parties: tableState.value } },
       formState.staffPayment
     )
 
@@ -55,20 +55,20 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   async function submit(draftId?: string) {
-    const receiverPayload: ReceiverPayload = {
+    const liquidatorPayload: LiquidatorPayload = {
       ...(newParties.value
-        ? { appointedReceivers: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        ? { appointedLiquidators: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
         : {}),
       ...(newParties.value
-        ? { ceasedReceivers: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        ? { ceasedLiquidators: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
         : {})
     }
 
-    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ReceiverPayload }>(
+    const payload = businessApi.createFilingPayload<{ changeOfLiquidators: LiquidatorPayload }>(
       businessStore.business!,
       // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
       FilingType.CHANGE_OF_RECEIVERS,
-      { changeOfReceivers: receiverPayload },
+      { changeOfLiquidators: liquidatorPayload },
       formState.staffPayment
     )
     if (draftId) {
@@ -84,7 +84,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   function $reset() {
-    const emptyObj = receiverSchema.parse({})
+    const emptyObj = liquidatorSchema.parse({})
     formState.activeParty = undefined
     formState.courtOrder = emptyObj.courtOrder
     formState.staffPayment = emptyObj.staffPayment

@@ -30,6 +30,24 @@ export async function navigateToManageReceiversPage(page: Page) {
   await expect(page.getByText('Manage Receivers').first()).toBeVisible()
 }
 
+export async function navigateToManageLiquidatorsPage(page: Page) {
+  // navigate to page
+  await page.goto(`./en-CA/manage-liquidators/${identifier}`)
+  // wait for api response to settle
+  await page.waitForResponse('*/**/businesses/**/*')
+  // wait for heading, this will wait for the loading state to finish on initial page mount
+  await expect(page.getByText('Manage Liquidators').first()).toBeVisible()
+}
+
+export async function navigateToIntentToLiquidatePage(page: Page) {
+  // navigate to page
+  await page.goto(`./en-CA/manage-liquidators/${identifier}/intent-to-liquidate`)
+  // wait for api response to settle
+  await page.waitForResponse('*/**/businesses/**/*')
+  // wait for heading, this will wait for the loading state to finish on initial page mount
+  await expect(page.getByText('Intent to Liquidate').first()).toBeVisible()
+}
+
 export async function setupOfficerChangePage(page: Page, includeNavigation = true) {
   // auth api business info GET
   await page.route(`*/**/entities/${identifier}`, async (route) => {

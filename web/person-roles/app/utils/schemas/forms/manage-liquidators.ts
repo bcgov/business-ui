@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export function getManageReceiversSchema() {
+export function getManageLiquidatorsSchema() {
   return z.object({
     // TODO: update
     parties: z.array(z.object({
@@ -13,9 +13,9 @@ export function getManageReceiversSchema() {
   })
 }
 
-export type ManageReceiversSchema = z.output<ReturnType<typeof getManageReceiversSchema>>
+export type ManageLiquidatorsSchema = z.output<ReturnType<typeof getManageLiquidatorsSchema>>
 
-export function getReceiversSchema() {
+export function getLiquidatorsSchema() {
   return z.object({
     courtOrder: getCourtOrderPoaSchema().default({
       hasPoa: false,
@@ -36,4 +36,4 @@ export function getReceiversSchema() {
   })
 }
 
-export type ReceiverFormSchema = z.output<ReturnType<typeof getReceiversSchema>>
+export type LiquidatorFormSchema = z.output<ReturnType<typeof getLiquidatorsSchema>>
