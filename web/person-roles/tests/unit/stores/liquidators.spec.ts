@@ -18,7 +18,7 @@ mockNuxtImport('useRoute', () => () => mockRoute)
 // -----------------------------
 // Manage Parties (table state)
 // -----------------------------
-const tableStateRef = ref<any[]>([])
+const tableStateRef = ref<[]>([])
 mockNuxtImport('useManageParties', () => () => ({
   tableState: tableStateRef
 }))
@@ -196,7 +196,7 @@ describe('useLiquidatorStore', () => {
   describe.skip('save(draftId?)', () => {
     test('should build payload and save/update draft', async () => {
       tableStateRef.value = [{ new: { id: 'A' } }, { new: { id: 'B' } }]
-      store.formState.staffPayment = { option: 'NONE' } as any
+      store.formState.staffPayment = { option: 'NONE' }
 
       const draftId = 'd-123'
 
@@ -246,7 +246,7 @@ describe('useLiquidatorStore', () => {
         { new: { id: 3, actions: ['added'] } }
       ]
 
-      store.formState.staffPayment = { option: 'NONE' } as any
+      store.formState.staffPayment = { option: 'NONE' }
       const draftId = 'draft-xyz'
 
       await store.submit(draftId)
@@ -309,9 +309,9 @@ describe('useLiquidatorStore', () => {
   describe('$reset', () => {
     test('restores defaults from schema', () => {
       // mutate form state
-      store.formState.courtOrder = { hasPoa: true } as any
-      store.formState.staffPayment = { option: 'BCOL' } as any
-      store.formState.activeParty = { id: 'X' } as any
+      store.formState.courtOrder = { hasPoa: true }
+      store.formState.staffPayment = { option: 'BCOL' }
+      store.formState.activeParty = { id: 'X' }
 
       store.$reset()
 

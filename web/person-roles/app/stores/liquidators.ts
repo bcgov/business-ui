@@ -57,10 +57,22 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   async function submit(draftId?: string) {
     const liquidatorPayload: LiquidatorPayload = {
       ...(newParties.value
-        ? { appointedLiquidators: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+        ? {
+          appointedLiquidators: {
+            parties: newParties.value.map(p =>
+              formatPartyApi(p.new as PartyStateBase)
+            ) || []
+          }
+        }
         : {}),
-      ...(newParties.value
-        ? { ceasedLiquidators: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
+      ...(ceasedParties.value
+        ? {
+          ceasedLiquidators: {
+            parties: ceasedParties.value.map(p =>
+              formatPartyApi(p.new as PartyStateBase)
+            ) || []
+          }
+        }
         : {})
     }
 
