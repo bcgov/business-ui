@@ -172,11 +172,11 @@ useFilingPageWatcher({
         orientation="horizontal"
       >
         <FormAddress
-          id="records-address"
+          id="records-office"
           v-model="liquidatorStore.formState.recordsOffice"
-          name="recordsAddress"
+          name="recordsOffice"
           nested
-          :form-ref="'records-address-ref'"
+          :form-ref="'records-office-ref'"
         />
       </ConnectFieldset>
     </ConnectFieldset>
