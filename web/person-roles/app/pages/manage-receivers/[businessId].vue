@@ -5,14 +5,10 @@ import { z } from 'zod'
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
-const { setButtonControl } = useConnectButtonControl()
 const modal = useFilingModals()
 const { dashboardUrl, breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
 const receiverSchema = getReceiversSchema()
 const receiverStore = useReceiverStore()
-const businessStore = useBusinessStore()
-const feeStore = useConnectFeeStore()
-const accountStore = useConnectAccountStore()
 
 useHead({
   title: t('page.manageReceivers.title')
@@ -85,60 +81,19 @@ function onError(event: FormErrorEvent) {
   }
 }
 
-// TODO: consolidate with officers
-watch(
-  () => accountStore.currentAccount.id,
-  async () => {
-    const draftId = (urlParams.draft as string) ?? undefined
-    await receiverStore.init(businessId, draftId)
-
-    // load fees
-    if (businessStore.business?.legalType !== undefined) {
-      try {
-        // TODO: update init with actual fee codes -> potentially move this into common code
-        const officerFeeCode = 'NOCOI'
-        await feeStore.initFees(
-          [
-            { code: officerFeeCode, entityType: businessStore.business.legalType, label: t('label.officerChange') }
-          ],
-          // TODO: need design input
-          { label: t('page.manageReceivers.h1') }
-        )
-      } catch {
-        // do nothing if fee failed
-      }
-    }
-
-    setBreadcrumbs(breadcrumbs.value)
-
-    setButtonControl({
-      leftGroup: {
-        buttons: [
-          { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
-        ]
-      },
-      rightGroup: {
-        buttons: [
-          { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
-          {
-            label: t('label.submit'),
-            type: 'submit',
-            trailingIcon: 'i-mdi-chevron-right',
-            // @ts-expect-error - form attr will be typed once this change has been published
-            // https://github.com/nuxt/ui/pull/5348
-            form: 'receiver-filing'
-          }
-        ]
-      }
-    })
-
-    // save filing before user logged out when session expires
-    setOnBeforeSessionExpired(async () => {
-      await saveFiling(false, true)
-    })
-  },
-  { immediate: true }
-)
+// Watcher to handle filing save, cancel, and navigation
+useFilingPageWatcher({
+  store: receiverStore,
+  businessId,
+  draftId: urlParams.draft as string | undefined,
+  feeCode: 'NOCOI',
+  feeLabel: t('label.receiverChange'),
+  pageLabel: t('page.manageReceivers.h1'),
+  formId: 'receiver-filing',
+  saveFiling,
+  cancelFiling,
+  breadcrumbs
+})
 </script>
 
 <template>

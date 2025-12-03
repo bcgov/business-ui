@@ -7,9 +7,7 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const officerStore = useOfficerStore()
 const businessStore = useBusinessStore()
-const feeStore = useConnectFeeStore()
-const accountStore = useConnectAccountStore()
-const { setButtonControl, setAlertText } = useConnectButtonControl()
+const { setAlertText } = useConnectButtonControl()
 const modal = useFilingModals()
 const businessApi = useBusinessApi()
 const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.officerChange.h1'))
@@ -232,55 +230,19 @@ async function validateFolioNumber() {
   return true
 }
 
-// init officers on mount and when account changes
-// update breadcrumbs and bottom buttons when account changes
-watch(
-  () => accountStore.currentAccount.id,
-  async () => {
-    // load officer info
-    const draftId = (urlParams.draft as string) ?? undefined
-    await officerStore.initOfficerStore(businessId, draftId)
-
-    // load fees
-    if (businessStore.business?.legalType !== undefined) {
-      try {
-        const officerFeeCode = 'NOCOI'
-        await feeStore.initFees(
-          [
-            { code: officerFeeCode, entityType: businessStore.business.legalType, label: t('label.officerChange') }
-          ],
-          { label: t('label.officerChange'), matchServiceFeeToCode: officerFeeCode }
-        )
-        feeStore.addReplaceFee(officerFeeCode)
-      } catch {
-      // do nothing if fee failed
-      }
-    }
-
-    setBreadcrumbs(breadcrumbs.value)
-
-    setButtonControl({
-      leftGroup: {
-        buttons: [
-          { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
-        ]
-      },
-      rightGroup: {
-        buttons: [
-          { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
-          { onClick: submitFiling, label: t('label.submit'), trailingIcon: 'i-mdi-chevron-right' }
-        ]
-      }
-    })
-
-    // save filing before user logged out when session expires
-    setOnBeforeSessionExpired(async () => {
-      revokeBeforeUnloadEvent()
-      await saveFiling(false, true)
-    })
-  },
-  { immediate: true }
-)
+// Watcher to handle filing save, cancel, and navigation
+useFilingPageWatcher({
+  store: officerStore,
+  businessId,
+  draftId: urlParams.draft as string | undefined,
+  feeCode: 'NOCOI',
+  feeLabel: t('label.officerChange'),
+  pageLabel: t('page.manageOfficers.h1'),
+  formId: 'officer-filing',
+  saveFiling,
+  cancelFiling,
+  breadcrumbs
+})
 </script>
 
 <template>

@@ -9,7 +9,7 @@ export function getManageLiquidatorsSchema() {
     })),
     courtOrder: getCourtOrderPoaSchema(),
     documentId: getDocumentIdSchema(),
-    recordsAddress: getAddressSchema(),
+    recordsOffice: getAddressSchema(),
     staffPayment: getStaffPaymentSchema()
   })
 }
@@ -25,7 +25,7 @@ export function getLiquidatorsSchema() {
     documentId: getDocumentIdSchema().default({
       documentIdNumber: ''
     }),
-    recordsAddress: getAddressSchema().default({
+    recordsOffice: getAddressSchema().default({
       deliveryAddress: {
         street: '',
         streetAdditional: '',

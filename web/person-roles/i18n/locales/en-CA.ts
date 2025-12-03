@@ -33,6 +33,8 @@ export default {
     liquidationRecordsOfficeAddress: 'Liquidation Records Office Address',
     loading: 'Loading',
     officerChange: 'Officer Change',
+    receiverChange: 'Receiver Change',
+    liquidatorChange: 'Liquidator Change',
     officerInfo: 'Officer Information',
     receiverInfo: 'Receiver Information',
     liquidatorInfo: 'Liquidator Information',

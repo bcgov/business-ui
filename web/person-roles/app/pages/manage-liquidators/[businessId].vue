@@ -5,13 +5,9 @@ import { z } from 'zod'
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
-const { setButtonControl } = useConnectButtonControl()
 const modal = useFilingModals()
 const liquidatorSchema = getLiquidatorsSchema()
 const liquidatorStore = useLiquidatorStore()
-const businessStore = useBusinessStore()
-const feeStore = useConnectFeeStore()
-const accountStore = useConnectAccountStore()
 
 // Dynamic i18n keys and breadcrumb based on intent to liquidate or manage liquidators
 // ToDo: include Liquidation report configuration when applicable
@@ -102,60 +98,19 @@ function onError(event: FormErrorEvent) {
   }
 }
 
-// TODO: consolidate with officers
-watch(
-  () => accountStore.currentAccount.id,
-  async () => {
-    const draftId = (urlParams.draft as string) ?? undefined
-    await liquidatorStore.init(businessId, draftId)
-
-    // load fees
-    if (businessStore.business?.legalType !== undefined) {
-      try {
-        // TODO: update init with actual fee codes -> potentially move this into common code
-        const officerFeeCode = 'NOCOI'
-        await feeStore.initFees(
-          [
-            { code: officerFeeCode, entityType: businessStore.business.legalType, label: t('label.officerChange') }
-          ],
-          // TODO: need design input
-          { label: i18nKeys.value.h1 }
-        )
-      } catch {
-        // do nothing if fee failed
-      }
-    }
-
-    setBreadcrumbs(breadcrumbs.value)
-
-    setButtonControl({
-      leftGroup: {
-        buttons: [
-          { onClick: () => saveFiling(true), label: t('label.saveResumeLater'), variant: 'outline' }
-        ]
-      },
-      rightGroup: {
-        buttons: [
-          { onClick: cancelFiling, label: t('label.cancel'), variant: 'outline' },
-          {
-            label: t('label.submit'),
-            type: 'submit',
-            trailingIcon: 'i-mdi-chevron-right',
-            // @ts-expect-error - form attr will be typed once this change has been published
-            // https://github.com/nuxt/ui/pull/5348
-            form: 'liquidator-filing'
-          }
-        ]
-      }
-    })
-
-    // save filing before user logged out when session expires
-    setOnBeforeSessionExpired(async () => {
-      await saveFiling(false, true)
-    })
-  },
-  { immediate: true }
-)
+// Watcher to handle filing save, cancel, and navigation
+useFilingPageWatcher({
+  store: liquidatorStore,
+  businessId,
+  draftId: urlParams.draft as string | undefined,
+  feeCode: 'NOCOI',
+  feeLabel: t('label.liquidatorChange'),
+  pageLabel: i18nKeys.value.h1,
+  formId: 'liquidator-filing',
+  saveFiling,
+  cancelFiling,
+  breadcrumbs
+})
 </script>
 
 <template>
@@ -212,13 +167,18 @@ watch(
       :description="$t('text.liquidationRecordsOfficeAddressDesc')"
       body-variant="card"
     >
-      <FormAddress
-        id="records-address"
-        v-model="liquidatorStore.formState.recordsAddress"
-        name="recordsAddress"
-        nested
-        :form-ref="'records-address-ref'"
-      />
+      <ConnectFieldset
+        :label="$t('label.liquidationRecordsOfficeAddress')"
+        orientation="horizontal"
+      >
+        <FormAddress
+          id="records-address"
+          v-model="liquidatorStore.formState.recordsOffice"
+          name="recordsAddress"
+          nested
+          :form-ref="'records-address-ref'"
+        />
+      </ConnectFieldset>
     </ConnectFieldset>
 
     <!-- TODO: add text/translation -->
