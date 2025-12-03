@@ -4,9 +4,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { reactive, ref } from 'vue'
 
-// -----------------------------
 // Route (for businessId & draft)
-// -----------------------------
 const identifier = 'BC1234567'
 
 const mockRoute = reactive({
@@ -15,17 +13,13 @@ const mockRoute = reactive({
 })
 mockNuxtImport('useRoute', () => () => mockRoute)
 
-// -----------------------------
 // Manage Parties (table state)
-// -----------------------------
 const tableStateRef = ref<[]>([])
 mockNuxtImport('useManageParties', () => () => ({
   tableState: tableStateRef
 }))
 
-// -----------------------------
 // Business API
-// -----------------------------
 const mockCreateFilingPayload = vi.fn((business, filingType, body, staffPayment) => ({
   business,
   filingType,
@@ -42,17 +36,13 @@ const mockBusinessApi = {
 }
 mockNuxtImport('useBusinessApi', () => () => mockBusinessApi)
 
-// -----------------------------
 // Filing init (draft + parties)
-// -----------------------------
 const mockUseFiling = {
   initFiling: vi.fn()
 }
 mockNuxtImport('useFiling', () => () => mockUseFiling)
 
-// -----------------------------
 // Business Store
-// -----------------------------
 const businessIdentifier = 'BC123'
 const mockBusiness = {
   identifier: businessIdentifier,
@@ -64,9 +54,7 @@ mockNuxtImport('useBusinessStore', () => () => ({
   businessIdentifier
 }))
 
-// -----------------------------
 // Liquidators schema
-// -----------------------------
 const mockSchemaDefault = {
   courtOrder: { hasPoa: false, courtOrderNumber: '' },
   documentId: { documentIdNumber: '' },
@@ -82,12 +70,6 @@ const mockSchemaDefault = {
 }
 const parseFn = vi.fn(() => ({ ...mockSchemaDefault }))
 mockNuxtImport('getLiquidatorsSchema', () => () => ({ parse: parseFn }))
-
-// -----------------------------
-// Import the store under test
-// -----------------------------
-// NOTE: update this path to match your project
-// import { useLiquidatorStore } from '~/stores/liquidator'
 
 describe('useLiquidatorStore', () => {
   let store: ReturnType<typeof useLiquidatorStore>
@@ -106,17 +88,13 @@ describe('useLiquidatorStore', () => {
     mockRoute.query = {}
   })
 
-  // ---------------------------------------------------------------------------
   // Default state
-  // ---------------------------------------------------------------------------
   test('initializes with the correct default state', () => {
     expect(store.initializing).toBe(false)
     expect(store.formState).toEqual(mockSchemaDefault)
   })
 
-  // ---------------------------------------------------------------------------
   // init(businessId, draftId?)
-  // ---------------------------------------------------------------------------
   describe('init(businessId, draftId?)', () => {
     const partiesResponse = { data: [{ new: { id: 1, name: 'Initial L' } }] }
 
@@ -190,9 +168,7 @@ describe('useLiquidatorStore', () => {
     })
   })
 
-  // ---------------------------------------------------------------------------
   // save(draftId?) Skipping until Submission
-  // ---------------------------------------------------------------------------
   describe.skip('save(draftId?)', () => {
     test('should build payload and save/update draft', async () => {
       tableStateRef.value = [{ new: { id: 'A' } }, { new: { id: 'B' } }]
@@ -234,9 +210,7 @@ describe('useLiquidatorStore', () => {
     })
   })
 
-  // ---------------------------------------------------------------------------
   // submit(draftId?) Skipping until Submission
-  // ---------------------------------------------------------------------------
   describe.skip('submit(draftId?)', () => {
     test('creates appointed/ceased payloads from actions and updates draft when draftId exists', async () => {
       // Arrange table with action strings (no enum mock)
@@ -303,9 +277,7 @@ describe('useLiquidatorStore', () => {
     })
   })
 
-  // ---------------------------------------------------------------------------
   // $reset()
-  // ---------------------------------------------------------------------------
   describe('$reset', () => {
     test('restores defaults from schema', () => {
       // mutate form state

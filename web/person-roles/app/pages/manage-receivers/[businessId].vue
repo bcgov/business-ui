@@ -31,6 +31,7 @@ const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
 async function submitFiling(e: FormSubmitEvent<unknown>) {
+  // Todo: Exclude non-edited existing parties from the submission payload
   try {
     console.info('RECEIVER FILING DATA: ', e.data) // This does not include the table data
     // pull draft id from url or mark as undefined

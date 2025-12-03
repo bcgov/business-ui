@@ -30,6 +30,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       draftFilingState.value = draftFiling.data.value.filing
       formState.courtOrder = draftFilingState.value.courtOrder
       formState.documentId = draftFilingState.value.documentId
+      formState.recordsAddress = draftFilingState.value.recordsAddress
       formState.staffPayment = draftFilingState.value.staffPayment
       tableState.value = draftFilingState.value.parties
     } else if (parties?.data) {
@@ -79,7 +80,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const payload = businessApi.createFilingPayload<{ changeOfLiquidators: LiquidatorPayload }>(
       businessStore.business!,
       // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
-      FilingType.CHANGE_OF_RECEIVERS,
+      FilingType.CHANGE_OF_LIQUIDATORS,
       { changeOfLiquidators: liquidatorPayload },
       formState.staffPayment
     )
@@ -99,6 +100,8 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const emptyObj = liquidatorSchema.parse({})
     formState.activeParty = undefined
     formState.courtOrder = emptyObj.courtOrder
+    formState.documentId = emptyObj.documentId
+    formState.recordsAddress = emptyObj.recordsAddress
     formState.staffPayment = emptyObj.staffPayment
   }
 

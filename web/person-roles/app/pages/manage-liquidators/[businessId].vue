@@ -48,6 +48,7 @@ const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
 async function submitFiling(e: FormSubmitEvent<unknown>) {
+  console.log('submit')
   // Todo: Exclude non-edited existing parties from the submission payload
   try {
     console.info('LIQUIDATOR FILING DATA: ', e.data) // This does not include the table data
@@ -93,6 +94,7 @@ async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) 
 }
 
 function onError(event: FormErrorEvent) {
+  console.error('onError', event)
   const firstError = event?.errors?.[0]
 
   if (firstError?.name === 'staffPayment.option') {
@@ -206,8 +208,26 @@ watch(
       :state="liquidatorStore.formState.documentId"
     />
 
+    <ConnectFieldset
+      v-if="hasIntentToLiquidate"
+      :label="'4. ' + $t('label.liquidationRecordsOfficeAddress')"
+      :description="$t('text.liquidationRecordsOfficeAddressDesc')"
+      body-variant="card"
+    >
+      <FormAddress
+        id="records-address"
+        v-model="liquidatorStore.formState.recordsAddress"
+        name="recordsAddress"
+        nested
+        :form-ref="'records-address-ref'"
+      />
+    </ConnectFieldset>
+
     <!-- TODO: add text/translation -->
-    <ConnectFieldset label="4. Staff Payment" body-variant="card">
+    <ConnectFieldset
+      :label="(hasIntentToLiquidate ? '5. ' : '4.') + 'Staff Payment'"
+      body-variant="card"
+    >
       <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
         <StaffPayment
           ref="staff-pay-ref"

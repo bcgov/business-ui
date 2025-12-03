@@ -9,6 +9,7 @@ export function getManageLiquidatorsSchema() {
     })),
     courtOrder: getCourtOrderPoaSchema(),
     documentId: getDocumentIdSchema(),
+    recordsAddress: getAddressSchema(),
     staffPayment: getStaffPaymentSchema()
   })
 }
@@ -23,6 +24,27 @@ export function getLiquidatorsSchema() {
     }),
     documentId: getDocumentIdSchema().default({
       documentIdNumber: ''
+    }),
+    recordsAddress: getAddressSchema().default({
+      deliveryAddress: {
+        street: '',
+        streetAdditional: '',
+        city: '',
+        region: '',
+        postalCode: '',
+        country: 'CA',
+        locationDescription: ''
+      },
+      mailingAddress: {
+        street: '',
+        streetAdditional: '',
+        city: '',
+        region: '',
+        postalCode: '',
+        country: 'CA',
+        locationDescription: ''
+      },
+      sameAs: false
     }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,
