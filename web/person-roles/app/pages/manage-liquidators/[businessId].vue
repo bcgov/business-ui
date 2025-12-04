@@ -107,8 +107,9 @@ useFilingPageWatcher({
   feeLabel: t('label.liquidatorChange'),
   pageLabel: i18nKeys.value.h1,
   formId: 'liquidator-filing',
-  saveFiling,
-  cancelFiling,
+  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
+  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
+  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
   breadcrumbs
 })
 </script>
@@ -167,7 +168,7 @@ useFilingPageWatcher({
       :description="$t('text.liquidationRecordsOfficeAddressDesc')"
       body-variant="card"
     >
-      <ConnectFieldset
+      <ConnectFormFieldWrapper
         :label="$t('label.liquidationRecordsOfficeAddress')"
         orientation="horizontal"
       >
@@ -178,7 +179,7 @@ useFilingPageWatcher({
           nested
           :form-ref="'records-office-ref'"
         />
-      </ConnectFieldset>
+      </ConnectFormFieldWrapper>
     </ConnectFieldset>
 
     <!-- TODO: add text/translation -->

@@ -90,8 +90,9 @@ useFilingPageWatcher({
   feeLabel: t('label.receiverChange'),
   pageLabel: t('page.manageReceivers.h1'),
   formId: 'receiver-filing',
-  saveFiling,
-  cancelFiling,
+  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
+  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
+  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
   breadcrumbs
 })
 </script>

@@ -239,8 +239,9 @@ useFilingPageWatcher({
   feeLabel: t('label.officerChange'),
   pageLabel: t('page.manageOfficers.h1'),
   formId: 'officer-filing',
-  saveFiling,
-  cancelFiling,
+  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
+  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
+  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
   breadcrumbs
 })
 </script>

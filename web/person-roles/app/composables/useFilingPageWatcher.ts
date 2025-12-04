@@ -6,9 +6,10 @@ interface FilingPageWatcherOptions {
   feeLabel: string
   pageLabel: string
   formId: string
-  saveFiling: (resumeLater?: boolean, disableCheck?: boolean) => Promise<void>
-  cancelFiling: () => Promise<void>
-  breadcrumbs: Ref<object>
+  saveFiling: { clickEvent: () => Promise<void>, label: string }
+  cancelFiling: { clickEvent: () => Promise<void>, label: string }
+  submitFiling?: { clickEvent: () => Promise<void>, label: string }
+  breadcrumbs: Ref<ConnectBreadcrumb[]>
 }
 
 export function useFilingPageWatcher(options: FilingPageWatcherOptions) {
@@ -37,22 +38,31 @@ export function useFilingPageWatcher(options: FilingPageWatcherOptions) {
       setButtonControl({
         leftGroup: {
           buttons: [
-            { onClick: () => options.saveFiling(true),
-              label: 'Save & Resume Later',
+            {
+              onClick: options.saveFiling.clickEvent,
+              label: options.saveFiling.label,
               variant: 'outline'
             }
           ]
         },
         rightGroup: {
           buttons: [
-            { onClick: options.cancelFiling, label: 'Cancel', variant: 'outline' },
-            { label: 'Submit', type: 'submit', trailingIcon: 'i-mdi-chevron-right', form: options.formId }
+            {
+              onClick: options.cancelFiling.clickEvent,
+              label: options.cancelFiling.label,
+              variant: 'outline'
+            },
+            {
+              onClick: options.submitFiling?.clickEvent,
+              label: options.submitFiling?.label,
+              trailingIcon: 'i-mdi-chevron-right'
+            }
           ]
         }
       })
 
       setOnBeforeSessionExpired(async () => {
-        await options.saveFiling(false, true)
+        await options.saveFiling.clickEvent(false, true)
       })
     },
     { immediate: true }
