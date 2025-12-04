@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.3.0
+
+### Minor Changes
+
+- [#318](https://github.com/bcgov/business-ui/pull/318) [`499edd1`](https://github.com/bcgov/business-ui/commit/499edd149a688fb009a2b48b2888866f1acf4ad0) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Include liquidation enums for filing and filing sub types
+
 ## 0.2.0
 
 ### Minor Changes

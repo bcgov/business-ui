@@ -1,7 +1,7 @@
 {
   "name": "@sbc-connect/nuxt-business-base",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": "github:bcgov/business-ui",
   "license": "BSD-3-Clause",
   "main": "./nuxt.config.ts",
