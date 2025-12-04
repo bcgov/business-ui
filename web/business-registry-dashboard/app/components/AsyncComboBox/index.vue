@@ -283,9 +283,9 @@ function handleInput (e: Event) {
     <UInput
       id="business-search-input"
       ref="inputRef"
+      v-model="query"
       type="text"
       role="combobox"
-      :value="query"
       :aria-expanded="showDropdown"
       aria-controls="search-results-container"
       autocomplete="off"
