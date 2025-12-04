@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { mockApiCallsForFiling, navigateToManageReceiversPage } from '../../test-utils'
+import { mockApiCallsForFiling, navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
 
-test.describe('Manage Receivers - Page init', () => {
+test.describe('Manage Liquidators - Page init', () => {
   test.beforeEach(async ({ page }) => {
-    await mockApiCallsForFiling(page, identifier, 'Receiver')
-    await navigateToManageReceiversPage(page)
+    await mockApiCallsForFiling(page, identifier, 'Liquidator')
+    await navigateToManageLiquidatorsPage(page)
     await page.waitForLoadState('networkidle')
   })
 
@@ -16,14 +16,14 @@ test.describe('Manage Receivers - Page init', () => {
       expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
       // has breadcrumb
       expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-      expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('Manage Receivers')).toBeVisible()
+      expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('Manage Liquidators')).toBeVisible()
       // has tombstone
       expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
       expect(page.getByTestId('connect-tombstone-wrapper')
         .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
       ).toBeVisible()
-      // has manage receiver title
-      expect(page.getByRole('heading', { name: 'Manage Receivers' })).toBeVisible()
+      // has manage liquidator title
+      expect(page.getByRole('heading', { name: 'Manage Liquidators' })).toBeVisible()
       // has fee summary
       expect(page.getByTestId('fee-widget')).toBeVisible()
       // has buttons

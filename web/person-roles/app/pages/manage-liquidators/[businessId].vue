@@ -6,12 +6,28 @@ const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
-const { dashboardUrl, breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
-const receiverSchema = getReceiversSchema()
-const receiverStore = useReceiverStore()
+const liquidatorSchema = getLiquidatorsSchema()
+const liquidatorStore = useLiquidatorStore()
+
+// Dynamic i18n keys and breadcrumb based on intent to liquidate or manage liquidators
+// ToDo: include Liquidation report configuration when applicable
+const hasIntentToLiquidate = computed(() => route.path.includes('intent-to-liquidate'))
+const i18nKeys = computed(() => {
+  return hasIntentToLiquidate.value
+    ? {
+      h1: t('page.intentToLiquidate.h1'),
+      title: t('page.intentToLiquidate.title')
+    }
+    : {
+      h1: t('page.manageLiquidators.h1'),
+      title: t('page.manageLiquidators.title')
+    }
+})
+
+const { dashboardUrl, breadcrumbs } = useFilingNavigation(i18nKeys.value.h1)
 
 useHead({
-  title: t('page.manageReceivers.title')
+  title: i18nKeys.value.title
 })
 
 definePageMeta({
@@ -19,7 +35,8 @@ definePageMeta({
   middleware: [
     // Check for login redirect
     'connect-auth'
-  ]
+  ],
+  alias: ['/manage-liquidators/:businessId/intent-to-liquidate'] // aliased path for intent to liquidate
 })
 
 const businessId = route.params.businessId as string
@@ -29,10 +46,10 @@ const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 async function submitFiling(e: FormSubmitEvent<unknown>) {
   // Todo: Exclude non-edited existing parties from the submission payload
   try {
-    console.info('RECEIVER FILING DATA: ', e.data) // This does not include the table data
+    console.info('LIQUIDATOR FILING DATA: ', e.data) // This does not include the table data
     // pull draft id from url or mark as undefined
     // const draftId = (urlParams.draft as string) ?? undefined
-    // await receiverStore.submit(draftId)
+    // await liquidatorStore.submit(draftId)
     // navigate to business dashboard if filing does *not* fail
     // await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
@@ -53,14 +70,14 @@ async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) 
   // TODO: consolidate with officers - break out common functionality
   try {
     // pull draft id from url or mark as undefined
-    const result = receiverSchema.safeParse(receiverStore.formState)
+    const result = liquidatorSchema.safeParse(liquidatorStore.formState)
     if (result.error) {
       // TODO: do not save if there are validation errors
       return
     }
     const draftId = (urlParams.draft as string) ?? undefined
 
-    await receiverStore.save(draftId)
+    await liquidatorStore.save(draftId)
 
     // if resume later, navigate back to business dashboard
     if (resumeLater) {
@@ -83,13 +100,13 @@ function onError(event: FormErrorEvent) {
 
 // Watcher to handle filing save, cancel, and navigation
 useFilingPageWatcher({
-  store: receiverStore,
+  store: liquidatorStore,
   businessId,
   draftId: urlParams.draft as string | undefined,
   feeCode: 'NOCOI',
-  feeLabel: t('label.receiverChange'),
-  pageLabel: t('page.manageReceivers.h1'),
-  formId: 'receiver-filing',
+  feeLabel: t('label.liquidatorChange'),
+  pageLabel: i18nKeys.value.h1,
+  formId: 'liquidator-filing',
   saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
   cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
   submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
@@ -99,58 +116,81 @@ useFilingPageWatcher({
 
 <template>
   <UForm
-    id="receiver-filing"
-    ref="receiver-filing"
-    :state="receiverStore.formState"
+    id="liquidator-filing"
+    ref="liquidator-filing"
+    :state="liquidatorStore.formState"
     :schema="z.any()"
     novalidate
     class="py-10 space-y-10"
-    :aria-label="t('page.manageReceivers.h1')"
+    :aria-label="t('page.manageLiquidators.h1')"
     @submit="submitFiling"
     @error="onError"
   >
     <div class="space-y-1">
-      <h1>{{ t('page.manageReceivers.h1') }}</h1>
+      <h1>{{ i18nKeys.h1 }}</h1>
       <!-- TODO: add text/translation -->
-      <p>Some receiver descriptive text</p>
+      <p>Some liquidator descriptive text</p>
     </div>
 
     <section class="space-y-4">
       <h2 class="text-base">
-        1. {{ $t('label.receiverInfo') }}
+        1. {{ $t('label.liquidatorInfo') }}
       </h2>
 
       <ManageParties
-        v-model:active-party="receiverStore.formState.activeParty"
-        :loading="receiverStore.initializing"
-        :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
-        :add-label="$t('label.addReceiver')"
-        :edit-label="$t('label.editReceiver')"
+        v-model:active-party="liquidatorStore.formState.activeParty"
+        :loading="liquidatorStore.initializing"
+        :empty-text="liquidatorStore.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
+        :add-label="$t('label.addLiquidator')"
+        :edit-label="$t('label.editLiquidator')"
       />
     </section>
 
     <FormCourtOrderPoa
       ref="court-order-poa-ref"
-      v-model="receiverStore.formState.courtOrder"
+      v-model="liquidatorStore.formState.courtOrder"
       name="courtOrder"
       order="2"
-      :state="receiverStore.formState.courtOrder"
+      :state="liquidatorStore.formState.courtOrder"
     />
 
     <FormDocumentId
       ref="document-id-ref"
-      v-model="receiverStore.formState.documentId"
+      v-model="liquidatorStore.formState.documentId"
       name="documentId"
       order="3"
-      :state="receiverStore.formState.documentId"
+      :state="liquidatorStore.formState.documentId"
     />
 
+    <ConnectFieldset
+      v-if="hasIntentToLiquidate"
+      :label="'4. ' + $t('label.liquidationRecordsOfficeAddress')"
+      :description="$t('text.liquidationRecordsOfficeAddressDesc')"
+      body-variant="card"
+    >
+      <ConnectFormFieldWrapper
+        :label="$t('label.liquidationRecordsOfficeAddress')"
+        orientation="horizontal"
+      >
+        <FormAddress
+          id="records-office"
+          v-model="liquidatorStore.formState.recordsOffice"
+          name="recordsOffice"
+          nested
+          :form-ref="'records-office-ref'"
+        />
+      </ConnectFormFieldWrapper>
+    </ConnectFieldset>
+
     <!-- TODO: add text/translation -->
-    <ConnectFieldset label="4. Staff Payment" body-variant="card">
+    <ConnectFieldset
+      :label="(hasIntentToLiquidate ? '5. ' : '4.') + 'Staff Payment'"
+      body-variant="card"
+    >
       <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
         <StaffPayment
           ref="staff-pay-ref"
-          v-model="receiverStore.formState.staffPayment"
+          v-model="liquidatorStore.formState.staffPayment"
           :show-priority="true"
           name="staffPayment"
         />

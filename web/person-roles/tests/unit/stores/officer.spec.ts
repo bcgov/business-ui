@@ -119,7 +119,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.initOfficerStore(businessId)
+        await store.init(businessId)
 
         // assert
         expect(store.initializing).toBe(false)
@@ -136,7 +136,7 @@ describe('useOfficerStore', () => {
         vi.mocked(isFilingAllowed).mockReturnValue(false)
 
         // init store
-        await store.initOfficerStore(businessId)
+        await store.init(businessId)
 
         // assert
         expect(mockErrorModalOpen).toHaveBeenCalled()
@@ -155,7 +155,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.initOfficerStore(businessBC1234567.business.identifier)
+        await store.init(businessBC1234567.business.identifier)
 
         // assert
         expect(store.initialOfficers).toHaveLength(0)
@@ -188,7 +188,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.initOfficerStore(businessId, draftId)
+        await store.init(businessId, draftId)
 
         // assert
         expect(store.officerTableState[0]!.new.firstName).toBe('Draft Officer')
@@ -208,7 +208,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.initOfficerStore(businessId, draftId)
+        await store.init(businessId, draftId)
 
         // assert
         expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
@@ -227,7 +227,7 @@ describe('useOfficerStore', () => {
       mockLegalApi.getParties.mockRejectedValue(apiError)
 
       // init store
-      await store.initOfficerStore(businessId)
+      await store.init(businessId)
 
       // assert
       expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
