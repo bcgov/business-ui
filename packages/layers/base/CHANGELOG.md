@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.3.1
+
+### Patch Changes
+
+- [#323](https://github.com/bcgov/business-ui/pull/323) [`5fc2db3`](https://github.com/bcgov/business-ui/commit/5fc2db31fd74762da4a5b63fd923f23ca9df9b86) Thanks [@deetz99](https://github.com/deetz99)! - Add "date" property to filing header payload creation
+
 ## 0.3.0
 
 ### Minor Changes
