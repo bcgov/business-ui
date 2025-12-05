@@ -55,13 +55,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
         return
       }
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
-        const allowedBusinessTypes = (
-          await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
-        ).split(' ') as CorpTypeCd[]
-        if (!business.value || !allowedBusinessTypes.includes(business.value.legalType)) {
-          await modal.openFilingNotAvailableModal()
-          return
-        }
+        // const allowedBusinessTypes = (
+        //   await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
+        // ).split(' ') as CorpTypeCd[]
+        // if (!business.value || !allowedBusinessTypes.includes(business.value.legalType)) {
+        //   await modal.openFilingNotAvailableModal()
+        //   return
+        // }
       }
 
       // if ***NO*** filing ID provided validate business is allowed to complete this filing type
