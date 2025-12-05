@@ -18,6 +18,7 @@ export const useBusinessApi = () => {
           name: filingName,
           certifiedBy: authUser.value.fullName,
           accountId,
+          date: getToday(),
           ...headerData
         },
         business: {
