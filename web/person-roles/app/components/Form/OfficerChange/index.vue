@@ -69,12 +69,13 @@ const roleSchema = z.object({
 })
 
 const schema = z.object({
+  id: z.string().optional(),
   firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
   middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
   lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 })),
   preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
-  mailingAddress: getNonRequiredAddressSchema(),
+  mailingAddress: getRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
   deliveryAddress: getRequiredAddressSchema(),
   roles: z
@@ -85,7 +86,7 @@ const schema = z.object({
 
       if (!hasActiveRole) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: t('validation.role.min')
         })
       }
@@ -225,15 +226,7 @@ watch(
       state.mailingAddress = { ...props.defaultState.mailingAddress }
     }
 
-    const mailingFields = [
-      'mailingAddress.country',
-      'mailingAddress.city',
-      'mailingAddress.region',
-      'mailingAddress.postalCode',
-      'mailingAddress.street'
-    ]
-
-    mailingFields.forEach(item => formRef.value?.clear(item))
+    formRef.value?.clear(/^mailingAddress.*/)
   },
   { immediate: true }
 )
@@ -423,8 +416,8 @@ function clearUnfinishedTaskMsg() {
             id="delivery-address"
             v-model="state.deliveryAddress"
             schema-prefix="deliveryAddress"
-            :form-ref="formRef"
             street-help-text="no-po"
+            @should-validate="formRef?.clear(/^deliveryAddress.*/)"
           />
         </ConnectFieldset>
 
@@ -445,7 +438,7 @@ function clearUnfinishedTaskMsg() {
             id="mailing-address"
             v-model="state.mailingAddress"
             schema-prefix="mailingAddress"
-            :form-ref="formRef"
+            @should-validate="formRef?.clear(/^mailingAddress.*/)"
           />
         </ConnectFieldset>
 
