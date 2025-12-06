@@ -20,17 +20,28 @@ defineEmits<{
   modalClosed: [void]
 }>()
 
-// Remove focus from close button after modal mount to prevent it from being auto-focused
-// This ensures the close button isn't immediately highlighted when the modal opens
+// Remove focus from close button after modal mount to prevent it from being auto-focused.
+// This ensures the close button isn't immediately highlighted when the modal opens.
 onMounted(async () => {
   await nextTick()
   closeButtonRef.value?.$el?.blur()
 })
+
+// Use this composable to handle the "esc" shortcut for closing the modal.
+defineShortcuts({
+  escape: {
+    usingInput: true,
+    whenever: [modalModel],
+    handler: () => { modalModel.value = false }
+  }
+})
 </script>
+
 <template>
   <UModal
     ref="modalRef"
     v-model="modalModel"
+    prevent-close
     :fullscreen
     :ui="{
       width: 'w-full sm:max-w-lg md:min-w-min'
@@ -60,6 +71,7 @@ onMounted(async () => {
           />
         </div>
       </template>
+
       <slot>
         <div v-if="error" class="-mb-4 -mt-12 flex flex-col gap-4">
           <div class="relative w-full">
@@ -85,6 +97,7 @@ onMounted(async () => {
           <BCRegContactInfo v-if="error.showContactInfo" class="self-start text-left" />
         </div>
       </slot>
+
       <template v-if="actions !== undefined || $slots.footer" #footer>
         <slot name="footer">
           <div v-if="actions !== undefined" class="flex flex-wrap items-center justify-center gap-4 pt-2">

@@ -140,6 +140,7 @@ onMounted(async () => {
   }, 300)
 })
 </script>
+
 <template>
   <ModalBase
     :title="$t('form.manageBusiness.heading')"

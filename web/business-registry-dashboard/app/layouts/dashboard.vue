@@ -118,7 +118,7 @@ onMounted(async () => {
     </div>
 
     <slot /> <!-- This is where the page content will be injected -->
-    <UModals />
+
     <UNotifications />
   </div>
 </template>

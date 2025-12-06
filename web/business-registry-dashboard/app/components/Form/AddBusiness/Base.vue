@@ -230,6 +230,7 @@ watch(() => props.authOptions, (newOptions) => {
   }
 }, { immediate: true })
 </script>
+
 <template>
   <UForm
     ref="formRef"
