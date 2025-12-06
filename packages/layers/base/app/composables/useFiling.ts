@@ -5,7 +5,6 @@ export const useFiling = () => {
   const { getBusinessParties } = useBusinessParty()
   const businessStore = useBusinessStore()
   const modal = useFilingModals()
-  const { errorModal } = useModal()
 
   function getFilingName(
     type: FilingType,
@@ -35,12 +34,23 @@ export const useFiling = () => {
         : undefined
   }
 
-  function handleErrors(errors: { error: Error | undefined | null, i18nPrefix: string }[]) {
-    for (const { error, i18nPrefix } of errors) {
-      if (error) {
-        errorModal.open({ error: error, i18nPrefix })
-        return true
+  // TODO: cleanup error handling
+  async function handleErrors(error: unknown) {
+    let hasHandledError = false
+    if (Array.isArray(error) && error.length) {
+      const firstError = error[0]
+      if (
+        firstError
+        && typeof firstError === 'object'
+        && 'fn' in firstError
+        && 'error' in firstError
+      ) {
+        await firstError.fn(firstError.error)
+        hasHandledError = true
       }
+    }
+    if (!hasHandledError) {
+      await modal.openInitFilingErrorModal(error)
     }
   }
 
@@ -62,7 +72,7 @@ export const useFiling = () => {
       let draftFilingResp = undefined
       let partiesResp = undefined
       if (draftId) {
-        draftFilingResp = businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+        draftFilingResp = await businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
       } else if (partiesParams) {
         partiesResp = getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
       }
@@ -73,19 +83,19 @@ export const useFiling = () => {
         [businessError, businessContactError]
       ] = await Promise.all([draftFilingResp, partiesResp, businessInitResp])
 
-      const errors = [
-        { error: businessError, i18nPrefix: 'modal.error.business.init' },
-        { error: businessContactError, i18nPrefix: 'modal.error.business.contact' },
-        { error: parties?.error, i18nPrefix: 'modal.error.business.parties' }
+      // TODO - FUTURE - consistent error value accessing ie not: (errorValue, value.error, value.error.value)
+      const errorConfig = [
+        { error: businessError, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
+        { error: businessContactError, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
+        { error: parties?.error, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
+        { error: draftFiling?.error.value, fn: (error: unknown) => modal.openGetDraftFilingErrorModal(error) }
       ]
-      if (handleErrors(errors)) {
-        return {
-          draftFiling: undefined,
-          parties: undefined
-        }
-      }
-      if (draftFiling?.error.value) {
-        modal.openGetDraftFilingErrorModal(draftFiling.error.value)
+
+      // filter out undefined or null errors
+      const definedErrors = errorConfig.filter(e => !!e.error)
+
+      if (definedErrors.length) {
+        throw definedErrors
       }
 
       return {
@@ -93,7 +103,7 @@ export const useFiling = () => {
         parties
       }
     } catch (error) {
-      await modal.openInitFilingErrorModal(error)
+      await handleErrors(error)
       return {
         draftFiling: undefined,
         parties: undefined
