@@ -6,7 +6,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
   const modal = useFilingModals()
-  const errorModal = useModal().errorModal
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
@@ -31,11 +30,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
       initializing.value = true
 
       // TODO: add in parties to init call once officers is updated to use party table
-      const { draftFiling } = await useFiling().initFiling(businessId, FilingType.CHANGE_OF_OFFICERS, draftId)
-      if (draftFiling?.error.value) {
-        await modal.openGetDraftFilingErrorModal(draftFiling.error.value)
-        return
-      } else if (draftFiling?.data.value?.filing) {
+      const { draftFiling } = await useFiling().initFiling(
+        businessId,
+        FilingType.CHANGE_OF_OFFICERS,
+        draftId
+      )
+
+      if (draftFiling?.data.value?.filing) {
         filingDraftState.value = { filing: draftFiling.data.value.filing, errors: [] } as OfficersDraftFiling
         folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
       }
@@ -45,15 +46,18 @@ export const useOfficerStore = defineStore('officer-store', () => {
         businessApi.getParties(businessId, { classType: 'officer' })
       ])
 
+      // TODO: remove unnecessary if statement
       if (businessError) {
-        errorModal.open({ error: businessError, i18nPrefix: 'modal.error.business.init' })
+        // error handle by useFiling composable
         return
       }
 
+      // TODO: remove unnecessary if statement
       if (contactError) {
-        errorModal.open({ error: contactError, i18nPrefix: 'modal.error.business.contact' })
+        // error handle by useFiling composable
         return
       }
+
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
           await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
@@ -75,8 +79,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
       if (parties.status.value === 'pending') {
         await parties.refresh()
       }
+      // TODO: remove once parties fetched by useFiling composable
       if (parties.error.value) {
-        errorModal.open({ error: parties.error.value, i18nPrefix: 'modal.error.business.parties' })
+        await modal.openInitFilingErrorModal(parties.error.value)
         return
       }
       // map current/existing officers
@@ -111,7 +116,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       initialOfficers.value = officers || [] // retain initial officer state before changes
 
       // set table to returned draft state if exists
-      if (draftId && filingDraftState.value?.filing.changeOfOfficers.length) {
+      if (draftId && draftFiling !== undefined && filingDraftState.value?.filing?.changeOfOfficers?.length) {
         officerTableState.value = JSON.parse(JSON.stringify(filingDraftState.value.filing.changeOfOfficers))
         return
       }
@@ -122,6 +127,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
         old: o
       })) || []
     } catch (error) {
+      // should never get here unless unhandled type/value error, fetch errors handled by useFiling composable
       await modal.openInitFilingErrorModal(error)
     } finally {
       initializing.value = false
