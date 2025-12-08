@@ -1,23 +1,21 @@
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
+import { StatusCodes } from 'http-status-codes'
 const emit = defineEmits<{
   refresh: []
 }>()
-import { StatusCodes } from 'http-status-codes'
 const config = useRuntimeConfig().public
 const showContactInfo = ref(false)
 
-async function handleRefresh() {
-  try {
-    emit('refresh')
-  } catch (error) {
-    if (error instanceof Error && error.response?.status === StatusCodes.UNAUTHORIZED) {
-      const registryUrl = config.registryHomeUrl
+function handleRefresh () {
+  useAffiliationsStore.loadAffiliations().catch((error) => {
+    if (error instanceof FetchError && error?.response?.status === StatusCodes.UNAUTHORIZED) {
+      const registryHomeUrl = config.registryHomeUrl
       const redirectUrl = encodeURIComponent(window.location.href)
-      window.location.href = `${registryUrl}/login?redirect=${redirectUrl}`
-      return
+      window.location.href = `${registryHomeUrl}/login?return=${redirectUrl}`
     }
-    emit('refresh')
-  }
+  })
+  emit('refresh')
 }
 
 function toggleContactInfo () {
