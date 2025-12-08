@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineEmits<{
+const emit = defineEmits<{
   refresh: []
 }>()
 import { StatusCodes } from 'http-status-codes'
@@ -16,6 +16,7 @@ async function handleRefresh() {
       window.location.href = `${registryUrl}/login?redirect=${redirectUrl}`
       return
     }
+    emit('refresh')
   }
 }
 
@@ -42,7 +43,7 @@ function toggleContactInfo () {
       variant="outline"
       class="mt-4 px-4"
       :ui="{ base: 'rounded' }"
-      @click="$emit('refresh')"
+      @click="handleRefresh"
     />
 
     <hr class="my-4 w-full border-t border-bcGovGray-300">
