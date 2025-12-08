@@ -151,7 +151,7 @@ test.describe('Page init errors', () => {
       await expect(modal).toBeVisible()
       await expect(modal).toContainText('Page not found')
       await expect(modal).toContainText(
-        'We cannot display this information right now. Please try refreshing the page.'
+        'We cannot display this page right now.'
       )
     })
   })
