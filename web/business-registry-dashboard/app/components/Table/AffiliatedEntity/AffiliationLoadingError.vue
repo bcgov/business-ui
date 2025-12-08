@@ -2,8 +2,22 @@
 defineEmits<{
   refresh: []
 }>()
-
+import { StatusCodes } from 'http-status-codes'
+const config = useRuntimeConfig().public
 const showContactInfo = ref(false)
+
+async function handleRefresh() {
+  try {
+    emit('refresh')
+  } catch (error) {
+    if (error instanceof Error && error.response?.status === StatusCodes.UNAUTHORIZED) {
+      const registryUrl = config.registryHomeUrl
+      const redirectUrl = encodeURIComponent(window.location.href)
+      window.location.href = `${registryUrl}/login?redirect=${redirectUrl}`
+      return
+    }
+  }
+}
 
 function toggleContactInfo () {
   if (showContactInfo.value) { return } // There is no way for the user to hide the contact info once it is shown
