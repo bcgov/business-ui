@@ -12,10 +12,11 @@ const mockRoute = reactive({
 })
 mockNuxtImport('useRoute', () => () => mockRoute)
 
+const mockGetAndValidateDraftFiling = vi.fn()
 const mockLegalApi = {
   getParties: vi.fn(),
   getPendingTask: vi.fn(),
-  getAndValidateDraftFiling: vi.fn(),
+  getAndValidateDraftFiling: mockGetAndValidateDraftFiling,
   getTasks: vi.fn()
 }
 mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
@@ -194,29 +195,6 @@ describe('useOfficerStore', () => {
         expect(store.officerTableState[0]!.new.firstName).toBe('Draft Officer')
         expect(store.filingDraftState.filing.changeOfOfficers[0]!.new.firstName).toBe('Draft Officer')
         expect(store.initialOfficers[0]!.firstName).toBe('Initial') // Initial state is still loaded for history
-      })
-
-      test('should show an error modal and return early if the draft is invalid', async () => {
-        // mock an invalid draft response
-        mockUseFiling.initFiling.mockResolvedValue(
-          {
-            draftFiling: {
-              data: { value: 'invalid draft' },
-              error: { value: new Error('Draft filing invalid') },
-              status: { value: 'success' }
-            }
-          })
-
-        // init store
-        await store.init(businessId, draftId)
-
-        // assert
-        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
-          error: expect.any(Error),
-          i18nPrefix: 'modal.error.filing.getDraft',
-          buttons: expect.any(Array)
-        }))
-        expect(store.officerTableState).toHaveLength(0)
       })
     })
 

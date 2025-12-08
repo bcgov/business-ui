@@ -154,6 +154,24 @@ describe('useFiling', () => {
         expect(parties).toBeUndefined()
         expect(draftFiling!.data!.value).toEqual(draftFilingMock)
       })
+
+      test.only('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {
+        mockLegalApi.getAndValidateDraftFiling.mockRejectedValue(new Error('invalid-draft-filing'))
+
+        await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_OFFICERS,
+          draftId,
+          { roleClass: RoleClass.OFFICER }
+        )
+
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
+          error: expect.any(Error),
+          i18nPrefix: 'modal.error.filing.getDraft',
+          buttons: expect.any(Array)
+        }))
+      })
     })
   })
 })

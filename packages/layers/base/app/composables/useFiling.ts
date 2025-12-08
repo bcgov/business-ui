@@ -34,26 +34,6 @@ export const useFiling = () => {
         : undefined
   }
 
-  // TODO: cleanup error handling
-  async function handleErrors(error: unknown) {
-    let hasHandledError = false
-    if (Array.isArray(error) && error.length) {
-      const firstError = error[0]
-      if (
-        firstError
-        && typeof firstError === 'object'
-        && 'fn' in firstError
-        && 'error' in firstError
-      ) {
-        await firstError.fn(firstError.error)
-        hasHandledError = true
-      }
-    }
-    if (!hasHandledError) {
-      await modal.openInitFilingErrorModal(error)
-    }
-  }
-
   async function initFiling<T extends FilingRecord>(
     businessId: string,
     filingName: FilingType,
@@ -69,33 +49,36 @@ export const useFiling = () => {
       // set masthead data
       setFilingDefault(businessId, false)
 
-      let draftFilingResp = undefined
-      let partiesResp = undefined
-      if (draftId) {
-        draftFilingResp = await businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
-      } else if (partiesParams) {
-        partiesResp = getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
-      }
-      const businessInitResp = businessStore.init(businessId, false, false, true)
+      const draftPromise = draftId
+        ? businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+        : undefined
+
+      const partiesPromise = (partiesParams && !draftId)
+        ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
+        : undefined
+
       const [
+        [businessError, businessContactError],
         draftFiling,
-        parties,
-        [businessError, businessContactError]
-      ] = await Promise.all([draftFilingResp, partiesResp, businessInitResp])
+        parties
+      ] = await Promise.all([
+        businessStore.init(businessId, false, false, true),
+        draftPromise,
+        partiesPromise
+      ])
 
-      // TODO - FUTURE - consistent error value accessing ie not: (errorValue, value.error, value.error.value)
-      const errorConfig = [
-        { error: businessError, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
-        { error: businessContactError, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
-        { error: parties?.error, fn: (error: unknown) => modal.openInitFilingErrorModal(error) },
-        { error: draftFiling?.error.value, fn: (error: unknown) => modal.openGetDraftFilingErrorModal(error) }
-      ]
+      const genericError = [
+        businessError,
+        businessContactError,
+        parties?.error
+      ].find(e => !!e)
 
-      // filter out undefined or null errors
-      const definedErrors = errorConfig.filter(e => !!e.error)
+      if (genericError) {
+        throw genericError
+      }
 
-      if (definedErrors.length) {
-        throw definedErrors
+      if (draftFiling?.error.value) {
+        throw new Error('invalid-draft-filing')
       }
 
       return {
@@ -103,7 +86,11 @@ export const useFiling = () => {
         parties
       }
     } catch (error) {
-      await handleErrors(error)
+      if (error instanceof Error && error.message === 'invalid-draft-filing') {
+        await modal.openGetDraftFilingErrorModal(error)
+      } else {
+        await modal.openInitFilingErrorModal(error)
+      }
       return {
         draftFiling: undefined,
         parties: undefined
