@@ -22,6 +22,11 @@ export default defineAppConfig({
       }
     },
     alert: {
+      // override unwanted config from core layer
+      inner: '',
+      default: {
+        closeButton: ''
+      },
       variant: {
         error: 'bg-red-50 dark:bg-red-400 dark:bg-opacity-10 text-red-500 dark:text-red-400 ring-1 ring-inset ring-red-500 dark:ring-red-400 ring-opacity-25 dark:ring-opacity-25',
         info: 'bg-white text-orange-500 ring-opacity-25 dark:ring-opacity-25',
