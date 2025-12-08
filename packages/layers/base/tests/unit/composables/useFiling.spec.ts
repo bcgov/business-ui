@@ -155,7 +155,7 @@ describe('useFiling', () => {
         expect(draftFiling!.data!.value).toEqual(draftFilingMock)
       })
 
-      test.only('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {
+      test('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {
         mockLegalApi.getAndValidateDraftFiling.mockRejectedValue(new Error('invalid-draft-filing'))
 
         await useFiling().initFiling(
