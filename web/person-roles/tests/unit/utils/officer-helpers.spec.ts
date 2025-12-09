@@ -49,7 +49,6 @@ describe('officer-helpers utils', () => {
       ]
     }
 
-    // UPDATED: Mock to use the new `new` property
     const baseState = [
       { new: baseOfficer }
     ] as unknown as OfficerTableState[]
@@ -106,6 +105,38 @@ describe('officer-helpers utils', () => {
       expect(result.relationships).toHaveLength(2)
       expect(result.relationships[0]!.entity.givenName).toBe('Test')
       expect(result.relationships[1]!.entity.givenName).toBe('Another')
+    })
+
+    test('should exclude officer if new and old values are the same', () => {
+      const unchangedOfficerState = {
+        new: baseOfficer,
+        old: { ...baseOfficer }
+      }
+
+      const payload = formatOfficerPayload([unchangedOfficerState] as OfficerTableState[]).changeOfOfficers
+
+      expect(payload.relationships).toHaveLength(0)
+    })
+
+    test('should include only new and edited officers', () => {
+      const unchangedOfficer = { new: baseOfficer, old: { ...baseOfficer } }
+
+      const newOfficer = { new: { ...baseOfficer, id: '999', firstName: 'New' } }
+
+      const changedOfficer = {
+        old: baseOfficer,
+        new: { ...baseOfficer, firstName: 'Changed First', lastName: 'Changed Last' }
+      }
+
+      const state = [unchangedOfficer, newOfficer, changedOfficer] as OfficerTableState[]
+      const result = formatOfficerPayload(state).changeOfOfficers
+
+      expect(result.relationships).toHaveLength(2)
+
+      expect(result.relationships.some(r => r!.entity.givenName === 'Test')).toBe(false)
+
+      expect(result.relationships.some(r => r!.entity.givenName === 'New')).toBe(true)
+      expect(result.relationships.some(r => r!.entity.familyName === 'Changed Last')).toBe(true)
     })
   })
 
