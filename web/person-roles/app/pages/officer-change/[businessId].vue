@@ -237,7 +237,7 @@ useFilingPageWatcher({
   draftId: urlParams.draft as string | undefined,
   feeCode: 'NOCOI',
   feeLabel: t('label.officerChange'),
-  pageLabel: t('page.manageOfficers.h1'),
+  pageLabel: t('page.officerChange.h1'),
   formId: 'officer-filing',
   saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
   cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },

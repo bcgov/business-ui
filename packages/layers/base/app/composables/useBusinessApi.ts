@@ -108,7 +108,7 @@ export const useBusinessApi = () => {
     if (!filingQuery.error.value) {
       const isValid = isValidDraft<F>(filingName, filingQuery.data.value)
       if (!isValid) {
-        filingQuery.error.value = new Error('Draft filing invalid')
+        throw new Error('invalid-draft-filing')
       }
     }
     return filingQuery
