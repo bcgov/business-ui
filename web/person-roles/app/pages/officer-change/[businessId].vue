@@ -10,10 +10,10 @@ const businessStore = useBusinessStore()
 const { setAlertText } = useConnectButtonControl()
 const modal = useFilingModals()
 const businessApi = useBusinessApi()
-const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.officerChange.h1'))
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.changeOfOfficers.h1'))
 
 useHead({
-  title: t('page.officerChange.title')
+  title: t('page.changeOfOfficers.title')
 })
 
 definePageMeta({
@@ -237,7 +237,7 @@ useFilingPageWatcher({
   draftId: urlParams.draft as string | undefined,
   feeCode: 'NOCOI',
   feeLabel: t('label.officerChange'),
-  pageLabel: t('page.officerChange.h1'),
+  pageLabel: t('page.changeOfOfficers.h1'),
   formId: 'officer-filing',
   saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
   cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
@@ -249,8 +249,8 @@ useFilingPageWatcher({
 <template>
   <div class="py-10 space-y-8">
     <div class="space-y-1">
-      <h1>{{ $t('page.officerChange.h1') }}</h1>
-      <p>{{ $t('page.officerChange.desc') }}</p>
+      <h1>{{ $t('page.changeOfOfficers.h1') }}</h1>
+      <p>{{ $t('page.changeOfOfficers.desc') }}</p>
     </div>
 
     <section class="space-y-4">

@@ -37,6 +37,7 @@ export const useFiling = () => {
   async function initFiling<T extends FilingRecord>(
     businessId: string,
     filingName: FilingType,
+    filingSubType?: string,
     draftId?: string,
     partiesParams?: { roleClass?: RoleClass, roleType?: RoleType }
     // officeParams?: office config (i.e. records, liquidation, etc.)
@@ -53,7 +54,7 @@ export const useFiling = () => {
         ? businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
         : undefined
 
-      const partiesPromise = (partiesParams && !draftId)
+      const partiesPromise = partiesParams
         ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
         : undefined
 
@@ -81,24 +82,49 @@ export const useFiling = () => {
         throw new Error('invalid-draft-filing')
       }
 
+      // TODO: discuss with team
+      const feeCode = businessStore.getAllowedFilingFeeCode(
+        filingName,
+        filingSubType
+      )
+      if (!feeCode) {
+        // no fee code from user allowed filing types for this business
+        throw new Error('filing-not-allowed')
+      }
+
       return {
         draftFiling,
-        parties
+        parties,
+        feeCode
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
         await modal.openGetDraftFilingErrorModal(error)
+      } else if (error instanceof Error && error.message === 'filing-not-allowed') {
+        await modal.openFilingNotAllowedErrorModal()
       } else {
         await modal.openInitFilingErrorModal(error)
       }
       return {
         draftFiling: undefined,
-        parties: undefined
+        parties: undefined,
+        feeCode: undefined
       }
     }
   }
 
+  function getCommonFilingPayloadData(
+    courtOrder?: CourtOrderPoaSchema,
+    documentId?: string
+  ): FilingPayloadData {
+    return {
+      ...(courtOrder?.courtOrderNumber ? { courtOrder: formatCourtOrderApi(courtOrder) } : {}),
+      ...(documentId ? { documentId } : {})
+    }
+  }
+
   return {
+    getCommonFilingPayloadData,
     getFilingName,
     initFiling
   }

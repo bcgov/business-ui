@@ -4,7 +4,7 @@
  */
 export interface CourtOrder {
   fileNumber: string
-  orderDate: string
-  effectOfOrder: string
+  orderDate?: string
+  effectOfOrder?: string
   hasPlanOfArrangement?: boolean
 }

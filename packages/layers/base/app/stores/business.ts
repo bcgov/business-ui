@@ -113,6 +113,12 @@ export const useBusinessStore = defineStore('business', () => {
     return await Promise.all(asyncs)
   }
 
+  function getAllowedFilingFeeCode(filingType: FilingType, filingSubType?: string) {
+    const allowedFilings = (business.value as BusinessData)?.allowedActions?.filing.filingTypes
+    const allowedFiling = allowedFilings.find(f => f.name === filingType && f.type === filingSubType)
+    return allowedFiling?.feeCode
+  }
+
   /** Whether the entity belongs to one of the passed-in legal types */
   function isLegalType(legalTypes: CorpTypeCd[]): boolean {
     return legalTypes.includes(business.value?.legalType as CorpTypeCd)
@@ -153,6 +159,7 @@ export const useBusinessStore = defineStore('business', () => {
     isLegalType,
     isFirm,
     isBaseCompany,
+    getAllowedFilingFeeCode,
     $reset
   }
 })
