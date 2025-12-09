@@ -1,4 +1,4 @@
-# Registry Home UI
+# Business Registry Home UI
 
 ## Tech
 - Framework: [Nuxt 4](https://nuxt.com/)
