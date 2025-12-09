@@ -41,11 +41,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
         folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
       }
 
-      const [_, parties] = await Promise.all([
-        businessStore.init(businessId, false, false, true),
-        businessApi.getParties(businessId, { classType: 'officer' })
-      ])
-
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
           await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
@@ -64,13 +59,14 @@ export const useOfficerStore = defineStore('officer-store', () => {
       }
 
       // TODO: common parties store will remove the need for this
+      const parties = await businessApi.getParties(businessId, { classType: 'officer' })
+
       if (parties.status.value === 'pending') {
         await parties.refresh()
       }
       // TODO: remove once parties fetched by useFiling composable
       if (parties.error.value) {
-        await modal.openInitFilingErrorModal(parties.error.value)
-        return
+        throw parties.error.value
       }
       // map current/existing officers
       const officers = parties.data.value?.parties.map((p) => {
