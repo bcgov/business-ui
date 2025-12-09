@@ -41,22 +41,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
         folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
       }
 
-      const [[businessError, contactError], parties] = await Promise.all([
+      const [_, parties] = await Promise.all([
         businessStore.init(businessId, false, false, true),
         businessApi.getParties(businessId, { classType: 'officer' })
       ])
-
-      // TODO: remove unnecessary if statement
-      if (businessError) {
-        // error handle by useFiling composable
-        return
-      }
-
-      // TODO: remove unnecessary if statement
-      if (contactError) {
-        // error handle by useFiling composable
-        return
-      }
 
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
         const allowedBusinessTypes = (
