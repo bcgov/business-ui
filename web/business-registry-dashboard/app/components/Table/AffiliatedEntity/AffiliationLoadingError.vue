@@ -1,22 +1,10 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-import { StatusCodes } from 'http-status-codes'
-const emit = defineEmits<{
+
+defineEmits<{
   refresh: []
 }>()
-const config = useRuntimeConfig().public
-const showContactInfo = ref(false)
 
-function handleRefresh () {
-  useAffiliationsStore.loadAffiliations().catch((error) => {
-    if (error instanceof FetchError && error?.response?.status === StatusCodes.UNAUTHORIZED) {
-      const registryHomeUrl = config.registryHomeUrl
-      const redirectUrl = encodeURIComponent(window.location.href)
-      window.location.href = `${registryHomeUrl}/login?return=${redirectUrl}`
-    }
-  })
-  emit('refresh')
-}
+const showContactInfo = ref(false)
 
 function toggleContactInfo () {
   if (showContactInfo.value) { return } // There is no way for the user to hide the contact info once it is shown
@@ -41,7 +29,7 @@ function toggleContactInfo () {
       variant="outline"
       class="mt-4 px-4"
       :ui="{ base: 'rounded' }"
-      @click="handleRefresh"
+      @click="$emit('refresh')"
     />
 
     <hr class="my-4 w-full border-t border-bcGovGray-300">
