@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.4.0
+
+### Minor Changes
+
+- [#327](https://github.com/bcgov/business-ui/pull/327) [`07320c4`](https://github.com/bcgov/business-ui/commit/07320c4b9732671d14dc236b0320bbe4e450b06c) Thanks [@deetz99](https://github.com/deetz99)! - Fix what modal displays when a filing initialization error occurs
+
 ## 0.3.1
 
 ### Patch Changes
