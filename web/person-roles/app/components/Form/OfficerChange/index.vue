@@ -304,7 +304,6 @@ function clearUnfinishedTaskMsg() {
       'border-l-3 border-error': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
       'rounded-sm shadow-sm': !editing
     }"
-    :validate-on="['blur']"
     @error="onError"
     @submit="onSubmit"
     @click="clearUnfinishedTaskMsg"

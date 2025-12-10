@@ -248,14 +248,17 @@ useFilingPageWatcher({
 
 <template>
   <div class="py-10 space-y-8">
-    <h1>{{ $t('page.officerChange.h1') }}</h1>
+    <div class="space-y-1">
+      <h1>{{ $t('page.officerChange.h1') }}</h1>
+      <p>{{ $t('page.officerChange.desc') }}</p>
+    </div>
 
     <section class="space-y-4">
       <h2 class="text-lg">
         1. {{ $t('label.officerInfo') }}
       </h2>
       <p class="-mt-2">
-        {{ $t('text.trackOfficers') }}
+        {{ $t('text.officerInfoDescription') }}
       </p>
       <UButton
         :label="$t('label.addOfficer')"
