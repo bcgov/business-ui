@@ -14,6 +14,7 @@ async function handleRefresh () {
     const registryHomeURL = config.registryHomeURL
     const redirectUrl = encodeURIComponent(window.location.href)
     window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+    return
   }
   // Reload affiliations on refresh
   await affStore.loadAffiliations()
