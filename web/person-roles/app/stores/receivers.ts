@@ -23,7 +23,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     receiverSubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties, feeCode } = await initFiling<{ changeOfReceivers: ReceiverPayload }>(
+    const { draftFiling, parties } = await initFiling<{ changeOfReceivers: ReceiverPayload }>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
       filingSubType,
@@ -49,7 +49,6 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         : parties.data
     }
     initializing.value = false
-    return feeCode
   }
 
   async function submit(isSubmission: boolean) {
@@ -66,19 +65,20 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },
-      formState.staffPayment
+      formatStaffPaymentApi(formState.staffPayment)
     )
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling(
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<{ changeOfReceivers: ReceiverPayload }>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
         draftId as string | number
       )
       draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>
-      // TODO: add draftId to url in case of refresh?
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
       await businessApi.postFiling(businessStore.businessIdentifier!, payload)
     }
@@ -94,6 +94,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   return {
     formState,
     initializing,
+    receivers: tableState,
     init,
     submit,
     $reset

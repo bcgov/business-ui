@@ -77,21 +77,29 @@ export default {
     changeOfReceivers: {
       ammendReceiver: {
         desc: 'Some ammend receiver descriptive text',
+        feeCode: 'AMEND',
+        feeLabel: 'Ammend Receiver or Receiver Manager Information',
         h1: 'Ammend Receiver or Receiver Manager Information',
         title: 'Ammend Receivers - People Roles - BC Registries and Online Services'
       },
       appointReceiver: {
         desc: 'Some appoint receiver descriptive text',
+        feeCode: 'NOARM',
+        feeLabel: 'Appoint Receivers or Receiver Managers',
         h1: 'Appoint Receivers or Receiver Managers',
         title: 'Appoint Receivers - People Roles - BC Registries and Online Services'
       },
       ceaseReceiver: {
         desc: 'Some cease receiver descriptive text',
+        feeCode: 'NOCER',
+        feeLabel: 'Cease Receivers or Receiver Managers',
         h1: 'Cease Receivers or Reveiver Managers',
         title: 'Cease Receivers - People Roles - BC Registries and Online Services'
       },
       changeAddressReceiver: {
         desc: 'Some change address receiver descriptive text',
+        feeCode: 'NOCRM',
+        feeLabel: 'Change Addresses of Receivers or Reveiver Managers',
         h1: 'Change Addresses of Receivers or Reveiver Managers',
         title: 'Change Receiver Addresses - People Roles - BC Registries and Online Services'
       }

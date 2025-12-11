@@ -1,4 +1,7 @@
-export interface FilingHeaderResponse extends Partial<StaffPayment> {
+export interface FilingHeaderResponse extends Partial<Pick<
+  StaffPayment,
+  'bcolAccountNumber' | 'datNumber' | 'folioNumber' | 'routingSlipNumber'
+>> {
   accountId: number
   affectedFilings: Array<unknown>
   availableOnPaperOnly: boolean
@@ -20,10 +23,12 @@ export interface FilingHeaderResponse extends Partial<StaffPayment> {
   status: FilingStatus
   submitter: string
   latestReviewComment?: string
+  staffPaymentOption?: StaffPaymentOption
   paymentDate?: ApiDateTimeUtc
   paymentMethod?: ConnectPayMethod
-  folioNumber?: string
+  priority?: boolean
   type?: FilingHeaderType
+  waiveFees?: boolean
 }
 
 export type FilingHeaderSubmission = Pick<FilingHeaderResponse,

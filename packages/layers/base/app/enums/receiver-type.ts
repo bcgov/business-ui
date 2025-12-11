@@ -1,5 +1,5 @@
 export enum ReceiverType {
-  AMMEND = 'ammendReceiver',
+  AMEND = 'amendReceiver',
   APPOINT = 'appointReceiver',
   CEASE = 'ceaseReceiver',
   ADDRESS = 'changeAddressReceiver'

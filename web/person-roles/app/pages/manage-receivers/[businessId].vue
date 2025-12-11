@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import type { FormErrorEvent } from '@nuxt/ui'
+import type { FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { RoleTypeUi } from '#imports'
+
+definePageMeta({
+  layout: 'connect-pay-tombstone-buttons',
+  middleware: ['connect-auth'],
+  path: '/manage-receivers/:businessId/:filingSubType'
+})
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
@@ -9,15 +16,6 @@ const modal = useFilingModals()
 const receiverStore = useReceiverStore()
 
 const FILING_TYPE = FilingType.CHANGE_OF_RECEIVERS
-
-definePageMeta({
-  layout: 'connect-pay-tombstone-buttons',
-  middleware: [
-    // Check for login redirect
-    'connect-auth'
-  ],
-  alias: ['/manage-receivers/:businessId/:filingSubType']
-})
 
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as ReceiverType
@@ -33,9 +31,19 @@ const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
-async function submitFiling() {
+async function submitFiling(e?: FormSubmitEvent<unknown>) {
   try {
-    await receiverStore.submit(true)
+    // e will be undefined when there are validation errors and form will trigger 'onError'
+    if (e) {
+      const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
+      if (!hasUpdatedReceiver) {
+        // TODO: temporary text - update in lang file or change this to scroll etc.
+        useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
+        return
+      }
+      await receiverStore.submit(true)
+      await navigateTo(dashboardUrl.value, { external: true })
+    }
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
   }
@@ -50,8 +58,14 @@ async function cancelFiling() {
   // }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   try {
+    if (!disableActiveFormCheck && useManageParties().addingParty.value) {
+      // TODO: temporary text - update in lang file or change this to scroll etc.
+      useConnectButtonControl().setAlertText('Please complete your expanded Receiver above', 'left', 0)
+      return
+    }
+
     await receiverStore.submit(false)
 
     // if resume later, navigate back to business dashboard
@@ -72,7 +86,6 @@ function onError(event: FormErrorEvent) {
     onFormSubmitError(event)
   }
 }
-
 // Watcher to handle filing save, cancel, and navigation
 useFilingPageWatcher<ReceiverType>({
   store: receiverStore,
@@ -116,6 +129,7 @@ useFilingPageWatcher<ReceiverType>({
         :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
         :add-label="$t('label.addReceiver')"
         :edit-label="$t('label.editReceiver')"
+        :role-type="RoleTypeUi.RECEIVER"
       />
     </section>
 

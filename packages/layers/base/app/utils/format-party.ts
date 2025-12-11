@@ -1,6 +1,57 @@
 import { isEqual } from 'es-toolkit'
 import { formatAddressApi } from './format-address'
 
+const ROLE_RELATIONSHIPS: [RoleTypeUi, RoleType][] = [
+  [RoleTypeUi.APPLICANT, RoleType.APPLICANT],
+  [RoleTypeUi.COMPLETING_PARTY, RoleType.COMPLETING_PARTY],
+  [RoleTypeUi.CUSTODIAN, RoleType.CUSTODIAN],
+  [RoleTypeUi.DIRECTOR, RoleType.DIRECTOR],
+  [RoleTypeUi.INCORPORATOR, RoleType.INCORPORATOR],
+  [RoleTypeUi.LIQUIDATOR, RoleType.LIQUIDATOR],
+  [RoleTypeUi.OFFICER, RoleType.OFFICER],
+  [RoleTypeUi.PARTNER, RoleType.PARTNER],
+  [RoleTypeUi.PROPRIETOR, RoleType.PROPRIETOR],
+  [RoleTypeUi.RECEIVER, RoleType.RECEIVER],
+  // Officer class
+  [RoleTypeUi.CEO, RoleType.CEO],
+  [RoleTypeUi.CFO, RoleType.CFO],
+  [RoleTypeUi.PRESIDENT, RoleType.PRESIDENT],
+  [RoleTypeUi.VICE_PRESIDENT, RoleType.VICE_PRESIDENT],
+  [RoleTypeUi.CHAIR, RoleType.CHAIR],
+  [RoleTypeUi.TREASURER, RoleType.TREASURER],
+  [RoleTypeUi.SECRETARY, RoleType.SECRETARY],
+  [RoleTypeUi.ASSISTANT_SECRETARY, RoleType.ASSISTANT_SECRETARY],
+  [RoleTypeUi.OTHER, RoleType.OTHER]
+]
+
+export const UI_ROLE_TO_API_ROLE_MAP = Object.fromEntries(ROLE_RELATIONSHIPS)
+
+export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
+  ROLE_RELATIONSHIPS.map(([uiValue, apiValue]) => [apiValue, uiValue])
+)
+
+function formatRelationshipRolesUi(roles: Role[]): PartyRoleSchema {
+  return roles.map((role) => {
+    return {
+      ...role,
+      roleType: role.roleType
+        ? API_ROLE_TO_UI_ROLE_MAP[role.roleType]
+        : undefined
+    }
+  })
+}
+
+function formatRelationshipRolesApi(roles: PartyRoleSchema): Role[] {
+  return roles.map((role) => {
+    return {
+      ...role,
+      roleType: role.roleType
+        ? UI_ROLE_TO_API_ROLE_MAP[role.roleType]
+        : undefined
+    }
+  })
+}
+
 export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchema {
   const mailingAddress = formatAddressUi(party.mailingAddress)
   const deliveryAddress = formatAddressUi(party.deliveryAddress)
@@ -20,7 +71,7 @@ export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchem
       deliveryAddress,
       sameAs: isEqual(mailingAddress, deliveryAddress)
     },
-    roles,
+    roles: roles ? formatRelationshipRolesUi(roles) : [],
     actions: []
   }
 }
@@ -43,7 +94,7 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
       deliveryAddress,
       sameAs: isEqual(mailingAddress, deliveryAddress)
     },
-    roles: party.roles ?? [],
+    roles: party.roles ? formatRelationshipRolesUi(party.roles) : [],
     actions: party.actions ?? []
   }
 }
@@ -61,7 +112,7 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
     },
     mailingAddress,
     deliveryAddress,
-    roles: party.roles || [],
+    roles: formatRelationshipRolesApi(party.roles),
     actions: party.actions
   }
 }
