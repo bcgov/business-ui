@@ -22,10 +22,9 @@ export default defineAppConfig({
       }
     },
     alert: {
-      // override unwanted config from core layer
-      inner: '',
+      inner: '', // override unwanted inner classes from core layer
       default: {
-        closeButton: ''
+        closeButton: '' // override unwanted close button from core layer
       },
       variant: {
         error: 'bg-red-50 dark:bg-red-400 dark:bg-opacity-10 text-red-500 dark:text-red-400 ring-1 ring-inset ring-red-500 dark:ring-red-400 ring-opacity-25 dark:ring-opacity-25',
@@ -111,40 +110,6 @@ export default defineAppConfig({
     notifications: {
       position: 'bottom-0 left-1/2 -translate-x-1/2'
     },
-    pagination: {
-      wrapper: 'flex items-center -space-x-px',
-      base: '',
-      rounded: 'first:rounded-s-md last:rounded-e-md',
-      default: {
-        size: 'sm',
-        activeButton: {
-          color: 'primary'
-        },
-        inactiveButton: {
-          color: 'white'
-        },
-        firstButton: {
-          color: 'white',
-          class: 'rtl:[&_span:first-child]:rotate-180',
-          icon: 'i-heroicons-chevron-double-left-20-solid'
-        },
-        lastButton: {
-          color: 'white',
-          class: 'rtl:[&_span:last-child]:rotate-180',
-          icon: 'i-heroicons-chevron-double-right-20-solid'
-        },
-        prevButton: {
-          color: 'white',
-          class: 'rtl:[&_span:first-child]:rotate-180',
-          icon: 'i-heroicons-chevron-left-20-solid'
-        },
-        nextButton: {
-          color: 'white',
-          class: 'rtl:[&_span:last-child]:rotate-180',
-          icon: 'i-heroicons-chevron-right-20-solid'
-        }
-      }
-    },
     popover: {
       background: 'bg-gray-700',
       ring: 'ring-1 ring-gray-700',
@@ -170,6 +135,9 @@ export default defineAppConfig({
         bcGov: 'border-gray-700',
         error: 'border-red-500'
       },
+      size: {
+        lg: 'h-[42px] w-[90px]' // override size from core layer
+      },
       icon: {
         base: 'text-gray-700'
       }
@@ -192,11 +160,6 @@ export default defineAppConfig({
       }
     },
     table: {
-      divide: 'divide-y divide-gray-300 dark:divide-gray-300/50',
-      tbody: 'divide-y divide-gray-200 dark:divide-gray-300/50',
-      th: {
-        color: 'text-bcGovColor-darkGray dark:text-white'
-      },
       td: {
         color: 'text-bcGovColor-midGray dark:text-gray-300'
       }

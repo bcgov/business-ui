@@ -125,21 +125,15 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       :rows="affStore.filteredResults"
       :loading="affStore.affiliations.loading"
       :ui="{
-        wrapper: 'relative overflow-x-auto h-[512px]',
-        thead: 'sticky top-0 bg-white z-10',
         th: {
           padding: 'px-0 py-0'
         },
         td: {
           base: `
-            /* Default text handling */
+            /* Same as core layer */
             whitespace-normal
+            max-w-96
             align-top
-
-            /* Standard column width constraints */
-            w-48
-            min-w-[192px]
-            max-w-[192px]
 
             /* Wider first column for business names */
             [&:first-child]:min-w-[250px]
@@ -148,11 +142,10 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             /* Wider third column for type */
             [&:nth-child(3)]:min-w-[230px]
             [&:nth-child(3)]:max-w-[230px]
-          `,
-          padding: 'px-4 py-4',
-          color: 'text-bcGovColor-midGray',
-          font: '',
-          size: 'text-sm',
+
+            /* No padding-right for Actions */
+            [&:last-child]:pr-0
+          `
         }
       }"
     >
@@ -433,6 +426,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <USelectMenu
             v-model="affStore.affiliations.pagination.limit"
             :options="affStore.paginationLimitOptions"
+            color="white"
             option-attribute="label"
             value-attribute="value"
             :disabled="affStore.affiliations.loading"
