@@ -117,7 +117,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
         },
         td: {
           base: `
-            /* From core layer */
+            /* Same as core layer */
             whitespace-normal
             max-w-96
             align-top
