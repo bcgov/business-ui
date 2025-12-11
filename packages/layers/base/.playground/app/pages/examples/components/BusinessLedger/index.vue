@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { delay } from 'es-toolkit'
+
 definePageMeta({
   layout: 'connect-auth',
   breadcrumbs: [
@@ -55,14 +57,36 @@ const loadLedger = async () => {
   loading.value = false
 }
 
-onMounted(() => {
+const businessService = useBusinessService()
+const query = useBusinessQuery()
+const keys = useBusinessQueryKeys()
+
+const { data, refetch, asyncStatus, status } = query.getBusiness('BC0888015', false)
+
+onMounted(async () => {
+  console.log('waiting for 3 seconds')
+  await delay(3000)
+  console.log('triggering on mounted')
+  const res = await businessService.getBusiness('BC0888015', false)
+  console.log('response without triggering a network call - returns cached value: ', res)
   resetBusiness()
   resetBootstrap()
+  await delay(3000)
+  console.log('Invalidating query - triggers refetch')
+  const queryCache = useQueryCache()
+  queryCache.invalidateQueries({ key: keys.getBusinessKey('BC0888015', false) })
+  console.log('Cached data shouldve been refetched')
 })
 </script>
 
 <template>
   <div class="py-8 space-y-6">
+    <div class="p-20 space-y-10">
+      <div>STATUS: {{ status }}</div>
+      <div>ASYNC STATUS: {{ asyncStatus }}</div>
+      <div>DATA: {{ data }}</div>
+      <UButton label="Refetch" @click="refetch(false)" />
+    </div>
     <h1>
       BusinessLedger
     </h1>
