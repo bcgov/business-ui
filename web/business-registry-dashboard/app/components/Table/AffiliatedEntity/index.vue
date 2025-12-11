@@ -2,10 +2,23 @@
 const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
 const ldStore = useConnectLaunchdarklyStore()
-
+const config = useRuntimeConfig().public
+const { isAuthenticated } = useKeycloak()
 onMounted(async () => {
   await affStore.loadAffiliations()
 })
+
+async function handleRefresh () {
+  // check if user is unauthorized
+  if (!isAuthenticated.value) {
+    const registryHomeURL = config.registryHomeURL
+    const redirectUrl = encodeURIComponent(window.location.href)
+    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+    return
+  }
+  // Reload affiliations on refresh
+  await affStore.loadAffiliations()
+}
 
 // Watch for newly added businesses or name requests to highlight them temporarily
 watch(
@@ -112,21 +125,15 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
       :rows="affStore.filteredResults"
       :loading="affStore.affiliations.loading"
       :ui="{
-        wrapper: 'relative overflow-x-auto h-[512px]',
-        thead: 'sticky top-0 bg-white z-10',
         th: {
           padding: 'px-0 py-0'
         },
         td: {
           base: `
-            /* Default text handling */
+            /* Same as core layer */
             whitespace-normal
+            max-w-96
             align-top
-
-            /* Standard column width constraints */
-            w-48
-            min-w-[192px]
-            max-w-[192px]
 
             /* Wider first column for business names */
             [&:first-child]:min-w-[250px]
@@ -135,11 +142,10 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
             /* Wider third column for type */
             [&:nth-child(3)]:min-w-[230px]
             [&:nth-child(3)]:max-w-[230px]
-          `,
-          padding: 'px-4 py-4',
-          color: 'text-bcGovColor-midGray',
-          font: '',
-          size: 'text-sm',
+
+            /* No padding-right for Actions */
+            [&:last-child]:pr-0
+          `
         }
       }"
     >
@@ -154,7 +160,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <div class="flex flex-col items-center">
             <TableAffiliatedEntityAffiliationLoadingError
               v-if="affStore.affiliations.error"
-              @refresh="affStore.loadAffiliations()"
+              @refresh="handleRefresh"
             />
             <p v-else-if="affStore.affiliations.results.length === 0" class="text-center text-sm text-bcGovColor-darkGray">
               {{ $t('labels.noAffiliationRecords.line1') }}
@@ -420,6 +426,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <USelectMenu
             v-model="affStore.affiliations.pagination.limit"
             :options="affStore.paginationLimitOptions"
+            color="white"
             option-attribute="label"
             value-attribute="value"
             :disabled="affStore.affiliations.loading"
