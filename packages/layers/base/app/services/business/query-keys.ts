@@ -3,7 +3,7 @@ export const useBusinessQueryKeys = () => {
   const { currentAccount } = storeToRefs(accountStore)
 
   function getBusinessKey(businessId: string, slim: boolean) {
-    return ['business', businessId, slim, currentAccount.value.id] as const
+    return ['business', businessId, slim, currentAccount.value.id]
   }
 
   return {

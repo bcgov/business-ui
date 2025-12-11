@@ -57,7 +57,7 @@ const loadLedger = async () => {
   loading.value = false
 }
 
-const businessService = useBusinessService()
+const service = useBusinessService()
 const query = useBusinessQuery()
 const keys = useBusinessQueryKeys()
 
@@ -67,7 +67,7 @@ onMounted(async () => {
   console.log('waiting for 3 seconds')
   await delay(3000)
   console.log('triggering on mounted')
-  const res = await businessService.getBusiness('BC0888015', false)
+  const res = await service.getBusiness('BC0888015', false)
   console.log('response without triggering a network call - returns cached value: ', res)
   resetBusiness()
   resetBootstrap()
