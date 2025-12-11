@@ -2,10 +2,23 @@
 const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
 const ldStore = useConnectLaunchdarklyStore()
-
+const config = useRuntimeConfig().public
+const { isAuthenticated } = useKeycloak()
 onMounted(async () => {
   await affStore.loadAffiliations()
 })
+
+async function handleRefresh () {
+  // check if user is unauthorized
+  if (!isAuthenticated.value) {
+    const registryHomeURL = config.registryHomeURL
+    const redirectUrl = encodeURIComponent(window.location.href)
+    window.location.href = `${registryHomeURL}/login/?return=${redirectUrl}`
+    return
+  }
+  // Reload affiliations on refresh
+  await affStore.loadAffiliations()
+}
 
 // Watch for newly added businesses or name requests to highlight them temporarily
 watch(
@@ -154,7 +167,7 @@ const mapDetailsWithEffectiveDate = (details: any[], row: any) => {
           <div class="flex flex-col items-center">
             <TableAffiliatedEntityAffiliationLoadingError
               v-if="affStore.affiliations.error"
-              @refresh="affStore.loadAffiliations()"
+              @refresh="handleRefresh"
             />
             <p v-else-if="affStore.affiliations.results.length === 0" class="text-center text-sm text-bcGovColor-darkGray">
               {{ $t('labels.noAffiliationRecords.line1') }}
