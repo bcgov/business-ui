@@ -359,7 +359,7 @@ const expandedTrClass = computed(() =>
 
     <template #empty>
       <div class="text-gray-700 text-left text-base px-6">
-        {{ $t('text.noOfficers') }}
+        {{ initializing ? `${$t('label.loading')}...` : $t('text.noOfficers') }}
       </div>
     </template>
   </UTable>

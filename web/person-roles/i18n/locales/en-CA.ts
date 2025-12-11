@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export default {
   badge: {
     rolesChanged: 'ROLES CHANGED',
@@ -45,13 +46,13 @@ export default {
     noOfficers: 'There are currently no officers.',
     noReceivers: 'There are currently no Receivers.',
     ifIssuePersistsContactUs: 'If this issue persists, please contact us.',
-    trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
     finishTaskBeforeSubmit: 'Finish this task before submitting.',
     finishTaskBeforeSave: 'Finish this task before saving.',
     liquidationRecordsOfficeAddressDesc: 'This is where the Liquidation Records Office is located.',
     noChangesToSave: 'There are no changes to save.',
     noChangesToSubmit: 'There are no changes to submit.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
+    officerInfoDescription: 'You can only view current officers. Keep current and former officer information in the company’s records.',
     trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.'
   },
   validation: {
@@ -78,6 +79,7 @@ export default {
       h1: 'Manage Receivers'
     },
     officerChange: {
+      desc: 'Officer information is not required by BC Registries, but will show on the business summary if it is submitted. To make updates, simply submit another officer change.',
       title: 'Officer Change - People Roles - BC Registries and Online Services',
       h1: 'Officer Change'
     }
