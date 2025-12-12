@@ -1,11 +1,13 @@
 <script setup lang="ts">
 const {
+  roleType,
   stateKey = 'manage-parties'
 } = defineProps<{
   loading?: boolean
   emptyText?: string
   addLabel: string
   editLabel: string
+  roleType?: RoleTypeUi
   stateKey?: string
 }>()
 
@@ -35,7 +37,7 @@ function cleanupPartyForm() {
 }
 
 function addParty(party: ActivePartySchema) {
-  addNewParty(party)
+  addNewParty(party, roleType)
   cleanupPartyForm()
 }
 

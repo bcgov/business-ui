@@ -23,6 +23,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const { draftFiling, parties } = await useFiling().initFiling<ManageLiquidatorsSchema>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
+      undefined,
       draftId,
       { roleType: RoleType.LIQUIDATOR })
 

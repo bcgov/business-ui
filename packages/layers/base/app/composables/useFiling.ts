@@ -4,7 +4,9 @@ export const useFiling = () => {
   const { setFilingDefault } = useBusinessTombstone()
   const { getBusinessParties } = useBusinessParty()
   const businessStore = useBusinessStore()
+  const feeStore = useConnectFeeStore()
   const modal = useFilingModals()
+  const permissionsStore = useBusinessPermissionsStore()
 
   function getFilingName(
     type: FilingType,
@@ -37,6 +39,7 @@ export const useFiling = () => {
   async function initFiling<T extends FilingRecord>(
     businessId: string,
     filingName: FilingType,
+    filingSubType?: string,
     draftId?: string,
     partiesParams?: { roleClass?: RoleClass, roleType?: RoleType }
     // officeParams?: office config (i.e. records, liquidation, etc.)
@@ -53,7 +56,7 @@ export const useFiling = () => {
         ? businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
         : undefined
 
-      const partiesPromise = (partiesParams && !draftId)
+      const partiesPromise = partiesParams
         ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
         : undefined
 
@@ -64,7 +67,8 @@ export const useFiling = () => {
       ] = await Promise.all([
         businessStore.init(businessId, false, false, true),
         draftPromise,
-        partiesPromise
+        partiesPromise,
+        permissionsStore.init()
       ])
 
       const genericError = [
@@ -81,6 +85,36 @@ export const useFiling = () => {
         throw new Error('invalid-draft-filing')
       }
 
+      const isAuthorized = permissionsStore.isAuthorizedByFilingType(
+        filingName,
+        filingSubType as FilingSubType
+      )
+
+      const isAllowed = draftId || businessStore.isAllowedFiling(
+        filingName,
+        filingSubType
+      )
+
+      if (!isAuthorized || !isAllowed) {
+        // no fee code from user allowed filing types for this business
+        throw new Error('filing-not-allowed')
+      }
+
+      try {
+        const feeEntityType = businessStore.business!.legalType
+        const feeCode = te(`page.${filingName}.${filingSubType}.feeCode`)
+          ? t(`page.${filingName}.${filingSubType}.feeCode`)
+          : t(`page.${filingName}.feeCode`)
+        const feeLabel = te(`page.${filingName}.${filingSubType}.feeLabel`)
+          ? t(`page.${filingName}.${filingSubType}.feeLabel`)
+          : t(`page.${filingName}.feeLabel`)
+        await feeStore.initFees(
+          [{ code: feeCode, entityType: feeEntityType, label: feeLabel }],
+          { label: feeLabel }
+        )
+        feeStore.addReplaceFee(feeCode)
+      } catch { /* ignore */ }
+
       return {
         draftFiling,
         parties
@@ -88,6 +122,8 @@ export const useFiling = () => {
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
         await modal.openGetDraftFilingErrorModal(error)
+      } else if (error instanceof Error && error.message === 'filing-not-allowed') {
+        await modal.openFilingNotAllowedErrorModal()
       } else {
         await modal.openInitFilingErrorModal(error)
       }
@@ -98,7 +134,18 @@ export const useFiling = () => {
     }
   }
 
+  function getCommonFilingPayloadData(
+    courtOrder?: CourtOrderPoaSchema,
+    documentId?: string
+  ): FilingPayloadData {
+    return {
+      ...(courtOrder?.courtOrderNumber ? { courtOrder: formatCourtOrderApi(courtOrder) } : {}),
+      ...(documentId ? { documentId } : {})
+    }
+  }
+
   return {
+    getCommonFilingPayloadData,
     getFilingName,
     initFiling
   }

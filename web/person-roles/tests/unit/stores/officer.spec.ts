@@ -55,10 +55,6 @@ mockNuxtImport('useConnectTombstone', () => () => ({
   $reset: vi.fn()
 }))
 
-vi.mock('@sbc-connect/nuxt-business-base/app/utils/is-filing-allowed', () => ({
-  isFilingAllowed: vi.fn().mockReturnValue(false)
-}))
-
 vi.mock('@sbc-connect/nuxt-forms/app/utils/zod-schemas/addresses', () => ({
   getRequiredAddressSchema: vi.fn()
 }))
@@ -76,11 +72,13 @@ mockNuxtImport('useConnectLaunchDarkly', () => () => ({
 
 const businessId = 'BC123'
 const mockBusiness = { identifier: businessId, legalName: 'Test Inc.', legalType: 'CC' } as BusinessData
+const mockIsAllowedFiling = vi.fn()
 mockNuxtImport('useBusinessStore', () => () => ({
   business: ref(mockBusiness),
   businessName: ref(mockBusiness.legalName),
   businessContact: ref({ contacts: [], corpType: {} }),
   businessFolio: ref(''),
+  isAllowedFiling: mockIsAllowedFiling,
   init: vi.fn(() => [undefined, undefined])
 }))
 
@@ -111,7 +109,7 @@ describe('useOfficerStore', () => {
       test('should fully initialize state if filing is allowed and no pending tasks exist', async () => {
         // mock API calls and permissions
         mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
-        vi.mocked(isFilingAllowed).mockReturnValue(true) // Filing is allowed
+        mockIsAllowedFiling.mockReturnValue(true) // Filing is allowed
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
         mockUseFiling.initFiling.mockResolvedValue(
@@ -120,7 +118,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.init(businessId)
+        await store.init(businessId, undefined, undefined)
 
         // assert
         expect(store.initializing).toBe(false)
@@ -134,10 +132,11 @@ describe('useOfficerStore', () => {
       test('should show modal and return early if filing is not allowed', async () => {
         // mock that the filing is NOT allowed
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        vi.mocked(isFilingAllowed).mockReturnValue(false)
+        mockLegalApi.getPendingTask.mockResolvedValue(undefined)
+        mockIsAllowedFiling.mockReturnValue(false)
 
         // init store
-        await store.init(businessId)
+        await store.init(businessId, undefined, undefined)
 
         // assert
         expect(mockErrorModalOpen).toHaveBeenCalled()
@@ -149,14 +148,14 @@ describe('useOfficerStore', () => {
         mockLegalApi.getPendingTask.mockResolvedValue(undefined)
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: { parties: [] } }, error: { value: undefined }, status: { value: 'success' } }) // No parties
-        vi.mocked(isFilingAllowed).mockReturnValue(true)
+        mockIsAllowedFiling.mockReturnValue(true)
         mockUseFiling.initFiling.mockResolvedValue(
           {
             draftFiling: undefined
           })
 
         // init store
-        await store.init(businessBC1234567.business.identifier)
+        await store.init(businessBC1234567.business.identifier, undefined, undefined)
 
         // assert
         expect(store.initialOfficers).toHaveLength(0)
@@ -189,7 +188,7 @@ describe('useOfficerStore', () => {
           })
 
         // init store
-        await store.init(businessId, draftId)
+        await store.init(businessId, undefined, draftId)
 
         // assert
         expect(store.officerTableState[0]!.new.firstName).toBe('Draft Officer')
@@ -205,7 +204,7 @@ describe('useOfficerStore', () => {
       mockLegalApi.getParties.mockRejectedValue(apiError)
 
       // init store
-      await store.init(businessId)
+      await store.init(businessId, undefined, undefined)
 
       // assert
       expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({

@@ -99,18 +99,18 @@ function onError(event: FormErrorEvent) {
 }
 
 // Watcher to handle filing save, cancel, and navigation
+// Update later once sub types are defined etc. (should happen after schema ticket is done)
 useFilingPageWatcher({
   store: liquidatorStore,
   businessId,
   draftId: urlParams.draft as string | undefined,
-  feeCode: 'NOCOI',
-  feeLabel: t('label.liquidatorChange'),
-  pageLabel: i18nKeys.value.h1,
-  formId: 'liquidator-filing',
-  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
-  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
-  breadcrumbs
+  filingType: FilingType.CHANGE_OF_LIQUIDATORS,
+  filingSubType: 'intentToLiquidate',
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { form: 'liquidator-filing' },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
 })
 </script>
 

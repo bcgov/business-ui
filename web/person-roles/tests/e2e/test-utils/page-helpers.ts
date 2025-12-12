@@ -3,6 +3,7 @@ import { expect } from '@playwright/test'
 import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 import type { getFakePerson, getFakeAddress } from './data'
 import { provinceSubdivisions } from './data'
+import { getPermissionsMock } from '#testMocks/business-permissions'
 
 type Person = ReturnType<typeof getFakePerson>
 type PersonLastNameRequired = Partial<Person> & Pick<Person, 'lastName'>
@@ -21,13 +22,13 @@ export async function navigateToOfficerChangePage(page: Page) {
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }
 
-export async function navigateToManageReceiversPage(page: Page) {
+export async function navigateToManageReceiversPage(page: Page, filingSubType: ReceiverType) {
   // navigate to page
-  await page.goto(`./en-CA/manage-receivers/${identifier}`)
+  await page.goto(`./en-CA/manage-receivers/${identifier}/${filingSubType}`)
   // wait for api response to settle
   await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
-  await expect(page.getByText('Manage Receivers').first()).toBeVisible()
+  await expect(page.getByText('1. Receiver Information').first()).toBeVisible()
 }
 
 export async function navigateToManageLiquidatorsPage(page: Page) {
@@ -72,6 +73,9 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   // pay api officer fee GET
   await page.route('*/**/fees/**/NOCOI', async (route) => {
     await route.fulfill({ json: NOCOI })
+  })
+  page.route('**/api/v2/permissions', async (route) => {
+    await route.fulfill({ json: getPermissionsMock() })
   })
   // business api filing creation POST
   await page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
