@@ -109,9 +109,11 @@ export default {
       h1: 'Manage Receivers'
     },
     changeOfOfficers: {
-      title: 'Officer Change - People Roles - BC Registries and Online Services',
-      h1: 'Officer Change',
       desc: 'Officer information is not required by BC Registries, but will show on the business summary if it is submitted. To make updates, simply submit another officer change.',
+      feeCode: 'NOCOI',
+      feeLabel: 'Officer Change',
+      h1: 'Officer Change',
+      title: 'Officer Change - People Roles - BC Registries and Online Services',
     }
   }
 }

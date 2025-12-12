@@ -8,7 +8,7 @@ interface FilingPageWatcherOptions<T> {
   saveFiling: { clickEvent: (...args: unknown[]) => Promise<void>, label: string }
   cancelFiling: { clickEvent: () => Promise<void>, label: string }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  submitFiling?: { clickEvent: (...args: any[]) => Promise<void>, label: string }
+  submitFiling?: { clickEvent?: (...args: any[]) => Promise<void>, label: string }
   breadcrumbs: Ref<ConnectBreadcrumb[]>
 }
 

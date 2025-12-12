@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getBusinessMock, getBusinessSettingsMock } from '#testMocks/business'
+import { getPermissionsMock } from '#testMocks/business-permissions'
 import { getPartiesMock } from '#testMocks/parties'
 import { getFilingMock } from '#testMocks/filing'
 
@@ -9,6 +10,7 @@ const identifier = 'BC1234567'
 
 const mockLegalApi = {
   getAuthInfo: vi.fn(),
+  getAuthorizedActions: vi.fn(),
   getBusiness: vi.fn(),
   getParties: vi.fn(),
   getAndValidateDraftFiling: vi.fn()
@@ -36,8 +38,10 @@ describe('useFiling', () => {
   })
 
   describe('initFiling', () => {
-    let store: ReturnType<typeof useBusinessStore>
+    let businessStore: ReturnType<typeof useBusinessStore>
+    let businessPermissionsStore: ReturnType<typeof useBusinessPermissionsStore>
     const businessMock = getBusinessMock([{ key: 'identifier', value: identifier }])
+    const businessPermissionsMock = getPermissionsMock()
     const businessSettingsMock = getBusinessSettingsMock()
     const partiesMock = getPartiesMock()
     const draftFilingMock = getFilingMock()
@@ -46,8 +50,10 @@ describe('useFiling', () => {
       vi.resetAllMocks()
       const pinia = createPinia()
       setActivePinia(pinia)
-      store = useBusinessStore()
-      store.$reset()
+      businessStore = useBusinessStore()
+      businessStore.$reset()
+      businessPermissionsStore = useBusinessPermissionsStore()
+      businessPermissionsStore.$reset()
       mockLegalApi.getBusiness.mockResolvedValue(
         {
           data: { value: businessMock },
@@ -80,9 +86,10 @@ describe('useFiling', () => {
           refresh: async () => ({})
         }
       )
+      mockLegalApi.getAuthorizedActions.mockResolvedValue(businessPermissionsMock)
     })
     describe('when initializing a filing (non draft)', () => {
-      test('should set initialize business data and set filing tombstone', async () => {
+      test('should initialize business, permissions, fee, and filing tombstone data', async () => {
         // init
         const { draftFiling, parties } = await useFiling().initFiling(identifier, FilingType.CHANGE_OF_OFFICERS)
 
@@ -93,14 +100,16 @@ describe('useFiling', () => {
         expect(draftFiling).toBeUndefined()
         expect(parties).toBeUndefined()
         // business store
-        expect(store.business).toBeDefined()
-        expect(store.businessName).toBe(businessMock.business.legalName)
-        expect(store.businessIdentifier).toBe(identifier)
-        expect(store.businessFolio).toBe(businessSettingsMock.folioNumber)
-        expect(store.businessContact).toEqual(businessSettingsMock.contacts[0])
+        expect(businessStore.business).toBeDefined()
+        expect(businessStore.businessName).toBe(businessMock.business.legalName)
+        expect(businessStore.businessIdentifier).toBe(identifier)
+        expect(businessStore.businessFolio).toBe(businessSettingsMock.folioNumber)
+        expect(businessStore.businessContact).toEqual(businessSettingsMock.contacts[0])
+        // business permissions store
+        expect(businessPermissionsStore.authorizedActions).toEqual(businessPermissionsMock)
         // tombstone
         const { businessTombstone } = useBusinessTombstone()
-        expect(businessTombstone.value.title.text).toBe(store.businessName)
+        expect(businessTombstone.value.title.text).toBe(businessStore.businessName)
         expect(businessTombstone.value.subtitles).toEqual([{ text: 'BC Limited Company' }])
         expect(businessTombstone.value.details).toEqual([])
         expect(businessTombstone.value.sideDetails).toEqual([
@@ -116,6 +125,7 @@ describe('useFiling', () => {
         const { parties } = await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
+          undefined,
           undefined,
           { roleClass: RoleClass.OFFICER }
         )
@@ -138,20 +148,21 @@ describe('useFiling', () => {
     describe('when initializing a draft filing', () => {
       const draftId = 'draft123'
 
-      test('should return the mock draft information and getParties should not be called', async () => {
+      test('should return the mock draft information and getParties should still be called', async () => {
         // init store
         const { draftFiling, parties } = await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
+          undefined,
           draftId,
           { roleClass: RoleClass.OFFICER }
         )
 
         expect(mockErrorModalOpen).not.toHaveBeenCalled()
         expect(mockLegalApi.getAndValidateDraftFiling).toHaveBeenCalledTimes(1)
-        expect(mockLegalApi.getParties).not.toHaveBeenCalled()
+        expect(mockLegalApi.getParties).toHaveBeenCalledTimes(1)
         expect(draftFiling).toBeDefined()
-        expect(parties).toBeUndefined()
+        expect(parties).toBeDefined()
         expect(draftFiling!.data!.value).toEqual(draftFilingMock)
       })
 
@@ -161,6 +172,7 @@ describe('useFiling', () => {
         await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
+          undefined,
           draftId,
           { roleClass: RoleClass.OFFICER }
         )

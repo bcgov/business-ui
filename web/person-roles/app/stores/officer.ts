@@ -23,7 +23,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
-  async function init(businessId: string, draftId?: string) {
+  async function init(businessId: string, _filingSubType: undefined, draftId?: string) {
     try {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
@@ -33,6 +33,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const { draftFiling } = await useFiling().initFiling(
         businessId,
         FilingType.CHANGE_OF_OFFICERS,
+        undefined,
         draftId
       )
 
@@ -49,13 +50,6 @@ export const useOfficerStore = defineStore('officer-store', () => {
           await modal.openFilingNotAvailableModal()
           return
         }
-      }
-
-      // if ***NO*** filing ID provided validate business is allowed to complete this filing type
-      // return early if the filing is not allowed or the business has pending tasks
-      if (!isFilingAllowed(business.value as BusinessData, 'changeOfOfficers') && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
-        await modal.openFilingNotAllowedErrorModal()
-        return
       }
 
       // TODO: common parties store will remove the need for this

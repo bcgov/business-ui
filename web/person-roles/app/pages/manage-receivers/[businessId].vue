@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormErrorEvent, FormSubmitEvent } from '@nuxt/ui'
+import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import { RoleTypeUi } from '#imports'
 
@@ -31,19 +31,16 @@ const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
-async function submitFiling(e?: FormSubmitEvent<unknown>) {
+async function submitFiling() {
   try {
-    // e will be undefined when there are validation errors and form will trigger 'onError'
-    if (e) {
-      const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
-      if (!hasUpdatedReceiver) {
-        // TODO: temporary text - update in lang file or change this to scroll etc.
-        useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
-        return
-      }
-      await receiverStore.submit(true)
-      await navigateTo(dashboardUrl.value, { external: true })
+    const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
+    if (!hasUpdatedReceiver) {
+      // TODO: temporary text - update in lang file or change this to scroll etc.
+      useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
+      return
     }
+    await receiverStore.submit(true)
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
   }
@@ -56,6 +53,7 @@ async function cancelFiling() {
   // } else {
   //   await navigateTo(dashboardOrEditUrl.value, { external: true })
   // }
+  await navigateTo(dashboardUrl.value, { external: true })
 }
 
 async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
@@ -96,7 +94,7 @@ useFilingPageWatcher<ReceiverType>({
   formId: 'receiver-filing',
   saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
   cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
+  submitFiling: { label: t('label.submit') },
   breadcrumbs
 })
 </script>
