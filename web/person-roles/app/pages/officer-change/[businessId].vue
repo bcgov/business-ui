@@ -239,10 +239,11 @@ useFilingPageWatcher({
   feeLabel: t('label.officerChange'),
   pageLabel: t('page.changeOfOfficers.h1'),
   formId: 'officer-filing',
-  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
-  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
-  breadcrumbs
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { onClick: submitFiling },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
 })
 </script>
 

@@ -1,18 +1,20 @@
+import type { ButtonProps } from '@nuxt/ui'
+
 interface FilingPageWatcherOptions<T> {
   store: { init: (businessId: string, filingSubType?: T, draftId?: string) => Promise<void> }
   businessId: string
   filingType: FilingType
   filingSubType?: T
   draftId?: string
-  formId: string
-  saveFiling: { clickEvent: (...args: unknown[]) => Promise<void>, label: string }
-  cancelFiling: { clickEvent: () => Promise<void>, label: string }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  submitFiling?: { clickEvent?: (...args: any[]) => Promise<void>, label: string }
+  saveFiling: ButtonProps
+  cancelFiling: ButtonProps
+  submitFiling?: ButtonProps
   breadcrumbs: Ref<ConnectBreadcrumb[]>
+  setOnBeforeSessionExpired: () => Promise<void>
 }
 
 export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
+  const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
   const { setButtonControl } = useConnectButtonControl()
   watch(
@@ -26,32 +28,31 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
         leftGroup: {
           buttons: [
             {
-              onClick: options.saveFiling.clickEvent,
-              label: options.saveFiling.label,
-              variant: 'outline'
+              label: t('label.saveResumeLater'),
+              variant: 'outline',
+              ...options.saveFiling
             }
           ]
         },
         rightGroup: {
           buttons: [
             {
-              onClick: options.cancelFiling.clickEvent,
-              label: options.cancelFiling.label,
-              variant: 'outline'
+              label: t('label.cancel'),
+              variant: 'outline',
+              ...options.cancelFiling
             },
             {
-              onClick: options.submitFiling?.clickEvent,
-              form: options.formId,
-              label: options.submitFiling?.label,
+              label: t('label.submit'),
               trailingIcon: 'i-mdi-chevron-right',
-              type: 'submit'
+              type: 'submit',
+              ...options.submitFiling
             }
           ]
         }
       })
 
       setOnBeforeSessionExpired(async () => {
-        await options.saveFiling.clickEvent(false, true)
+        await options.setOnBeforeSessionExpired()
       })
     },
     { immediate: true }

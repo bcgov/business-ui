@@ -70,8 +70,10 @@ export default {
     changeOfLiquidators: {
       // TODO: add other sub types
       intentToLiquidate: {
+        feeCode: 'LQSIN',
+        feeLabel: 'Intent to Liquidate',
+        h1: 'Intent to Liquidate',
         title: 'Intent to Liquidate - People Roles - BC Registries and Online Services',
-        h1: 'Intent to Liquidate'
       }
     },
     changeOfReceivers: {
@@ -113,7 +115,7 @@ export default {
       feeCode: 'NOCOI',
       feeLabel: 'Officer Change',
       h1: 'Officer Change',
-      title: 'Officer Change - People Roles - BC Registries and Online Services',
+      title: 'Officer Change - People Roles - BC Registries and Online Services'
     }
   }
 }

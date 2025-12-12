@@ -91,11 +91,11 @@ useFilingPageWatcher<ReceiverType>({
   filingType: FILING_TYPE,
   filingSubType,
   draftId: urlParams.draft as string | undefined,
-  formId: 'receiver-filing',
-  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
-  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { label: t('label.submit') },
-  breadcrumbs
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { form: 'receiver-filing' },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
 })
 </script>
 
