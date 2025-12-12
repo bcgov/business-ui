@@ -23,7 +23,7 @@ jobs:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
     with:
       target: ${{ inputs.target }}
-      app_name: "registry-home"
+      app_name: "business-registry-home"
       working_directory: "."
       node_version: 24
       pnpm_version: 10.0.0
