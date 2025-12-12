@@ -23,7 +23,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
-  async function init(businessId: string, _filingSubType: undefined, draftId?: string) {
+  async function init(businessId: string, _filingSubType?: string, draftId?: string) {
     try {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()

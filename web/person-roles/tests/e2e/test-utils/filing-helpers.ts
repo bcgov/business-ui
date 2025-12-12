@@ -25,6 +25,10 @@ export const mockApiCallsForFiling = async (
   // FUTURE: make this configurable for other filings
   page.route(`**/api/v2/businesses/${identifier}/parties?role=${roleType}`, async (route) => {
     // FUTURE: update roles of parties to match the configurables
-    await route.fulfill({ json: getPartiesMock() })
+    await route.fulfill({ json: getPartiesMock([
+      { index: 0, key: 'roleType', value: roleType },
+      { index: 1, key: 'roleType', value: roleType },
+      { index: 2, key: 'roleType', value: roleType }
+    ]) })
   })
 }

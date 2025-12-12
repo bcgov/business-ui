@@ -14,6 +14,7 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
 const receiverStore = useReceiverStore()
+const { handleButtonLoading } = useConnectButtonControl()
 
 const FILING_TYPE = FilingType.CHANGE_OF_RECEIVERS
 
@@ -39,10 +40,12 @@ async function submitFiling() {
       useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
       return
     }
+    handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
+    handleButtonLoading(false)
   }
 }
 

@@ -86,7 +86,7 @@ describe('useFiling', () => {
           refresh: async () => ({})
         }
       )
-      mockLegalApi.getAuthorizedActions.mockResolvedValue(businessPermissionsMock)
+      mockLegalApi.getAuthorizedActions.mockResolvedValue(businessPermissionsMock.authorizedPermissions)
     })
     describe('when initializing a filing (non draft)', () => {
       test('should initialize business, permissions, fee, and filing tombstone data', async () => {
@@ -106,7 +106,7 @@ describe('useFiling', () => {
         expect(businessStore.businessFolio).toBe(businessSettingsMock.folioNumber)
         expect(businessStore.businessContact).toEqual(businessSettingsMock.contacts[0])
         // business permissions store
-        expect(businessPermissionsStore.authorizedActions).toEqual(businessPermissionsMock)
+        expect(businessPermissionsStore.authorizedActions).toEqual(businessPermissionsMock.authorizedPermissions)
         // tombstone
         const { businessTombstone } = useBusinessTombstone()
         expect(businessTombstone.value.title.text).toBe(businessStore.businessName)

@@ -41,10 +41,11 @@ function formatRelationshipRolesUi(roles: Role[]): PartyRoleSchema {
   })
 }
 
-function formatRelationshipRolesApi(roles: PartyRoleSchema): Role[] {
+function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = false): Role[] {
   return roles.map((role) => {
     return {
       ...role,
+      cessationDate: isRemoved && !role.cessationDate ? getToday() : role.cessationDate,
       roleType: role.roleType
         ? UI_ROLE_TO_API_ROLE_MAP[role.roleType]
         : undefined
@@ -112,7 +113,7 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
     },
     mailingAddress,
     deliveryAddress,
-    roles: formatRelationshipRolesApi(party.roles),
+    roles: formatRelationshipRolesApi(party.roles, party.actions.includes(ActionType.REMOVED)),
     actions: party.actions
   }
 }

@@ -73,7 +73,7 @@ export default {
         feeCode: 'LQSIN',
         feeLabel: 'Intent to Liquidate',
         h1: 'Intent to Liquidate',
-        title: 'Intent to Liquidate - People Roles - BC Registries and Online Services',
+        title: 'Intent to Liquidate - People Roles - BC Registries and Online Services'
       }
     },
     changeOfReceivers: {
