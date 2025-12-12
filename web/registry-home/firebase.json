@@ -1,7 +1,7 @@
 {
   "hosting":
     {
-      "site": "registry-home-dev",
+      "site": "business-registry-home-dev",
       "public": "dist",
       "ignore": ["**/devops/**", "**/.*", "**/node_modules/**"],
       "rewrites": [
