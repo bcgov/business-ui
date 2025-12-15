@@ -153,7 +153,8 @@ export default defineNuxtConfig({
       xlpFormUrl: process.env.NUXT_APP_XLP_FORMS_URL,
       businessDashUrl: process.env.NUXT_BUSINESS_DASH_URL,
       corpOLUrl: process.env.NUXT_CORPORATE_ONLINE_URL,
-      authApiGwUrl: `${process.env.NUXT_AUTH_API_GW_URL}${process.env.NUXT_AUTH_API_VERSION}`,
+      // NOTE: authApiURL is actually the Auth API Gateway URL
+      authApiURL: `${process.env.NUXT_AUTH_API_URL}${process.env.NUXT_AUTH_API_VERSION}`,
       authApiKey: process.env.NUXT_AUTH_API_KEY,
       businessApiGwUrl: `${process.env.NUXT_BUSINESS_API_GW_URL}${process.env.NUXT_BUSINESS_API_VERSION_2}`,
       businessApiKey: process.env.NUXT_BUSINESS_API_KEY,
