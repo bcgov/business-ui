@@ -82,12 +82,12 @@ export default {
       }
     },
     changeOfReceivers: {
-      ammendReceiver: {
-        desc: 'Some ammend receiver descriptive text',
+      amendReceiver: {
+        desc: 'Some amend receiver descriptive text',
         feeCode: 'AMEND',
-        feeLabel: 'Ammend Receiver or Receiver Manager Information',
-        h1: 'Ammend Receiver or Receiver Manager Information',
-        title: 'Ammend Receivers - People Roles - BC Registries and Online Services'
+        feeLabel: 'Amend Receiver or Receiver Manager Information',
+        h1: 'Amend Receiver or Receiver Manager Information',
+        title: 'Amend Receivers - People Roles - BC Registries and Online Services'
       },
       appointReceiver: {
         desc: 'Some appoint receiver descriptive text',
