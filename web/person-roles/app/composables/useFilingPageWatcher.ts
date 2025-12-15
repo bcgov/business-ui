@@ -1,37 +1,26 @@
-interface FilingPageWatcherOptions {
-  store: { init: (businessId: string, draftId?: string) => Promise<void> }
+import type { ButtonProps } from '@nuxt/ui'
+
+interface FilingPageWatcherOptions<T> {
+  store: { init: (businessId: string, filingSubType?: T, draftId?: string) => Promise<void> }
   businessId: string
+  filingType: FilingType
+  filingSubType?: T
   draftId?: string
-  feeCode: string
-  feeLabel: string
-  pageLabel: string
-  formId: string
-  saveFiling: { clickEvent: () => Promise<void>, label: string }
-  cancelFiling: { clickEvent: () => Promise<void>, label: string }
-  submitFiling?: { clickEvent: () => Promise<void>, label: string }
+  saveFiling: ButtonProps
+  cancelFiling: ButtonProps
+  submitFiling?: ButtonProps
   breadcrumbs: Ref<ConnectBreadcrumb[]>
+  setOnBeforeSessionExpired: () => Promise<void>
 }
 
-export function useFilingPageWatcher(options: FilingPageWatcherOptions) {
+export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
+  const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
-  const businessStore = useBusinessStore()
-  const feeStore = useConnectFeeStore()
   const { setButtonControl } = useConnectButtonControl()
-
   watch(
     () => accountStore.currentAccount.id,
     async () => {
-      await options.store.init(options.businessId, options.draftId)
-
-      if (businessStore.business?.legalType) {
-        try {
-          await feeStore.initFees(
-            [{ code: options.feeCode, entityType: businessStore.business.legalType, label: options.feeLabel }],
-            { label: options.pageLabel }
-          )
-          feeStore.addReplaceFee(options.feeCode)
-        } catch { /* ignore */ }
-      }
+      await options.store.init(options.businessId, options.filingSubType, options.draftId)
 
       setBreadcrumbs(options.breadcrumbs.value)
 
@@ -39,30 +28,31 @@ export function useFilingPageWatcher(options: FilingPageWatcherOptions) {
         leftGroup: {
           buttons: [
             {
-              onClick: options.saveFiling.clickEvent,
-              label: options.saveFiling.label,
-              variant: 'outline'
+              label: t('label.saveResumeLater'),
+              variant: 'outline',
+              ...options.saveFiling
             }
           ]
         },
         rightGroup: {
           buttons: [
             {
-              onClick: options.cancelFiling.clickEvent,
-              label: options.cancelFiling.label,
-              variant: 'outline'
+              label: t('label.cancel'),
+              variant: 'outline',
+              ...options.cancelFiling
             },
             {
-              onClick: options.submitFiling?.clickEvent,
-              label: options.submitFiling?.label,
-              trailingIcon: 'i-mdi-chevron-right'
+              label: t('label.submit'),
+              trailingIcon: 'i-mdi-chevron-right',
+              type: 'submit',
+              ...options.submitFiling
             }
           ]
         }
       })
 
       setOnBeforeSessionExpired(async () => {
-        await options.saveFiling.clickEvent(false, true)
+        await options.setOnBeforeSessionExpired()
       })
     },
     { immediate: true }

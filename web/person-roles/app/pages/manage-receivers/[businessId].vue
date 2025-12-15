@@ -1,42 +1,51 @@
 <script setup lang="ts">
-import type { FormSubmitEvent, FormErrorEvent } from '@nuxt/ui'
+import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { RoleTypeUi } from '#imports'
+
+definePageMeta({
+  layout: 'connect-pay-tombstone-buttons',
+  middleware: ['connect-auth'],
+  path: '/manage-receivers/:businessId/:filingSubType'
+})
 
 const { t } = useI18n()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
-const { dashboardUrl, breadcrumbs } = useFilingNavigation(t('page.manageReceivers.h1'))
-const receiverSchema = getReceiversSchema()
 const receiverStore = useReceiverStore()
+const { handleButtonLoading } = useConnectButtonControl()
 
-useHead({
-  title: t('page.manageReceivers.title')
-})
-
-definePageMeta({
-  layout: 'connect-pay-tombstone-buttons',
-  middleware: [
-    // Check for login redirect
-    'connect-auth'
-  ]
-})
+const FILING_TYPE = FilingType.CHANGE_OF_RECEIVERS
 
 const businessId = route.params.businessId as string
+const filingSubType = route.params.filingSubType as ReceiverType
+
+useHead({
+  title: t(`page.${FILING_TYPE}.${filingSubType}.title`)
+})
+
+const filingHeading = t(`page.${FILING_TYPE}.${filingSubType}.h1`)
+const filingDescription = t(`page.${FILING_TYPE}.${filingSubType}.desc`)
+const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}.${filingSubType}.h1`))
+
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 // submit final filing
-async function submitFiling(e: FormSubmitEvent<unknown>) {
-  // Todo: Exclude non-edited existing parties from the submission payload
+async function submitFiling() {
   try {
-    console.info('RECEIVER FILING DATA: ', e.data) // This does not include the table data
-    // pull draft id from url or mark as undefined
-    // const draftId = (urlParams.draft as string) ?? undefined
-    // await receiverStore.submit(draftId)
-    // navigate to business dashboard if filing does *not* fail
-    // await navigateTo(dashboardUrl.value, { external: true })
+    const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
+    if (!hasUpdatedReceiver) {
+      // TODO: temporary text - update in lang file or change this to scroll etc.
+      useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
+      return
+    }
+    handleButtonLoading(true, 'right', 1)
+    await receiverStore.submit(true)
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
+    handleButtonLoading(false)
   }
 }
 
@@ -47,20 +56,18 @@ async function cancelFiling() {
   // } else {
   //   await navigateTo(dashboardOrEditUrl.value, { external: true })
   // }
+  await navigateTo(dashboardUrl.value, { external: true })
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
-  // TODO: consolidate with officers - break out common functionality
+async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   try {
-    // pull draft id from url or mark as undefined
-    const result = receiverSchema.safeParse(receiverStore.formState)
-    if (result.error) {
-      // TODO: do not save if there are validation errors
+    if (!disableActiveFormCheck && useManageParties().addingParty.value) {
+      // TODO: temporary text - update in lang file or change this to scroll etc.
+      useConnectButtonControl().setAlertText('Please complete your expanded Receiver above', 'left', 0)
       return
     }
-    const draftId = (urlParams.draft as string) ?? undefined
 
-    await receiverStore.save(draftId)
+    await receiverStore.submit(false)
 
     // if resume later, navigate back to business dashboard
     if (resumeLater) {
@@ -80,20 +87,18 @@ function onError(event: FormErrorEvent) {
     onFormSubmitError(event)
   }
 }
-
 // Watcher to handle filing save, cancel, and navigation
-useFilingPageWatcher({
+useFilingPageWatcher<ReceiverType>({
   store: receiverStore,
   businessId,
+  filingType: FILING_TYPE,
+  filingSubType,
   draftId: urlParams.draft as string | undefined,
-  feeCode: 'NOCOI',
-  feeLabel: t('label.receiverChange'),
-  pageLabel: t('page.manageReceivers.h1'),
-  formId: 'receiver-filing',
-  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
-  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
-  breadcrumbs
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { form: 'receiver-filing' },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
 })
 </script>
 
@@ -105,14 +110,13 @@ useFilingPageWatcher({
     :schema="z.any()"
     novalidate
     class="py-10 space-y-10"
-    :aria-label="t('page.manageReceivers.h1')"
+    :aria-label="filingHeading"
     @submit="submitFiling"
     @error="onError"
   >
     <div class="space-y-1">
-      <h1>{{ t('page.manageReceivers.h1') }}</h1>
-      <!-- TODO: add text/translation -->
-      <p>Some receiver descriptive text</p>
+      <h1>{{ filingHeading }}</h1>
+      <p>{{ filingDescription }}</p>
     </div>
 
     <section class="space-y-4">
@@ -126,6 +130,7 @@ useFilingPageWatcher({
         :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
         :add-label="$t('label.addReceiver')"
         :edit-label="$t('label.editReceiver')"
+        :role-type="RoleTypeUi.RECEIVER"
       />
     </section>
 

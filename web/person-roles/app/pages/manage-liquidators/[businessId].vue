@@ -19,8 +19,8 @@ const i18nKeys = computed(() => {
       title: t('page.intentToLiquidate.title')
     }
     : {
-      h1: t('page.manageLiquidators.h1'),
-      title: t('page.manageLiquidators.title')
+      h1: t('page.changeOfLiquidators.h1'),
+      title: t('page.changeOfLiquidators.title')
     }
 })
 
@@ -99,18 +99,18 @@ function onError(event: FormErrorEvent) {
 }
 
 // Watcher to handle filing save, cancel, and navigation
+// Update later once sub types are defined etc. (should happen after schema ticket is done)
 useFilingPageWatcher({
   store: liquidatorStore,
   businessId,
   draftId: urlParams.draft as string | undefined,
-  feeCode: 'NOCOI',
-  feeLabel: t('label.liquidatorChange'),
-  pageLabel: i18nKeys.value.h1,
-  formId: 'liquidator-filing',
-  saveFiling: { clickEvent: () => saveFiling(true), label: t('label.saveResumeLater') },
-  cancelFiling: { clickEvent: cancelFiling, label: t('label.cancel') },
-  submitFiling: { clickEvent: submitFiling, label: t('label.submit') },
-  breadcrumbs
+  filingType: FilingType.CHANGE_OF_LIQUIDATORS,
+  filingSubType: hasIntentToLiquidate.value ? 'intentToLiquidate' : undefined,
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { form: 'liquidator-filing' },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
 })
 </script>
 
@@ -122,7 +122,7 @@ useFilingPageWatcher({
     :schema="z.any()"
     novalidate
     class="py-10 space-y-10"
-    :aria-label="t('page.manageLiquidators.h1')"
+    :aria-label="t('page.changeOfLiquidators.h1')"
     @submit="submitFiling"
     @error="onError"
   >

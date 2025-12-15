@@ -21,14 +21,39 @@
                     "name": "annualReport"
                 },
                 {
+                    "displayName": "Manage Liquidators",
+                    "feeCode": "AMEND",
+                    "name": "changeOfLiquidators"
+                },
+                {
+                    "displayName": "Intent to Liquidate",
+                    "feeCode": "LQSIN",
+                    "name": "changeOfLiquidators",
+                    "type": "intentToLiquidate"
+                },
+                {
+                    "displayName": "Amend Receiver",
+                    "feeCode": "AMEND",
+                    "name": "changeOfReceivers",
+                    "type": "amendReceiver"
+                },
+                {
                     "displayName": "Appoint Receiver",
                     "feeCode": "NOARM",
-                    "name": "appointReceiver"
+                    "name": "changeOfReceivers",
+                    "type": "appointReceiver"
                 },
                 {
                     "displayName": "Cease Receiver",
                     "feeCode": "NOCER",
-                    "name": "ceaseReceiver"
+                    "name": "changeOfReceivers",
+                    "type": "ceaseReceiver"
+                },
+                {
+                    "displayName": "Change Address Receiver",
+                    "feeCode": "NOCRM",
+                    "name": "changeOfReceivers",
+                    "type": "changeAddressReceiver"
                 },
                 {
                     "displayName": "Address Change",

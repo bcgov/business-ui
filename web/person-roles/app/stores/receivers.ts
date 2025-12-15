@@ -1,83 +1,84 @@
-import type { ManageReceiversSchema } from '~/utils/schemas/forms/manage-receivers'
-
 export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
   const { tableState } = useManageParties()
+  const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { getCommonFilingPayloadData, initFiling } = useFiling()
 
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false) // receiver store loading state
-  const draftFilingState = shallowRef<ManageReceiversSchema>({} as ManageReceiversSchema) // filing state saved as draft
+  const receiverSubType = ref<ReceiverType>(ReceiverType.APPOINT)
+  const draftFilingState = shallowRef<FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>>(
+    {} as FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>) // filing state saved as draft
 
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
-  // TODO: watcher on these that updates fee summary OR added as part of compute fns
-  const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
-  const ceasedParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
-
-  async function init(businessId: string, draftId?: string) {
+  async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
+    if (!filingSubType) {
+      await useFilingModals().openInitFilingErrorModal({ status: 500 })
+      return
+    }
     initializing.value = true
+    receiverSubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await useFiling().initFiling<ManageReceiversSchema>(
+    const { draftFiling, parties } = await initFiling<{ changeOfReceivers: ReceiverPayload }>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
+      filingSubType,
       draftId,
       { roleType: RoleType.RECEIVER })
 
     if (draftFiling?.data.value?.filing) {
-      draftFilingState.value = draftFiling.data.value.filing
-      formState.courtOrder = draftFilingState.value.courtOrder
-      formState.documentId = draftFilingState.value.documentId
-      formState.staffPayment = draftFilingState.value.staffPayment
-      tableState.value = draftFilingState.value.parties
-    } else if (parties?.data) {
-      tableState.value = parties.data
+      draftFilingState.value = draftFiling.data.value
+      // TODO: util mappers for these - draft filing util?
+      formState.staffPayment = formatStaffPaymentUi(draftFilingState.value.filing.header)
+      if (draftFilingState.value.filing.changeOfReceivers.courtOrder) {
+        formState.courtOrder = formatCourtOrderUi(draftFilingState.value.filing.changeOfReceivers.courtOrder)
+      }
+      if (draftFilingState.value.filing.changeOfReceivers.documentId) {
+        formState.documentId.documentIdNumber = draftFilingState.value.filing.changeOfReceivers.documentId
+      }
+    }
+
+    if (parties?.data) {
+      const draftRelationships = draftFiling?.data.value?.filing.changeOfReceivers.relationships
+      tableState.value = draftRelationships
+        ? getPartiesMergedWithRelationships(parties.data, draftRelationships)
+        : parties.data
     }
     initializing.value = false
   }
 
-  async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ManageReceiversSchema }>(
-      businessStore.business!,
-      FilingType.CHANGE_OF_RECEIVERS,
-      { changeOfReceivers: { ...formState, parties: tableState.value } },
-      formState.staffPayment
-    )
-
-    await businessApi.saveOrUpdateDraftFiling(
-      businessStore.businessIdentifier!,
-      payload,
-      false,
-      draftId as string | number
-    )
-  }
-
-  async function submit(draftId?: string) {
+  async function submit(isSubmission: boolean) {
     const receiverPayload: ReceiverPayload = {
-      ...(newParties.value
-        ? { appointedReceivers: { parties: newParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
-        : {}),
-      ...(newParties.value
-        ? { ceasedReceivers: { parties: ceasedParties.value.map(p => formatPartyApi(p.new as PartyStateBase)) || [] } }
-        : {})
+      type: receiverSubType.value,
+      relationships: (
+        tableState.value.map(relationship => formatRelationshipApi(relationship.new))
+        // Only add relationships that have changes
+      ).filter(relationship => relationship.actions?.length),
+      ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
     }
 
     const payload = businessApi.createFilingPayload<{ changeOfReceivers: ReceiverPayload }>(
       businessStore.business!,
-      // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },
-      formState.staffPayment
+      formatStaffPaymentApi(formState.staffPayment)
     )
-    if (draftId) {
-      await businessApi.saveOrUpdateDraftFiling(
+
+    const draftId = draftFilingState.value?.filing?.header?.filingId
+    if (draftId || !isSubmission) {
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<{ changeOfReceivers: ReceiverPayload }>(
         businessStore.businessIdentifier!,
         payload,
-        true,
-        draftId
+        isSubmission,
+        draftId as string | number
       )
+      draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
       await businessApi.postFiling(businessStore.businessIdentifier!, payload)
     }
@@ -93,8 +94,8 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   return {
     formState,
     initializing,
+    receivers: tableState,
     init,
-    save,
     submit,
     $reset
   }

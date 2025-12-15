@@ -2,6 +2,17 @@ import { z } from 'zod'
 
 export * from './name'
 
+export function getPartyRoleSchema() {
+  return z.array(z.object({
+    appointmentDate: z.string().optional(),
+    cessationDate: z.string().optional().nullable(),
+    roleClass: z.enum(RoleClass).optional(),
+    roleType: z.enum(RoleTypeUi).optional()
+  })).optional().default([])
+}
+
+export type PartyRoleSchema = z.output<ReturnType<typeof getPartyRoleSchema>>
+
 export function getPartySchema() {
   return z.object({
     actions: z.array(z.enum(ActionType)).default([]),
@@ -33,12 +44,7 @@ export function getPartySchema() {
       lastName: '',
       businessName: ''
     }),
-    roles: z.array(z.object({
-      appointmentDate: z.string().optional(),
-      cessationDate: z.string().optional().nullable(),
-      roleClass: z.enum(RoleClass).optional(),
-      roleType: z.enum(RoleType).optional()
-    })).optional().default([]),
+    roles: getPartyRoleSchema(),
     id: z.string().optional().default('')
   })
 }

@@ -66,22 +66,57 @@ export default {
     }
   },
   page: {
-    manageLiquidators: {
+    // Below sections are named based on filing type and filing sub type
+    changeOfLiquidators: {
+      // TODO: remove once sub types are in
+      h1: 'Manage Liquidators',
       title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
-      h1: 'Manage Liquidators'
+      feeCode: 'LQSIN',
+      feeLabel: 'Manage Liquidators',
+      // TODO: add other sub types
+      intentToLiquidate: {
+        feeCode: 'LQSIN',
+        feeLabel: 'Intent to Liquidate',
+        h1: 'Intent to Liquidate',
+        title: 'Intent to Liquidate - People Roles - BC Registries and Online Services'
+      }
     },
-    intentToLiquidate: {
-      title: 'Intent to Liquidate - People Roles - BC Registries and Online Services',
-      h1: 'Intent to Liquidate'
+    changeOfReceivers: {
+      ammendReceiver: {
+        desc: 'Some ammend receiver descriptive text',
+        feeCode: 'AMEND',
+        feeLabel: 'Ammend Receiver or Receiver Manager Information',
+        h1: 'Ammend Receiver or Receiver Manager Information',
+        title: 'Ammend Receivers - People Roles - BC Registries and Online Services'
+      },
+      appointReceiver: {
+        desc: 'Some appoint receiver descriptive text',
+        feeCode: 'NOARM',
+        feeLabel: 'Appoint Receivers or Receiver Managers',
+        h1: 'Appoint Receivers or Receiver Managers',
+        title: 'Appoint Receivers - People Roles - BC Registries and Online Services'
+      },
+      ceaseReceiver: {
+        desc: 'Some cease receiver descriptive text',
+        feeCode: 'NOCER',
+        feeLabel: 'Cease Receivers or Receiver Managers',
+        h1: 'Cease Receivers or Reveiver Managers',
+        title: 'Cease Receivers - People Roles - BC Registries and Online Services'
+      },
+      changeAddressReceiver: {
+        desc: 'Some change address receiver descriptive text',
+        feeCode: 'NOCRM',
+        feeLabel: 'Change Addresses of Receivers or Reveiver Managers',
+        h1: 'Change Addresses of Receivers or Reveiver Managers',
+        title: 'Change Receiver Addresses - People Roles - BC Registries and Online Services'
+      }
     },
-    manageReceivers: {
-      title: 'Manage Receivers - People Roles - BC Registries and Online Services',
-      h1: 'Manage Receivers'
-    },
-    officerChange: {
+    changeOfOfficers: {
       desc: 'Officer information is not required by BC Registries, but will show on the business summary if it is submitted. To make updates, simply submit another officer change.',
-      title: 'Officer Change - People Roles - BC Registries and Online Services',
-      h1: 'Officer Change'
+      feeCode: 'NOCOI',
+      feeLabel: 'Officer Change',
+      h1: 'Officer Change',
+      title: 'Officer Change - People Roles - BC Registries and Online Services'
     }
   }
 }

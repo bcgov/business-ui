@@ -1,4 +1,7 @@
-export interface FilingHeaderResponse {
+export interface FilingHeaderResponse extends Partial<Pick<
+  StaffPayment,
+  'bcolAccountNumber' | 'datNumber' | 'folioNumber' | 'routingSlipNumber'
+>> {
   accountId: number
   affectedFilings: Array<unknown>
   availableOnPaperOnly: boolean
@@ -20,10 +23,12 @@ export interface FilingHeaderResponse {
   status: FilingStatus
   submitter: string
   latestReviewComment?: string
+  staffPaymentOption?: StaffPaymentOption
   paymentDate?: ApiDateTimeUtc
   paymentMethod?: ConnectPayMethod
-  folioNumber?: string
+  priority?: boolean
   type?: FilingHeaderType
+  waiveFees?: boolean
 }
 
 export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
@@ -51,7 +56,12 @@ export interface FilingSubmissionBaseData {
   business: FilingBusiness
 }
 
-export type FilingRecord = Partial<Record<FilingType, unknown>>
+export interface FilingPayloadData extends Record<string, unknown> {
+  courtOrder?: CourtOrder
+  documentId?: string
+}
+
+export type FilingRecord = Partial<Record<FilingType, Partial<FilingPayloadData>>>
 
 export interface FilingSubmissionBody<F extends FilingRecord> {
   filing: FilingSubmissionBaseData & F
