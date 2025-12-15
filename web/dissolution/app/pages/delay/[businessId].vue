@@ -13,7 +13,14 @@ const modal = useFilingModals()
 const { handleButtonLoading } = useConnectButtonControl()
 
 const businessId = route.params.businessId as string
-const filingHeading = computed(() => store.isStaff ? t('page.stayDissolution.h1') : t('page.delayDissolution.h1'))
+
+const filingText = computed(() => {
+  return {
+    h1: store.isStaff ? t('page.stayDissolution.h1') : t('page.delayDissolution.h1'),
+    title: store.isStaff ? t('page.stayDissolution.title') : t('page.delayDissolution.title'),
+    description: store.isStaff ? 'page.stayDissolution.desc' : 'page.delayDissolution.desc' // component only needs the translation key
+  }
+})
 const filingSubType = computed(() => store.isStaff ? 'stay' : 'delay')
 
 definePageMeta({
@@ -22,7 +29,7 @@ definePageMeta({
 })
 
 useHead({
-  title: computed(() => store.isStaff ? t('page.stayDissolution.title') : t('page.delayDissolution.title'))
+  title: filingText.value.title
 })
 
 // TODO: figure out display if invalid date was manually entered - maybe move to store
@@ -90,15 +97,15 @@ useFilingPageWatcher<unknown>({
     :schema="z.any()"
     novalidate
     class="py-6 space-y-6 sm:py-10 sm:space-y-10"
-    :aria-label="filingHeading"
+    :aria-label="filingText.h1"
     @error="onFormSubmitError"
     @submit="submitFiling"
   >
     <div class="space-y-4">
-      <h1>{{ filingHeading }}</h1>
+      <h1>{{ filingText.h1 }}</h1>
       <ConnectI18nHelper
         as="p"
-        translation-path="page.delay.desc"
+        :translation-path="filingText.description"
         :date="delayDateDisplay"
       />
       <AlertMaxTwoDelays v-if="!store.isStaff" />
@@ -141,7 +148,5 @@ useFilingPageWatcher<unknown>({
       name="certify"
       order="3"
     />
-
-    <UButton type="submit" label="Submit" />
   </UForm>
 </template>

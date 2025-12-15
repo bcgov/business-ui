@@ -93,7 +93,7 @@ defineExpose({
           </UFormField>
           <ConnectI18nHelper
             as="p"
-            translation-path="page.delay.desc"
+            :translation-path="isStaff ? 'page.stayDissolution.desc' : 'page.delayDissolution.desc'"
             :date="delayDateDisplay"
           />
         </div>
