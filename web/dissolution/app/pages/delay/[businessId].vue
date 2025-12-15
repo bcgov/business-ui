@@ -5,13 +5,14 @@ import { onFormSubmitError } from '#imports'
 import { DateTime } from 'luxon'
 
 const { t } = useI18n()
+const store = useDodStore()
 // const urlParams = useUrlSearchParams()
 // const route = useRoute()
 // const modal = useFilingModals()
-const { currentAccount } = storeToRefs(useConnectAccountStore())
+// const { currentAccount } = storeToRefs(useConnectAccountStore())
 
-const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
-const filingHeading = computed(() => isStaff.value ? t('page.delay.h1Staff') : t('page.delay.h1'))
+// const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
+const filingHeading = computed(() => store.isStaff ? t('page.delay.h1Staff') : t('page.delay.h1'))
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -21,12 +22,10 @@ definePageMeta({
 useHead({
   title: t('page.delay.title')
 })
-const schema = getDodSchema()
 
-const formState = reactive(schema.parse({}))
-
+// TODO: figure out display if invalid date was menually entered - maybe move to store
 const delayDateDisplay = computed<string>((previous) => {
-  const dt = DateTime.fromISO(formState.delay.date, { zone: 'America/Vancouver' })
+  const dt = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
 
   if (!dt.isValid) {
     return previous || '' // TODO: fallback value? Only update if valid selection?
@@ -35,8 +34,9 @@ const delayDateDisplay = computed<string>((previous) => {
   return dt.toFormat('DDD')
 })
 
-function submitFiling(e: FormSubmitEvent<unknown>) {
+async function submitFiling(e: FormSubmitEvent<unknown>) {
   console.info('Data: ', e.data)
+  await store.submit
 }
 </script>
 
@@ -44,7 +44,7 @@ function submitFiling(e: FormSubmitEvent<unknown>) {
   <UForm
     id="dod-filing"
     ref="dod-filing"
-    :state="formState"
+    :state="store.formState"
     :schema="z.any()"
     novalidate
     class="py-6 space-y-6 sm:py-10 sm:space-y-10"
@@ -59,42 +59,42 @@ function submitFiling(e: FormSubmitEvent<unknown>) {
         translation-path="page.delay.desc"
         :date="delayDateDisplay"
       />
-      <AlertMaxTwoDelays v-if="!isStaff" />
+      <AlertMaxTwoDelays v-if="!store.isStaff" />
     </div>
 
     <FormDelayDate
-      v-model="formState.delay"
+      v-model="store.formState.delay"
       order="1"
-      :is-staff="isStaff"
+      :is-staff="store.isStaff"
       name="delay"
       :delay-date-display="delayDateDisplay"
     />
 
     <FormCourtOrderPoa
-      v-if="isStaff"
+      v-if="store.isStaff"
       ref="court-order-poa-ref"
-      v-model="formState.courtOrder"
+      v-model="store.formState.courtOrder"
       name="courtOrder"
       order="2"
     />
 
     <FormFolio
       ref="folio-ref"
-      v-model="formState.folio"
+      v-model="store.formState.folio"
       name="folio"
-      :order="isStaff ? 3 : 2"
+      :order="store.isStaff ? 3 : 2"
     />
 
     <FormAddToLedger
-      v-if="isStaff"
-      v-model="formState.addToLedger"
+      v-if="store.isStaff"
+      v-model="store.formState.addToLedger"
       order="4"
     />
 
     <FormCertify
       v-else
       ref="certify-ref"
-      v-model="formState.certify"
+      v-model="store.formState.certify"
       :description="t('text.certifyDelayDescription')"
       name="certify"
       order="3"
