@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
-import { onFormSubmitError } from '#imports'
+import { onFormSubmitError } from '#imports' // auto imports causing type error for this util
 import { DateTime } from 'luxon'
 
 const { t } = useI18n()
 const store = useDodStore()
-// const urlParams = useUrlSearchParams()
-// const route = useRoute()
-// const modal = useFilingModals()
-// const { currentAccount } = storeToRefs(useConnectAccountStore())
+const { breadcrumbs, dashboardUrl } = useFilingNavigation()
+const urlParams = useUrlSearchParams()
+const route = useRoute()
+const modal = useFilingModals()
+const { handleButtonLoading } = useConnectButtonControl()
 
-// const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
-const filingHeading = computed(() => store.isStaff ? t('page.delay.h1Staff') : t('page.delay.h1'))
+const businessId = route.params.businessId as string
+const filingHeading = computed(() => store.isStaff ? t('page.stayDissolution.h1') : t('page.delayDissolution.h1'))
+const filingSubType = computed(() => store.isStaff ? 'stay' : 'delay')
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -20,10 +22,10 @@ definePageMeta({
 })
 
 useHead({
-  title: t('page.delay.title')
+  title: computed(() => store.isStaff ? t('page.stayDissolution.title') : t('page.delayDissolution.title'))
 })
 
-// TODO: figure out display if invalid date was menually entered - maybe move to store
+// TODO: figure out display if invalid date was manually entered - maybe move to store
 const delayDateDisplay = computed<string>((previous) => {
   const dt = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
 
@@ -35,9 +37,49 @@ const delayDateDisplay = computed<string>((previous) => {
 })
 
 async function submitFiling(e: FormSubmitEvent<unknown>) {
-  console.info('Data: ', e.data)
-  await store.submit
+  try {
+    handleButtonLoading(true, 'right', 1)
+    console.info('Data: ', e.data)
+    await store.submit(true)
+  } catch {
+    handleButtonLoading(false)
+  }
 }
+
+async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+  try {
+    await store.submit(false)
+    // if resume later, navigate back to business dashboard
+    if (resumeLater) {
+      await navigateTo(dashboardUrl.value, { external: true })
+    }
+  } catch (error) {
+    await modal.openSaveFilingErrorModal(error)
+  }
+}
+
+async function cancelFiling() {
+  // TODO: check has changes, display modal if unsaved changes
+  await navigateTo(dashboardUrl.value, { external: true })
+}
+
+// TODO: update type
+useFilingPageWatcher<unknown>({
+  // @ts-expect-error - unknown filing type not matching 'delay' | 'stay'
+  // this should be fixed once the types are complete
+  store,
+  businessId,
+  // @ts-expect-error - filing type not matching 'delay' | 'stay'
+  // this should be fixed once the types are complete
+  filingType: filingSubType.value, // TODO: IMPORTANT: determine if stay/delay are sub types or filing types
+  filingSubType,
+  draftId: urlParams.draft as string | undefined,
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { form: 'dod-filing' },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
+})
 </script>
 
 <template>

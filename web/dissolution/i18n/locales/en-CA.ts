@@ -11,11 +11,19 @@ export default {
     sixMonths: '6 Months'
   },
   page: {
-    delay: {
+    delayDissolution: {
       desc: 'The dissolution or cancellation of this business will be delayed until {boldStart}{date}{boldEnd}.',
+      feeCode: 'NOCRM', // TODO: add correct fee code
+      feeLabel: 'Delay of Dissolution',
       h1: 'Delay of Dissolution or Cancellation',
-      h1Staff: 'Stay of Dissolution or Cancellation',
       title: 'Delay of Dissolution - Dissolution - BC Registries and Online Services'
+    },
+    stayDissolution: {
+      desc: 'The dissolution or cancellation of this business will be delayed until {boldStart}{date}{boldEnd}.',
+      feeCode: 'NOCRM', // TODO: add correct fee code
+      feeLabel: 'Stay of Dissolution',
+      h1: 'Stay of Dissolution or Cancellation',
+      title: 'Stay of Dissolution - Dissolution - BC Registries and Online Services'
     }
   },
   text: {
