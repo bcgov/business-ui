@@ -22,10 +22,10 @@ const dateError = computed<FormError | undefined>(() => {
 })
 
 const delayOptions = computed<RadioGroupItem[]>(() => {
-  const options = [{ label: '6 Months', value: DelayOption.SIX_MONTHS }]
+  const options = [{ label: t('label.sixMonths'), value: DelayOption.SIX_MONTHS }]
 
   if (props.isStaff) {
-    options.push({ label: 'Select a date', value: DelayOption.CUSTOM })
+    options.push({ label: t('label.selectADate'), value: DelayOption.CUSTOM })
   }
 
   return options
@@ -82,7 +82,7 @@ defineExpose({
           <UFormField
             v-if="isStaff"
             name="date"
-            help="Format: YYYY-MM-DD"
+            :help="t('text.formatYYYYMMDD')"
           >
             <ConnectInputDate
               id="delay-date-input"

@@ -4,6 +4,8 @@ import { DateTime } from 'luxon'
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/
 
 export function getDelayDateSchema() {
+  const t = useNuxtApp().$i18n.t
+
   return z.object({
     option: z.enum(DelayOption).default(DelayOption.SIX_MONTHS),
     date: z.string().optional().default('')
@@ -16,7 +18,7 @@ export function getDelayDateSchema() {
       ctx.addIssue({
         code: 'custom',
         path: ['date'],
-        message: 'This field is required'
+        message: t('connect.validation.fieldRequired')
       })
       return
     }
@@ -25,7 +27,7 @@ export function getDelayDateSchema() {
       ctx.addIssue({
         code: 'custom',
         path: ['date'],
-        message: 'Date must be in YYYY-MM-DD format.'
+        message: t('validation.date.invalidFormat')
       })
       return
     }
@@ -36,7 +38,7 @@ export function getDelayDateSchema() {
       ctx.addIssue({
         code: 'custom',
         path: ['date'],
-        message: 'Please enter a valid date.'
+        message: t('validation.date.invalid')
       })
       return
     }
@@ -47,7 +49,7 @@ export function getDelayDateSchema() {
       ctx.addIssue({
         code: 'custom',
         path: ['date'],
-        message: 'The delay date must be a valid date after today.'
+        message: t('validation.date.tooSmall')
       })
     }
   })

@@ -31,6 +31,14 @@ export default {
     alertMaxTwoDelays: '{important} Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {email}.',
     certifyDelayDescription: 'Confirm the legal name of the person authorized to complete and submit this filing.',
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
+    formatYYYYMMDD: 'Format: YYYY-MM-DD',
     yesCreateLedgerItemForDissolution: 'Yes create a ledger item for this stay of dissolution'
+  },
+  validation: {
+    date: {
+      invalid: 'Please enter a valid date.',
+      invalidFormat: 'Date must be in YYYY-MM-DD format.',
+      tooSmall: 'The delay date must be a valid date after today.'
+    }
   }
 }
