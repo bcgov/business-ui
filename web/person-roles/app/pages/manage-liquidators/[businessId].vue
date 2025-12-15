@@ -19,8 +19,8 @@ const i18nKeys = computed(() => {
       title: t('page.intentToLiquidate.title')
     }
     : {
-      h1: t('page.manageLiquidators.h1'),
-      title: t('page.manageLiquidators.title')
+      h1: t('page.changeOfLiquidators.h1'),
+      title: t('page.changeOfLiquidators.title')
     }
 })
 
@@ -105,7 +105,7 @@ useFilingPageWatcher({
   businessId,
   draftId: urlParams.draft as string | undefined,
   filingType: FilingType.CHANGE_OF_LIQUIDATORS,
-  filingSubType: 'intentToLiquidate',
+  filingSubType: hasIntentToLiquidate.value ? 'intentToLiquidate' : undefined,
   saveFiling: { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'liquidator-filing' },
@@ -122,7 +122,7 @@ useFilingPageWatcher({
     :schema="z.any()"
     novalidate
     class="py-10 space-y-10"
-    :aria-label="t('page.manageLiquidators.h1')"
+    :aria-label="t('page.changeOfLiquidators.h1')"
     @submit="submitFiling"
     @error="onError"
   >

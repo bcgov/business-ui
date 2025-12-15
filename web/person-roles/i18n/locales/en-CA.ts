@@ -68,6 +68,11 @@ export default {
   page: {
     // Below sections are named based on filing type and filing sub type
     changeOfLiquidators: {
+      // TODO: remove once sub types are in
+      h1: 'Manage Liquidators',
+      title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
+      feeCode: 'LQSIN',
+      feeLabel: 'Manage Liquidators',
       // TODO: add other sub types
       intentToLiquidate: {
         feeCode: 'LQSIN',
@@ -105,10 +110,6 @@ export default {
         h1: 'Change Addresses of Receivers or Reveiver Managers',
         title: 'Change Receiver Addresses - People Roles - BC Registries and Online Services'
       }
-    },
-    manageReceivers: {
-      title: 'Manage Receivers - People Roles - BC Registries and Online Services',
-      h1: 'Manage Receivers'
     },
     changeOfOfficers: {
       desc: 'Officer information is not required by BC Registries, but will show on the business summary if it is submitted. To make updates, simply submit another officer change.',

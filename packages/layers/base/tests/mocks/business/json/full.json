@@ -21,6 +21,17 @@
                     "name": "annualReport"
                 },
                 {
+                    "displayName": "Manage Liquidators",
+                    "feeCode": "AMEND",
+                    "name": "changeOfLiquidators"
+                },
+                {
+                    "displayName": "Intent to Liquidate",
+                    "feeCode": "LQSIN",
+                    "name": "changeOfLiquidators",
+                    "type": "intentToLiquidate"
+                },
+                {
                     "displayName": "Amend Receiver",
                     "feeCode": "AMEND",
                     "name": "changeOfReceivers",

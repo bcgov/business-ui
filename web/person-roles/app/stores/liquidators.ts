@@ -16,14 +16,15 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
   const ceasedParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
 
-  async function init(businessId: string, draftId?: string) {
+  // TODO: replace with liquidator sub type
+  async function init(businessId: string, filingSubType?: string, draftId?: string) {
     initializing.value = true
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
     const { draftFiling, parties } = await useFiling().initFiling<ManageLiquidatorsSchema>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
-      undefined,
+      filingSubType,
       draftId,
       { roleType: RoleType.LIQUIDATOR })
 
