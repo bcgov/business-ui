@@ -38,6 +38,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       // add to ledger - staff only
       // certify - non-staff only
     }
+    initializing.value = false
   }
 
   async function submit(isSubmission: boolean) {

@@ -48,6 +48,7 @@ async function submitFiling(e: FormSubmitEvent<unknown>) {
     handleButtonLoading(true, 'right', 1)
     console.info('Data: ', e.data)
     await store.submit(true)
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch {
     handleButtonLoading(false)
   }
