@@ -14,7 +14,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "vitest --dir tests/unit",
+    "test": "pnpm postinstall && vitest --dir tests/unit",
     "test:unit": "vitest --dir tests/unit",
     "test:unit:cov": "vitest --dir tests/unit --coverage",
     "test:unit:watch": "vitest --dir tests/unit",
