@@ -134,6 +134,7 @@ useFilingPageWatcher<DissolutionType>({
     <FormAddToLedger
       v-if="store.isStaff"
       v-model="store.formState.addToLedger"
+      name="addToLedger"
       order="4"
     />
 
