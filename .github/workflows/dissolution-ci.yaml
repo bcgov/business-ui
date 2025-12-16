@@ -48,6 +48,8 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
+    - name: Generate Types
+      run: pnpm postinstall
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
     - name: Set basic env
