@@ -105,6 +105,12 @@
                     "displayName": "Transition Application",
                     "feeCode": "TRANP",
                     "name": "transition"
+                },
+                {
+                  "displayName": "Delay of Dissolution",
+                  "feeCode": "DISDE",
+                  "name": "dissolution",
+                  "type": "delay"
                 }
             ]
         },

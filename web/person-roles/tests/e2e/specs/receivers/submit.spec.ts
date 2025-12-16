@@ -5,7 +5,8 @@ import { ReceiverType } from '#business/app/enums/receiver-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
 import type { BusinessEntity, BusinessRelationship } from '#business/app/interfaces/business-relationship'
-import { mockApiCallsForFiling, navigateToManageReceiversPage } from '../../test-utils'
+import { mockCommonApiCallsForFiling, getPartiesMock } from '#testMocks'
+import { navigateToManageReceiversPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
 
@@ -52,7 +53,16 @@ async function fillOutNewRelationship(page: Page, relationship: BusinessRelation
 
 test.describe('Manage Receivers - Submission', () => {
   test.beforeEach(async ({ page }) => {
-    await mockApiCallsForFiling(page, identifier, 'Receiver')
+    await mockCommonApiCallsForFiling(
+      page,
+      identifier,
+      getPartiesMock([
+        { index: 0, key: 'roleType', value: 'Receiver' },
+        { index: 1, key: 'roleType', value: 'Receiver' },
+        { index: 2, key: 'roleType', value: 'Receiver' }
+      ]),
+      undefined
+    )
   })
 
   test.describe('Happy paths', () => {
