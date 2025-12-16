@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test'
 import { getBusinessMock, getBusinessSettingsMock } from '#testMocks/business'
 import { getPermissionsMock } from '#testMocks/business-permissions'
 import { getLdarklyFlagsMock } from '#testMocks/ldarkly'
+import { DISDE } from '../../../mocks'
 
 export const mockApiCallsForFiling = async (
   page: Page,
@@ -18,6 +19,7 @@ export const mockApiCallsForFiling = async (
         {
           key: 'allowedActions',
           value: {
+            // @ts-expect-error - override type mismatch
             filing: {
               filingTypes: [
                 {
@@ -38,5 +40,11 @@ export const mockApiCallsForFiling = async (
   })
   page.route('**/api/v2/permissions', async (route) => {
     await route.fulfill({ json: getPermissionsMock() })
+  })
+  page.route('**/api/v2/permissions', async (route) => {
+    await route.fulfill({ json: getPermissionsMock() })
+  })
+  page.route('**/api/v1/fees/**', async (route) => {
+    await route.fulfill({ json: DISDE })
   })
 }

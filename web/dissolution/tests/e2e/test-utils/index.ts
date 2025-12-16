@@ -1,1 +1,1 @@
-export * from './delay-of-dissoultion'
+export * from './delay-of-dissolution'

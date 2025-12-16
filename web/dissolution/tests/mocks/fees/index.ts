@@ -1,1 +1,1 @@
-export * from './nocoi'
+export * from './disde'

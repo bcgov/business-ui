@@ -33,6 +33,9 @@ test.describe('Delay of Dissolution - Page init', () => {
       expect(page.getByTestId('form-section-certify')).toBeVisible()
       // has fee summary
       expect(page.getByTestId('fee-widget')).toBeVisible()
+      // has fee summary text
+      expect(page.getByTestId('fee-widget').getByText('Delay of Dissolution')).toBeVisible()
+      expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
       // has buttons
       expect(page.getByTestId('connect-button-control-wrapper')).toBeVisible()
       // has footer
