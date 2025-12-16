@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const todayMockDate = '2025-12-15T12:00:00.000Z'
-const todayMockIso = '2025-12-15'
 const yesterdayMockIso = '2025-12-14'
 const tomorrowMockIso = '2025-12-16'
 
@@ -90,7 +89,7 @@ describe('getDelayDateSchema', () => {
     const schema = getDelayDateSchema()
     const data = {
       option: DelayOption.CUSTOM,
-      date: todayMockIso
+      date: getToday('America/Vancouver')
     }
     const result = schema.safeParse(data)
     expect(result).toMatchObject({
