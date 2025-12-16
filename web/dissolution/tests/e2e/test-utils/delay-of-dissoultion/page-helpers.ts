@@ -1,11 +1,9 @@
-import type { Locator, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 import {
-  // NOCOI,
-  businessBC1234567,
-  tasksBC1234567,
-  authInfoBC1234567
-  // partiesBC1234567
+  businessBC1234567
+  // tasksBC1234567,
+  // authInfoBC1234567
 } from '~~/tests/mocks'
 // import type { getFakePerson, getFakeAddress } from './data'
 // import { provinceSubdivisions } from './data'
