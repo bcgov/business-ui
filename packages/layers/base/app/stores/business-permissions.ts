@@ -77,6 +77,9 @@ export const useBusinessPermissionsStore = defineStore('business-permissions', (
         if (filingSubType === FilingSubType.DISSOLUTION_ADMINISTRATIVE) {
           return isAuthorized(AuthorizedAction.ADMIN_DISSOLUTION_FILING)
         }
+        if (filingSubType === FilingSubType.DISSOLUTION_DELAY) {
+          return isAuthorized(AuthorizedAction.DISSOLUTION_DELAY_FILING)
+        }
         if (filingSubType === FilingSubType.DISSOLUTION_VOLUNTARY) {
           return isAuthorized(AuthorizedAction.VOLUNTARY_DISSOLUTION_FILING)
         }

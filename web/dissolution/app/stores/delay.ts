@@ -6,25 +6,23 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const formState = reactive(schema.parse({}))
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<FilingGetByIdResponse<unknown>>({} as FilingGetByIdResponse<unknown>) // TODO: update type
-  const delaySubType = ref<'delay' | 'stay'>('delay') // TODO: update type
 
   const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
 
-  // TODO: update with correct filing sub type
-  async function init(businessId: string, filingSubType?: 'delay' | 'stay', draftId?: string) {
+  async function init(businessId: string, filingSubType?: DissolutionType, draftId?: string) {
     if (!filingSubType) {
       await useFilingModals().openInitFilingErrorModal({ status: 500 })
       return
     }
     initializing.value = true
-    delaySubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
     // TODO: update type
-    // @ts-expect-error - 'unknown' should be updated with the correct type once the api definition is complete
+    // @ts-expect-error - 'unknown' should be updated with the correct
+    // dissolution payload type once the api definition is complete
     const { draftFiling } = await initFiling<unknown>(
       businessId,
-      FilingType.CHANGE_OF_RECEIVERS,
+      FilingType.DISSOLUTION,
       filingSubType,
       draftId
     )

@@ -12,6 +12,7 @@ export enum FilingSubType {
   CHANGE_ADDRESS_RECEIVER = ReceiverType.ADDRESS,
   COURT_ORDERED_LIQUIDATION = 'courtOrderedLiquidation',
   DISSOLUTION_ADMINISTRATIVE = 'administrative',
+  DISSOLUTION_DELAY = 'delay',
   DISSOLUTION_INVOLUNTARY = 'involuntary',
   DISSOLUTION_VOLUNTARY = 'voluntary',
   FULL_RESTORATION = RestorationType.FULL,

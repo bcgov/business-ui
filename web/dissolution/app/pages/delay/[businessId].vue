@@ -13,15 +13,15 @@ const modal = useFilingModals()
 const { handleButtonLoading } = useConnectButtonControl()
 
 const businessId = route.params.businessId as string
+const FILING_TYPE = FilingType.DISSOLUTION
+const FILING_SUB_TYPE = FilingSubType.DISSOLUTION_DELAY
 
 const filingText = computed(() => {
   return {
-    h1: store.isStaff ? t('page.stayDissolution.h1') : t('page.delayDissolution.h1'),
-    title: store.isStaff ? t('page.stayDissolution.title') : t('page.delayDissolution.title'),
-    description: store.isStaff ? 'page.stayDissolution.desc' : 'page.delayDissolution.desc' // component only needs the translation key
+    h1: store.isStaff ? t('page.dissolution.delay.h1Staff') : t('page.dissolution.delay.h1'),
+    title: store.isStaff ? t('page.dissolution.delay.titleStaff') : t('page.dissolution.delay.title')
   }
 })
-const filingSubType = computed(() => store.isStaff ? 'stay' : 'delay')
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -72,15 +72,11 @@ async function cancelFiling() {
 }
 
 // TODO: update type
-useFilingPageWatcher<unknown>({
-  // @ts-expect-error - unknown filing type not matching 'delay' | 'stay'
-  // this should be fixed once the types are complete
+useFilingPageWatcher<DissolutionType>({
   store,
   businessId,
-  // @ts-expect-error - filing type not matching 'delay' | 'stay'
-  // this should be fixed once the types are complete
-  filingType: filingSubType.value, // TODO: IMPORTANT: determine if stay/delay are sub types or filing types
-  filingSubType,
+  filingType: FILING_TYPE,
+  filingSubType: FILING_SUB_TYPE,
   draftId: urlParams.draft as string | undefined,
   saveFiling: { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },
@@ -106,7 +102,7 @@ useFilingPageWatcher<unknown>({
       <h1>{{ filingText.h1 }}</h1>
       <ConnectI18nHelper
         as="p"
-        :translation-path="filingText.description"
+        translation-path="page.dissolution.delay.desc"
         :date="delayDateDisplay"
       />
       <AlertMaxTwoDelays v-if="!store.isStaff" />
