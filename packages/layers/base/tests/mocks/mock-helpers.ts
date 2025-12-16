@@ -1,15 +1,18 @@
 import type { Page } from '@playwright/test'
 
-import { FilingType } from '../../app/enums/filing-type'
-import { isTempRegIdentifier } from '../../app/utils/business-string-helpers'
-import { getBootstrapMock } from './bootstrap'
-import { getBusinessMock } from './business'
-import { getCommentsMock } from './business-comments'
-import { getDocumentsMock } from './business-ledger/documents'
-import type { LedgerMockItem } from './business-ledger'
-import { getBusinessLedgerMock } from './business-ledger'
-import { getPermissionsMock } from './business-permissions'
-import { getLdarklyFlagsMock } from './ldarkly'
+import { FilingType } from '#business/app/enums/filing-type'
+import { isTempRegIdentifier } from '#business/app/utils/business-string-helpers'
+import {
+  getBootstrapMock,
+  getBusinessLedgerMock,
+  getBusinessMock,
+  getBusinessSettingsMock,
+  getCommentsMock,
+  getDocumentsMock,
+  getLdarklyFlagsMock,
+  getPermissionsMock
+} from '#testMocks'
+import type { LedgerMockItem } from '#testMocks'
 
 export const mockApiCallsForAlerts = async (
   page: Page,
@@ -66,4 +69,36 @@ export const mockApiCallsForLedger = async (
   page.route('**/api/v2/businesses/**/filings/**/comments', async (route) => {
     await route.fulfill({ json: getCommentsMock() })
   })
+}
+
+export const mockCommonApiCallsForFiling = async (
+  page: Page,
+  identifier = 'BC1234567',
+  partiesJSON: object | undefined,
+  feesJSON: object | undefined
+) => {
+  page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
+    await route.fulfill({ json: getLdarklyFlagsMock() })
+  })
+  page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
+    await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
+  })
+  page.route(`**/api/v1/entities/${identifier}`, async (route) => {
+    await route.fulfill({ json: getBusinessSettingsMock() })
+  })
+  page.route('**/api/v2/permissions', async (route) => {
+    await route.fulfill({ json: getPermissionsMock() })
+  })
+  // FUTURE: make this configurable for other filings
+  if (partiesJSON) {
+    page.route(`**/api/v2/businesses/${identifier}/parties**`, async (route) => {
+      // FUTURE: update roles of parties to match the configurables
+      await route.fulfill({ json: partiesJSON })
+    })
+  }
+  if (feesJSON) {
+    page.route('**/api/v1/fees/**', async (route) => {
+      await route.fulfill({ json: feesJSON })
+    })
+  }
 }

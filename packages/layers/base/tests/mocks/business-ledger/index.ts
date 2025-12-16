@@ -1,6 +1,8 @@
 import fs from 'fs'
 import { createResolver } from 'nuxt/kit'
 
+export * from './documents'
+
 const { resolve } = createResolver(import.meta.url)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

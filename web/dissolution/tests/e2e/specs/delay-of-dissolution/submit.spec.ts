@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test'
-import { mockApiCallsForFiling, navigateToDodPage } from '../../test-utils'
+import { navigateToDodPage } from '../../test-utils'
+import { mockCommonApiCallsForFiling } from '#testMocks'
+import { DISDE } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 
 test.describe('Delay of Dissolution - Filing Submit', () => {
   test.beforeEach(async ({ page }) => {
-    await mockApiCallsForFiling(page, identifier)
+    mockCommonApiCallsForFiling(page, identifier, undefined, DISDE)
     await navigateToDodPage(page, identifier)
     await page.waitForLoadState('networkidle')
   })
