@@ -2,6 +2,7 @@ export enum SessionStorageKeys {
   AffidavitNeeded = 'AFFIDAVIT_NEEDED',
   ApiConfigKey = 'AUTH_API_CONFIG',
   AuthApiGwUrl = 'AUTH_API_GW_URL',
+  AuthApiUrl = 'AUTH_API_URL',
   AuthWebUrl = 'AUTH_WEB_URL',
   BusinessIdentifierKey = 'BUSINESS_ID',
   CurrentAccount = 'CURRENT_ACCOUNT',
