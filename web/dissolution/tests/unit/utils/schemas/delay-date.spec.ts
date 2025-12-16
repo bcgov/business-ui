@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { Settings } from 'luxon'
 
 const todayMockDate = '2025-12-15T12:00:00.000Z'
 const yesterdayMockIso = '2025-12-14'
@@ -8,6 +9,7 @@ describe('getDelayDateSchema', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(todayMockDate))
+    Settings.now = () => Date.now()
   })
 
   afterEach(() => {

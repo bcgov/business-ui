@@ -43,7 +43,7 @@ export function getDelayDateSchema() {
       return
     }
 
-    const today = DateTime.fromISO(getToday('America/Vancouver'))
+    const today = DateTime.fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' })
 
     if (selectedDate <= today) {
       ctx.addIssue({
