@@ -1,3 +1,4 @@
+// TODO - FUTURE - maybe consolidate 'delay' store with other dissolution filings if possible
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const { currentAccount } = storeToRefs(useConnectAccountStore())
   const schema = getDodSchema()
@@ -5,7 +6,9 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
 
   const formState = reactive(schema.parse({}))
   const initializing = ref<boolean>(false)
-  const draftFilingState = shallowRef<FilingGetByIdResponse<unknown>>({} as FilingGetByIdResponse<unknown>) // TODO: update type
+  // 'unknown' should be updated with the correct
+  // dissolution payload type once the api definition is complete
+  const draftFilingState = shallowRef<FilingGetByIdResponse<unknown>>({} as FilingGetByIdResponse<unknown>)
 
   const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
 

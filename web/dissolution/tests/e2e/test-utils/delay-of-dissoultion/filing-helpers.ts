@@ -12,7 +12,26 @@ export const mockApiCallsForFiling = async (
     await route.fulfill({ json: getLdarklyFlagsMock() })
   })
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
-    await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
+    await route.fulfill({ json: getBusinessMock(
+      [
+        { key: 'identifier', value: identifier },
+        {
+          key: 'allowedActions',
+          value: {
+            filing: {
+              filingTypes: [
+                {
+                  displayName: 'Delay of Dissolution',
+                  feeCode: 'DISDE',
+                  name: 'dissolution',
+                  type: 'delay'
+                }
+              ]
+            }
+          }
+        }
+      ]
+    ) })
   })
   page.route(`**/api/v1/entities/${identifier}`, async (route) => {
     await route.fulfill({ json: getBusinessSettingsMock() })

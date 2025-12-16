@@ -6,7 +6,6 @@ import { DateTime } from 'luxon'
 
 const { t } = useI18n()
 const store = useDodStore()
-const { breadcrumbs, dashboardUrl } = useFilingNavigation()
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
@@ -22,6 +21,8 @@ const filingText = computed(() => {
     title: store.isStaff ? t('page.dissolution.delay.titleStaff') : t('page.dissolution.delay.title')
   }
 })
+
+const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.value.h1)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -105,11 +106,12 @@ useFilingPageWatcher<DissolutionType>({
         translation-path="page.dissolution.delay.desc"
         :date="delayDateDisplay"
       />
-      <AlertMaxTwoDelays v-if="!store.isStaff" />
+      <AlertMaxTwoDelays v-if="!store.isStaff" data-testid="alert-max-2-days" />
     </div>
 
     <FormDelayDate
       v-model="store.formState.delay"
+      data-testid="form-section-delay-date"
       order="1"
       :is-staff="store.isStaff"
       name="delay"
@@ -118,15 +120,15 @@ useFilingPageWatcher<DissolutionType>({
 
     <FormCourtOrderPoa
       v-if="store.isStaff"
-      ref="court-order-poa-ref"
       v-model="store.formState.courtOrder"
+      data-testid="form-section-court-order-poa"
       name="courtOrder"
       order="2"
     />
 
     <FormFolio
-      ref="folio-ref"
       v-model="store.formState.folio"
+      data-testid="form-section-folio-number"
       name="folio"
       :order="store.isStaff ? 3 : 2"
     />
@@ -134,14 +136,15 @@ useFilingPageWatcher<DissolutionType>({
     <FormAddToLedger
       v-if="store.isStaff"
       v-model="store.formState.addToLedger"
+      data-testid="form-section-add-to-ledger"
       name="addToLedger"
       order="4"
     />
 
     <FormCertify
       v-else
-      ref="certify-ref"
       v-model="store.formState.certify"
+      data-testid="form-section-certify"
       :description="t('text.certifyDelayDescription')"
       name="certify"
       order="3"

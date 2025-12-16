@@ -1,3 +1,6 @@
 export enum DissolutionType {
-  DELAY = 'delay'
+  ADMINISTRATIVE = 'administrative',
+  DELAY = 'delay',
+  INVOLUNTARY = 'involuntary',
+  VOLUNTARY = 'voluntary'
 }
