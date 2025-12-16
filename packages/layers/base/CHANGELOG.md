@@ -1,5 +1,53 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.5.0
+
+### Minor Changes
+
+- [#341](https://github.com/bcgov/business-ui/pull/341) [`de467bd`](https://github.com/bcgov/business-ui/commit/de467bdfb6c612e3f801b473c60f405263727395) Thanks [@deetz99](https://github.com/deetz99)! - <br>
+
+  - useFilingPageWatcher - initializes filing pages business, fees, etc
+  - dissolution enums for filing subtypes and allowed filings
+  - mockCommonApiCallsForFiling test util
+
+### Patch Changes
+
+- [#332](https://github.com/bcgov/business-ui/pull/332) [`439e937`](https://github.com/bcgov/business-ui/commit/439e9370dd2adbb0fb40974cb0d038f7bdce8743) Thanks [@kialj876](https://github.com/kialj876)! - ### useBusinessParty
+
+  - add getPartiesMergedWithRelationships to support merging current party data with draft relationships data
+
+  ### useFiling
+
+  - update initFiling to support filing sub type
+  - update initFiling to intialize fee information based on filing type and filing sub type
+  - update initFiling to check user business permissions
+  - add getCommonFilingPayloadData
+
+  ### useManageParties
+
+  - update addNewParty to add a role item if roleType is given
+
+  ### enums
+
+  - update ActionType (removed unused roles)
+  - update AuthorizedAction (add OFFICER_CHANGE_FILING)
+  - update FilingSubType (add reveiver sub types)
+  - add ReceiverType (contains receiver sub types)
+  - add RoleTypeUi enum
+
+  ### useBusinessPermissionsStore
+
+  - add permission checks for changeOfOfficers/Receivers/Liquidators
+
+  ### useBusinessStore
+
+  - add isAllowedFiling (moved util here and updated as needed)
+
+  ### utils
+
+  - isFilingAllowed moved into business store
+  - several formating funtions added to support BusinessRelationship payloads
+
 ## 0.4.0
 
 ### Minor Changes
