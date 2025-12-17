@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#testMocks'
+import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'

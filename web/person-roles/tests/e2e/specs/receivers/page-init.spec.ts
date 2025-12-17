@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { ReceiverType } from '#business/app/enums/receiver-type'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#testMocks'
+import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
 import { navigateToManageReceiversPage } from '../../test-utils'
 
 const identifier = 'BC1234567'

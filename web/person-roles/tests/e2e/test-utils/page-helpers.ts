@@ -1,8 +1,8 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { NOCOI, businessBC1234567, tasksBC1234567, authInfoBC1234567, partiesBC1234567 } from '~~/tests/mocks'
+import { NOCOI, businessBC1234567, tasksBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 import { provinceSubdivisions } from './data'
-import { getPermissionsMock, mockCommonApiCallsForFiling } from '#testMocks'
+import { mockCommonApiCallsForFiling } from '#test-mocks'
 import type { getFakePerson, getFakeAddress } from '#e2e-utils'
 import { fillAddressFields } from '#e2e-utils'
 
@@ -18,7 +18,7 @@ export async function navigateToOfficerChangePage(page: Page) {
   // navigate to page
   await page.goto(`./en-CA/officer-change/${identifier}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  await page.waitForResponse('*/**/businesses**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }
@@ -57,54 +57,13 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
     partiesBC1234567,
     NOCOI
   )
-
-  // auth api business info GET
-  // await page.route(`*/**/entities/${identifier}`, async (route) => {
-  //   await route.fulfill({ json: authInfoBC1234567 })
-  // })
-  // business api business info GET slim
-  // await page.route(`*/**/businesses/${identifier}?slim=true`, async (route) => {
-  //   await route.fulfill({ json: businessBC1234567 })
-  // })
-  // // business api business info GET
-  // await page.route(`*/**/businesses/${identifier}`, async (route) => {
-  //   await route.fulfill({ json: businessBC1234567 })
-  // })
   // business api business tasks GET
   await page.route(`*/**/businesses/${identifier}/tasks`, async (route) => {
     await route.fulfill({ json: tasksBC1234567 })
   })
-  // business api perties/officers GET
-  // await page.route(`*/**/businesses/${identifier}/parties?classType=officer`, async (route) => {
-  //   await route.fulfill({ json: partiesBC1234567 })
-  // })
-  // pay api officer fee GET
-  // await page.route('*/**/fees/**/NOCOI', async (route) => {
-  //   await route.fulfill({ json: NOCOI })
-  // })
-  // page.route('**/api/v2/permissions', async (route) => {
-  //   await route.fulfill({ json: getPermissionsMock() })
-  // })
   // business api filing creation POST
   await page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
     await route.fulfill({ status: 201 })
-  })
-  // user accounts GET request
-  await page.route('*/**/users/test/settings', async (route) => {
-    await route.fulfill({
-      json: [
-        {
-          accountStatus: 'ACTIVE',
-          accountType: 'PREMIUM',
-          id: 1234,
-          label: 'Test Account Label',
-          productSettings: '/account/1234/restricted-product',
-          type: 'ACCOUNT',
-          urlorigin: 'https://dev.account.bcregistry.gov.bc.ca',
-          urlpath: '/account/1234/settings'
-        }
-      ]
-    })
   })
 
   if (includeNavigation) {

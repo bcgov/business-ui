@@ -5,7 +5,7 @@ import { ReceiverType } from '#business/app/enums/receiver-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
 import type { BusinessEntity, BusinessRelationship } from '#business/app/interfaces/business-relationship'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#testMocks'
+import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
 import { navigateToManageReceiversPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
