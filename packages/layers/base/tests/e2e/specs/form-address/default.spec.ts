@@ -59,19 +59,16 @@ test.describe('FormAddress (default)', () => {
     // mailing address elements
     const getMailingAddress = () => page.getByTestId('mailing-address-container')
     await expect(getMailingAddress()).toBeVisible()
+    await page.getByText('Same as Delivery Address').click()
 
-    await page.getByRole('checkbox', { name: /same as/i }).check({ force: true })
+    // await page.getByRole('checkbox', { name: /same as/i }).check({ force: true })
 
     await expect(getMailingAddress()).not.toBeVisible()
   })
 
   test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
-    { page, browserName }
+    { page }
   ) => {
-    test.skip(
-      (browserName === 'firefox' || browserName === 'webkit'),
-      'This test is failing only for Firefox (sometimes safari) and only when run in the CI.'
-    )
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
     // delivery address elements
