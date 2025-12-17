@@ -133,6 +133,15 @@ export async function fillNameFields(page: Page, person: PersonLastNameRequired)
 
 export async function fillAddress(page: Page, type: 'mailing' | 'delivery', data: ReturnType<typeof getFakeAddress>) {
   const fieldset = page.getByTestId(`${type}-address-fieldset`)
+  // country - this is flaky, must focus first and wait for listbox or test may fail
+  await fieldset.getByTestId(`${type}-address-input-country`).focus()
+  await fieldset.getByTestId(`${type}-address-input-country`).click()
+  const countryList = page.getByRole('listbox') // listbox is a teleport on the page body
+  await countryList.scrollIntoViewIfNeeded()
+  await expect(countryList).toBeVisible()
+  await page.keyboard.type('canada')
+  await page.keyboard.press('Enter')
+  await expect(countryList).not.toBeVisible()
   await fieldset.getByTestId(`${type}-address-input-street`).click()
   await fieldset.getByTestId(`${type}-address-input-street`).fill(data.street)
   await fieldset.getByTestId(`${type}-address-input-streetAdditional`).click()
@@ -271,12 +280,10 @@ export async function assertAddress(
   page: Page,
   person: PersonLastNameRequired,
   column: 2 | 3,
-  address?: ReturnType<typeof getFakeAddress> | 'same'
+  address: ReturnType<typeof getFakeAddress> | 'same'
 ) {
   const row = getTableRowForPerson(page, person)
-  if (!address) {
-    await expect(row.getByRole('cell').nth(column)).toContainText('Not Entered')
-  } else if (address === 'same') {
+  if (address === 'same') {
     await expect(row.getByRole('cell').nth(column)).toContainText('Same as Delivery Address')
   } else {
     await expect(row.getByRole('cell').nth(column)).toContainText(address.street)

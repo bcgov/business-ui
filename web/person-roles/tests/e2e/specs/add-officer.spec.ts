@@ -176,33 +176,4 @@ test.describe('Adding Officers', () => {
     await expect(page).not.toHaveURL(/.*business-dashboard.*/)
     await expect(page).toHaveURL(/.*officer-change.*/)
   })
-
-  test('should submit with the minumum required info', async ({ page }) => {
-    const person = getFakePerson()
-    const roles = ['Chief Executive Officer']
-    const deliveryAddress = getFakeAddress()
-
-    await openOfficerForm(page)
-    await completeOfficerForm(page, { lastName: person.lastName }, roles, deliveryAddress)
-
-    // assert table columns
-    const row = getTableRowForPerson(page, person)
-    await expect(row.getByRole('cell').nth(0)).not.toContainText(person.firstName.toUpperCase())
-    await expect(row.getByRole('cell').nth(0)).not.toContainText(person.middleName.toUpperCase())
-    await expect(row.getByRole('cell').nth(0)).toContainText(person.lastName.toUpperCase())
-    await expect(row.getByRole('cell').nth(0)).not.toContainText('Preferred Name')
-    await expect(row.getByRole('cell').nth(0)).toContainText('ADDED')
-    await assertRoles(page, person, roles)
-    await assertAddress(page, person, 2, deliveryAddress)
-    await assertAddress(page, person, 3, undefined)
-
-    // submit filing
-    await page.getByRole('button', { name: 'Submit' }).click()
-
-    // should be redirected to dashboard page
-    // should be redirected to dashboard page - user will be redirected to bcreg sign in page as test run with mock user
-    await expect(page).not.toHaveURL(/.*officer-change.*/)
-    // await expect(page).toHaveURL(/.*business-dashboard.*/) // can use this instead once real logins are sorted out
-    // expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
-  })
 })

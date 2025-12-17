@@ -39,7 +39,8 @@ test.describe('Editing Officers', () => {
       page,
       updatedPerson,
       updatedRoles,
-      updatedAddress
+      updatedAddress,
+      'same'
     )
 
     const updatedRow = getTableRowForPerson(page, { lastName: updatedPerson.lastName })
@@ -49,7 +50,7 @@ test.describe('Editing Officers', () => {
     // delivery should be updated
     await assertAddress(page, updatedPerson, 2, updatedAddress)
     // mailing should be empty
-    await assertAddress(page, updatedPerson, 3, undefined)
+    await assertAddress(page, updatedPerson, 3, 'same')
 
     // should be redirected to business dashboard on submit
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -119,15 +120,19 @@ test.describe('Editing Officers', () => {
     const newAddress1 = getFakeAddress()
     await openOfficerForm(page, row)
     await fillAddress(page, 'delivery', newAddress1)
+    await fillAddress(page, 'mailing', newAddress1)
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, person, 2, newAddress1)
+    await assertAddress(page, person, 3, 'same')
     await assertNameTableCell(page, person, ['ADDRESS CHANGED'])
     // edit/assert address a second time
     const newAddress2 = getFakeAddress()
     await openOfficerForm(page, row)
     await fillAddress(page, 'delivery', newAddress2)
+    await fillAddress(page, 'mailing', newAddress2)
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, person, 2, newAddress2)
+    await assertAddress(page, person, 3, 'same')
     await assertNameTableCell(page, person, ['ADDRESS CHANGED'])
 
     // undo changes
@@ -153,7 +158,7 @@ test.describe('Editing Officers', () => {
 
     // add new officer
     await openOfficerForm(page)
-    await completeOfficerForm(page, person, roles, deliveryAddress)
+    await completeOfficerForm(page, person, roles, deliveryAddress, 'same')
 
     const row = getTableRowForPerson(page, person)
 
@@ -161,11 +166,13 @@ test.describe('Editing Officers', () => {
     await assertNameTableCell(page, person, ['ADDED'])
     await assertRoles(page, person, roles)
     await assertAddress(page, person, 2, deliveryAddress)
+    await assertAddress(page, person, 3, 'same')
 
     // edit/assert address
     const newAddress = getFakeAddress()
     await openOfficerForm(page, row)
     await fillAddress(page, 'delivery', newAddress)
+    await fillAddress(page, 'mailing', newAddress)
     await page.getByRole('button', { name: 'Done' }).click()
     // should have new adddress
     await assertAddress(page, person, 2, newAddress)
