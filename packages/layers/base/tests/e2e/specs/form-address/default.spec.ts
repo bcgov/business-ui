@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { getFakeAddress, fillAddressFields } from '#e2e-utils'
 
 test.describe('FormAddress (default)', () => {
   test('Should render correct elements', async ({ page }) => {
@@ -67,24 +68,17 @@ test.describe('FormAddress (default)', () => {
   test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
     { page }
   ) => {
+    const address = getFakeAddress()
+
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
-    // delivery address elements
     const deliveryAddress = page.getByTestId('delivery-address-container')
-    const getAdditionalInput = () => deliveryAddress.getByTestId('delivery-address-input-streetAdditional')
     await expect(deliveryAddress).toBeVisible()
-    await getAdditionalInput().fill('value')
-    // mailing address elements
-    const getMailingAddress = () => page.getByTestId('mailing-address-container')
-    await expect(getMailingAddress()).toBeVisible()
-
-    await page.getByText('Same as Delivery Address').click()
-
-    await expect(getMailingAddress()).not.toBeVisible()
-
-    await getAdditionalInput().fill('updated')
-
-    await expect(getMailingAddress()).toBeVisible()
-    await expect(getMailingAddress().getByTestId('mailing-address-input-streetAdditional')).toHaveValue('')
+    await fillAddressFields(page, 'delivery', address)
+    await expect(page.getByTestId('mailing-address-container')).toBeVisible()
+    await fillAddressFields(page, 'mailing', 'same')
+    await expect(page.getByTestId('mailing-address-container')).not.toBeVisible()
+    await deliveryAddress.getByTestId('delivery-address-input-streetAdditional').fill('updated')
+    await expect(page.getByTestId('mailing-address-container')).toBeVisible()
   })
 })
