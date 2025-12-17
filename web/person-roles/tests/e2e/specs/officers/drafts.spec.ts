@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test'
 import {
-  getFakeAddress,
-  getFakePerson,
   getRandomRoles,
   setupOfficerChangePage,
   completeOfficerForm,
@@ -12,6 +10,7 @@ import {
   getTableRowForPerson,
   provinceSubdivisions
 } from '../../test-utils'
+import { getFakeAddress, getFakePerson } from '#e2e-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 const identifier = businessBC1234567.business.identifier

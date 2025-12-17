@@ -1,11 +1,8 @@
 import { test, expect } from '@playwright/test'
 import {
-  getFakeAddress,
-  getFakePerson,
   getRandomRoles,
   setupOfficerChangePage,
   completeOfficerForm,
-  fillAddress,
   selectRoles,
   openOfficerForm,
   assertNameTableCell,
@@ -13,13 +10,12 @@ import {
   assertAddress,
   getTableRowForPerson
 } from '../../test-utils'
+import { getFakeAddress, getFakePerson, fillAddressFields } from '#e2e-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 const identifier = businessBC1234567.business.identifier
 
 test.describe('Editing Officers', () => {
-  // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
-
   const initialOfficer = partiesBC1234567.parties[0]!
 
   test.beforeEach(async ({ page }) => {
@@ -75,7 +71,7 @@ test.describe('Editing Officers', () => {
       updatedPerson,
       updatedRoles,
       updatedAddress,
-      undefined,
+      'same',
       true // click cancel instead of done
     )
 
@@ -119,8 +115,8 @@ test.describe('Editing Officers', () => {
     // edit/assert address once
     const newAddress1 = getFakeAddress()
     await openOfficerForm(page, row)
-    await fillAddress(page, 'delivery', newAddress1)
-    await fillAddress(page, 'mailing', newAddress1)
+    await fillAddressFields(page, 'delivery', newAddress1)
+    await fillAddressFields(page, 'mailing', 'same')
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, person, 2, newAddress1)
     await assertAddress(page, person, 3, 'same')
@@ -128,8 +124,8 @@ test.describe('Editing Officers', () => {
     // edit/assert address a second time
     const newAddress2 = getFakeAddress()
     await openOfficerForm(page, row)
-    await fillAddress(page, 'delivery', newAddress2)
-    await fillAddress(page, 'mailing', newAddress2)
+    await fillAddressFields(page, 'delivery', newAddress2)
+    await fillAddressFields(page, 'mailing', 'same')
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, person, 2, newAddress2)
     await assertAddress(page, person, 3, 'same')
@@ -171,8 +167,8 @@ test.describe('Editing Officers', () => {
     // edit/assert address
     const newAddress = getFakeAddress()
     await openOfficerForm(page, row)
-    await fillAddress(page, 'delivery', newAddress)
-    await fillAddress(page, 'mailing', newAddress)
+    await fillAddressFields(page, 'delivery', newAddress)
+    await fillAddressFields(page, 'mailing', 'same')
     await page.getByRole('button', { name: 'Done' }).click()
     // should have new adddress
     await assertAddress(page, person, 2, newAddress)

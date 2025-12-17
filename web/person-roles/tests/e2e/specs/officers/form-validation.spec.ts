@@ -2,8 +2,6 @@ import { test, expect } from '@playwright/test'
 import { setupOfficerChangePage } from '../../test-utils'
 
 test.describe('Form Validation', () => {
-  // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
-
   test.beforeEach(async ({ page }) => {
     await setupOfficerChangePage(page)
   })

@@ -5,8 +5,6 @@ import { businessBC1234567 } from '~~/tests/mocks'
 const identifier = businessBC1234567.business.identifier
 
 test.describe('Page init errors', () => {
-  // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
-
   test.beforeEach(async ({ page }) => {
     await setupOfficerChangePage(page, false)
   })
