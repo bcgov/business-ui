@@ -159,7 +159,7 @@ test.describe('Draft Officers', () => {
     // navigate to page - with draft id
     await page.goto(`./en-CA/officer-change/${identifier}?draft=${filingId}`)
     // wait for api response to settle
-    await page.waitForResponse('*/**/businesses**/*')
+    await page.waitForResponse('*/**/businesses/**/*')
 
     // wait for page state to be reinitialized
     await expect(page.getByText('Officer Change').first()).toBeVisible()

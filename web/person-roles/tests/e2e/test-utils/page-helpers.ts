@@ -18,7 +18,7 @@ export async function navigateToOfficerChangePage(page: Page) {
   // navigate to page
   await page.goto(`./en-CA/officer-change/${identifier}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses**/*')
+  await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }

@@ -106,7 +106,7 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
-      await page.waitForResponse('*/**/businesses**/*')
+      await page.waitForResponse('*/**/businesses/**/*')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content
@@ -141,7 +141,7 @@ test.describe('Page init errors', () => {
 
       // navigate to page and wait for settled state
       await page.goto(`./en-CA/officer-change/${identifier}?draft=123`)
-      await page.waitForResponse('*/**/businesses**/*')
+      await page.waitForResponse('*/**/businesses/**/*')
       await expect(page.getByText('Officer Change').first()).toBeVisible()
 
       // assert modal content
