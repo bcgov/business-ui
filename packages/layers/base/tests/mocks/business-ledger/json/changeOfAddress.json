@@ -1,0 +1,26 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0223072",
+    "commentsCount": 1,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591/comments",
+    "data": {
+        "applicationDate": "2025-10-11T07:01:00+00:00",
+        "legalFilings": [
+            "changeOfAddress"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Address Change",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591/documents",
+    "effectiveDate": "Sat, 11 Oct 2025 07:01:00 GMT",
+    "filingId": 206591,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0223072/filings/206591",
+    "isFutureEffective": true,
+    "name": "changeOfAddress",
+    "paymentDate": "Fri, 10 Oct 2025 14:09:11 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Fri, 10 Oct 2025 14:09:10 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

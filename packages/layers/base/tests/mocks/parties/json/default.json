@@ -1,0 +1,110 @@
+[
+    {
+        "deliveryAddress": {
+            "addressCity": "Pierrefonds",
+            "addressCountry": "CA",
+            "addressRegion": "QC",
+            "deliveryInstructions": "",
+            "id": 2736127,
+            "postalCode": "H9H 1Z2",
+            "streetAddress": "5-14505 Boul De Pierrefonds",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Pierrefonds",
+            "addressCountry": "CA",
+            "addressRegion": "QC",
+            "deliveryInstructions": "",
+            "id": 2736128,
+            "postalCode": "H9H 1Z2",
+            "streetAddress": "5-14505 Boul De Pierrefonds",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "",
+            "firstName": "Tester",
+            "id": 575361,
+            "lastName": "Testing",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-08-16",
+                "cessationDate": null,
+                "roleType": "Director"
+            }
+        ]
+    },
+    {
+        "deliveryAddress": {
+            "addressCity": "Brampton",
+            "addressCountry": "CA",
+            "addressRegion": "ON",
+            "deliveryInstructions": "",
+            "id": 2736129,
+            "postalCode": "L6R 3C7",
+            "streetAddress": "7 Wallaby Way",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Brampton",
+            "addressCountry": "CA",
+            "addressRegion": "ON",
+            "deliveryInstructions": "",
+            "id": 2736130,
+            "postalCode": "L6R 3C7",
+            "streetAddress": "7 Wallaby Way",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "",
+            "firstName": "WALLABY",
+            "id": 575362,
+            "lastName": "WAY",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-08-16",
+                "cessationDate": null,
+                "roleType": "Director"
+            }
+        ]
+    },
+    {
+        "deliveryAddress": {
+            "addressCity": "Victoria",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "deliveryInstructions": "",
+            "id": 2722676,
+            "postalCode": "V8W 2H3",
+            "streetAddress": "2-940 Blanshard",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Victoria",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "deliveryInstructions": "",
+            "id": 2722677,
+            "postalCode": "V8W 2H3",
+            "streetAddress": "2-940 Blanshard",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "fake.email@gov.bc.ca",
+            "firstName": "MIHAI",
+            "id": 574465,
+            "lastName": "DINU TEST",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-07-12",
+                "cessationDate": null,
+                "roleType": "Director"
+            }
+        ]
+    }
+]

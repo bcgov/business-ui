@@ -1,0 +1,163 @@
+{
+    "adminFreeze": false,
+    "allowedActions": {
+        "digitalBusinessCard": false,
+        "digitalBusinessCardPreconditions": {
+            "attestBusiness": "MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST",
+            "attestName": "Kial Jinnah",
+            "attestRoles": []
+        },
+        "filing": {
+            "filingSubmissionLink": "https://mock-api-url/api/v2/businesses/BC0223072/filings",
+            "filingTypes": [
+                {
+                    "displayName": "Admin Freeze",
+                    "feeCode": "NOFEE",
+                    "name": "adminFreeze"
+                },
+                {
+                    "displayName": "Annual Report",
+                    "feeCode": "BCANN",
+                    "name": "annualReport"
+                },
+                {
+                    "displayName": "Manage Liquidators",
+                    "feeCode": "AMEND",
+                    "name": "changeOfLiquidators"
+                },
+                {
+                    "displayName": "Intent to Liquidate",
+                    "feeCode": "LQSIN",
+                    "name": "changeOfLiquidators",
+                    "type": "intentToLiquidate"
+                },
+                {
+                    "displayName": "Amend Receiver",
+                    "feeCode": "AMEND",
+                    "name": "changeOfReceivers",
+                    "type": "amendReceiver"
+                },
+                {
+                    "displayName": "Appoint Receiver",
+                    "feeCode": "NOARM",
+                    "name": "changeOfReceivers",
+                    "type": "appointReceiver"
+                },
+                {
+                    "displayName": "Cease Receiver",
+                    "feeCode": "NOCER",
+                    "name": "changeOfReceivers",
+                    "type": "ceaseReceiver"
+                },
+                {
+                    "displayName": "Change Address Receiver",
+                    "feeCode": "NOCRM",
+                    "name": "changeOfReceivers",
+                    "type": "changeAddressReceiver"
+                },
+                {
+                    "displayName": "Address Change",
+                    "feeCode": "BCADD",
+                    "name": "changeOfAddress"
+                },
+                {
+                    "displayName": "Director Change",
+                    "feeCode": "BCCDR",
+                    "name": "changeOfDirectors"
+                },
+                {
+                    "displayName": "Officer Change",
+                    "feeCode": "NOCOI",
+                    "name": "changeOfOfficers"
+                },
+                {
+                    "displayName": "Register Correction Application",
+                    "feeCode": "CRCTN",
+                    "name": "correction"
+                },
+                {
+                    "displayName": "Court Order",
+                    "feeCode": "COURT",
+                    "name": "courtOrder"
+                },
+                {
+                    "displayName": "Administrative Dissolution",
+                    "feeCode": "DIS_ADM",
+                    "name": "dissolution",
+                    "type": "administrative"
+                },
+                {
+                    "displayName": "Correction - Put Back Off",
+                    "feeCode": "NOFEE",
+                    "name": "putBackOff"
+                },
+                {
+                    "displayName": "Registrar's Notation",
+                    "feeCode": "NOFEE",
+                    "name": "registrarsNotation"
+                },
+                {
+                    "displayName": "Registrar's Order",
+                    "feeCode": "NOFEE",
+                    "name": "registrarsOrder"
+                },
+                {
+                    "displayName": "Transition Application",
+                    "feeCode": "TRANP",
+                    "name": "transition"
+                },
+                {
+                  "displayName": "Delay of Dissolution",
+                  "feeCode": "DISDE",
+                  "name": "dissolution",
+                  "type": "delay"
+                }
+            ]
+        },
+        "viewAll": false
+    },
+    "alternateNames": [],
+    "arMaxDate": "2025-10-23",
+    "arMinDate": "2025-12-23",
+    "associationType": null,
+    "complianceWarnings": [
+        {
+            "code": "TRANSITION_NOT_FILED",
+            "message": "This Business requires a post restoration transition application to be filed.",
+            "warningType": "NOT_IN_GOOD_STANDING"
+        }
+    ],
+    "fiscalYearEndDate": "1980-12-23",
+    "foundingDate": "1980-12-23T08:00:00+00:00",
+    "goodStanding": false,
+    "hasCorrections": false,
+    "hasCourtOrders": false,
+    "hasRestrictions": null,
+    "identifier": "BC0223072",
+    "inDissolution": true,
+    "inLiquidation": false,
+    "lastAddressChangeDate": "2025-10-11",
+    "lastAnnualGeneralMeetingDate": "",
+    "lastAnnualReportDate": "2024-12-23",
+    "lastDirectorChangeDate": "2023-11-09",
+    "lastLedgerTimestamp": "1980-12-23T08:00:00+00:00",
+    "lastModified": "2025-10-11T07:15:15.440264+00:00",
+    "legalName": "MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST",
+    "legalType": "BC",
+    "naicsCode": null,
+    "naicsDescription": null,
+    "naicsKey": null,
+    "nextAnnualReport": "2025-12-23T08:00:00+00:00",
+    "noDissolution": false,
+    "state": "ACTIVE",
+    "stateFiling": "https://mock-api-url/api/v2/businesses/BC0223072/filings/192032",
+    "submitter": "kjinnah@idir",
+    "taxId": "882156342BC0001",
+    "warnings": [
+        {
+            "code": "TRANSITION_NOT_FILED",
+            "message": "This Business requires a post restoration transition application to be filed.",
+            "warningType": "NOT_IN_GOOD_STANDING"
+        }
+    ]
+}

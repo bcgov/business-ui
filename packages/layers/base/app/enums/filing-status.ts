@@ -1,0 +1,19 @@
+export enum FilingStatus {
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  CORRECTED = 'CORRECTED',
+  DRAFT = 'DRAFT',
+  EPOCH = 'EPOCH',
+  ERROR = 'ERROR',
+  PAID = 'PAID',
+  PENDING = 'PENDING',
+  PENDING_CORRECTION = 'PENDING_CORRECTION',
+  WITHDRAWN = 'WITHDRAWN',
+  TOMBSTONE = 'TOMBSTONE',
+  // filings with staff review
+  APPROVED = 'APPROVED',
+  AWAITING_REVIEW = 'AWAITING_REVIEW',
+  CHANGE_REQUESTED = 'CHANGE_REQUESTED',
+  REJECTED = 'REJECTED',
+  NEW = 'NEW' // used for Todo List items only (ie, not yet a filing)
+}

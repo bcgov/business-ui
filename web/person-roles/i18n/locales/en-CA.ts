@@ -7,44 +7,6 @@ export default {
     added: 'ADDED',
     removed: 'REMOVED'
   },
-  btn: {
-    done: 'Done',
-    cancel: 'Cancel',
-    submit: 'Submit',
-    save: 'Save',
-    saveExit: 'Save and Resume Later',
-    goToBRD: 'Go to Business Registry Dashboard',
-    keepEditing: 'Keep Editing',
-    exitWithoutSaving: 'Exit Without Saving',
-    close: 'Close',
-    goBack: 'Go Back',
-    refreshPage: 'Refresh Page',
-    goToMyBusinessRegistry: 'Go to My Business Registry'
-  },
-  contactInfo: {
-    bcros: {
-      tollFree: {
-        title: 'Toll Free:',
-        value: '1-877-370-1033'
-      },
-      victoriaOffice: {
-        title: 'Victoria Office:',
-        value: '1-250-370-1033'
-      },
-      email: {
-        title: 'Email:',
-        value: "BCRegistries{'@'}gov.bc.ca"
-      },
-      hours: {
-        title: 'Hours of Operation:',
-        value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
-      }
-    }
-  },
-  currency: {
-    cad: 'CAD',
-    usd: 'USD'
-  },
   enum: {
     officerRole: {
       CEO: 'Chief Executive Officer',
@@ -59,181 +21,41 @@ export default {
       Officer: 'Officer' // TODO: update when subtype/roles are defined in api
     }
   },
-  help: {
-    addressCannotBePOBox: 'Address cannot be a PO Box',
-    addressCanBePOBox: 'Street address, PO box, rural route, or general delivery address'
-  },
   label: {
-    address: 'Address',
-    addressResidential: 'Residential Address',
-    state: 'State',
-    street: 'Street Address',
-    streetAdditional: 'Additional Street Address (Optional)',
-    streetName: 'Street Name',
-    streetNumber: 'Street Number',
-    unitNumber: 'Unit Number',
-    unitNumberOpt: 'Unit Number (Optional)',
-    country: 'Country',
-    line1: 'Address Line 1',
-    line2: 'Address Line 2 (Optional)',
-    city: 'City',
-    region: 'Region',
-    regionOpt: 'Region (Optional)',
-    province: 'Province',
-    postalCode: 'Postal Code',
-    zipCode: 'Zip Code',
-    code: 'Code',
-    mailingAddress: 'Mailing Address',
-    deliveryAddress: 'Delivery Address',
-    sameAsMailAddress: 'Same as Mailing Address',
-    sameAsDeliveryAddress: 'Same as Delivery Address',
-    deliveryInstructions: 'Delivery Instructions',
-    deliveryInstructionsOpt: 'Delivery Instructions (Optional)',
-    locationDescription: 'Location Description',
-    locationDescriptionOpt: 'Location Description (Optional)',
+    addLiquidator: 'Add Liquidator',
     addOfficer: 'Add Officer',
-    name: 'Name',
-    legalName: 'Legal Name',
-    roles: 'Roles',
-    firstName: 'First Name',
-    middleNameOpt: 'Middle Name (Optional)',
-    lastName: 'Last Name',
-    preferredNameOpt: 'Preferred Name (Optional)',
-    preferredName: 'Preferred Name',
-    preferredNameColon: 'Preferred Name:',
-    haspreferredName: 'This person also has another name they prefer to use',
-    actions: 'Actions',
+    addReceiver: 'Add Receiver',
+    changeAddress: 'Change Address',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
-    changeAddress: 'Change Address',
-    undo: 'Undo',
-    remove: 'Remove',
-    moreActions: 'More Actions',
-    edit: 'Edit',
-    businessNumber: 'Business Number',
-    incorporationNumber: 'Incorporation Number',
-    email: 'Email',
-    phone: 'Phone',
-    change: 'Change',
-    makeChanges: 'Make Changes',
-    myBusinessRegistry: 'My Business Registry',
-    bcRegistriesDashboard: 'BC Registries Dashboard',
-    notEntered: 'Not Entered',
-    notAvailable: 'Not Available',
-    folioNumber: 'Folio or Reference Number',
-    folioNumberOpt: 'Folio or Reference Number (Optional)',
-    officerInfo: 'Officer Information'
-  },
-  modal: {
-    error: {
-      initOfficerStore: {
-        401: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
-        },
-        403: {
-          title: 'Access Restricted',
-          description: 'You don’t have permission to access this business. Go to your business registry page to request access to this business.'
-        },
-        404: {
-          title: 'Invalid Link',
-          description: 'The link you entered is invalid. To access this business, try searching for it on your business registry page.'
-        },
-        500: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        },
-        undefined: {
-          title: 'Page Not Found',
-          description: 'We cannot display this information right now. Please try refreshing the page. If this problem continues, please contact us for help.'
-        }
-      },
-      getDraftFiling: {
-        undefined: {
-          title: 'Page not found',
-          description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
-        }
-      },
-      submitFiling: {
-        400: {
-          title: 'Invalid Submission',
-          description: 'There was an issue with the data submitted. Please review the form and try again.'
-        },
-        401: {
-          title: 'Permission Denied',
-          description: 'You do not have permission to perform this action for this business.'
-        },
-        403: {
-          title: 'Permission Denied',
-          description: 'You do not have permission to perform this action for this business.'
-        },
-        404: {
-          title: 'Business Not Found',
-          description: 'This business could not be found in our records.'
-        },
-        422: {
-          title: 'Invalid Submission',
-          description: 'There was an issue with the data submitted. Please review the form and try again.'
-        },
-        500: {
-          title: 'An Error Occurred',
-          description: "We couldn't complete your request due to an internal error. Please try again later."
-        },
-        undefined: {
-          title: 'Unknown Error',
-          description: 'An unknown error occured while trying to submit this filing, please try again later.'
-        }
-      },
-      filingNotAllowed: {
-        undefined: {
-          title: 'Page not available',
-          description: 'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
-        }
-      },
-      pendingTaskOnSaveOrSubmit: {
-        undefined: {
-          title: 'Unable to submit filing',
-          description: 'Another draft filing already exists. Please complete it before creating a new filing.'
-        }
-      }
-    },
-    unsavedChanges: {
-      title: 'Unsaved changes',
-      description: 'You have unsaved changes. Are you sure you want to exit your filing?'
-    },
-    padConfirmationPeriod: {
-      undefined: {
-        title: 'PAD Account in Confirmation Period',
-        description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
-      }
-    }
+    editLiquidator: 'Edit Liquidator',
+    editReceiver: 'Edit Receiver',
+    haspreferredName: 'This person also has another name they prefer to use',
+    liquidationRecordsOfficeAddress: 'Liquidation Records Office Address',
+    loading: 'Loading',
+    officerChange: 'Officer Change',
+    receiverChange: 'Receiver Change',
+    liquidatorChange: 'Liquidator Change',
+    officerInfo: 'Officer Information',
+    receiverInfo: 'Receiver Information',
+    liquidatorInfo: 'Liquidator Information',
+    roles: 'Roles'
   },
   text: {
+    noLiquidators: 'There are currently no liquidators.',
     noOfficers: 'There are currently no officers.',
+    noReceivers: 'There are currently no Receivers.',
     ifIssuePersistsContactUs: 'If this issue persists, please contact us.',
-    trackOfficers: 'You can only view current officers. To track historical information, keep a personal record.',
     finishTaskBeforeSubmit: 'Finish this task before submitting.',
     finishTaskBeforeSave: 'Finish this task before saving.',
+    liquidationRecordsOfficeAddressDesc: 'This is where the Liquidation Records Office is located.',
     noChangesToSave: 'There are no changes to save.',
     noChangesToSubmit: 'There are no changes to submit.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
+    officerInfoDescription: 'You can only view current officers. Keep current and former officer information in the company’s records.',
     trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.'
   },
   validation: {
-    required: 'Required',
-    fieldRequired: 'This field is required',
-    minChars: 'Minimum 0 characters | Minimum 1 character | Minimum {count} characters', // 0/1 most likely will never be used but required for pluralization
-    maxChars: 'Maximum 0 characters | Maximum 1 character | Maximum {count} characters', // 0/1 most likely will never be used but required for pluralization
-    address: {
-      country: 'Please select a country',
-      street: 'Please enter a street address',
-      streetName: 'Please enter a street name',
-      streetNumber: 'Please enter a street number',
-      city: 'Please enter a city',
-      region: 'Please select a region',
-      postalCode: 'Please enter a postal code',
-      unitNumber: 'Please enter a unit number'
-    },
     name: {
       first: 'Please enter a first name',
       last: 'Please enter a last name',
@@ -244,46 +66,57 @@ export default {
     }
   },
   page: {
-    officerChange: {
-      title: 'Officer Change - People Roles - BC Registries and Online Services',
-      h1: 'Officer Change'
-    }
-  },
-  // components
-  ConnectHeader: {
-    title: 'BC Registries and Online Services'
-  },
-  ConnectBreadcrumb: {
-    default: 'BC Registries and Online Services'
-  },
-  ConnectFeeWidget: {
-    feeSummary: {
-      title: 'Fee Summary',
-      total: 'Total Fees',
-      noFee: 'No Fee',
-      priorityFees: 'Priority Fees',
-      futureEffectiveFees: 'Future Effective Fees',
-      serviceFees: 'Service Fee',
-      itemLabels: {
-        PLACEHOLDER: 'Placeholder (Replace Me)', // each project using the connect fee widget should change the placeholder filingTypeCode
-        TEST: 'This is test entry',
-        undefined: 'Item Fee',
-        OFFICER_CHANGE: 'Officer Change'
+    // Below sections are named based on filing type and filing sub type
+    changeOfLiquidators: {
+      // TODO: remove once sub types are in
+      h1: 'Manage Liquidators',
+      title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
+      feeCode: 'LQSIN',
+      feeLabel: 'Manage Liquidators',
+      // TODO: add other sub types
+      intentToLiquidate: {
+        feeCode: 'LQSIN',
+        feeLabel: 'Intent to Liquidate',
+        h1: 'Intent to Liquidate',
+        title: 'Intent to Liquidate - People Roles - BC Registries and Online Services'
       }
     },
-    paymentMethod: {
-      DIRECT_PAY: 'Credit Card',
-      PAD: 'Pre-authorized Debit (PAD) {account}',
-      BCOL: 'Online Banking',
-      JV: 'Journal Voucher',
-      undefined: 'Default'
+    changeOfReceivers: {
+      amendReceiver: {
+        desc: 'Some amend receiver descriptive text',
+        feeCode: 'AMEND',
+        feeLabel: 'Amend Receiver or Receiver Manager Information',
+        h1: 'Amend Receiver or Receiver Manager Information',
+        title: 'Amend Receivers - People Roles - BC Registries and Online Services'
+      },
+      appointReceiver: {
+        desc: 'Some appoint receiver descriptive text',
+        feeCode: 'NOARM',
+        feeLabel: 'Appoint Receivers or Receiver Managers',
+        h1: 'Appoint Receivers or Receiver Managers',
+        title: 'Appoint Receivers - People Roles - BC Registries and Online Services'
+      },
+      ceaseReceiver: {
+        desc: 'Some cease receiver descriptive text',
+        feeCode: 'NOCER',
+        feeLabel: 'Cease Receivers or Receiver Managers',
+        h1: 'Cease Receivers or Reveiver Managers',
+        title: 'Cease Receivers - People Roles - BC Registries and Online Services'
+      },
+      changeAddressReceiver: {
+        desc: 'Some change address receiver descriptive text',
+        feeCode: 'NOCRM',
+        feeLabel: 'Change Addresses of Receivers or Reveiver Managers',
+        h1: 'Change Addresses of Receivers or Reveiver Managers',
+        title: 'Change Receiver Addresses - People Roles - BC Registries and Online Services'
+      }
     },
-    payingWith: {
-      DIRECT_PAY: 'Paying with Credit Card',
-      PAD: 'Paying with Pre-authorized Debit (PAD) {account}',
-      BCOL: 'Paying with Online Banking',
-      JV: 'Paying with Journal Voucher',
-      undefined: 'Paying with default method'
+    changeOfOfficers: {
+      desc: 'Officer information is not required by BC Registries, but will show on the business summary if it is submitted. To make updates, simply submit another officer change.',
+      feeCode: 'NOCOI',
+      feeLabel: 'Officer Change',
+      h1: 'Officer Change',
+      title: 'Officer Change - People Roles - BC Registries and Online Services'
     }
   }
 }

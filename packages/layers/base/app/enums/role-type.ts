@@ -1,0 +1,43 @@
+export enum RoleType {
+  APPLICANT = 'Applicant',
+  COMPLETING_PARTY = 'Completing Party',
+  CUSTODIAN = 'Custodian',
+  DIRECTOR = 'Director',
+  INCORPORATOR = 'Incorporator',
+  LIQUIDATOR = 'Liquidator',
+  PARTNER = 'Partner',
+  PROPRIETOR = 'Proprietor',
+  RECEIVER = 'Receiver',
+  OFFICER = 'Officer',
+  CEO = 'Ceo',
+  CFO = 'Cfo',
+  PRESIDENT = 'President',
+  VICE_PRESIDENT = 'Vice President',
+  CHAIR = 'Chair',
+  TREASURER = 'Treasurer',
+  SECRETARY = 'Secretary',
+  ASSISTANT_SECRETARY = 'Assistant Secretary',
+  OTHER = 'Other'
+}
+
+export enum RoleTypeUi {
+  APPLICANT = 'APPLICANT',
+  COMPLETING_PARTY = 'COMPLETING_PARTY',
+  CUSTODIAN = 'CUSTODIAN',
+  DIRECTOR = 'DIRECTOR',
+  INCORPORATOR = 'INCORPORATOR',
+  LIQUIDATOR = 'LIQUIDATOR',
+  PARTNER = 'PARTNER',
+  PROPRIETOR = 'PROPRIETOR',
+  RECEIVER = 'RECEIVER',
+  OFFICER = 'OFFICER',
+  CEO = 'CEO',
+  CFO = 'CFO',
+  PRESIDENT = 'PRESIDENT',
+  VICE_PRESIDENT = 'VICE_PRESIDENT',
+  CHAIR = 'CHAIR',
+  TREASURER = 'TREASURER',
+  SECRETARY = 'SECRETARY',
+  ASSISTANT_SECRETARY = 'ASSISTANT_SECRETARY',
+  OTHER = 'OTHER'
+}

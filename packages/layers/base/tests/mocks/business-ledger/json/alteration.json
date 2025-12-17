@@ -1,0 +1,30 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0887698",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184541/comments",
+    "data": {
+        "alteration": {
+            "fromLegalType": "BC",
+            "toLegalType": "BEN"
+        },
+        "applicationDate": "2025-03-06T18:07:18.553612+00:00",
+        "legalFilings": [
+            "alteration"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Alteration",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184541/documents",
+    "effectiveDate": "Thu, 06 Mar 2025 18:07:19 GMT",
+    "filingId": 184541,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0887698/filings/184541",
+    "isFutureEffective": false,
+    "name": "alteration",
+    "paymentDate": "Thu, 06 Mar 2025 18:07:19 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Thu, 06 Mar 2025 18:07:18 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

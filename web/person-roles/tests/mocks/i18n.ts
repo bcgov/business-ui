@@ -1,5 +1,5 @@
 import { createI18n } from 'vue-i18n'
-import { merge } from 'lodash'
+import { merge } from 'es-toolkit'
 import en from '~~/i18n/locales/en-CA'
 import coreEn from '#core/i18n/locales/en-CA'
 

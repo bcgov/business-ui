@@ -7,7 +7,7 @@ const { t } = useI18n()
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
-const UButtonGroup = resolveComponent('UButtonGroup')
+const UFieldGroup = resolveComponent('UFieldGroup')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 const ConnectAddressDisplay = resolveComponent('ConnectAddressDisplay')
 
@@ -137,20 +137,20 @@ const columns: TableColumn<OfficerTableState>[] = [
         h('span', {}, name),
         preferredName
           ? h('div', { class: 'flex flex-col' }, [
-            h('i', { class: 'text-sm italic font-normal' }, t('label.preferredNameColon')),
+            h('i', { class: 'text-sm italic font-normal' }, t('label.preferredName') + ':'),
             h('span', { class: 'text-sm' }, preferredName.toUpperCase())
           ])
           : null,
         badges.length
           ? h('ul', { class: 'flex flex-col gap-2' },
-              badges.map(badge =>
-                h(UBadge, {
-                  as: 'li',
-                  class: 'w-min',
-                  key: badge.label,
-                  ...badge
-                })
-              )
+            badges.map(badge =>
+              h(UBadge, {
+                as: 'li',
+                class: 'w-min',
+                key: badge.label,
+                ...badge
+              })
+            )
           )
           : null
       ])
@@ -191,9 +191,9 @@ const columns: TableColumn<OfficerTableState>[] = [
 
       return sortedRoles.length
         ? h('ul', { class: containerClass },
-            sortedRoles.map(role =>
-              h('li', {}, t(`enum.officerRole.${role.roleType}`))
-            )
+          sortedRoles.map(role =>
+            h('li', {}, t(`enum.officerRole.${role.roleType}`))
+          )
         )
         : null
     }
@@ -209,8 +209,13 @@ const columns: TableColumn<OfficerTableState>[] = [
     cell: ({ row }) => {
       const address = row.original.new.deliveryAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
+      const addressKey = JSON.stringify(address)
 
-      return h('div', { class: containerClass }, h(ConnectAddressDisplay, { address }))
+      return h(
+        'div',
+        { class: containerClass },
+        h(ConnectAddressDisplay, { address, key: addressKey, textDecor: true })
+      )
     }
   },
   {
@@ -225,6 +230,7 @@ const columns: TableColumn<OfficerTableState>[] = [
       const sameAs = row.original.new.sameAsDelivery
       const mailingAddress = row.original.new.mailingAddress
       const containerClass = getCellContainerClass(row, 'px-2 py-4 min-w-48 max-w-48 overflow-clip')
+      const addressKey = JSON.stringify(mailingAddress)
 
       // only display mailing address if fully entered
       const isValidAddress = (addressSchema.safeParse(mailingAddress)).success
@@ -233,7 +239,7 @@ const columns: TableColumn<OfficerTableState>[] = [
         ? h('span', {}, t('label.notEntered'))
         : sameAs
           ? h('span', {}, t('label.sameAsDeliveryAddress'))
-          : h(ConnectAddressDisplay, { address: mailingAddress })
+          : h(ConnectAddressDisplay, { address: mailingAddress, key: addressKey, textDecor: true })
       ))
     }
   },
@@ -256,7 +262,7 @@ const columns: TableColumn<OfficerTableState>[] = [
         { class: containerClass },
         [
           h(
-            UButtonGroup,
+            UFieldGroup,
             {},
             {
               default: () => [
@@ -319,7 +325,7 @@ const columns: TableColumn<OfficerTableState>[] = [
 const expandedTrClass = computed(() =>
   (typeof expanded.value === 'object' && expanded.value !== null && expanded.value[0] === true)
     ? ''
-    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-bcGovGray-100'
+    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-gray-100'
 )
 </script>
 
@@ -333,13 +339,13 @@ const expandedTrClass = computed(() =>
     :ui="{
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
-      th: 'bg-bcGovColor-gray2 px-2',
-      td: 'px-0 py-0 text-bcGovGray-900 align-top',
+      th: 'bg-shade-secondary text-neutral-highlighted px-2',
+      td: 'px-0 py-0 text-neutral-highlighted align-top',
       tr: expandedTrClass
     }"
   >
     <template #expanded="{ row }">
-      <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-bcGovGray-100' : ''">
+      <div :class="(row.index !== officerTableState.length - 1) ? 'border-b-6 border-shade' : ''">
         <FormOfficerChange
           class="max-w-full"
           :default-state="editState"
@@ -352,11 +358,9 @@ const expandedTrClass = computed(() =>
     </template>
 
     <template #empty>
-      <div class="text-bcGovGray-700 text-left text-base px-6">
-        {{ $t('text.noOfficers') }}
+      <div class="text-gray-700 text-left text-base px-6">
+        {{ initializing ? `${$t('label.loading')}...` : $t('text.noOfficers') }}
       </div>
     </template>
   </UTable>
-
-  <!-- <pre>{{ officers }}</pre> -->
 </template>

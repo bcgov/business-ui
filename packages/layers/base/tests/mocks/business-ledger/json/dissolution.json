@@ -1,0 +1,31 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0883823",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0883823/filings/155050/comments",
+    "data": {
+        "applicationDate": "2024-12-12T19:46:06.532397+00:00",
+        "dissolution": {
+            "dissolutionDate": "2024-12-12",
+            "dissolutionType": "voluntary"
+        },
+        "legalFilings": [
+            "dissolution"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Voluntary Dissolution",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0883823/filings/155050/documents",
+    "effectiveDate": "Thu, 12 Dec 2024 19:46:07 GMT",
+    "filingId": 155050,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0883823/filings/155050",
+    "filingSubType": "voluntary",
+    "isFutureEffective": false,
+    "name": "dissolution",
+    "paymentDate": "Thu, 12 Dec 2024 19:46:07 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Thu, 12 Dec 2024 19:46:06 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

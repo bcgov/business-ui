@@ -2,7 +2,7 @@
 import type { FormErrorEvent, Form, FormSubmitEvent, FormError } from '@nuxt/ui'
 import type { AcceptableValue } from 'reka-ui'
 import { z } from 'zod'
-import { isEqual } from 'lodash'
+import { isEqual } from 'es-toolkit'
 import { UForm } from '#components'
 
 const na = useNuxtApp()
@@ -69,12 +69,13 @@ const roleSchema = z.object({
 })
 
 const schema = z.object({
-  firstName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
-  middleName: z.string().max(20, t('validation.maxChars', { count: 20 })).default(''),
-  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('validation.maxChars', { count: 30 })),
-  preferredName: z.string().max(50, t('validation.maxChars', { count: 50 })).default(''),
+  id: z.string().optional(),
+  firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
+  middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })).default(''),
+  lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 })),
+  preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).default(''),
   hasPreferredName: z.boolean(),
-  mailingAddress: getNotRequiredAddressSchema(),
+  mailingAddress: getRequiredAddressSchema(),
   sameAsDelivery: z.boolean(),
   deliveryAddress: getRequiredAddressSchema(),
   roles: z
@@ -85,7 +86,7 @@ const schema = z.object({
 
       if (!hasActiveRole) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: t('validation.role.min')
         })
       }
@@ -225,15 +226,7 @@ watch(
       state.mailingAddress = { ...props.defaultState.mailingAddress }
     }
 
-    const mailingFields = [
-      'mailingAddress.country',
-      'mailingAddress.city',
-      'mailingAddress.region',
-      'mailingAddress.postalCode',
-      'mailingAddress.street'
-    ]
-
-    mailingFields.forEach(item => formRef.value?.clear(item))
+    formRef.value?.clear(/^mailingAddress.*/)
   },
   { immediate: true }
 )
@@ -303,14 +296,14 @@ function clearUnfinishedTaskMsg() {
 <template>
   <UForm
     ref="officer-form"
+    data-testid="officer-form"
     :state
     :schema="schema"
     class="bg-white p-6"
     :class="{
-      'border-l-3 border-red-600': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
+      'border-l-3 border-error': Object.values(formErrors).some(v => v !== undefined) || unfinishedTaskMsg !== '',
       'rounded-sm shadow-sm': !editing
     }"
-    :validate-on="['blur']"
     @error="onError"
     @submit="onSubmit"
     @click="clearUnfinishedTaskMsg"
@@ -318,37 +311,41 @@ function clearUnfinishedTaskMsg() {
   >
     <div class="flex flex-col sm:flex-row gap-6">
       <h3
-        class="w-full sm:w-1/5 font-bold text-bcGovGray-900 text-base -mt-1.5"
-        :class="{ 'text-red-600': unfinishedTaskMsg !== '' }"
+        class="w-full sm:w-1/5 font-bold text-neutral-highlighted text-base -mt-1.5"
+        :class="{ 'text-error': unfinishedTaskMsg !== '' }"
       >
         {{ title }}
       </h3>
       <div class="flex flex-col gap-9 w-full">
         <div class="flex flex-col gap-9 w-full">
-          <FormSection
+          <ConnectFieldset
             :label="$t('label.legalName')"
             :error="formErrors.name"
+            data-testid="fieldset-name"
           >
             <div class="flex flex-col gap-4 sm:flex-row">
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.firstName"
+                data-testid="form-group-first-name"
                 name="firstName"
-                input-id="first-name"
+                input-id="first-name-input"
                 :label="$t('label.firstName')"
                 autofocus
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.middleName"
+                data-testid="form-group-middle-name"
                 name="middleName"
-                input-id="middle-name"
+                input-id="middle-name-input"
                 :label="$t('label.middleNameOpt')"
               />
 
-              <FormFieldInput
+              <ConnectFormInput
                 v-model="state.lastName"
+                data-testid="form-group-last-name"
                 name="lastName"
-                input-id="last-name"
+                input-id="last-name-input"
                 required
                 :label="$t('label.lastName')"
               />
@@ -367,10 +364,11 @@ function clearUnfinishedTaskMsg() {
               class="grow flex-1"
               :label="$t('label.preferredName')"
               :ui="{ label: 'mb-3.5' }"
+              data-testid="form-group-preferred-name"
             >
               <template #default="{ error }">
                 <ConnectInput
-                  id="preferred-name"
+                  id="preferred-name-input"
                   v-model="state.preferredName"
                   :invalid="!!error"
                   :label="$t('label.preferredNameOpt')"
@@ -381,10 +379,10 @@ function clearUnfinishedTaskMsg() {
                 />
               </template>
             </UFormField>
-          </FormSection>
+          </ConnectFieldset>
         </div>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.roles')"
           :error="formErrors.roles"
           :show-error-msg="true"
@@ -405,32 +403,27 @@ function clearUnfinishedTaskMsg() {
               }"
               @update:model-value="handleRoleChange"
             />
-            <!-- <FormCheckboxGroup
-              id="officer-role-options"
-              :items="roleOptions"
-              :model-value="selectedRoles"
-              @update:model-value="handleRoleChange"
-            /> -->
           </UFormField>
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.deliveryAddress')"
           :error="formErrors.delivery"
+          data-testid="delivery-address-fieldset"
         >
-          <FormAddress
+          <ConnectFormAddress
             id="delivery-address"
             v-model="state.deliveryAddress"
-            schema-prefix="deliveryAddress."
-            :form-ref="formRef"
-            not-po-box
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
+            schema-prefix="deliveryAddress"
+            street-help-text="no-po"
+            @should-validate="formRef?.clear(/^deliveryAddress.*/)"
           />
-        </FormSection>
+        </ConnectFieldset>
 
-        <FormSection
+        <ConnectFieldset
           :label="$t('label.mailingAddress')"
           :error="formErrors.mailing"
+          data-testid="mailing-address-fieldset"
         >
           <UCheckbox
             v-model="state.sameAsDelivery"
@@ -439,15 +432,14 @@ function clearUnfinishedTaskMsg() {
             :class="state.sameAsDelivery ? '' : 'mb-6'"
           />
 
-          <FormAddress
+          <ConnectFormAddress
             v-if="!state.sameAsDelivery"
             id="mailing-address"
             v-model="state.mailingAddress"
-            schema-prefix="mailingAddress."
-            :form-ref="formRef"
-            :excluded-fields="['streetName', 'streetNumber', 'unitNumber']"
+            schema-prefix="mailingAddress"
+            @should-validate="formRef?.clear(/^mailingAddress.*/)"
           />
-        </FormSection>
+        </ConnectFieldset>
 
         <div class="flex sm:flex-row flex-col gap-4 justify-end sm:items-center -mt-5">
           <p
@@ -458,14 +450,14 @@ function clearUnfinishedTaskMsg() {
           </p>
           <div class="flex gap-6 justify-end">
             <UButton
-              :label="$t('btn.cancel')"
+              :label="$t('label.cancel')"
               variant="outline"
               size="xl"
               @click="$emit('cancel')"
             />
             <UButton
               id="btn-officer-form-done"
-              :label="$t('btn.done')"
+              :label="$t('label.done')"
               type="submit"
               class="font-bold"
               size="xl"

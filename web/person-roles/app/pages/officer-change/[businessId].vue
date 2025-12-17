@@ -3,62 +3,33 @@ import { z } from 'zod'
 import type { Form, FormError } from '@nuxt/ui'
 
 const { t } = useI18n()
-const rtc = useRuntimeConfig().public
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const officerStore = useOfficerStore()
-const feeStore = useConnectFeeStore()
-const accountStore = useConnectAccountStore()
-const { setButtonControl, handleButtonLoading, setAlertText } = useButtonControl()
-const modal = useModal()
-const legalApi = useLegalApi()
+const businessStore = useBusinessStore()
+const { setAlertText } = useConnectButtonControl()
+const modal = useFilingModals()
+const businessApi = useBusinessApi()
+const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.changeOfOfficers.h1'))
 
 useHead({
-  title: t('page.officerChange.title')
+  title: t('page.changeOfOfficers.title')
 })
 
 definePageMeta({
-  layout: 'form',
-  middleware: () => {
-    // redirect to reg home with return url if user unauthenticated
-    const { $keycloak, $config } = useNuxtApp()
-    if (!$keycloak.authenticated) {
-      const returnUrl = encodeURIComponent(window.location.href)
-      return navigateTo(
-        `${$config.public.registryHomeUrl}login?return=${returnUrl}`,
-        { external: true }
-      )
-    }
+  layout: 'connect-pay-tombstone-buttons',
+  middleware: [
+    // Check for login redirect
+    'connect-auth'
+  ],
+  buttonControl: {
+    leftGroup: { buttons: [] },
+    rightGroup: { buttons: [] }
   }
 })
 
 const businessId = route.params.businessId as string
-const businessDashboardUrlWithBusinessAndAccount = computed(() =>
-  `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`
-)
 
-// TODO: get fee from pay api?
-// set empty fee
-feeStore.feeOptions.showServiceFees = false
-feeStore.fees = {
-  OFFICER_CHANGE: {
-    filingFees: 0,
-    filingType: 'Officer change fee',
-    filingTypeCode: 'OFFICER_CHANGE',
-    futureEffectiveFees: 0,
-    priorityFees: 0,
-    processingFees: 0,
-    serviceFees: 0,
-    tax: {
-      gst: 0,
-      pst: 0
-    },
-    total: 0,
-    waived: true
-  }
-}
-
-// TODO: how to not run this if the users sessions was expired, save draft automatically? ignore changes and logout?
 // show browser error if unsaved changes
 function onBeforeUnload(event: BeforeUnloadEvent) {
   if (officerStore.checkHasChanges('save')) {
@@ -83,7 +54,7 @@ async function onAddOfficerClick() {
   }
   officerStore.addingOfficer = true
   // reset any alert text in button control component
-  await setAlertText(true)
+  await setAlertText()
 }
 
 // submit final filing
@@ -97,7 +68,7 @@ async function submitFiling() {
 
     // prevent submit if there are no changes
     if (!officerStore.checkHasChanges('submit')) {
-      setAlertText(false, 'right', t('text.noChangesToSubmit'))
+      setAlertText(t('text.noChangesToSubmit'), 'right')
       return
     }
 
@@ -107,98 +78,58 @@ async function submitFiling() {
       return
     }
 
-    // set submit button as loading, disable all other bottom buttons
-    handleButtonLoading(false, 'right', 1)
-
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      modal.openBaseErrorModal(
-        undefined,
-        'modal.error.pendingTaskOnSaveOrSubmit'
-      )
+      await modal.openPendingTaskOnSaveOrSubmitModal()
       return
     }
 
     // format payload
     const officerData = formatOfficerPayload(JSON.parse(JSON.stringify(officerStore.officerTableState)))
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
-      officerStore.activeBusiness,
-      'changeOfOfficers',
-      officerData
+    const folioNumber = officerStore.folio.number ?? businessStore.businessFolio
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerPayload }>(
+      businessStore.business!,
+      FilingType.CHANGE_OF_OFFICERS,
+      officerData,
+      (folioNumber ? { folioNumber } : {})
     )
-    // add folio number if it exists
-    if (officerStore.folio.number) {
-      payload.filing.header.folioNumber = officerStore.folio.number
-    } else if (officerStore.activeBusinessAuthInfo.folioNumber) { // if not, use entity folio number if available
-      payload.filing.header.folioNumber = officerStore.activeBusinessAuthInfo.folioNumber
-    }
-    // set as non legal filing
-    payload.filing.header.type = FilingHeaderType.NON_LEGAL
 
     // if draft id exists, submit final payload as a PUT request to that filing and mark as not draft
     if (draftId) {
-      await legalApi.saveOrUpdateDraftFiling(
-        officerStore.activeBusiness.identifier,
+      await businessApi.saveOrUpdateDraftFiling(
+        businessStore.businessIdentifier!,
         payload,
         true,
         draftId
       )
     } else {
       // submit as normal if no draft id
-      await legalApi.postFiling(
-        officerStore.activeBusiness.identifier,
+      await businessApi.postFiling(
+        businessStore.businessIdentifier!,
         payload
       )
     }
     // remove window beforeUnload event to prevent navigation block
     revokeBeforeUnloadEvent()
     // navigate to business dashboard if filing does *not* fail
-    await navigateTo(
-      businessDashboardUrlWithBusinessAndAccount.value,
-      { external: true }
-    )
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    modal.openBaseErrorModal(
-      error,
-      'modal.error.submitFiling'
-    )
-  } finally {
-    handleButtonLoading(true)
+    await modal.openSaveFilingErrorModal(error)
   }
 }
 
 async function cancelFiling() {
   if (officerStore.checkHasChanges('save')) {
-    await modal.openBaseModal(
-      t('modal.unsavedChanges.title'),
-      t('modal.unsavedChanges.description'),
-      false,
-      [
-        { label: t('btn.keepEditing'), variant: 'outline', size: 'xl', shouldClose: true },
-        {
-          label: t('btn.exitWithoutSaving'),
-          size: 'xl',
-          onClick: async () => {
-            revokeBeforeUnloadEvent()
-            await navigateTo(businessDashboardUrlWithBusinessAndAccount.value, {
-              external: true
-            })
-          }
-        }
-      ]
-    )
+    await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
   } else {
-    await navigateTo(
-      businessDashboardUrlWithBusinessAndAccount.value,
-      { external: true }
-    )
+    await navigateTo(dashboardOrEditUrl.value, { external: true })
   }
 }
 
@@ -214,7 +145,7 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
   // prevent save if there are no changes
   if (!officerStore.checkHasChanges('save')) {
-    setAlertText(false, 'left', t('text.noChangesToSave'))
+    setAlertText(t('text.noChangesToSave'), 'left')
     return
   }
 
@@ -225,26 +156,16 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
   }
 
   try {
-    // set appropriate button loading state
-    if (resumeLater) {
-      handleButtonLoading(false, 'left', 1)
-    } else {
-      handleButtonLoading(false, 'left', 0)
-    }
-
     // pull draft id from url or mark as undefined
     const draftId = (urlParams.draft as string) ?? undefined
 
     // check if the business has a pending filing before submit
-    const pendingTask = await legalApi.getPendingTask(businessId, 'filing')
+    const pendingTask = await businessApi.getPendingTask(businessId, 'filing')
     if ((pendingTask && !draftId) || (draftId && draftId !== String(pendingTask?.filing.header.filingId))) {
       // TODO: how granular do we want to be with our error messages?
       // we check pending tasks on page mount
       // this will only occur if a pending task has been created after the initial page mount
-      modal.openBaseErrorModal(
-        undefined,
-        'modal.error.pendingTaskOnSaveOrSubmit'
-      )
+      await modal.openPendingTaskOnSaveOrSubmitModal()
       return
     }
 
@@ -252,19 +173,16 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     const officerTableSnapshot = JSON.parse(JSON.stringify(officerStore.officerTableState))
 
     // create filing payload
-    const payload = legalApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
-      officerStore.activeBusiness,
-      'changeOfOfficers',
-      { changeOfOfficers: officerTableSnapshot }
+    const payload = businessApi.createFilingPayload<{ changeOfOfficers: OfficerTableState[] }>(
+      businessStore.business!,
+      FilingType.CHANGE_OF_OFFICERS,
+      { changeOfOfficers: officerTableSnapshot },
+      { folioNumber: officerStore.folio.number }
     )
 
-    // add folio number & set as non legal filing
-    payload.filing.header.folioNumber = officerStore.folio.number
-    payload.filing.header.type = FilingHeaderType.NON_LEGAL
-
     // save filing as draft
-    const res = await legalApi.saveOrUpdateDraftFiling(
-      officerStore.activeBusiness.identifier,
+    const res = await businessApi.saveOrUpdateDraftFiling(
+      businessStore.businessIdentifier!,
       payload,
       false,
       draftId
@@ -281,24 +199,16 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
     // if resume later, navigate back to business dashboard
     if (resumeLater) {
       revokeBeforeUnloadEvent()
-      await navigateTo(
-        businessDashboardUrlWithBusinessAndAccount.value,
-        { external: true }
-      )
+      await navigateTo(dashboardUrl.value, { external: true })
     }
   } catch (error) {
-    modal.openBaseErrorModal(
-      error,
-      'modal.error.submitFiling'
-    )
-  } finally {
-    handleButtonLoading(true)
+    await modal.openSaveFilingErrorModal(error)
   }
 }
 
 // folio number stuff
 const folioSchema = z.object({
-  number: z.string().max(50, t('validation.maxChars', { count: 50 })).optional()
+  number: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).optional()
 })
 type FolioSchema = z.output<typeof folioSchema>
 const folioFormRef = useTemplateRef<Form<FolioSchema>>('folio-form')
@@ -320,68 +230,36 @@ async function validateFolioNumber() {
   return true
 }
 
-// init officers on mount and when account changes
-// update breadcrumbs and bottom buttons when account changes
-watch(
-  () => accountStore.currentAccount.id,
-  async (id) => {
-    const draftId = (urlParams.draft as string) ?? undefined
-    await officerStore.initOfficerStore(businessId, draftId)
-
-    setBreadcrumbs([
-      {
-        label: t('label.bcRegistriesDashboard'),
-        to: `${rtc.registryHomeUrl}dashboard`,
-        external: true,
-        appendAccountId: true
-      },
-      {
-        label: t('label.myBusinessRegistry'),
-        to: `${rtc.brdUrl}account/${id}`,
-        external: true
-      },
-      {
-        label: officerStore.activeBusiness.legalName,
-        to: `${rtc.businessDashboardUrl + businessId}`,
-        appendAccountId: true,
-        external: true
-      },
-      {
-        label: t('page.officerChange.h1')
-      }
-    ])
-
-    setButtonControl({
-      leftButtons: [
-        { onClick: () => saveFiling(), label: t('btn.save'), variant: 'outline' },
-        { onClick: () => saveFiling(true), label: t('btn.saveExit'), variant: 'outline' }
-      ],
-      rightButtons: [
-        { onClick: cancelFiling, label: t('btn.cancel'), variant: 'outline' },
-        { onClick: submitFiling, label: t('btn.submit'), trailingIcon: 'i-mdi-chevron-right' }
-      ]
-    })
-
-    // save filing before user logged out when session expires
-    setOnBeforeSessionExpired(async () => {
-      revokeBeforeUnloadEvent()
-      await saveFiling(false, true)
-    })
-  },
-  { immediate: true }
-)
+// Watcher to handle filing save, cancel, and navigation
+useFilingPageWatcher({
+  store: officerStore,
+  businessId,
+  draftId: urlParams.draft as string | undefined,
+  feeCode: 'NOCOI',
+  feeLabel: t('label.officerChange'),
+  pageLabel: t('page.changeOfOfficers.h1'),
+  formId: 'officer-filing',
+  saveFiling: { onClick: () => saveFiling(true) },
+  cancelFiling: { onClick: cancelFiling },
+  submitFiling: { onClick: submitFiling },
+  breadcrumbs,
+  setOnBeforeSessionExpired: () => saveFiling(false, true)
+})
 </script>
 
 <template>
   <div class="py-10 space-y-8">
-    <h1>{{ $t('page.officerChange.h1') }}</h1>
+    <div class="space-y-1">
+      <h1>{{ $t('page.changeOfOfficers.h1') }}</h1>
+      <p>{{ $t('page.changeOfOfficers.desc') }}</p>
+    </div>
 
     <section class="space-y-4">
       <h2 class="text-lg">
         1. {{ $t('label.officerInfo') }}
       </h2>
       <p class="-mt-2">
-        {{ $t('text.trackOfficers') }}
+        {{ $t('text.officerInfoDescription') }}
       </p>
       <UButton
         :label="$t('label.addOfficer')"
@@ -400,12 +278,12 @@ watch(
         @cancel="officerStore.addingOfficer = false"
       />
 
-      <TableOfficerChange @table-action="setAlertText(true)" />
+      <TableOfficerChange @table-action="setAlertText()" />
     </section>
 
     <section class="flex flex-col gap-4">
       <h2 class="text-lg">
-        2. {{ $t('label.folioNumberOpt') }}
+        2. {{ $t('label.folioOrRefNumber') }}
       </h2>
       <p class="-mt-2">
         {{ $t('text.trackFolio') }}
@@ -413,6 +291,7 @@ watch(
 
       <UForm
         ref="folio-form"
+        data-testid="folio-form"
         :state="officerStore.folio"
         :schema="folioSchema"
         class="bg-white p-6 rounded-sm shadow-sm"
@@ -420,19 +299,20 @@ watch(
           'border-l-3 border-red-600': folioErrors && folioErrors[0]
         }"
       >
-        <FormSection
-          :label="$t('label.folioNumber')"
+        <ConnectFormFieldWrapper
+          :label="$t('label.folioOrRefNumber')"
           orientation="horizontal"
           :error="folioErrors && folioErrors[0] ? folioErrors[0] : undefined"
         >
-          <FormFieldInput
+          <ConnectFormInput
             v-model="officerStore.folio.number"
+            data-testid="form-field-folio-number"
             name="number"
-            :label="$t('label.folioNumberOpt')"
+            :label="$t('label.folioOrRefNumberOpt')"
             input-id="folio-number"
-            @focusin="setAlertText(true)"
+            @focusin="setAlertText()"
           />
-        </FormSection>
+        </ConnectFormFieldWrapper>
       </UForm>
     </section>
   </div>

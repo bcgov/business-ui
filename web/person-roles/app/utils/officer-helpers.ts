@@ -1,3 +1,5 @@
+import { isEqual } from 'es-toolkit'
+
 const ROLE_RELATIONSHIPS: [OfficerRole, string][] = [
   [OfficerRole.CEO, 'CEO'],
   [OfficerRole.CFO, 'CFO'],
@@ -19,7 +21,19 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
 export function formatOfficerPayload(newState: OfficerTableState[]): ChangeOfOfficersPayload {
   const addressSchema = getRequiredAddressSchema()
 
-  const data = newState.map((s) => {
+  const changedOfficers = newState.filter((s) => {
+    if (!s.old) {
+      return true
+    }
+
+    if (s.new && s.old) {
+      return !isEqual(s.new, s.old)
+    }
+
+    return true
+  })
+
+  const data = changedOfficers.map((s) => {
     const officer = s.new
 
     const roles = officer.roles.map((r) => {

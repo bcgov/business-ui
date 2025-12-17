@@ -1,19 +1,17 @@
 import type { ExpandedState, Row } from '@tanstack/vue-table'
-import { isEqual } from 'lodash'
-import { FetchError } from 'ofetch'
+import { isEqual } from 'es-toolkit'
+import { isEmpty } from 'es-toolkit/compat'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
+  const modal = useFilingModals()
+  const businessApi = useBusinessApi()
+  const businessStore = useBusinessStore()
+  const { business } = storeToRefs(businessStore)
+  const ld = useConnectLaunchDarkly()
   const rtc = useRuntimeConfig().public
-  const modal = useModal()
-  const legalApi = useLegalApi()
-  const authApi = useAuthApi()
-  const accountStore = useConnectAccountStore()
-  const detailsHeaderStore = useConnectDetailsHeaderStore()
 
-  const activeBusiness = shallowRef<BusinessData>({} as BusinessData)
-  const activeBusinessAuthInfo = shallowRef<AuthInformation>({} as AuthInformation)
   const initializing = ref<boolean>(false) // officer store loading state
   const addingOfficer = ref<boolean>(false) // flag to show/hide Add Officer form
   const initialOfficers = shallowRef<Officer[]>([]) // officer state on page load
@@ -25,97 +23,47 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
   const disableActions = computed(() => addingOfficer.value || !!expanded.value || initializing.value)
 
-  async function initOfficerStore(businessId: string, draftId?: string) {
+  async function init(businessId: string, _filingSubType?: string, draftId?: string) {
     try {
       // reset any previous state (ex: user switches accounts) and init loading state
       $reset()
       initializing.value = true
-      detailsHeaderStore.loading = true
 
-      // if filing ID provided, get and validate the filing structure, return early if invalid
-      if (draftId) {
-        try {
-          const { isValid, data } = await legalApi.getAndValidateDraftFiling<{ changeOfOfficers: OfficerTableState[] }>(
-            businessId,
-            draftId,
-            'changeOfOfficers'
-          )
-          if (!isValid) {
-            throw new Error('Draft filing invalid')
-          } else {
-            filingDraftState.value = { filing: data?.filing, errors: [] } as OfficersDraftFiling
-            folio.number = data?.filing.header?.folioNumber || ''
-          }
-        } catch (error) {
-          modal.openBaseErrorModal(
-            error,
-            'modal.error.getDraftFiling',
-            [
-              {
-                label: t('btn.goBack'),
-                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-                variant: 'outline'
-              },
-              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
-            ]
-          )
+      // TODO: add in parties to init call once officers is updated to use party table
+      const { draftFiling } = await useFiling().initFiling(
+        businessId,
+        FilingType.CHANGE_OF_OFFICERS,
+        undefined,
+        draftId
+      )
+
+      if (draftFiling?.data.value?.filing) {
+        filingDraftState.value = { filing: draftFiling.data.value.filing, errors: [] } as OfficersDraftFiling
+        folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
+      }
+
+      if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
+        const allowedBusinessTypes = (
+          await ld.getFeatureFlag('supported-change-of-officers-entities', '', 'await')
+        ).split(' ') as CorpTypeCd[]
+        if (!business.value || !allowedBusinessTypes.includes(business.value.legalType)) {
+          await modal.openFilingNotAvailableModal()
           return
         }
       }
 
-      // get full business data
-      // get business pending tasks
-      const [business, pendingTask] = await Promise.all([
-        legalApi.getBusiness(businessId),
-        legalApi.getPendingTask(businessId, 'filing')
-      ])
+      // TODO: common parties store will remove the need for this
+      const parties = await businessApi.getParties(businessId, { classType: 'officer' })
 
-      // set business ref
-      activeBusiness.value = business
-
-      // if ***NO*** filing ID provided validate business is allowed to complete this filing type
-      // return early if the filing is not allowed or the business has pending tasks
-      const isFilingAllowed = validateBusinessAllowedFilings(business, 'changeOfOfficers')
-      if ((!isFilingAllowed || pendingTask !== undefined) && !draftId) { // TODO: maybe update the draft id check to compare the pending task and filing name and status ??
-        modal.openBaseErrorModal(
-          undefined,
-          'modal.error.filingNotAllowed',
-          [
-            {
-              label: t('btn.goBack'),
-              to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-              variant: 'outline'
-            },
-            { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
-          ]
-        )
-        return
+      if (parties.status.value === 'pending') {
+        await parties.refresh()
       }
-
-      // get business auth info for masthead
-      // get current business officers
-      const [authInfo, parties] = await Promise.all([
-        authApi.getAuthInfo(businessId),
-        legalApi.getParties(businessId, { classType: 'officer' })
-      ])
-
-      activeBusinessAuthInfo.value = authInfo
-      // set masthead data
-      const contact = authInfo.contacts[0]
-      const ext = contact?.extension || contact?.phoneExtension
-      const phoneLabel = ext ? `${contact?.phone || ''} Ext: ${ext}` : contact?.phone || t('label.notAvailable')
-
-      detailsHeaderStore.title = { el: 'span', text: business.legalName }
-      detailsHeaderStore.subtitles = [{ text: authInfo.corpType.desc }]
-      detailsHeaderStore.sideDetails = [
-        { label: t('label.businessNumber'), value: business.taxId ?? t('label.notAvailable') },
-        { label: t('label.incorporationNumber'), value: business.identifier },
-        { label: t('label.email'), value: contact?.email || t('label.notAvailable') },
-        { label: t('label.phone'), value: phoneLabel }
-      ]
-
+      // TODO: remove once parties fetched by useFiling composable
+      if (parties.error.value) {
+        throw parties.error.value
+      }
       // map current/existing officers
-      const officers = parties.map((p) => {
+      const officers = parties.data.value?.parties.map((p) => {
         const mailingAddress = formatAddressUi(p.mailingAddress)
         const deliveryAddress = formatAddressUi(p.deliveryAddress)
         const id = p.officer.id ? String(p.officer.id) : undefined
@@ -143,40 +91,23 @@ export const useOfficerStore = defineStore('officer-store', () => {
         }
       })
 
-      initialOfficers.value = officers // retain initial officer state before changes
+      initialOfficers.value = officers || [] // retain initial officer state before changes
 
       // set table to returned draft state if exists
-      if (draftId && filingDraftState.value.filing.changeOfOfficers.length) {
+      if (draftId && draftFiling !== undefined && filingDraftState.value?.filing?.changeOfOfficers?.length) {
         officerTableState.value = JSON.parse(JSON.stringify(filingDraftState.value.filing.changeOfOfficers))
         return
       }
 
       // map intitial officers data to display in table if no draft officers
-      officerTableState.value = officers.map(o => ({
+      officerTableState.value = officers?.map(o => ({
         new: o,
         old: o
-      }))
+      })) || []
     } catch (error) {
-      const status = error instanceof FetchError
-        ? error.response?.status
-        : undefined
-      const isUnauthorizedOrBusinessNotFound = status && [401, 403, 404].includes(status)
-      modal.openBaseErrorModal(
-        error,
-        'modal.error.initOfficerStore',
-        isUnauthorizedOrBusinessNotFound
-          ? [{ label: t('btn.goToMyBusinessRegistry'), to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}` }]
-          : [
-              {
-                label: t('btn.goBack'),
-                to: `${rtc.businessDashboardUrl + businessId}?accountid=${accountStore.currentAccount.id}`,
-                variant: 'outline'
-              },
-              { label: t('btn.refreshPage'), onClick: () => window.location.reload() }
-            ]
-      )
+      // should never get here unless unhandled type/value error, fetch errors handled by useFiling composable
+      await modal.openInitFilingErrorModal(error)
     } finally {
-      detailsHeaderStore.loading = false
       initializing.value = false
     }
   }
@@ -236,8 +167,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const todayUtc = getToday()
 
       const ceasedRoles: OfficerRoleObj[] = newOfficer.roles.map(role => ({
-          ...role,
-          cessationDate: todayUtc
+        ...role,
+        cessationDate: todayUtc
       }))
 
       const newState = JSON.parse(JSON.stringify({
@@ -257,13 +188,13 @@ export const useOfficerStore = defineStore('officer-store', () => {
   function undoOfficer(row: Row<OfficerTableState>): void {
     const oldOfficer = row.original.old
 
-      if (oldOfficer) {
-        const newState = JSON.parse(JSON.stringify({
-          new: oldOfficer,
-          old: oldOfficer
-        }))
-        updateOfficerTable(newState, row)
-      }
+    if (oldOfficer) {
+      const newState = JSON.parse(JSON.stringify({
+        new: oldOfficer,
+        old: oldOfficer
+      }))
+      updateOfficerTable(newState, row)
+    }
   }
 
   /**
@@ -357,26 +288,22 @@ export const useOfficerStore = defineStore('officer-store', () => {
     officerTableState.value = []
     expanded.value = undefined
     editState.value = {} as Officer
-    activeBusiness.value = {} as BusinessData
     initialOfficers.value = []
     folio.number = ''
     filingDraftState.value = {} as OfficersDraftFiling
-    activeBusinessAuthInfo.value = {} as AuthInformation
   }
 
   return {
     officerTableState,
     initializing,
     addingOfficer,
-    activeBusiness,
     expanded,
     editState,
     disableActions,
     initialOfficers,
     folio,
     filingDraftState,
-    activeBusinessAuthInfo,
-    initOfficerStore,
+    init,
     addNewOfficer,
     editOfficer,
     updateOfficerTable,

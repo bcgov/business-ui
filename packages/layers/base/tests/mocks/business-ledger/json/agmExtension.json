@@ -1,0 +1,35 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "C9900770",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/149743/comments",
+    "data": {
+        "agmExtension": {
+            "expireDateApprovedExt": "2026-07-03",
+            "extReqForAgmYear": false,
+            "extensionDuration": 6,
+            "isFinalExtension": false,
+            "isFirstAgm": true,
+            "totalApprovedExt": 6,
+            "year": "2024"
+        },
+        "applicationDate": "2024-07-04T19:50:37.235814+00:00",
+        "legalFilings": [
+            "agmExtension"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Request for AGM Extension",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/149743/documents",
+    "effectiveDate": "Thu, 04 Jul 2024 19:50:41 GMT",
+    "filingId": 149743,
+    "filingLink": "https://mock-api-url/api/v2/businesses/C9900770/filings/149743",
+    "isFutureEffective": false,
+    "name": "agmExtension",
+    "paymentDate": "Thu, 04 Jul 2024 19:50:41 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Thu, 04 Jul 2024 19:50:37 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

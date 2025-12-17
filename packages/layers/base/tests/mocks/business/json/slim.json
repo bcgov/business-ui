@@ -1,0 +1,14 @@
+{
+    "adminFreeze": false,
+    "alternateNames": [],
+    "foundingDate": "2025-02-28T11:04:00+00:00",
+    "goodStanding": true,
+    "identifier": "BC0887698",
+    "inDissolution": false,
+    "inLiquidation": false,
+    "lastModified": "2025-03-26T18:00:09.050820+00:00",
+    "legalName": "0887698 B.C. LTD.",
+    "legalType": "BEN",
+    "state": "HISTORICAL",
+    "stateFiling": "https://mock-api-url/api/v2/businesses/BC0887698/filings/185944"
+}

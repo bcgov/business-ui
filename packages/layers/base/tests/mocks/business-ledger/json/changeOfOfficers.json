@@ -1,0 +1,26 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC1239315",
+    "commentsCount": 0,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC1239315/filings/206535/comments",
+    "data": {
+        "applicationDate": "2025-09-29T17:55:20.324084+00:00",
+        "legalFilings": [
+            "changeOfOfficers"
+        ]
+    },
+    "displayLedger": true,
+    "displayName": "Officer Change",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC1239315/filings/206535/documents",
+    "effectiveDate": "Mon, 29 Sep 2025 17:55:20 GMT",
+    "filingId": 206535,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC1239315/filings/206535",
+    "isFutureEffective": false,
+    "name": "changeOfOfficers",
+    "paymentDate": "Mon, 29 Sep 2025 17:55:20 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Mon, 29 Sep 2025 17:55:19 GMT",
+    "submitter": "Testing Tester",
+    "withdrawalPending": false
+}

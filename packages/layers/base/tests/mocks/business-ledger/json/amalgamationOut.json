@@ -1,0 +1,36 @@
+{
+    "availableOnPaperOnly": false,
+    "businessIdentifier": "BC0887748",
+    "commentsCount": 1,
+    "commentsLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/185790/comments",
+    "data": {
+        "amalgamationOut": {
+            "amalgamationOutDate": "2025-03-20",
+            "country": "AF",
+            "legalName": "ANOTHER EMAIL CORP.",
+            "region": null
+        },
+        "applicationDate": "2025-03-24T23:24:57.620306+00:00",
+        "legalFilings": [
+            "amalgamationOut"
+        ],
+        "order": {
+            "effectOfOrder": "planOfArrangement",
+            "fileNumber": "TT0010045"
+        }
+    },
+    "displayLedger": true,
+    "displayName": "Amalgamation Out",
+    "documentsLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/185790/documents",
+    "effectiveDate": "Mon, 24 Mar 2025 23:24:58 GMT",
+    "filingId": 185790,
+    "filingLink": "https://mock-api-url/api/v2/businesses/BC0887748/filings/185790",
+    "isFutureEffective": false,
+    "name": "amalgamationOut",
+    "paymentDate": "Mon, 24 Mar 2025 23:24:58 GMT",
+    "paymentStatusCode": "COMPLETED",
+    "status": "COMPLETED",
+    "submittedDate": "Mon, 24 Mar 2025 23:24:57 GMT",
+    "submitter": "Tester Testing",
+    "withdrawalPending": false
+}

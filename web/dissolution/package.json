@@ -1,0 +1,41 @@
+{
+  "name": "dissolution",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.13.1",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "build-check": "nuxt build",
+    "build": "nuxt generate",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "pnpm postinstall && vitest --dir tests/unit",
+    "test:unit": "vitest --dir tests/unit",
+    "test:unit:cov": "vitest --dir tests/unit --coverage",
+    "test:unit:watch": "vitest --dir tests/unit",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "build:test": "pnpm generate && npx serve .output/public"
+  },
+  "dependencies": {
+    "@sbc-connect/nuxt-business-base": "workspace:*",
+    "nuxt": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "catalog:",
+    "@faker-js/faker": "^10.0.0",
+    "@iconify-json/mdi": "catalog:",
+    "@sbc-connect/playwright-config": "workspace:*",
+    "@sbc-connect/vitest-config": "workspace:*",
+    "@types/node": "^24.0.10",
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@sbc-connect/playwright-config",
+  "type": "module",
+  "version": "0.0.11",
+  "repository": "github:bcgov/business-ui",
+  "main": "./playwright.config.ts",
+  "private": true,
+  "dependencies": {
+    "@nuxt/test-utils": "catalog:",
+    "@playwright/test": "^1.55.0"
+  }
+}
