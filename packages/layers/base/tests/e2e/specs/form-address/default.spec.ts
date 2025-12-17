@@ -61,8 +61,6 @@ test.describe('FormAddress (default)', () => {
     await expect(getMailingAddress()).toBeVisible()
     await page.getByText('Same as Delivery Address').click()
 
-    // await page.getByRole('checkbox', { name: /same as/i }).check({ force: true })
-
     await expect(getMailingAddress()).not.toBeVisible()
   })
 
@@ -78,19 +76,15 @@ test.describe('FormAddress (default)', () => {
     await getAdditionalInput().fill('value')
     // mailing address elements
     const getMailingAddress = () => page.getByTestId('mailing-address-container')
-    // const getCheckbox = () => page.getByRole('checkbox', { name: /same as/i })
     await expect(getMailingAddress()).toBeVisible()
 
     await page.getByText('Same as Delivery Address').click()
-    // await getCheckbox().check({ force: true })
 
     await expect(getMailingAddress()).not.toBeVisible()
-    // await expect(getCheckbox()).toHaveAttribute('aria-checked', 'true')
 
     await getAdditionalInput().fill('updated')
 
     await expect(getMailingAddress()).toBeVisible()
     await expect(getMailingAddress().getByTestId('mailing-address-input-streetAdditional')).toHaveValue('')
-    // await expect(getCheckbox()).toHaveAttribute('aria-checked', 'false')
   })
 })

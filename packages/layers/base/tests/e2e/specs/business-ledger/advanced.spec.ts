@@ -23,7 +23,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
       } else {
         await page.goto('./examples/components/BusinessLedger')
       }
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
       if (test.info().title.includes('docs locked')) {
         await page.getByRole('switch', { name: 'Documents Locked' }).click()
       }
@@ -34,13 +34,13 @@ test.describe('Business Ledger Tests (advanced)', () => {
       input.fill(identifier)
       const loadLedgerBtn = page.getByRole('button', { name: 'Load Business Ledger' })
       await loadLedgerBtn.click()
-      await page.waitForLoadState('networkidle')
+      await page.waitForLoadState('load')
     }
   })
   test('BusinessLedger test component displays as expected', async ({ page }) => {
     await mockApiCallsForLedger(page)
     await page.goto('./examples/components/BusinessLedger')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     await expect(page.getByText('BusinessLedger').first()).toBeVisible()
     await expect(page.getByRole(
       'heading',
@@ -95,7 +95,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await expect(ledgerItemBody).not.toBeVisible()
     await headerDocumentsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     await expect(ledgerItemBody).toBeVisible()
     // No text
     await expect(ledgerItemBody.getByTestId('business-ledger-item-body-text')).not.toBeVisible()
@@ -119,7 +119,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await expect(ledgerItemBody).not.toBeVisible()
     await headerDocumentsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     await expect(headerDocumentsBtn).toHaveText('Close')
     await expect(ledgerItemBody).toBeVisible()
     // Text
@@ -170,7 +170,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
       .getByTestId('business-ledger-item-header-dropdown-btn').getByRole('button')
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await headerDocumentsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     // Verify Document list
     const documentList = ledgerItemBody.getByTestId('document-list')
     await expect(documentList).toBeVisible()
@@ -202,7 +202,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
       .getByTestId('business-ledger-item-header-dropdown-btn').getByRole('button')
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await headerDocumentsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     // Verify Document list
     const documentList = ledgerItemBody.getByTestId('document-list')
     await expect(documentList).toBeVisible()
@@ -232,7 +232,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
       .getByTestId('business-ledger-item-header-dropdown-btn').getByRole('button')
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await headerDocumentsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     // Verify Document list
     const documentList = ledgerItemBody.getByTestId('document-list')
     await expect(documentList).toBeVisible()
@@ -256,7 +256,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
       .getByTestId('business-ledger-item-header-details-btn')
     const ledgerItemBody = item.getByTestId('business-ledger-item-body')
     await headerDetailsBtn.click()
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('load')
     // Verify Comment list
     const commentSection = ledgerItemBody.getByTestId('comments-list')
     await expect(commentSection).toBeVisible()
