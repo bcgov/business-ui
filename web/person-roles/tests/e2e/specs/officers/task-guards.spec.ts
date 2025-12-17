@@ -9,7 +9,7 @@ import {
   assertNameTableCell,
   getTableRowForPerson,
   getOfficerForm
-} from '../test-utils'
+} from '../../test-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 const initialOfficer = partiesBC1234567.parties[0]!

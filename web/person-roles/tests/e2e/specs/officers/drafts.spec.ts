@@ -11,7 +11,7 @@ import {
   assertAddress,
   getTableRowForPerson,
   provinceSubdivisions
-} from '../test-utils'
+} from '../../test-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 const identifier = businessBC1234567.business.identifier

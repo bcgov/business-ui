@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { setupOfficerChangePage } from '../test-utils'
+import { setupOfficerChangePage } from '../../test-utils'
 
 test.describe('Form Validation', () => {
   // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
