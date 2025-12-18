@@ -10,6 +10,8 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
+const { t } = useI18n()
+
 type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
 
 const model = defineModel<PartyDetails>({ required: true })
@@ -63,22 +65,24 @@ async function onDone() {
         <FormPartyName
           ref="party-name-form"
           v-model="model.name"
+          :state="model.name"
           name="name"
         />
         <FormAddress
           ref="address-form"
           v-model="model.address"
+          :state="model.address"
           nested
           name="address"
         />
         <div class="flex gap-6 justify-end">
           <UButton
-            :label="$t('label.done')"
+            :label="t('label.done')"
             @click="onDone"
           />
           <UButton
             variant="outline"
-            :label="$t('label.cancel')"
+            :label="t('label.cancel')"
             @click="$emit('cancel')"
           />
         </div>

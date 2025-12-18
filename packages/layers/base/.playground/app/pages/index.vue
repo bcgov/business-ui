@@ -32,6 +32,15 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/BusinessLedger/Wrapper')
   },
   {
+    label: 'ManageParties',
+    children: [
+      {
+        to: localePath('/examples/components/ManageParties'),
+        label: 'Default'
+      }
+    ]
+  },
+  {
     label: 'ModalError',
     to: localePath('/examples/components/Modal/Error')
   },

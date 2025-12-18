@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { FormError, Form, RadioGroupItem } from '@nuxt/ui'
+import type { FormError, Form, RadioGroupItem, AcceptableValue } from '@nuxt/ui'
+import { PartyType } from '#imports'
 
 defineProps<{
   name?: string
@@ -26,7 +27,7 @@ const formRef = useTemplateRef<Form<PartyNameSchema>>('party-name-form')
 
 const formErrors = computed<FormError[] | undefined>(() => formRef.value?.getErrors())
 
-function resetFields(value: string) {
+function resetFields(value: AcceptableValue | undefined) {
   switch (value) {
     case PartyType.PERSON:
       model.value.businessName = ''
@@ -55,7 +56,8 @@ defineExpose({
     nested
     :name
   >
-    <ConnectFieldset :label="$t('label.personOrOrgName')" :error="formErrors && formErrors[0]">
+    <!-- :state="model" -->
+    <ConnectFieldset :label="t('label.personOrOrgName')" :error="formErrors && formErrors[0]">
       <div class="space-y-6">
         <URadioGroup
           v-model="model.partyType"
@@ -76,7 +78,7 @@ defineExpose({
             data-testid="form-group-first-name"
             name="firstName"
             input-id="first-name-input"
-            :label="$t('label.firstName')"
+            :label="t('label.firstName')"
           />
 
           <ConnectFormInput
@@ -84,7 +86,7 @@ defineExpose({
             data-testid="form-group-middle-name"
             name="middleName"
             input-id="middle-name-input"
-            :label="$t('label.middleNameOpt')"
+            :label="t('label.middleNameOpt')"
           />
 
           <ConnectFormInput
@@ -93,7 +95,7 @@ defineExpose({
             name="lastName"
             input-id="last-name-input"
             required
-            :label="$t('label.lastName')"
+            :label="t('label.lastName')"
           />
         </div>
         <ConnectFormInput
@@ -103,7 +105,7 @@ defineExpose({
           name="businessName"
           input-id="business-name-input"
           required
-          :label="$t('label.businessName')"
+          :label="t('label.businessName')"
         />
       </div>
     </ConnectFieldset>
