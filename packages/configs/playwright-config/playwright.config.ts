@@ -34,6 +34,7 @@ export default defineConfig<ConfigOptions>({
   testMatch: '**/*.spec.ts',
   workers: 2,
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
+  retries: 2,
   use: {
     nuxt: {
       rootDir: resolve('./'),

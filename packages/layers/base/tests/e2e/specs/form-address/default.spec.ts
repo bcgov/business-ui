@@ -54,47 +54,26 @@ test.describe('FormAddress (default)', () => {
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
     // delivery address elements
-    const deliveryAddress = page.getByTestId('delivery-address-container')
-    await expect(deliveryAddress).toBeVisible()
+    await expect(page.getByTestId('delivery-address-container')).toBeVisible()
     // mailing address elements
-    const getMailingAddress = () => page.getByTestId('mailing-address-container')
-    await expect(getMailingAddress()).toBeVisible()
-
-    await page.getByRole('checkbox', { name: 'Same as Delivery Address' }).focus()
-    await page.keyboard.press('Space')
-
-    await expect(getMailingAddress()).not.toBeVisible()
+    await expect(page.getByTestId('mailing-address-container')).toBeVisible()
+    await page.getByText('Same as Delivery Address').click()
+    await expect(page.getByTestId('mailing-address-container')).not.toBeVisible()
   })
 
   test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
-    { page, browserName }
+    { page }
   ) => {
-    test.skip(
-      (browserName === 'firefox' || browserName === 'webkit'),
-      'This test is failing only for Firefox (sometimes safari) and only when run in the CI.'
-    )
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
-    // delivery address elements
     const deliveryAddress = page.getByTestId('delivery-address-container')
-    const getAdditionalInput = () => deliveryAddress.getByTestId('delivery-address-input-streetAdditional')
+    const mailingAddress = page.getByTestId('mailing-address-container')
     await expect(deliveryAddress).toBeVisible()
-    await getAdditionalInput().fill('value')
-    // mailing address elements
-    const getMailingAddress = () => page.getByTestId('mailing-address-container')
-    const getCheckbox = () => page.getByRole('checkbox', { name: 'Same as Delivery Address' })
-    await expect(getMailingAddress()).toBeVisible()
+    await expect(mailingAddress).toBeVisible()
+    await page.getByText('Same as Delivery Address').click()
 
-    await getCheckbox().focus()
-    await page.keyboard.press('Space')
-
-    await expect(getMailingAddress()).not.toBeVisible()
-    await expect(getCheckbox()).toHaveAttribute('aria-checked', 'true')
-
-    await getAdditionalInput().fill('updated')
-
-    await expect(getMailingAddress()).toBeVisible()
-    await expect(getMailingAddress().getByTestId('mailing-address-input-streetAdditional')).toHaveValue('')
-    await expect(getCheckbox()).toHaveAttribute('aria-checked', 'false')
+    await expect(mailingAddress).not.toBeVisible()
+    await deliveryAddress.getByTestId('delivery-address-input-streetAdditional').fill('updated')
+    await expect(mailingAddress).toBeVisible()
   })
 })

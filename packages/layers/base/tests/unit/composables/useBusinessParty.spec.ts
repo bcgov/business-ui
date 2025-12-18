@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { getPartiesMock } from '#testMocks/parties'
+import { getPartiesMock } from '#test-mocks/parties'
 
 const identifier = 'BC1234567'
 

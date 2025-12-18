@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { navigateToDodPage } from '../../test-utils'
-import { mockCommonApiCallsForFiling } from '#testMocks'
+import { mockCommonApiCallsForFiling } from '#test-mocks'
 import { DISDE } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'

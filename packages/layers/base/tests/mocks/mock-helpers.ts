@@ -11,8 +11,8 @@ import {
   getDocumentsMock,
   getLdarklyFlagsMock,
   getPermissionsMock
-} from '#testMocks'
-import type { LedgerMockItem } from '#testMocks'
+} from '#test-mocks'
+import type { LedgerMockItem } from '#test-mocks'
 
 export const mockApiCallsForAlerts = async (
   page: Page,

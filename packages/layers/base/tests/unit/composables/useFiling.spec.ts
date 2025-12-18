@@ -1,10 +1,10 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { getBusinessMock, getBusinessSettingsMock } from '#testMocks/business'
-import { getPermissionsMock } from '#testMocks/business-permissions'
-import { getPartiesMock } from '#testMocks/parties'
-import { getFilingMock } from '#testMocks/filing'
+import { getBusinessMock, getBusinessSettingsMock } from '#test-mocks/business'
+import { getPermissionsMock } from '#test-mocks/business-permissions'
+import { getPartiesMock } from '#test-mocks/parties'
+import { getFilingMock } from '#test-mocks/filing'
 
 const identifier = 'BC1234567'
 

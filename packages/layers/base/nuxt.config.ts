@@ -54,7 +54,8 @@ export default defineNuxtConfig({
 
   alias: {
     '#business': resolve('./'),
-    '#testMocks': resolve('./tests/mocks')
+    '#test-mocks': resolve('./tests/mocks'),
+    '#e2e-utils': resolve('./tests/e2e/test-utils')
   },
 
   runtimeConfig: {

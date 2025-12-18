@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test'
 import {
-  getFakeAddress,
-  getFakePerson,
   getRandomRoles,
   setupOfficerChangePage,
   completeOfficerForm,
@@ -11,7 +9,8 @@ import {
   assertAddress,
   getTableRowForPerson,
   provinceSubdivisions
-} from '../test-utils'
+} from '../../test-utils'
+import { getFakeAddress, getFakePerson } from '#e2e-utils'
 import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 
 const identifier = businessBC1234567.business.identifier
@@ -62,6 +61,7 @@ const draftFilingResponse = {
             }
           ],
           deliveryAddress: initialDeliveryAddress,
+          mailingAddress: initialDeliveryAddress,
           sameAsDelivery: true,
           hasPreferredName: false
         },
@@ -86,6 +86,15 @@ const draftFilingResponse = {
             }
           ],
           deliveryAddress: {
+            street: newDeliveryAddress.street,
+            streetAdditional: newDeliveryAddress.streetAdditional,
+            city: newDeliveryAddress.city,
+            region: provinceSubdivisions.find(province => province.name === newDeliveryAddress.region)!.code,
+            postalCode: newDeliveryAddress.postalCode,
+            country: 'CA',
+            locationDescription: newDeliveryAddress.locationDescription
+          },
+          mailingAddress: {
             street: newDeliveryAddress.street,
             streetAdditional: newDeliveryAddress.streetAdditional,
             city: newDeliveryAddress.city,
@@ -131,14 +140,15 @@ test.describe('Draft Officers', () => {
       page,
       newPerson,
       newRoles,
-      newDeliveryAddress
+      newDeliveryAddress,
+      'same'
     )
 
     // assert updated table data
     await assertNameTableCell(page, newPerson, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     await assertRoles(page, newPerson, newRoles)
     await assertAddress(page, newPerson, 2, newDeliveryAddress)
-    await assertAddress(page, newPerson, 3)
+    await assertAddress(page, newPerson, 3, 'same')
 
     // save and resume later filing
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
@@ -159,7 +169,7 @@ test.describe('Draft Officers', () => {
     await assertNameTableCell(page, newPerson, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     await assertRoles(page, newPerson, newRoles)
     await assertAddress(page, newPerson, 2, newDeliveryAddress)
-    await assertAddress(page, newPerson, 3)
+    await assertAddress(page, newPerson, 3, 'same')
 
     // should also include folio
     await expect(page.getByTestId('folio-number')).toHaveValue(testFolio)
@@ -181,7 +191,7 @@ test.describe('Draft Officers', () => {
     )
     await assertRoles(page, { lastName: initialOfficer.officer.lastName }, initialRoles)
     await assertAddress(page, { lastName: initialOfficer.officer.lastName }, 2, initialDeliveryAddress)
-    await assertAddress(page, { lastName: initialOfficer.officer.lastName }, 3)
+    await assertAddress(page, { lastName: initialOfficer.officer.lastName }, 3, 'same')
   })
 
   test('should be redirected to business dashboard when selecting save and resume', async ({ page }) => {
