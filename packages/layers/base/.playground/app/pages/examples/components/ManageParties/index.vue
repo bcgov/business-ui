@@ -1,101 +1,31 @@
 <script setup lang="ts">
-// import type { FormSubmitEvent } from '@nuxt/ui'
-// import { onFormSubmitError } from '#imports'
+import mockParties from '#test-mocks/parties/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth'
 })
 
 const { tableState } = useManageParties()
-
-onMounted(() => {
-  tableState.value = [
-    {
-      new: {
-        id: '123',
-        actions: [],
-        address: {
-          mailingAddress: {
-            street: '123 Main St',
-            streetAdditional: '',
-            city: 'Vancouver',
-            region: 'BC',
-            postalCode: 'V1X 1X1',
-            country: 'CA',
-            locationDescription: ''
-          },
-          deliveryAddress: {
-            street: '123 Main St',
-            streetAdditional: '',
-            city: 'Vancouver',
-            region: 'BC',
-            postalCode: 'V1X 1X1',
-            country: 'CA',
-            locationDescription: ''
-          },
-          sameAs: true
-        },
-        name: {
-          firstName: 'Henry',
-          middleName: '',
-          lastName: 'Toth',
-          businessName: '',
-          partyType: PartyType.PERSON
-        },
-        roles: []
-      },
-      old: {
-        id: '123',
-        actions: [],
-        address: {
-          mailingAddress: {
-            street: '123 Main St',
-            streetAdditional: '',
-            city: 'Vancouver',
-            region: 'BC',
-            postalCode: 'V1X 1X1',
-            country: 'CA',
-            locationDescription: ''
-          },
-          deliveryAddress: {
-            street: '123 Main St',
-            streetAdditional: '',
-            city: 'Vancouver',
-            region: 'BC',
-            postalCode: 'V1X 1X1',
-            country: 'CA',
-            locationDescription: ''
-          },
-          sameAs: true
-        },
-        name: {
-          firstName: 'Henry',
-          middleName: '',
-          lastName: 'Toth',
-          businessName: '',
-          partyType: PartyType.PERSON
-        },
-        roles: []
-      }
-    }
-  ]
+const parties = mockParties.map((p) => {
+  return {
+    // @ts-expect-error - party type enum/string mismatch
+    new: formatPartyUi(p, undefined),
+    // @ts-expect-error - party type enum/string mismatch
+    old: formatPartyUi(p, undefined)
+  }
 })
+tableState.value = parties
 
-const schema = getActivePartySchema()
 const activeParty = ref<ActivePartySchema | undefined>(undefined)
 const loading = ref(false)
-
-watch(activeParty, v => console.log('Active Party: ', v))
 </script>
 
 <template>
-  <div class="py-10 flex flex-col gap-10 items-center">
+  <UContainer>
     <ConnectPageSection
-      :heading="{ label: 'Manage Parties' }"
+      :heading="{ label: 'Manage Parties - Default' }"
       ui-body="p-10"
     >
-      <!-- :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'" -->
-
       <ManageParties
         v-model:active-party="activeParty"
         :loading="loading"
@@ -104,5 +34,5 @@ watch(activeParty, v => console.log('Active Party: ', v))
         edit-label="Edit Party"
       />
     </ConnectPageSection>
-  </div>
+  </UContainer>
 </template>
