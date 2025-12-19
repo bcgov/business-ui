@@ -11,8 +11,21 @@ vi.mock('vue-i18n', () => ({
   })
 }))
 
-function mountComponent() {
+function createMockRow(isNew: boolean) {
+  return {
+    original: {
+      old: isNew ? undefined : { name: 'test' },
+      new: { name: 'test' }
+    }
+  }
+}
+
+function mountComponent(props: any = {}) {
   return mountSuspended(TableColumnActions, {
+    props: {
+      row: createMockRow(false),
+      ...props
+    },
     global: {
       mocks: {
         $t: mockT
@@ -164,6 +177,136 @@ describe('TableColumnActions', () => {
       items[0].onSelect()
 
       expect(wrapper.emitted('init-edit')).toHaveLength(1)
+    })
+  })
+
+  describe('Allowed Actions', () => {
+    it('should hide all actions if row has no allowed actions', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+
+      const wrapper = await mountComponent({
+        allowedActions: [],
+        row: createMockRow(false)
+      })
+
+      expect(wrapper.findComponent(UButton).exists()).toBe(false)
+    })
+
+    it('should show Change and Remove for a NEW row if allowedActions is empty', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+
+      const wrapper = await mountComponent({
+        allowedActions: [],
+        row: createMockRow(true)
+      })
+
+      expect(wrapper.findComponent(UButton).exists()).toBe(true)
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.change')
+
+      const dropdown = wrapper.findComponent(UDropdownMenu as any)
+      expect(dropdown.exists()).toBe(true)
+      expect(dropdown.props('items')).toHaveLength(1)
+    })
+
+    it('should only show Remove if only REMOVE action is allowed on existing row', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.REMOVE],
+        row: createMockRow(false)
+      })
+
+      const mainButton = wrapper.findComponent(UButton)
+      expect(mainButton.props('label')).toBe('label.remove')
+      expect(wrapper.findComponent(UDropdownMenu as any).exists()).toBe(false)
+    })
+
+    it('should allow all actions if allowedActions is undefined', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+
+      const wrapper = await mountComponent({ allowedActions: undefined })
+
+      const mainButton = wrapper.findComponent(UButton)
+      expect(mainButton.props('label')).toBe('label.change')
+
+      const dropdown = wrapper.findComponent(UDropdownMenu as any)
+      expect(dropdown.exists()).toBe(true)
+      expect(dropdown.props('items')).toHaveLength(1)
+    })
+
+    it('should show Change button if only ROLE_CHANGE is allowed', async () => {
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.ROLE_CHANGE],
+        row: createMockRow(false)
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.change')
+      expect(wrapper.findComponent(UDropdownMenu as any).exists()).toBe(false)
+    })
+
+    it('should show Change button if only ADDRESS_CHANGE is allowed', async () => {
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.ADDRESS_CHANGE],
+        row: createMockRow(false)
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.change')
+      expect(wrapper.findComponent(UDropdownMenu as any).exists()).toBe(false)
+    })
+
+    it('should show Change button if only NAME_CHANGE is allowed', async () => {
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.NAME_CHANGE],
+        row: createMockRow(false)
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.change')
+      expect(wrapper.findComponent(UDropdownMenu as any).exists()).toBe(false)
+    })
+
+    it('should show Undo even allowedActions is empty (if row is already edited)', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+
+      const wrapper = await mountComponent({
+        allowedActions: [],
+        row: createMockRow(false)
+      })
+
+      const mainButton = wrapper.findComponent(UButton)
+      expect(mainButton.props('label')).toBe('label.undo')
+    })
+
+    it('should keep Undo as main action and push Remove to dropdown when edited', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.REMOVE],
+        row: createMockRow(false)
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.undo')
+
+      const dropdown = wrapper.findComponent(UDropdownMenu as any)
+      expect(dropdown.exists()).toBe(true)
+      expect(dropdown.props('items')[0].label).toBe('label.remove')
+    })
+
+    it('should show Undo as main action for a NEW row that has been edited', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+
+      const wrapper = await mountComponent({
+        allowedActions: [],
+        row: createMockRow(true)
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.undo')
     })
   })
 })
