@@ -1,0 +1,7 @@
+export enum ManageAllowedAction {
+  ADD = 'ADD',
+  ADDRESS_CHANGE = 'ADDRESS_CHANGE',
+  NAME_CHANGE = 'NAME_CHANGE',
+  REMOVE = 'REMOVE',
+  ROLE_CHANGE = 'ROLE_CHANGE'
+}

@@ -7,11 +7,8 @@ export function getTableBadges<T extends { actions: ActionType[] }>(row: TableBu
     [ActionType.ADDED]: { label: t('badge.added') },
     [ActionType.REMOVED]: { label: t('badge.removed'), color: 'neutral' as const },
     [ActionType.ADDRESS_CHANGED]: { label: t('badge.addressChanged') },
-    [ActionType.CORRECTED]: { label: t('badge.corrected') },
-    [ActionType.EDITED]: { label: t('badge.edited') },
     [ActionType.EMAIL_CHANGED]: { label: t('badge.emailChanged') },
     [ActionType.NAME_CHANGED]: { label: t('badge.nameChanged') },
-    [ActionType.REPLACED]: { label: t('badge.replaced') },
     [ActionType.ROLES_CHANGED]: { label: t('badge.rolesChanged') }
   }
 

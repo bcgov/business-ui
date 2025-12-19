@@ -4,12 +4,9 @@ export default {
   badge: {
     added: 'ADDED',
     addressChanged: 'ADDRESS CHANGED',
-    corrected: 'CORRECTED',
-    edited: 'EDITED',
     emailChanged: 'EMAIL CHANGED',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',
-    replaced: 'REPLACED',
     rolesChanged: 'ROLES CHANGED'
   },
   businessAlert: {

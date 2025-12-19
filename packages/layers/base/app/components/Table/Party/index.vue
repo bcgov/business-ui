@@ -5,6 +5,7 @@ defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
+  allowedActions?: ManageAllowedAction[]
 }>()
 
 const partyColumns = getPartyTableColumns<T>()
@@ -18,6 +19,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :loading
     :empty-text="emptyText"
     :columns="partyColumns"
+    :allowed-actions="allowedActions"
   >
     <template #expanded="{ row }">
       <slot name="expanded" :row />

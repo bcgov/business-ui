@@ -6,6 +6,7 @@ defineProps<{
   columns: TableBusinessColumn<T>[]
   loading?: boolean
   emptyText?: string
+  allowedActions?: ManageAllowedAction[]
 }>()
 
 defineEmits<{
@@ -43,6 +44,7 @@ const expandedTrClass = computed(() =>
     <template #actions-cell="{ row }">
       <TableColumnActions
         :row
+        :allowed-actions="allowedActions"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"
