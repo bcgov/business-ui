@@ -33,7 +33,7 @@ test.describe('FormAddress (default)', () => {
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible()
   })
 
-  test('Should show validation errors for delivery only on submit', async ({ page }) => {
+  test('Should show validation errors for delivery and mailing on submit', async ({ page }) => {
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
     // submit empty form
@@ -47,7 +47,7 @@ test.describe('FormAddress (default)', () => {
     await expect(page.getByText('Mailing Address').first()).toBeVisible()
     const mailingAddress = page.getByTestId('mailing-address-container')
     await expect(mailingAddress).toBeVisible()
-    expect(await mailingAddress.getByText('This field is required').all()).toHaveLength(0)
+    expect(await mailingAddress.getByText('This field is required').all()).toHaveLength(4)
   })
 
   test('Should hide mailing address on `same as` checkbox', async ({ page }) => {
