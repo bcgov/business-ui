@@ -13,8 +13,6 @@ const {
   allowedActions?: ManageAllowedAction[]
 }>()
 
-provide('allowed-actions', allowedActions)
-
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
 
 const {

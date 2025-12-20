@@ -56,7 +56,6 @@ defineExpose({
     nested
     :name
   >
-    <!-- :state="model" -->
     <ConnectFieldset :label="t('label.personOrOrgName')" :error="formErrors && formErrors[0]">
       <div class="space-y-6">
         <URadioGroup
