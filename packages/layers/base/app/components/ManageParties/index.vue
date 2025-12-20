@@ -92,6 +92,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
           v-if="activeParty"
           v-model="activeParty"
           :title="editLabel"
+          :allowed-actions="allowedActions"
           name="activeParty"
           variant="edit"
           @cancel="cleanupPartyForm"

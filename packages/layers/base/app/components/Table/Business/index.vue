@@ -17,13 +17,6 @@ defineEmits<{
 }>()
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
-
-// apply border to top of table row if expanded except for 1st row
-const expandedTrClass = computed(() =>
-  (typeof expanded.value === 'object' && expanded.value !== null && expanded.value[0] === true)
-    ? ''
-    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-gray-100'
-)
 </script>
 
 <template>
@@ -37,8 +30,9 @@ const expandedTrClass = computed(() =>
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'px-2 py-4 text-neutral-highlighted align-top text-sm whitespace-normal',
-      tr: expandedTrClass
+      td: 'px-4 pt-4 text-neutral-highlighted align-top text-sm whitespace-normal',
+      tr: 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade'
+        + ' [&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
     }"
   >
     <template #actions-cell="{ row }">
@@ -52,9 +46,7 @@ const expandedTrClass = computed(() =>
     </template>
 
     <template #expanded="{ row }">
-      <div :class="{ 'border-b-6 border-shade': (data && row.index !== data.length - 1) }">
-        <slot name="expanded" :row />
-      </div>
+      <slot name="expanded" :row />
     </template>
 
     <template #empty>
