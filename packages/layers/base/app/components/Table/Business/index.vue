@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
 import type { ExpandedState } from '@tanstack/vue-table'
 
-defineProps<{
+const props = defineProps<{
   data?: TableBusinessState<T>[]
   columns: TableBusinessColumn<T>[]
   loading?: boolean
@@ -17,6 +17,29 @@ defineEmits<{
 }>()
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
+
+const expandedTrClass = computed(() => {
+  const expandedKeys = (typeof expanded.value === 'object' && expanded.value !== null)
+    ? Object.keys(expanded.value)
+    : []
+
+  const rowIndex = expandedKeys.length > 0 ? Number(expandedKeys[0]) : undefined
+
+  const isFirstRow = rowIndex === 0
+  const isLastRow = props.data && rowIndex !== undefined && rowIndex === props.data.length - 1
+
+  let classes = ''
+
+  if (!isFirstRow) {
+    classes += 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade '
+  }
+
+  if (!isLastRow) {
+    classes += '[&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
+  }
+
+  return classes
+})
 </script>
 
 <template>
@@ -31,8 +54,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
       td: 'px-4 pt-4 text-neutral-highlighted align-top text-sm whitespace-normal',
-      tr: 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade'
-        + ' [&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
+      tr: expandedTrClass
     }"
   >
     <template #actions-cell="{ row }">
