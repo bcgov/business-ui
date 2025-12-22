@@ -36,10 +36,7 @@ definePageMeta({
   path: '/manage-liquidators/:businessId/:filingSubType',
   validate(route) {
     const filingSubType = route.params.filingSubType as string
-    const excludedSubTypes = [LiquidateType.COURT_ORDERED, LiquidateType.VOLUNTARY]
-    return Object.values(LiquidateType)
-      .filter(type => !excludedSubTypes.includes(type))
-      .includes(filingSubType as LiquidateType)
+    return Object.values(LiquidateType).includes(filingSubType as LiquidateType)
   }
 })
 
@@ -48,7 +45,7 @@ const filingSubType = route.params.filingSubType as LiquidateType
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
 const allowedPartyActions = computed(() => {
-  const actionMap: Partial<Record<LiquidateType, ManageAllowedAction[] | undefined>> = {
+  const actionMap: Record<LiquidateType, ManageAllowedAction[] | undefined> = {
     [LiquidateType.ADDRESS]: [ManageAllowedAction.ADDRESS_CHANGE],
     [LiquidateType.APPOINT]: [ManageAllowedAction.ADD],
     [LiquidateType.CEASE]: [ManageAllowedAction.REMOVE],
