@@ -6,7 +6,11 @@ import { RoleTypeUi } from '#imports'
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
   middleware: ['connect-auth'],
-  path: '/manage-receivers/:businessId/:filingSubType'
+  path: '/manage-receivers/:businessId/:filingSubType',
+  validate(route) {
+    const filingSubType = route.params.filingSubType as string
+    return Object.values(ReceiverType).includes(filingSubType as ReceiverType)
+  }
 })
 
 const { t } = useI18n()
@@ -30,6 +34,16 @@ const filingDescription = t(`page.${FILING_TYPE}.${filingSubType}.desc`)
 const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}.${filingSubType}.h1`))
 
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+
+const allowedPartyActions = computed(() => {
+  const actionMap: Record<ReceiverType, ManageAllowedAction[] | undefined> = {
+    [ReceiverType.ADDRESS]: [ManageAllowedAction.ADDRESS_CHANGE],
+    [ReceiverType.APPOINT]: [ManageAllowedAction.ADD],
+    [ReceiverType.CEASE]: [ManageAllowedAction.REMOVE],
+    [ReceiverType.AMEND]: undefined
+  }
+  return actionMap[filingSubType]
+})
 
 // submit final filing
 async function submitFiling() {
@@ -131,6 +145,7 @@ useFilingPageWatcher<ReceiverType>({
         :add-label="$t('label.addReceiver')"
         :edit-label="$t('label.editReceiver')"
         :role-type="RoleTypeUi.RECEIVER"
+        :allowed-actions="allowedPartyActions"
       />
     </section>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   variant: 'add' | 'edit'
   name?: string
   title: string
@@ -45,6 +45,15 @@ async function onDone() {
     emit('done')
   }
 }
+
+function isAllowedAction(action: ManageAllowedAction) {
+  return !props.allowedActions
+    || props.allowedActions.includes(ManageAllowedAction.ADD) // allow any edits if newly added party
+    || props.allowedActions.includes(action)
+}
+
+const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
+const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
 </script>
 
 <template>
@@ -64,14 +73,14 @@ async function onDone() {
     >
       <div class="space-y-4">
         <FormPartyName
-          v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.NAME_CHANGE)"
+          v-if="isNameChangeAllowed"
           ref="party-name-form"
           v-model="model.name"
           :state="model.name"
           name="name"
         />
         <FormAddress
-          v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADDRESS_CHANGE)"
+          v-if="isAddressChangeAllowed"
           ref="address-form"
           v-model="model.address"
           :state="model.address"
