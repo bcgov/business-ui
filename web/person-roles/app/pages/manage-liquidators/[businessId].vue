@@ -11,7 +11,7 @@ const liquidatorStore = useLiquidatorStore()
 
 // Dynamic i18n keys and breadcrumb based on intent to liquidate or manage liquidators
 // ToDo: include Liquidation report configuration when applicable
-const hasIntentToLiquidate = computed(() => route.path.includes('intent-to-liquidate'))
+const hasIntentToLiquidate = computed(() => route.path.includes('intentToLiquidate'))
 const i18nKeys = computed(() => {
   return hasIntentToLiquidate.value
     ? {
@@ -32,15 +32,31 @@ useHead({
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
-  middleware: [
-    // Check for login redirect
-    'connect-auth'
-  ],
-  alias: ['/manage-liquidators/:businessId/intent-to-liquidate'] // aliased path for intent to liquidate
+  middleware: ['connect-auth'],
+  path: '/manage-liquidators/:businessId/:filingSubType',
+  validate(route) {
+    const filingSubType = route.params.filingSubType as string
+    const excludedSubTypes = [LiquidateType.COURT_ORDERED, LiquidateType.VOLUNTARY]
+    return Object.values(LiquidateType)
+      .filter(type => !excludedSubTypes.includes(type))
+      .includes(filingSubType as LiquidateType)
+  }
 })
 
 const businessId = route.params.businessId as string
+const filingSubType = route.params.filingSubType as LiquidateType
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+
+const allowedPartyActions = computed(() => {
+  const actionMap: Partial<Record<LiquidateType, ManageAllowedAction[] | undefined>> = {
+    [LiquidateType.ADDRESS]: [ManageAllowedAction.ADDRESS_CHANGE],
+    [LiquidateType.APPOINT]: [ManageAllowedAction.ADD],
+    [LiquidateType.CEASE]: [ManageAllowedAction.REMOVE],
+    [LiquidateType.INTENT]: [ManageAllowedAction.ADD],
+    [LiquidateType.REPORT]: undefined
+  }
+  return actionMap[filingSubType]
+})
 
 // submit final filing
 async function submitFiling(e: FormSubmitEvent<unknown>) {
@@ -105,7 +121,7 @@ useFilingPageWatcher({
   businessId,
   draftId: urlParams.draft as string | undefined,
   filingType: FilingType.CHANGE_OF_LIQUIDATORS,
-  filingSubType: hasIntentToLiquidate.value ? 'intentToLiquidate' : undefined,
+  filingSubType,
   saveFiling: { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'liquidator-filing' },
@@ -143,6 +159,7 @@ useFilingPageWatcher({
         :empty-text="liquidatorStore.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
         :add-label="$t('label.addLiquidator')"
         :edit-label="$t('label.editLiquidator')"
+        :allowed-actions="allowedPartyActions"
       />
     </section>
 

@@ -1,29 +1,36 @@
 /* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 /** Filing sub-types used by Legal API. */
 export enum FilingSubType {
+  // admin
   ADMIN_FREEZE = 'adminFreeze',
   ADMIN_UNFREEZE = 'adminUnfreeze',
+  // amalgamation
   AMALGAMATION_REGULAR = AmalgamationType.REGULAR,
   AMALGAMATION_HORIZONTAL = AmalgamationType.HORIZONTAL,
   AMALGAMATION_VERTICAL = AmalgamationType.VERTICAL,
+  // receiver
   AMEND_RECEIVER = ReceiverType.AMEND,
   APPOINT_RECEIVER = ReceiverType.APPOINT,
   CEASE_RECEIVER = ReceiverType.CEASE,
   CHANGE_ADDRESS_RECEIVER = ReceiverType.ADDRESS,
-  COURT_ORDERED_LIQUIDATION = 'courtOrderedLiquidation',
+  // dissolution
   DISSOLUTION_ADMINISTRATIVE = DissolutionType.ADMINISTRATIVE,
   DISSOLUTION_DELAY = DissolutionType.DELAY,
   DISSOLUTION_INVOLUNTARY = DissolutionType.INVOLUNTARY,
   DISSOLUTION_VOLUNTARY = DissolutionType.VOLUNTARY,
+  // restoration
   FULL_RESTORATION = RestorationType.FULL,
-  INTENT_TO_LIQUIDATE = 'intentToLiquidate',
   LIMITED_RESTORATION = RestorationType.LIMITED,
   LIMITED_RESTORATION_EXTENSION = RestorationType.LTD_EXTEND,
   LIMITED_RESTORATION_TO_FULL = RestorationType.LTD_TO_FULL,
-  LIQUIDATION_REPORT = 'liquidationReport',
-  MANAGE_RECEIVERS = 'manageReceivers',
-  MANAGE_LIQUIDATORS = 'manageLiquidators',
-  VOLUNTARY_LIQUIDATION = 'voluntaryLiquidation'
+  // liquidation
+  APPOINT_LIQUIDATOR = LiquidateType.APPOINT,
+  CEASE_LIQUIDATOR = LiquidateType.CEASE,
+  CHANGE_ADDRESS_LIQUIDATOR = LiquidateType.ADDRESS,
+  INTENT_TO_LIQUIDATE = LiquidateType.INTENT,
+  LIQUIDATION_REPORT = LiquidateType.REPORT,
+  VOLUNTARY_LIQUIDATION = LiquidateType.VOLUNTARY,
+  COURT_ORDERED_LIQUIDATION = LiquidateType.COURT_ORDERED
 
   // FUTURE: add these dissolution names as needed
   // DISS_D1A = 'DISS_1_ADMIN',
