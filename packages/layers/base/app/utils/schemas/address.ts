@@ -3,11 +3,10 @@ import { z } from 'zod'
 
 export function getAddressSchema() {
   const reqSchema = getRequiredAddressSchema()
-  const nonReqSchema = getNonRequiredAddressSchema()
 
   return z.object({
     deliveryAddress: reqSchema,
-    mailingAddress: nonReqSchema,
+    mailingAddress: reqSchema,
     sameAs: z.boolean()
   })
 }

@@ -3,12 +3,15 @@ defineProps<{
   variant: 'add' | 'edit'
   name?: string
   title: string
+  allowedActions?: ManageAllowedAction[]
 }>()
 
 const emit = defineEmits<{
   done: []
   cancel: []
 }>()
+
+const { t } = useI18n()
 
 type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
 
@@ -51,7 +54,7 @@ async function onDone() {
     class="bg-white"
     :class="{
       'p-6 rounded shadow': variant === 'add',
-      'pl-4 py-2 pr-6': variant === 'edit'
+      'pl-2 py-2 pr-6': variant === 'edit'
     }"
     @keydown.enter.prevent.stop="onDone"
   >
@@ -61,24 +64,28 @@ async function onDone() {
     >
       <div class="space-y-4">
         <FormPartyName
+          v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.NAME_CHANGE)"
           ref="party-name-form"
           v-model="model.name"
+          :state="model.name"
           name="name"
         />
         <FormAddress
+          v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADDRESS_CHANGE)"
           ref="address-form"
           v-model="model.address"
+          :state="model.address"
           nested
           name="address"
         />
         <div class="flex gap-6 justify-end">
           <UButton
-            :label="$t('label.done')"
+            :label="t('label.done')"
             @click="onDone"
           />
           <UButton
             variant="outline"
-            :label="$t('label.cancel')"
+            :label="t('label.cancel')"
             @click="$emit('cancel')"
           />
         </div>

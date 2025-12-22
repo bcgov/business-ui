@@ -58,6 +58,6 @@ test.describe('FormAddress (nested)', () => {
 
     const form = page.locator('form').first()
     const requiredErrors = form.getByText('This field is required')
-    await expect(requiredErrors).toHaveCount(7)
+    await expect(requiredErrors).toHaveCount(11)
   })
 })

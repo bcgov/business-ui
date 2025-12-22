@@ -32,6 +32,36 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/BusinessLedger/Wrapper')
   },
   {
+    label: 'ManageParties',
+    children: [
+      {
+        to: localePath('/examples/components/ManageParties'),
+        label: 'Default'
+      },
+      {
+        label: 'Allowed Actions',
+        children: [
+          {
+            label: 'Add',
+            to: localePath('/examples/components/ManageParties/allowed-actions/add')
+          },
+          {
+            label: 'Remove',
+            to: localePath('/examples/components/ManageParties/allowed-actions/remove')
+          },
+          {
+            label: 'Edits',
+            to: localePath('/examples/components/ManageParties/allowed-actions/edits')
+          },
+          {
+            label: 'Mixed',
+            to: localePath('/examples/components/ManageParties/allowed-actions/mixed')
+          }
+        ]
+      }
+    ]
+  },
+  {
     label: 'ModalError',
     to: localePath('/examples/components/Modal/Error')
   },

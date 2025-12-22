@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const {
   roleType,
-  stateKey = 'manage-parties'
+  stateKey = 'manage-parties',
+  allowedActions
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -9,6 +10,7 @@ const {
   editLabel: string
   roleType?: RoleTypeUi
   stateKey?: string
+  allowedActions?: ManageAllowedAction[]
 }>()
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
@@ -55,6 +57,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
 <template>
   <div class="space-y-4">
     <UButton
+      v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
       variant="outline"
       icon="i-mdi-account-plus-outline"
@@ -77,6 +80,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
       :data="tableState"
       :loading
       :empty-text="emptyText"
+      :allowed-actions="allowedActions"
       @init-edit="initEditParty"
       @remove="removeParty"
       @undo="undoParty"
@@ -86,6 +90,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
           v-if="activeParty"
           v-model="activeParty"
           :title="editLabel"
+          :allowed-actions="allowedActions"
           name="activeParty"
           variant="edit"
           @cancel="cleanupPartyForm"

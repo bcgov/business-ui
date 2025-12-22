@@ -15,8 +15,8 @@ export type PartyRoleSchema = z.output<ReturnType<typeof getPartyRoleSchema>>
 
 export function getPartySchema() {
   return z.object({
-    actions: z.array(z.enum(ActionType)).default([]),
-    address: getAddressSchema().default({
+    actions: z.array(z.enum(ActionType)).default(() => []),
+    address: getAddressSchema().default(() => ({
       deliveryAddress: {
         street: '',
         streetAdditional: '',
@@ -36,7 +36,7 @@ export function getPartySchema() {
         locationDescription: ''
       },
       sameAs: false
-    }),
+    })),
     name: getPartyNameSchema().default({
       partyType: PartyType.PERSON,
       firstName: '',
@@ -44,8 +44,8 @@ export function getPartySchema() {
       lastName: '',
       businessName: ''
     }),
-    roles: getPartyRoleSchema(),
-    id: z.string().optional().default('')
+    roles: getPartyRoleSchema().default(() => []),
+    id: z.string().optional().default(() => '')
   })
 }
 

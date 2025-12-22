@@ -1,11 +1,12 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
 import type { ExpandedState } from '@tanstack/vue-table'
 
-defineProps<{
+const props = defineProps<{
   data?: TableBusinessState<T>[]
   columns: TableBusinessColumn<T>[]
   loading?: boolean
   emptyText?: string
+  allowedActions?: ManageAllowedAction[]
 }>()
 
 defineEmits<{
@@ -17,12 +18,28 @@ defineEmits<{
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
-// apply border to top of table row if expanded except for 1st row
-const expandedTrClass = computed(() =>
-  (typeof expanded.value === 'object' && expanded.value !== null && expanded.value[0] === true)
-    ? ''
-    : 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-gray-100'
-)
+const expandedTrClass = computed(() => {
+  const expandedKeys = (typeof expanded.value === 'object' && expanded.value !== null)
+    ? Object.keys(expanded.value)
+    : []
+
+  const rowIndex = expandedKeys.length > 0 ? Number(expandedKeys[0]) : undefined
+
+  const isFirstRow = rowIndex === 0
+  const isLastRow = props.data && rowIndex !== undefined && rowIndex === props.data.length - 1
+
+  let classes = ''
+
+  if (!isFirstRow) {
+    classes += 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade '
+  }
+
+  if (!isLastRow) {
+    classes += '[&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
+  }
+
+  return classes
+})
 </script>
 
 <template>
@@ -36,13 +53,14 @@ const expandedTrClass = computed(() =>
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'px-2 py-4 text-neutral-highlighted align-top text-sm whitespace-normal',
+      td: 'px-4 pt-4 text-neutral-highlighted align-top text-sm whitespace-normal',
       tr: expandedTrClass
     }"
   >
     <template #actions-cell="{ row }">
       <TableColumnActions
         :row
+        :allowed-actions="allowedActions"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"
@@ -50,9 +68,7 @@ const expandedTrClass = computed(() =>
     </template>
 
     <template #expanded="{ row }">
-      <div :class="{ 'border-b-6 border-shade': (data && row.index !== data.length - 1) }">
-        <slot name="expanded" :row />
-      </div>
+      <slot name="expanded" :row />
     </template>
 
     <template #empty>
