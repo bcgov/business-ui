@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.6.0
+
+### Minor Changes
+
+- [#346](https://github.com/bcgov/business-ui/pull/346) [`31057c9`](https://github.com/bcgov/business-ui/commit/31057c9d59e1120870de261cc0b92e87f115dd62) Thanks [@deetz99](https://github.com/deetz99)! - Add allowedActions prop to FormPartyDetails, TableBusiness, TableParty and TableColumnActions components to restrict allowed actions on a given table row.
+
+### Patch Changes
+
+- [#348](https://github.com/bcgov/business-ui/pull/348) [`e4e16d4`](https://github.com/bcgov/business-ui/commit/e4e16d43c665b1afb745811a7576761e43d409c7) Thanks [@deetz99](https://github.com/deetz99)! - Allow edits in FormPartyDetails component when it's a newly added party, add LiquidateType enum.
+
 ## 0.5.0
 
 ### Minor Changes
