@@ -1,117 +1,109 @@
-import type { ManageLiquidatorsSchema } from '~/utils/schemas/forms/manage-liquidators'
+import { isEqual } from 'es-toolkit'
 
 export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
+  const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { getCommonFilingPayloadData, initFiling } = useFiling()
 
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
-  const initializing = ref<boolean>(false) // liquidator store loading state
-  const draftFilingState = shallowRef<ManageLiquidatorsSchema>({} as ManageLiquidatorsSchema) // filing state saved as draft
-
+  const initializing = ref<boolean>(false)
+  const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
+  const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
 
-  // TODO: watcher on these that updates fee summary OR added as part of compute fns
-  const newParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.ADDED)))
-  const ceasedParties = computed(() => tableState.value.filter(p => p.new?.actions.includes(ActionType.REMOVED)))
-
-  // TODO: replace with liquidator sub type
   async function init(businessId: string, filingSubType?: LiquidateType, draftId?: string) {
+    if (!filingSubType) {
+      await useFilingModals().openInitFilingErrorModal({ status: 500 })
+      return
+    }
     initializing.value = true
+    liquidateSubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await useFiling().initFiling<ManageLiquidatorsSchema>(
+    const { draftFiling, parties } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
       filingSubType,
       draftId,
-      { roleType: RoleType.LIQUIDATOR })
+      { roleType: RoleType.LIQUIDATOR }
+    )
 
     if (draftFiling?.data.value?.filing) {
-      draftFilingState.value = draftFiling.data.value.filing
-      formState.courtOrder = draftFilingState.value.courtOrder
-      formState.documentId = draftFilingState.value.documentId
-      formState.recordsOffice = draftFilingState.value.recordsOffice
-      formState.staffPayment = draftFilingState.value.staffPayment
-      tableState.value = draftFilingState.value.parties
-    } else if (parties?.data) {
-      tableState.value = parties.data
+      draftFilingState.value = draftFiling.data.value
+      const filingData = draftFilingState.value.filing
+      formState.staffPayment = formatStaffPaymentUi(filingData.header)
+      if (filingData.changeOfLiquidators.courtOrder) {
+        formState.courtOrder = formatCourtOrderUi(filingData.changeOfLiquidators.courtOrder)
+      }
+      if (filingData.changeOfLiquidators.documentId) {
+        formState.documentId.documentIdNumber = filingData.changeOfLiquidators.documentId
+      }
+
+      const mailingAddress = filingData.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress
+      const deliveryAddress = filingData.changeOfLiquidators.offices?.liquidationRecordsOffice.deliveryAddress
+
+      formState.recordsOffice = {
+        mailingAddress: formatAddressUi(mailingAddress),
+        deliveryAddress: formatAddressUi(deliveryAddress),
+        sameAs: isEqual(mailingAddress, deliveryAddress)
+      }
     }
+    if (parties?.data) {
+      const draftRelationships = draftFiling?.data.value?.filing.changeOfLiquidators.relationships
+      tableState.value = draftRelationships
+        ? getPartiesMergedWithRelationships(parties.data, draftRelationships)
+        : parties.data
+    }
+
     initializing.value = false
   }
 
-  async function save(draftId?: string) {
-    const payload = businessApi.createFilingPayload<{ changeOfLiquidators: ManageLiquidatorsSchema }>(
-      businessStore.business!,
-      FilingType.CHANGE_OF_LIQUIDATORS,
-      { changeOfLiquidators: { ...formState, parties: tableState.value } },
-      formState.staffPayment
+  async function submit(isSubmission: boolean) {
+    const liquidatorPayload = formatLiquidatorsApi(
+      tableState.value,
+      formState,
+      liquidateSubType.value,
+      getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
     )
 
-    await businessApi.saveOrUpdateDraftFiling(
-      businessStore.businessIdentifier!,
-      payload,
-      false,
-      draftId as string | number
-    )
-  }
-
-  async function submit(draftId?: string) {
-    const liquidatorPayload: LiquidatorPayload = {
-      ...(newParties.value
-        ? {
-          appointedLiquidators: {
-            parties: newParties.value.map(p =>
-              formatPartyApi(p.new as PartyStateBase)
-            ) || []
-          }
-        }
-        : {}),
-      ...(ceasedParties.value
-        ? {
-          ceasedLiquidators: {
-            parties: ceasedParties.value.map(p =>
-              formatPartyApi(p.new as PartyStateBase)
-            ) || []
-          }
-        }
-        : {})
-    }
-
-    const payload = businessApi.createFilingPayload<{ changeOfLiquidators: LiquidatorPayload }>(
+    const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
       businessStore.business!,
-      // TODO: Need to figure out subtypes / what to put here for a combined filing for subtype
       FilingType.CHANGE_OF_LIQUIDATORS,
       { changeOfLiquidators: liquidatorPayload },
-      formState.staffPayment
+      formatStaffPaymentApi(formState.staffPayment)
     )
-    if (draftId) {
-      await businessApi.saveOrUpdateDraftFiling(
+
+    const draftId = draftFilingState.value?.filing?.header?.filingId
+    if (draftId || !isSubmission) {
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
         businessStore.businessIdentifier!,
         payload,
-        true,
-        draftId
+        isSubmission,
+        draftId as string | number
       )
+      draftFilingState.value = filingResp as unknown as LiquidatorDraftState
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
       await businessApi.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 
   function $reset() {
-    const emptyObj = liquidatorSchema.parse({})
+    const defaults = liquidatorSchema.parse({})
+    Object.assign(formState, defaults)
     formState.activeParty = undefined
-    formState.courtOrder = emptyObj.courtOrder
-    formState.documentId = emptyObj.documentId
-    formState.recordsOffice = emptyObj.recordsOffice
-    formState.staffPayment = emptyObj.staffPayment
   }
 
   return {
     formState,
     initializing,
+    liquidateSubType,
+    draftFilingState,
     init,
-    save,
     submit,
     $reset
   }

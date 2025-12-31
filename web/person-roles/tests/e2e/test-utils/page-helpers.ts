@@ -32,13 +32,13 @@ export async function navigateToManageReceiversPage(page: Page, filingSubType: R
   await expect(page.getByText('1. Receiver Information').first()).toBeVisible()
 }
 
-export async function navigateToManageLiquidatorsPage(page: Page) {
+export async function navigateToManageLiquidatorsPage(page: Page, filingSubType: LiquidateType) {
   // navigate to page
-  await page.goto(`./en-CA/manage-liquidators/${identifier}`)
+  await page.goto(`./en-CA/manage-liquidators/${identifier}/${filingSubType}`)
   // wait for api response to settle
   await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
-  await expect(page.getByText('Manage Liquidators').first()).toBeVisible()
+  await expect(page.getByText('1. Liquidator Information').first()).toBeVisible()
 }
 
 export async function navigateToIntentToLiquidatePage(page: Page) {
