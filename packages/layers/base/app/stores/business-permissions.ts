@@ -47,7 +47,10 @@ export const useBusinessPermissionsStore = defineStore('business-permissions', (
       case FilingType.CHANGE_OF_OFFICERS: {
         return isAuthorized(AuthorizedAction.OFFICER_CHANGE_FILING)
       }
-      case FilingType.CHANGE_OF_LIQUIDATORS, FilingType.CHANGE_OF_RECEIVERS: {
+      case FilingType.CHANGE_OF_LIQUIDATORS: {
+        return isAuthorized(AuthorizedAction.STAFF_FILINGS)
+      }
+      case FilingType.CHANGE_OF_RECEIVERS: {
         return isAuthorized(AuthorizedAction.STAFF_FILINGS)
       }
       // case FilingType.CHANGE_OF_NAME:    not used here yet
