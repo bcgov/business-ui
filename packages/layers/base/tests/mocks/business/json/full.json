@@ -32,6 +32,24 @@
                     "type": "intentToLiquidate"
                 },
                 {
+                    "displayName": "Appoint Liquidators",
+                    "feeCode": "NOAPL",
+                    "name": "changeOfLiquidators",
+                    "type": "appointLiquidator"
+                },
+                {
+                    "displayName": "Cease Liquidators",
+                    "feeCode": "NOCEL",
+                    "name": "changeOfLiquidators",
+                    "type": "ceaseLiquidator"
+                },
+                {
+                    "displayName": "Change Addresses of Liquidators",
+                    "feeCode": "NOCAL",
+                    "name": "changeOfLiquidators",
+                    "type": "changeAddressLiquidator"
+                },
+                {
                     "displayName": "Amend Receiver",
                     "feeCode": "AMEND",
                     "name": "changeOfReceivers",

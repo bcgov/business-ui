@@ -69,17 +69,46 @@ export default {
     // Below sections are named based on filing type and filing sub type
     changeOfLiquidators: {
       // TODO: remove once sub types are in
-      h1: 'Manage Liquidators',
-      title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
-      feeCode: 'LQSIN',
-      feeLabel: 'Manage Liquidators',
-      // TODO: add other sub types
+      // h1: 'Manage Liquidators',
+      // title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
+      // feeCode: 'LQSIN',
+      // feeLabel: 'Manage Liquidators',
       intentToLiquidate: {
+        desc: 'Some intent to liquidate descriptive text',
         feeCode: 'LQSIN',
         feeLabel: 'Intent to Liquidate',
         h1: 'Intent to Liquidate',
         title: 'Intent to Liquidate - People Roles - BC Registries and Online Services'
+      },
+      appointLiquidator: {
+        desc: 'Some appoint Liquidator descriptive text',
+        feeCode: 'NOAPL',
+        feeLabel: 'Appoint Liquidators',
+        h1: 'Appoint Liquidators',
+        title: 'Appoint Liquidators - People Roles - BC Registries and Online Services'
+      },
+      ceaseLiquidator: {
+        desc: 'Some cease Liquidator descriptive text',
+        feeCode: 'NOCEL',
+        feeLabel: 'Cease Liquidators',
+        h1: 'Cease Liquidators',
+        title: 'Cease Liquidators - People Roles - BC Registries and Online Services'
+      },
+      changeAddressLiquidator: {
+        desc: 'Some change address Liquidator descriptive text',
+        feeCode: 'NOCAL',
+        feeLabel: 'Change Addresses of Liquidators',
+        h1: 'Change Addresses of Liquidators',
+        title: 'Change Addresses of Liquidators - People Roles - BC Registries and Online Services'
       }
+      // TODO: liquidation report
+      // liquidationReport: {
+      //   desc: 'Some liquidation descriptive text',
+      //   feeCode: 'LIQUR',
+      //   feeLabel: 'Liquidation Report',
+      //   h1: 'Liquidation Report',
+      //   title: 'Liquidation Report - People Roles - BC Registries and Online Services'
+      // }
     },
     changeOfReceivers: {
       amendReceiver: {

@@ -1,9 +1,17 @@
-export interface LiquidatorPayload extends FilingRecord {
-  // NOTE: these may change depending on the API
-  appointedLiquidator?: {
-    parties: OrgPerson[]
+export interface LiquidatorPayload extends FilingPayloadData {
+  relationships: BusinessRelationship[]
+  type: LiquidateType
+  offices?: {
+    liquidationRecordsOffice: {
+      mailingAddress: ApiAddress
+      deliveryAddress: ApiAddress
+    }
   }
-  ceasedLiquidators?: {
-    parties: OrgPerson[]
-  }
+  changeOfLiquidatorsDate?: string // yyyy-mm-dd
 }
+
+export interface ChangeOfLiquidators {
+  changeOfLiquidators: LiquidatorPayload
+}
+
+export type LiquidatorDraftState = FilingGetByIdResponse<ChangeOfLiquidators>

@@ -1,11 +1,30 @@
 import { test, expect } from '@playwright/test'
+import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
 
-// TODO: fix tests once liquidators updated to initialize properly
-test.describe.skip('Manage Liquidators - Page init', () => {
+const testCases = [
+  {
+    type: LiquidateType.INTENT,
+    h1: 'Intent to Liquidate'
+  },
+  {
+    type: LiquidateType.APPOINT,
+    h1: 'Appoint Liquidators'
+  },
+  {
+    type: LiquidateType.CEASE,
+    h1: 'Cease Liquidators'
+  },
+  {
+    type: LiquidateType.ADDRESS,
+    h1: 'Change Addresses of Liquidators'
+  }
+]
+
+test.describe('Manage Liquidators - Page init', () => {
   test.beforeEach(async ({ page }) => {
     await mockCommonApiCallsForFiling(
       page,
@@ -17,32 +36,41 @@ test.describe.skip('Manage Liquidators - Page init', () => {
       ]),
       undefined
     )
-    await navigateToManageLiquidatorsPage(page)
-    await page.waitForLoadState('networkidle')
   })
 
-  test.describe('Basic initialization', () => {
-    test('should display basic filing elements', async ({ page }) => {
+  testCases.forEach(({ type, h1 }) => {
+    test(`Basic initialization - ${type}`, async ({ page }) => {
+      await navigateToManageLiquidatorsPage(page, type)
+      await page.waitForLoadState('networkidle')
+
       // has auth header
       expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
       // has breadcrumb
       expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-      // TODO: uncomment once liquidators updated to initialize properly
-      // expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('Manage Liquidators')).toBeVisible()
+      expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(h1)).toBeVisible()
       // has tombstone
       expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
       expect(page.getByTestId('connect-tombstone-wrapper')
         .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
       ).toBeVisible()
-      // has manage liquidator title
-      // TODO: uncomment once liquidators updated to initialize properly
-      // expect(page.getByRole('heading', { name: 'Manage Liquidators' })).toBeVisible()
+      // has correct h1
+      expect(page.getByRole('heading', { name: h1 })).toBeVisible()
       // has fee summary
       expect(page.getByTestId('fee-widget')).toBeVisible()
       // has buttons
       expect(page.getByTestId('connect-button-control-wrapper')).toBeVisible()
       // has footer
       expect(page.getByTestId('connect-main-footer')).toBeVisible()
+      // has form elemenets
+      expect(page.getByTestId('liquidator-info-section')).toBeVisible()
+      expect(page.getByTestId('court-order-section')).toBeVisible()
+      expect(page.getByTestId('document-id-section')).toBeVisible()
+      expect(page.getByTestId('staff-payment-section')).toBeVisible()
+      if (type === LiquidateType.INTENT) {
+        expect(page.getByTestId('records-office-section')).toBeVisible()
+      } else {
+        expect(page.getByTestId('records-office-section')).not.toBeVisible()
+      }
     })
   })
 })
