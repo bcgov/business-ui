@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.6.1
+
+### Patch Changes
+
+- [#349](https://github.com/bcgov/business-ui/pull/349) [`a855b08`](https://github.com/bcgov/business-ui/commit/a855b082aa02f8bc1563ec608cd6fb83e62a6a87) Thanks [@deetz99](https://github.com/deetz99)! - Fix business permissions store to evaluate changeOfLiquidators correctly.
+
 ## 0.6.0
 
 ### Minor Changes
