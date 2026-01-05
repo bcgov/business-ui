@@ -151,28 +151,6 @@ test.describe('Manage Liquidators - Submission', () => {
       const innerPayload: LiquidatorPayload = {
         relationships: [newLiquidator],
         type: LiquidateType.APPOINT,
-        offices: {
-          liquidationRecordsOffice: {
-            mailingAddress: {
-              addressCity: '',
-              addressCountry: 'CA',
-              addressRegion: '',
-              deliveryInstructions: '',
-              postalCode: '',
-              streetAddress: '',
-              streetAddressAdditional: ''
-            },
-            deliveryAddress: {
-              addressCity: '',
-              addressCountry: 'CA',
-              addressRegion: '',
-              deliveryInstructions: '',
-              postalCode: '',
-              streetAddress: '',
-              streetAddressAdditional: ''
-            }
-          }
-        },
         changeOfLiquidatorsDate: '2025-12-30'
       }
 
