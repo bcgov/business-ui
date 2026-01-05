@@ -1,4 +1,4 @@
-// TODO: include office address on changeAddressLiquidator only if it's different from the existing data
+// TODO: include office address on changeAddressLiquidator only if it's different from the existing data - ticket 31863
 export function formatLiquidatorsApi(
   tableState: TableBusinessState<PartySchema>[],
   formState: LiquidatorFormSchema,
