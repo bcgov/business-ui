@@ -1,0 +1,74 @@
+{
+    "liquidationRecordsOffice": {
+        "deliveryAddress": {
+            "addressCity": "Calgary",
+            "addressCountry": "CA",
+            "addressRegion": "AB",
+            "addressType": "delivery",
+            "deliveryInstructions": "",
+            "id": 3324735,
+            "postalCode": "T3B 5P3",
+            "streetAddress": "456-3223 83 St NW",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Calgary",
+            "addressCountry": "CA",
+            "addressRegion": "AB",
+            "addressType": "mailing",
+            "deliveryInstructions": "",
+            "id": 3324734,
+            "postalCode": "T3B 5P3",
+            "streetAddress": "457-3223 83 St NW",
+            "streetAddressAdditional": ""
+        }
+    },
+    "recordsOffice": {
+        "deliveryAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "addressType": "delivery",
+            "deliveryInstructions": "",
+            "id": 3324294,
+            "postalCode": "V6B 0M3",
+            "streetAddress": "1800 - 510 West Georgia Street",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "addressType": "mailing",
+            "deliveryInstructions": "",
+            "id": 3324293,
+            "postalCode": "V6B 0M3",
+            "streetAddress": "1800 - 510 West Georgia Street",
+            "streetAddressAdditional": ""
+        }
+    },
+    "registeredOffice": {
+        "deliveryAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "addressType": "delivery",
+            "deliveryInstructions": "",
+            "id": 3324296,
+            "postalCode": "V6B 0M3",
+            "streetAddress": "1800 - 510 West Georgia Street",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "addressType": "mailing",
+            "deliveryInstructions": "",
+            "id": 3324295,
+            "postalCode": "V6B 0M3",
+            "streetAddress": "1800 - 510 West Georgia Street",
+            "streetAddressAdditional": ""
+        }
+    }
+}

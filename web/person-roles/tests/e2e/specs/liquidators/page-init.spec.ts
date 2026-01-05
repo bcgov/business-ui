@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { LiquidateType } from '#business/app/enums/liquidate-type'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
+import { mockCommonApiCallsForFiling, getPartiesMock, getBusinessAddressesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
@@ -34,7 +34,8 @@ test.describe('Manage Liquidators - Page init', () => {
         { index: 1, key: 'roleType', value: 'Liquidator' },
         { index: 2, key: 'roleType', value: 'Liquidator' }
       ]),
-      undefined
+      undefined,
+      getBusinessAddressesMock()
     )
   })
 
@@ -66,7 +67,7 @@ test.describe('Manage Liquidators - Page init', () => {
       expect(page.getByTestId('court-order-section')).toBeVisible()
       expect(page.getByTestId('document-id-section')).toBeVisible()
       expect(page.getByTestId('staff-payment-section')).toBeVisible()
-      if (type === LiquidateType.INTENT) {
+      if (type === LiquidateType.INTENT || type === LiquidateType.ADDRESS) {
         expect(page.getByTestId('records-office-section')).toBeVisible()
       } else {
         expect(page.getByTestId('records-office-section')).not.toBeVisible()

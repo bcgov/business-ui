@@ -5,7 +5,7 @@ import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
 import type { BusinessEntity, BusinessRelationship } from '#business/app/interfaces/business-relationship'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
+import { mockCommonApiCallsForFiling, getPartiesMock, getBusinessAddressesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
@@ -63,7 +63,8 @@ test.describe('Manage Liquidators - Submission', () => {
         { index: 1, key: 'roleType', value: 'Liquidator' },
         { index: 2, key: 'roleType', value: 'Liquidator' }
       ]),
-      undefined
+      undefined,
+      getBusinessAddressesMock()
     )
   })
 

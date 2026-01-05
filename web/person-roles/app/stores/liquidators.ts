@@ -123,6 +123,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     initializing,
     liquidateSubType,
     draftFilingState,
+    currentLiquidationOffice,
     init,
     submit,
     $reset

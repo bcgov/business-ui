@@ -61,6 +61,7 @@ test.describe('Manage Receivers - Submission', () => {
         { index: 1, key: 'roleType', value: 'Receiver' },
         { index: 2, key: 'roleType', value: 'Receiver' }
       ]),
+      undefined,
       undefined
     )
   })

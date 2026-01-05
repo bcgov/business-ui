@@ -262,5 +262,73 @@ describe('format-liquidators', () => {
 
       expect(result.offices).toBeUndefined()
     })
+
+    describe(`${LiquidateType.ADDRESS}`, () => {
+      const officeMailing = getFakeAddress()
+      const officeDelivery = getFakeAddress()
+      const currentOfficeMock: LiquidationRecordsOffice = {
+        mailingAddress: officeMailing,
+        deliveryAddress: officeDelivery
+      }
+      it('should include offices when addresses have changed', () => {
+        const changedMailing = { ...officeMailing, street: 'New Street 123' }
+
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: changedMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          currentOfficeMock
+        )
+
+        expect(result.offices).toBeDefined()
+        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe('New Street 123')
+      })
+
+      it('should exclude offices when addresses are identical to current', () => {
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: officeMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          currentOfficeMock
+        )
+
+        expect(result.offices).toBeUndefined()
+      })
+
+      it('should include formState offices even if currentLiquidationOffice is undefined', () => {
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: officeMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          undefined
+        )
+
+        expect(result.offices).toBeDefined()
+      })
+    })
   })
 })
