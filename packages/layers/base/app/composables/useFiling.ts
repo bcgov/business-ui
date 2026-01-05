@@ -41,8 +41,8 @@ export const useFiling = () => {
     filingName: FilingType,
     filingSubType?: string,
     draftId?: string,
-    partiesParams?: { roleClass?: RoleClass, roleType?: RoleType }
-    // officeParams?: office config (i.e. records, liquidation, etc.)
+    partiesParams?: { roleClass?: RoleClass, roleType?: RoleType },
+    includeAddresses?: boolean
   ) {
     try {
       // throw error and show modal if invalid business ID
@@ -60,21 +60,29 @@ export const useFiling = () => {
         ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
         : undefined
 
+      const addressesPromise = includeAddresses
+        ? businessApi.getBusinessAddresses(businessId)
+        : undefined
+
       const [
         [businessError, businessContactError],
         draftFiling,
-        parties
+        parties,
+        _permissions,
+        addresses
       ] = await Promise.all([
         businessStore.init(businessId, false, false, true),
         draftPromise,
         partiesPromise,
-        permissionsStore.init()
+        permissionsStore.init(),
+        addressesPromise
       ])
 
       const genericError = [
         businessError,
         businessContactError,
-        parties?.error
+        parties?.error,
+        addresses?.error.value
       ].find(e => !!e)
 
       if (genericError) {
@@ -117,7 +125,8 @@ export const useFiling = () => {
 
       return {
         draftFiling,
-        parties
+        parties,
+        addresses
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
@@ -129,7 +138,8 @@ export const useFiling = () => {
       }
       return {
         draftFiling: undefined,
-        parties: undefined
+        parties: undefined,
+        addresses: undefined
       }
     }
   }

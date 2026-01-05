@@ -48,4 +48,5 @@ export interface EntityOfficeAddress {
   registeredOffice?: ApiBaseAddressObj
   recordsOffice?: ApiBaseAddressObj
   businessOffice?: ApiBaseAddressObj
+  liquidationRecordsOffice?: ApiBaseAddressObj
 }

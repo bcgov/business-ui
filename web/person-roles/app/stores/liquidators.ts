@@ -11,6 +11,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
+  const currentLiquidationOffice = shallowRef<LiquidationRecordsOffice>(undefined)
   const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
 
@@ -23,12 +24,13 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     liquidateSubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await initFiling<ChangeOfLiquidators>(
+    const { draftFiling, parties, addresses } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
       filingSubType,
       draftId,
-      { roleType: RoleType.LIQUIDATOR }
+      { roleType: RoleType.LIQUIDATOR },
+      filingSubType === LiquidateType.ADDRESS
     )
 
     if (draftFiling?.data.value?.filing) {
@@ -58,6 +60,22 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
         : parties.data
     }
 
+    const office = addresses?.data.value?.liquidationRecordsOffice
+    if (office) {
+      const mailingAddress = formatAddressUi(office.mailingAddress)
+      const deliveryAddress = formatAddressUi(office.deliveryAddress)
+
+      currentLiquidationOffice.value = { mailingAddress, deliveryAddress }
+
+      if (!draftId || !draftFilingState.value.filing.changeOfLiquidators.offices) {
+        formState.recordsOffice = {
+          mailingAddress: { ...mailingAddress },
+          deliveryAddress: { ...deliveryAddress },
+          sameAs: isEqual(mailingAddress, deliveryAddress)
+        }
+      }
+    }
+
     initializing.value = false
   }
 
@@ -66,7 +84,8 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       tableState.value,
       formState,
       liquidateSubType.value,
-      getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
+      getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
+      currentLiquidationOffice.value
     )
 
     const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
@@ -96,6 +115,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const defaults = liquidatorSchema.parse({})
     Object.assign(formState, defaults)
     formState.activeParty = undefined
+    currentLiquidationOffice.value = undefined
   }
 
   return {

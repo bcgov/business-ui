@@ -1,9 +1,11 @@
-// TODO: include office address on changeAddressLiquidator only if it's different from the existing data - ticket 31863
+import { isEqual } from 'es-toolkit'
+
 export function formatLiquidatorsApi(
   tableState: TableBusinessState<PartySchema>[],
   formState: LiquidatorFormSchema,
   type: LiquidateType,
-  commonData: FilingPayloadData
+  commonData: FilingPayloadData,
+  currentLiquidationOffice?: LiquidationRecordsOffice
 ): LiquidatorPayload {
   const payload: LiquidatorPayload = {
     type,
@@ -15,7 +17,16 @@ export function formatLiquidatorsApi(
     changeOfLiquidatorsDate: getToday()
   }
 
-  if (type === LiquidateType.INTENT) {
+  const isIntent = type === LiquidateType.INTENT
+  const hasOfficeChange = type === LiquidateType.ADDRESS && !isEqual(
+    {
+      mailingAddress: formState.recordsOffice.mailingAddress,
+      deliveryAddress: formState.recordsOffice.deliveryAddress
+    },
+    currentLiquidationOffice
+  )
+
+  if (isIntent || hasOfficeChange) {
     payload.offices = {
       liquidationRecordsOffice: {
         mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
