@@ -1,5 +1,5 @@
 export interface LiquidatorPayload extends FilingPayloadData {
-  relationships: BusinessRelationship[]
+  relationships?: BusinessRelationship[]
   type: LiquidateType
   offices?: {
     liquidationRecordsOffice: {

@@ -327,7 +327,7 @@ export const useBusinessApi = () => {
   async function getBusinessAddresses(businessId: string) {
     const query = defineQuery({
       key: ['businessAddresses', businessId],
-      query: () => $businessApi<EntityOfficeAddress>(`businesses/${businessId}/addresses`),
+      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${businessId}/addresses`),
       staleTime: 60000
     })
     return query()

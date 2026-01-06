@@ -60,19 +60,12 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
         : parties.data
     }
 
-    const office = addresses?.data.value?.liquidationRecordsOffice
+    const office = addresses?.data?.liquidationRecordsOffice
     if (office) {
-      const mailingAddress = formatAddressUi(office.mailingAddress)
-      const deliveryAddress = formatAddressUi(office.deliveryAddress)
-
-      currentLiquidationOffice.value = { mailingAddress, deliveryAddress }
+      currentLiquidationOffice.value = { ...office }
 
       if (!draftId || !draftFilingState.value.filing.changeOfLiquidators.offices) {
-        formState.recordsOffice = {
-          mailingAddress: { ...mailingAddress },
-          deliveryAddress: { ...deliveryAddress },
-          sameAs: isEqual(mailingAddress, deliveryAddress)
-        }
+        formState.recordsOffice = { ...office }
       }
     }
 

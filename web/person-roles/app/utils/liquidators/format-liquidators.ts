@@ -9,12 +9,14 @@ export function formatLiquidatorsApi(
 ): LiquidatorPayload {
   const payload: LiquidatorPayload = {
     type,
-    relationships: (
-      tableState.map(relationship => formatRelationshipApi(relationship.new))
-    // Only add relationships that have changes
-    ).filter(relationship => relationship.actions?.length),
     ...commonData,
     changeOfLiquidatorsDate: getToday()
+  }
+
+  const changedRelationships = tableState.map(rel => formatRelationshipApi(rel.new)).filter(rel => rel.actions?.length)
+
+  if (changedRelationships.length > 0) {
+    payload.relationships = changedRelationships
   }
 
   const isIntent = type === LiquidateType.INTENT

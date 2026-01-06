@@ -36,6 +36,12 @@ export interface ApiBaseAddressObj {
   deliveryAddress?: ApiAddress
 }
 
+export interface UiBaseAddressObj {
+  mailingAddress: ConnectAddress
+  deliveryAddress: ConnectAddress
+  sameAs: boolean
+}
+
 /** Interface to define the incorporation addresses. */
 export interface IncorporationAddress {
   registeredOffice: ApiBaseAddressObj
@@ -44,9 +50,16 @@ export interface IncorporationAddress {
   recordsOffice?: ApiBaseAddressObj
 }
 
-export interface EntityOfficeAddress {
+export interface ApiEntityOfficeAddress {
   registeredOffice?: ApiBaseAddressObj
   recordsOffice?: ApiBaseAddressObj
   businessOffice?: ApiBaseAddressObj
   liquidationRecordsOffice?: ApiBaseAddressObj
+}
+
+export interface UiEntityOfficeAddress {
+  registeredOffice?: UiBaseAddressObj
+  recordsOffice?: UiBaseAddressObj
+  businessOffice?: UiBaseAddressObj
+  liquidationRecordsOffice?: UiBaseAddressObj
 }

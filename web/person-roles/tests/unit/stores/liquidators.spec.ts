@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getFakePerson, getFakeAddress } from '#e2e-utils'
-import { getBusinessAddressesMock } from '#test-mocks'
 
 const identifier = 'BC1234567'
 
@@ -100,7 +99,17 @@ describe('useLiquidatorStore', () => {
       ]
     }
 
-    const addressesResponse = getBusinessAddressesMock()
+    const addressesResponse = {
+      liquidationRecordsOffice: {
+        mailingAddress: {
+          ...getFakeAddress()
+        },
+        deliveryAddress: {
+          ...getFakeAddress()
+        },
+        sameAs: false
+      }
+    }
 
     describe('when starting a new filing (no draftId)', () => {
       it('should set table state from parties response and init formState defaults', async () => {
@@ -121,7 +130,7 @@ describe('useLiquidatorStore', () => {
         mockInitFiling.mockResolvedValue({
           draftFiling: undefined,
           parties: { data: partiesResponse.data },
-          addresses: { data: { value: addressesResponse } }
+          addresses: { data: addressesResponse }
         })
 
         await store.init(identifier, LiquidateType.ADDRESS)
@@ -130,9 +139,9 @@ describe('useLiquidatorStore', () => {
 
         expect(tableState.value).toEqual(partiesResponse.data)
         expect(store.formState.recordsOffice.deliveryAddress)
-          .toEqual(formatAddressUi(addressesResponse.liquidationRecordsOffice?.deliveryAddress))
+          .toEqual(addressesResponse.liquidationRecordsOffice?.deliveryAddress)
         expect(store.formState.recordsOffice.mailingAddress)
-          .toEqual(formatAddressUi(addressesResponse.liquidationRecordsOffice?.mailingAddress))
+          .toEqual(addressesResponse.liquidationRecordsOffice?.mailingAddress)
       })
 
       it('should set empty table when API returns no parties', async () => {

@@ -3,6 +3,7 @@ export const useFiling = () => {
   const businessApi = useBusinessApi()
   const { setFilingDefault } = useBusinessTombstone()
   const { getBusinessParties } = useBusinessParty()
+  const { getBusinessAddresses } = useBusinessAddresses()
   const businessStore = useBusinessStore()
   const feeStore = useConnectFeeStore()
   const modal = useFilingModals()
@@ -61,7 +62,7 @@ export const useFiling = () => {
         : undefined
 
       const addressesPromise = includeAddresses
-        ? businessApi.getBusinessAddresses(businessId)
+        ? getBusinessAddresses(businessId)
         : undefined
 
       const [
@@ -82,7 +83,7 @@ export const useFiling = () => {
         businessError,
         businessContactError,
         parties?.error,
-        addresses?.error.value
+        addresses?.error
       ].find(e => !!e)
 
       if (genericError) {

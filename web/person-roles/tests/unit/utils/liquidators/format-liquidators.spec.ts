@@ -107,8 +107,8 @@ describe('format-liquidators', () => {
 
       expect(result.relationships).toHaveLength(2) // should filter out party with no actions
 
-      expect(result.relationships[0]).toBeDefined()
-      expect(result.relationships[0]).toMatchObject({
+      expect(result.relationships![0]).toBeDefined()
+      expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: person.firstName,
@@ -122,8 +122,8 @@ describe('format-liquidators', () => {
         }
       })
 
-      expect(result.relationships[1]).toBeDefined()
-      expect(result.relationships[1]).toMatchObject({
+      expect(result.relationships![1]).toBeDefined()
+      expect(result.relationships![1]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
@@ -230,8 +230,8 @@ describe('format-liquidators', () => {
 
       expect(result.relationships).toHaveLength(2) // should filter out party with no actions
 
-      expect(result.relationships[0]).toBeDefined()
-      expect(result.relationships[0]).toMatchObject({
+      expect(result.relationships![0]).toBeDefined()
+      expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: person.firstName,
@@ -245,8 +245,8 @@ describe('format-liquidators', () => {
         }
       })
 
-      expect(result.relationships[1]).toBeDefined()
-      expect(result.relationships[1]).toMatchObject({
+      expect(result.relationships![1]).toBeDefined()
+      expect(result.relationships![1]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
@@ -330,5 +330,35 @@ describe('format-liquidators', () => {
         expect(result.offices).toBeDefined()
       })
     })
+  })
+
+  it('should exclude relationships property if none have changes/actions', () => {
+    const officeMailing = getFakeAddress()
+    const officeDelivery = getFakeAddress()
+
+    const unchangedPerson = createPartyMock(
+      { partyType: PartyType.PERSON, firstName: 'John', lastName: 'Doe', businessName: '', middleName: '' },
+      { delivery: officeDelivery, mailing: officeMailing },
+      []
+    )
+
+    const mockFormState = {
+      recordsOffice: {
+        mailingAddress: { ...officeMailing, street: 'Changed St' },
+        deliveryAddress: officeDelivery
+      }
+    }
+
+    const result = formatLiquidatorsApi(
+      [unchangedPerson],
+      mockFormState as LiquidatorFormSchema,
+      LiquidateType.ADDRESS,
+      {},
+      { mailingAddress: officeMailing, deliveryAddress: officeDelivery }
+    )
+
+    expect(result.offices).toBeDefined()
+    expect(result.relationships).toBeUndefined()
+    expect(Object.keys(result)).not.toContain('relationships')
   })
 })
