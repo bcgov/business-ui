@@ -7,17 +7,7 @@ export function formatLiquidatorsApi(
   commonData: FilingPayloadData,
   currentLiquidationOffice?: LiquidationRecordsOffice
 ): LiquidatorPayload {
-  const payload: LiquidatorPayload = {
-    type,
-    ...commonData,
-    changeOfLiquidatorsDate: getToday()
-  }
-
   const changedRelationships = tableState.map(rel => formatRelationshipApi(rel.new)).filter(rel => rel.actions?.length)
-
-  if (changedRelationships.length > 0) {
-    payload.relationships = changedRelationships
-  }
 
   const isIntent = type === LiquidateType.INTENT
   const hasOfficeChange = type === LiquidateType.ADDRESS && !isEqual(
@@ -28,14 +18,18 @@ export function formatLiquidatorsApi(
     currentLiquidationOffice
   )
 
-  if (isIntent || hasOfficeChange) {
-    payload.offices = {
-      liquidationRecordsOffice: {
-        mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
-        deliveryAddress: formatAddressApi(formState.recordsOffice.deliveryAddress as ConnectAddress)
+  return {
+    type,
+    ...commonData,
+    changeOfLiquidatorsDate: getToday(),
+    ...(changedRelationships.length > 0 && { relationships: changedRelationships }),
+    ...((isIntent || hasOfficeChange) && {
+      offices: {
+        liquidationRecordsOffice: {
+          mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
+          deliveryAddress: formatAddressApi(formState.recordsOffice.deliveryAddress as ConnectAddress)
+        }
       }
-    }
+    })
   }
-
-  return payload
 }
