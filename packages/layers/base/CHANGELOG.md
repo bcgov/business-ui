@@ -1,5 +1,16 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.7.0
+
+### Minor Changes
+
+- [#351](https://github.com/bcgov/business-ui/pull/351) [`3e9044d`](https://github.com/bcgov/business-ui/commit/3e9044d44bf2ec7f095ab7a3228b3f9b478f40bd) Thanks [@deetz99](https://github.com/deetz99)! - <br>
+
+  - Update useFiling.initFiling to optionally fetch the given business's addresses
+  - useBusinessAddresses composable to return formatted business address objects
+
+- [#353](https://github.com/bcgov/business-ui/pull/353) [`7008aa7`](https://github.com/bcgov/business-ui/commit/7008aa7c6dd4149810055dce3f41472ee1adf407) Thanks [@deetz99](https://github.com/deetz99)! - StaffPayment - add prop to disable resetting the model-value
+
 ## 0.6.1
 
 ### Patch Changes
