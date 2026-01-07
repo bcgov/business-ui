@@ -1,28 +1,35 @@
-// TODO: include office address on changeAddressLiquidator only if it's different from the existing data - ticket 31863
+import { isEqual } from 'es-toolkit'
+
 export function formatLiquidatorsApi(
   tableState: TableBusinessState<PartySchema>[],
   formState: LiquidatorFormSchema,
   type: LiquidateType,
-  commonData: FilingPayloadData
+  commonData: FilingPayloadData,
+  currentLiquidationOffice?: LiquidationRecordsOffice
 ): LiquidatorPayload {
-  const payload: LiquidatorPayload = {
+  const changedRelationships = tableState.map(rel => formatRelationshipApi(rel.new)).filter(rel => rel.actions?.length)
+
+  const isIntent = type === LiquidateType.INTENT
+  const hasOfficeChange = type === LiquidateType.ADDRESS && !isEqual(
+    {
+      mailingAddress: formState.recordsOffice.mailingAddress,
+      deliveryAddress: formState.recordsOffice.deliveryAddress
+    },
+    currentLiquidationOffice
+  )
+
+  return {
     type,
-    relationships: (
-      tableState.map(relationship => formatRelationshipApi(relationship.new))
-    // Only add relationships that have changes
-    ).filter(relationship => relationship.actions?.length),
     ...commonData,
-    changeOfLiquidatorsDate: getToday()
-  }
-
-  if (type === LiquidateType.INTENT) {
-    payload.offices = {
-      liquidationRecordsOffice: {
-        mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
-        deliveryAddress: formatAddressApi(formState.recordsOffice.deliveryAddress as ConnectAddress)
+    changeOfLiquidatorsDate: getToday(),
+    ...(changedRelationships.length > 0 && { relationships: changedRelationships }),
+    ...((isIntent || hasOfficeChange) && {
+      offices: {
+        liquidationRecordsOffice: {
+          mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
+          deliveryAddress: formatAddressApi(formState.recordsOffice.deliveryAddress as ConnectAddress)
+        }
       }
-    }
+    })
   }
-
-  return payload
 }

@@ -107,8 +107,8 @@ describe('format-liquidators', () => {
 
       expect(result.relationships).toHaveLength(2) // should filter out party with no actions
 
-      expect(result.relationships[0]).toBeDefined()
-      expect(result.relationships[0]).toMatchObject({
+      expect(result.relationships![0]).toBeDefined()
+      expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: person.firstName,
@@ -122,8 +122,8 @@ describe('format-liquidators', () => {
         }
       })
 
-      expect(result.relationships[1]).toBeDefined()
-      expect(result.relationships[1]).toMatchObject({
+      expect(result.relationships![1]).toBeDefined()
+      expect(result.relationships![1]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
@@ -230,8 +230,8 @@ describe('format-liquidators', () => {
 
       expect(result.relationships).toHaveLength(2) // should filter out party with no actions
 
-      expect(result.relationships[0]).toBeDefined()
-      expect(result.relationships[0]).toMatchObject({
+      expect(result.relationships![0]).toBeDefined()
+      expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: person.firstName,
@@ -245,8 +245,8 @@ describe('format-liquidators', () => {
         }
       })
 
-      expect(result.relationships[1]).toBeDefined()
-      expect(result.relationships[1]).toMatchObject({
+      expect(result.relationships![1]).toBeDefined()
+      expect(result.relationships![1]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
@@ -262,5 +262,103 @@ describe('format-liquidators', () => {
 
       expect(result.offices).toBeUndefined()
     })
+
+    describe(`${LiquidateType.ADDRESS}`, () => {
+      const officeMailing = getFakeAddress()
+      const officeDelivery = getFakeAddress()
+      const currentOfficeMock: LiquidationRecordsOffice = {
+        mailingAddress: officeMailing,
+        deliveryAddress: officeDelivery
+      }
+      it('should include offices when addresses have changed', () => {
+        const changedMailing = { ...officeMailing, street: 'New Street 123' }
+
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: changedMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          currentOfficeMock
+        )
+
+        expect(result.offices).toBeDefined()
+        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe('New Street 123')
+      })
+
+      it('should exclude offices when addresses are identical to current', () => {
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: officeMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          currentOfficeMock
+        )
+
+        expect(result.offices).toBeUndefined()
+      })
+
+      it('should include formState offices even if currentLiquidationOffice is undefined', () => {
+        const mockFormState = {
+          recordsOffice: {
+            mailingAddress: officeMailing,
+            deliveryAddress: officeDelivery
+          }
+        }
+
+        const result = formatLiquidatorsApi(
+          [],
+          mockFormState as LiquidatorFormSchema,
+          LiquidateType.ADDRESS,
+          {},
+          undefined
+        )
+
+        expect(result.offices).toBeDefined()
+      })
+    })
+  })
+
+  it('should exclude relationships property if none have changes/actions', () => {
+    const officeMailing = getFakeAddress()
+    const officeDelivery = getFakeAddress()
+
+    const unchangedPerson = createPartyMock(
+      { partyType: PartyType.PERSON, firstName: 'John', lastName: 'Doe', businessName: '', middleName: '' },
+      { delivery: officeDelivery, mailing: officeMailing },
+      []
+    )
+
+    const mockFormState = {
+      recordsOffice: {
+        mailingAddress: { ...officeMailing, street: 'Changed St' },
+        deliveryAddress: officeDelivery
+      }
+    }
+
+    const result = formatLiquidatorsApi(
+      [unchangedPerson],
+      mockFormState as LiquidatorFormSchema,
+      LiquidateType.ADDRESS,
+      {},
+      { mailingAddress: officeMailing, deliveryAddress: officeDelivery }
+    )
+
+    expect(result.offices).toBeDefined()
+    expect(result.relationships).toBeUndefined()
+    expect(Object.keys(result)).not.toContain('relationships')
   })
 })

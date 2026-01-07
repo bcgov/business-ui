@@ -320,6 +320,20 @@ export const useBusinessApi = () => {
   }
 
   /**
+   * Fetches business addresses by its business identifier.
+   * @param businessId the identifier of the business
+   * @returns a promise to return the addresses for this business
+   */
+  async function getBusinessAddresses(businessId: string) {
+    const query = defineQuery({
+      key: ['businessAddresses', businessId],
+      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${businessId}/addresses`),
+      staleTime: 60000
+    })
+    return query()
+  }
+
+  /**
    * Fetches the auth info of the given business.
    * @returns a promise to return the data
    */
@@ -351,6 +365,7 @@ export const useBusinessApi = () => {
     getPendingTask,
     getAndValidateDraftFiling,
     createFilingPayload,
+    getBusinessAddresses,
     // auth/entity queries
     getAuthInfo
   }

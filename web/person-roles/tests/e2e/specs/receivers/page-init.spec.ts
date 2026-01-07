@@ -15,6 +15,7 @@ test.describe('Manage Receivers - Page init', () => {
         { index: 1, key: 'roleType', value: 'Receiver' },
         { index: 2, key: 'roleType', value: 'Receiver' }
       ]),
+      undefined,
       undefined
     )
     await navigateToManageReceiversPage(page, ReceiverType.APPOINT)

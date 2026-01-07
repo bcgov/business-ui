@@ -41,21 +41,13 @@ export async function navigateToManageLiquidatorsPage(page: Page, filingSubType:
   await expect(page.getByText('1. Liquidator Information').first()).toBeVisible()
 }
 
-export async function navigateToIntentToLiquidatePage(page: Page) {
-  // navigate to page
-  await page.goto(`./en-CA/manage-liquidators/${identifier}/intent-to-liquidate`)
-  // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
-  // wait for heading, this will wait for the loading state to finish on initial page mount
-  await expect(page.getByText('Intent to Liquidate').first()).toBeVisible()
-}
-
 export async function setupOfficerChangePage(page: Page, includeNavigation = true) {
   await mockCommonApiCallsForFiling(
     page,
     identifier,
     partiesBC1234567,
-    NOCOI
+    NOCOI,
+    undefined
   )
   // business api business tasks GET
   await page.route(`*/**/businesses/${identifier}/tasks`, async (route) => {

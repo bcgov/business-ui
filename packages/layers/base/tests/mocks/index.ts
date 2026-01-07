@@ -1,5 +1,6 @@
 export * from './bootstrap'
 export * from './business'
+export * from './business-addresses'
 export * from './business-comments'
 export * from './business-ledger'
 export * from './business-permissions'

@@ -22,7 +22,7 @@ const { handleButtonLoading } = useConnectButtonControl()
 const FILING_TYPE = FilingType.CHANGE_OF_LIQUIDATORS
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as LiquidateType
-const isIntentToLiquidate = filingSubType === LiquidateType.INTENT
+const isIntentOrAddressChange = filingSubType === LiquidateType.INTENT || filingSubType === LiquidateType.ADDRESS
 
 useHead({
   title: t(`page.${FILING_TYPE}.${filingSubType}.title`)
@@ -165,7 +165,7 @@ useFilingPageWatcher<LiquidateType>({
     />
 
     <ConnectFieldset
-      v-if="isIntentToLiquidate"
+      v-if="isIntentOrAddressChange"
       data-testid="records-office-section"
       :label="'4. ' + t('label.liquidationRecordsOfficeAddress')"
       :description="t('text.liquidationRecordsOfficeAddressDesc')"
@@ -187,7 +187,7 @@ useFilingPageWatcher<LiquidateType>({
     <!-- TODO: add text/translation -->
     <ConnectFieldset
       data-testid="staff-payment-section"
-      :label="(isIntentToLiquidate ? '5. ' : '4.') + 'Staff Payment'"
+      :label="(isIntentOrAddressChange ? '5. ' : '4.') + 'Staff Payment'"
       body-variant="card"
     >
       <ConnectFormFieldWrapper label="Payment" orientation="horizontal">

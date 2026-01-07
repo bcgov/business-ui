@@ -1,5 +1,5 @@
 export interface LiquidatorPayload extends FilingPayloadData {
-  relationships: BusinessRelationship[]
+  relationships?: BusinessRelationship[]
   type: LiquidateType
   offices?: {
     liquidationRecordsOffice: {
@@ -15,3 +15,5 @@ export interface ChangeOfLiquidators {
 }
 
 export type LiquidatorDraftState = FilingGetByIdResponse<ChangeOfLiquidators>
+
+export type LiquidationRecordsOffice = Omit<LiquidatorFormSchema['recordsOffice'], 'sameAs'> | undefined

@@ -99,6 +99,18 @@ describe('useLiquidatorStore', () => {
       ]
     }
 
+    const addressesResponse = {
+      liquidationRecordsOffice: {
+        mailingAddress: {
+          ...getFakeAddress()
+        },
+        deliveryAddress: {
+          ...getFakeAddress()
+        },
+        sameAs: false
+      }
+    }
+
     describe('when starting a new filing (no draftId)', () => {
       it('should set table state from parties response and init formState defaults', async () => {
         mockInitFiling.mockResolvedValue({
@@ -112,6 +124,24 @@ describe('useLiquidatorStore', () => {
 
         expect(tableState.value).toEqual(partiesResponse.data)
         expect(store.formState).toEqual(schemaDefault)
+      })
+
+      it('should init records office when filing type = address change', async () => {
+        mockInitFiling.mockResolvedValue({
+          draftFiling: undefined,
+          parties: { data: partiesResponse.data },
+          addresses: { data: addressesResponse }
+        })
+
+        await store.init(identifier, LiquidateType.ADDRESS)
+
+        expect(store.initializing).toBe(false)
+
+        expect(tableState.value).toEqual(partiesResponse.data)
+        expect(store.formState.recordsOffice.deliveryAddress)
+          .toEqual(addressesResponse.liquidationRecordsOffice?.deliveryAddress)
+        expect(store.formState.recordsOffice.mailingAddress)
+          .toEqual(addressesResponse.liquidationRecordsOffice?.mailingAddress)
       })
 
       it('should set empty table when API returns no parties', async () => {
@@ -264,10 +294,13 @@ describe('useLiquidatorStore', () => {
       store.formState.staffPayment = { option: StaffPaymentOption.BCOL }
       // @ts-expect-error - partial object
       store.formState.activeParty = { id: 'X' }
+      // @ts-expect-error - incorrect object
+      store.currentLiquidationOffice = { some: 'address' }
 
       store.$reset()
 
       expect(store.formState).toEqual(schemaDefault)
+      expect(store.currentLiquidationOffice).toBeUndefined()
     })
   })
 })

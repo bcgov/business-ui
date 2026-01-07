@@ -7,7 +7,7 @@ export interface NameRequestFilingData {
 
 export interface BootstrapFilingData {
   nameRequest?: NameRequestFilingData
-  offices?: EntityOfficeAddress
+  offices?: ApiEntityOfficeAddress
   parties?: OrgPerson
 }
 

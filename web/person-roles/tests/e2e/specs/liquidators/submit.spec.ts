@@ -5,7 +5,7 @@ import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
 import type { BusinessEntity, BusinessRelationship } from '#business/app/interfaces/business-relationship'
-import { mockCommonApiCallsForFiling, getPartiesMock } from '#test-mocks'
+import { mockCommonApiCallsForFiling, getPartiesMock, getBusinessAddressesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
@@ -63,7 +63,8 @@ test.describe('Manage Liquidators - Submission', () => {
         { index: 1, key: 'roleType', value: 'Liquidator' },
         { index: 2, key: 'roleType', value: 'Liquidator' }
       ]),
-      undefined
+      undefined,
+      getBusinessAddressesMock()
     )
   })
 
@@ -190,45 +191,78 @@ test.describe('Manage Liquidators - Submission', () => {
       const request = await submitRequest
       const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
       expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.CEASE)
-      expect(requestBody.filing.changeOfLiquidators.relationships.length).toBe(1)
-      expect(requestBody.filing.changeOfLiquidators.relationships[0]!.actions).toEqual([ActionType.REMOVED])
-      expect(requestBody.filing.changeOfLiquidators.relationships[0]!.roles.length).toBe(1)
-      expect(requestBody.filing.changeOfLiquidators.relationships[0]!.roles[0]!.cessationDate).toBeDefined()
+      expect(requestBody.filing.changeOfLiquidators.relationships!.length).toBe(1)
+      expect(requestBody.filing.changeOfLiquidators.relationships![0]!.actions).toEqual([ActionType.REMOVED])
+      expect(requestBody.filing.changeOfLiquidators.relationships![0]!.roles.length).toBe(1)
+      expect(requestBody.filing.changeOfLiquidators.relationships![0]!.roles[0]!.cessationDate).toBeDefined()
     })
 
-    test('changeAddressLiquidator', async ({ page }) => {
-      await navigateToManageLiquidatorsPage(page, LiquidateType.ADDRESS)
-      await page.waitForLoadState('networkidle')
-      const newAddress: ApiAddress = {
-        streetAddress: 'changed street',
-        streetAddressAdditional: '',
-        addressCity: 'newCity',
-        addressCountry: 'CA',
-        addressRegion: 'BC',
-        deliveryInstructions: '',
-        postalCode: 'V1N 4H8'
-      }
-      const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
-      expect(existingLiquidator).toBeVisible()
-      const changeBtn = existingLiquidator.getByRole('button', { name: 'Change' })
-      expect(changeBtn).toBeVisible()
-      await changeBtn.click()
-      await fillOutAddress(page, newAddress)
-      await selectDone(page)
-      const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
-      await staffNoFeeRadio.click()
+    test.describe('changeAddressLiquidator', () => {
+      test('change address of a party', async ({ page }) => {
+        await navigateToManageLiquidatorsPage(page, LiquidateType.ADDRESS)
+        await page.waitForLoadState('networkidle')
+        const newAddress: ApiAddress = {
+          streetAddress: 'changed street',
+          streetAddressAdditional: '',
+          addressCity: 'newCity',
+          addressCountry: 'CA',
+          addressRegion: 'BC',
+          deliveryInstructions: '',
+          postalCode: 'V1N 4H8'
+        }
+        const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
+        expect(existingLiquidator).toBeVisible()
+        const changeBtn = existingLiquidator.getByRole('button', { name: 'Change' })
+        expect(changeBtn).toBeVisible()
+        await changeBtn.click()
+        await fillOutAddress(page, newAddress)
+        await selectDone(page)
+        const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
+        expect(staffNoFeeRadio).toBeVisible()
+        await staffNoFeeRadio.click()
 
-      const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
-      const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
-      await submitBtn.click()
-      const request = await submitRequest
-      const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
-      expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
-      expect(requestBody.filing.changeOfLiquidators.relationships.length).toBe(1)
-      expect(requestBody.filing.changeOfLiquidators.relationships[0]!.actions).toEqual([ActionType.ADDRESS_CHANGED])
-      expect(requestBody.filing.changeOfLiquidators.relationships[0]!.deliveryAddress).toEqual(newAddress)
+        const submitBtn = page.getByRole('button', { name: 'Submit' })
+        expect(submitBtn).toBeVisible()
+        const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
+        await submitBtn.click()
+        const request = await submitRequest
+        const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
+        expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
+        expect(requestBody.filing.changeOfLiquidators.relationships!.length).toBe(1)
+        expect(requestBody.filing.changeOfLiquidators.relationships![0]!.actions).toEqual([ActionType.ADDRESS_CHANGED])
+        expect(requestBody.filing.changeOfLiquidators.relationships![0]!.deliveryAddress).toEqual(newAddress)
+      })
+
+      test('change address of the liquidation records office', async ({ page }) => {
+        await navigateToManageLiquidatorsPage(page, LiquidateType.ADDRESS)
+        await page.waitForLoadState('networkidle')
+        const newAddress: ApiAddress = {
+          streetAddress: 'changed street',
+          streetAddressAdditional: '',
+          addressCity: 'newCity',
+          addressCountry: 'CA',
+          addressRegion: 'BC',
+          deliveryInstructions: '',
+          postalCode: 'V1N 4H8'
+        }
+        await fillOutAddress(page, newAddress)
+        const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
+        expect(staffNoFeeRadio).toBeVisible()
+        await staffNoFeeRadio.click()
+
+        const submitBtn = page.getByRole('button', { name: 'Submit' })
+        expect(submitBtn).toBeVisible()
+        const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
+        await submitBtn.click()
+        const request = await submitRequest
+        const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
+        expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
+        expect(requestBody.filing.changeOfLiquidators.relationships).toBeUndefined()
+        expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.deliveryAddress)
+          .toEqual(newAddress)
+        expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress)
+          .toEqual(newAddress)
+      })
     })
   })
 })
