@@ -196,6 +196,7 @@ useFilingPageWatcher<LiquidateType>({
           v-model="liquidatorStore.formState.staffPayment"
           :show-priority="true"
           name="staffPayment"
+          :enable-auto-reset="!liquidatorStore.initializing"
         />
       </ConnectFormFieldWrapper>
     </ConnectFieldset>

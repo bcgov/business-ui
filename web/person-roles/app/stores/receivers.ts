@@ -48,6 +48,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         ? getPartiesMergedWithRelationships(parties.data, draftRelationships)
         : parties.data
     }
+    await nextTick()
     initializing.value = false
   }
 
@@ -85,10 +86,9 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   }
 
   function $reset() {
-    const emptyObj = receiverSchema.parse({})
+    const defaults = receiverSchema.parse({})
+    Object.assign(formState, defaults)
     formState.activeParty = undefined
-    formState.courtOrder = emptyObj.courtOrder
-    formState.staffPayment = emptyObj.staffPayment
   }
 
   return {
