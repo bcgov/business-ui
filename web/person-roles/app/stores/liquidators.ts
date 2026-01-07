@@ -37,6 +37,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       draftFilingState.value = draftFiling.data.value
       const filingData = draftFilingState.value.filing
       formState.staffPayment = formatStaffPaymentUi(filingData.header)
+
       if (filingData.changeOfLiquidators.courtOrder) {
         formState.courtOrder = formatCourtOrderUi(filingData.changeOfLiquidators.courtOrder)
       }
@@ -69,6 +70,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       }
     }
 
+    await nextTick()
     initializing.value = false
   }
 

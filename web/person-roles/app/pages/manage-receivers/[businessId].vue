@@ -173,6 +173,7 @@ useFilingPageWatcher<ReceiverType>({
           v-model="receiverStore.formState.staffPayment"
           :show-priority="true"
           name="staffPayment"
+          :enable-auto-reset="!receiverStore.initializing"
         />
       </ConnectFormFieldWrapper>
     </ConnectFieldset>

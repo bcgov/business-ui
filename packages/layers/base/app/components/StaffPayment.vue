@@ -2,7 +2,10 @@
 import type { Form, RadioGroupItem } from '@nuxt/ui'
 
 const staffPayment = defineModel<StaffPaymentSchema>({ required: true })
-defineProps<{ showPriority?: boolean }>()
+const { enableAutoReset = true } = defineProps<{
+  showPriority?: boolean
+  enableAutoReset?: boolean
+}>()
 
 const { t } = useI18n()
 
@@ -12,7 +15,7 @@ const staffPayStore = useStaffPaymentStore()
 
 const schema = getStaffPaymentSchema()
 
-const clearOptionData = () => {
+const resetOptionData = () => {
   staffPayment.value = {
     ...staffPayStore.getEmptyStaffPayment(),
     isPriority: staffPayment.value.isPriority,
@@ -29,7 +32,10 @@ const radioItems: RadioGroupItem[] = [
 const staffPaymentForm = useTemplateRef<Form<StaffPaymentSchema>>('staffPaymentForm')
 watch(() => staffPayment.value.option, async (val) => {
   feeStore.updateAllFees(staffPayment.value.isPriority, val === StaffPaymentOption.NO_FEE)
-  clearOptionData()
+
+  if (enableAutoReset) {
+    resetOptionData()
+  }
   // NB: needs to render in the dom before clearing the validation.
   await nextTick()
   staffPaymentForm.value?.clear()
@@ -39,12 +45,9 @@ watch(() => staffPayment.value.isPriority, (val) => {
   feeStore.updateAllFees(val, staffPayment.value.option === StaffPaymentOption.NO_FEE)
 })
 
-onMounted(() => {
-  staffPayment.value = staffPayStore.getEmptyStaffPayment()
-})
-
 function setFocusOnError() {
-  // @ts-expect-error - $el not typed on form ref
+  // @ts-expect-error - $el not typed on form ref // TODO: this should be fixed in th elatest verison of nuxt ui
+  // shouldn't need to use .$el anymore
   const form = staffPaymentForm.value?.$el as HTMLDivElement | undefined
 
   if (form) {
