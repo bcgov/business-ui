@@ -23,7 +23,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     initializing.value = true
     liquidateSubType.value = filingSubType
     // reset any previous state (ex: user switches accounts) and init loading state
-    // $reset()
+    $reset()
     const { draftFiling, parties, addresses } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
@@ -36,8 +36,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     if (draftFiling?.data.value?.filing) {
       draftFilingState.value = draftFiling.data.value
       const filingData = draftFilingState.value.filing
-
-      Object.assign(formState.staffPayment, formatStaffPaymentUi(filingData.header))
+      formState.staffPayment = formatStaffPaymentUi(filingData.header)
 
       if (filingData.changeOfLiquidators.courtOrder) {
         formState.courtOrder = formatCourtOrderUi(filingData.changeOfLiquidators.courtOrder)
