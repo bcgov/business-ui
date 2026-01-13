@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.8.0
+
+### Minor Changes
+
+- [#354](https://github.com/bcgov/business-ui/pull/354) [`b93ec23`](https://github.com/bcgov/business-ui/commit/b93ec23fcce7165c48738ba27d8fb98fc841bcd4) Thanks [@deetz99](https://github.com/deetz99)! - Implement business service and cache layer abstraction data fetching
+
 ## 0.7.0
 
 ### Minor Changes
