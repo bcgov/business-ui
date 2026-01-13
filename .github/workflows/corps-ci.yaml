@@ -15,9 +15,9 @@ jobs:
   corps-ui-ci:
     uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
     with:
-      app_name: "corps"
+      app_name: "business-corps"
       working_directory: "./web/corps"
-      codecov_flag: "corps"
+      codecov_flag: "businesscorps"
       node_version: 24
       pnpm_version: 10.0.0
 
