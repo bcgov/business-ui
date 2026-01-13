@@ -1,3 +1,5 @@
+import { getCachedOrFetch } from '../helpers'
+
 /**
  * BUSINESS SERVICE
  *
@@ -26,7 +28,7 @@
 //   try {
 //    business.value = await service.getBusiness('123')
 //   } catch (e) {
-//     handle error
+//     ...handle error
 //   } finally {
 //     loading.value = false
 //   }
@@ -39,7 +41,6 @@
 
 export const useBusinessService = () => {
   const query = useBusinessQuery()
-  const nuxtApp = useNuxtApp()
 
   /**
    * Fetches business addresses by its business identifier.
@@ -47,10 +48,8 @@ export const useBusinessService = () => {
    * @returns a promise to return the addresses for this business
    */
   async function getAddresses(businessId: string, force = false) {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.addresses(businessId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.addressesOptions(businessId)
+    return await getCachedOrFetch<ApiEntityOfficeAddress>(options, force)
   }
 
   /**
@@ -66,28 +65,25 @@ export const useBusinessService = () => {
     draftId: number | string,
     filingName: FilingType,
     force = false
-  ) {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.filing<F>(businessId, draftId))
-    const method = force ? refetch : refresh
-    await method(true)
+  ): Promise<FilingGetByIdResponse<F>> {
+    const options = query.filingOptions<F>(businessId, draftId)
+    const result = await getCachedOrFetch(options, force)
 
-    const isValid = isValidDraft<F>(filingName, data.value)
+    const isValid = isValidDraft<F>(filingName, result)
     if (!isValid) {
       throw new Error('invalid-draft-filing')
     }
 
-    return data.value!
+    return result
   }
 
   /**
    * Fetches the auth info of the given business.
    * @returns a promise to return the data
    */
-  async function getAuthInfo(businessId: string, force = false) {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.authInfo(businessId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+  async function getAuthInfo(businessId: string, force = false): Promise<AuthInformation> {
+    const options = query.authInfoOptions(businessId)
+    return await getCachedOrFetch(options, force)
   }
 
   /**
@@ -95,10 +91,9 @@ export const useBusinessService = () => {
    * @returns a promise to return authorized actions list
    */
   async function getAuthorizedActions(businessId: string, force = false): Promise<AuthorizedAction[]> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.authorizedActions(businessId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!.authorizedPermissions
+    const options = query.authorizedActionsOptions(businessId)
+    return await getCachedOrFetch<{ authorizedPermissions: AuthorizedAction[] }>(options, force)
+      .then(res => res.authorizedPermissions)
   }
 
   /**
@@ -113,10 +108,9 @@ export const useBusinessService = () => {
     slim = false,
     force = false
   ): Promise<BusinessDataSlim | BusinessData> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.business(businessId, slim))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!.business
+    const options = query.businessOptions(businessId, slim)
+    return await getCachedOrFetch<{ business: BusinessData | BusinessDataSlim }>(options, force)
+      .then(res => res.business)
   }
 
   /**
@@ -132,10 +126,8 @@ export const useBusinessService = () => {
       console.error('Attempting to get bootstrap filing with invalid temp reg id:', tempRegId)
       return
     }
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.bootstrapFiling(tempRegId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.bootstrapFilingOptions(tempRegId)
+    return await getCachedOrFetch(options, force)
   }
 
   /**
@@ -145,10 +137,8 @@ export const useBusinessService = () => {
    * @returns the fetch documents object
    */
   async function getDocument(businessId: string, url: string, filename: string, force = false): Promise<Blob> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.document(businessId, url, filename))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.documentOptions(businessId, url, filename)
+    return await getCachedOrFetch(options, force)
   }
 
   /**
@@ -162,10 +152,8 @@ export const useBusinessService = () => {
     filingId: number | string,
     force = false
   ): Promise<FilingGetByIdResponse<F>> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.filing<F>(businessId, filingId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.filingOptions<F>(businessId, filingId)
+    return await getCachedOrFetch(options, force)
   }
 
   /**
@@ -179,12 +167,9 @@ export const useBusinessService = () => {
     url: string,
     force = false
   ): Promise<BusinessComment[]> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(
-      () => query.filingComments(businessId, filingId, url)
-    )
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!.comments.map(comment => comment.comment).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+    const options = query.filingCommentsOptions(businessId, filingId, url)
+    const result = await getCachedOrFetch(options, force)
+    return result.comments.map(comment => comment.comment).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
   }
 
   /**
@@ -198,12 +183,8 @@ export const useBusinessService = () => {
     filingId: string,
     force = false
   ): Promise<BusinessFilingDocumentUrls> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(
-      () => query.filingDocumentUrls(businessId, filingId)
-    )
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!.documents
+    const options = query.filingDocumentUrlsOptions(businessId, filingId)
+    return await getCachedOrFetch(options, force).then(res => res.documents)
   }
 
   /**
@@ -215,15 +196,13 @@ export const useBusinessService = () => {
     businessId: string,
     effectiveDate?: IsoDatePacific,
     force = false
-  ) {
+  ): Promise<BusinessLedgerItem[] | undefined> {
     if (isTempRegIdentifier(businessId)) {
       console.error('Attempting to get business ledger with a temp reg id:', businessId)
       return
     }
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.ledger(businessId, effectiveDate))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.ledgerOptions(businessId, effectiveDate)
+    return await getCachedOrFetch(options, force).then(res => res.filings)
   }
 
   /**
@@ -232,10 +211,8 @@ export const useBusinessService = () => {
    * @returns a promise to return the Name Request information for this temporary business
    */
   async function getLinkedNameRequest(businessId: string, nrNumber: string, force = false): Promise<NameRequest> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.linkedNameRequest(businessId, nrNumber))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+    const options = query.linkedNameRequestOptions(businessId, nrNumber)
+    return await getCachedOrFetch(options, force)
   }
 
   /**
@@ -243,11 +220,9 @@ export const useBusinessService = () => {
    * @param businessId the business identifier (aka entity inc no)
    * @returns A promise that resolves the business tasks.
   */
-  async function getTasks(businessId: string, force = false): Promise<TaskGetResponse> {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.tasks(businessId))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+  async function getTasks(businessId: string, force = false): Promise<TaskItem[]> {
+    const options = query.tasksOptions(businessId)
+    return await getCachedOrFetch(options, force).then(res => res.tasks)
   }
 
   /**
@@ -256,11 +231,13 @@ export const useBusinessService = () => {
    * @param partyQuery the query to add to the request (e.g., { role: 'director' })
    * @returns a promise to return the data
    */
-  async function getParties(businessId: string, partyQuery?: Record<string, unknown>, force = false) {
-    const { data, refresh, refetch } = await nuxtApp.runWithContext(() => query.parties(businessId, partyQuery))
-    const method = force ? refetch : refresh
-    await method(true)
-    return data.value!
+  async function getParties(
+    businessId: string,
+    partyQuery?: Record<string, unknown>,
+    force = false
+  ): Promise<OrgPerson[]> {
+    const options = query.partiesOptions(businessId, partyQuery)
+    return await getCachedOrFetch(options, force).then(res => res.parties)
   }
 
   return {

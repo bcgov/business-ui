@@ -24,7 +24,7 @@ const {
   error: bError,
   refresh: refreshBusiness,
   refetch: refetchBusiness
-} = query.business(businessId, false, { enabled })
+} = query.business(businessId, false, { enabled, staleTime: 5000 })
 
 const {
   data: addresses,
@@ -49,9 +49,9 @@ function invalidateACache(id: string) {
   cache.invalidateQueries({ key })
 }
 
-async function triggerBService() {
+async function triggerBService(force: boolean) {
   try {
-    await service.getBusiness(businessId.value, false, true)
+    await service.getBusiness(businessId.value, false, force)
   } catch (e) {
     console.error('Caught error: ', e)
   }
@@ -84,7 +84,7 @@ async function triggerAService() {
         {
           label: 'Invalidate all via partial match',
           onClick: () => {
-            cache.invalidateQueries({ key: base })
+            cache.invalidateQueries({ key: base, active: true })
           }
         }
       ]"
@@ -114,10 +114,16 @@ async function triggerAService() {
               @click="invalidateBCache(businessId)"
             />
             <UButton
-              label="Trigger Service"
+              label="Trigger Service (force = true)"
               size="xs"
               variant="ghost"
-              @click="triggerBService"
+              @click="triggerBService(true)"
+            />
+            <UButton
+              label="Trigger Service (force = false)"
+              size="xs"
+              variant="ghost"
+              @click="triggerBService(false)"
             />
           </div>
 

@@ -18,7 +18,7 @@ export interface TaskTodo {
   displayName?: string // for app tasks only
   dissolution?: unknown
   documents?: Array<unknown>
-  header: FilingHeader
+  header: FilingHeaderResponse
   incorporationApplication?: unknown
   registrarsNotation?: unknown
   registrarsOrder?: unknown
