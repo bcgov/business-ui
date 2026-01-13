@@ -1,3 +1,6 @@
+// IMPORTANT: This service is meant as an abstraction layer to interact with the cache and queries directly
+// IMPORTANT: do not define raw api requests in this file - define the request in either the query or mutate file
+// and abstract here if necessary
 import { getCachedOrFetch } from '../helpers'
 
 /**

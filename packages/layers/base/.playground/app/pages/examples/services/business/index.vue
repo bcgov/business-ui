@@ -57,9 +57,9 @@ async function triggerBService(force: boolean) {
   }
 }
 
-async function triggerAService() {
+async function triggerAService(force: boolean) {
   try {
-    await service.getAddresses(businessId.value, true)
+    await service.getAddresses(businessId.value, force)
   } catch (e) {
     console.error('Caught error: ', e)
   }
@@ -177,10 +177,16 @@ async function triggerAService() {
               @click="invalidateACache(businessId)"
             />
             <UButton
-              label="Trigger Service"
+              label="Trigger Service (force = true)"
               size="xs"
               variant="ghost"
-              @click="triggerAService"
+              @click="triggerAService(true)"
+            />
+            <UButton
+              label="Trigger Service (force = false)"
+              size="xs"
+              variant="ghost"
+              @click="triggerAService(false)"
             />
           </div>
 

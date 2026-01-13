@@ -1,9 +1,14 @@
+// IMPORTANT: Query definitions are for GET requests only - for all other methods define a mutation in the ./mutate file
 // https://pinia-colada.esm.dev/guide/queries.html
 import { useQuery } from '@pinia/colada'
 import type { UseQueryOptions, DefineQueryOptions } from '@pinia/colada'
 
 type QueryOptions<T> = Omit<UseQueryOptions<T>, 'key' | 'query'> & {
   query?: UseQueryOptions<T>['query']
+}
+
+type DefineOptions<TData, TError = Error> = Omit<DefineQueryOptions<TData, TError>, 'key' | 'query'> & {
+  query?: DefineQueryOptions<TData, TError>['query']
 }
 
 const DEFAULT_STALE_TIME = 60000
@@ -14,7 +19,7 @@ export const useBusinessQuery = () => {
 
   function addressesOptions(
     businessId: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<ApiEntityOfficeAddress>
+    options?: DefineOptions<ApiEntityOfficeAddress>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${toValue(businessId)}/addresses`),
@@ -28,12 +33,12 @@ export const useBusinessQuery = () => {
     businessId: MaybeRefOrGetter<string>,
     options?: QueryOptions<ApiEntityOfficeAddress>
   ) {
-    return useQuery(() => addressesOptions(businessId, options as DefineQueryOptions<ApiEntityOfficeAddress>))
+    return useQuery(() => addressesOptions(businessId, options as DefineOptions<ApiEntityOfficeAddress>))
   }
 
   function authorizedActionsOptions(
     businessId: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<{ authorizedPermissions: AuthorizedAction[] }>
+    options?: Partial<DefineOptions<{ authorizedPermissions: AuthorizedAction[] }>>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<{ authorizedPermissions: AuthorizedAction[] }>('/permissions'),
@@ -48,14 +53,14 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<{ authorizedPermissions: AuthorizedAction[] }>
   ) {
     return useQuery(() => authorizedActionsOptions(
-      businessId, options as DefineQueryOptions<{ authorizedPermissions: AuthorizedAction[] }>)
+      businessId, options as DefineOptions<{ authorizedPermissions: AuthorizedAction[] }>)
     )
   }
 
   function businessOptions(
     businessId: MaybeRefOrGetter<string>,
     slim: boolean,
-    options?: DefineQueryOptions<{ business: BusinessData | BusinessDataSlim }>
+    options?: DefineOptions<{ business: BusinessData | BusinessDataSlim }>
   ) {
     return defineQueryOptions({
       query: () => $businessApi(`businesses/${toValue(businessId)}`, {
@@ -73,7 +78,7 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<{ business: BusinessData | BusinessDataSlim }>
   ) {
     return useQuery(() => businessOptions(
-      businessId, slim, options as DefineQueryOptions<{ business: BusinessData | BusinessDataSlim }>
+      businessId, slim, options as DefineOptions<{ business: BusinessData | BusinessDataSlim }>
     ))
   }
 
@@ -81,7 +86,7 @@ export const useBusinessQuery = () => {
     businessId: MaybeRefOrGetter<string>,
     url: string,
     filename: string,
-    options?: DefineQueryOptions<Blob>
+    options?: DefineOptions<Blob>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<Blob>('', {
@@ -100,12 +105,12 @@ export const useBusinessQuery = () => {
     filename: string,
     options?: QueryOptions<Blob>
   ) {
-    return useQuery(() => documentOptions(businessId, url, filename, options as DefineQueryOptions<Blob>))
+    return useQuery(() => documentOptions(businessId, url, filename, options as DefineOptions<Blob>))
   }
 
   function bootstrapFilingOptions(
     tempRegId: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<FilingGetByIdResponse<BootstrapFiling>>
+    options?: DefineOptions<FilingGetByIdResponse<BootstrapFiling>>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<FilingGetByIdResponse<BootstrapFiling>>(`businesses/${toValue(tempRegId)}/filings`),
@@ -120,14 +125,14 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<FilingGetByIdResponse<BootstrapFiling>>
   ) {
     return useQuery(
-      () => bootstrapFilingOptions(tempRegId, options as DefineQueryOptions<FilingGetByIdResponse<BootstrapFiling>>)
+      () => bootstrapFilingOptions(tempRegId, options as DefineOptions<FilingGetByIdResponse<BootstrapFiling>>)
     )
   }
 
   function filingOptions<F extends FilingRecord>(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    options?: DefineQueryOptions<FilingGetByIdResponse<F>>
+    options?: DefineOptions<FilingGetByIdResponse<F>>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<FilingGetByIdResponse<F>>(
@@ -144,14 +149,14 @@ export const useBusinessQuery = () => {
     filingId: MaybeRefOrGetter<string | number>,
     options?: QueryOptions<FilingGetByIdResponse<F>>
   ) {
-    return useQuery(() => filingOptions(businessId, filingId, options as DefineQueryOptions<FilingGetByIdResponse<F>>))
+    return useQuery(() => filingOptions(businessId, filingId, options as DefineOptions<FilingGetByIdResponse<F>>))
   }
 
   function filingCommentsOptions(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
     url: string,
-    options?: DefineQueryOptions<{ comments: { comment: BusinessComment }[] }>
+    options?: DefineOptions<{ comments: { comment: BusinessComment }[] }>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<{ comments: { comment: BusinessComment }[] }>('', { baseURL: url }),
@@ -168,14 +173,14 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<{ comments: { comment: BusinessComment }[] }>
   ) {
     return useQuery(() => filingCommentsOptions(
-      businessId, filingId, url, options as DefineQueryOptions<{ comments: { comment: BusinessComment }[] }>
+      businessId, filingId, url, options as DefineOptions<{ comments: { comment: BusinessComment }[] }>
     ))
   }
 
   function filingDocumentUrlsOptions(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    options?: DefineQueryOptions<{ documents: BusinessFilingDocumentUrls }>
+    options?: DefineOptions<{ documents: BusinessFilingDocumentUrls }>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<{ documents: BusinessFilingDocumentUrls }>(
@@ -193,14 +198,14 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<{ documents: BusinessFilingDocumentUrls }>
   ) {
     return useQuery(() => filingDocumentUrlsOptions(
-      businessId, filingId, options as DefineQueryOptions<{ documents: BusinessFilingDocumentUrls }>)
+      businessId, filingId, options as DefineOptions<{ documents: BusinessFilingDocumentUrls }>)
     )
   }
 
   function ledgerOptions(
     businessId: MaybeRefOrGetter<string>,
     effectiveDate?: IsoDatePacific,
-    options?: DefineQueryOptions<{ filings: BusinessLedgerItem[] }>
+    options?: DefineOptions<{ filings: BusinessLedgerItem[] }>
   ) {
     const config = { params: effectiveDate ? { effective_date: effectiveDate } : {} }
     return defineQueryOptions({
@@ -217,14 +222,14 @@ export const useBusinessQuery = () => {
     options?: QueryOptions<{ filings: BusinessLedgerItem[] }>
   ) {
     return useQuery(
-      () => ledgerOptions(businessId, effectiveDate, options as DefineQueryOptions<{ filings: BusinessLedgerItem[] }>)
+      () => ledgerOptions(businessId, effectiveDate, options as DefineOptions<{ filings: BusinessLedgerItem[] }>)
     )
   }
 
   function linkedNameRequestOptions(
     businessId: MaybeRefOrGetter<string>,
     nrNumber: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<NameRequest>
+    options?: DefineOptions<NameRequest>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<NameRequest>(`nameRequests/${toValue(nrNumber)}/validate`),
@@ -239,13 +244,13 @@ export const useBusinessQuery = () => {
     nrNumber: MaybeRefOrGetter<string>,
     options?: QueryOptions<NameRequest>
   ) {
-    return useQuery(() => linkedNameRequestOptions(businessId, nrNumber, options as DefineQueryOptions<NameRequest>))
+    return useQuery(() => linkedNameRequestOptions(businessId, nrNumber, options as DefineOptions<NameRequest>))
   }
 
   function partiesOptions(
     businessId: MaybeRefOrGetter<string>,
     query?: Record<string, unknown>,
-    options?: DefineQueryOptions<{ parties: OrgPerson[] }>
+    options?: DefineOptions<{ parties: OrgPerson[] }>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<{ parties: OrgPerson[] }>(`businesses/${toValue(businessId)}/parties`, {
@@ -262,12 +267,12 @@ export const useBusinessQuery = () => {
     query?: Record<string, unknown>,
     options?: QueryOptions<{ parties: OrgPerson[] }>
   ) {
-    return useQuery(() => partiesOptions(businessId, query, options as DefineQueryOptions<{ parties: OrgPerson[] }>))
+    return useQuery(() => partiesOptions(businessId, query, options as DefineOptions<{ parties: OrgPerson[] }>))
   }
 
   function tasksOptions(
     businessId: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<TaskGetResponse>
+    options?: DefineOptions<TaskGetResponse>
   ) {
     return defineQueryOptions({
       query: () => $businessApi<TaskGetResponse>(`businesses/${toValue(businessId)}/tasks`),
@@ -281,13 +286,13 @@ export const useBusinessQuery = () => {
     businessId: MaybeRefOrGetter<string>,
     options?: QueryOptions<TaskGetResponse>
   ) {
-    return useQuery(() => tasksOptions(businessId, options as DefineQueryOptions<TaskGetResponse>))
+    return useQuery(() => tasksOptions(businessId, options as DefineOptions<TaskGetResponse>))
   }
 
   // auth api queries
   function authInfoOptions(
     businessId: MaybeRefOrGetter<string>,
-    options?: DefineQueryOptions<AuthInformation>
+    options?: DefineOptions<AuthInformation>
   ) {
     return defineQueryOptions({
       query: () => $authApi<AuthInformation>(`/entities/${toValue(businessId)}`),
@@ -301,7 +306,7 @@ export const useBusinessQuery = () => {
     businessId: MaybeRefOrGetter<string>,
     options?: QueryOptions<AuthInformation>
   ) {
-    return useQuery(() => authInfoOptions(businessId, options as DefineQueryOptions<AuthInformation>))
+    return useQuery(() => authInfoOptions(businessId, options as DefineOptions<AuthInformation>))
   }
 
   return {
