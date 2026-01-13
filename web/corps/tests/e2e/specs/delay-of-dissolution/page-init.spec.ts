@@ -7,7 +7,7 @@ const identifier = 'BC1234567'
 
 test.describe('Delay of Dissolution - Page init', () => {
   test.beforeEach(async ({ page }) => {
-    await mockCommonApiCallsForFiling(page, identifier, undefined, DISDE)
+    await mockCommonApiCallsForFiling(page, identifier, undefined, DISDE, undefined)
     await navigateToDodPage(page, identifier)
     await page.waitForLoadState('networkidle')
   })
