@@ -1,4 +1,4 @@
-# Dissolution Home UI
+# Corps UI
 
 ## Tech
 - Framework: [Nuxt 4](https://nuxt.com/)
@@ -17,7 +17,7 @@ gh repo fork bcgov/business-ui
 > Ensure you have the env variables as defined in the `.env.example` file.
 Change into the directory and install the packages.
 ```bash
-cd bcgov/business-ui/dissolution
+cd bcgov/business-ui/corps
 pnpm install
 ```
 
