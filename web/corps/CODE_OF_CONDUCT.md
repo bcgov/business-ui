@@ -1,4 +1,4 @@
-# Code of Conduct - Dissolution UI
+# Code of Conduct - Corps UI
 
 ## Our Pledge
 

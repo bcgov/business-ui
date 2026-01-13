@@ -13,7 +13,8 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
 
   async function init(businessId: string, filingSubType?: DissolutionType, draftId?: string) {
-    if (!filingSubType) {
+    // FUTURE: if consolidating with other dissolution types update below condition
+    if (!filingSubType || filingSubType !== DissolutionType.DELAY) {
       await useFilingModals().openInitFilingErrorModal({ status: 500 })
       return
     }

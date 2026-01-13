@@ -1,23 +1,23 @@
-name: Dissolution UI CI
+name: Corps UI CI
 
 on:
   pull_request:
     paths:
-      - "web/dissolution/**"
+      - "web/corps/**"
   workflow_dispatch:
 
 defaults:
   run:
     shell: bash
-    working-directory: "./web/dissolution"
+    working-directory: "./web/corps"
 
 jobs:
-  dissolution-ui-ci:
+  corps-ui-ci:
     uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
     with:
-      app_name: "dissolution"
-      working_directory: "./web/dissolution"
-      codecov_flag: "dissolution"
+      app_name: "business-corps"
+      working_directory: "./web/corps"
+      codecov_flag: "businesscorps"
       node_version: 24
       pnpm_version: 10.0.0
 
@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ["dissolution"]
+        project: ["corps"]
         shardIndex: [1, 2, 3, 4 ]
         shardTotal: [4]
     defaults:
@@ -71,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ["dissolution"]
+        project: ["corps"]
     defaults:
       run:
         working-directory: ./web/${{ matrix.project }}

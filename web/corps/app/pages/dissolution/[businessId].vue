@@ -12,8 +12,8 @@ const modal = useFilingModals()
 const { handleButtonLoading } = useConnectButtonControl()
 
 const businessId = route.params.businessId as string
+const filingSubType = route.params.filingSubType as DissolutionType
 const FILING_TYPE = FilingType.DISSOLUTION
-const FILING_SUB_TYPE = FilingSubType.DISSOLUTION_DELAY
 
 const filingText = computed(() => {
   return {
@@ -26,7 +26,8 @@ const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.value.h1)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
-  middleware: ['connect-auth']
+  middleware: ['connect-auth'],
+  path: '/dissolution/:businessId/:filingSubType'
 })
 
 useHead({
@@ -72,12 +73,11 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-// TODO: update type
 useFilingPageWatcher<DissolutionType>({
   store,
   businessId,
+  filingSubType,
   filingType: FILING_TYPE,
-  filingSubType: FILING_SUB_TYPE,
   draftId: urlParams.draft as string | undefined,
   saveFiling: { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },

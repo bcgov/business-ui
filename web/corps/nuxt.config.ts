@@ -63,7 +63,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      version: `Dissolution UI v${process.env.npm_package_version || ''}`,
+      version: `Corps UI v${process.env.npm_package_version || ''}`,
       playwright: process.env.playwright === 'true'
     }
   }

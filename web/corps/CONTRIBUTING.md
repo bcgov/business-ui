@@ -1,5 +1,5 @@
 <!-- omit in toc -->
-# Contributing to Dissolution UI
+# Contributing to Corps UI
 
 All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. We forward to your contributions. 🎉
 
@@ -102,7 +102,7 @@ Once it's filed:
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for Dissolution UI, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
+This section guides you through submitting an enhancement suggestion for Corps UI, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
 
 <!-- omit in toc -->
 #### Before Submitting an Enhancement
