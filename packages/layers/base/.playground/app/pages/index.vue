@@ -74,6 +74,13 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Form/DocumentId')
   }
 ]
+
+const serviceExamples: DropdownMenuItem[] = [
+  {
+    label: 'Business Service',
+    to: localePath('/examples/services/business')
+  }
+]
 </script>
 
 <template>
@@ -98,6 +105,18 @@ const componentExamples: DropdownMenuItem[] = [
       >
         <UButton
           label="Component Examples"
+          icon="i-lucide-menu"
+          color="neutral"
+          variant="outline"
+        />
+      </UDropdownMenu>
+
+      <UDropdownMenu
+        :items="serviceExamples"
+        :content="{ align: 'start' }"
+      >
+        <UButton
+          label="Service Examples"
           icon="i-lucide-menu"
           color="neutral"
           variant="outline"
