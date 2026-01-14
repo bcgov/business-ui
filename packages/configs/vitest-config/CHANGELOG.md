@@ -1,5 +1,11 @@
 # @sbc-connect/vitest-config
 
+## 0.1.0
+
+### Minor Changes
+
+- [#357](https://github.com/bcgov/business-ui/pull/357) [`189fc1c`](https://github.com/bcgov/business-ui/commit/189fc1c1c24a31994b0d581ac13fb51aa33fada4) Thanks [@deetz99](https://github.com/deetz99)! - Update all dependencies - remove unnecessary custom css module workaround.
+
 ## 0.0.10
 
 ### Patch Changes
