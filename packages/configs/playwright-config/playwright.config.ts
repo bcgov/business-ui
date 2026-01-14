@@ -36,9 +36,6 @@ export default defineConfig<ConfigOptions>({
   reporter: [['list'], [process.env.CI ? 'blob' : 'html']],
   retries: 2,
   use: {
-    launchOptions: {
-      slowMo: 1000
-    },
     nuxt: {
       rootDir: resolve('./'),
       runner: 'vitest',

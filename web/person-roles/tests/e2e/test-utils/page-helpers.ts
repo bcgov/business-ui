@@ -15,28 +15,31 @@ export function getOfficerForm(page: Page) {
 }
 
 export async function navigateToOfficerChangePage(page: Page) {
+  const networkResponse = page.waitForResponse('*/**/businesses/**/*')
   // navigate to page
   await page.goto(`./en-CA/officer-change/${identifier}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  await networkResponse
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }
 
 export async function navigateToManageReceiversPage(page: Page, filingSubType: ReceiverType) {
+  const networkResponse = page.waitForResponse('*/**/businesses/**/*')
   // navigate to page
   await page.goto(`./en-CA/manage-receivers/${identifier}/${filingSubType}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  await networkResponse
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('1. Receiver Information').first()).toBeVisible()
 }
 
 export async function navigateToManageLiquidatorsPage(page: Page, filingSubType: LiquidateType) {
+  const networkResponse = page.waitForResponse('*/**/businesses/**/*')
   // navigate to page
   await page.goto(`./en-CA/manage-liquidators/${identifier}/${filingSubType}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  await networkResponse
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('1. Liquidator Information').first()).toBeVisible()
 }
