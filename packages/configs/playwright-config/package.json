@@ -7,6 +7,6 @@
   "private": true,
   "dependencies": {
     "@nuxt/test-utils": "catalog:",
-    "@playwright/test": "^1.55.0"
+    "@playwright/test": "1.57.0"
   }
 }
