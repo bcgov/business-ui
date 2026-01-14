@@ -18,7 +18,7 @@ export async function navigateToOfficerChangePage(page: Page) {
   // navigate to page
   await page.goto(`./en-CA/officer-change/${identifier}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  // await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('Officer Change').first()).toBeVisible()
 }
@@ -27,7 +27,7 @@ export async function navigateToManageReceiversPage(page: Page, filingSubType: R
   // navigate to page
   await page.goto(`./en-CA/manage-receivers/${identifier}/${filingSubType}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  // await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('1. Receiver Information').first()).toBeVisible()
 }
@@ -36,7 +36,7 @@ export async function navigateToManageLiquidatorsPage(page: Page, filingSubType:
   // navigate to page
   await page.goto(`./en-CA/manage-liquidators/${identifier}/${filingSubType}`)
   // wait for api response to settle
-  await page.waitForResponse('*/**/businesses/**/*')
+  // await page.waitForResponse('*/**/businesses/**/*')
   // wait for heading, this will wait for the loading state to finish on initial page mount
   await expect(page.getByText('1. Liquidator Information').first()).toBeVisible()
 }

@@ -27,7 +27,7 @@ async function fillOutAddress(page: Page, address: ApiAddress, type = 'delivery'
   await postalCodeInput.fill(address.postalCode)
   if (sameAs) {
     expect(sameAsCheckbox).toBeVisible()
-    await sameAsCheckbox.click()
+    await page.getByRole('checkbox', { name: /same as/i }).check({ force: true })
   }
 }
 async function fillOutName(page: Page, entity: Partial<BusinessEntity>) {
