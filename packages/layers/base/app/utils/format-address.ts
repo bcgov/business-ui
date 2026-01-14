@@ -1,3 +1,5 @@
+import { isEqual } from 'es-toolkit'
+
 export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress {
   return {
     street: address?.streetAddress ?? '',
@@ -7,6 +9,16 @@ export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress
     postalCode: address?.postalCode ?? '',
     country: address?.addressCountry ?? '',
     locationDescription: address?.deliveryInstructions ?? ''
+  }
+}
+
+export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiBaseAddressObj {
+  const mailing = address?.mailingAddress
+  const delivery = address?.deliveryAddress
+  return {
+    mailingAddress: formatAddressUi(mailing),
+    deliveryAddress: formatAddressUi(delivery),
+    sameAs: !!mailing && isEqual(mailing, delivery)
   }
 }
 

@@ -1,7 +1,7 @@
-export function formatCourtOrderUi(courtOrder: CourtOrder): CourtOrderPoaSchema {
+export function formatCourtOrderUi(courtOrder: CourtOrder | undefined): CourtOrderPoaSchema {
   return {
-    courtOrderNumber: courtOrder.fileNumber,
-    hasPoa: !!courtOrder.hasPlanOfArrangement
+    courtOrderNumber: courtOrder?.fileNumber ?? '',
+    hasPoa: courtOrder?.hasPlanOfArrangement ?? false
   }
 }
 

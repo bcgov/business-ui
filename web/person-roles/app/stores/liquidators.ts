@@ -1,5 +1,3 @@
-import { isEqual } from 'es-toolkit'
-
 export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
@@ -11,7 +9,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
-  const currentLiquidationOffice = shallowRef<LiquidationRecordsOffice>(undefined)
+  const currentLiquidationOffice = shallowRef<UiBaseAddressObj | undefined>(undefined)
   const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
 
@@ -20,10 +18,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       await useFilingModals().openInitFilingErrorModal({ status: 500 })
       return
     }
+
     initializing.value = true
     liquidateSubType.value = filingSubType
-    // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
+
     const { draftFiling, parties, addresses } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
@@ -33,35 +32,23 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       filingSubType === LiquidateType.ADDRESS
     )
 
-    if (draftFiling?.data.value?.filing) {
-      draftFilingState.value = draftFiling.data.value
-      const filingData = draftFilingState.value.filing
-      formState.staffPayment = formatStaffPaymentUi(filingData.header)
-
-      if (filingData.changeOfLiquidators.courtOrder) {
-        formState.courtOrder = formatCourtOrderUi(filingData.changeOfLiquidators.courtOrder)
-      }
-      if (filingData.changeOfLiquidators.documentId) {
-        formState.documentId.documentIdNumber = filingData.changeOfLiquidators.documentId
-      }
-
-      const mailingAddress = filingData.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress
-      const deliveryAddress = filingData.changeOfLiquidators.offices?.liquidationRecordsOffice.deliveryAddress
-
-      formState.recordsOffice = {
-        mailingAddress: formatAddressUi(mailingAddress),
-        deliveryAddress: formatAddressUi(deliveryAddress),
-        sameAs: isEqual(mailingAddress, deliveryAddress)
-      }
+    const draft = draftFiling?.filing?.changeOfLiquidators
+    if (draft) {
+      draftFilingState.value = draftFiling
+      formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
+      formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
+      formState.documentId.documentIdNumber = draft.documentId ?? ''
+      formState.recordsOffice = formatBaseAddressUi(draft.offices?.liquidationRecordsOffice)
     }
-    if (parties?.data) {
-      const draftRelationships = draftFiling?.data.value?.filing.changeOfLiquidators.relationships
+
+    if (parties) {
+      const draftRelationships = draft?.relationships
       tableState.value = draftRelationships
-        ? getPartiesMergedWithRelationships(parties.data, draftRelationships)
-        : parties.data
+        ? getPartiesMergedWithRelationships(parties, draftRelationships)
+        : parties
     }
 
-    const office = addresses?.data?.liquidationRecordsOffice
+    const office = addresses?.liquidationRecordsOffice
     if (office) {
       currentLiquidationOffice.value = { ...office }
 

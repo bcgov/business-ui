@@ -5,7 +5,7 @@ export function formatLiquidatorsApi(
   formState: LiquidatorFormSchema,
   type: LiquidateType,
   commonData: FilingPayloadData,
-  currentLiquidationOffice?: LiquidationRecordsOffice
+  currentLiquidationOffice?: UiBaseAddressObj
 ): LiquidatorPayload {
   const changedRelationships = tableState.map(rel => formatRelationshipApi(rel.new)).filter(rel => rel.actions?.length)
 
@@ -15,7 +15,10 @@ export function formatLiquidatorsApi(
       mailingAddress: formState.recordsOffice.mailingAddress,
       deliveryAddress: formState.recordsOffice.deliveryAddress
     },
-    currentLiquidationOffice
+    {
+      mailingAddress: currentLiquidationOffice?.mailingAddress,
+      deliveryAddress: currentLiquidationOffice?.deliveryAddress
+    }
   )
 
   return {
