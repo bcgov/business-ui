@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "web/person-roles/**"
+      - "packages/**"
   workflow_dispatch:
 
 defaults:
