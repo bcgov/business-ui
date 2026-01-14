@@ -1,7 +1,7 @@
 {
   "hosting":
     {
-      "site": "corps-dev",
+      "site": "business-corps-dev",
       "public": "dist",
       "ignore": ["**/devops/**", "**/.*", "**/node_modules/**"],
       "rewrites": [
