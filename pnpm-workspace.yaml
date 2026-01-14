@@ -1,4 +1,5 @@
 packages:
+  - web/corps
   - web/person-roles
   - packages/**
 
