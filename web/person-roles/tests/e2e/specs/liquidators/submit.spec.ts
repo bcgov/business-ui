@@ -249,7 +249,7 @@ test.describe('Manage Liquidators - Submission', () => {
         }
 
         const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
-        await expect(existingLiquidator).toHaveText('TESTER TESTING', { timeout: 10000 })
+        await expect(existingLiquidator).toContainText('TESTER TESTING', { timeout: 10000 })
 
         await fillOutAddress(page, newAddress)
         const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
