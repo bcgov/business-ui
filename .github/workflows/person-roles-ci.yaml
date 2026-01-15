@@ -28,8 +28,10 @@ jobs:
       fail-fast: false
       matrix:
         project: ["person-roles"]
-        shardIndex: [1, 2, 3, 4 ]
-        shardTotal: [4]
+        shardIndex: [1]
+        shardTotal: [1]
+        # shardIndex: [1, 2, 3, 4]
+        # shardTotal: [4]
     defaults:
       run:
         working-directory: ./web/${{ matrix.project }}
