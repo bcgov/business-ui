@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon'
 
 /** Manages business data */
-export const useBusinessStore = defineStore('business', () => {
-  const { getBusiness, getAuthInfo } = useBusinessApi()
+export const useBusinessStore = defineStore('business-store', () => {
+  const service = useBusinessService()
 
   const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
@@ -80,37 +80,17 @@ export const useBusinessStore = defineStore('business', () => {
   })
 
   async function init(identifier: string, slim = false, force = false, includeContact = false) {
-    const {
-      data: businessResp,
-      refresh: businessRefresh,
-      refetch: businessRefetch
-    } = await getBusiness(identifier, slim as true)
+    const [
+      businessResp,
+      contactResp
+    ] = await Promise.all([
+      service.getBusiness(identifier, slim, force),
+      includeContact ? service.getAuthInfo(identifier, force) : undefined
+    ])
 
-    const asyncs = []
-
-    asyncs.push((force ? businessRefetch() : businessRefresh()).then((state) => {
-      if (state.error) {
-        return state.error
-      } else {
-        business.value = businessResp.value?.business
-      }
-    }))
-
-    let contactAsync = undefined
-    if (includeContact) {
-      // NOTE: define within block so that it doesn't make an initial call when includeContact is false
-      const { data: contactResp, refresh: contactRefresh } = await getAuthInfo(identifier)
-      contactAsync = contactRefresh().then(({ error }) => {
-        if (error) {
-          return error
-        } else {
-          businessContact.value = contactResp.value?.contacts[0]
-          businessFolio.value = contactResp.value?.folioNumber || ''
-        }
-      })
-    }
-    asyncs.push(contactAsync)
-    return await Promise.all(asyncs)
+    business.value = businessResp
+    businessContact.value = contactResp?.contacts[0]
+    businessFolio.value = contactResp?.folioNumber || ''
   }
 
   function isAllowedFiling(filingType: FilingType, filingSubType?: string) {
