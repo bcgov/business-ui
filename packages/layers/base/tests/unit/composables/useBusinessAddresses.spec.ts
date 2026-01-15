@@ -4,51 +4,44 @@ import { getBusinessAddressesMock } from '#test-mocks'
 
 const identifier = 'BC1234567'
 
-const mockBusinessApi = {
-  getBusinessAddresses: vi.fn()
-}
-mockNuxtImport('useBusinessApi', () => () => mockBusinessApi)
+const mockGetAddresses = vi.fn()
+mockNuxtImport('useBusinessService', () => () => ({
+  getAddresses: mockGetAddresses
+}))
 
 describe('useBusinessAddresses', () => {
   const addressesMock = getBusinessAddressesMock()
 
   beforeEach(async () => {
     vi.resetAllMocks()
-    mockBusinessApi.getBusinessAddresses.mockResolvedValue(
-      {
-        data: { value: addressesMock },
-        error: { value: undefined },
-        status: { value: 'success' },
-        refresh: async () => ({ data: addressesMock })
-      }
-    )
+    mockGetAddresses.mockResolvedValue(addressesMock)
   })
 
-  describe('getBusinessAddresses', () => {
+  describe('getAddresses', () => {
     test('should format the response to the expected UiEntityOfficeAddress format', async () => {
       const resp = await useBusinessAddresses().getBusinessAddresses(identifier)
 
-      expect(mockBusinessApi.getBusinessAddresses).toHaveBeenCalled()
+      expect(mockGetAddresses).toHaveBeenCalled()
       // mock does not include businessOffice
-      expect(resp.data?.businessOffice).toBeUndefined()
+      expect(resp?.businessOffice).toBeUndefined()
 
       // should format liquidationRecordsOffice
-      expect(resp.data?.liquidationRecordsOffice).toBeDefined()
-      expect(resp.data?.liquidationRecordsOffice?.deliveryAddress.street)
+      expect(resp?.liquidationRecordsOffice).toBeDefined()
+      expect(resp?.liquidationRecordsOffice?.deliveryAddress.street)
         .toEqual(addressesMock.liquidationRecordsOffice?.deliveryAddress?.streetAddress)
-      expect(resp.data?.liquidationRecordsOffice?.sameAs).toBe(false)
+      expect(resp?.liquidationRecordsOffice?.sameAs).toBe(false)
 
       // should format recordsOffice
-      expect(resp.data?.recordsOffice).toBeDefined()
-      expect(resp.data?.recordsOffice?.deliveryAddress.street)
+      expect(resp?.recordsOffice).toBeDefined()
+      expect(resp?.recordsOffice?.deliveryAddress.street)
         .toEqual(addressesMock.recordsOffice?.deliveryAddress?.streetAddress)
-      expect(resp.data?.recordsOffice?.sameAs).toBe(true)
+      expect(resp?.recordsOffice?.sameAs).toBe(true)
 
       // should format registeredOffice
-      expect(resp.data?.registeredOffice).toBeDefined()
-      expect(resp.data?.registeredOffice?.deliveryAddress.street)
+      expect(resp?.registeredOffice).toBeDefined()
+      expect(resp?.registeredOffice?.deliveryAddress.street)
         .toEqual(addressesMock.registeredOffice?.deliveryAddress?.streetAddress)
-      expect(resp.data?.registeredOffice?.sameAs).toBe(true)
+      expect(resp?.registeredOffice?.sameAs).toBe(true)
     })
   })
 })

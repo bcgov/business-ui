@@ -1,12 +1,10 @@
-export const useBusinessPermissionsStore = defineStore('business-permissions', () => {
-  const { getAuthorizedActions } = useBusinessApi()
+export const useBusinessPermissionsStore = defineStore('business-permissions-store', () => {
+  const service = useBusinessService()
 
   const authorizedActions = shallowRef<AuthorizedAction[]>([])
 
-  async function init() {
-    if (!authorizedActions.value.length) {
-      authorizedActions.value = await getAuthorizedActions()
-    }
+  async function init(identifier: string) {
+    authorizedActions.value = await service.getAuthorizedActions(identifier)
   }
 
   function isAuthorized(action: AuthorizedAction) {

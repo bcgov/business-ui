@@ -5,10 +5,10 @@ import { getPartiesMock } from '#test-mocks/parties'
 
 const identifier = 'BC1234567'
 
-const mockLegalApi = {
-  getParties: vi.fn()
-}
-mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
+const mockGetParties = vi.fn()
+mockNuxtImport('useBusinessService', () => () => ({
+  getParties: mockGetParties
+}))
 
 mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 123 } }))
 
@@ -27,37 +27,29 @@ describe('useBusinessParty', () => {
       setActivePinia(pinia)
       store = useBusinessStore()
       store.$reset()
-      mockLegalApi.getParties.mockResolvedValue(
-        {
-          data: { value: partiesMock },
-          error: { value: undefined },
-          status: { value: 'success' },
-          refresh: async () => ({ data: partiesMock })
-        }
-      )
+      mockGetParties.mockResolvedValue(partiesMock.parties)
     })
 
     describe('getBusinessParties', () => {
       test('should map the response to the expected table state array', async () => {
         // init
-        const resp = await useBusinessParty()
-          .getBusinessParties(identifier, RoleClass.OFFICER)
+        const resp = await useBusinessParty().getBusinessParties(identifier, RoleClass.OFFICER)
 
         // assert
-        expect(mockLegalApi.getParties).toHaveBeenCalled()
-        expect(resp.data).toBeDefined()
-        expect(resp.data!.length).toBe(partiesMock.parties.length)
-        expect(resp.data![0]!.new.actions).toEqual([])
-        expect(resp.data![0]!.old!.actions).toEqual([])
-        expect(resp.data![0]!.new.name.firstName).toBe(partiesMock.parties[0]!.officer.firstName)
-        expect(resp.data![0]!.old!.name.firstName).toBe(partiesMock.parties[0]!.officer.firstName)
-        expect(resp.data![0]!.new.address.deliveryAddress.street)
+        expect(mockGetParties).toHaveBeenCalled()
+        expect(resp).toBeDefined()
+        expect(resp!.length).toBe(partiesMock.parties.length)
+        expect(resp![0]!.new.actions).toEqual([])
+        expect(resp![0]!.old!.actions).toEqual([])
+        expect(resp![0]!.new.name.firstName).toBe(partiesMock.parties[0]!.officer.firstName)
+        expect(resp![0]!.old!.name.firstName).toBe(partiesMock.parties[0]!.officer.firstName)
+        expect(resp![0]!.new.address.deliveryAddress.street)
           .toBe(partiesMock.parties[0]!.deliveryAddress?.streetAddress)
-        expect(resp.data![0]!.old!.address.deliveryAddress.street)
+        expect(resp![0]!.old!.address.deliveryAddress.street)
           .toBe(partiesMock.parties[0]!.deliveryAddress?.streetAddress)
-        expect(resp.data![0]!.new.address.mailingAddress.street)
+        expect(resp![0]!.new.address.mailingAddress.street)
           .toBe(partiesMock.parties[0]!.mailingAddress?.streetAddress)
-        expect(resp.data![0]!.old!.address.mailingAddress.street)
+        expect(resp![0]!.old!.address.mailingAddress.street)
           .toBe(partiesMock.parties[0]!.mailingAddress?.streetAddress)
       })
     })

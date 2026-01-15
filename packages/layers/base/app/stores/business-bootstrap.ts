@@ -1,5 +1,5 @@
 /** Manages business bootstrap (temp reg) data */
-export const useBusinessBootstrapStore = defineStore('business-bootstrap', () => {
+export const useBusinessBootstrapStore = defineStore('business-bootstrap-store', () => {
   const { t } = useI18n()
   const { businessApiUrl, businessApiVersion } = useRuntimeConfig().public
   const { getBootstrapFiling, getLinkedNameRequest } = useBusinessApi()

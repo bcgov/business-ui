@@ -1,5 +1,5 @@
 /** Store for managing client documents  */
-export const useDocumentRecordServiceStore = defineStore('document-record-service', () => {
+export const useDocumentRecordServiceStore = defineStore('document-record-service-store', () => {
   const { getCorpDocuments } = useDocumentRecordServiceApi()
   const { isAuthorized } = useBusinessPermissionsStore()
   const { getStoredFlag } = useConnectLaunchDarkly()

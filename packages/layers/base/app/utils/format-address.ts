@@ -13,12 +13,13 @@ export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress
 }
 
 export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiBaseAddressObj {
-  const mailing = address?.mailingAddress
-  const delivery = address?.deliveryAddress
+  const mailingAddress = formatAddressUi(address?.mailingAddress)
+  const deliveryAddress = formatAddressUi(address?.deliveryAddress)
+  const hasMailing = !!address?.mailingAddress?.streetAddress
   return {
-    mailingAddress: formatAddressUi(mailing),
-    deliveryAddress: formatAddressUi(delivery),
-    sameAs: !!mailing && isEqual(mailing, delivery)
+    mailingAddress,
+    deliveryAddress,
+    sameAs: hasMailing && isEqual(mailingAddress, deliveryAddress)
   }
 }
 
