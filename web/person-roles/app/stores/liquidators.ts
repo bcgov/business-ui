@@ -52,7 +52,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     if (office) {
       currentLiquidationOffice.value = { ...office }
 
-      if (!draftId || !draftFilingState.value.filing.changeOfLiquidators.offices) {
+      if (!draftId || !draft?.offices) {
         formState.recordsOffice = { ...office }
       }
     }
