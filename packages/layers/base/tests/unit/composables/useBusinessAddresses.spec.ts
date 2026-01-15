@@ -17,7 +17,7 @@ describe('useBusinessAddresses', () => {
     mockGetAddresses.mockResolvedValue(addressesMock)
   })
 
-  describe('getAddresses', () => {
+  describe('getBusinessAddresses', () => {
     test('should format the response to the expected UiEntityOfficeAddress format', async () => {
       const resp = await useBusinessAddresses().getBusinessAddresses(identifier)
 
