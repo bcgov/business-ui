@@ -92,7 +92,7 @@ describe('useFiling', () => {
         ])
       })
 
-      test.only('should return parties when applicable', async () => {
+      test('should return parties when applicable', async () => {
         // init store
         const { parties } = await useFiling().initFiling(
           identifier,
