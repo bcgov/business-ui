@@ -12,14 +12,10 @@ const mockRoute = reactive({
 })
 mockNuxtImport('useRoute', () => () => mockRoute)
 
-const mockGetAndValidateDraftFiling = vi.fn()
-const mockLegalApi = {
-  getParties: vi.fn(),
-  getPendingTask: vi.fn(),
-  getAndValidateDraftFiling: mockGetAndValidateDraftFiling,
-  getTasks: vi.fn()
+const mockService = {
+  getParties: vi.fn()
 }
-mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
+mockNuxtImport('useBusinessService', () => () => mockService)
 
 const mockUseFiling = {
   initFiling: vi.fn()
@@ -107,11 +103,8 @@ describe('useOfficerStore', () => {
     // Starting a new filing (no draftId)
     describe('when starting a new filing', () => {
       test('should fully initialize state if filing is allowed and no pending tasks exist', async () => {
-        // mock API calls and permissions
-        mockLegalApi.getPendingTask.mockResolvedValue(undefined) // No pending tasks
         mockIsAllowedFiling.mockReturnValue(true) // Filing is allowed
-        mockLegalApi.getParties.mockResolvedValue(
-          { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
+        mockService.getParties.mockResolvedValue(mockParties.parties)
         mockUseFiling.initFiling.mockResolvedValue(
           {
             draftFiling: undefined
@@ -130,9 +123,6 @@ describe('useOfficerStore', () => {
       })
 
       test('should show modal and return early if filing is not allowed', async () => {
-        // mock that the filing is NOT allowed
-        mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        mockLegalApi.getPendingTask.mockResolvedValue(undefined)
         mockIsAllowedFiling.mockReturnValue(false)
 
         // init store
@@ -145,14 +135,9 @@ describe('useOfficerStore', () => {
 
       test('should initialize with an empty state for a business with no officers', async () => {
         // mock no parties
-        mockLegalApi.getPendingTask.mockResolvedValue(undefined)
-        mockLegalApi.getParties.mockResolvedValue(
-          { data: { value: { parties: [] } }, error: { value: undefined }, status: { value: 'success' } }) // No parties
+        mockService.getParties.mockResolvedValue([])
         mockIsAllowedFiling.mockReturnValue(true)
-        mockUseFiling.initFiling.mockResolvedValue(
-          {
-            draftFiling: undefined
-          })
+        mockUseFiling.initFiling.mockResolvedValue({ draftFiling: undefined })
 
         // init store
         await store.init(businessBC1234567.business.identifier, undefined, undefined)
@@ -176,8 +161,7 @@ describe('useOfficerStore', () => {
         }
 
         // mocks
-        mockLegalApi.getParties.mockResolvedValue(
-          { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
+        mockService.getParties.mockResolvedValue(mockParties.parties)
         mockUseFiling.initFiling.mockResolvedValue({ draftFiling: draftResponse })
 
         // init store
@@ -194,7 +178,7 @@ describe('useOfficerStore', () => {
     test('should show a generic error modal if an API call fails', async () => {
       // mock api error
       const apiError = new Error('Network Failed')
-      mockLegalApi.getParties.mockRejectedValue(apiError)
+      mockService.getParties.mockRejectedValue(apiError)
 
       // init store
       await store.init(businessId, undefined, undefined)
