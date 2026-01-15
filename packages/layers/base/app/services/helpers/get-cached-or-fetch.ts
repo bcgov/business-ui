@@ -25,7 +25,7 @@ export async function getCachedOrFetch<TData, TError = Error>(
   force = false
 ): Promise<TData> {
   const cache = useQueryCache()
-  await new Promise(resolve => setTimeout(resolve, 1))
+  await new Promise(resolve => setTimeout(resolve, 1)) // TODO: discuss with team
 
   // Ensures a query entry is present in the cache.
   // will create a new one if no entry found
