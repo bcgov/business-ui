@@ -1,6 +1,6 @@
 export const useFiling = () => {
   const { t, te } = useNuxtApp().$i18n
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const { setFilingDefault } = useBusinessTombstone()
   const { getBusinessParties } = useBusinessParty()
   const { getBusinessAddresses } = useBusinessAddresses()
@@ -54,7 +54,8 @@ export const useFiling = () => {
       setFilingDefault(businessId, false)
 
       const draftPromise = draftId
-        ? businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+        ? service.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+          .catch(() => { throw new Error('invalid-draft-filing') }) // custom case for loading drafts in initFiling - changes TBD
         : undefined
 
       const partiesPromise = partiesParams

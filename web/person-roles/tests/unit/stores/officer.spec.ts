@@ -178,14 +178,7 @@ describe('useOfficerStore', () => {
         // mocks
         mockLegalApi.getParties.mockResolvedValue(
           { data: { value: mockParties }, error: { value: undefined }, status: { value: 'success' } })
-        mockUseFiling.initFiling.mockResolvedValue(
-          {
-            draftFiling: {
-              data: { value: draftResponse },
-              error: { value: undefined },
-              status: { value: 'success' }
-            }
-          })
+        mockUseFiling.initFiling.mockResolvedValue({ draftFiling: draftResponse })
 
         // init store
         await store.init(businessId, undefined, draftId)

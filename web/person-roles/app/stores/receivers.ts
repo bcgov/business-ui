@@ -7,10 +7,9 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
-  const initializing = ref<boolean>(false) // receiver store loading state
+  const initializing = ref<boolean>(false)
   const receiverSubType = ref<ReceiverType>(ReceiverType.APPOINT)
-  const draftFilingState = shallowRef<FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>>(
-    {} as FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>) // filing state saved as draft
+  const draftFilingState = shallowRef<ReceiverDraftState>({} as ReceiverDraftState)
 
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
@@ -19,35 +18,34 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       await useFilingModals().openInitFilingErrorModal({ status: 500 })
       return
     }
+
     initializing.value = true
     receiverSubType.value = filingSubType
-    // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
-    const { draftFiling, parties } = await initFiling<{ changeOfReceivers: ReceiverPayload }>(
+
+    const { draftFiling, parties } = await initFiling<ChangeOfReceivers>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
       filingSubType,
       draftId,
-      { roleType: RoleType.RECEIVER })
+      { roleType: RoleType.RECEIVER }
+    )
 
-    if (draftFiling?.data.value?.filing) {
-      draftFilingState.value = draftFiling.data.value
-      // TODO: util mappers for these - draft filing util?
-      formState.staffPayment = formatStaffPaymentUi(draftFilingState.value.filing.header)
-      if (draftFilingState.value.filing.changeOfReceivers.courtOrder) {
-        formState.courtOrder = formatCourtOrderUi(draftFilingState.value.filing.changeOfReceivers.courtOrder)
-      }
-      if (draftFilingState.value.filing.changeOfReceivers.documentId) {
-        formState.documentId.documentIdNumber = draftFilingState.value.filing.changeOfReceivers.documentId
-      }
+    const draft = draftFiling?.filing?.changeOfReceivers
+    if (draft) {
+      draftFilingState.value = draftFiling
+      formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
+      formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
+      formState.documentId.documentIdNumber = draft.documentId ?? ''
     }
 
-    if (parties?.data) {
-      const draftRelationships = draftFiling?.data.value?.filing.changeOfReceivers.relationships
+    if (parties) {
+      const draftRelationships = draft?.relationships
       tableState.value = draftRelationships
-        ? getPartiesMergedWithRelationships(parties.data, draftRelationships)
-        : parties.data
+        ? getPartiesMergedWithRelationships(parties, draftRelationships)
+        : parties
     }
+
     await nextTick()
     initializing.value = false
   }
@@ -62,7 +60,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
     }
 
-    const payload = businessApi.createFilingPayload<{ changeOfReceivers: ReceiverPayload }>(
+    const payload = businessApi.createFilingPayload<ChangeOfReceivers>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },
@@ -71,13 +69,13 @@ export const useReceiverStore = defineStore('receiver-store', () => {
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<{ changeOfReceivers: ReceiverPayload }>(
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfReceivers>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
         draftId as string | number
       )
-      draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<{ changeOfReceivers: ReceiverPayload }>
+      draftFilingState.value = filingResp as unknown as ReceiverDraftState
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
