@@ -22,6 +22,11 @@ const testCases = [
     type: LiquidateType.ADDRESS,
     h1: 'Change Addresses of Liquidators'
   }
+  // TODO: report filing
+  // {
+  //   type: LiquidateType.REPORT,
+  //   h1: 'Change Addresses of Liquidators'
+  // },
 ]
 
 test.describe('Manage Liquidators - Page init', () => {
