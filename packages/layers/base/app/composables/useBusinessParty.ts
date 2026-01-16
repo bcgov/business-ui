@@ -1,29 +1,20 @@
 export const useBusinessParty = () => {
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
 
   async function getBusinessParties(
     businessId: string,
     roleClass?: RoleClass,
     roleType?: RoleType
-  ): Promise<{
-    error: Error | undefined | null
-    data: TableBusinessState<PartySchema>[] | undefined
-  }> {
-    const resp = await businessApi.getParties(businessId, {
+  ): Promise<TableBusinessState<PartySchema>[] | undefined> {
+    const resp = await service.getParties(businessId, {
       ...(roleClass ? { roleClass } : {}),
       ...(roleType ? { role: roleType } : {})
     })
-    return resp.refresh().then((state) => {
-      return {
-        error: state.error,
-        data: state.data?.parties.map((p) => {
-          return {
-            new: formatPartyUi(p, roleType),
-            old: formatPartyUi(p, roleType)
-          }
-        })
-      }
-    })
+
+    return resp.map(p => ({
+      new: formatPartyUi(p, roleType),
+      old: formatPartyUi(p, roleType)
+    }))
   }
 
   function getPartiesMergedWithRelationships(

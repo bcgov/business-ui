@@ -266,9 +266,10 @@ describe('format-liquidators', () => {
     describe(`${LiquidateType.ADDRESS}`, () => {
       const officeMailing = getFakeAddress()
       const officeDelivery = getFakeAddress()
-      const currentOfficeMock: LiquidationRecordsOffice = {
+      const currentOfficeMock: UiBaseAddressObj = {
         mailingAddress: officeMailing,
-        deliveryAddress: officeDelivery
+        deliveryAddress: officeDelivery,
+        sameAs: false
       }
       it('should include offices when addresses have changed', () => {
         const changedMailing = { ...officeMailing, street: 'New Street 123' }
@@ -354,7 +355,7 @@ describe('format-liquidators', () => {
       mockFormState as LiquidatorFormSchema,
       LiquidateType.ADDRESS,
       {},
-      { mailingAddress: officeMailing, deliveryAddress: officeDelivery }
+      { mailingAddress: officeMailing, deliveryAddress: officeDelivery, sameAs: false }
     )
 
     expect(result.offices).toBeDefined()

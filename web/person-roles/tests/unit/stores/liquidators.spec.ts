@@ -115,7 +115,7 @@ describe('useLiquidatorStore', () => {
       it('should set table state from parties response and init formState defaults', async () => {
         mockInitFiling.mockResolvedValue({
           draftFiling: undefined,
-          parties: { data: partiesResponse.data }
+          parties: partiesResponse.data
         })
 
         await store.init(identifier, LiquidateType.INTENT)
@@ -129,8 +129,8 @@ describe('useLiquidatorStore', () => {
       it('should init records office when filing type = address change', async () => {
         mockInitFiling.mockResolvedValue({
           draftFiling: undefined,
-          parties: { data: partiesResponse.data },
-          addresses: { data: addressesResponse }
+          parties: partiesResponse.data,
+          addresses: addressesResponse
         })
 
         await store.init(identifier, LiquidateType.ADDRESS)
@@ -147,7 +147,7 @@ describe('useLiquidatorStore', () => {
       it('should set empty table when API returns no parties', async () => {
         mockInitFiling.mockResolvedValue({
           draftFiling: undefined,
-          parties: { data: [] }
+          parties: []
         })
 
         await store.init(identifier, LiquidateType.INTENT)
@@ -182,12 +182,8 @@ describe('useLiquidatorStore', () => {
         }
 
         mockInitFiling.mockResolvedValue({
-          draftFiling: {
-            data: { value: draft },
-            error: { value: undefined },
-            status: { value: 'success' }
-          },
-          parties: { data: partiesResponse.data }
+          draftFiling: draft,
+          parties: partiesResponse.data
         })
 
         await store.init(identifier, LiquidateType.INTENT, draftId)
@@ -210,12 +206,8 @@ describe('useLiquidatorStore', () => {
 
       it('falls back to parties when draft has no filing data', async () => {
         mockInitFiling.mockResolvedValue({
-          draftFiling: {
-            data: { value: undefined },
-            error: { value: undefined },
-            status: { value: 'success' }
-          },
-          parties: { data: partiesResponse.data }
+          draftFiling: {},
+          parties: partiesResponse.data
         })
 
         await store.init(identifier, LiquidateType.INTENT, draftId)

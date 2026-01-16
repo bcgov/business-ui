@@ -11,24 +11,26 @@ import { navigateToManageLiquidatorsPage } from '../../test-utils'
 const identifier = 'BC1234567'
 
 async function fillOutAddress(page: Page, address: ApiAddress, type = 'delivery', sameAs = true) {
-  const streetInput = page.getByTestId(`${type}-address-input-street`).first()
-  const cityInput = page.getByTestId(`${type}-address-input-city`).first()
-  const provinceSelect = page.getByTestId(`${type}-address-input-region`).first()
-  const postalCodeInput = page.getByTestId(`${type}-address-input-postalCode`).first()
-  const sameAsCheckbox = page.getByRole('checkbox', { name: 'Same as Delivery Address' }).first()
-  expect(streetInput).toBeVisible()
-  await streetInput.fill(address.streetAddress)
-  expect(cityInput).toBeVisible()
-  await cityInput.fill(address.addressCity)
-  expect(provinceSelect).toBeVisible()
-  await provinceSelect.click()
-  await page.getByRole('option', { name: 'British Columbia' }).click()
-  expect(postalCodeInput).toBeVisible()
-  await postalCodeInput.fill(address.postalCode)
-  if (sameAs) {
-    expect(sameAsCheckbox).toBeVisible()
-    await sameAsCheckbox.click()
-  }
+  await expect(async () => {
+    const streetInput = page.getByTestId(`${type}-address-input-street`).first()
+    const cityInput = page.getByTestId(`${type}-address-input-city`).first()
+    const provinceSelect = page.getByTestId(`${type}-address-input-region`).first()
+    const postalCodeInput = page.getByTestId(`${type}-address-input-postalCode`).first()
+    const sameAsCheckbox = page.getByRole('checkbox', { name: 'Same as Delivery Address' }).first()
+    expect(streetInput).toBeVisible()
+    await streetInput.fill(address.streetAddress)
+    expect(cityInput).toBeVisible()
+    await cityInput.fill(address.addressCity)
+    expect(provinceSelect).toBeVisible()
+    await provinceSelect.click()
+    await page.getByRole('option', { name: 'British Columbia' }).click()
+    expect(postalCodeInput).toBeVisible()
+    await postalCodeInput.fill(address.postalCode)
+    if (sameAs) {
+      expect(sameAsCheckbox).toBeVisible()
+      await sameAsCheckbox.click()
+    }
+  }).toPass()
 }
 async function fillOutName(page: Page, entity: Partial<BusinessEntity>) {
   // FUTURE: add common party form fill out in base layer and use that
@@ -245,6 +247,10 @@ test.describe('Manage Liquidators - Submission', () => {
           deliveryInstructions: '',
           postalCode: 'V1N 4H8'
         }
+
+        const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
+        await expect(existingLiquidator).toContainText('TESTER TESTING', { timeout: 10000 })
+
         await fillOutAddress(page, newAddress)
         const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
         expect(staffNoFeeRadio).toBeVisible()

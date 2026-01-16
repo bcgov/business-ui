@@ -104,6 +104,7 @@ export const useBusinessService = () => {
    * @param businessId the identifier of the business
    * @returns a promise to return business data
   */
+  function getBusiness(businessId: string, slim: boolean, force?: boolean): Promise<BusinessData | BusinessDataSlim>
   function getBusiness(businessId: string, slim: true, force?: boolean): Promise<BusinessDataSlim>
   function getBusiness(businessId: string, slim?: false, force?: boolean): Promise<BusinessData>
   async function getBusiness(

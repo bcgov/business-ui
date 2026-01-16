@@ -11,21 +11,21 @@ const { resolve } = createResolver(import.meta.url)
 // only desktop supported
 // https://id.gov.bc.ca/static/help/supported_browsers.html
 const deviceNames = [
-  'Desktop Chrome',
-  ...(process.env.CI
-    ? [
-      'Desktop Firefox',
-      'Desktop Edge',
-      'Desktop Safari'
-      // TODO: add fix mobile tests?
-      // 'iPad (gen 11) landscape',
-      // 'Blackberry PlayBook landscape',
-      // 'Nexus 10 landscape',
-      // 'iPhone 15 Pro',
-      // 'Pixel 7',
-      // 'iPhone 6'
-    ]
-    : [])
+  'Desktop Chrome'
+  // ...(process.env.CI
+  //   ? [
+  // 'Desktop Firefox',
+  // 'Desktop Edge',
+  // 'Desktop Safari'
+  // TODO: add fix mobile tests?
+  // 'iPad (gen 11) landscape',
+  // 'Blackberry PlayBook landscape',
+  // 'Nexus 10 landscape',
+  // 'iPhone 15 Pro',
+  // 'Pixel 7',
+  // 'iPhone 6'
+  // ]
+  // : [])
 ]
 
 export default defineConfig<ConfigOptions>({

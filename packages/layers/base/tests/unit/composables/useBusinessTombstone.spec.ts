@@ -36,24 +36,11 @@ const mockAuthInfo = (identifier: string) => {
   }
 }
 
-mockNuxtImport('useBusinessApi', () => {
+mockNuxtImport('useBusinessService', () => {
   return vi.fn(() => {
     return {
-      getBusiness: vi.fn((identifier: string) => {
-        const state = { data: {
-          value: { business: identifier === 'full' ? mockBusiness : incompleteBusiness } } }
-        return {
-          ...state,
-          refresh: vi.fn(async () => setTimeout(() => (state)))
-        }
-      }),
-      getAuthInfo: vi.fn((identifier: string) => {
-        const state = { data: { value: mockAuthInfo(identifier) } }
-        return {
-          ...state,
-          refresh: vi.fn(async () => setTimeout(() => (state)))
-        }
-      })
+      getBusiness: vi.fn((identifier: string) => identifier === 'full' ? mockBusiness : incompleteBusiness),
+      getAuthInfo: vi.fn((identifier: string) => mockAuthInfo(identifier))
     }
   })
 })

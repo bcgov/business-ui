@@ -8,14 +8,14 @@ import { getFilingMock } from '#test-mocks/filing'
 
 const identifier = 'BC1234567'
 
-const mockLegalApi = {
+const mockBusinessService = {
   getAuthInfo: vi.fn(),
   getAuthorizedActions: vi.fn(),
   getBusiness: vi.fn(),
   getParties: vi.fn(),
   getAndValidateDraftFiling: vi.fn()
 }
-mockNuxtImport('useBusinessApi', () => () => mockLegalApi)
+mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 const mockErrorModalOpen = vi.fn()
 const mockBaseModalOpen = vi.fn()
@@ -54,39 +54,11 @@ describe('useFiling', () => {
       businessStore.$reset()
       businessPermissionsStore = useBusinessPermissionsStore()
       businessPermissionsStore.$reset()
-      mockLegalApi.getBusiness.mockResolvedValue(
-        {
-          data: { value: businessMock },
-          error: { undefined },
-          status: { value: 'success' },
-          refresh: async () => ({})
-        }
-      )
-      mockLegalApi.getAuthInfo.mockResolvedValue(
-        {
-          data: { value: businessSettingsMock },
-          error: { value: undefined },
-          status: { value: 'success' },
-          refresh: async () => ({})
-        }
-      )
-      mockLegalApi.getParties.mockResolvedValue(
-        {
-          data: { value: partiesMock },
-          error: { value: undefined },
-          status: { value: 'success' },
-          refresh: async () => ({ data: partiesMock })
-        }
-      )
-      mockLegalApi.getAndValidateDraftFiling.mockResolvedValue(
-        {
-          data: { value: draftFilingMock },
-          error: { value: undefined },
-          status: { value: 'success' },
-          refresh: async () => ({})
-        }
-      )
-      mockLegalApi.getAuthorizedActions.mockResolvedValue(businessPermissionsMock.authorizedPermissions)
+      mockBusinessService.getBusiness.mockResolvedValue(businessMock.business)
+      mockBusinessService.getAuthInfo.mockResolvedValue(businessSettingsMock)
+      mockBusinessService.getParties.mockResolvedValue(partiesMock.parties)
+      mockBusinessService.getAndValidateDraftFiling.mockResolvedValue(draftFilingMock)
+      mockBusinessService.getAuthorizedActions.mockResolvedValue(businessPermissionsMock.authorizedPermissions)
     })
     describe('when initializing a filing (non draft)', () => {
       test('should initialize business, permissions, fee, and filing tombstone data', async () => {
@@ -95,8 +67,8 @@ describe('useFiling', () => {
 
         // assert
         expect(mockErrorModalOpen).not.toHaveBeenCalled()
-        expect(mockLegalApi.getAndValidateDraftFiling).not.toHaveBeenCalled()
-        expect(mockLegalApi.getParties).not.toHaveBeenCalled()
+        expect(mockBusinessService.getAndValidateDraftFiling).not.toHaveBeenCalled()
+        expect(mockBusinessService.getParties).not.toHaveBeenCalled()
         expect(draftFiling).toBeUndefined()
         expect(parties).toBeUndefined()
         // business store
@@ -120,7 +92,7 @@ describe('useFiling', () => {
         ])
       })
 
-      test('should return parties when applicaple', async () => {
+      test('should return parties when applicable', async () => {
         // init store
         const { parties } = await useFiling().initFiling(
           identifier,
@@ -132,15 +104,15 @@ describe('useFiling', () => {
 
         // assert
         expect(mockErrorModalOpen).not.toHaveBeenCalled()
-        expect(mockLegalApi.getAndValidateDraftFiling).not.toHaveBeenCalled()
-        expect(mockLegalApi.getParties).toHaveBeenCalledTimes(1)
+        expect(mockBusinessService.getAndValidateDraftFiling).not.toHaveBeenCalled()
+        expect(mockBusinessService.getParties).toHaveBeenCalledTimes(1)
         expect(parties).toBeDefined()
-        expect(parties!.data!.length).toBe(partiesMock.parties.length)
+        expect(parties!.length).toBe(partiesMock.parties.length)
         // Existing should have new and old entry
-        expect(parties!.data![0]!.new).toBeDefined()
-        expect(parties!.data![0]!.old).toBeDefined()
+        expect(parties![0]!.new).toBeDefined()
+        expect(parties![0]!.old).toBeDefined()
         // should have empty actions added
-        expect(parties!.data![0]!.new.actions.length).toBe(0)
+        expect(parties![0]!.new.actions.length).toBe(0)
       })
     })
 
@@ -159,15 +131,15 @@ describe('useFiling', () => {
         )
 
         expect(mockErrorModalOpen).not.toHaveBeenCalled()
-        expect(mockLegalApi.getAndValidateDraftFiling).toHaveBeenCalledTimes(1)
-        expect(mockLegalApi.getParties).toHaveBeenCalledTimes(1)
+        expect(mockBusinessService.getAndValidateDraftFiling).toHaveBeenCalledTimes(1)
+        expect(mockBusinessService.getParties).toHaveBeenCalledTimes(1)
         expect(draftFiling).toBeDefined()
         expect(parties).toBeDefined()
-        expect(draftFiling!.data!.value).toEqual(draftFilingMock)
+        expect(draftFiling).toEqual(draftFilingMock)
       })
 
       test('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {
-        mockLegalApi.getAndValidateDraftFiling.mockRejectedValue(new Error('invalid-draft-filing'))
+        mockBusinessService.getAndValidateDraftFiling.mockRejectedValue(new Error('invalid-draft-filing'))
 
         await useFiling().initFiling(
           identifier,

@@ -45,8 +45,10 @@ jobs:
       fail-fast: false
       matrix:
         project: ["base"]
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        shardIndex: [1]
+        shardTotal: [1]
+        # shardIndex: [1, 2, 3, 4]
+        # shardTotal: [4]
     defaults:
       run:
         working-directory: ./packages/layers/${{ matrix.project }}

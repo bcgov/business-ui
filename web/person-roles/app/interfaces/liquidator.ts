@@ -15,5 +15,3 @@ export interface ChangeOfLiquidators {
 }
 
 export type LiquidatorDraftState = FilingGetByIdResponse<ChangeOfLiquidators>
-
-export type LiquidationRecordsOffice = Omit<LiquidatorFormSchema['recordsOffice'], 'sameAs'> | undefined

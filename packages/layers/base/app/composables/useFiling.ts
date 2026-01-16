@@ -1,6 +1,6 @@
 export const useFiling = () => {
   const { t, te } = useNuxtApp().$i18n
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const { setFilingDefault } = useBusinessTombstone()
   const { getBusinessParties } = useBusinessParty()
   const { getBusinessAddresses } = useBusinessAddresses()
@@ -50,11 +50,10 @@ export const useFiling = () => {
       if (businessId === 'undefined') {
         throw createError({ statusCode: 404 })
       }
-      // set masthead data
-      setFilingDefault(businessId, false)
 
       const draftPromise = draftId
-        ? businessApi.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+        ? service.getAndValidateDraftFiling<T>(businessId, draftId, filingName)
+          .catch(() => { throw new Error('invalid-draft-filing') }) // special case for loading drafts in initFiling - changes TBD
         : undefined
 
       const partiesPromise = partiesParams
@@ -66,33 +65,20 @@ export const useFiling = () => {
         : undefined
 
       const [
-        [businessError, businessContactError],
+        _tombstoneInit,
+        _businessInit,
         draftFiling,
         parties,
         _permissions,
         addresses
       ] = await Promise.all([
+        setFilingDefault(businessId, false),
         businessStore.init(businessId, false, false, true),
         draftPromise,
         partiesPromise,
-        permissionsStore.init(),
+        permissionsStore.init(businessId),
         addressesPromise
       ])
-
-      const genericError = [
-        businessError,
-        businessContactError,
-        parties?.error,
-        addresses?.error
-      ].find(e => !!e)
-
-      if (genericError) {
-        throw genericError
-      }
-
-      if (draftFiling?.error.value) {
-        throw new Error('invalid-draft-filing')
-      }
 
       const isAuthorized = permissionsStore.isAuthorizedByFilingType(
         filingName,

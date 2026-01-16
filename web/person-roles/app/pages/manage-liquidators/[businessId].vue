@@ -9,6 +9,7 @@ definePageMeta({
   validate(route) {
     const filingSubType = route.params.filingSubType as string
     return Object.values(LiquidateType).includes(filingSubType as LiquidateType)
+      && filingSubType as LiquidateType !== LiquidateType.REPORT // TODO: temporary until liquidation report is complete
   }
 })
 

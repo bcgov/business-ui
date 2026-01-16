@@ -6,7 +6,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const na = useNuxtApp()
   const t = na.$i18n.t
   const modal = useFilingModals()
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
   const { business } = storeToRefs(businessStore)
   const ld = useConnectLaunchDarkly()
@@ -37,9 +37,9 @@ export const useOfficerStore = defineStore('officer-store', () => {
         draftId
       )
 
-      if (draftFiling?.data.value?.filing) {
-        filingDraftState.value = { filing: draftFiling.data.value.filing, errors: [] } as OfficersDraftFiling
-        folio.number = draftFiling.data.value.filing.header?.folioNumber || ''
+      if (draftFiling?.filing) {
+        filingDraftState.value = { filing: draftFiling.filing, errors: [] } as unknown as OfficersDraftFiling
+        folio.number = draftFiling.filing.header?.folioNumber || ''
       }
 
       if (!rtc.playwright) { // TODO: figure out mock LD in e2e tests
@@ -52,18 +52,10 @@ export const useOfficerStore = defineStore('officer-store', () => {
         }
       }
 
-      // TODO: common parties store will remove the need for this
-      const parties = await businessApi.getParties(businessId, { classType: 'officer' })
+      const parties = await service.getParties(businessId, { classType: 'officer' })
 
-      if (parties.status.value === 'pending') {
-        await parties.refresh()
-      }
-      // TODO: remove once parties fetched by useFiling composable
-      if (parties.error.value) {
-        throw parties.error.value
-      }
       // map current/existing officers
-      const officers = parties.data.value?.parties.map((p) => {
+      const officers = parties.map((p) => {
         const mailingAddress = formatAddressUi(p.mailingAddress)
         const deliveryAddress = formatAddressUi(p.deliveryAddress)
         const id = p.officer.id ? String(p.officer.id) : undefined
