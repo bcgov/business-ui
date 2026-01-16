@@ -99,7 +99,6 @@ useFilingPageWatcher<DissolutionType>({
       novalidate
       class="py-6 space-y-6 sm:py-10 sm:space-y-10"
       :aria-label="filingText.h1"
-      :disabled="true"
       @error="onFormSubmitError"
       @submit="submitFiling"
     >

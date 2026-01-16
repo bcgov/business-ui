@@ -31,15 +31,13 @@ export interface FilingHeaderResponse extends Partial<Pick<
   waiveFees?: boolean
 }
 
-export interface FilingHeaderSubmission extends Pick<FilingHeaderResponse,
+export type FilingHeaderSubmission = Pick<FilingHeaderResponse,
   'name'
   | 'certifiedBy'
   | 'accountId'
   | 'paymentMethod'
   | 'folioNumber'
-> {
-  'hide-in-ledger'?: boolean
-}
+>
 
 export type FilingBusiness = Pick<BusinessData,
   'identifier'

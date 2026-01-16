@@ -3,7 +3,7 @@ import { ActionType } from '#business/app/enums/action-type'
 import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
-import { fillOutAddress, fillOutNewRelationship } from '#business/tests/e2e/test-utils'
+import { fillOutAddress, fillOutNewRelationship, selectDone } from '#business/tests/e2e/test-utils'
 import { mockCommonApiCallsForFiling, getPartiesMock, getBusinessAddressesMock } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
