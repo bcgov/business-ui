@@ -7,7 +7,7 @@ export function getDelayDateSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
-    option: z.enum(DelayOption).default(DelayOption.SIX_MONTHS),
+    option: z.enum(DelayOption).default(DelayOption.DEFAULT),
     date: z.string().optional().default('')
   }).superRefine((val, ctx) => {
     if (val.option !== DelayOption.CUSTOM) {

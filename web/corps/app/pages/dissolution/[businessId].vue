@@ -6,6 +6,7 @@ import { DateTime } from 'luxon'
 
 const { t } = useI18n()
 const store = useDodStore()
+const { initializing } = storeToRefs(store)
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
@@ -88,66 +89,70 @@ useFilingPageWatcher<DissolutionType>({
 </script>
 
 <template>
-  <UForm
-    id="dod-filing"
-    ref="dod-filing"
-    :state="store.formState"
-    :schema="z.any()"
-    novalidate
-    class="py-6 space-y-6 sm:py-10 sm:space-y-10"
-    :aria-label="filingText.h1"
-    @error="onFormSubmitError"
-    @submit="submitFiling"
-  >
-    <div class="space-y-4">
-      <h1>{{ filingText.h1 }}</h1>
-      <ConnectI18nHelper
-        as="p"
-        translation-path="page.dissolution.delay.desc"
-        :date="delayDateDisplay"
+  <div>
+    <ConnectSpinner v-if="initializing" fullscreen />
+    <UForm
+      id="dod-filing"
+      ref="dod-filing"
+      :state="store.formState"
+      :schema="z.any()"
+      novalidate
+      class="py-6 space-y-6 sm:py-10 sm:space-y-10"
+      :aria-label="filingText.h1"
+      :disabled="true"
+      @error="onFormSubmitError"
+      @submit="submitFiling"
+    >
+      <div class="space-y-4">
+        <h1>{{ filingText.h1 }}</h1>
+        <ConnectI18nHelper
+          as="p"
+          translation-path="page.dissolution.delay.desc"
+          :date="delayDateDisplay"
+        />
+        <AlertMaxTwoDelays v-if="!store.isStaff" data-testid="alert-max-2-days" />
+      </div>
+
+      <FormDelayDate
+        v-model="store.formState.delay"
+        data-testid="form-section-delay-date"
+        order="1"
+        :is-staff="store.isStaff"
+        name="delay"
+        :delay-date-display="delayDateDisplay"
       />
-      <AlertMaxTwoDelays v-if="!store.isStaff" data-testid="alert-max-2-days" />
-    </div>
 
-    <FormDelayDate
-      v-model="store.formState.delay"
-      data-testid="form-section-delay-date"
-      order="1"
-      :is-staff="store.isStaff"
-      name="delay"
-      :delay-date-display="delayDateDisplay"
-    />
+      <FormCourtOrderPoa
+        v-if="store.isStaff"
+        v-model="store.formState.courtOrder"
+        data-testid="form-section-court-order-poa"
+        name="courtOrder"
+        order="2"
+      />
 
-    <FormCourtOrderPoa
-      v-if="store.isStaff"
-      v-model="store.formState.courtOrder"
-      data-testid="form-section-court-order-poa"
-      name="courtOrder"
-      order="2"
-    />
+      <FormFolio
+        v-model="store.formState.folio"
+        data-testid="form-section-folio-number"
+        name="folio"
+        :order="store.isStaff ? 3 : 2"
+      />
 
-    <FormFolio
-      v-model="store.formState.folio"
-      data-testid="form-section-folio-number"
-      name="folio"
-      :order="store.isStaff ? 3 : 2"
-    />
+      <FormAddToLedger
+        v-if="store.isStaff"
+        v-model="store.formState.addToLedger"
+        data-testid="form-section-add-to-ledger"
+        name="addToLedger"
+        order="4"
+      />
 
-    <FormAddToLedger
-      v-if="store.isStaff"
-      v-model="store.formState.addToLedger"
-      data-testid="form-section-add-to-ledger"
-      name="addToLedger"
-      order="4"
-    />
-
-    <FormCertify
-      v-else
-      v-model="store.formState.certify"
-      data-testid="form-section-certify"
-      :description="t('text.certifyDelayDescription')"
-      name="certify"
-      order="3"
-    />
-  </UForm>
+      <FormCertify
+        v-else
+        v-model="store.formState.certify"
+        data-testid="form-section-certify"
+        :description="t('text.certifyDelayDescription')"
+        name="certify"
+        order="3"
+      />
+    </UForm>
+  </div>
 </template>

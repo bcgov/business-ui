@@ -22,7 +22,7 @@ const dateError = computed<FormError | undefined>(() => {
 })
 
 const delayOptions = computed<RadioGroupItem[]>(() => {
-  const options = [{ label: t('label.sixMonths'), value: DelayOption.SIX_MONTHS }]
+  const options = [{ label: t('label.sixMonths'), value: DelayOption.DEFAULT }]
 
   if (props.isStaff) {
     options.push({ label: t('label.selectADate'), value: DelayOption.CUSTOM })
@@ -43,9 +43,8 @@ async function onDelayOptionChange(e: unknown) {
     }
   }
 }
-
 const uInputProps = computed<InputProps>(() => ({
-  disabled: model.value.option === DelayOption.SIX_MONTHS
+  disabled: model.value.option === DelayOption.DEFAULT
 }))
 provide('UInput-props-delay-date-input', uInputProps)
 

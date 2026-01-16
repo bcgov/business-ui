@@ -123,12 +123,14 @@ export const useBusinessApi = () => {
   */
   async function postFiling<F extends FilingRecord>(
     identifier: string,
-    body: FilingSubmissionBody<F>
+    body: FilingSubmissionBody<F>,
+    headers?: HeadersInit
   ): Promise<FilingPostResponse<F>> {
     return $businessApi(`businesses/${identifier}/filings`,
       {
         method: 'POST',
-        body
+        body,
+        headers: headers ? headers : {}
       }
     )
   }
@@ -149,7 +151,8 @@ export const useBusinessApi = () => {
     identifier: string,
     body: FilingSubmissionBody<F>,
     isSubmission: boolean,
-    filingId: string | number
+    filingId: string | number,
+    headers?: HeadersInit
   ): Promise<FilingPutResponse<F>>
   // will return Promise<FilingPostResponse<F> if no filingId is provided
   async function saveOrUpdateDraftFiling<F extends FilingRecord>(
@@ -162,19 +165,22 @@ export const useBusinessApi = () => {
     identifier: string,
     body: FilingSubmissionBody<F>,
     isSubmission = false,
-    filingId?: string | number
+    filingId?: string | number,
+    headers?: HeadersInit
   ): Promise<FilingPutResponse<F> | FilingPostResponse<F>> {
     const url = filingId
       ? `businesses/${identifier}/filings/${filingId}`
       : `businesses/${identifier}/filings`
     const method = filingId ? 'PUT' : 'POST'
     const query = isSubmission ? undefined : { draft: true }
+    headers = headers ? headers : {}
 
     return $businessApi(url,
       {
         method,
         body,
-        query
+        query,
+        headers
       }
     )
   }

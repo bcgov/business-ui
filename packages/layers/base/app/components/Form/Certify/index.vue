@@ -36,6 +36,7 @@ defineExpose({
       :label="order ? `${order}. ${$t('label.certify')}` : $t('label.certify')"
       :description
       body-variant="card"
+      data-testid="certify-section"
     >
       <ConnectFormFieldWrapper
         :label="$t('label.legalName')"

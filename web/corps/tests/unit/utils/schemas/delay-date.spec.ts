@@ -16,10 +16,10 @@ describe('getDelayDateSchema', () => {
     vi.useRealTimers()
   })
 
-  it('should pass with no date when SIX_MONTHS DelayOption is selected', () => {
+  it('should pass with no date when DEFAULT DelayOption is selected', () => {
     const schema = getDelayDateSchema()
     const data = {
-      option: DelayOption.SIX_MONTHS,
+      option: DelayOption.DEFAULT,
       date: ''
     }
     const result = schema.safeParse(data)
@@ -136,10 +136,10 @@ describe('getDelayDateSchema', () => {
     expect(schema.safeParse(data).success).toEqual(true)
   })
 
-  it('should ignore an invalid date if SIX_MONTHS DelayOption is selected', () => {
+  it('should ignore an invalid date if DEFAULT DelayOption is selected', () => {
     const schema = getDelayDateSchema()
     const data = {
-      option: DelayOption.SIX_MONTHS,
+      option: DelayOption.DEFAULT,
       date: '2025-02-30'
     }
     expect(schema.safeParse(data).success).toEqual(true)

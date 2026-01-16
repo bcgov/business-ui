@@ -1,0 +1,38 @@
+[
+    {
+        "accountStatus": "ACTIVE",
+        "accountType": "PREMIUM",
+        "additionalLabel": "Test Branch 1",
+        "id": 1222,
+        "label": "Test Tester",
+        "productSettings": "/account/1222/restricted-product",
+        "type": "ACCOUNT",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/account/1222/settings"
+    },
+    {
+        "accountStatus": "ACTIVE",
+        "accountType": "PREMIUM",
+        "additionalLabel": "Test Branch 2",
+        "id": 1223,
+        "label": "Test Tester 2",
+        "productSettings": "/account/1223/restricted-product",
+        "type": "ACCOUNT",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/account/1223/settings"
+    },
+    {
+        "id": 1111,
+        "label": "USER PROFILE",
+        "type": "USER_PROFILE",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/userprofile"
+    },
+    {
+        "id": 1111,
+        "label": "CREATE ACCOUNT",
+        "type": "CREATE_ACCOUNT",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/setup-account"
+    }
+]

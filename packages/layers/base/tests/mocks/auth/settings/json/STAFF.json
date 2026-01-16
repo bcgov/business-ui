@@ -1,0 +1,27 @@
+[
+    {
+        "accountStatus": "ACTIVE",
+        "accountType": "STAFF",
+        "additionalLabel": "BC Registries and Online Services Staff",
+        "id": 1234,
+        "label": "Ministry of Citizens' Services",
+        "productSettings": "/account/1234/restricted-product",
+        "type": "ACCOUNT",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/account/1234/settings"
+    },
+    {
+        "id": 1111,
+        "label": "USER PROFILE",
+        "type": "USER_PROFILE",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/userprofile"
+    },
+    {
+        "id": 1111,
+        "label": "CREATE ACCOUNT",
+        "type": "CREATE_ACCOUNT",
+        "urlorigin": "https://dev.account.bcregistry.gov.bc.ca",
+        "urlpath": "/setup-account"
+    }
+]

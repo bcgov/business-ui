@@ -11,6 +11,7 @@ import {
   getDocumentsMock,
   getLdarklyFlagsMock,
   getPermissionsMock
+  // getUserSettingsMock
 } from '#test-mocks'
 import type { LedgerMockItem } from '#test-mocks'
 
@@ -77,10 +78,14 @@ export const mockCommonApiCallsForFiling = async (
   partiesJSON: object | undefined,
   feesJSON: object | undefined,
   addressesJSON: object | undefined
+  // accountType?: string
 ) => {
   page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
   })
+  // page.route('**/users/**/settings', async (route) => {
+  //   await route.fulfill({ json: getUserSettingsMock(accountType || 'PREMIUM') })
+  // })
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
     await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
   })
@@ -89,6 +94,21 @@ export const mockCommonApiCallsForFiling = async (
   })
   page.route('**/api/v2/permissions', async (route) => {
     await route.fulfill({ json: getPermissionsMock() })
+  })
+  page.route(`**/businesses/${identifier}/filings`, async (route) => {
+    await route.fulfill({
+      status: 201,
+      json: {}
+    })
+  })
+  page.route(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      headers: {
+        Location: `www.playwright-mocked.bc.gov.ca/business-dashboard/${identifier}`
+      },
+      body: 'Redirected to playwright mocked business dashboard'
+    })
   })
   // FUTURE: make this configurable for other filings
   if (partiesJSON) {
