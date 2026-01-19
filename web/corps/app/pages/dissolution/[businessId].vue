@@ -115,6 +115,7 @@ useFilingPageWatcher<DissolutionType>({
       <FormDelayDate
         v-model="store.formState.delay"
         data-testid="form-section-delay-date"
+        :disabled="initializing"
         order="1"
         :is-staff="store.isStaff"
         name="delay"
@@ -125,6 +126,7 @@ useFilingPageWatcher<DissolutionType>({
         v-if="store.isStaff"
         v-model="store.formState.courtOrder"
         data-testid="form-section-court-order-poa"
+        :disabled="initializing"
         name="courtOrder"
         order="2"
       />
@@ -132,6 +134,7 @@ useFilingPageWatcher<DissolutionType>({
       <FormFolio
         v-model="store.formState.folio"
         data-testid="form-section-folio-number"
+        :disabled="initializing"
         name="folio"
         :order="store.isStaff ? 3 : 2"
       />
@@ -140,6 +143,7 @@ useFilingPageWatcher<DissolutionType>({
         v-if="store.isStaff"
         v-model="store.formState.addToLedger"
         data-testid="form-section-add-to-ledger"
+        :disabled="initializing"
         name="addToLedger"
         order="4"
       />
@@ -149,6 +153,7 @@ useFilingPageWatcher<DissolutionType>({
         v-model="store.formState.certify"
         data-testid="form-section-certify"
         :description="t('text.certifyDelayDescription')"
+        :disabled="initializing"
         name="certify"
         order="3"
       />

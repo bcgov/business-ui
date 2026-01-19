@@ -25,7 +25,13 @@ export async function getCachedOrFetch<TData>(
   force = false
 ): Promise<TData> {
   const cache = useQueryCache()
-
+  // NB: Required to prevent calls within 1ms causing a promise to return before the cached response is complete.
+  // i.e. without below:
+  // -> Call 1 for BC1234567 data
+  // -> Call 2 for BC1234567 data within 1ms
+  // -> Call 1 is cancelled
+  // -> Promise returns with undefined response from Call 1 instead of awaiting Call 2
+  await new Promise(resolve => setTimeout(resolve, 1))
   // Ensures a query entry is present in the cache.
   // will create one if it doesn't exist
   const entry = cache.ensure(options)

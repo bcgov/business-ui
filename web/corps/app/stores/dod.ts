@@ -42,8 +42,8 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       draftId
     )
 
-    if (draftFiling?.data.value?.filing) {
-      draftFilingState.value = draftFiling.data.value
+    if (draftFiling?.filing) {
+      draftFilingState.value = draftFiling
       // delay
       formState.delay.option = draftFilingState.value.filing.dissolution.delayType!
       if (draftFilingState.value.filing.dissolution.dissolutionDate) {
