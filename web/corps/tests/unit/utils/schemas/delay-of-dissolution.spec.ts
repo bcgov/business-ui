@@ -24,7 +24,7 @@ describe('getDodSchema', () => {
       courtOrder: { hasPoa: false, courtOrderNumber: '' },
       folio: { folioNumber: '' },
       delay: {
-        option: DelayOption.SIX_MONTHS,
+        option: DelayOption.DEFAULT,
         date: mockInSixMonths
       }
     }

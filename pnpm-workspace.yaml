@@ -1,6 +1,7 @@
 packages:
   - web/corps
   - web/person-roles
+  - web/registry-home
   - packages/**
 
 catalog:

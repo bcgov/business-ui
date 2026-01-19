@@ -11,7 +11,7 @@ export function getDodSchema() {
       hasPoa: false,
       courtOrderNumber: ''
     }),
-    delay: getDelayDateSchema().default({ option: DelayOption.SIX_MONTHS, date: inSixMonths }),
+    delay: getDelayDateSchema().default({ option: DelayOption.DEFAULT, date: inSixMonths }),
     folio: getFolioSchema().default({ folioNumber: '' })
   })
 }

@@ -68,6 +68,7 @@ const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedActio
     @keydown.enter.prevent.stop="onDone"
   >
     <ConnectFieldset
+      data-testid="party-details-form"
       :label="title"
       orientation="horizontal"
     >

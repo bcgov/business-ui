@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { getFakeAddress } from '#e2e-utils'
 
+// FUTURE: consolidate with fill-out-address once officers is consolidated
 export async function fillAddressFields(
   page: Page,
   type: 'mailing' | 'delivery',

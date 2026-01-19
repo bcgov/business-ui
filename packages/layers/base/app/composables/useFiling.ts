@@ -117,11 +117,11 @@ export const useFiling = () => {
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
-        await modal.openGetDraftFilingErrorModal(error)
+        modal.openGetDraftFilingErrorModal(error)
       } else if (error instanceof Error && error.message === 'filing-not-allowed') {
-        await modal.openFilingNotAllowedErrorModal()
+        modal.openFilingNotAllowedErrorModal()
       } else {
-        await modal.openInitFilingErrorModal(error)
+        modal.openInitFilingErrorModal(error)
       }
       return {
         draftFiling: undefined,

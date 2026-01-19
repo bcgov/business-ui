@@ -20,8 +20,6 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   watch(
     () => accountStore.currentAccount.id,
     async () => {
-      await options.store.init(options.businessId, options.filingSubType, options.draftId)
-
       setBreadcrumbs(options.breadcrumbs.value)
 
       setButtonControl({
@@ -54,6 +52,8 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
       setOnBeforeSessionExpired(async () => {
         await options.setOnBeforeSessionExpired()
       })
+
+      await options.store.init(options.businessId, options.filingSubType, options.draftId)
     },
     { immediate: true }
   )
