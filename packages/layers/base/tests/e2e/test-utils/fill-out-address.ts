@@ -28,7 +28,7 @@ export async function fillOutAddress(
     await postalCodeInput.fill(address.postalCode)
     if (sameAs) {
       await expect(sameAsCheckbox).toBeVisible()
-      await sameAsCheckbox.click()
+      await sameAsCheckbox.check()
     }
   }).toPass()
 }
