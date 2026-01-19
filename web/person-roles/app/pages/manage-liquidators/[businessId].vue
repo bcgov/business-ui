@@ -18,6 +18,7 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
 const liquidatorStore = useLiquidatorStore()
+const { initializing } = storeToRefs(liquidatorStore)
 const { handleButtonLoading } = useConnectButtonControl()
 
 const FILING_TYPE = FilingType.CHANGE_OF_LIQUIDATORS
@@ -113,93 +114,100 @@ useFilingPageWatcher<LiquidateType>({
 </script>
 
 <template>
-  <UForm
-    id="liquidator-filing"
-    ref="liquidator-filing"
-    :state="liquidatorStore.formState"
-    :schema="z.any()"
-    novalidate
-    class="py-10 space-y-10"
-    aria-labelledby="filing-title"
-    @submit="submitFiling"
-    @error="onError"
-  >
-    <div class="space-y-1">
-      <h1 id="filing-title">
-        {{ t(`page.${FILING_TYPE}.${filingSubType}.h1`) }}
-      </h1>
-      <p>{{ t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
-    </div>
+  <div>
+    <ConnectSpinner v-if="initializing" fullscreen />
+    <UForm
+      id="liquidator-filing"
+      ref="liquidator-filing"
+      :state="liquidatorStore.formState"
+      :schema="z.any()"
+      novalidate
+      class="py-10 space-y-10"
+      aria-labelledby="filing-title"
+      @submit="submitFiling"
+      @error="onError"
+    >
+      <div class="space-y-1">
+        <h1 id="filing-title">
+          {{ t(`page.${FILING_TYPE}.${filingSubType}.h1`) }}
+        </h1>
+        <p>{{ t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
+      </div>
 
-    <section class="space-y-4" data-testid="liquidator-info-section">
-      <h2 class="text-base">
-        1. {{ t('label.liquidatorInfo') }}
-      </h2>
+      <section class="space-y-4" data-testid="liquidator-info-section">
+        <h2 class="text-base">
+          1. {{ t('label.liquidatorInfo') }}
+        </h2>
 
-      <ManageParties
-        v-model:active-party="liquidatorStore.formState.activeParty"
-        :loading="liquidatorStore.initializing"
-        :empty-text="liquidatorStore.initializing ? `${t('label.loading')}...` : t('text.noLiquidators')"
-        :add-label="t('label.addLiquidator')"
-        :edit-label="t('label.editLiquidator')"
-        :allowed-actions="allowedPartyActions"
-        :role-type="RoleTypeUi.LIQUIDATOR"
+        <ManageParties
+          v-model:active-party="liquidatorStore.formState.activeParty"
+          :loading="liquidatorStore.initializing"
+          :empty-text="liquidatorStore.initializing ? `${t('label.loading')}...` : t('text.noLiquidators')"
+          :add-label="t('label.addLiquidator')"
+          :edit-label="t('label.editLiquidator')"
+          :allowed-actions="allowedPartyActions"
+          :role-type="RoleTypeUi.LIQUIDATOR"
+        />
+      </section>
+
+      <FormCourtOrderPoa
+        ref="court-order-poa-ref"
+        v-model="liquidatorStore.formState.courtOrder"
+        data-testid="court-order-section"
+        :disabled="initializing"
+        name="courtOrder"
+        order="2"
+        :state="liquidatorStore.formState.courtOrder"
       />
-    </section>
 
-    <FormCourtOrderPoa
-      ref="court-order-poa-ref"
-      v-model="liquidatorStore.formState.courtOrder"
-      data-testid="court-order-section"
-      name="courtOrder"
-      order="2"
-      :state="liquidatorStore.formState.courtOrder"
-    />
+      <FormDocumentId
+        ref="document-id-ref"
+        v-model="liquidatorStore.formState.documentId"
+        data-testid="document-id-section"
+        :disabled="initializing"
+        name="documentId"
+        order="3"
+        :state="liquidatorStore.formState.documentId"
+      />
 
-    <FormDocumentId
-      ref="document-id-ref"
-      v-model="liquidatorStore.formState.documentId"
-      data-testid="document-id-section"
-      name="documentId"
-      order="3"
-      :state="liquidatorStore.formState.documentId"
-    />
-
-    <ConnectFieldset
-      v-if="isIntentOrAddressChange"
-      data-testid="records-office-section"
-      :label="'4. ' + t('label.liquidationRecordsOfficeAddress')"
-      :description="t('text.liquidationRecordsOfficeAddressDesc')"
-      body-variant="card"
-    >
-      <ConnectFormFieldWrapper
-        :label="t('label.liquidationRecordsOfficeAddress')"
-        orientation="horizontal"
+      <ConnectFieldset
+        v-if="isIntentOrAddressChange"
+        data-testid="records-office-section"
+        :label="'4. ' + t('label.liquidationRecordsOfficeAddress')"
+        :description="t('text.liquidationRecordsOfficeAddressDesc')"
+        body-variant="card"
       >
-        <FormAddress
-          id="records-office"
-          v-model="liquidatorStore.formState.recordsOffice"
-          name="recordsOffice"
-          nested
-        />
-      </ConnectFormFieldWrapper>
-    </ConnectFieldset>
+        <ConnectFormFieldWrapper
+          :label="t('label.liquidationRecordsOfficeAddress')"
+          orientation="horizontal"
+        >
+          <FormAddress
+            id="records-office"
+            v-model="liquidatorStore.formState.recordsOffice"
+            :disabled="initializing"
+            name="recordsOffice"
+            nested
+          />
+        </ConnectFormFieldWrapper>
+      </ConnectFieldset>
 
-    <!-- TODO: add text/translation -->
-    <ConnectFieldset
-      data-testid="staff-payment-section"
-      :label="(isIntentOrAddressChange ? '5. ' : '4.') + 'Staff Payment'"
-      body-variant="card"
-    >
-      <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
-        <StaffPayment
-          ref="staff-pay-ref"
-          v-model="liquidatorStore.formState.staffPayment"
-          :show-priority="true"
-          name="staffPayment"
-          :enable-auto-reset="!liquidatorStore.initializing"
-        />
-      </ConnectFormFieldWrapper>
-    </ConnectFieldset>
-  </UForm>
+      <!-- TODO: add text/translation -->
+      <ConnectFieldset
+        data-testid="staff-payment-section"
+        :label="(isIntentOrAddressChange ? '5. ' : '4.') + 'Staff Payment'"
+        body-variant="card"
+      >
+        <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
+          <StaffPayment
+            ref="staff-pay-ref"
+            v-model="liquidatorStore.formState.staffPayment"
+            :disabled="initializing"
+            :show-priority="true"
+            name="staffPayment"
+            :enable-auto-reset="!liquidatorStore.initializing"
+          />
+        </ConnectFormFieldWrapper>
+      </ConnectFieldset>
+    </UForm>
+  </div>
 </template>

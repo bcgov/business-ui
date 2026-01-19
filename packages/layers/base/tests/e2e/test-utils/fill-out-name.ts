@@ -1,9 +1,10 @@
 import { expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 
-export async function fillOutName(page: Page, entity: Partial<BusinessEntity>) {
-  const firstNameInput = page.getByTestId('first-name-input')
-  const lastNameInput = page.getByTestId('last-name-input')
+export async function fillOutName(page: Page, entity: Partial<BusinessEntity>, parent?: Locator) {
+  const parentLocator = parent ?? page
+  const firstNameInput = parentLocator.getByTestId('first-name-input')
+  const lastNameInput = parentLocator.getByTestId('last-name-input')
   await expect(firstNameInput).toBeVisible()
   await firstNameInput.fill(entity.givenName!)
   await expect(lastNameInput).toBeVisible()
