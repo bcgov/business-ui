@@ -85,7 +85,10 @@ importers:
     dependencies:
       '@sbc-connect/nuxt-pay':
         specifier: 0.2.0
-        version: 0.2.0(6a4a0a553ea442e978e831aacaefd679)
+        version: 0.2.0(50c944a4aa72d013c334af5f19abf592)
+      '@vueuse/integrations':
+        specifier: ^14.1.0
+        version: 14.1.0(fuse.js@7.1.0)(jwt-decode@4.0.0)(sortablejs@1.15.6)(vue@3.5.26(typescript@5.9.3))
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -95,6 +98,9 @@ importers:
       luxon:
         specifier: 3.7.2
         version: 3.7.2
+      sortablejs:
+        specifier: ^1.15.6
+        version: 1.15.6
     devDependencies:
       '@axe-core/playwright':
         specifier: 'catalog:'
@@ -5495,6 +5501,9 @@ packages:
   smob@1.5.0:
     resolution: {integrity: sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig==}
 
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -7630,7 +7639,7 @@ snapshots:
       - magicast
       - typescript
 
-  '@nuxt/ui@4.3.0(9575456657b9c9aa7834f8afe8b59704)':
+  '@nuxt/ui@4.3.0(b9043a612bbe6c2985defb6da22f7043)':
     dependencies:
       '@iconify/vue': 5.0.0(vue@3.5.26(typescript@5.9.3))
       '@internationalized/date': 3.10.1
@@ -7660,7 +7669,7 @@ snapshots:
       '@tiptap/vue-3': 3.13.0(@floating-ui/dom@1.7.4)(@tiptap/core@3.13.0(@tiptap/pm@3.13.0))(@tiptap/pm@3.13.0)(vue@3.5.26(typescript@5.9.3))
       '@unhead/vue': 2.0.19(vue@3.5.26(typescript@5.9.3))
       '@vueuse/core': 14.1.0(vue@3.5.26(typescript@5.9.3))
-      '@vueuse/integrations': 14.1.0(fuse.js@7.1.0)(jwt-decode@4.0.0)(vue@3.5.26(typescript@5.9.3))
+      '@vueuse/integrations': 14.1.0(fuse.js@7.1.0)(jwt-decode@4.0.0)(sortablejs@1.15.6)(vue@3.5.26(typescript@5.9.3))
       colortranslator: 5.0.0
       consola: 3.4.2
       defu: 6.1.4
@@ -8367,13 +8376,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.5':
     optional: true
 
-  '@sbc-connect/nuxt-auth@0.4.0(6a4a0a553ea442e978e831aacaefd679)':
+  '@sbc-connect/nuxt-auth@0.4.0(50c944a4aa72d013c334af5f19abf592)':
     dependencies:
       '@pinia/colada': 0.20.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3))
       '@pinia/colada-nuxt': 0.3.0(@pinia/colada@0.20.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3)))(vue@3.5.26(typescript@5.9.3)))(magicast@0.5.1)
       '@pinia/nuxt': 0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3)))
-      '@sbc-connect/nuxt-base': 0.6.0(d75ed1be80f44a10d7c252ad64af8350)
-      '@sbc-connect/nuxt-forms': 0.4.0(d75ed1be80f44a10d7c252ad64af8350)
+      '@sbc-connect/nuxt-base': 0.6.0(5cd70b52aa8b2e4143905edbbef2ad24)
+      '@sbc-connect/nuxt-forms': 0.4.0(5cd70b52aa8b2e4143905edbbef2ad24)
       keycloak-js: 26.2.2
       pinia: 3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3))
       pinia-plugin-persistedstate: 4.7.1(@nuxt/kit@4.2.2(magicast@0.5.1))(@pinia/nuxt@0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3)))
@@ -8435,10 +8444,10 @@ snapshots:
       - vue-router
       - yup
 
-  '@sbc-connect/nuxt-base@0.6.0(d75ed1be80f44a10d7c252ad64af8350)':
+  '@sbc-connect/nuxt-base@0.6.0(5cd70b52aa8b2e4143905edbbef2ad24)':
     dependencies:
       '@iconify-json/mdi': 1.2.3
-      '@nuxt/ui': 4.3.0(9575456657b9c9aa7834f8afe8b59704)
+      '@nuxt/ui': 4.3.0(b9043a612bbe6c2985defb6da22f7043)
       '@nuxtjs/i18n': 10.2.1(@netlify/blobs@9.1.2)(@vue/compiler-dom@3.5.26)(db0@0.3.4)(eslint@9.31.0(jiti@2.6.1))(ioredis@5.8.2)(magicast@0.5.1)(rollup@4.52.5)(vue@3.5.26(typescript@5.9.3))
       '@vueuse/core': 14.1.0(vue@3.5.26(typescript@5.9.3))
       '@vueuse/nuxt': 14.1.0(magicast@0.5.1)(nuxt@4.2.2(@netlify/blobs@9.1.2)(@parcel/watcher@2.5.1)(@types/node@24.3.0)(@vue/compiler-sfc@3.5.26)(cac@6.7.14)(db0@0.3.4)(eslint@9.31.0(jiti@2.6.1))(ioredis@5.8.2)(lightningcss@1.30.2)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.52.5)(terser@5.43.1)(typescript@5.9.3)(vite@7.3.1(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue-tsc@3.2.2(typescript@5.9.3))(yaml@2.8.2))(vue@3.5.26(typescript@5.9.3))
@@ -8505,9 +8514,9 @@ snapshots:
       - vue-router
       - yup
 
-  '@sbc-connect/nuxt-forms@0.4.0(d75ed1be80f44a10d7c252ad64af8350)':
+  '@sbc-connect/nuxt-forms@0.4.0(5cd70b52aa8b2e4143905edbbef2ad24)':
     dependencies:
-      '@sbc-connect/nuxt-base': 0.6.0(d75ed1be80f44a10d7c252ad64af8350)
+      '@sbc-connect/nuxt-base': 0.6.0(5cd70b52aa8b2e4143905edbbef2ad24)
       country-codes-list: 2.0.0
       vue-country-flag-next: 2.3.2(vue@3.5.26(typescript@5.9.3))
     transitivePeerDependencies:
@@ -8567,9 +8576,9 @@ snapshots:
       - vue-router
       - yup
 
-  '@sbc-connect/nuxt-pay@0.2.0(6a4a0a553ea442e978e831aacaefd679)':
+  '@sbc-connect/nuxt-pay@0.2.0(50c944a4aa72d013c334af5f19abf592)':
     dependencies:
-      '@sbc-connect/nuxt-auth': 0.4.0(6a4a0a553ea442e978e831aacaefd679)
+      '@sbc-connect/nuxt-auth': 0.4.0(50c944a4aa72d013c334af5f19abf592)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -9454,7 +9463,7 @@ snapshots:
       '@vueuse/shared': 14.1.0(vue@3.5.26(typescript@5.9.3))
       vue: 3.5.26(typescript@5.9.3)
 
-  '@vueuse/integrations@14.1.0(fuse.js@7.1.0)(jwt-decode@4.0.0)(vue@3.5.26(typescript@5.9.3))':
+  '@vueuse/integrations@14.1.0(fuse.js@7.1.0)(jwt-decode@4.0.0)(sortablejs@1.15.6)(vue@3.5.26(typescript@5.9.3))':
     dependencies:
       '@vueuse/core': 14.1.0(vue@3.5.26(typescript@5.9.3))
       '@vueuse/shared': 14.1.0(vue@3.5.26(typescript@5.9.3))
@@ -9462,6 +9471,7 @@ snapshots:
     optionalDependencies:
       fuse.js: 7.1.0
       jwt-decode: 4.0.0
+      sortablejs: 1.15.6
 
   '@vueuse/metadata@10.11.1': {}
 
@@ -12515,6 +12525,8 @@ snapshots:
   slash@5.1.0: {}
 
   smob@1.5.0: {}
+
+  sortablejs@1.15.6: {}
 
   source-map-js@1.2.1: {}
 
