@@ -17,7 +17,14 @@ on:
         - test
         - sandbox
         - prod
-
+      redeploy:
+        description: "Redeploy Application"
+        required: true
+        type: choice
+        options:
+          - "false"
+          - "true"
+          
 jobs:
   business-registry-ui-cd:
     uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
