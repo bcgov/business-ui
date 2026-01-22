@@ -18,8 +18,7 @@ export default defineNuxtConfig({
   },
 
   extends: [
-    '@sbc-connect/nuxt-pay',
-    '@sbc-connect/nuxt-forms'
+    '@sbc-connect/nuxt-pay'
   ],
 
   modules: ['@pinia/colada-nuxt'],

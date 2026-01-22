@@ -6,7 +6,6 @@
   "packageManager": "pnpm@10.13.1",
   "license": "BSD-3-Clause",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "build-check": "nuxt build",
     "build": "nuxt generate",
     "dev": "nuxt dev",
