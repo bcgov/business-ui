@@ -19,7 +19,8 @@ const route = useRoute()
 const modal = useFilingModals()
 const receiverStore = useReceiverStore()
 const { initializing } = storeToRefs(receiverStore)
-const { handleButtonLoading } = useConnectButtonControl()
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
+const { setAlert: setSubFormAlert } = useFilingAlerts('manage-parties')
 
 const FILING_TYPE = FilingType.CHANGE_OF_RECEIVERS
 
@@ -46,18 +47,35 @@ const allowedPartyActions = computed(() => {
   return actionMap[filingSubType]
 })
 
+const {
+  hasChanges,
+  init: initUnsavedChangesCheck,
+  revoke: revokeBeforeUnloadEvent,
+  cancelBlocked,
+  saveBlocked
+} = useUnsavedChanges(
+  receiverStore.initialState,
+  receiverStore.formState,
+  () => !!receiverStore.receivers.find(r => r.new.actions.length > 0)
+)
+
 // submit final filing
 async function submitFiling() {
   try {
-    const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
-    if (!hasUpdatedReceiver) {
-      // TODO: temporary text - update in lang file or change this to scroll etc.
-      useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
-      return
+    if (!hasChanges.value) {
+      console.log('there are no changes to submit')
+    } else {
+      console.log('there are changes to submit')
     }
-    handleButtonLoading(true, 'right', 1)
-    await receiverStore.submit(true)
-    await navigateTo(dashboardUrl.value, { external: true })
+    // const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
+    // if (!hasUpdatedReceiver) {
+    //   // TODO: temporary text - update in lang file or change this to scroll etc.
+    //   useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
+    //   return
+    // }
+    // handleButtonLoading(true, 'right', 1)
+    // await receiverStore.submit(true)
+    // await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
@@ -65,31 +83,30 @@ async function submitFiling() {
 }
 
 async function cancelFiling() {
-  // TODO: should checkHasChanges to common parties code? Effects quite a few things across the code
-  // if (officerStore.checkHasChanges('save')) {
-  //   await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
-  // } else {
-  //   await navigateTo(dashboardOrEditUrl.value, { external: true })
-  // }
+  if (cancelBlocked()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    if (!disableActiveFormCheck && useManageParties().addingParty.value) {
-      // TODO: temporary text - update in lang file or change this to scroll etc.
-      useConnectButtonControl().setAlertText('Please complete your expanded Receiver above', 'left', 0)
-      return
+    if (enableUnsavedChangesBlock) {
+      if (saveBlocked()) {
+        return setBtnCtrlAlert('There are no changes to save.', 'left', 0)
+      }
+      if (receiverStore.formState.activeParty !== undefined) {
+        return setSubFormAlert('party-details-form', 'Finish this task before saving.')
+      }
     }
-
+    revokeBeforeUnloadEvent()
     await receiverStore.submit(false)
-
-    // if resume later, navigate back to business dashboard
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
-    }
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    await modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initUnsavedChangesCheck()
+    }
   }
 }
 
@@ -109,11 +126,18 @@ useFilingPageWatcher<ReceiverType>({
   filingType: FILING_TYPE,
   filingSubType,
   draftId: urlParams.draft as string | undefined,
-  saveFiling: { onClick: () => saveFiling(true) },
+  saveFiling: { onClick: () => saveFiling() },
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'receiver-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(false, true)
+  // TODO: currently even if a draft is saved it doesnt include the
+  // draft url param to reload the draft once the user logs back in
+  // need to sort out why and fix
+  setOnBeforeSessionExpired: async () => {
+    if (hasChanges.value) {
+      await saveFiling(false)
+    }
+  }
 })
 </script>
 
@@ -138,15 +162,15 @@ useFilingPageWatcher<ReceiverType>({
 
       <section class="space-y-4">
         <h2 class="text-base">
-          1. {{ $t('label.receiverInfo') }}
+          1. {{ t('label.receiverInfo') }}
         </h2>
 
         <ManageParties
           v-model:active-party="receiverStore.formState.activeParty"
           :loading="receiverStore.initializing"
-          :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
-          :add-label="$t('label.addReceiver')"
-          :edit-label="$t('label.editReceiver')"
+          :empty-text="receiverStore.initializing ? `${t('label.loading')}...` : t('text.noReceivers')"
+          :add-label="t('label.addReceiver')"
+          :edit-label="t('label.editReceiver')"
           :role-type="RoleTypeUi.RECEIVER"
           :allowed-actions="allowedPartyActions"
         />

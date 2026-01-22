@@ -1,3 +1,5 @@
+import { cloneDeep } from 'es-toolkit'
+
 export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
   const { tableState } = useManageParties()
@@ -12,6 +14,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const draftFilingState = shallowRef<ReceiverDraftState>({} as ReceiverDraftState)
 
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
+  const initialState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
 
   async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
     if (!filingSubType) {
@@ -47,6 +50,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     }
 
     await nextTick()
+    Object.assign(initialState, cloneDeep(formState))
     initializing.value = false
   }
 
@@ -93,6 +97,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     formState,
     initializing,
     receivers: tableState,
+    initialState,
     init,
     submit,
     $reset

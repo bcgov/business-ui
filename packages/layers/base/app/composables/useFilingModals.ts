@@ -5,7 +5,7 @@ export const useFilingModals = () => {
   const accountStore = useConnectAccountStore()
   const { dashboardUrl, dashboardOrEditUrl } = useFilingNavigation()
 
-  async function openUnsavedChangesModal(revokeBeforeUnloadEvent: () => void) {
+  async function openUnsavedChangesModal(revokeBeforeUnloadEvent: (() => void) | null) {
     await baseModal.open({
       title: t('modal.unsavedChanges.title'),
       description: t('modal.unsavedChanges.description'),
@@ -16,7 +16,9 @@ export const useFilingModals = () => {
           label: t('label.exitWithoutSaving'),
           size: 'xl',
           onClick: async () => {
-            revokeBeforeUnloadEvent()
+            if (revokeBeforeUnloadEvent) {
+              revokeBeforeUnloadEvent()
+            }
             await navigateTo(dashboardOrEditUrl.value, {
               external: true
             })
