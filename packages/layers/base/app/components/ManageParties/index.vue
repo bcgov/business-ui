@@ -13,8 +13,6 @@ const {
   allowedActions?: ManageAllowedAction[]
 }>()
 
-const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
-
 const {
   addingParty,
   expandedState,
@@ -25,9 +23,21 @@ const {
   applyTableEdits
 } = useManageParties(stateKey)
 
+const { t } = useI18n()
+const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const activePartySchema = getActivePartySchema()
 
+const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
+
+function setActiveFormAlert() {
+  setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+}
+
 function initAddParty() {
+  if (activeParty.value !== undefined) {
+    setActiveFormAlert()
+    return
+  }
   activeParty.value = activePartySchema.parse({})
   addingParty.value = true
 }
@@ -55,7 +65,11 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div
+    class="space-y-4"
+    @pointerdown="clearAlert('party-details-form')"
+    @keydown="clearAlert('party-details-form')"
+  >
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
@@ -71,6 +85,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
       :title="addLabel"
       name="activeParty"
       variant="add"
+      :state-key="stateKey"
       @done="() => addParty(activeParty)"
       @cancel="cleanupPartyForm"
     />
@@ -81,9 +96,11 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
       :loading
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
+      :prevent-actions="!!activeParty"
       @init-edit="initEditParty"
       @remove="removeParty"
       @undo="undoParty"
+      @action-prevented="setActiveFormAlert"
     >
       <template #expanded="{ row }">
         <FormPartyDetails
@@ -93,6 +110,7 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
           :allowed-actions="allowedActions"
           name="activeParty"
           variant="edit"
+          :state-key="stateKey"
           @cancel="cleanupPartyForm"
           @done="() => applyEdits(activeParty, row)"
         />

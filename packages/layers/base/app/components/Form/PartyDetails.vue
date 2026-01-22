@@ -4,6 +4,7 @@ const props = defineProps<{
   name?: string
   title: string
   allowedActions?: ManageAllowedAction[]
+  stateKey: string
 }>()
 
 const emit = defineEmits<{
@@ -12,6 +13,8 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
+const formTarget = 'party-details-form'
 
 type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
 
@@ -54,6 +57,8 @@ function isAllowedAction(action: ManageAllowedAction) {
 
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+
+const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
 
 <template>
@@ -63,14 +68,16 @@ const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedActio
     class="bg-white"
     :class="{
       'p-6 rounded shadow': variant === 'add',
-      'pl-2 py-2 pr-6': variant === 'edit'
+      'px-6 py-4': variant === 'edit',
+      'border-l-3 border-error': alerts[formTarget]
     }"
     @keydown.enter.prevent.stop="onDone"
   >
     <ConnectFieldset
-      data-testid="party-details-form"
+      :data-testid="formTarget"
       :label="title"
       orientation="horizontal"
+      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
     >
       <div class="space-y-4">
         <FormPartyName
@@ -88,14 +95,22 @@ const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedActio
           nested
           name="address"
         />
-        <div class="flex gap-6 justify-end">
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
+          />
           <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
             :label="t('label.done')"
+            class="w-full sm:w-min justify-center"
             @click="onDone"
           />
           <UButton
             variant="outline"
             :label="t('label.cancel')"
+            class="w-full sm:w-min justify-center"
             @click="$emit('cancel')"
           />
         </div>

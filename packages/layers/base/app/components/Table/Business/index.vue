@@ -7,13 +7,14 @@ const props = defineProps<{
   loading?: boolean
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
+  preventActions?: boolean
 }>()
 
 defineEmits<{
   'init-edit': [row: TableBusinessRow<T>]
   'undo': [row: TableBusinessRow<T>]
-  'table-action': []
   'remove': [row: TableBusinessRow<T>]
+  'action-prevented': []
 }>()
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
@@ -28,7 +29,7 @@ const expandedTrClass = computed(() => {
   const isFirstRow = rowIndex === 0
   const isLastRow = props.data && rowIndex !== undefined && rowIndex === props.data.length - 1
 
-  let classes = ''
+  let classes = 'data-[expanded=true]:[&+tr>td]:p-0 '
 
   if (!isFirstRow) {
     classes += 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade '
@@ -53,7 +54,7 @@ const expandedTrClass = computed(() => {
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'px-4 pt-4 text-neutral-highlighted align-top text-sm whitespace-normal',
+      td: 'text-neutral-highlighted align-top text-sm whitespace-normal',
       tr: expandedTrClass
     }"
   >
@@ -61,9 +62,11 @@ const expandedTrClass = computed(() => {
       <TableColumnActions
         :row
         :allowed-actions="allowedActions"
+        :prevent-actions="preventActions"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"
+        @action-prevented="$emit('action-prevented')"
       />
     </template>
 
