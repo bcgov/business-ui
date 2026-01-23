@@ -54,7 +54,6 @@ export default {
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
     officerInfoDescription: 'You can only view current officers. Keep current and former officer information in the company’s records.',
     trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.',
-    thereAreNoChangesToSave: 'There are no changes to save.',
     updateAtleastOneReceiverToSubmit: 'Update at least one Receiver to submit.'
   },
   validation: {

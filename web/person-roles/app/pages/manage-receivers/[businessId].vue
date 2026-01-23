@@ -91,7 +91,7 @@ async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock) {
       if (saveBlocked()) {
-        return setBtnCtrlAlert(t('text.thereAreNoChangesToSave'), 'left')
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
       }
       if (receiverStore.formState.activeParty !== undefined) {
         return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
