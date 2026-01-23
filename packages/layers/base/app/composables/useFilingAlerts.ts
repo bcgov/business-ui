@@ -1,6 +1,5 @@
 export const useFilingAlerts = (group: string = 'default') => {
   const allAlerts = useState<Record<string, Record<string, string>>>('business-filing-alerts', () => ({}))
-
   const groupAlerts = computed(() => allAlerts.value[group] || {})
 
   function setAlert(target: string, message: string) {
@@ -11,13 +10,14 @@ export const useFilingAlerts = (group: string = 'default') => {
   }
 
   function clearAlert(target?: string) {
-    if (!allAlerts.value[group]) {
+    const alertGroup = allAlerts.value[group]
+    if (!alertGroup) {
       return
     }
 
     if (target) {
-      // eslint-disable-next-line
-      delete allAlerts.value[group][target]
+      const { [target]: _, ...rest } = alertGroup
+      allAlerts.value[group] = rest
     } else {
       allAlerts.value[group] = {}
     }
@@ -27,44 +27,37 @@ export const useFilingAlerts = (group: string = 'default') => {
     const targetId = `alert-target-${group}-${target}`
     const messageId = `alert-message-${group}-${target}`
 
-    watch(() => groupAlerts.value[target], async (message) => {
+    const unwatch = watch(() => groupAlerts.value[target], async (message) => {
       if (!message) {
         return
       }
-
-      await nextTick()
 
       const el = document.querySelector(`[data-alert-focus-target="${targetId}"]`)
 
       if (el instanceof HTMLElement) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-
-        setTimeout(() => {
-          el.focus({ preventScroll: true })
-        }, 100)
+        setTimeout(() => el.focus({ preventScroll: true }), 100)
       }
-    })
+    }, { flush: 'post' })
 
+    onUnmounted(unwatch)
     return { targetId, messageId }
   }
 
   function autoClear<T>(target: string, model: Ref<T>) {
-    whenever(() => !!groupAlerts.value[target], () => {
-      const unwatch = watch(model, () => {
+    const unwatch = watch(model, () => {
+      if (groupAlerts.value[target]) {
         clearAlert(target)
-        unwatch()
-      }, { deep: true })
-    }, { immediate: true })
+      }
+    }, { deep: true })
+    onUnmounted(unwatch)
   }
 
   function attachAlerts<T>(target: string, model: Ref<T>) {
     const ids = watchAlertAndFocus(target)
 
     autoClear(target, model)
-
-    onUnmounted(() => {
-      clearAlert(target)
-    })
+    onUnmounted(() => clearAlert(target))
 
     return ids
   }

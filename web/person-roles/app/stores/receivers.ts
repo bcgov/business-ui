@@ -14,7 +14,8 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const draftFilingState = shallowRef<ReceiverDraftState>({} as ReceiverDraftState)
 
   const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
-  const initialState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
+  const initialFormState = shallowRef<ReceiverFormSchema>({} as ReceiverFormSchema)
+  const initialReceivers = shallowRef<TableBusinessState<PartySchema>[]>([])
 
   async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
     if (!filingSubType) {
@@ -50,7 +51,8 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     }
 
     await nextTick()
-    Object.assign(initialState, cloneDeep(formState))
+    initialFormState.value = cloneDeep(formState)
+    initialReceivers.value = cloneDeep(tableState.value)
     initializing.value = false
   }
 
@@ -97,7 +99,8 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     formState,
     initializing,
     receivers: tableState,
-    initialState,
+    initialFormState,
+    initialReceivers,
     init,
     submit,
     $reset

@@ -49,36 +49,34 @@ const allowedPartyActions = computed(() => {
 
 const {
   hasChanges,
-  init: initUnsavedChangesCheck,
-  revoke: revokeBeforeUnloadEvent,
+  initBeforeUnload,
+  revokeBeforeUnload,
   cancelBlocked,
-  saveBlocked
-} = useUnsavedChanges(
-  receiverStore.initialState,
-  receiverStore.formState,
+  saveBlocked,
+  submitBlocked
+} = useFilingTaskGuards(
+  [
+    [() => receiverStore.initialFormState, () => receiverStore.formState],
+    [() => receiverStore.initialReceivers, () => receiverStore.receivers]
+  ],
   () => !!receiverStore.receivers.find(r => r.new.actions.length > 0)
 )
 
 // submit final filing
 async function submitFiling() {
   try {
-    if (!hasChanges.value) {
-      console.log('there are no changes to submit')
-    } else {
-      console.log('there are changes to submit')
+    setBtnCtrlAlert(undefined)
+    if (submitBlocked(urlParams.draft as string | undefined)) {
+      return setBtnCtrlAlert('Update at least one Receiver to submit.', 'right')
     }
-    // const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
-    // if (!hasUpdatedReceiver) {
-    //   // TODO: temporary text - update in lang file or change this to scroll etc.
-    //   useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
-    //   return
-    // }
-    // handleButtonLoading(true, 'right', 1)
-    // await receiverStore.submit(true)
-    // await navigateTo(dashboardUrl.value, { external: true })
+    handleButtonLoading(true, 'right', 1)
+    await receiverStore.submit(true)
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
@@ -93,19 +91,19 @@ async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock) {
       if (saveBlocked()) {
-        return setBtnCtrlAlert('There are no changes to save.', 'left', 0)
+        return setBtnCtrlAlert('There are no changes to save.', 'left')
       }
       if (receiverStore.formState.activeParty !== undefined) {
         return setSubFormAlert('party-details-form', 'Finish this task before saving.')
       }
     }
-    revokeBeforeUnloadEvent()
     await receiverStore.submit(false)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     if (enableUnsavedChangesBlock) {
       await modal.openSaveFilingErrorModal(error)
-      initUnsavedChangesCheck()
+      initBeforeUnload()
     }
   }
 }
