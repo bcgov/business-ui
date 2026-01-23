@@ -26,34 +26,30 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
           certifiedBy: 'Fred Jones',
           folioNumber: 'folio123'
         }
+      },
+      {
+        testName: 'Staff-default',
+        heading: 'Stay of Dissolution or Cancellation',
+        isStaff: true,
+        addToLedger: false,
+        innerPayload: {
+          courtOrder: {
+            hasPlanOfArrangement: true,
+            fileNumber: '12345'
+          },
+          dissolutionType: DissolutionType.DELAY,
+          delayType: DelayOption.DEFAULT
+        },
+        headerPayload: {
+          folioNumber: 'folio123'
+        }
       }
-      // FUTURE: needs auth layer changes before uncommenting
-      //   - will work once we can mock the account as staff (tested with isStaff in store as true)
-      // {
-      //   testName: 'Staff-default',
-      //   heading: 'Stay of Dissolution or Cancellation',
-      //   isStaff: true,
-      //   addToLedger: false,
-      //   innerPayload: {
-      //     courtOrder: {
-      //       hasPlanOfArrangement: true,
-      //       fileNumber: '12345'
-      //     },
-      //     dissolutionType: DissolutionType.DELAY,
-      //     delayType: DelayOption.DEFAULT
-      //   },
-      //   headerPayload: {
-      //     folioNumber: 'folio123'
-      //   }
-      // }
     ]
     testCases.forEach(({ testName, heading, isStaff, addToLedger, innerPayload, headerPayload }) => {
-      test.beforeEach(async ({ page }) => {
-        mockCommonApiCallsForFiling(page, identifier, undefined, DISDE, undefined)
+      test(testName, async ({ page }) => {
+        mockCommonApiCallsForFiling(page, identifier, undefined, DISDE, undefined, isStaff ? 'STAFF' : 'PREMIUM')
         await navigateToDodPage(page, identifier)
         await page.waitForLoadState('networkidle')
-      })
-      test(testName, async ({ page }) => {
         expect(page.getByRole('heading', { name: heading })).toBeVisible({ timeout: 10000 })
         if (headerPayload.folioNumber) {
           await fillOutFolio(page, headerPayload.folioNumber)

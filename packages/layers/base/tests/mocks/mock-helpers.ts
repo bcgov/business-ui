@@ -10,10 +10,19 @@ import {
   getCommentsMock,
   getDocumentsMock,
   getLdarklyFlagsMock,
-  getPermissionsMock
-  // getUserSettingsMock
+  getPermissionsMock,
+  getUserSettingsMock
 } from '#test-mocks'
 import type { LedgerMockItem } from '#test-mocks'
+
+export const mockApiCallsForSetAccount = async (
+  page: Page,
+  accountType: string = 'PREMIUM'
+) => {
+  page.route('**/users/**/settings', async (route) => {
+    await route.fulfill({ json: getUserSettingsMock(accountType) })
+  })
+}
 
 export const mockApiCallsForAlerts = async (
   page: Page,
@@ -32,6 +41,7 @@ export const mockApiCallsForAlerts = async (
       ],
       false) })
   })
+  mockApiCallsForSetAccount(page)
 }
 
 export const mockApiCallsForLedger = async (
@@ -70,6 +80,7 @@ export const mockApiCallsForLedger = async (
   page.route('**/api/v2/businesses/**/filings/**/comments', async (route) => {
     await route.fulfill({ json: getCommentsMock() })
   })
+  mockApiCallsForSetAccount(page)
 }
 
 export const mockCommonApiCallsForFiling = async (
@@ -77,15 +88,13 @@ export const mockCommonApiCallsForFiling = async (
   identifier = 'BC1234567',
   partiesJSON: object | undefined,
   feesJSON: object | undefined,
-  addressesJSON: object | undefined
-  // accountType?: string
+  addressesJSON: object | undefined,
+  accountType?: string
 ) => {
   page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
   })
-  // page.route('**/users/**/settings', async (route) => {
-  //   await route.fulfill({ json: getUserSettingsMock(accountType || 'PREMIUM') })
-  // })
+  mockApiCallsForSetAccount(page, accountType)
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
     await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
   })
@@ -110,10 +119,8 @@ export const mockCommonApiCallsForFiling = async (
       body: 'Redirected to playwright mocked business dashboard'
     })
   })
-  // FUTURE: make this configurable for other filings
   if (partiesJSON) {
     page.route(`**/api/v2/businesses/${identifier}/parties**`, async (route) => {
-      // FUTURE: update roles of parties to match the configurables
       await route.fulfill({ json: partiesJSON })
     })
   }
