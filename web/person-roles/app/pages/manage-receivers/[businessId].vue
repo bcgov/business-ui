@@ -67,7 +67,7 @@ async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
     if (submitBlocked(urlParams.draft as string | undefined)) {
-      return setBtnCtrlAlert('Update at least one Receiver to submit.', 'right')
+      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)
@@ -91,10 +91,10 @@ async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock) {
       if (saveBlocked()) {
-        return setBtnCtrlAlert('There are no changes to save.', 'left')
+        return setBtnCtrlAlert(t('text.thereAreNoChangesToSave'), 'left')
       }
       if (receiverStore.formState.activeParty !== undefined) {
-        return setSubFormAlert('party-details-form', 'Finish this task before saving.')
+        return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
       }
     }
     await receiverStore.submit(false)
