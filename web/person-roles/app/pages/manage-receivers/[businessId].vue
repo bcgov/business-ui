@@ -48,12 +48,11 @@ const allowedPartyActions = computed(() => {
 })
 
 const {
-  hasChanges,
+  canSubmit,
+  canSave,
+  canCancel,
   initBeforeUnload,
-  revokeBeforeUnload,
-  cancelBlocked,
-  saveBlocked,
-  submitBlocked
+  revokeBeforeUnload
 } = useFilingTaskGuards(
   [
     [() => receiverStore.initialFormState, () => receiverStore.formState],
@@ -66,7 +65,7 @@ const {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (submitBlocked(urlParams.draft as string | undefined)) {
+    if (!canSubmit()) {
       return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
     handleButtonLoading(true, 'right', 1)
@@ -81,7 +80,7 @@ async function submitFiling() {
 }
 
 async function cancelFiling() {
-  if (cancelBlocked()) {
+  if (!canCancel()) {
     return
   }
   await navigateTo(dashboardUrl.value, { external: true })
@@ -90,7 +89,7 @@ async function cancelFiling() {
 async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock) {
-      if (saveBlocked()) {
+      if (!canSave()) {
         return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
       }
       if (receiverStore.formState.activeParty !== undefined) {
@@ -132,7 +131,7 @@ useFilingPageWatcher<ReceiverType>({
   // draft url param to reload the draft once the user logs back in
   // need to sort out why and fix
   setOnBeforeSessionExpired: async () => {
-    if (hasChanges.value) {
+    if (canSave()) {
       await saveFiling(false)
     }
   }

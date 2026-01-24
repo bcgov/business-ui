@@ -9,6 +9,9 @@ mockNuxtImport('useFilingModals', () => () => ({
   openUnsavedChangesModal: mockModalOpen
 }))
 
+const mockRoute = { query: {} } as any
+mockNuxtImport('useRoute', () => () => mockRoute)
+
 describe('useFilingTaskGuards', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -79,65 +82,71 @@ describe('useFilingTaskGuards', () => {
     })
   })
 
-  describe('submitBlocked', () => {
-    it('should block if no changes', () => {
-      const { submitBlocked } = useFilingTaskGuards([[{}, {}]])
-      expect(submitBlocked(undefined)).toBe(true)
+  describe('canSubmit', () => {
+    beforeEach(() => {
+      mockRoute.query = {}
+    })
+
+    it('should not allow submit if no changes and no draft', () => {
+      const { canSubmit } = useFilingTaskGuards([[{}, {}]])
+      expect(canSubmit()).toBe(false)
     })
 
     it('should allow submit if theres a draft even with no changes', () => {
-      const { submitBlocked } = useFilingTaskGuards([[{}, {}]])
-      expect(submitBlocked('draft_123')).toBe(false)
+      mockRoute.query = { draft: '123' }
+      const { canSubmit } = useFilingTaskGuards([[{}, {}]])
+      expect(canSubmit()).toBe(true)
     })
 
-    it('submitCondition param should override draft id check', () => {
+    it('submitCondition param should not allow submit even if theres a draft', () => {
+      mockRoute.query = { draft: '123' }
       const condition = ref(false)
-      const { submitBlocked } = useFilingTaskGuards([[{}, {}]], condition)
+      const { canSubmit } = useFilingTaskGuards([[{}, {}]], condition)
 
-      expect(submitBlocked('draft_123')).toBe(true)
+      expect(canSubmit()).toBe(false)
     })
   })
 
-  describe('saveBlocked', () => {
-    it('should return !hasChanges status', async () => {
+  describe('canSave', () => {
+    it('should return hasChanges status', async () => {
       const initial = { a: 1 }
       const current = ref({ a: 1 })
-      const { saveBlocked } = useFilingTaskGuards([[initial, current]])
+      const { canSave } = useFilingTaskGuards([[initial, current]])
 
-      expect(saveBlocked()).toBe(true)
+      expect(canSave()).toBe(false)
 
       current.value.a = 2
       await nextTick()
       vi.advanceTimersByTime(150)
       await nextTick()
 
-      expect(saveBlocked()).toBe(false)
+      expect(canSave()).toBe(true)
     })
   })
 
-  describe('cancelBlocked', () => {
-    it('opens modal and returns true when changes exist', async () => {
+  describe('canCancel', () => {
+    it('opens modal and returns false when changes exist', async () => {
       const initial = { a: 1 }
       const current = ref({ a: 1 })
-      const { cancelBlocked } = useFilingTaskGuards([[initial, current]])
+      const { canCancel } = useFilingTaskGuards([[initial, current]])
       await nextTick()
       current.value.a = 2
       await nextTick()
       vi.advanceTimersByTime(150)
       await nextTick()
 
-      const result = cancelBlocked()
+      const result = canCancel()
 
-      expect(result).toBe(true)
+      expect(result).toBe(false)
       expect(mockModalOpen).toHaveBeenCalled()
     })
 
-    it('does not open modal and returns false when no changes exist', () => {
-      const { cancelBlocked } = useFilingTaskGuards([[{ a: 1 }, { a: 1 }]])
+    it('does not open modal and returns true when no changes exist', () => {
+      const { canCancel } = useFilingTaskGuards([[{ a: 1 }, { a: 1 }]])
 
-      const result = cancelBlocked()
+      const result = canCancel()
 
-      expect(result).toBe(false)
+      expect(result).toBe(true)
       expect(mockModalOpen).not.toHaveBeenCalled()
     })
   })

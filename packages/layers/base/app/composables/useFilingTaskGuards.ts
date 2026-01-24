@@ -23,6 +23,7 @@ export const useFilingTaskGuards = (
   watchers: WatcherGroup[],
   submitCondition?: MaybeRefOrGetter<boolean>
 ) => {
+  const route = useRoute()
   const modal = useFilingModals()
   let stop: (() => void) | null = null
   const hasChanges = ref(false)
@@ -66,38 +67,39 @@ export const useFilingTaskGuards = (
     stop = useEventListener(window, 'beforeunload', onBeforeUnload)
   }
 
-  // determines if a filing submission should be blocked
-  function submitBlocked(draftId: string | undefined) {
-    // block unless submitCondition is met
-    // eg: submitCondition === true -> returns false ie: not blocked
+  // determines if a filing is allowed to be submitted
+  function canSubmit() {
+    // if an additonal submit condition is required that is not handled by the watchers, check it here
+    // NOTE: submitCondition is not for a form schema (zod) validation check
+    // the form should be validated prior to evaluating submitCondition
     if (submitCondition) {
-      return !toValue(submitCondition)
+      return toValue(submitCondition)
     }
-
-    // if we have a draftId, the 'initial' state has already been saved
+    // if we have a draft, the 'initial' state has already been saved
     // drafts can be submitted without new local changes
-    if (draftId !== undefined) {
-      return false
+    // allowing the user to resume a saved draft and submit immediately without making any other edits
+    if (route.query.draft) {
+      return true
     }
-
-    // new filings must have at least one change to submit
-    return !hasChanges.value
+    // new filings without a draft must have changes to submit
+    return hasChanges.value
   }
 
-  // do not allow saves unless there has been local changes made to the filing
-  function saveBlocked() {
-    return !hasChanges.value
+  // only allow saves if there has been local changes made to the filing
+  function canSave() {
+    return hasChanges.value
   }
 
-  // returns true if there are unsaved changes
+  // returns true if there are no unsaved changes -> no unsaved changes, allow cancelling with no modal prompt
   // will open the 'unsaved changes' modal and prompt the user to either keep editing or confirm that
   // they want to navigate away and lose their progress
   // requires 'revokeBeforeUnload' to bypass the browser event listener if they choose to leave
-  function cancelBlocked() {
+  function canCancel() {
     if (hasChanges.value) {
       modal.openUnsavedChangesModal(revokeBeforeUnload)
+      return false
     }
-    return hasChanges.value
+    return true
   }
 
   // init/cleanup window listener
@@ -108,8 +110,8 @@ export const useFilingTaskGuards = (
     hasChanges: readonly(hasChanges),
     initBeforeUnload,
     revokeBeforeUnload,
-    submitBlocked,
-    saveBlocked,
-    cancelBlocked
+    canSubmit,
+    canSave,
+    canCancel
   }
 }
