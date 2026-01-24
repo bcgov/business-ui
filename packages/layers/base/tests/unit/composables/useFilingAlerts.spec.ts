@@ -21,21 +21,21 @@ describe('useFilingAlerts', () => {
   }
 
   describe('Alerts', () => {
-    it('should set and clear alerts', () => {
+    it('should set and clear alerts', async () => {
       const { setAlert, clearAlert, alerts } = useFilingAlerts('basic')
 
-      setAlert('focus-target-id', 'Error message')
+      await setAlert('focus-target-id', 'Error message')
       expect(alerts.value['focus-target-id']).toBe('Error message')
 
       clearAlert('focus-target-id')
       expect(alerts.value['focus-target-id']).toBeUndefined()
     })
 
-    it('should clear all alerts when no params given', () => {
+    it('should clear all alerts when no params given', async () => {
       const { setAlert, clearAlert, alerts } = useFilingAlerts('all-alerts')
 
-      setAlert('focus-target-id-1', 'Error 1')
-      setAlert('focus-target-id-2', 'Error 2')
+      await setAlert('focus-target-id-1', 'Error 1')
+      await setAlert('focus-target-id-2', 'Error 2')
 
       clearAlert()
       expect(alerts.value).toEqual({})
@@ -51,7 +51,7 @@ describe('useFilingAlerts', () => {
 
       watchAlertAndFocus('focus-target-id')
 
-      setAlert('focus-target-id', 'Error Message')
+      await setAlert('focus-target-id', 'Error Message')
 
       await flushPromises()
       expect(mockElement.scrollIntoView).toHaveBeenCalledWith({
@@ -70,7 +70,7 @@ describe('useFilingAlerts', () => {
       const model = ref('initial')
 
       autoClear('focus-target-id', model)
-      setAlert('focus-target-id', 'Old Error')
+      await setAlert('focus-target-id', 'Old Error')
 
       await flushPromises()
       expect(alerts.value['focus-target-id']).toBe('Old Error')
@@ -83,7 +83,7 @@ describe('useFilingAlerts', () => {
   })
 
   describe('attachAlerts', () => {
-    it('should return target and message ID and clear alert on unmounted', () => {
+    it('should return target and message ID and clear alert on unmounted', async () => {
       const { setAlert, attachAlerts, alerts } = useFilingAlerts('attach-group')
       const model = ref('')
 
@@ -96,7 +96,7 @@ describe('useFilingAlerts', () => {
       })
 
       const wrapper = mount(TestComponent)
-      setAlert('focus-target-id', 'Error Message')
+      await setAlert('focus-target-id', 'Error Message')
 
       expect(wrapper.vm.ids).toEqual({
         targetId: 'alert-target-attach-group-focus-target-id',
@@ -124,7 +124,7 @@ describe('useFilingAlerts', () => {
 
       const wrapper = mount(TestComponent)
 
-      setAlert('focus-target-id', 'Error Message')
+      await setAlert('focus-target-id', 'Error Message')
       await flushPromises()
       expect(mockElement.scrollIntoView).toHaveBeenCalled()
 
