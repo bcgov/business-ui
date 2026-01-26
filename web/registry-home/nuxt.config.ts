@@ -63,7 +63,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      brdHomeUrl: process.env.NUXT_PUBLIC_BRD_URL,
       version: `Registry Home UI v${process.env.npm_package_version || ''}`,
       playwright: process.env.playwright === 'true'
     }

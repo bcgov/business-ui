@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(() => {
   return navigateTo(
     {
       path: appendUrlParam(
-        config.brdHomeUrl,
+        config.brdUrl,
         'accountid',
         useConnectAccountStore().currentAccount.id
       )
