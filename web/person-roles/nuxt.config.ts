@@ -69,7 +69,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Person Roles UI v${process.env.npm_package_version || ''}`,
-      playwright: process.env.playwright === 'true'
+      playwright: process.env.playwright === 'true',
+      sessionInactivityTimeout: '20000',
+      sessionModalTimeout: '20000'
     }
   }
 })
