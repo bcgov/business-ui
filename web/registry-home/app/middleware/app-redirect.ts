@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware((to) => {
+export default defineNuxtRouteMiddleware(() => {
   const config = useRuntimeConfig().public
 
   // ToDo: Can remove this middleware once BRH is setup
