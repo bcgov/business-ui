@@ -4,7 +4,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
-  const { $keycloak, $authApi, $businessApi } = useNuxtApp()
+  const { $keycloak, $authApi, $businessApi, $searchAPI } = useNuxtApp()
   const { t, locale } = useNuxtApp().$i18n
   const toast = useToast()
   const brdModal = useBrdModals()
@@ -396,6 +396,26 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       affiliations.pagination.page = 1
       if (!affiliations.loading) {
         await loadAffiliations()
+      }
+    }
+  )
+
+  // Watch authorized actions and populate query param to auto-load a business for affiliation
+  watch(
+    () => authorizedActions.value,
+    async () => {
+      const populateParam = route.query?.populate as string
+      if (!authorizedActions.value.length || !populateParam) { return }
+
+      try {
+        const regSearchResponse = await $searchAPI.regSearch(populateParam)
+        if (regSearchResponse?.[0]) {
+          await handleManageBusinessOrNameRequest('reg', regSearchResponse[0])
+        } else {
+          console.warn('No reg search results for', populateParam)
+        }
+      } catch (error) {
+        logFetchError(error, 'Error performing regSearch')
       }
     }
   )
