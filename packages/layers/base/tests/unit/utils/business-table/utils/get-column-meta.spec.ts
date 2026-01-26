@@ -1,16 +1,15 @@
 import { describe, it, expect } from 'vitest'
 
 describe('getColumnMeta', () => {
-  it('should return an empty object if no option provided', () => {
-    const result = getColumnMeta()
-
-    expect(result).toEqual({})
-  })
-
-  it('should return an empty object for the "default" option', () => {
+  it('should return correct config for the "default" option', () => {
     const result = getColumnMeta('default')
 
-    expect(result).toEqual({})
+    expect(result).toEqual({
+      class: {
+        td: 'px-2',
+        th: ''
+      }
+    })
   })
 
   it('should return correct config for the "first" option', () => {

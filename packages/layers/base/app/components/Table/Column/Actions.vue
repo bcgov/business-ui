@@ -1,23 +1,38 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
 const {
   row,
-  allowedActions
+  allowedActions,
+  preventActions
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
+  preventActions?: boolean
 }>()
 
 const emit = defineEmits<{
   'init-edit': []
   'undo': []
-  'table-action': []
   'remove': []
+  'action-prevented': []
 }>()
 
 const { t } = useI18n()
 
 function isActionAllowed(action: ManageAllowedAction) {
   return !allowedActions || allowedActions.includes(action)
+}
+
+function emitAction(event: 'init-edit' | 'undo' | 'remove') {
+  if (preventActions) {
+    emit('action-prevented')
+    return
+  }
+  switch (event) {
+    case 'init-edit': return emit('init-edit')
+    case 'undo': return emit('undo')
+    case 'remove': return emit('remove')
+    default: return
+  }
 }
 
 const isAdded = computed(() => row.original.old === undefined)
@@ -39,7 +54,7 @@ const availableActions = computed(() => {
     actions.push({
       label: t('label.undo'),
       icon: 'i-mdi-undo',
-      click: () => emit('undo')
+      click: () => emitAction('undo')
     })
   }
 
@@ -47,7 +62,7 @@ const availableActions = computed(() => {
     actions.push({
       label: t('label.change'),
       icon: 'i-mdi-pencil',
-      click: () => emit('init-edit')
+      click: () => emitAction('init-edit')
     })
   }
 
@@ -55,7 +70,7 @@ const availableActions = computed(() => {
     actions.push({
       label: t('label.remove'),
       icon: 'i-mdi-delete',
-      click: () => emit('remove')
+      click: () => emitAction('remove')
     })
   }
 
@@ -159,7 +174,8 @@ const hasDropdownActions = computed(() => dropdownActions.value.length > 0)
         v-if="hasDropdownActions"
         :items="dropdownActions"
         :content="{
-          align: 'end'
+          align: 'end',
+          onCloseAutoFocus: (e) => preventActions && e.preventDefault()
         }"
       >
         <UButton
@@ -170,7 +186,6 @@ const hasDropdownActions = computed(() => dropdownActions.value.length > 0)
           :ui="{
             leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
           }"
-          @click="$emit('table-action')"
         />
       </UDropdownMenu>
     </UFieldGroup>

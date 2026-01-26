@@ -1,6 +1,11 @@
 export function getColumnMeta<T = unknown>(option: TableColumnMetaOption = 'default'): TableBusinessColumnMeta<T> {
   const config: Record<TableColumnMetaOption, TableBusinessColumnMeta<T>> = {
-    default: {},
+    default: {
+      class: {
+        th: '',
+        td: 'px-2'
+      }
+    },
     first: {
       class: {
         th: 'pl-6',

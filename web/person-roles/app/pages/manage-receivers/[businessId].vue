@@ -19,7 +19,8 @@ const route = useRoute()
 const modal = useFilingModals()
 const receiverStore = useReceiverStore()
 const { initializing } = storeToRefs(receiverStore)
-const { handleButtonLoading } = useConnectButtonControl()
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
+const { setAlert: setSubFormAlert } = useFilingAlerts('manage-parties')
 
 const FILING_TYPE = FilingType.CHANGE_OF_RECEIVERS
 
@@ -46,50 +47,66 @@ const allowedPartyActions = computed(() => {
   return actionMap[filingSubType]
 })
 
+const {
+  canSubmit,
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [() => receiverStore.initialFormState, () => receiverStore.formState],
+    [() => receiverStore.initialReceivers, () => receiverStore.receivers]
+  ],
+  () => !!receiverStore.receivers.find(r => r.new.actions.length > 0)
+)
+
 // submit final filing
 async function submitFiling() {
   try {
-    const hasUpdatedReceiver = receiverStore.receivers.find(receiver => receiver.new.actions.length)
-    if (!hasUpdatedReceiver) {
-      // TODO: temporary text - update in lang file or change this to scroll etc.
-      useConnectButtonControl().setAlertText('Please update at least one Receiver above', 'right')
-      return
+    setBtnCtrlAlert(undefined)
+    if (!canSubmit()) {
+      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
+    }
+    if (receiverStore.formState.activeParty !== undefined) {
+      return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
     }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
 async function cancelFiling() {
-  // TODO: should checkHasChanges to common parties code? Effects quite a few things across the code
-  // if (officerStore.checkHasChanges('save')) {
-  //   await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
-  // } else {
-  //   await navigateTo(dashboardOrEditUrl.value, { external: true })
-  // }
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    if (!disableActiveFormCheck && useManageParties().addingParty.value) {
-      // TODO: temporary text - update in lang file or change this to scroll etc.
-      useConnectButtonControl().setAlertText('Please complete your expanded Receiver above', 'left', 0)
-      return
+    if (enableUnsavedChangesBlock) {
+      if (!canSave()) {
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+      }
+      if (receiverStore.formState.activeParty !== undefined) {
+        return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
+      }
     }
-
     await receiverStore.submit(false)
-
-    // if resume later, navigate back to business dashboard
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
-    }
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    await modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
@@ -109,11 +126,19 @@ useFilingPageWatcher<ReceiverType>({
   filingType: FILING_TYPE,
   filingSubType,
   draftId: urlParams.draft as string | undefined,
-  saveFiling: { onClick: () => saveFiling(true) },
+  saveFiling: { onClick: () => saveFiling() },
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'receiver-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(false, true)
+  // TODO: currently even if a draft is saved it doesnt include the
+  // draft url param to reload the draft once the user logs back in
+  // need to sort out why and fix
+  // ticket 32173
+  setOnBeforeSessionExpired: async () => {
+    if (canSave()) {
+      await saveFiling(false)
+    }
+  }
 })
 </script>
 
@@ -170,9 +195,8 @@ useFilingPageWatcher<ReceiverType>({
         :state="receiverStore.formState.documentId"
       />
 
-      <!-- TODO: add text/translation -->
-      <ConnectFieldset label="4. Staff Payment" body-variant="card">
-        <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
+      <ConnectFieldset :label="`4. ${$t('label.staffPayment')}`" body-variant="card">
+        <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
           <StaffPayment
             ref="staff-pay-ref"
             v-model="receiverStore.formState.staffPayment"
