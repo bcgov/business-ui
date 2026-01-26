@@ -371,6 +371,7 @@ export default {
     noFee: 'No Fee',
     noticeOfWithdrawalForm: 'Notice of Withdrawal Form',
     numberedAmalgamatedCompany: 'Numbered Amalgamated Company',
+    office: 'Office',
     PAID: 'PAID',
     payment: 'Payment',
     PAYMENTCOMPLETED: 'PAYMENT COMPLETED',
