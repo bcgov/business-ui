@@ -372,6 +372,7 @@ export default {
     noticeOfWithdrawalForm: 'Notice of Withdrawal Form',
     numberedAmalgamatedCompany: 'Numbered Amalgamated Company',
     PAID: 'PAID',
+    payment: 'Payment',
     PAYMENTCOMPLETED: 'PAYMENT COMPLETED',
     PENDING: 'PENDING',
     pacificTime: 'Pacific time',

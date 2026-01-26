@@ -68,6 +68,9 @@ async function submitFiling() {
     if (!canSubmit()) {
       return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
+    if (receiverStore.formState.activeParty !== undefined) {
+      return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
+    }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)
     revokeBeforeUnload()
@@ -130,6 +133,7 @@ useFilingPageWatcher<ReceiverType>({
   // TODO: currently even if a draft is saved it doesnt include the
   // draft url param to reload the draft once the user logs back in
   // need to sort out why and fix
+  // ticket 32173
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {
       await saveFiling(false)
@@ -159,15 +163,15 @@ useFilingPageWatcher<ReceiverType>({
 
       <section class="space-y-4">
         <h2 class="text-base">
-          1. {{ t('label.receiverInfo') }}
+          1. {{ $t('label.receiverInfo') }}
         </h2>
 
         <ManageParties
           v-model:active-party="receiverStore.formState.activeParty"
           :loading="receiverStore.initializing"
-          :empty-text="receiverStore.initializing ? `${t('label.loading')}...` : t('text.noReceivers')"
-          :add-label="t('label.addReceiver')"
-          :edit-label="t('label.editReceiver')"
+          :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
+          :add-label="$t('label.addReceiver')"
+          :edit-label="$t('label.editReceiver')"
           :role-type="RoleTypeUi.RECEIVER"
           :allowed-actions="allowedPartyActions"
         />
@@ -191,9 +195,8 @@ useFilingPageWatcher<ReceiverType>({
         :state="receiverStore.formState.documentId"
       />
 
-      <!-- TODO: add text/translation -->
-      <ConnectFieldset label="4. Staff Payment" body-variant="card">
-        <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
+      <ConnectFieldset :label="`4. ${$t('label.staffPayment')}`" body-variant="card">
+        <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
           <StaffPayment
             ref="staff-pay-ref"
             v-model="receiverStore.formState.staffPayment"

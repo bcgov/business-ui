@@ -93,6 +93,11 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     const defaults = receiverSchema.parse({})
     Object.assign(formState, defaults)
     formState.activeParty = undefined
+    initialFormState.value = {
+      ...defaults,
+      activeParty: undefined
+    }
+    initialReceivers.value = []
   }
 
   return {

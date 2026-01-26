@@ -90,9 +90,9 @@ export const useFilingTaskGuards = (
     return hasChanges.value
   }
 
-  // returns true if there are no unsaved changes -> no unsaved changes, allow cancelling with no modal prompt
-  // will open the 'unsaved changes' modal and prompt the user to either keep editing or confirm that
-  // they want to navigate away and lose their progress
+  // returns true if there are no unsaved changes allowing cancelling with no modal prompt
+  // if unsaved changes, will open the 'unsaved changes' modal and prompt the user to either keep editing or
+  // confirm that they want to navigate away and lose their progress
   // requires 'revokeBeforeUnload' to bypass the browser event listener if they choose to leave
   function canCancel() {
     if (hasChanges.value) {

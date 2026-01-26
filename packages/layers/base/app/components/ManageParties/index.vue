@@ -13,6 +13,8 @@ const {
   allowedActions?: ManageAllowedAction[]
 }>()
 
+const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
+
 const {
   addingParty,
   expandedState,
@@ -26,8 +28,6 @@ const {
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const activePartySchema = getActivePartySchema()
-
-const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
 
 function setActiveFormAlert() {
   setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
