@@ -3,7 +3,7 @@ import { z } from 'zod'
 export function getOfficesSchema() {
   return z.object({
     actions: z.array(z.enum(ActionType)).default(() => []),
-    type: z.string(),
+    type: z.enum(OfficeType).default(() => OfficeType.UNKNOWN),
     address: getAddressSchema().default(() => ({
       deliveryAddress: {
         street: '',
@@ -32,7 +32,7 @@ export function getOfficesSchema() {
 export type OfficesSchema = z.output<ReturnType<typeof getOfficesSchema>>
 
 export function getActiveOfficesSchema() {
-  return getPartySchema().nullable().optional()
+  return getOfficesSchema().nullable().optional()
 }
 
 export type ActiveOfficesSchema = z.output<ReturnType<typeof getActiveOfficesSchema>>

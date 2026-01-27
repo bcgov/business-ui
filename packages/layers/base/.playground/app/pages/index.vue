@@ -32,6 +32,36 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/BusinessLedger/Wrapper')
   },
   {
+    label: 'ManageOffices',
+    children: [
+      {
+        to: localePath('/examples/components/ManageOffices'),
+        label: 'Default'
+      },
+      {
+        label: 'Allowed Actions',
+        children: [
+          // { // FUTURE: complete once 'add' functionality complete in ManageOffices
+          //   label: 'Add',
+          //   to: localePath('/examples/components/ManageOffices/allowed-actions/add')
+          // },
+          {
+            label: 'Edits',
+            to: localePath('/examples/components/ManageOffices/allowed-actions/edits')
+          },
+          {
+            label: 'Remove',
+            to: localePath('/examples/components/ManageOffices/allowed-actions/remove')
+          },
+          {
+            label: 'None',
+            to: localePath('/examples/components/ManageOffices/allowed-actions/none')
+          }
+        ]
+      }
+    ]
+  },
+  {
     label: 'ManageParties',
     children: [
       {

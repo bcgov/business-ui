@@ -1,74 +1,78 @@
 <script setup lang="ts">
 const {
-  roleType,
-  stateKey = 'manage-parties',
+  stateKey = 'manage-offices',
   allowedActions
 } = defineProps<{
   loading?: boolean
   emptyText?: string
   addLabel: string
   editLabel: string
-  roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
 }>()
 
-const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
+const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office', { required: true })
 
 const {
-  addingParty,
+  addingOffice,
   expandedState,
   tableState,
-  addNewParty,
-  removeParty,
-  undoParty,
+  addNewOffice,
+  removeOffice,
+  undoOffice,
   applyTableEdits
-} = useManageParties(stateKey)
+} = useManageOffices(stateKey)
 
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
-const activePartySchema = getActivePartySchema()
+const { setAlertText } = useConnectButtonControl()
+const activeOfficeSchema = getActiveOfficesSchema()
 
 function setActiveFormAlert() {
-  setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+  setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
 }
 
-function initAddParty() {
-  if (activeParty.value !== undefined) {
+function initAddOffice() {
+  if (activeOffice.value !== undefined) {
     setActiveFormAlert()
     return
   }
-  activeParty.value = activePartySchema.parse({})
-  addingParty.value = true
+  activeOffice.value = activeOfficeSchema.parse({})
+  addingOffice.value = true
 }
 
-function cleanupPartyForm() {
-  addingParty.value = false
+function cleanupOfficeForm() {
+  addingOffice.value = false
   expandedState.value = undefined
-  activeParty.value = undefined
+  activeOffice.value = undefined
 }
 
-function addParty(party: ActivePartySchema) {
-  addNewParty(party, roleType)
-  cleanupPartyForm()
+function addOffice(office: ActiveOfficesSchema) {
+  addNewOffice(office)
+  cleanupOfficeForm()
 }
 
-function initEditParty(row: TableBusinessRow<PartySchema>) {
-  activeParty.value = activePartySchema.parse({ ...row.original.new })
+function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
+  activeOffice.value = activeOfficeSchema.parse({ ...row.original.new })
   expandedState.value = { [row.index]: true }
 }
 
-function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>) {
-  applyTableEdits(party, row)
-  cleanupPartyForm()
+function applyEdits(office: ActiveOfficesSchema, row: TableBusinessRow<OfficesSchema>) {
+  applyTableEdits(office, row)
+  cleanupOfficeForm()
+}
+
+function clearAllAlerts() {
+  clearAlert('office-address-form') // clear alert in sub form
+  setAlertText(undefined) // clear alert in button control
 }
 </script>
 
 <template>
   <div
     class="space-y-4"
-    @pointerdown="clearAlert('party-details-form')"
-    @keydown="clearAlert('party-details-form')"
+    @pointerdown="clearAllAlerts"
+    @keydown="clearAllAlerts"
   >
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
@@ -76,45 +80,44 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
       variant="outline"
       icon="i-mdi-account-plus-outline"
       class="w-min"
-      @click="initAddParty"
+      @click="initAddOffice"
     />
 
-    <FormPartyDetails
-      v-if="addingParty && activeParty"
-      v-model="activeParty"
-      :title="addLabel"
-      name="activeParty"
+    <FormOfficeDetails
+      v-if="addingOffice && activeOffice"
+      v-model="activeOffice"
       variant="add"
+      name="activeOffice"
+      :title="addLabel"
       :state-key="stateKey"
-      @done="() => addParty(activeParty)"
-      @cancel="cleanupPartyForm"
+      @done="() => addOffice(activeOffice)"
+      @cancel="cleanupOfficeForm"
     />
 
-    <TableParty
+    <TableOffices
       v-model:expanded="expandedState"
       :data="tableState"
       :loading
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
-      :prevent-actions="!!activeParty"
-      @init-edit="initEditParty"
-      @remove="removeParty"
-      @undo="undoParty"
+      :prevent-actions="!!activeOffice"
       @action-prevented="setActiveFormAlert"
+      @init-edit="initEditOffice"
+      @remove="removeOffice"
+      @undo="undoOffice"
     >
       <template #expanded="{ row }">
-        <FormPartyDetails
-          v-if="activeParty"
-          v-model="activeParty"
-          :title="editLabel"
-          :allowed-actions="allowedActions"
-          name="activeParty"
+        <FormOfficeDetails
+          v-if="activeOffice"
+          v-model="activeOffice"
           variant="edit"
+          name="activeOffice"
+          :title="editLabel"
           :state-key="stateKey"
-          @cancel="cleanupPartyForm"
-          @done="() => applyEdits(activeParty, row)"
+          @done="() => applyEdits(activeOffice, row)"
+          @cancel="cleanupOfficeForm"
         />
       </template>
-    </TableParty>
+    </TableOffices>
   </div>
 </template>

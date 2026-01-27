@@ -463,6 +463,15 @@ export default {
   filingText: {
     agmExtension: 'The {agmyear} AGM must be held by {boldStart}{agmduedate}{boldEnd}.'
   },
+  officeType: {
+    registeredOffice: 'Registered Office',
+    recordsOffice: 'Records Office',
+    businessOffice: 'Business Office',
+    liquidationRecordsOffice: 'Liquidation Records Office',
+    custodial: 'Custodial Office',
+    unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
+    undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
+  },
   text: {
     addressChange: 'address change',
     alteration: 'alteration',

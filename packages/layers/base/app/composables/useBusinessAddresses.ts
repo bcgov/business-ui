@@ -13,6 +13,8 @@ export const useBusinessAddresses = () => {
       ...(
         res.liquidationRecordsOffice
         && { liquidationRecordsOffice: formatBaseAddressUi(res.liquidationRecordsOffice) }
+      ),
+      ...(res.custodialOffice && { custodialOffice: formatBaseAddressUi(res.custodialOffice) }
       )
     }
   }

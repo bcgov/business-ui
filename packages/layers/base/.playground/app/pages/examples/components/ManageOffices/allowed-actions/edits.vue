@@ -3,7 +3,7 @@ import mockOffices from '#test-mocks/business-addresses/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices (edits)' }]
 })
 
 const { tableState } = useManageOffices()
@@ -31,8 +31,9 @@ const loading = ref(false)
 
 <template>
   <UContainer>
+    <h1>ManageOffices - Edits</h1>
     <ConnectPageSection
-      :heading="{ label: 'Manage Offices - Default' }"
+      :heading="{ label: 'ManageOffices - Edits' }"
       ui-body="p-10"
     >
       <ManageOffices
@@ -41,6 +42,7 @@ const loading = ref(false)
         :empty-text="loading ? `Loading...` : 'No offices'"
         add-label="Add Office"
         edit-label="Edit Office"
+        :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       />
     </ConnectPageSection>
   </UContainer>
