@@ -102,35 +102,6 @@ mockNuxtImport('useWindowSize', () => {
   )
 })
 
-
-// // mock logFetchError used by the watcher
-// const mockLogFetchError = vi.fn()
-// vi.mock('~~/app/utils/logFetchError', () => ({
-//   logFetchError: (...args: any[]) => mockLogFetchError(...args)
-// }))
-//
-// // mock $searchAPI.regSearch (alongside useNuxtApp mock)
-// const mockRegSearch = vi.fn()
-// mockNuxtImport('useNuxtApp', () => {
-//   return () => ({
-//     $keycloak: {
-//       authenticated: mockAuthenticated,
-//       token: 'mock-token'
-//     },
-//     $authApi: mockAuthApi,
-//     $businessApi: mockBusinessApi,
-//     $searchAPI: { regSearch: mockRegSearch }, // <-- add this
-//     $i18n: {
-//       t: (key: string) => key,
-//       locale: { value: 'en-CA' }
-//     }
-//   })
-// })
-//
-// // mock authorizedActions source used by the watcher
-// import { ref } from 'vue'
-// const mockAuthorizedActionsRef = ref<string[]>([])
-
 const mockEntities = {
   entities: [
     { identifier: '123' },
