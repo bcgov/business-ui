@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware((to) => {
         path: appendUrlParam(
           config.brdUrl,
           'accountid',
-          useConnectAccountStore().currentAccount.id
+          useConnectAccountStore().currentAccount?.id
         )
       },
       { external: true }

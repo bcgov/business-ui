@@ -417,7 +417,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
       } catch (error) {
         logFetchError(error, 'Error performing regSearch')
       }
-    }
+    }, { once: true }
   )
 
   // Watch for changes to type and status filters
