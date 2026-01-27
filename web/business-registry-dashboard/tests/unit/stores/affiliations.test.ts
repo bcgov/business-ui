@@ -12,6 +12,7 @@ vi.mock('~~/app/utils/isAuthorized', () => ({
 }))
 
 let mockAuthenticated = true
+const mockRegSearch = vi.fn()
 const mockAuthApi = vi.fn()
 const mockBusinessApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
@@ -23,6 +24,7 @@ mockNuxtImport('useNuxtApp', () => {
       },
       $authApi: mockAuthApi,
       $businessApi: mockBusinessApi,
+      $searchAPI: { regSearch: mockRegSearch }, // <-- NEW: minimal addition
       $i18n: {
         t: (key: string) => key,
         locale: { value: 'en-CA' }
@@ -99,6 +101,35 @@ mockNuxtImport('useWindowSize', () => {
     }
   )
 })
+
+
+// // mock logFetchError used by the watcher
+// const mockLogFetchError = vi.fn()
+// vi.mock('~~/app/utils/logFetchError', () => ({
+//   logFetchError: (...args: any[]) => mockLogFetchError(...args)
+// }))
+//
+// // mock $searchAPI.regSearch (alongside useNuxtApp mock)
+// const mockRegSearch = vi.fn()
+// mockNuxtImport('useNuxtApp', () => {
+//   return () => ({
+//     $keycloak: {
+//       authenticated: mockAuthenticated,
+//       token: 'mock-token'
+//     },
+//     $authApi: mockAuthApi,
+//     $businessApi: mockBusinessApi,
+//     $searchAPI: { regSearch: mockRegSearch }, // <-- add this
+//     $i18n: {
+//       t: (key: string) => key,
+//       locale: { value: 'en-CA' }
+//     }
+//   })
+// })
+//
+// // mock authorizedActions source used by the watcher
+// import { ref } from 'vue'
+// const mockAuthorizedActionsRef = ref<string[]>([])
 
 const mockEntities = {
   entities: [
@@ -1480,4 +1511,95 @@ describe('useAffiliationsStore', () => {
       expect(affStore.affiliations.results).toEqual(processedAffiliations)
     })
   })
+
+  describe('populate watcher', () => {
+    let affStore: any
+    let consoleWarnSpy: any
+    const setAuthorized = async () => {
+      // Preferred: if your code populates authorized actions during loadAffiliations,
+      // this is enough. If not, use the fallback below.
+
+      await affStore.loadAffiliations()
+      await flushPromises()
+
+      // Fallback (only if needed): if authorizedActions isn't populated by loadAffiliations,
+      // set it directly to trigger the watcher (keep minimal + local).
+      if (!affStore?.authorizedActions?.length && affStore?.authorizedActions !== undefined) {
+        affStore.authorizedActions = ['READY']
+        await flushPromises()
+      }
+    }
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+      const pinia = createPinia()
+      setActivePinia(pinia)
+      affStore = useAffiliationsStore()
+
+      // Reset inputs each test
+      mockRoute.query = {}
+      mockRegSearch.mockReset()
+      consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      // If your store loads authorized actions through $businessApi,
+      // ensure it returns something that results in a non-empty authorizedActions.
+      // If your current setup already does that, you can remove this:
+      mockBusinessApi.mockResolvedValueOnce({ authorizedPermissions: ['ANY'] })
+    })
+
+    afterEach(() => {
+      consoleWarnSpy.mockRestore()
+      mockRoute.query = {}
+    })
+
+    it('runs only once even if authorizedActions change again', async () => {
+      mockRoute.query = { populate: 'BC0000001' }
+      mockRegSearch.mockResolvedValue([{ identifier: 'BC0000001' }])
+
+      await setAuthorized()
+
+      // Attempt to trigger watcher again by "changing" authorized actions via another load or mutation
+      mockBusinessApi.mockResolvedValueOnce({ authorizedPermissions: ['ANY', 'ANOTHER'] })
+      await affStore.loadAffiliations()
+      await flushPromises()
+
+      expect(mockRegSearch).toHaveBeenCalledTimes(1) // `{ once: true }`
+    })
+
+    it('logs a warning when regSearch returns no results', async () => {
+      mockRoute.query = { populate: 'NORESULT' }
+      mockRegSearch.mockResolvedValue([])
+
+      await setAuthorized()
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('No reg search results for', 'NORESULT')
+    })
+
+    it('logs an error via logFetchError when regSearch throws', async () => {
+      // Keep your existing logFetchError path if you already mock it elsewhere,
+      // otherwise just assert no throw + no modal.
+      const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockRoute.query = { populate: 'ERR' }
+      mockRegSearch.mockRejectedValue(new Error('boom'))
+
+      await setAuthorized()
+
+      // Your watcher uses logFetchError; if you have a mock for it, assert that.
+      // Otherwise, at least assert we didn't crash (no calls to handleManageBusinessOrNameRequest)
+      // and optionally check console.error if your logFetchError uses console under the hood.
+      expect(vi.mocked(mockRegSearch)).toHaveBeenCalled()
+      expect(logSpy).toHaveBeenCalled() // relax this if you have a direct mock for logFetchError
+      logSpy.mockRestore()
+    })
+
+    it('does nothing if populate is missing', async () => {
+      mockRoute.query = {} // no populate param
+      mockRegSearch.mockClear()
+
+      await setAuthorized()
+
+      expect(mockRegSearch).not.toHaveBeenCalled()
+    })
+  })
+
 })

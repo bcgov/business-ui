@@ -400,14 +400,21 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     }
   )
 
-  // Watch authorized actions and populate query param to auto-load a business for affiliation
+  // This watcher runs as soon as authorized actions are available because that’s
+  // the only prerequisite for auto‑prompting an affiliation via ?populate=.
+  // In a watcher because the app has no centralized init sequence and startup is highly async,
+  // so this runs as soon as its only dependency (authorizedActions) becomes available.
+  // * `{ once: true }` ensures it executes a single time, and
+  // failures (no results or API errors) are safely logged.
   watch(
     () => authorizedActions.value,
     async () => {
+      // Dependency: wait until we have authorized actions
       const populateParam = route.query?.populate as string
       if (!authorizedActions.value.length || !populateParam) { return }
 
       try {
+        // We intentionally proceed as soon as authorization is ready. No other app data is required.
         const regSearchResponse = await $searchAPI.regSearch(populateParam)
         if (regSearchResponse?.[0]) {
           await handleManageBusinessOrNameRequest('reg', regSearchResponse[0])
