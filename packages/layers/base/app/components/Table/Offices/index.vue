@@ -9,7 +9,7 @@ defineProps<{
   preventActions?: boolean
 }>()
 
-const partyColumns = getOfficesTableColumns<T>()
+const officesColumns = getOfficesTableColumns<T>()
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 </script>
 
@@ -19,7 +19,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :data
     :loading
     :empty-text="emptyText"
-    :columns="partyColumns"
+    :columns="officesColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
   >
