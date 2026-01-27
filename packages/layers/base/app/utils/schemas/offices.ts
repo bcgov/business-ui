@@ -5,6 +5,8 @@ export function getOfficesSchema() {
     actions: z.array(z.enum(ActionType)).default(() => []),
     type: z.enum(OfficeType).default(() => OfficeType.UNKNOWN),
     address: getAddressSchema().default(() => ({
+      // NOTE/FUTURE: may need to include address id in here to compare against api data
+      // this would require an update to the ConnectAddress interface and the formatAddressUi util
       deliveryAddress: {
         street: '',
         streetAdditional: '',
@@ -24,8 +26,7 @@ export function getOfficesSchema() {
         locationDescription: ''
       },
       sameAs: false
-    })),
-    id: z.string().optional().default(() => '')
+    }))
   })
 }
 

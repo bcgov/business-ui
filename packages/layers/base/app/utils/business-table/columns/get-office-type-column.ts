@@ -8,7 +8,7 @@ export function getOfficeTypeColumn<T extends { type: OfficeType, actions: Actio
   const meta = getColumnMeta<T>(metaOption)
 
   const officeColumn: TableBusinessColumn<T> = {
-    id: 'office',
+    id: 'office-type',
     header: t('label.office'),
     meta,
     cell: ({ row }) => {

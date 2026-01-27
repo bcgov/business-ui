@@ -24,8 +24,8 @@ describe('getDocumentIdSchema', () => {
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues).toHaveLength(1)
-      expect(issues[0].message).toContain('Document ID must be 8 characters') // or exact message if known
-      expect(issues[0].path).toEqual(['documentIdNumber'])
+      expect(issues[0]!.message).toContain('Document ID must be 8 characters') // or exact message if known
+      expect(issues[0]!.path).toEqual(['documentIdNumber'])
     })
   })
 
@@ -36,8 +36,8 @@ describe('getDocumentIdSchema', () => {
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues).toHaveLength(1)
-      expect(issues[0].message).toBe('The number entered is not recognized in our system')
-      expect(issues[0].path).toEqual(['documentIdNumber'])
+      expect(issues[0]!.message).toBe('The number entered is not recognized in our system')
+      expect(issues[0]!.path).toEqual(['documentIdNumber'])
     })
 
     it('should fail when statusCode is 200', () => {
@@ -46,8 +46,8 @@ describe('getDocumentIdSchema', () => {
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues).toHaveLength(1)
-      expect(issues[0].message).toBe('A document record already exists with this document ID')
-      expect(issues[0].path).toEqual(['documentIdNumber'])
+      expect(issues[0]!.message).toBe('A document record already exists with this document ID')
+      expect(issues[0]!.path).toEqual(['documentIdNumber'])
     })
 
     it('should pass when statusCode is 404', () => {
