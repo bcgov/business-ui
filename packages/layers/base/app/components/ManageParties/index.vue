@@ -73,8 +73,8 @@ function clearAllAlerts() {
 <template>
   <div
     class="space-y-4"
-    @pointerdown="clearAllAlerts()"
-    @keydown="clearAllAlerts()"
+    @pointerdown="clearAllAlerts"
+    @keydown="clearAllAlerts"
   >
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
