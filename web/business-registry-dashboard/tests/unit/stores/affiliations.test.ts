@@ -1487,8 +1487,6 @@ describe('useAffiliationsStore', () => {
     let affStore: any
     let consoleWarnSpy: any
     const setAuthorized = async () => {
-      // Preferred: if your code populates authorized actions during loadAffiliations,
-      // this is enough. If not, use the fallback below.
 
       await affStore.loadAffiliations()
       await flushPromises()
@@ -1512,9 +1510,6 @@ describe('useAffiliationsStore', () => {
       mockRegSearch.mockReset()
       consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
-      // If your store loads authorized actions through $businessApi,
-      // ensure it returns something that results in a non-empty authorizedActions.
-      // If your current setup already does that, you can remove this:
       mockBusinessApi.mockResolvedValueOnce({ authorizedPermissions: ['ANY'] })
     })
 
@@ -1547,19 +1542,14 @@ describe('useAffiliationsStore', () => {
     })
 
     it('logs an error via logFetchError when regSearch throws', async () => {
-      // Keep your existing logFetchError path if you already mock it elsewhere,
-      // otherwise just assert no throw + no modal.
       const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       mockRoute.query = { populate: 'ERR' }
       mockRegSearch.mockRejectedValue(new Error('boom'))
 
       await setAuthorized()
 
-      // Your watcher uses logFetchError; if you have a mock for it, assert that.
-      // Otherwise, at least assert we didn't crash (no calls to handleManageBusinessOrNameRequest)
-      // and optionally check console.error if your logFetchError uses console under the hood.
       expect(vi.mocked(mockRegSearch)).toHaveBeenCalled()
-      expect(logSpy).toHaveBeenCalled() // relax this if you have a direct mock for logFetchError
+      expect(logSpy).toHaveBeenCalled()
       logSpy.mockRestore()
     })
 
