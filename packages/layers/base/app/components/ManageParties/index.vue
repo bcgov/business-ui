@@ -27,6 +27,7 @@ const {
 
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
+const { setAlertText } = useConnectButtonControl()
 const activePartySchema = getActivePartySchema()
 
 function setActiveFormAlert() {
@@ -62,13 +63,18 @@ function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>
   applyTableEdits(party, row)
   cleanupPartyForm()
 }
+
+function clearAllAlerts() {
+  clearAlert('party-details-form') // clear alert in sub form
+  setAlertText(undefined) // clear alert in button control
+}
 </script>
 
 <template>
   <div
     class="space-y-4"
-    @pointerdown="clearAlert('party-details-form')"
-    @keydown="clearAlert('party-details-form')"
+    @pointerdown="clearAllAlerts"
+    @keydown="clearAllAlerts"
   >
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"

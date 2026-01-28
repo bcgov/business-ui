@@ -55,6 +55,7 @@ export interface ApiEntityOfficeAddress {
   recordsOffice?: ApiBaseAddressObj
   businessOffice?: ApiBaseAddressObj
   liquidationRecordsOffice?: ApiBaseAddressObj
+  custodialOffice?: ApiBaseAddressObj
 }
 
 export interface UiEntityOfficeAddress {
@@ -62,4 +63,5 @@ export interface UiEntityOfficeAddress {
   recordsOffice?: UiBaseAddressObj
   businessOffice?: UiBaseAddressObj
   liquidationRecordsOffice?: UiBaseAddressObj
+  custodialOffice?: UiBaseAddressObj
 }

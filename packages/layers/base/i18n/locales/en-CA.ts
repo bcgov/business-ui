@@ -371,6 +371,7 @@ export default {
     noFee: 'No Fee',
     noticeOfWithdrawalForm: 'Notice of Withdrawal Form',
     numberedAmalgamatedCompany: 'Numbered Amalgamated Company',
+    office: 'Office',
     PAID: 'PAID',
     payment: 'Payment',
     PAYMENTCOMPLETED: 'PAYMENT COMPLETED',
@@ -461,6 +462,15 @@ export default {
   /* Mappings here are based from the FilingType enum */
   filingText: {
     agmExtension: 'The {agmyear} AGM must be held by {boldStart}{agmduedate}{boldEnd}.'
+  },
+  officeType: {
+    registeredOffice: 'Registered Office',
+    recordsOffice: 'Records Office',
+    businessOffice: 'Business Office',
+    liquidationRecordsOffice: 'Liquidation Records Office',
+    custodial: 'Custodial Office',
+    unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
+    undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
   },
   text: {
     addressChange: 'address change',
