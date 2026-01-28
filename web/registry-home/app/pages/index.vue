@@ -2,7 +2,8 @@
 const { t } = useI18n()
 
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  middleware: ['connect-auth', 'app-redirect']
 })
 
 useHead({

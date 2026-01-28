@@ -25,7 +25,7 @@
     "typecheck": "npx nuxt typecheck"
   },
   "dependencies": {
-    "@sbc-connect/nuxt-pay": "0.2.1",
+    "@sbc-connect/nuxt-pay": "0.2.2",
     "http-status-codes": "2.3.0",
     "iso-3166-2": "1.0.0",
     "luxon": "3.7.2"

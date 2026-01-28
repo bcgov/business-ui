@@ -12,6 +12,7 @@ vi.mock('~~/app/utils/isAuthorized', () => ({
 }))
 
 let mockAuthenticated = true
+const mockRegSearch = vi.fn()
 const mockAuthApi = vi.fn()
 const mockBusinessApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
@@ -23,6 +24,7 @@ mockNuxtImport('useNuxtApp', () => {
       },
       $authApi: mockAuthApi,
       $businessApi: mockBusinessApi,
+      $searchAPI: { regSearch: mockRegSearch }, // <-- NEW: minimal addition
       $i18n: {
         t: (key: string) => key,
         locale: { value: 'en-CA' }
@@ -1480,4 +1482,85 @@ describe('useAffiliationsStore', () => {
       expect(affStore.affiliations.results).toEqual(processedAffiliations)
     })
   })
+
+  describe('populate watcher', () => {
+    let affStore: any
+    let consoleWarnSpy: any
+    const setAuthorized = async () => {
+
+      await affStore.loadAffiliations()
+      await flushPromises()
+
+      // Fallback (only if needed): if authorizedActions isn't populated by loadAffiliations,
+      // set it directly to trigger the watcher (keep minimal + local).
+      if (!affStore?.authorizedActions?.length && affStore?.authorizedActions !== undefined) {
+        affStore.authorizedActions = ['READY']
+        await flushPromises()
+      }
+    }
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+      const pinia = createPinia()
+      setActivePinia(pinia)
+      affStore = useAffiliationsStore()
+
+      // Reset inputs each test
+      mockRoute.query = {}
+      mockRegSearch.mockReset()
+      consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+      mockBusinessApi.mockResolvedValueOnce({ authorizedPermissions: ['ANY'] })
+    })
+
+    afterEach(() => {
+      consoleWarnSpy.mockRestore()
+      mockRoute.query = {}
+    })
+
+    it('runs only once even if authorizedActions change again', async () => {
+      mockRoute.query = { populate: 'BC0000001' }
+      mockRegSearch.mockResolvedValue([{ identifier: 'BC0000001' }])
+
+      await setAuthorized()
+
+      // Attempt to trigger watcher again by "changing" authorized actions via another load or mutation
+      mockBusinessApi.mockResolvedValueOnce({ authorizedPermissions: ['ANY', 'ANOTHER'] })
+      await affStore.loadAffiliations()
+      await flushPromises()
+
+      expect(mockRegSearch).toHaveBeenCalledTimes(1) // `{ once: true }`
+    })
+
+    it('logs a warning when regSearch returns no results', async () => {
+      mockRoute.query = { populate: 'NORESULT' }
+      mockRegSearch.mockResolvedValue([])
+
+      await setAuthorized()
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('No reg search results for', 'NORESULT')
+    })
+
+    it('logs an error via logFetchError when regSearch throws', async () => {
+      const logSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockRoute.query = { populate: 'ERR' }
+      mockRegSearch.mockRejectedValue(new Error('boom'))
+
+      await setAuthorized()
+
+      expect(vi.mocked(mockRegSearch)).toHaveBeenCalled()
+      expect(logSpy).toHaveBeenCalled()
+      logSpy.mockRestore()
+    })
+
+    it('does nothing if populate is missing', async () => {
+      mockRoute.query = {} // no populate param
+      mockRegSearch.mockClear()
+
+      await setAuthorized()
+
+      expect(mockRegSearch).not.toHaveBeenCalled()
+    })
+  })
+
 })

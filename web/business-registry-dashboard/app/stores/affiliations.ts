@@ -4,7 +4,7 @@ import { EntityStates } from '@bcrs-shared-components/enums'
 
 export const useAffiliationsStore = defineStore('brd-affiliations-store', () => {
   const accountStore = useConnectAccountStore()
-  const { $keycloak, $authApi, $businessApi } = useNuxtApp()
+  const { $keycloak, $authApi, $businessApi, $searchAPI } = useNuxtApp()
   const { t, locale } = useNuxtApp().$i18n
   const toast = useToast()
   const brdModal = useBrdModals()
@@ -398,6 +398,33 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         await loadAffiliations()
       }
     }
+  )
+
+  // This watcher runs as soon as authorized actions are available because that’s
+  // the only prerequisite for auto‑prompting an affiliation via ?populate=.
+  // In a watcher because the app has no centralized init sequence and startup is highly async,
+  // so this runs as soon as its only dependency (authorizedActions) becomes available.
+  // * `{ once: true }` ensures it executes a single time, and
+  // failures (no results or API errors) are safely logged.
+  watch(
+    () => authorizedActions.value,
+    async () => {
+      // Dependency: wait until we have authorized actions
+      const populateParam = route.query?.populate as string
+      if (!authorizedActions.value.length || !populateParam) { return }
+
+      try {
+        // We intentionally proceed as soon as authorization is ready. No other app data is required.
+        const regSearchResponse = await $searchAPI.regSearch(populateParam)
+        if (regSearchResponse?.[0]) {
+          await handleManageBusinessOrNameRequest('reg', regSearchResponse[0])
+        } else {
+          console.warn('No reg search results for', populateParam)
+        }
+      } catch (error) {
+        logFetchError(error, 'Error performing regSearch')
+      }
+    }, { once: true }
   )
 
   // Watch for changes to type and status filters

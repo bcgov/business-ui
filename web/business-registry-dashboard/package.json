@@ -2,7 +2,7 @@
   "name": "business-registry-dashboard",
   "private": true,
   "type": "module",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
