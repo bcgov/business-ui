@@ -21,6 +21,15 @@ export default {
         title: 'Delay of Dissolution - Dissolution - BC Registries and Online Services',
         titleStaff: 'Stay of Dissolution - Dissolution - BC Registries and Online Services'
       }
+    },
+    transition: {
+      desc: 'Transition your business so that it operates under the new {italicStart}Business Corporations Act.{italicEnd}',
+      feeCode: 'TRANP',
+      feeLabel: 'Post Restoration Transition Application',
+      h1: 'Post Restoration Transition Application',
+      // h1Staff: 'Stay of Dissolution or Cancellation',
+      title: 'Post Restoration Transition Application - BC Registries and Online Services'
+      // titleStaff: 'Stay of Dissolution - Dissolution - BC Registries and Online Services'
     }
   },
   text: {
