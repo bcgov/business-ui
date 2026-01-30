@@ -5,7 +5,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 
 <template>
   <div class="space-y-6 sm:space-y-10">
-    <section class="space-y-4">
+    <section class="space-y-4" data-testid="office-addresses-section">
       <div>
         <h2 class="text-base">
           1. {{ $t('label.officeAddresses') }}
@@ -23,7 +23,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <section class="space-y-4">
+    <section class="space-y-4" data-testid="current-directors-section">
       <div>
         <h2 class="text-base">
           2. {{ $t('label.currentDirectors') }}
@@ -42,11 +42,11 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <div class="w-full border border-black p-10">
+    <div class="w-full border border-black p-10" data-testid="share-structure-section">
       share structure here
     </div>
 
-    <div class="w-full border border-black p-10 space-y-2">
+    <div class="w-full border border-black p-10 space-y-2" data-testid="articles-section">
       <div>articles here</div>
       <div>Maybe no date at all? Ignore this section for now</div>
     </div>

@@ -5,7 +5,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 
 <template>
   <div class="space-y-6 sm:space-y-10">
-    <section class="space-y-4">
+    <section class="space-y-4" data-testid="office-addresses-section">
       <div>
         <h2 class="text-base">
           1. {{ $t('label.officeAddresses') }}
@@ -23,7 +23,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <section class="space-y-4">
+    <section class="space-y-4" data-testid="current-directors-section">
       <div>
         <h2 class="text-base">
           2. {{ $t('label.currentDirectors') }}
@@ -42,20 +42,20 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <div class="w-full border border-black p-10">
+    <div class="w-full border border-black p-10" data-testid="share-structure-section">
       share structure here
     </div>
 
-    <div class="w-full border border-black p-10">
+    <div class="w-full border border-black p-10" data-testid="articles-section">
       articles here - Maybe not needed - ignore for now
     </div>
 
-    <div class="w-full border border-black p-10">
+    <div class="w-full border border-black p-10" data-testid="provisions-section">
       pre existing company provisions
     </div>
 
     <!-- staff only -->
-    <div class="w-full border border-black p-10">
+    <div class="w-full border border-black p-10" data-testid="document-delivery-section">
       document delivery
     </div>
 
@@ -64,6 +64,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
     <FormFolio
       v-if="!store.isStaff && store.formState.folio"
       v-model="store.formState.folio"
+      data-testid="folio-section"
       order="X"
       name="folio"
     />
@@ -72,6 +73,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
     <FormCourtOrderPoa
       v-if="store.isStaff && store.formState.courtOrder"
       v-model="store.formState.courtOrder"
+      data-testid="court-order-section"
       :disabled="store.initializing"
       name="courtOrder"
       order="X"
@@ -89,6 +91,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
     <!-- staff only -->
     <ConnectFieldset
       v-if="store.isStaff && store.formState.staffPayment"
+      data-testid="staff-payment-section"
       :label="`4. ${$t('label.staffPayment')}`"
       body-variant="card"
     >
