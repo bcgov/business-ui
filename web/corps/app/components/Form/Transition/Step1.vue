@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const store = useTransitionStore()
-
-const activeParty = ref(undefined)
-const activeOffice = ref(undefined)
+const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 </script>
 
 <template>
@@ -10,17 +8,17 @@ const activeOffice = ref(undefined)
     <section class="space-y-4">
       <div>
         <h2 class="text-base">
-          1. Office Addresses
+          1. {{ $t('label.officeAddresses') }}
         </h2>
-        <p>Office addresses must be correct before filing your application.</p>
+        <p>{{ $t('text.officeAddressesMustBeCorrect') }}</p>
       </div>
 
       <ManageOffices
         v-model:active-office="activeOffice"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : 'No Offices'"
-        :add-label="'Add Office'"
-        :edit-label="'Edit Office'"
+        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :add-label="$t('label.addOffice')"
+        :edit-label="$t('label.editOffice')"
         :allowed-actions="[]"
       />
     </section>
@@ -28,17 +26,17 @@ const activeOffice = ref(undefined)
     <section class="space-y-4">
       <div>
         <h2 class="text-base">
-          2. Current Directors
+          2. {{ $t('label.currentDirectors') }}
         </h2>
-        <p>Current directors must be correct before filing your application.</p>
+        <p>{{ $t('text.currentDirectorsMustBeCorrect') }}</p>
       </div>
 
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : 'No Directors'"
-        :add-label="'Add Director'"
-        :edit-label="'Edit Director'"
+        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :add-label="$t('label.addDirector')"
+        :edit-label="$t('label.editDirector')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       />
@@ -51,7 +49,6 @@ const activeOffice = ref(undefined)
     <div class="w-full border border-black p-10 space-y-2">
       <div>articles here</div>
       <div>Maybe no date at all? Ignore this section for now</div>
-      <!-- https://www.figma.com/design/9Lp6kpwm6JyfQmBqvRdVJF/Transition-Application?node-id=15505-217656&t=9NvNK4yKNBDaNOdQ-4 -->
     </div>
   </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import { onFormSubmitError } from '#imports' // auto imports causing type error for this util
 
@@ -8,33 +7,28 @@ const store = useTransitionStore()
 const { initializing } = storeToRefs(store)
 const urlParams = useUrlSearchParams('history')
 const route = useRoute()
-const modal = useFilingModals()
-const { handleButtonLoading, setButtonControl } = useConnectButtonControl()
+// const modal = useFilingModals()
+// const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
 
-const filingText = computed(() => {
-  return {
-    h1: t('page.transition.h1'),
-    title: t('page.dissolution.delay.titleStaff')
-  }
-})
-
-const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.transition.h1'))
+const {
+  breadcrumbs
+  // dashboardUrl
+} = useFilingNavigation(t('page.transition.h1'))
 
 definePageMeta({
-  layout: 'connect-pay-tombstone-buttons-stacked', // -stacked
+  layout: 'connect-pay-tombstone-buttons-stacked',
   middleware: ['connect-auth']
-  // path: '/transition/:businessId/:filingSubType' // has filing sub type?
 })
 
 useHead({
   title: t('page.transition.title')
 })
 
-async function submitFiling(e: FormSubmitEvent<unknown>) {
-  console.log('submit filing')
+async function submitFiling() {
+  console.info('submit filing')
   // try {
   //   handleButtonLoading(true, 'right', 1)
   //   console.info('Data: ', e.data)
@@ -45,8 +39,8 @@ async function submitFiling(e: FormSubmitEvent<unknown>) {
   // }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
-  console.log('save filing')
+async function saveFiling(_disableActiveFormCheck = false) {
+  console.info('save filing')
   // try {
   //   await store.submit(false)
   //   // if resume later, navigate back to business dashboard
@@ -59,12 +53,10 @@ async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) 
 }
 
 async function cancelFiling() {
-  console.log('cancel filing')
-  // TODO: check has changes, display modal if unsaved changes
+  console.info('cancel filing')
   // await navigateTo(dashboardUrl.value, { external: true })
 }
 
-// useFilingPageWatcher<DissolutionType>({
 const { currentStep } = useFilingPageWatcher({
   store,
   businessId,
@@ -73,12 +65,11 @@ const { currentStep } = useFilingPageWatcher({
   draftId: urlParams.draft as string | undefined,
   saveFiling: { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },
-  submitFiling: { form: 'transition-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(false, true),
+  setOnBeforeSessionExpired: () => saveFiling(),
   steps: [
-    { submitFiling: { label: 'Review and Confirm' } },
-    { backButton: { class: 'w-min-full' } }
+    { submitFiling: { label: t('label.reviewAndConfirm') } },
+    { submitFiling: { form: 'transition-filing' } }
   ]
 })
 </script>
@@ -93,13 +84,14 @@ const { currentStep } = useFilingPageWatcher({
       :schema="z.any()"
       novalidate
       class="py-6 space-y-6 sm:py-10 sm:space-y-10"
-      :aria-label="filingText.h1"
+      aria-labelledby="filing-h1"
       @error="onFormSubmitError"
-      @submit="() => console.log('form submitted')"
+      @submit="submitFiling"
     >
-      <!-- @submit="submitFiling" -->
       <div class="space-y-2">
-        <h1>{{ $t('page.transition.h1') }}</h1>
+        <h1 id="filing-h1">
+          {{ $t('page.transition.h1') }}
+        </h1>
         <ConnectI18nHelper
           as="p"
           translation-path="page.transition.desc"

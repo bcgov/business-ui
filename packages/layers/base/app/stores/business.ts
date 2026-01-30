@@ -96,7 +96,12 @@ export const useBusinessStore = defineStore('business-store', () => {
   function isAllowedFiling(filingType: FilingType, filingSubType?: string) {
     const allowedFilings = (business.value as BusinessData)?.allowedActions?.filing.filingTypes
     const allowedFiling = allowedFilings.find(f => f.name === filingType && f.type === filingSubType)
-    return !!allowedFiling
+    const allowed = !!allowedFiling
+    if (!allowed) {
+      /* eslint-disable-next-line max-len */
+      logDevOnly(`filingType: ${filingType}${filingSubType ? `, subType: ${filingSubType}` : ''} not in businesses allowedActions list.`)
+    }
+    return allowed
   }
 
   /** Whether the entity belongs to one of the passed-in legal types */

@@ -90,13 +90,10 @@ export const useFiling = () => {
         filingSubType
       )
 
-      // TODO: figure out why this is returning not allowed even though business has it in allowed filings
-      // if (!isAuthorized || !isAllowed) {
-      //   console.log('isAuthorized: ', isAuthorized)
-      //   console.log('isAllowed: ', isAllowed)
-      //   // no fee code from user allowed filing types for this business
-      //   throw new Error('filing-not-allowed')
-      // }
+      if (!isAuthorized || !isAllowed) {
+        // no fee code from user allowed filing types for this business
+        throw new Error('filing-not-allowed')
+      }
 
       try {
         const feeEntityType = businessStore.business!.legalType
@@ -119,7 +116,6 @@ export const useFiling = () => {
         addresses
       }
     } catch (error) {
-      console.log('init filing: ', error)
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
         modal.openGetDraftFilingErrorModal(error)
       } else if (error instanceof Error && error.message === 'filing-not-allowed') {

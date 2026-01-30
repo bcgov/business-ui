@@ -1,40 +1,36 @@
 import { cloneDeep } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
-  // const receiverSchema = getReceiversSchema()
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const { getBusinessAddresses } = useBusinessAddresses()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { getCommonFilingPayloadData, initFiling } = useFiling()
+  // const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const {
+    // getCommonFilingPayloadData,
+    initFiling
+  } = useFiling()
 
-  const businessApi = useBusinessApi()
-  const businessStore = useBusinessStore()
+  // const businessApi = useBusinessApi()
+  // const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
-  const transitionSubType = ref<ReceiverType>(ReceiverType.APPOINT)
-  const draftFilingState = shallowRef({})
-  // const draftFilingState = shallowRef<ReceiverDraftState>({} as ReceiverDraftState)
+  // const draftFilingState = shallowRef({}) // TODO: add type
 
-  const formState = reactive({})
-  const initialFormState = shallowRef({})
-  // const formState = reactive<ReceiverFormSchema>(receiverSchema.parse({}))
-  // const initialFormState = shallowRef<ReceiverFormSchema>({} as ReceiverFormSchema)
+  const formState = reactive<TransitionFormSchema>({} as TransitionFormSchema)
+  const initialFormState = shallowRef<TransitionFormSchema>({} as TransitionFormSchema)
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
 
-  async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
-    // if (!filingSubType) {
-    //   await useFilingModals().openInitFilingErrorModal({ status: 500 })
-    //   return
-    // }
+  const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
 
+  async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
     initializing.value = true
-    // transitionSubType.value = filingSubType
     $reset()
 
-    // const { draftFiling, parties } = await initFiling<ChangeOfReceivers>(
-    const { draftFiling, parties } = await initFiling(
+    const {
+      // draftFiling,
+      parties
+    } = await initFiling( // TODO: add type
       businessId,
       FilingType.TRANSITION,
       undefined,
@@ -73,6 +69,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = false
   }
 
+  // TODO: implement submit
   // async function submit(isSubmission: boolean) {
   //   const receiverPayload: ReceiverPayload = {
   //     type: receiverSubType.value,
@@ -107,13 +104,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
   // }
 
   function $reset() {
-    // const defaults = receiverSchema.parse({})
-    // Object.assign(formState, defaults)
-    // formState.activeParty = undefined
-    // initialFormState.value = {
-    //   ...defaults,
-    //   activeParty: undefined
-    // }
+    const defaults = getTransitionSchema(isStaff.value).parse({})
+    Object.assign(formState, defaults)
+    formState.activeDirector = undefined
+    // formState.activeOffice = undefined // TODO - only add if making offices editable
+    // formState.activeShareClass = undefined // TODO
+    // formState.activeShareSeries = undefined // TODO
+
+    initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
     initialOffices.value = []
   }
@@ -125,6 +123,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
     offices: tableOffices,
     initialFormState,
     initialDirectors,
+    initialOffices,
+    isStaff,
     init,
     // submit,
     $reset
