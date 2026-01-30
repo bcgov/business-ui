@@ -91,7 +91,7 @@ test.describe('Transition - Page init', () => {
         ]),
         TRANP,
         getBusinessAddressesMock(),
-        'Premium'
+        'PREMIUM'
       )
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
