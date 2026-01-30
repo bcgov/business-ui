@@ -63,14 +63,17 @@ const { currentStep } = useFilingPageWatcher({
   filingSubType: undefined,
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
-  saveFiling: { onClick: () => saveFiling(true) },
-  cancelFiling: { onClick: cancelFiling },
+  backButton: { removeAlertSpacing: true },
+  saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
+  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
+  submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   breadcrumbs,
   setOnBeforeSessionExpired: () => saveFiling(),
   steps: [
-    { submitFiling: { label: t('label.reviewAndConfirm') } },
+    { cancelFiling: { class: 'min-w-[300px] justify-center' }, submitFiling: { label: t('label.reviewAndConfirm') } },
     { submitFiling: { form: 'transition-filing' } }
-  ]
+  ],
+  buttonLayout: 'stackedDefault'
 })
 </script>
 

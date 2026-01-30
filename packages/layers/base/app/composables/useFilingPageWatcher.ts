@@ -1,12 +1,10 @@
-import type { ButtonProps } from '@nuxt/ui'
-
 interface StepOverride {
   leftStacked?: boolean
   rightStacked?: boolean
-  saveFiling?: ButtonProps
-  cancelFiling?: ButtonProps
-  submitFiling?: ButtonProps
-  backButton?: ButtonProps
+  saveFiling?: ConnectButton
+  cancelFiling?: ConnectButton
+  submitFiling?: ConnectButton
+  backButton?: ConnectButton
 }
 
 interface FilingPageWatcherOptions<T> {
@@ -15,20 +13,20 @@ interface FilingPageWatcherOptions<T> {
   filingType: FilingType
   filingSubType?: T
   draftId?: string
-  saveFiling: ButtonProps
-  cancelFiling: ButtonProps
-  submitFiling?: ButtonProps
-  backButton?: ButtonProps
+  saveFiling: ConnectButton
+  cancelFiling: ConnectButton
+  submitFiling?: ConnectButton
+  backButton?: ConnectButton
   steps?: StepOverride[] // pass array of objects to use steps - object can be empty
   breadcrumbs: Ref<ConnectBreadcrumb[]>
   setOnBeforeSessionExpired: () => Promise<void>
+  buttonLayout?: 'bottomDefault' | 'stackedDefault'
 }
 
 export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
   const { setButtonControl } = useConnectButtonControl()
-  const route = useRoute()
   const currentStep = ref(1)
 
   function updateButtonControl() {
@@ -52,8 +50,8 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     }
 
     const step = (isMultiStep && options.steps?.[stepIndex]) ? options.steps[stepIndex] : {}
-    const isStackedLayout = route.meta.layout === 'connect-pay-tombstone-buttons-stacked'
-    const blockClass = 'min-w-[300px] justify-center' // TODO: figure out why `block: true` attr not working in button control
+    // TODO: figure out why `block: true` attr not working in button control
+    // and other styling - ticket 32262
 
     // button defaults with main override and step override
     const buttons: Record<'back' | 'cancel' | 'save' | 'primary', ConnectButton> = {
@@ -61,7 +59,6 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
         label: t('label.back'),
         variant: 'outline' as const,
         icon: 'i-mdi-chevron-left',
-        removeAlertSpacing: isStackedLayout,
         onClick: () => { currentStep.value-- },
         ...options.backButton,
         ...(step?.backButton || {})
@@ -69,16 +66,12 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
       cancel: {
         label: t('label.cancel'),
         variant: 'outline' as const,
-        class: (isStackedLayout && isFirstStep) ? blockClass : '',
-        removeAlertSpacing: isStackedLayout,
         ...options.cancelFiling,
         ...(step?.cancelFiling || {})
       },
       save: {
         label: t('label.saveResumeLater'),
         variant: 'outline' as const,
-        class: isStackedLayout ? blockClass : '',
-        removeAlertSpacing: isStackedLayout,
         ...options.saveFiling,
         ...(step?.saveFiling || {})
       },
@@ -86,41 +79,44 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
         label: isLastStep ? t('label.submit') : t('label.next'),
         trailingIcon: 'i-mdi-chevron-right',
         type: isLastStep ? 'submit' : 'button',
-        class: isStackedLayout ? blockClass : '',
-        removeAlertSpacing: isStackedLayout,
         onClick: !isLastStep ? () => { currentStep.value++ } : undefined,
         ...options.submitFiling,
         ...(step?.submitFiling || {})
       }
     }
 
-    let leftGroupButtons: ConnectButton[] = []
-    let rightGroupButtons: ConnectButton[] = []
+    // predefined button group order/grouping
+    const buttonLayouts = {
+      stackedDefault: {
+        left: [buttons.back, buttons.cancel],
+        right: [buttons.save, buttons.primary]
+      },
+      bottomDefault: {
+        left: [buttons.back, buttons.save],
+        right: [buttons.cancel, buttons.primary]
+      }
+    }
 
-    // order buttons based on stacked vs bottom layout
-    // hide back button if its the first step
-    if (isStackedLayout) {
-      leftGroupButtons = [
-        ...((isMultiStep && !isFirstStep) ? [buttons.back] : []),
-        buttons.cancel
-      ]
-      rightGroupButtons = [buttons.save, buttons.primary]
-    } else {
-      leftGroupButtons = [
-        ...((isMultiStep && !isFirstStep) ? [buttons.back] : []),
-        buttons.save
-      ]
-      rightGroupButtons = [buttons.cancel, buttons.primary]
+    const layout = buttonLayouts[options.buttonLayout || 'bottomDefault']
+
+    function getGroupButtons(btns: ConnectButton[]) {
+      // only keep the back button if there are multiple steps and it's not the first step
+      return btns.filter((btn) => {
+        if (btn === buttons.back) {
+          return isMultiStep && !isFirstStep
+        }
+        return true
+      })
     }
 
     setButtonControl({
       leftGroup: {
         stacked: step?.leftStacked || false,
-        buttons: leftGroupButtons
+        buttons: getGroupButtons(layout.left)
       },
       rightGroup: {
         stacked: step?.rightStacked || false,
-        buttons: rightGroupButtons
+        buttons: getGroupButtons(layout.right)
       }
     })
   }
