@@ -1,5 +1,21 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.10.0
+
+### Minor Changes
+
+- [#371](https://github.com/bcgov/business-ui/pull/371) [`592c3eb`](https://github.com/bcgov/business-ui/commit/592c3eb31bab3ec0c3c08ed9c66205ff3d54281e) Thanks [@deetz99](https://github.com/deetz99)! - Update useFilingPageWatcher to allow multiple step configuration passed to button control.
+
+- [#366](https://github.com/bcgov/business-ui/pull/366) [`ab8c9a1`](https://github.com/bcgov/business-ui/commit/ab8c9a1bf8281437963217f5c0ec7230649df324) Thanks [@deetz99](https://github.com/deetz99)! - useFilingAlerts and useFilingTaskGuards composables to enhance UX
+
+- [#360](https://github.com/bcgov/business-ui/pull/360) [`16c3efd`](https://github.com/bcgov/business-ui/commit/16c3efd7e44787bcf03e3d45faabadc2defaee63) Thanks [@deetz99](https://github.com/deetz99)! - Refactor composables/stores to use new business service.
+
+- [#369](https://github.com/bcgov/business-ui/pull/369) [`2bf0256`](https://github.com/bcgov/business-ui/commit/2bf02568cb4367d3e4a85f91093a17c24f044b03) Thanks [@deetz99](https://github.com/deetz99)! - ManageOffices components, composable and zod schema
+
+### Patch Changes
+
+- [#361](https://github.com/bcgov/business-ui/pull/361) [`6720e1e`](https://github.com/bcgov/business-ui/commit/6720e1ebae2790496766abcbc047011c4c290090) Thanks [@kialj876](https://github.com/kialj876)! - postFiling - add optional custom headers
+
 ## 0.9.0
 
 ### Minor Changes
