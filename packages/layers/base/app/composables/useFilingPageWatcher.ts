@@ -27,29 +27,32 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
   const { setButtonControl } = useConnectButtonControl()
-  const currentStep = ref(1)
+  const _currentStep = ref(1)
+  const currentStep = computed({
+    get: () => _currentStep.value,
+    set: (val: number) => {
+      const max = options.steps?.length || 1
+      let next = Math.round(val)
+      // normalize current step to be between 1 and max steps
+      if (next < 1) {
+        next = 1
+      } else if (next > max) {
+        next = max
+      }
+
+      if (_currentStep.value !== next) {
+        _currentStep.value = next
+      }
+    }
+  })
 
   function updateButtonControl() {
-    const isMultiStep = !!options.steps
-    let stepIndex = -1
-    let isLastStep = true
-    let isFirstStep = true
+    const isMultiStep = !!options.steps && options.steps.length > 0
+    const stepIndex = currentStep.value - 1
+    const isFirstStep = currentStep.value === 1
+    const isLastStep = !isMultiStep || currentStep.value === (options.steps?.length || 1)
 
-    // normalize current step
-    if (options.steps) {
-      if (currentStep.value < 1) {
-        currentStep.value = 1
-      }
-      if (currentStep.value > options.steps.length) {
-        currentStep.value = options.steps.length
-      }
-
-      stepIndex = currentStep.value - 1
-      isLastStep = stepIndex === options.steps.length - 1
-      isFirstStep = stepIndex === 0
-    }
-
-    const step = (isMultiStep && options.steps?.[stepIndex]) ? options.steps[stepIndex] : {}
+    const step = options.steps?.[stepIndex] ?? {}
     // TODO: figure out why `block: true` attr not working in button control
     // and other styling - ticket 32262
 
@@ -100,7 +103,7 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     const layout = buttonLayouts[options.buttonLayout || 'bottomDefault']
 
     function getGroupButtons(btns: ConnectButton[]) {
-      // only keep the back button if there are multiple steps and it's not the first step
+      // remove back button if not multi step or if its the first step
       return btns.filter((btn) => {
         if (btn === buttons.back) {
           return isMultiStep && !isFirstStep
