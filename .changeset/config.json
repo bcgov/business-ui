@@ -11,6 +11,8 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "person-roles"
+    "corps",
+    "person-roles",
+    "registry-home"
   ]
 }
