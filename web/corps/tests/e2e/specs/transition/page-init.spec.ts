@@ -15,7 +15,7 @@ async function assertCorrectOffices(page: Page) {
   await expect(tbody).not.toContainText('Custodial Office')
   await expect(tbody).not.toContainText('Liquidation Records Office')
 
-  const rows = section.locator('tbody').locator('tr')
+  const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(2)
 
   const registeredRow = rows.filter({ hasText: 'Registered Office' })
@@ -36,7 +36,7 @@ async function assertCorrectDirectors(page: Page) {
   await expect(tbody).toContainText('WALLABY WAY')
   await expect(tbody).toContainText('MIHAI DINU TEST')
 
-  const rows = section.locator('tbody').locator('tr')
+  const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(3)
 }
 
