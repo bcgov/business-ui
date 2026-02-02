@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const mockToday = '2025-12-15T12:00:00.000Z'
-const mockInSixMonths = '2026-06-15'
 
 describe('getDodSchema', () => {
   beforeEach(() => {
@@ -25,7 +24,7 @@ describe('getDodSchema', () => {
       folio: { folioNumber: '' },
       delay: {
         option: DelayOption.DEFAULT,
-        date: mockInSixMonths
+        date: ''
       }
     }
 
