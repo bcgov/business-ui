@@ -6,6 +6,40 @@ import { TRANP } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 
+async function assertCorrectOffices(page: Page) {
+  const section = page.getByTestId('office-addresses-section')
+  const tbody = section.locator('tbody')
+  await expect(tbody).toContainText('Registered Office')
+  await expect(tbody).toContainText('Records Office')
+  await expect(tbody).not.toContainText('Business Office')
+  await expect(tbody).not.toContainText('Custodial Office')
+  await expect(tbody).not.toContainText('Liquidation Records Office')
+
+  const rows = section.locator('tbody').locator('tr')
+  await expect(rows).toHaveCount(2)
+
+  const registeredRow = rows.filter({ hasText: 'Registered Office' })
+  await expect(registeredRow).toContainText('1800 - 510 West Georgia Street')
+  await expect(registeredRow).toContainText('Same as Delivery Address')
+
+  // TODO: update mocks to be unique for each address? currently this second check is kinda useless
+  // updating the mock will affect other tests currently relying on it
+  const recordsRow = rows.filter({ hasText: 'Records Office' })
+  await expect(recordsRow).toContainText('1800 - 510 West Georgia Street')
+  await expect(recordsRow).toContainText('Same as Delivery Address')
+}
+
+async function assertCorrectDirectors(page: Page) {
+  const section = page.getByTestId('current-directors-section')
+  const tbody = section.locator('tbody')
+  await expect(tbody).toContainText('TESTER TESTING')
+  await expect(tbody).toContainText('WALLABY WAY')
+  await expect(tbody).toContainText('MIHAI DINU TEST')
+
+  const rows = section.locator('tbody').locator('tr')
+  await expect(rows).toHaveCount(3)
+}
+
 async function assertCommonElements(page: Page) {
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
   // has auth header
@@ -32,8 +66,10 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('connect-main-footer')).toBeVisible()
   // has office addresses
   await expect(page.getByTestId('office-addresses-section')).toBeVisible()
+  await assertCorrectOffices(page)
   // has directors
   await expect(page.getByTestId('current-directors-section')).toBeVisible()
+  await assertCorrectDirectors(page)
   // has share structure
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
   // has articles
