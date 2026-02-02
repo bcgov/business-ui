@@ -15,7 +15,6 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
     const testCases = [
       {
         testName: 'Non-staff',
-        heading: 'Delay of Dissolution or Cancellation',
         isStaff: false,
         addToLedger: true,
         innerPayload: {
@@ -29,7 +28,6 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
       },
       {
         testName: 'Staff-default',
-        heading: 'Stay of Dissolution or Cancellation',
         isStaff: true,
         addToLedger: false,
         innerPayload: {
@@ -45,12 +43,13 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
         }
       }
     ]
-    testCases.forEach(({ testName, heading, isStaff, addToLedger, innerPayload, headerPayload }) => {
+    testCases.forEach(({ testName, isStaff, addToLedger, innerPayload, headerPayload }) => {
       test(testName, async ({ page }) => {
         mockCommonApiCallsForFiling(page, identifier, undefined, DISDE, undefined, isStaff ? 'STAFF' : 'PREMIUM')
         await navigateToDodPage(page, identifier)
         await page.waitForLoadState('networkidle')
-        expect(page.getByRole('heading', { name: heading })).toBeVisible({ timeout: 10000 })
+        expect(page.getByRole('heading', { name: 'Delay of Dissolution or Cancellation' }))
+          .toBeVisible({ timeout: 10000 })
         if (headerPayload.folioNumber) {
           await fillOutFolio(page, headerPayload.folioNumber)
         }

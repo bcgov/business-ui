@@ -26,9 +26,7 @@ export default {
         feeCode: 'DISDE',
         feeLabel: 'Delay of Dissolution',
         h1: 'Delay of Dissolution or Cancellation',
-        h1Staff: 'Stay of Dissolution or Cancellation',
-        title: 'Delay of Dissolution - Dissolution - BC Registries and Online Services',
-        titleStaff: 'Stay of Dissolution - Dissolution - BC Registries and Online Services'
+        title: 'Delay of Dissolution - Dissolution - BC Registries and Online Services'
       }
     },
     transition: {
@@ -40,7 +38,7 @@ export default {
     }
   },
   text: {
-    addToLedgerDescription: 'If you require this stay of dissolution to be ledgered, select the box below.',
+    addToLedgerDescription: 'If you require this delay of dissolution to be ledgered, select the box below.',
     alertMaxTwoDelays: '{important} Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {email}.',
     certifyDelayDescription: 'Confirm the legal name of the person authorized to complete and submit this filing.',
     certifyTransitionDescription: 'Confirm the legal name of the person authorized to complete and submit this application.',
@@ -48,7 +46,7 @@ export default {
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
-    yesCreateLedgerItemForDissolution: 'Yes create a ledger item for this stay of dissolution'
+    yesCreateLedgerItemForDissolution: 'Yes create a ledger item for this delay of dissolution'
   },
   validation: {
     date: {

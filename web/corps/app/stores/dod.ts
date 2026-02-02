@@ -1,5 +1,3 @@
-import { DateTime } from 'luxon'
-
 // TODO - FUTURE - maybe consolidate 'delay' store with other dissolution filings if possible
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const { currentAccount } = storeToRefs(useConnectAccountStore())
@@ -14,14 +12,18 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const dissolutionSubType = ref<DissolutionType>(DissolutionType.DELAY)
   const draftFilingState = shallowRef<FilingGetByIdResponse<{ dissolution: DissolutionPayload }>>(
     {} as FilingGetByIdResponse<{ dissolution: DissolutionPayload }>)
+  const dissolutionInfo = shallowRef({
+    targetDissolutionDate: '',
+    targetStage2Date: '',
+    isStage1: false,
+    userDelays: 0
+  })
 
   const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
 
-  // set zone may return null if timezone is invalid, we know America/Vancouver is valid
-  const inSixMonths = DateTime.now().setZone('America/Vancouver').plus({ months: 6 }).toISODate()!
   watch(() => formState.delay.option, (val) => {
     if (val === DelayOption.DEFAULT) {
-      formState.delay.date = inSixMonths
+      formState.delay.date = ''
     }
   }, { immediate: true })
 
@@ -61,6 +63,16 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       if (isStaff.value) {
         formState.addToLedger = draftFilingState.value.displayLedger
       }
+    }
+
+    const dissolutionWarning = businessStore.business?.warnings?.find(
+      warn => warn.code === ApiWarningCode.DISSOLUTION_IN_PROGRESS)
+
+    dissolutionInfo.value = {
+      targetDissolutionDate: dissolutionWarning?.data?.targetDissolutionDate || '',
+      targetStage2Date: dissolutionWarning?.data?.targetStage2Date || '',
+      isStage1: !dissolutionWarning?.data?.stage_2_date,
+      userDelays: dissolutionWarning?.data?.userDelays || 0
     }
     initializing.value = false
   }
@@ -112,6 +124,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   }
 
   return {
+    dissolutionInfo,
     formState,
     initializing,
     isStaff,
