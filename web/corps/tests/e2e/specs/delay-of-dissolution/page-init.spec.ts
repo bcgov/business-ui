@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test'
 import { navigateToDodPage } from '../../test-utils'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
 import { DISDE } from '~~/tests/mocks'
-import E from '../../../../../person-roles/dist/_nuxt/BcNcvYtj'
 
 const identifier = 'BC1234567'
 
