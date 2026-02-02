@@ -61,7 +61,7 @@ describe('useBusinessAddresses', () => {
         expect(firstOffice).toHaveProperty('new')
         expect(firstOffice).toHaveProperty('old')
 
-        expect(firstOffice!.new.type).toBe(mockKeys[0])
+        expect(mockKeys).toContain(firstOffice!.new.type)
         expect(firstOffice!.new.address.deliveryAddress.street).toBeDefined()
         expect(firstOffice!.new.actions).toEqual([])
         expect(firstOffice!.new).toEqual(firstOffice!.old)
@@ -70,6 +70,49 @@ describe('useBusinessAddresses', () => {
         expect(registeredEntry).toBeDefined()
         expect(registeredEntry!.new.address.deliveryAddress.street)
           .toEqual(addressesMock.registeredOffice!.deliveryAddress!.streetAddress)
+      })
+    })
+
+    describe('filtering offices', () => {
+      test('should return filtered office types for default config', async () => {
+        const types = [OfficeType.REGISTERED, OfficeType.RECORDS] // mock will also return liquidationRecordsOffice
+
+        const res = await useBusinessAddresses().getBusinessAddresses(
+          identifier,
+          'default',
+          types
+        )
+
+        const keys = Object.keys(res)
+        expect(keys).toHaveLength(2)
+        expect(keys).toContain(OfficeType.REGISTERED)
+        expect(keys).toContain(OfficeType.RECORDS)
+        expect(keys).not.toContain(OfficeType.LIQUIDATION)
+      })
+
+      test('should return filtered office types for table config', async () => {
+        const types = [OfficeType.REGISTERED]
+
+        const res = await useBusinessAddresses().getBusinessAddresses(
+          identifier,
+          'table',
+          types
+        )
+
+        expect(res).toHaveLength(1)
+        expect(res[0]!.new.type).toBe(OfficeType.REGISTERED)
+      })
+
+      test('should return all addresses if no officeTypes param given', async () => {
+        const defaultRes = await useBusinessAddresses().getBusinessAddresses(identifier, 'default')
+        const tableRes = await useBusinessAddresses().getBusinessAddresses(identifier, 'table')
+
+        const keys = Object.keys(defaultRes)
+        expect(keys).toHaveLength(3)
+        expect(keys).toContain(OfficeType.REGISTERED)
+        expect(keys).toContain(OfficeType.RECORDS)
+        expect(keys).toContain(OfficeType.LIQUIDATION)
+        expect(tableRes).toHaveLength(3)
       })
     })
   })
