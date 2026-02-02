@@ -29,7 +29,7 @@ export const useBusinessAddresses = () => {
       for (const type of filteredTypes) {
         offices[type] = formatBaseAddressUi(res[type])
       }
-      return offices as UiEntityOfficeAddress
+      return offices
     }
 
     // return TableBusinessState<OfficesSchema> array if table config option provided
