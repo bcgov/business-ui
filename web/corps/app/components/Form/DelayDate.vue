@@ -94,6 +94,7 @@ defineExpose({
             />
           </UFormField>
           <ConnectI18nHelper
+            v-if="isStaff"
             as="p"
             data-testid="expected-dissolution-date-info"
             :date="delayDateDisplay"

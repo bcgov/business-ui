@@ -120,6 +120,7 @@ useFilingPageWatcher<DissolutionType>({
       <div class="space-y-4">
         <h1>{{ filingText.h1 }}</h1>
         <ConnectI18nHelper
+          v-if="store.isStaff"
           as="p"
           translation-path="page.dissolution.delay.desc"
           :date="delayDateDisplay"

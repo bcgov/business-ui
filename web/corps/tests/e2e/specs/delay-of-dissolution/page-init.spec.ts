@@ -41,15 +41,18 @@ test.describe('Delay of Dissolution - Page init', () => {
         const delayDateSection = page.getByTestId('form-section-delay-date')
         const dateSelectionRadio = delayDateSection.getByRole('radio', { name: 'Select a date' })
         const dateSelectionInput = delayDateSection.getByTestId('delay-date-input')
+        const dateSelectionInfo = delayDateSection.getByTestId('expected-dissolution-date-info')
         expect(delayDateSection).toBeVisible()
         if (isStaff) {
           expect(dateSelectionRadio).toBeVisible()
           expect(dateSelectionInput).toBeVisible()
+          expect(dateSelectionInfo).toBeVisible()
+          expect(dateSelectionInfo).toContainText('October 4, 2026')
         } else {
           expect(dateSelectionRadio).not.toBeVisible()
           expect(dateSelectionInput).not.toBeVisible()
+          expect(dateSelectionInfo).not.toBeVisible()
         }
-        expect(delayDateSection.getByTestId('expected-dissolution-date-info')).toContainText('October 4, 2026')
         // has folio number section
         expect(page.getByTestId('form-section-folio-number')).toBeVisible()
         // certify section
