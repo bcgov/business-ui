@@ -50,9 +50,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       articles here - Maybe not needed - ignore for now
     </div>
 
-    <div class="w-full border border-black p-10" data-testid="provisions-section">
-      pre existing company provisions
-    </div>
+    <FormPreExistingCompanyProvisions order="X" data-testid="provisions-section" />
 
     <!-- staff only -->
     <div class="w-full border border-black p-10" data-testid="document-delivery-section">

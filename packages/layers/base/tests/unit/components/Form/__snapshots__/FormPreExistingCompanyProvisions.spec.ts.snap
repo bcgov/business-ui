@@ -1,0 +1,113 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FormPreExistingCompanyProvisions > matches the snapshot with an order prop 1`] = `
+<section
+  class="space-y-4"
+>
+  <h2>
+    5. Pre-existing Company Provisions
+  </h2>
+  <div
+    class="rounded p-6 bg-white space-y-1"
+  >
+    <h3>
+      The Pre-existing Company Provisions apply to this company
+    </h3>
+    <div
+      class="space-y-4"
+    >
+      <p>
+        A pre-existing company is a company that was incorporated in British Columbia before March 29, 2004. The regulations within legislation contain provisions that apply to a pre-existing company. These provisions can be removed by filing a Notice of Alteration.
+      </p>
+      <p>
+        For more information, read the 
+        
+        
+        
+        <a
+          class="rounded-md font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75 transition-colors cursor-pointer hover:text-primary/75 active:text-primary/75 disabled:text-primary aria-disabled:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary underline italic text-primary p-0 text-base gap-1"
+          data-slot="base"
+          href="https://www.corp-act-link.example.com"
+          rel="noopener noreferrer"
+          target="external"
+        >
+          
+          
+          <!--v-if-->
+          
+          
+          Business Corporations Act (Section 442.1)
+          
+          
+          <span
+            aria-hidden="true"
+            class="iconify i-mdi:open-in-new shrink-0 size-5"
+            data-slot="trailingIcon"
+          />
+          
+          
+        </a>
+        
+        
+        
+      </p>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`FormPreExistingCompanyProvisions > matches the snapshot without an order prop 1`] = `
+<section
+  class="space-y-4"
+>
+  <h2>
+    Pre-existing Company Provisions
+  </h2>
+  <div
+    class="rounded p-6 bg-white space-y-1"
+  >
+    <h3>
+      The Pre-existing Company Provisions apply to this company
+    </h3>
+    <div
+      class="space-y-4"
+    >
+      <p>
+        A pre-existing company is a company that was incorporated in British Columbia before March 29, 2004. The regulations within legislation contain provisions that apply to a pre-existing company. These provisions can be removed by filing a Notice of Alteration.
+      </p>
+      <p>
+        For more information, read the 
+        
+        
+        
+        <a
+          class="rounded-md font-medium inline-flex items-center disabled:cursor-not-allowed aria-disabled:cursor-not-allowed disabled:opacity-75 aria-disabled:opacity-75 transition-colors cursor-pointer hover:text-primary/75 active:text-primary/75 disabled:text-primary aria-disabled:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary underline italic text-primary p-0 text-base gap-1"
+          data-slot="base"
+          href="https://www.corp-act-link.example.com"
+          rel="noopener noreferrer"
+          target="external"
+        >
+          
+          
+          <!--v-if-->
+          
+          
+          Business Corporations Act (Section 442.1)
+          
+          
+          <span
+            aria-hidden="true"
+            class="iconify i-mdi:open-in-new shrink-0 size-5"
+            data-slot="trailingIcon"
+          />
+          
+          
+        </a>
+        
+        
+        
+      </p>
+    </div>
+  </div>
+</section>
+`;

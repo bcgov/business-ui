@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 export default {
   /* Ordering should be alphabetical unless otherwise specified */
+  act: {
+    businessCorpPreExistingCompanyProvisions: 'Business Corporations Act (Section 442.1)'
+  },
   badge: {
     added: 'ADDED',
     addressChanged: 'ADDRESS CHANGED',
@@ -383,6 +386,8 @@ export default {
     personOrOrgName: 'Person or Business Name',
     phone: 'Phone',
     planOfArrangement: 'Plan of Arrangement',
+    preExistingCompanyProvisions: 'Pre-existing Company Provisions',
+    preExistingCompanyProvisionsApplyToCompany: 'The Pre-existing Company Provisions apply to this company',
     preferredName: 'Preferred Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     priorityStaffPay: 'Priority (Add $100.00)',
@@ -509,11 +514,13 @@ export default {
     noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
     noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
+    moreInfoReadTheLink: 'For more information, read the {link}',
     offenceToMakeMisleadingStatement: '{boldStart}Note:{boldEnd} It is an offence to make a false or misleading statement in respect of a material fact in a record submitted to the Corporate Registry for filing. See section 427 of the Business Corporations Act.',
     paidButNotCompletedByRegistry: 'This {name} is paid, but the filing has not been completed by the Business Registry yet. Some filings may take longer than expected.',
     pendingButNotCompletedByRegistry: 'Your submission is still being processed.',
     pendingButNotCompletedByRegistry1: 'Some submissions may take longer than usual to complete. If this issue continues, please contact us.',
     pleaseSubmitANewApplication: 'Please submit a new application if you’d like to continue your business into B.C.',
+    preExistingCompanyProvisionsDescription: 'A pre-existing company is a company that was incorporated in British Columbia before March 29, 2004. The regulations within legislation contain provisions that apply to a pre-existing company. These provisions can be removed by filing a Notice of Alteration.',
     refreshScreenOrContact: 'Refresh this screen in a few minutes or you can come back later to check on the progress. If this issue persists, please contact us.',
     requiredToRetainDissolution: 'You are required to retain a copy of all the dissolution documents in your records book.',
     reviewReasonsYourFilingWasRejected: 'Review the reasons your filing was rejected below',
