@@ -68,7 +68,8 @@ export default defineNuxtConfig({
       docApiVersion: '',
       docApiKey: '',
       documentsUiUrl: '',
-      noticeOfWithdrawalFormUrl: ''
+      noticeOfWithdrawalFormUrl: '',
+      preExistingCompanyProvisions: ''
     }
   }
 })

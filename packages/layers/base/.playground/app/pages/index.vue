@@ -102,6 +102,10 @@ const componentExamples: DropdownMenuItem[] = [
   {
     label: 'FormDocumentId',
     to: localePath('/examples/components/Form/DocumentId')
+  },
+  {
+    label: 'FormPreExistingCompanyRevisions',
+    to: localePath('/examples/components/Form/PreExistingCompanyProvisions')
   }
 ]
 
