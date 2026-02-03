@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const store = useTransitionStore()
+const businessStore = useBusinessStore()
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 </script>
 
@@ -54,10 +55,14 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       pre existing company provisions
     </div>
 
-    <!-- staff only -->
-    <div class="w-full border border-black p-10" data-testid="document-delivery-section">
-      document delivery
-    </div>
+    <FormDocumentDelivery
+      v-if="store.formState.documentDelivery"
+      v-model="store.formState.documentDelivery"
+      order="X"
+      name="documentDelivery"
+      :loading="store.initializing"
+      :registered-office-email="businessStore.businessContact?.email"
+    />
 
     <!-- TODO: help content enhancement? -->
     <!-- client only -->
