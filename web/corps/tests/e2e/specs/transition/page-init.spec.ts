@@ -22,8 +22,6 @@ async function assertCorrectOffices(page: Page) {
   await expect(registeredRow).toContainText('1800 - 510 West Georgia Street')
   await expect(registeredRow).toContainText('Same as Delivery Address')
 
-  // TODO: update mocks to be unique for each address? currently this second check is kinda useless
-  // updating the mock will affect other tests currently relying on it
   const recordsRow = rows.filter({ hasText: 'Records Office' })
   await expect(recordsRow).toContainText('1800 - 510 West Georgia Street')
   await expect(recordsRow).toContainText('Same as Delivery Address')
@@ -32,12 +30,23 @@ async function assertCorrectOffices(page: Page) {
 async function assertCorrectDirectors(page: Page) {
   const section = page.getByTestId('current-directors-section')
   const tbody = section.locator('tbody')
-  await expect(tbody).toContainText('TESTER TESTING')
-  await expect(tbody).toContainText('WALLABY WAY')
   await expect(tbody).toContainText('MIHAI DINU TEST')
 
   const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(3)
+
+  // TODO: update row assertions with effective date column check once that is available
+  const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
+  await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
+  await expect(firstRow).toContainText('Same as Delivery Address')
+
+  const secondRow = rows.filter({ hasText: 'WALLABY WAY' })
+  await expect(secondRow).toContainText('7 Wallaby Way')
+  await expect(secondRow).toContainText('Same as Delivery Address')
+
+  const thirdRow = rows.filter({ hasText: 'MIHAI DINU TEST' })
+  await expect(thirdRow).toContainText('2-940 Blanshard')
+  await expect(thirdRow).toContainText('Same as Delivery Address')
 }
 
 async function assertCommonElements(page: Page) {
