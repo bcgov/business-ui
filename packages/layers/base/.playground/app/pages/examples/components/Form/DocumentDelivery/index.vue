@@ -33,6 +33,7 @@ const state = reactive<FullSchema>({
     completingPartyEmail: ''
   }
 })
+const submittedData = ref<FullSchema | undefined>(undefined)
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
 const docDeliveryRef = useTemplateRef<FormDocumentDeliveryRef>('doc-delivery-ref')
@@ -55,6 +56,7 @@ const nameError = computed<FormError | undefined>(() => {
 // cast type to get type completion if necessary
 async function onSubmit(event: FormSubmitEvent<unknown>) {
   const data = event.data as FullSchema
+  submittedData.value = data
   console.info('Form data: ', data)
 }
 
@@ -68,7 +70,7 @@ onMounted(async () => {
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
       :heading="{ label: 'DocumentDeliveryForm (default/nested)' }"
-      :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
+      :ui-body="hasErrors ? 'p-10 border-l-2 border-error space-y-10' : 'p-10 space-y-10'"
       class="max-w-3xl"
     >
       <UForm
@@ -121,10 +123,32 @@ onMounted(async () => {
           <UButton
             variant="outline"
             :label="$t('label.cancel')"
-            @click="formRef?.clear()"
+            @click="() => {
+              formRef?.clear()
+              submittedData = undefined
+              Object.assign(state, {
+                name: {
+                  first: '',
+                  middle: '',
+                  last: ''
+                },
+                docDelivery: {
+                  completingPartyEmail: ''
+                }
+              })
+            }"
           />
         </div>
       </UForm>
+
+      <div
+        v-if="submittedData"
+        data-testid="submitted-data"
+        class="space-y-4"
+      >
+        <div>Form Submitted</div>
+        <pre>{{ submittedData }}</pre>
+      </div>
     </ConnectPageSection>
   </div>
 </template>
