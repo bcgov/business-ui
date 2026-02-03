@@ -35,12 +35,15 @@ async function onDelayOptionChange(e: unknown) {
   const option = e as DelayOption
   model.value.date = ''
 
+  await nextTick()
   if (option === DelayOption.CUSTOM) {
-    await nextTick()
     const element = document.getElementById('delay-date-input')
     if (element) {
       element.focus({ preventScroll: true })
     }
+  } else {
+    // DelayOption.DEFAULT
+    formRef.value?.clear()
   }
 }
 const uInputProps = computed<InputProps>(() => ({
@@ -91,9 +94,11 @@ defineExpose({
             />
           </UFormField>
           <ConnectI18nHelper
+            v-if="isStaff"
             as="p"
-            translation-path="page.dissolution.delay.desc"
+            data-testid="expected-dissolution-date-info"
             :date="delayDateDisplay"
+            translation-path="page.dissolution.delay.desc"
           />
         </div>
       </ConnectFormFieldWrapper>

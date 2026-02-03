@@ -64,6 +64,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       version: `Corps UI v${process.env.npm_package_version || ''}`,
+      disStageDelay: '',
       playwright: process.env.playwright === 'true'
     }
   }

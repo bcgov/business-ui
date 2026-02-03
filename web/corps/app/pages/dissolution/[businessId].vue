@@ -11,19 +11,18 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
 const { handleButtonLoading } = useConnectButtonControl()
+const rtc = useRuntimeConfig().public
 
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as DissolutionType
 const FILING_TYPE = FilingType.DISSOLUTION
 
-const filingText = computed(() => {
-  return {
-    h1: store.isStaff ? t('page.dissolution.delay.h1Staff') : t('page.dissolution.delay.h1'),
-    title: store.isStaff ? t('page.dissolution.delay.titleStaff') : t('page.dissolution.delay.title')
-  }
-})
+const filingText = {
+  h1: t('page.dissolution.delay.h1'),
+  title: t('page.dissolution.delay.title')
+}
 
-const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.value.h1)
+const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.h1)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -32,18 +31,34 @@ definePageMeta({
 })
 
 useHead({
-  title: filingText.value.title
+  title: filingText.title
 })
 
-// TODO: figure out display if invalid date was manually entered - maybe move to store
 const delayDateDisplay = computed<string>((previous) => {
-  const dt = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
+  const dissolutionDate = DateTime.fromISO(
+    store.dissolutionInfo.targetDissolutionDate,
+    { zone: 'America/Vancouver' }
+  )
+  const unknownStr = `[${t('text.unknown')}]`
 
-  if (!dt.isValid) {
-    return previous || '' // TODO: fallback value? Only update if valid selection?
+  if (!dissolutionDate.isValid) {
+    return unknownStr
   }
 
-  return dt.toFormat('DDD')
+  const delayDate = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
+  const delayOption = store.formState.delay.option
+
+  if (delayOption === DelayOption.DEFAULT) {
+    return dissolutionDate.plus({ months: 6 }).toFormat('DDD')
+  } else {
+    // selected date
+    if (!delayDate.isValid) {
+      return previous || unknownStr
+    }
+    return store.dissolutionInfo.isStage1
+      ? delayDate.plus({ days: Number(rtc.disStageDelay) }).toFormat('DDD')
+      : delayDate.toFormat('DDD')
+  }
 })
 
 async function submitFiling(e: FormSubmitEvent<unknown>) {
@@ -105,6 +120,7 @@ useFilingPageWatcher<DissolutionType>({
       <div class="space-y-4">
         <h1>{{ filingText.h1 }}</h1>
         <ConnectI18nHelper
+          v-if="store.isStaff"
           as="p"
           translation-path="page.dissolution.delay.desc"
           :date="delayDateDisplay"

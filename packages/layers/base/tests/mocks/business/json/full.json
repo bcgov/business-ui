@@ -176,6 +176,20 @@
             "code": "TRANSITION_NOT_FILED",
             "message": "This Business requires a post restoration transition application to be filed.",
             "warningType": "NOT_IN_GOOD_STANDING"
+        },
+        {
+            "code": "DISSOLUTION_IN_PROGRESS", 
+            "data": {
+                "colinDissolutionState": "D1F",
+                "importFromColin": true,
+                "overdueTransition": true,
+                "stage_1_date": "2025-04-11T00:34:28.974191+00:00", 
+                "targetDissolutionDate": "2026-04-04", 
+                "targetStage2Date": "2026-03-05", 
+                "userDelays": 2
+            }, 
+            "message": "Business is in the process of involuntary dissolution.", 
+            "warningType": "INVOLUNTARY_DISSOLUTION"
         }
     ]
 }

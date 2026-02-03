@@ -40,7 +40,10 @@ export const useBusinessStore = defineStore('business-store', () => {
       // The business goodStanding flag is false and/OR it has a good standing warning
       alertList.push({
         // Set alert type to TRANSITIONREQUIRED if there is a warning and it has the TRANSITION_NOT_FILED warning code
-        type: goodStandingWarning?.code === ApiWarningCode.TRANSITION_NOT_FILED
+        type: [
+          ApiWarningCode.TRANSITION_NOT_FILED,
+          ApiWarningCode.TRANSITION_NOT_FILED_AFTER_12_MONTH_RESTORATION
+        ].includes(goodStandingWarning?.code as ApiWarningCode)
           ? BusinessAlert.TRANSITIONREQUIRED
           : BusinessAlert.GOODSTANDING
       })
