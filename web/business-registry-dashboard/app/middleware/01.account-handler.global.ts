@@ -6,7 +6,9 @@ export default defineNuxtRouteMiddleware((to) => {
   const hasAccountInPath = /(^|\/)account\/[^/]+(\/|$)/.test(to.path)
   if (hasAccountInPath) { return }
 
-  if (to.query.accountid) {
+  // If accountid and populate are in the query params, redirect to /account/<id>
+  // The "populate" param is to preserve magic link functionality that also use accountid in the query params
+  if (to.query.accountid && to.query.populate) {
     // Pull accountid out, keep the rest of the query params
     const { accountid, ...restQuery } = to.query
 
