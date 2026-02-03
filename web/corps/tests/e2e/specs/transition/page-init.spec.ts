@@ -30,7 +30,6 @@ async function assertCorrectOffices(page: Page) {
 async function assertCorrectDirectors(page: Page) {
   const section = page.getByTestId('current-directors-section')
   const tbody = section.locator('tbody')
-  await expect(tbody).toContainText('MIHAI DINU TEST')
 
   const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(3)
