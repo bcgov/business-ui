@@ -311,6 +311,7 @@ export default {
     close: 'Close',
     closeDetails: 'Close Details',
     companyInformationPage: 'Company Information Page',
+    completingParty: 'Completing Party',
     continuationPending: 'Continuation Pending',
     continuationOutComplete: 'Continuation Out Complete',
     continueToPayment: 'Continue to Payment',
@@ -322,12 +323,14 @@ export default {
     deliveryAddress: 'Delivery Address',
     details: 'Details',
     dissolutionCompleted: 'Dissolution Completed',
+    documentDelivery: 'Document Delivery',
     documentId: 'Document Id',
     documentIdOpt: 'Document Id (Optional)',
     done: 'Done',
     downloadAll: 'Download All',
     edit: 'Edit',
     email: 'Email',
+    emailAddressOpt: 'Email Address (Optional)',
     exitWithoutSaving: 'Exit Without Saving',
     extensionOfLimitedRestoration: 'Extension of Limited Restoration',
     FILED: 'FILED',
@@ -491,6 +494,7 @@ export default {
     dissolution: 'dissolution',
     dissolutionCompletedFirm: 'The statement of dissolution for {entitytitle} {name} was successfully submitted on {boldStart}{submitteddate}{boldEnd} with dissolution date of {boldStart}{dissolutiondate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
     dissolutionCompletedNonFirm: 'The {entitytitle} {name} was successfully {boldStart}dissolved on {effectivedate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
+    documentDeliveryDescription: 'Copies of the transition documents will be sent to the email addresses listed below.',
     documentIdDescription: 'Enter the 8-digit Document ID number, also referred to as the barcode number. If you do not have one, leave the field empty to generate a Document ID upon submission.',
     effectiveAsOf: 'EFFECTIVE as of',
     expiredConsent: 'This consent is expired. Please resubmit the {name} application for authorization to become a foreign corporation.',
@@ -546,6 +550,7 @@ export default {
     selectAPaymentOption: 'Select a payment option',
     exactDocIDChars: 'Document ID must be 8 characters',
     duplicateDocId: 'A document record already exists with this document ID',
-    invalidDocId: 'The number entered is not recognized in our system'
+    invalidDocId: 'The number entered is not recognized in our system',
+    invalidEmailAddress: 'Enter a valid email address'
   }
 }
