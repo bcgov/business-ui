@@ -6,6 +6,48 @@ import { TRANP } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 
+async function assertCorrectOffices(page: Page) {
+  const section = page.getByTestId('office-addresses-section')
+  const tbody = section.locator('tbody')
+  await expect(tbody).toContainText('Registered Office')
+  await expect(tbody).toContainText('Records Office')
+  await expect(tbody).not.toContainText('Business Office')
+  await expect(tbody).not.toContainText('Custodial Office')
+  await expect(tbody).not.toContainText('Liquidation Records Office')
+
+  const rows = tbody.locator('tr')
+  await expect(rows).toHaveCount(2)
+
+  const registeredRow = rows.filter({ hasText: 'Registered Office' })
+  await expect(registeredRow).toContainText('1800 - 510 West Georgia Street')
+  await expect(registeredRow).toContainText('Same as Delivery Address')
+
+  const recordsRow = rows.filter({ hasText: 'Records Office' })
+  await expect(recordsRow).toContainText('1800 - 510 West Georgia Street')
+  await expect(recordsRow).toContainText('Same as Delivery Address')
+}
+
+async function assertCorrectDirectors(page: Page) {
+  const section = page.getByTestId('current-directors-section')
+  const tbody = section.locator('tbody')
+
+  const rows = tbody.locator('tr')
+  await expect(rows).toHaveCount(3)
+
+  // TODO: update row assertions with effective date column check once that is available
+  const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
+  await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
+  await expect(firstRow).toContainText('Same as Delivery Address')
+
+  const secondRow = rows.filter({ hasText: 'WALLABY WAY' })
+  await expect(secondRow).toContainText('7 Wallaby Way')
+  await expect(secondRow).toContainText('Same as Delivery Address')
+
+  const thirdRow = rows.filter({ hasText: 'MIHAI DINU TEST' })
+  await expect(thirdRow).toContainText('2-940 Blanshard')
+  await expect(thirdRow).toContainText('Same as Delivery Address')
+}
+
 async function assertCommonElements(page: Page) {
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
   // has auth header
@@ -32,8 +74,10 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('connect-main-footer')).toBeVisible()
   // has office addresses
   await expect(page.getByTestId('office-addresses-section')).toBeVisible()
+  await assertCorrectOffices(page)
   // has directors
   await expect(page.getByTestId('current-directors-section')).toBeVisible()
+  await assertCorrectDirectors(page)
   // has share structure
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
   // has articles

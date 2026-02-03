@@ -39,7 +39,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     )
 
     // TODO: add table config option to useFiling addresses param
-    const addresses = await getBusinessAddresses(businessId, 'table')
+    const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
 
     // TODO: load/check/merge draft state
     // const draft = draftFiling?.filing?.changeOfReceivers
