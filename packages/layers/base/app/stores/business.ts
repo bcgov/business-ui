@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 export const useBusinessStore = defineStore('business-store', () => {
   const service = useBusinessService()
 
-  const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
+  const business = shallowRef<BusinessDataPublic | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
   const businessFolio = ref('')
 
@@ -31,7 +31,25 @@ export const useBusinessStore = defineStore('business-store', () => {
     const alertList = []
 
     if (business.value?.adminFreeze) {
-      alertList.push({ type: BusinessAlert.FROZEN })
+      alertList.push({ type: BusinessAlert.FROZEN, contentExtraOptions: [{ path: 'default' }] })
+    }
+
+    if (
+      allWarnings.some(item => item.warningType === ApiWarningType.INVOLUNTARY_DISSOLUTION)
+      || business.value?.inDissolution
+    ) {
+      const warning = allWarnings.find(item =>
+        item.warningType?.includes(ApiWarningType.INVOLUNTARY_DISSOLUTION)
+      )
+      const dissolutionDate = toDate(warning?.data?.targetDissolutionDate || '')
+      const contentDate = dissolutionDate ? toFormattedDateStr(dissolutionDate, DateTime.DATE_FULL) : undefined
+
+      const maxUserDelaysReached = (warning?.data?.userDelays || 0) > 1
+      const contentExtraOptions = [{
+        path: maxUserDelaysReached ? 'maxDelaysReached' : 'default',
+        link: { path: 'emailLink', to: 'emailTo' }
+      }]
+      alertList.push({ type: BusinessAlert.DISSOLUTION, contentDate, contentExtraOptions, hideContact: true })
     }
 
     // NOTES: The API will only return 1 good standing warning even if there are multiple reasons for it
@@ -45,22 +63,9 @@ export const useBusinessStore = defineStore('business-store', () => {
           ApiWarningCode.TRANSITION_NOT_FILED_AFTER_12_MONTH_RESTORATION
         ].includes(goodStandingWarning?.code as ApiWarningCode)
           ? BusinessAlert.TRANSITIONREQUIRED
-          : BusinessAlert.GOODSTANDING
+          : BusinessAlert.GOODSTANDING,
+        contentExtraOptions: [{ path: 'default' }]
       })
-    }
-
-    if (
-      allWarnings.some(item => item.warningType === ApiWarningType.INVOLUNTARY_DISSOLUTION)
-      || business.value?.inDissolution
-    ) {
-      const warning = allWarnings.find(item =>
-        item.warningType?.includes(ApiWarningType.INVOLUNTARY_DISSOLUTION)
-      )
-      const targetDissolutionDate = toDate(warning?.data?.targetDissolutionDate || '')
-      const days = targetDissolutionDate
-        ? daysBetween(new Date(), targetDissolutionDate)
-        : undefined
-      alertList.push({ type: BusinessAlert.DISSOLUTION, days })
     }
 
     const amalgWarning = allWarnings.find(
@@ -71,23 +76,23 @@ export const useBusinessStore = defineStore('business-store', () => {
         : undefined
       alertList.push({
         type: BusinessAlert.AMALGAMATION,
-        date: amalDate ? toFormattedDateStr(amalDate, DateTime.DATE_FULL) : undefined
+        labelDate: amalDate ? toFormattedDateStr(amalDate, DateTime.DATE_FULL) : undefined
       })
     }
 
     if (allWarnings.some(item => item.warningType === ApiWarningType.MISSING_REQUIRED_BUSINESS_INFO)) {
-      alertList.push({ type: BusinessAlert.MISSINGINFO })
+      alertList.push({ type: BusinessAlert.MISSINGINFO, contentExtraOptions: [{ path: 'default' }] })
     }
 
     return alertList
   })
 
-  async function init(identifier: string, slim = false, force = false, includeContact = false) {
+  async function init(identifier: string, slim = false, publicData = false, force = false, includeContact = false) {
     const [
       businessResp,
       contactResp
     ] = await Promise.all([
-      service.getBusiness(identifier, slim, force),
+      service.getBusiness(identifier, slim, publicData, force),
       includeContact ? service.getAuthInfo(identifier, force) : undefined
     ])
 

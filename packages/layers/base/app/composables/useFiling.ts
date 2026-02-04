@@ -73,7 +73,7 @@ export const useFiling = () => {
         addresses
       ] = await Promise.all([
         setFilingDefault(businessId, false),
-        businessStore.init(businessId, false, false, true),
+        businessStore.init(businessId, false, false, false, true),
         draftPromise,
         partiesPromise,
         permissionsStore.init(businessId),

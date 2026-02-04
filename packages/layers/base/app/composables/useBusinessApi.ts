@@ -7,7 +7,7 @@ export const useBusinessApi = () => {
   const accountId = useConnectAccountStore().currentAccount.id
 
   function createFilingPayload<F extends FilingRecord>(
-    business: BusinessData | BusinessDataSlim,
+    business: BusinessData | BusinessDataPublic,
     filingName: FilingType,
     filingData: F,
     headerData: Partial<FilingHeaderSubmission> = {}
@@ -209,17 +209,24 @@ export const useBusinessApi = () => {
    * @param businessId the identifier of the business
    * @returns a promise to return business data
    */
-  function getBusiness(businessId: string, slim: true): Promise<UseQueryReturn<{ business: BusinessDataSlim }>> // tell TS return type is slim if true
-  function getBusiness(businessId: string, slim?: false): Promise<UseQueryReturn<{ business: BusinessData }>>
+  function getBusiness(
+    businessId: string, slim: true, publicData?: boolean): Promise<UseQueryReturn<{ business: BusinessDataPublic }>> // tell TS return type is slim if true
+  function getBusiness(
+    businessId: string, slim: boolean, publicData: true): Promise<UseQueryReturn<{ business: BusinessDataPublic }>> // tell TS return type is slim if true
+  function getBusiness(
+    businessId: string, slim?: false, publicData?: false): Promise<UseQueryReturn<{ business: BusinessData }>>
   async function getBusiness(
     businessId: string,
-    slim = false
-  ): Promise<UseQueryReturn<{ business: BusinessDataSlim | BusinessData }>> {
+    slim = false,
+    publicData = false
+  ): Promise<UseQueryReturn<{ business: BusinessDataPublic | BusinessData }>> {
+    const publicPath = publicData ? '/public' : ''
     const query = defineQuery({
-      key: ['business', businessId, slim],
-      query: () => $businessApi<{ business: BusinessData | BusinessDataSlim }>(`businesses/${businessId}`, {
-        query: slim ? { slim: true } : undefined
-      }),
+      key: ['business', businessId, slim, publicData],
+      query: () => $businessApi<{ business: BusinessData | BusinessDataPublic }>(
+        `businesses/${businessId}${publicPath}`,
+        { query: slim ? { slim: true } : undefined }
+      ),
       staleTime: 60000
     })
     return query()

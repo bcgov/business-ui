@@ -9,7 +9,7 @@ export const useBusinessTombstone = () => {
 
   async function setFilingDefault(businessId: string, slim = true) {
     businessTombstone.value.loading = true
-    await businessStore.init(businessId, slim, false, true)
+    await businessStore.init(businessId, slim, false, false, true)
 
     const ext = businessContact.value?.extension || businessContact.value?.phoneExtension
     const phoneLabel = ext

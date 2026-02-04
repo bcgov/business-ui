@@ -26,6 +26,7 @@ const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstra
 
 /** good dev examples:
  * BC0870681 (not in good standing, process of being dissolved)
+ * BC0688952 (not in good standing, process of being dissolved - user delays maxed)
 */
 const identifier = ref('')
 

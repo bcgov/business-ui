@@ -104,16 +104,21 @@ export const useBusinessService = () => {
    * @param businessId the identifier of the business
    * @returns a promise to return business data
   */
-  function getBusiness(businessId: string, slim: boolean, force?: boolean): Promise<BusinessData | BusinessDataSlim>
-  function getBusiness(businessId: string, slim: true, force?: boolean): Promise<BusinessDataSlim>
-  function getBusiness(businessId: string, slim?: false, force?: boolean): Promise<BusinessData>
+  function getBusiness(
+    businessId: string, slim: boolean, publicData: boolean, force?: boolean): Promise<BusinessData | BusinessDataPublic>
+  function getBusiness(
+    businessId: string, slim: true, publicData?: boolean, force?: boolean): Promise<BusinessDataPublic>
+  function getBusiness(
+    businessId: string, slim: boolean, publicData: true, force?: boolean): Promise<BusinessDataPublic>
+  function getBusiness(businessId: string, slim?: false, publicData?: false, force?: boolean): Promise<BusinessData>
   async function getBusiness(
     businessId: string,
     slim = false,
+    publicData = false,
     force = false
-  ): Promise<BusinessDataSlim | BusinessData> {
-    const options = query.businessOptions(businessId, slim)
-    return await getCachedOrFetch<{ business: BusinessData | BusinessDataSlim }>(options, force)
+  ): Promise<BusinessDataPublic | BusinessData> {
+    const options = query.businessOptions(businessId, slim, publicData)
+    return await getCachedOrFetch<{ business: BusinessData | BusinessDataPublic }>(options, force)
       .then(res => res.business)
   }
 
