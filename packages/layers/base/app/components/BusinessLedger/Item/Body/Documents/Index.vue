@@ -10,6 +10,8 @@ const { getBusinessDocument } = useBusinessApi()
 const downloadingIndex = ref(-1)
 const downloadingAll = ref(false)
 
+const BusinessHelpContact = resolveComponent('BusinessHelpContact')
+
 const download = async (document: BusinessDocument, index: number) => {
   downloadingIndex.value = index
   try {
@@ -21,12 +23,8 @@ const download = async (document: BusinessDocument, index: number) => {
     useModal().errorModal.open({
       error: { statusCode: 500 },
       i18nPrefix: 'modal.error.documentDownload',
-      buttons: [
-        {
-          label: 'OK', shouldClose: true
-        }
-      ],
-      showHelpContact: true
+      buttons: [{ label: 'OK', shouldClose: true }],
+      contactInfo: h(BusinessHelpContact)
     })
   }
   downloadingIndex.value = -1

@@ -109,7 +109,7 @@ describe('useFilingModals', () => {
   })
 
   describe('openSaveFilingErrorModal', () => {
-    it('should open the error modal with the correct prefix and error object', async () => {
+    it('should open the error modal with the correct prefix, error object and default preferErrorMessage', async () => {
       const { openSaveFilingErrorModal } = useFilingModals()
       const mockError = new Error('API Failed')
       await openSaveFilingErrorModal(mockError)
@@ -118,7 +118,21 @@ describe('useFilingModals', () => {
       expect(mockErrorModalOpen).toHaveBeenCalledWith(
         expect.objectContaining({
           error: mockError,
-          i18nPrefix: 'modal.error.filing.submit'
+          i18nPrefix: 'modal.error.filing.submit',
+          preferErrorMessage: false
+        })
+      )
+    })
+
+    it('should pass preferErrorMessage as true when preferApiMessage is true', async () => {
+      const { openSaveFilingErrorModal } = useFilingModals()
+      const mockError = new Error('API Failed')
+
+      await openSaveFilingErrorModal(mockError, true)
+
+      expect(mockErrorModalOpen).toHaveBeenCalledWith(
+        expect.objectContaining({
+          preferErrorMessage: true
         })
       )
     })
