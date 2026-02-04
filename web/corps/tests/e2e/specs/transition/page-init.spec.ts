@@ -1,7 +1,12 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { navigateToTransitionPage } from '../../test-utils'
-import { mockCommonApiCallsForFiling, getBusinessAddressesMock, getPartiesMock } from '#test-mocks'
+import {
+  mockCommonApiCallsForFiling,
+  getBusinessAddressesMock,
+  getPartiesMock,
+  getBusinessSettingsMock
+} from '#test-mocks'
 import { TRANP } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -48,7 +53,12 @@ async function assertCorrectDirectors(page: Page) {
   await expect(thirdRow).toContainText('Same as Delivery Address')
 }
 
-async function assertCommonElements(page: Page) {
+async function assertDocumentDelivery(page: Page) {
+  const section = page.getByTestId('document-delivery-section')
+  await expect(section).toContainText(getBusinessSettingsMock().contacts[0]!.email)
+}
+
+async function assertCommonElements(page: Page, step?: 1 | 2) {
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
   // has auth header
   await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
@@ -82,6 +92,13 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
   // has articles
   await expect(page.getByTestId('articles-section')).toBeVisible()
+
+  // common for staff and client per step assertions
+  // add as necessary
+  if (step === 2) {
+    await expect(page.getByTestId('provisions-section')).toBeVisible()
+    await assertDocumentDelivery(page)
+  }
 }
 
 test.describe('Transition - Page init', () => {
@@ -109,15 +126,13 @@ test.describe('Transition - Page init', () => {
       // step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
       // should still have common elements
-      await assertCommonElements(page)
+      await assertCommonElements(page, 2)
 
-      // common step 2 and staff only sections
-      await expect(page.getByTestId('provisions-section')).toBeVisible()
-      await expect(page.getByTestId('document-delivery-section')).toBeVisible()
+      // step 2 staff only sections
       await expect(page.getByTestId('court-order-section')).toBeVisible()
       await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
-      // client only which should not be visible
+      // step 2 client only which should not be visible
       await expect(page.getByTestId('folio-section')).not.toBeVisible()
       await expect(page.getByTestId('certify-section')).not.toBeVisible()
     })
@@ -147,15 +162,13 @@ test.describe('Transition - Page init', () => {
       // step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
       // should still have common elements
-      await assertCommonElements(page)
+      await assertCommonElements(page, 2)
 
-      // common step 2 and staff only sections
-      await expect(page.getByTestId('provisions-section')).toBeVisible()
-      await expect(page.getByTestId('document-delivery-section')).toBeVisible()
+      // step 2 client only sections
       await expect(page.getByTestId('folio-section')).toBeVisible()
       await expect(page.getByTestId('certify-section')).toBeVisible()
 
-      // staff only which should not be visible
+      // step 2 staff only which should not be visible
       await expect(page.getByTestId('court-order-section')).not.toBeVisible()
       await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
     })

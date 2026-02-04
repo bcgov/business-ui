@@ -1,6 +1,7 @@
 export * from './address'
 export * from './certify'
 export * from './court-order-poa'
+export * from './document-delivery'
 export * from './document-id'
 export * from './folio'
 export * from './offices'

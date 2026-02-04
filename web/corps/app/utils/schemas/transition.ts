@@ -29,11 +29,11 @@ function getStaffTransitionSchema() {
 
 export function getTransitionSchema(isStaff: boolean) {
   const schema = z.object({
+    documentDelivery: getDocumentDeliverySchema().default(() => ({ completingPartyEmail: '' })),
     activeDirector: getActivePartySchema()
   // activeOffice: getActiveOfficesSchema() // TODO (only if allowing office edits)
   // activeShareClass: getActiveShareClassSchema() // TODO
   // activeShareSeries: getActiveShareSeriesSchema() // TODO
-  // documentDelivery: getDocumentDeliverySchema() // TODO
   })
 
   if (isStaff) {
