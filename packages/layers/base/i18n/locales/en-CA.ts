@@ -49,7 +49,7 @@ export default {
     missinginfo: {
       content: 'BC Registries is missing information about your business (e.g., business start date, nature of business, business address, etc.). Please contact BC Registries to input any missing business information. Missing information must be entered before you can file changes or dissolve this business.',
       contentExtra: {
-        default: 'If further action is required, please contact BC Registries staff:',
+        default: 'If further action is required, please contact BC Registries staff:'
       },
       label: 'Missing Information'
     },
