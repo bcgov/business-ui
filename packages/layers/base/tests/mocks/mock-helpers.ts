@@ -74,8 +74,22 @@ export const mockApiCallsForLedger = async (
   page.route('**/api/v2/permissions', async (route) => {
     await route.fulfill({ json: getPermissionsMock() })
   })
-  page.route('**/api/v2/businesses/**/filings/**/documents', async (route) => {
-    await route.fulfill({ json: getDocumentsMock() })
+  page.route('**/api/v2/businesses/**/filings/**/documents**', async (route) => {
+    const url = route.request().url()
+
+    if (url.endsWith('/documents')) {
+      await route.fulfill({
+        status: 200,
+        json: getDocumentsMock()
+      })
+    } else {
+      await new Promise(resolve => setTimeout(resolve, 1))
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/pdf',
+        body: 'document content'
+      })
+    }
   })
   page.route('**/api/v2/businesses/**/filings/**/comments', async (route) => {
     await route.fulfill({ json: getCommentsMock() })

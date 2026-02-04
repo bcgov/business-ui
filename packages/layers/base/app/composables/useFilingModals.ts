@@ -35,10 +35,11 @@ export const useFilingModals = () => {
     })
   }
 
-  async function openSaveFilingErrorModal(error: unknown) {
+  async function openSaveFilingErrorModal(error: unknown, preferApiMessage = false) {
     await errorModal.open({
       error,
-      i18nPrefix: 'modal.error.filing.submit'
+      i18nPrefix: 'modal.error.filing.submit',
+      preferErrorMessage: preferApiMessage
     })
   }
 

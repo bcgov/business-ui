@@ -11,3 +11,12 @@
 
 ## Post Restoration Transition Application (aka standalone transition)
 /web/post-restoration-transition-application @BrandonSharratt @deetz99 @hfekete @kialj876 @thorwolpert
+
+## Packages - Business Base Layer
+/packages/layers/base @deetz99 @kialj876 @cameron-eyds
+
+## Packages - Playwright Config
+/packages/configs/playwright-config @deetz99 @kialj876 @cameron-eyds
+
+## Packages - Vitest Config
+/packages/configs/vitest-config @deetz99 @kialj876 @cameron-eyds
