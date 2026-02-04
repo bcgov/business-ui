@@ -21,7 +21,8 @@ export const useBusinessQueryKeys = () => {
     addresses: (businessId: string) => [...base.value, businessId, 'addresses'] as const,
     authInfo: (businessId: string) => [...base.value, businessId, 'auth-info'] as const,
     authorizedActions: (businessId: string) => [...base.value, businessId, 'authorized-actions'] as const,
-    business: (businessId: string, slim: boolean) => [...base.value, businessId, 'information', { slim }] as const,
+    business: (businessId: string, slim: boolean, publicData: boolean) =>
+      [...base.value, businessId, 'information', { slim, publicData }] as const,
     bootstrapFiling: (tempRegId: string) => [...base.value, tempRegId, 'bootstrap-filing'] as const,
     document: (businessId: string, url: string, filename: string) =>
       [...base.value, businessId, 'document', { url, filename }] as const,

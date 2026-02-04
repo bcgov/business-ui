@@ -60,25 +60,28 @@ export const useBusinessQuery = () => {
   function businessOptions(
     businessId: MaybeRefOrGetter<string>,
     slim: boolean,
-    options?: DefineOptions<{ business: BusinessData | BusinessDataSlim }>
+    publicData: boolean,
+    options?: DefineOptions<{ business: BusinessData | BusinessDataPublic }>
   ) {
+    const addedPath = publicData ? '/public' : ''
     return defineQueryOptions({
-      query: () => $businessApi(`businesses/${toValue(businessId)}`, {
+      query: () => $businessApi(`businesses/${toValue(businessId)}${addedPath}`, {
         query: slim ? { slim: true } : undefined
       }),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.business(toValue(businessId), slim)
+      key: keys.business(toValue(businessId), slim, publicData)
     })
   }
 
   function business(
     businessId: MaybeRefOrGetter<string>,
     slim: boolean,
-    options?: QueryOptions<{ business: BusinessData | BusinessDataSlim }>
+    publicData: boolean,
+    options?: QueryOptions<{ business: BusinessData | BusinessDataPublic }>
   ) {
     return useQuery(() => businessOptions(
-      businessId, slim, options as DefineOptions<{ business: BusinessData | BusinessDataSlim }>
+      businessId, slim, publicData, options as DefineOptions<{ business: BusinessData | BusinessDataPublic }>
     ))
   }
 

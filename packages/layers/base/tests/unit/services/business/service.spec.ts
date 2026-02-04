@@ -84,7 +84,7 @@ describe('useBusinessService', () => {
     const result = await service.getBusiness(businessId, false)
 
     const opts = mockQuery.businessOptions
-    expect(opts).toHaveBeenCalledWith(businessId, false)
+    expect(opts).toHaveBeenCalledWith(businessId, false, false)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData.business)
   })

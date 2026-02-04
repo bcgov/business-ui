@@ -3,7 +3,7 @@
  * and sent to/from the API.
  * Ref: https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/business.json
  */
-export interface BusinessDataSlim {
+export interface BusinessDataPublic {
   adminFreeze: boolean
   alternateNames: AlternateName[]
   foundingDate: ApiDateTimeUtc
@@ -15,10 +15,11 @@ export interface BusinessDataSlim {
   lastModified: ApiDateTimeUtc
   state: EntityState
   taxId?: string // incorporation number
+  // available when not pulling slim data (edge case requests can be very slow)
   warnings?: BusinessWarning[]
 }
 
-export interface BusinessData extends BusinessDataSlim {
+export interface BusinessData extends BusinessDataPublic {
   cacheId?: number
   allowedActions: AllowedActions
   arMaxDate: IsoDatePacific

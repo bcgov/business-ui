@@ -2,31 +2,25 @@
 const props = defineProps<{
   alertInfo: {
     type: BusinessAlert
-    date?: string
-    days?: string | number
+    contentDate?: string
+    contentExtraOptions?: { path: string, link?: { path: string, to: string } }[]
+    labelDate?: string
     hideContact?: boolean
   }[]
 }>()
 
-const { rt, t, tm } = useI18n()
+const { t } = useI18n()
 const unknownText = `[${t('text.unknown')}]`
-
-const parseContentExtra = (alert: BusinessAlert) => {
-  const translations: unknown = tm(`businessAlert.${alert}.contentExtra`)
-  if (translations instanceof Array) {
-    return translations.map(translation => rt(translation))
-  }
-}
 
 const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => (
   {
     alertType: alert.type,
-    contentExtra: parseContentExtra(alert.type) || [],
-    days: alert.days || unknownText,
+    contentExtra: alert.contentExtraOptions || [],
+    date: alert.contentDate || unknownText,
     icon: 'i-mdi-alert',
-    label: t(`businessAlert.${alert.type}.label`, { date: alert.date || unknownText }),
+    label: t(`businessAlert.${alert.type}.label`, { date: alert.labelDate || unknownText }),
     showContact: !alert.hideContact,
-    ui: { leadingIcon: 'text-warning' }
+    ui: { leadingIcon: alert.type === BusinessAlert.DISSOLUTION ? 'text-error' : 'text-warning' }
   }
 )))
 </script>
@@ -51,19 +45,31 @@ const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => 
         />
       </template>
       <template #body="{ item }">
-        <div class="space-y-3">
-          <!-- NOTE: no user inputted values are used below -->
-          <!-- eslint-disable-next-line vue/no-v-html  -->
-          <p v-html="item.content" />
-          <p>
-            <ConnectI18nHelper
-              :translation-path="`businessAlert.${item.alertType}.content`"
-              :days="item.days"
-            />
-          </p>
-          <p v-for="content, i in item.contentExtra" :key="`contentExtra-${i}`">
-            {{ content }}
-          </p>
+        <div class="space-y-3" :data-testid="`business-alerts-${item.alertType}-content`">
+          <ConnectI18nHelper
+            as="p"
+            :translation-path="`businessAlert.${item.alertType}.content`"
+            :date="item.date"
+            data-testid="business-alerts-content-text"
+          />
+          <i18n-t
+            v-for="content, i in item.contentExtra"
+            :key="`contentExtra-${i}`"
+            :keypath="`businessAlert.${item.alertType}.contentExtra.${content.path}`"
+            tag="p"
+            scope="global"
+            data-testid="business-alerts-content-extra-text"
+          >
+            <template #link>
+              <UButton
+                :to="$t(`businessAlert.${item.alertType}.contentExtra.${content.link?.to}`)"
+                variant="link"
+                class="underline text-primary p-0 text-base gap-1"
+              >
+                {{ $t(`businessAlert.${item.alertType}.contentExtra.${content.link?.path}`) }}
+              </UButton>
+            </template>
+          </i18n-t>
           <BusinessHelpContact v-if="item.showContact" hide-header />
         </div>
       </template>

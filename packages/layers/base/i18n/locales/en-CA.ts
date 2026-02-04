@@ -17,32 +17,47 @@ export default {
     },
     disabled: {
       content: 'This business is disabled.',
-      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      contentExtra: {
+        default: 'For assistance, please contact BC Registries staff:'
+      },
       label: 'This business is disabled'
     },
     dissolution: {
-      content: 'This means that the business will be struck from the Corporate Registry in {boldStart}{days} days{boldEnd} due to overdue annual reports. Please file the annual reports immediately to bring this business back into good standing or request a delay of dissolution if more time is needed.',
-      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      content: 'The business may be struck from the Corporate Registry as soon as {boldStart}{date}{boldEnd} due to overdue annual reports. Please file the annual reports immediately to return the business to good standing.',
+      contentExtra: {
+        default: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
+        maxDelaysReached: 'Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
+        emailLink: "BCRegistries{'@'}gov.bc.ca",
+        emailTo: "mailto:bcregistries{'@'}gov.bc.ca"
+      },
       label: 'Urgent - this business is in the process of being dissolved'
     },
     frozen: {
       content: 'This business is frozen and therefore no filings can be completed at this time.',
-      contentExtra: ['For assistance, please contact BC Registries staff:'],
+      contentExtra: {
+        default: 'For assistance, please contact BC Registries staff:'
+      },
       label: 'This business is frozen'
     },
     goodstanding: {
       content: 'The most common reason a business is not in good standing is an overdue annual report. Any outstanding annual reports must filed to bring the business back into good standing.',
-      contentExtra: ['If further action is required, please contact BC Registries staff:'],
+      contentExtra: {
+        default: 'If further action is required, please contact BC Registries staff:'
+      },
       label: 'This business is not in good standing'
     },
     missinginfo: {
       content: 'BC Registries is missing information about your business (e.g., business start date, nature of business, business address, etc.). Please contact BC Registries to input any missing business information. Missing information must be entered before you can file changes or dissolve this business.',
-      contentExtra: ['If further action is required, please contact BC Registries staff:'],
+      contentExtra: {
+        default: 'If further action is required, please contact BC Registries staff:',
+      },
       label: 'Missing Information'
     },
     transitionrequired: {
       content: 'A new {italicStart}Business Corporations Act{italicEnd} came into effect while this business was dissolved. To restore good standing, transition this business so that it operates under this new legislation.',
-      contentExtra: ['If you don’t file a post restoration transition application within a year of your restoration date, this business will be dissolved.'],
+      contentExtra: {
+        default: 'If you don’t file a post restoration transition application within a year of your restoration date, this business will be dissolved.'
+      },
       label: 'This business is not in good standing'
     }
   },

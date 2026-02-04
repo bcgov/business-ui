@@ -76,28 +76,45 @@ describe('useBusinessQuery', () => {
   it('businessOptions should have correct config', () => {
     const { businessOptions } = useBusinessQuery()
 
-    // slim fetch
-    const slim = businessOptions(businessId, true)
+    // slim only fetch
+    const slim = businessOptions(businessId, true, false)
     slim.query({} as any)
-    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}`, { query: { slim: true } })
-    expect(mockKeys.business).toHaveBeenCalledWith(businessId, true)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}`, { query: { slim: true } })
+    expect(mockKeys.business).toHaveBeenCalledWith(businessId, true, false)
     expect(slim.staleTime).toBe(DEFAULT_STALE_TIME)
 
+    // public only fetch
+    const publicData = businessOptions(businessId, false, true)
+    publicData.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}/public`, { query: undefined })
+    expect(mockKeys.business).toHaveBeenCalledWith(businessId, false, true)
+    expect(publicData.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    // slim and public fetch
+    const slimPublic = businessOptions(businessId, true, true)
+    slimPublic.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}/public`, { query: { slim: true } })
+    expect(mockKeys.business).toHaveBeenCalledWith(businessId, true, true)
+    expect(publicData.staleTime).toBe(DEFAULT_STALE_TIME)
+
     // full fetch
-    const full = businessOptions(businessId, false)
+    const full = businessOptions(businessId, false, false)
     full.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}`, { query: undefined })
-    expect(mockKeys.business).toHaveBeenCalledWith(businessId, false)
+    expect(mockKeys.business).toHaveBeenCalledWith(businessId, false, false)
     expect(full.staleTime).toBe(DEFAULT_STALE_TIME)
 
     // custom options
-    const custom = businessOptions(businessId, false, {
+    const custom = businessOptions(businessId, false, false, {
       enabled: false,
       staleTime: 500
     })
     expect(custom.enabled).toBe(false)
     expect(custom.staleTime).toBe(500)
-    expect(mockKeys.business).toHaveBeenLastCalledWith(businessId, false)
+    expect(mockKeys.business).toHaveBeenLastCalledWith(businessId, false, false)
   })
 
   it('documentOptions should have correct config', () => {
