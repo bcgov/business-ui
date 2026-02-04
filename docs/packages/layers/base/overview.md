@@ -15,13 +15,8 @@
 
 ## Extended Layers
 - [@sbc-connect/nuxt-pay](https://github.com/bcgov/connect-nuxt/blob/main/packages/layers/pay/README.md)
-- [@sbc-connect/nuxt-forms](https://github.com/bcgov/connect-nuxt/blob/main/packages/layers/forms/README.md)
 
 ## Components
-
-- ModalError
-  - Note: Though not necessary, this component is meant to be used alongside the `useModal` composable.
-  - [Examples](../../../../packages/layers/base/.playground/app/pages/examples/components/Modal/Error.vue)
 
 ## Composables
 

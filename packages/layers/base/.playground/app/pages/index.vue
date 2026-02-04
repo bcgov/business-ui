@@ -92,10 +92,6 @@ const componentExamples: DropdownMenuItem[] = [
     ]
   },
   {
-    label: 'ModalError',
-    to: localePath('/examples/components/Modal/Error')
-  },
-  {
     label: 'ModalStaffPay',
     to: localePath('/examples/components/Modal/StaffPay')
   },
