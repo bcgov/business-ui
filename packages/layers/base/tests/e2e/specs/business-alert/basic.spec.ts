@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import { mockApiCallsForAlerts } from '../../../mocks/mock-helpers'
+import { mockApiCallsForAlerts } from '#test-mocks/mock-helpers'
 
 test.describe('Business Alerts Tests - Basic', () => {
   test.beforeEach(async ({ page }) => {

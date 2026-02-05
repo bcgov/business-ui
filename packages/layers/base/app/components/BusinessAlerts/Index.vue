@@ -1,28 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
-  alertInfo: {
-    type: BusinessAlert
-    contentDate?: string
-    contentExtraOptions?: { path: string, link?: { path: string, to: string } }[]
-    labelDate?: string
-    hideContact?: boolean
-  }[]
-}>()
-
-const { t } = useI18n()
-const unknownText = `[${t('text.unknown')}]`
-
-const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => (
-  {
-    alertType: alert.type,
-    contentExtra: alert.contentExtraOptions || [],
-    date: alert.contentDate || unknownText,
-    icon: 'i-mdi-alert',
-    label: t(`businessAlert.${alert.type}.label`, { date: alert.labelDate || unknownText }),
-    showContact: !alert.hideContact,
-    ui: { leadingIcon: alert.type === BusinessAlert.DISSOLUTION ? 'text-error' : 'text-warning' }
-  }
-)))
+defineProps<{ alerts: BusinessAlertItem[] }>()
 </script>
 
 <template>
@@ -64,7 +41,7 @@ const alerts = computed((): BusinessAlertItem[] => props.alertInfo.map(alert => 
               <UButton
                 :to="$t(`businessAlert.${item.alertType}.contentExtra.${content.link?.to}`)"
                 variant="link"
-                class="underline text-primary p-0 text-base gap-1"
+                class="underline p-0 text-small gap-1"
               >
                 {{ $t(`businessAlert.${item.alertType}.contentExtra.${content.link?.path}`) }}
               </UButton>

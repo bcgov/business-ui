@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test'
 import type { BusinessWarning } from '#business/app/interfaces/business-warning'
 import { ApiWarningCode } from '#business/app/enums/api-warning-code'
 import { ApiWarningType } from '#business/app/enums/api-warning-type'
-import { mockApiCallsForAlerts } from '../../../mocks/mock-helpers'
+import { mockApiCallsForAlerts } from '#test-mocks/mock-helpers'
 
 async function setupPage(page: Page, warnings: BusinessWarning[]) {
   const identifier = 'BC1234567'

@@ -76,7 +76,7 @@ const loadAlerts = async () => {
       </div>
       <ConnectTransitionCollapse>
         <div v-if="!loading && (businessIdentifier || bootstrapIdentifier)" class="bg-shade p-5">
-          <BusinessAlerts v-if="businessAlerts" :alert-info="businessAlerts" />
+          <BusinessAlerts v-if="businessAlerts" :alerts="businessAlerts" />
           <p v-else>
             No alerts to show for this business.
           </p>
