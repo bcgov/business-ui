@@ -31,11 +31,11 @@ export const useBusinessTombstone = () => {
     businessTombstone.value.loading = false
   }
 
-  async function setPublicDefault(businessId: string): Promise<void> {
+  async function setPublicDefault(businessId: string, slim = true): Promise<void> {
     businessTombstone.value.loading = true
 
     if (!business.value) {
-      await businessStore.init(businessId, true)
+      await businessStore.init(businessId, slim, true)
     }
 
     businessTombstone.value.title = { as: 'h1', text: businessName.value || `[${t('text.unknown')}]` }
