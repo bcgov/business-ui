@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.11.0
+
+### Minor Changes
+
+- [#381](https://github.com/bcgov/business-ui/pull/381) [`c3fdc94`](https://github.com/bcgov/business-ui/commit/c3fdc94397cfaee513043e0e0c86f5312dbbb175) Thanks [@deetz99](https://github.com/deetz99)! - Create getEffectiveDatesColumn util, update getPartyTableColumns to return custom column ordering/selection. Add optional prop to TableParty and ManageParties components to configure what columns are displayed.
+
 ## 0.10.1
 
 ### Patch Changes
