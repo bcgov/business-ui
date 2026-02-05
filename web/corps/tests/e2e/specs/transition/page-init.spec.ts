@@ -43,14 +43,17 @@ async function assertCorrectDirectors(page: Page) {
   const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
   await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
   await expect(firstRow).toContainText('Same as Delivery Address')
+  await expect(firstRow).toContainText('August 16, 2023 to current')
 
   const secondRow = rows.filter({ hasText: 'WALLABY WAY' })
   await expect(secondRow).toContainText('7 Wallaby Way')
   await expect(secondRow).toContainText('Same as Delivery Address')
+  await expect(secondRow).toContainText('August 16, 2023 to current')
 
   const thirdRow = rows.filter({ hasText: 'MIHAI DINU TEST' })
   await expect(thirdRow).toContainText('2-940 Blanshard')
   await expect(thirdRow).toContainText('Same as Delivery Address')
+  await expect(thirdRow).toContainText('July 12, 2023 to current')
 }
 
 async function assertDocumentDelivery(page: Page) {

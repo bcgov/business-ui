@@ -13,3 +13,5 @@ export type TableBusinessColumn<T> = TableColumn<TableBusinessState<T>>
 export type TableBusinessColumnMeta<T> = TableColumn<TableBusinessState<T>>['meta']
 
 export type TableColumnMetaOption = 'default' | 'first' | 'last'
+
+export type TablePartyColumnName = 'name' | 'delivery' | 'mailing' | 'effectiveDates' | 'actions'

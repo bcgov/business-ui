@@ -40,6 +40,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
         :edit-label="$t('label.editDirector')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
+        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
       />
     </section>
 

@@ -11,6 +11,7 @@ const {
   roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  columnsToDisplay?: TablePartyColumnName[]
 }>()
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
@@ -103,6 +104,7 @@ function clearAllAlerts() {
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
       :prevent-actions="!!activeParty"
+      :columns="columnsToDisplay"
       @init-edit="initEditParty"
       @remove="removeParty"
       @undo="undoParty"
