@@ -1,5 +1,34 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.10.0
+
+### Minor Changes
+
+- [#371](https://github.com/bcgov/business-ui/pull/371) [`592c3eb`](https://github.com/bcgov/business-ui/commit/592c3eb31bab3ec0c3c08ed9c66205ff3d54281e) Thanks [@deetz99](https://github.com/deetz99)! - Update useFilingPageWatcher to allow multiple step configuration passed to button control.
+
+- [#366](https://github.com/bcgov/business-ui/pull/366) [`ab8c9a1`](https://github.com/bcgov/business-ui/commit/ab8c9a1bf8281437963217f5c0ec7230649df324) Thanks [@deetz99](https://github.com/deetz99)! - useFilingAlerts and useFilingTaskGuards composables to enhance UX
+
+- [#360](https://github.com/bcgov/business-ui/pull/360) [`16c3efd`](https://github.com/bcgov/business-ui/commit/16c3efd7e44787bcf03e3d45faabadc2defaee63) Thanks [@deetz99](https://github.com/deetz99)! - Refactor composables/stores to use new business service.
+
+- [#380](https://github.com/bcgov/business-ui/pull/380) [`0be66c2`](https://github.com/bcgov/business-ui/commit/0be66c227b7f9d922a04586d73da88ac89e308fe) Thanks [@deetz99](https://github.com/deetz99)! - Remove ModalError component and getErrorStatus util that are now implemented in connect-base
+
+- [#375](https://github.com/bcgov/business-ui/pull/375) [`d024d41`](https://github.com/bcgov/business-ui/commit/d024d416aaf7e98d50042f55c2dcf0b22fb336d6) Thanks [@deetz99](https://github.com/deetz99)! - FormPreExistingCompanyProvisions form section component.
+
+- [#373](https://github.com/bcgov/business-ui/pull/373) [`fdef260`](https://github.com/bcgov/business-ui/commit/fdef260cb2c173e156fe97526e3e99a40831e9f5) Thanks [@deetz99](https://github.com/deetz99)! - Add optional officeTypes param to useBusinessAddresses().getBusinessAddresses() to filter office types from api response.
+
+- [#369](https://github.com/bcgov/business-ui/pull/369) [`2bf0256`](https://github.com/bcgov/business-ui/commit/2bf02568cb4367d3e4a85f91093a17c24f044b03) Thanks [@deetz99](https://github.com/deetz99)! - ManageOffices components, composable and zod schema
+
+- [#376](https://github.com/bcgov/business-ui/pull/376) [`bdd55a9`](https://github.com/bcgov/business-ui/commit/bdd55a9954c84b8bfc0e3ce3d9e068d1a53e75dc) Thanks [@deetz99](https://github.com/deetz99)! - - FormDocumentDelivery component and zod schema.
+  - Augment ComponentCustomProperties in new i18n declaration file to fix TS warnings in component template sections
+
+### Patch Changes
+
+- [#379](https://github.com/bcgov/business-ui/pull/379) [`0a0b1f4`](https://github.com/bcgov/business-ui/commit/0a0b1f44d1c9090d0fd4b7ab67b9bff95b88ac6c) Thanks [@kialj876](https://github.com/kialj876)! - Added support for public business response information, updated dissolution alert messaging
+
+- [#361](https://github.com/bcgov/business-ui/pull/361) [`6720e1e`](https://github.com/bcgov/business-ui/commit/6720e1ebae2790496766abcbc047011c4c290090) Thanks [@kialj876](https://github.com/kialj876)! - postFiling - add optional custom headers
+
+- [#372](https://github.com/bcgov/business-ui/pull/372) [`b26da63`](https://github.com/bcgov/business-ui/commit/b26da639b0541fb60f4366a94ba91727a61afceb) Thanks [@kialj876](https://github.com/kialj876)! - Update business warning/alerts pieces to reflect new api data
+
 ## 0.9.0
 
 ### Minor Changes
