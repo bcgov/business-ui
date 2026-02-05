@@ -106,6 +106,23 @@ const componentExamples: DropdownMenuItem[] = [
   {
     label: 'FormPreExistingCompanyRevisions',
     to: localePath('/examples/components/Form/PreExistingCompanyProvisions')
+  },
+  {
+    label: 'Table Examples',
+    children: [
+      {
+        label: 'TableBusiness',
+        to: localePath('/examples/components/Table/Business')
+      },
+      {
+        label: 'TableParty',
+        to: localePath('/examples/components/Table/Party')
+      },
+      {
+        label: 'TableShareStructure',
+        to: localePath('/examples/components/Table/ShareStructure')
+      }
+    ]
   }
 ]
 
