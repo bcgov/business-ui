@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export function getShareSeriesSchema() {
   return z.object({
+    actions: z.array(z.enum(ActionType)).default(() => []),
     name: z.string(),
     priority: z.number(),
     maxNumberOfShares: z.number().nullable(),

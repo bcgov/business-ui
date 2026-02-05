@@ -24,7 +24,7 @@ function initEditFn(row: TableBusinessRow<ShareClassSchema>) {
 const data: TableBusinessState<ShareClassSchema>[] = [
   {
     new: {
-      actions: [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
+      actions: [ActionType.ADDED],
       name: 'Share Class 1',
       priority: 1,
       maxNumberOfShares: 10,
@@ -36,6 +36,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       uuid: crypto.randomUUID(),
       series: [
         {
+          actions: [ActionType.ADDED],
           name: 'Class 1 Series 1',
           priority: 1,
           maxNumberOfShares: 5,
@@ -44,6 +45,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           uuid: crypto.randomUUID()
         },
         {
+          actions: [ActionType.ADDED],
           name: 'Class 1 Series 2',
           priority: 2,
           maxNumberOfShares: 5,
@@ -66,6 +68,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       uuid: crypto.randomUUID(),
       series: [
         {
+          actions: [],
           name: 'Class 1 Series 1',
           priority: 1,
           maxNumberOfShares: 5,
@@ -74,6 +77,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           uuid: crypto.randomUUID()
         },
         {
+          actions: [],
           name: 'Class 1 Series 2',
           priority: 2,
           maxNumberOfShares: 5,
@@ -82,6 +86,53 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           uuid: crypto.randomUUID()
         }
       ]
+    }
+  },
+  {
+    new: {
+      actions: [ActionType.ADDED],
+      name: 'Share Class 2',
+      priority: 1,
+      maxNumberOfShares: null,
+      parValue: 2,
+      currency: 'CAD',
+      hasMaximumShares: true,
+      hasParValue: true,
+      hasRightsOrRestrictions: true,
+      uuid: crypto.randomUUID(),
+      series: [
+        // {
+        //   actions: [ActionType.ADDED],
+        //   name: 'Class 2 Series 1',
+        //   priority: 1,
+        //   maxNumberOfShares: 5,
+        //   hasMaximumShares: true,
+        //   hasRightsOrRestrictions: true,
+        //   uuid: crypto.randomUUID()
+        // },
+        // {
+        //   actions: [ActionType.ADDED],
+        //   name: 'Class 2 Series 2',
+        //   priority: 2,
+        //   maxNumberOfShares: 5,
+        //   hasMaximumShares: true,
+        //   hasRightsOrRestrictions: true,
+        //   uuid: crypto.randomUUID()
+        // }
+      ]
+    },
+    old: {
+      actions: [ActionType.ADDED],
+      name: 'Share Class 1',
+      priority: 1,
+      maxNumberOfShares: 10,
+      parValue: 2,
+      currency: 'CAD',
+      hasMaximumShares: true,
+      hasParValue: true,
+      hasRightsOrRestrictions: true,
+      uuid: crypto.randomUUID(),
+      series: []
     }
   }
 ]

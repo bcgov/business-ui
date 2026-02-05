@@ -2,15 +2,21 @@ export function getShareStructureTableColumns<
   T extends ShareClassSchema = ShareClassSchema
 >(): TableBusinessColumn<T>[] {
   const nameColumn = getShareClassOrSeriesNameColumn<T>()
-  // const typeColumn = getOfficeTypeColumn<T>()
-  // const deliveryColumn = getDeliveryAddressColumn<T>()
-  // const mailingColumn = getMailingAddressColumn<T>()
+  const maxColumn = getMaxNumberOfSharesColumn<T>()
+  const parValueColumn = getParValueColumn<T>()
+  const currencyColumn = getCurrencyColumn<T>()
+  const rorColumn = getSpecialRightsOrRestrictionsColumn<T>()
   // const actionsColumn = getActionsColumn<T>()
 
   const shareStructureColumns: TableBusinessColumn<T>[] = [
-    nameColumn
-    // deliveryColumn,
-    // mailingColumn,
+    {
+      accessorKey: 'priority'
+    },
+    nameColumn,
+    maxColumn,
+    parValueColumn,
+    currencyColumn,
+    rorColumn
     // actionsColumn
   ]
 
