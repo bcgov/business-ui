@@ -1,15 +1,13 @@
-export function getPartyTableColumns<T extends PartySchema = PartySchema>(): TableBusinessColumn<T>[] {
-  const nameColumn = getNameColumn<T>()
-  const deliveryColumn = getDeliveryAddressColumn<T>()
-  const mailingColumn = getMailingAddressColumn<T>()
-  const actionsColumn = getActionsColumn<T>()
+export function getPartyTableColumns<T extends PartySchema = PartySchema>(
+  columns: TablePartyColumnName[] = ['name', 'delivery', 'mailing', 'actions']
+): TableBusinessColumn<T>[] {
+  const columnMap: Record<TablePartyColumnName, TableBusinessColumn<T>> = {
+    name: getNameColumn<T>(),
+    delivery: getDeliveryAddressColumn<T>(),
+    mailing: getMailingAddressColumn<T>(),
+    effectiveDates: getEffectiveDatesColumn<T>(),
+    actions: getActionsColumn<T>()
+  }
 
-  const partyColumns: TableBusinessColumn<T>[] = [
-    nameColumn,
-    deliveryColumn,
-    mailingColumn,
-    actionsColumn
-  ]
-
-  return partyColumns
+  return columns.map(c => columnMap[c])
 }
