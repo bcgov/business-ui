@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.10.1
+
+### Patch Changes
+
+- [#382](https://github.com/bcgov/business-ui/pull/382) [`d9d74bd`](https://github.com/bcgov/business-ui/commit/d9d74bd16e6a99609f946396589535333ce4f249) Thanks [@kialj876](https://github.com/kialj876)! - Update to business tombstone composable - small tweak for setPublicDefault
+
 ## 0.10.0
 
 ### Minor Changes
