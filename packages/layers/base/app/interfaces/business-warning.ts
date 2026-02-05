@@ -2,7 +2,7 @@ export interface BusinessWarning {
   code: string
   message: string
   warningType: string
-  filing: string
+  filing?: string
   data?: {
     amalgamationDate?: FormattedDateTimeGmt
     stage_1_date?: ApiDateTimeUtc // the date the business entered stage 1

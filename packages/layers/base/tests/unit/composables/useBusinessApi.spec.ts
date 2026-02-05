@@ -99,6 +99,15 @@ describe('useBusinessApi', () => {
 
         expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}`, { query: { slim: true } })
       })
+
+      test('should fetch public business data when specified', async () => {
+        const businessId = 'BC123'
+        mockBusinessApi.mockResolvedValue({ business: { legalName: 'Public Business data' } })
+
+        await businessApi.getBusiness(businessId, false, true)
+
+        expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/public`, { query: undefined })
+      })
     })
 
     describe('getParties', () => {

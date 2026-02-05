@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 
+import type { BusinessWarning } from '#business/app/interfaces/business-warning'
 import { FilingType } from '#business/app/enums/filing-type'
 import { isTempRegIdentifier } from '#business/app/utils/business-string-helpers'
 import {
@@ -26,7 +27,8 @@ export const mockApiCallsForSetAccount = async (
 
 export const mockApiCallsForAlerts = async (
   page: Page,
-  identifier = 'BC1234567'
+  identifier = 'BC1234567',
+  warnings: BusinessWarning[] = []
 ) => {
   page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
@@ -37,7 +39,7 @@ export const mockApiCallsForAlerts = async (
         { key: 'adminFreeze', value: true },
         { key: 'goodStanding', value: false },
         { key: 'inDissolution', value: true },
-        { key: 'warnings', value: [] }
+        { key: 'warnings', value: warnings }
       ],
       false) })
   })

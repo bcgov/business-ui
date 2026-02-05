@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 export const useBusinessStore = defineStore('business-store', () => {
   const service = useBusinessService()
 
-  const business = shallowRef<BusinessDataSlim | BusinessData | undefined>(undefined)
+  const business = shallowRef<BusinessDataPublic | BusinessData | undefined>(undefined)
   const businessContact = shallowRef<ContactPoint | undefined>(undefined)
   const businessFolio = ref('')
 
@@ -26,26 +26,21 @@ export const useBusinessStore = defineStore('business-store', () => {
     return business.value.legalName
   })
 
+  const { t } = useNuxtApp().$i18n
+  const unknownText = `[${t('text.unknown')}]`
+
   const businessAlerts = computed(() => {
     const allWarnings = business.value?.warnings || []
-    const alertList = []
+    const alertList: BusinessAlertItem[] = []
 
     if (business.value?.adminFreeze) {
-      alertList.push({ type: BusinessAlert.FROZEN })
-    }
-
-    // NOTES: The API will only return 1 good standing warning even if there are multiple reasons for it
-    const goodStandingWarning = allWarnings.find(item => item.warningType === ApiWarningType.NOT_IN_GOOD_STANDING)
-    if (business.value?.goodStanding === false || goodStandingWarning) {
-      // The business goodStanding flag is false and/OR it has a good standing warning
       alertList.push({
-        // Set alert type to TRANSITIONREQUIRED if there is a warning and it has the TRANSITION_NOT_FILED warning code
-        type: [
-          ApiWarningCode.TRANSITION_NOT_FILED,
-          ApiWarningCode.TRANSITION_NOT_FILED_AFTER_12_MONTH_RESTORATION
-        ].includes(goodStandingWarning?.code as ApiWarningCode)
-          ? BusinessAlert.TRANSITIONREQUIRED
-          : BusinessAlert.GOODSTANDING
+        alertType: BusinessAlert.FROZEN,
+        contentExtra: [{ path: 'default' }],
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.FROZEN}.label`),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
       })
     }
 
@@ -56,11 +51,44 @@ export const useBusinessStore = defineStore('business-store', () => {
       const warning = allWarnings.find(item =>
         item.warningType?.includes(ApiWarningType.INVOLUNTARY_DISSOLUTION)
       )
-      const targetDissolutionDate = toDate(warning?.data?.targetDissolutionDate || '')
-      const days = targetDissolutionDate
-        ? daysBetween(new Date(), targetDissolutionDate)
-        : undefined
-      alertList.push({ type: BusinessAlert.DISSOLUTION, days })
+      const dissolutionDate = toDate(warning?.data?.targetDissolutionDate || '')
+      const date = dissolutionDate ? toFormattedDateStr(dissolutionDate, DateTime.DATE_FULL) : undefined
+
+      const maxUserDelaysReached = (warning?.data?.userDelays || 0) > 1
+      const contentExtra = [{
+        path: maxUserDelaysReached ? 'maxDelaysReached' : 'default',
+        link: { path: 'emailLink', to: 'emailTo' }
+      }]
+      alertList.push({
+        alertType: BusinessAlert.DISSOLUTION,
+        contentExtra,
+        date: date || unknownText,
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.DISSOLUTION}.label`),
+        showContact: false,
+        ui: { leadingIcon: 'text-error' }
+      })
+    }
+
+    // NOTES: The API will only return 1 good standing warning even if there are multiple reasons for it
+    const goodStandingWarning = allWarnings.find(item => item.warningType === ApiWarningType.NOT_IN_GOOD_STANDING)
+    if (business.value?.goodStanding === false || goodStandingWarning) {
+      // The business goodStanding flag is false and/OR it has a good standing warning
+      const alertType = [
+        ApiWarningCode.TRANSITION_NOT_FILED,
+        ApiWarningCode.TRANSITION_NOT_FILED_AFTER_12_MONTH_RESTORATION
+      ].includes(goodStandingWarning?.code as ApiWarningCode)
+        // Set alert type to TRANSITIONREQUIRED if it has one of the transition warning codes
+        ? BusinessAlert.TRANSITIONREQUIRED
+        : BusinessAlert.GOODSTANDING
+      alertList.push({
+        alertType,
+        contentExtra: [{ path: 'default' }],
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${alertType}.label`),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
+      })
     }
 
     const amalgWarning = allWarnings.find(
@@ -69,25 +97,37 @@ export const useBusinessStore = defineStore('business-store', () => {
       const amalDate = amalgWarning.data?.amalgamationDate
         ? new Date(amalgWarning.data.amalgamationDate)
         : undefined
+      const displayDate = amalDate ? toFormattedDateStr(amalDate, DateTime.DATE_FULL) : unknownText
       alertList.push({
-        type: BusinessAlert.AMALGAMATION,
-        date: amalDate ? toFormattedDateStr(amalDate, DateTime.DATE_FULL) : undefined
+        alertType: BusinessAlert.AMALGAMATION,
+        contentExtra: [],
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.AMALGAMATION}.label`, { date: displayDate }),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
       })
     }
 
     if (allWarnings.some(item => item.warningType === ApiWarningType.MISSING_REQUIRED_BUSINESS_INFO)) {
-      alertList.push({ type: BusinessAlert.MISSINGINFO })
+      alertList.push({
+        alertType: BusinessAlert.MISSINGINFO,
+        contentExtra: [{ path: 'default' }],
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.MISSINGINFO}.label`),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
+      })
     }
 
     return alertList
   })
 
-  async function init(identifier: string, slim = false, force = false, includeContact = false) {
+  async function init(identifier: string, slim = false, publicData = false, force = false, includeContact = false) {
     const [
       businessResp,
       contactResp
     ] = await Promise.all([
-      service.getBusiness(identifier, slim, force),
+      service.getBusiness(identifier, slim, publicData, force),
       includeContact ? service.getAuthInfo(identifier, force) : undefined
     ])
 

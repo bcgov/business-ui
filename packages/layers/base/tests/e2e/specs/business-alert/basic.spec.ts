@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
-import { mockApiCallsForAlerts } from '../../mocks/mock-helpers'
+import { mockApiCallsForAlerts } from '#test-mocks/mock-helpers'
 
-test.describe('Business Alerts Tests', () => {
+test.describe('Business Alerts Tests - Basic', () => {
   test.beforeEach(async ({ page }) => {
     const identifier = 'BC1234567'
     await mockApiCallsForAlerts(page, identifier)

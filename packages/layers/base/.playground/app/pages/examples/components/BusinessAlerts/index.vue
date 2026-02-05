@@ -26,6 +26,7 @@ const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstra
 
 /** good dev examples:
  * BC0870681 (not in good standing, process of being dissolved)
+ * BC0688952 (not in good standing, process of being dissolved - user delays maxed)
 */
 const identifier = ref('')
 
@@ -75,7 +76,7 @@ const loadAlerts = async () => {
       </div>
       <ConnectTransitionCollapse>
         <div v-if="!loading && (businessIdentifier || bootstrapIdentifier)" class="bg-shade p-5">
-          <BusinessAlerts v-if="businessAlerts" :alert-info="businessAlerts" />
+          <BusinessAlerts v-if="businessAlerts" :alerts="businessAlerts" />
           <p v-else>
             No alerts to show for this business.
           </p>

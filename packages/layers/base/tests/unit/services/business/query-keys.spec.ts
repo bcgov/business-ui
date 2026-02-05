@@ -44,7 +44,7 @@ describe('useBusinessQueryKeys', () => {
       ['addresses', [businessId], ['business', accountId, businessId, 'addresses']],
       ['authInfo', [businessId], ['business', accountId, businessId, 'auth-info']],
       ['authorizedActions', [businessId], ['business', accountId, businessId, 'authorized-actions']],
-      ['business', [businessId, true], ['business', accountId, businessId, 'information', { slim: true }]],
+      ['business', [businessId, true], ['business', accountId, businessId, 'information', { slim: true, publicData: undefined }]],
       ['bootstrapFiling', ['T12345'], ['business', accountId, 'T12345', 'bootstrap-filing']],
       ['document', [businessId, 'http://api/pdf', 'file.pdf'], ['business', accountId, businessId, 'document', { url: 'http://api/pdf', filename: 'file.pdf' }]],
       ['filing', [businessId, 55], ['business', accountId, businessId, 'filing', 55]],
