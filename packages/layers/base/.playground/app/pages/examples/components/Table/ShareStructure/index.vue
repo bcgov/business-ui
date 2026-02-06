@@ -15,16 +15,25 @@ function removeFn(row: TableBusinessRow<ShareClassSchema>) {
 function undoFn(row: TableBusinessRow<ShareClassSchema>) {
   console.info('undo: ', row)
 }
-
 function initEditFn(row: TableBusinessRow<ShareClassSchema>) {
   console.info('init edit: ', row)
   expanded.value = { [row.index]: true }
 }
+function moveRowFn(row: TableBusinessRow<ShareClassSchema>, direction: 'up' | 'down') {
+  console.info(`move row ${direction}: `, row)
+}
+function addSeriesFn(row: TableBusinessRow<ShareClassSchema>) {
+  console.info('add series: ', row)
+}
+
+const shareClass1Id = crypto.randomUUID()
+const class1Series1Id = crypto.randomUUID()
+const class1Series2Id = crypto.randomUUID()
 
 const data: TableBusinessState<ShareClassSchema>[] = [
   {
     new: {
-      actions: [ActionType.ADDED],
+      actions: [],
       name: 'Share Class 1',
       priority: 1,
       maxNumberOfShares: 10,
@@ -33,30 +42,30 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: crypto.randomUUID(),
+      uuid: shareClass1Id,
       series: [
         {
-          actions: [ActionType.ADDED],
+          actions: [],
           name: 'Class 1 Series 1',
           priority: 1,
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: crypto.randomUUID()
+          uuid: class1Series1Id
         },
         {
-          actions: [ActionType.ADDED],
+          actions: [],
           name: 'Class 1 Series 2',
           priority: 2,
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: crypto.randomUUID()
+          uuid: class1Series2Id
         }
       ]
     },
     old: {
-      actions: [ActionType.ADDED],
+      actions: [],
       name: 'Share Class 1',
       priority: 1,
       maxNumberOfShares: 10,
@@ -65,7 +74,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: crypto.randomUUID(),
+      uuid: shareClass1Id,
       series: [
         {
           actions: [],
@@ -74,7 +83,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: crypto.randomUUID()
+          uuid: class1Series1Id
         },
         {
           actions: [],
@@ -83,7 +92,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: crypto.randomUUID()
+          uuid: class1Series2Id
         }
       ]
     }
@@ -92,7 +101,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
     new: {
       actions: [ActionType.ADDED],
       name: 'Share Class 2',
-      priority: 1,
+      priority: 2,
       maxNumberOfShares: null,
       parValue: 2,
       currency: 'CAD',
@@ -138,8 +147,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
 ]
 
 const expanded = ref<Record<string, boolean>>(
-  { 0: true }
-  // Object.fromEntries(data.map(item => [item.new.uuid, true]))
+  // { 0: true }
+  Object.fromEntries(data.map(item => [item.new.uuid, true]))
 )
 </script>
 
@@ -151,6 +160,8 @@ const expanded = ref<Record<string, boolean>>(
       @init-edit="initEditFn"
       @remove="removeFn"
       @undo="undoFn"
+      @move-row="moveRowFn"
+      @add-series="addSeriesFn"
     >
       <template #expanded="{ row }">
         <div class="max-w-sm">

@@ -1,12 +1,16 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
+import type { DropdownMenuItem } from '@nuxt/ui'
+
 const {
   row,
   allowedActions,
-  preventActions
+  preventActions,
+  getCustomDropdownItems
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
 }>()
 
 const emit = defineEmits<{
@@ -78,87 +82,43 @@ const availableActions = computed(() => {
 })
 
 const mainAction = computed(() => availableActions.value[0])
-const dropdownActions = computed(() => availableActions.value.slice(1).map(action => ({
-  label: action.label,
-  icon: action.icon,
-  onSelect: action.click,
-  ui: {
-    item: 'text-primary',
-    itemLeadingIcon: 'text-primary'
+const dropdownActions = computed(() => {
+  const items: DropdownMenuItem[] = []
+
+  if (getCustomDropdownItems) {
+    const customItems = getCustomDropdownItems(row)
+    items.push(...customItems.map(item => ({
+      ui: {
+        item: 'text-primary',
+        itemLeadingIcon: 'text-primary'
+      },
+      ...item,
+      onSelect: (e: Event) => {
+        if (preventActions) {
+          return emit('action-prevented')
+        }
+        return item.onSelect?.(e)
+      }
+    })))
   }
-})))
+
+  const defaultItems = availableActions.value.slice(1).map(action => ({
+    label: action.label,
+    icon: action.icon,
+    onSelect: action.click,
+    ui: {
+      item: 'text-primary',
+      itemLeadingIcon: 'text-primary'
+    }
+  }))
+
+  if (defaultItems.length) {
+    items.push(...defaultItems)
+  }
+
+  return items
+})
 const hasDropdownActions = computed(() => dropdownActions.value.length > 0)
-
-// NOTE: leaving as a reference to prevent actions if an action is currently in progress
-// const preventDropdownCloseAutoFocus = ref(false)
-//
-// function getDropdownActions() {
-//   const ui = {
-//     item: 'text-primary',
-//     itemLeadingIcon: 'text-primary'
-//   }
-
-//   const actions = [
-//     {
-//       label: t('label.remove'),
-//       ui,
-//       icon: 'i-mdi-delete',
-//       onSelect: async () => {
-//         emit('remove')
-//         // emit('table-action')
-//         // const hasActiveForm = await officerStore.checkHasActiveForm('change')
-//         // if (hasActiveForm) {
-//         //   preventDropdownCloseAutoFocus.value = true
-//         //   return
-//         // }
-//         // officerStore.removeOfficer(row)
-//       }
-//     }
-//   ]
-
-//   if (isEdited.value) {
-//     actions.unshift({
-//       label: t('label.change'),
-//       icon: 'i-mdi-pencil',
-//       ui,
-//       onSelect: async () => {
-//         emit('init-edit')
-//         // emit('table-action')
-//         // const hasActiveForm = await officerStore.checkHasActiveForm('change')
-//         // if (hasActiveForm) {
-//         //   preventDropdownCloseAutoFocus.value = true
-//         //   return
-//         // }
-//         // officerStore.initOfficerEdit(row)
-//       }
-//     })
-//   }
-
-//   return actions
-// }
-
-// @click="async () => {
-//     const hasActiveForm = await officerStore.checkHasActiveForm('change')
-//     if (hasActiveForm) {
-//       return
-//     }
-//     if (isRemoved || hasEdits) {
-//       officerStore.undoOfficer(row)
-//     }
-//     else {
-//       officerStore.initOfficerEdit(row)
-//     }
-//     emit('table-action')
-//   }"
-
-// required to prevent refocusing on dropdown trigger
-// when the focus has moved to the form when the user has an unfinished task
-// onCloseAutoFocus: (e: Event) => {
-//   if (preventDropdownCloseAutoFocus) {
-//     e.preventDefault()
-//     preventDropdownCloseAutoFocus = false
-//   }
-// }
 </script>
 
 <template>

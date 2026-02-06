@@ -6,7 +6,7 @@ export function getShareStructureTableColumns<
   const parValueColumn = getParValueColumn<T>()
   const currencyColumn = getCurrencyColumn<T>()
   const rorColumn = getSpecialRightsOrRestrictionsColumn<T>()
-  // const actionsColumn = getActionsColumn<T>()
+  const actionsColumn = getActionsColumn<T>()
 
   const shareStructureColumns: TableBusinessColumn<T>[] = [
     {
@@ -16,8 +16,8 @@ export function getShareStructureTableColumns<
     maxColumn,
     parValueColumn,
     currencyColumn,
-    rorColumn
-    // actionsColumn
+    rorColumn,
+    actionsColumn
   ]
 
   return shareStructureColumns

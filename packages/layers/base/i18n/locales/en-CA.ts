@@ -7,6 +7,7 @@ export default {
   badge: {
     added: 'ADDED',
     addressChanged: 'ADDRESS CHANGED',
+    changed: 'CHANGED',
     emailChanged: 'EMAIL CHANGED',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',
@@ -307,6 +308,7 @@ export default {
   label: {
     actions: 'Actions',
     addDetail: 'Add Detail',
+    addSeries: 'Add Series',
     alerts: 'Alerts',
     alterationComplete: 'Alteration Complete',
     alterationPending: 'Alteration Pending',
@@ -390,6 +392,8 @@ export default {
     middleName: 'MiddleName',
     middleNameOpt: 'Middle Name (Optional)',
     moreActions: 'More Actions',
+    moveDown: 'Move Down',
+    moveUp: 'Move Up',
     myBusinessRegistry: 'My Business Registry',
     name: 'Name',
     next: 'Next',
