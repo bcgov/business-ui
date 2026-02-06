@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { ExpandedState } from '@tanstack/vue-table'
-// NOTE: This is an example of using the TableBusiness component in a 'party' configuration
+
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'TableOffices' }]
 })
 
 type SomeState = {
@@ -13,7 +14,7 @@ type SomeState = {
   }
 }
 
-type TableDataState = SomeState & PartyStateBase
+type TableDataState = SomeState & PartySchema
 
 const partyColumns = getPartyTableColumns<TableDataState>()
 const expanded = ref<ExpandedState | undefined>(undefined)
@@ -35,6 +36,7 @@ function initEditFn(row: TableBusinessRow<TableDataState>) {
 const data: TableBusinessState<TableDataState>[] = [
   {
     new: {
+      id: '',
       someState: {
         item1: '',
         item2: '',
@@ -45,7 +47,8 @@ const data: TableBusinessState<TableDataState>[] = [
         partyType: PartyType.PERSON,
         firstName: 'First New',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {
@@ -70,14 +73,15 @@ const data: TableBusinessState<TableDataState>[] = [
       },
       roles: [
         {
-          roleType: RoleType.LIQUIDATOR,
+          roleType: RoleTypeUi.LIQUIDATOR,
           appointmentDate: '2022-10-10',
           cessationDate: null,
-          roleClass: 'AGENT'
+          roleClass: RoleClass.AGENT
         }
       ]
     },
     old: {
+      id: '',
       someState: {
         item1: '',
         item2: '',
@@ -88,7 +92,8 @@ const data: TableBusinessState<TableDataState>[] = [
         partyType: PartyType.PERSON,
         firstName: 'First',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {
@@ -113,10 +118,10 @@ const data: TableBusinessState<TableDataState>[] = [
       },
       roles: [
         {
-          roleType: RoleType.LIQUIDATOR,
+          roleType: RoleTypeUi.LIQUIDATOR,
           appointmentDate: '2022-10-10',
           cessationDate: null,
-          roleClass: 'AGENT'
+          roleClass: RoleClass.AGENT
         }
       ]
     }

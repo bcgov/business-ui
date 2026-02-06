@@ -135,7 +135,7 @@ const hasDropdownActions = computed(() => dropdownActions.value.length > 0)
         :items="dropdownActions"
         :content="{
           align: 'end',
-          onCloseAutoFocus: (e) => preventActions && e.preventDefault()
+          onCloseAutoFocus: (e: Event) => preventActions && e.preventDefault()
         }"
       >
         <UButton

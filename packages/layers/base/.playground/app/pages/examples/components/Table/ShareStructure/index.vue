@@ -2,7 +2,8 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'TableShareStructure' }]
 })
 
 function removeFn(row: TableBusinessRow<ShareClassSchema>) {
@@ -33,7 +34,7 @@ const class1Series2Id = crypto.randomUUID()
 const data: TableBusinessState<ShareClassSchema>[] = [
   {
     new: {
-      actions: [],
+      actions: [ActionType.CHANGED],
       name: 'Share Class 1',
       priority: 1,
       maxNumberOfShares: 10,

@@ -1,3 +1,4 @@
+import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
 
 export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
@@ -18,10 +19,14 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
       // row.depth === 0 is a top level row (Class)
       // row.depth === 1 is a sub row (Series)
       const isSeries = row.depth === 1
+      const label = row.original.new.name
+      const badges = getTableBadges(row)
 
       return h(
-        'span',
+        TableColumnIdentity,
         {
+          badges,
+          label,
           class: [
             isSeries
               ? [ // apply list styling to series name
@@ -31,8 +36,7 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
               : '',
             cellClass
           ]
-        },
-        row.original.new.name
+        }
       )
     }
   }
