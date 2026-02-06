@@ -34,7 +34,7 @@ const class1Series2Id = crypto.randomUUID()
 const data: TableBusinessState<ShareClassSchema>[] = [
   {
     new: {
-      actions: [ActionType.CHANGED],
+      actions: [ActionType.REMOVED],
       name: 'Share Class 1',
       priority: 1,
       maxNumberOfShares: 10,
@@ -46,7 +46,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       uuid: shareClass1Id,
       series: [
         {
-          actions: [],
+          actions: [ActionType.REMOVED],
           name: 'Class 1 Series 1',
           priority: 1,
           maxNumberOfShares: 5,

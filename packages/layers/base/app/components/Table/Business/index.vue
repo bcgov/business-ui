@@ -62,6 +62,7 @@ const expandedTrClass = computed(() => {
   >
     <template #actions-cell="{ row }">
       <TableColumnActions
+        v-if="row.depth === 0 || !getIsRowRemoved(row.getParentRow())"
         :row
         :allowed-actions="allowedActions"
         :prevent-actions="preventActions"

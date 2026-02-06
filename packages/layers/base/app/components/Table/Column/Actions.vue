@@ -118,7 +118,7 @@ const dropdownActions = computed(() => {
 
   return items
 })
-const hasDropdownActions = computed(() => dropdownActions.value.length > 0)
+const hasDropdownActions = computed(() => dropdownActions.value.length > 0 && !getIsRowRemoved(row))
 </script>
 
 <template>

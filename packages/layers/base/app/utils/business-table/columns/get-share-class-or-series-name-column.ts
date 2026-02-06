@@ -12,15 +12,22 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
     header: t('label.shareClassOrSeriesName'),
     meta,
     cell: ({ row }) => {
-      const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'font-bold min-w-48 max-w-48' // flex flex-col gap-2
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
-
       // row.depth === 0 is a top level row (Class)
       // row.depth === 1 is a sub row (Series)
       const isSeries = row.depth === 1
+
+      // series row styling can change based on parent row removed action
+      const isRowRemoved = getIsRowRemoved(row)
+      const isParentRowRemoved = isSeries && getIsRowRemoved(row.getParentRow()!)
+
+      const defaultClass = 'font-bold min-w-48 max-w-48' // flex flex-col gap-2
+      // apply opacity whether the current or parent row is removed
+      const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
+
+      // if the parent row is removed, show no badges on the series
+      const badges = isParentRowRemoved ? [] : getTableBadges(row)
+
       const label = row.original.new.name
-      const badges = getTableBadges(row)
 
       return h(
         TableColumnIdentity,
@@ -28,14 +35,12 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
           badges,
           label,
           class: [
-            isSeries
-              ? [ // apply list styling to series name
-                'flex items-center gap-2 ml-4',
-                'before:size-1 before:bg-black before:rounded-full'
-              ]
-              : '',
+            isSeries ? 'ml-6' : '',
             cellClass
-          ]
+          ],
+          labelClass: isSeries // apply list styling to series name
+            ? 'flex flex-row items-center -ml-3 gap-2 before:size-1 before:bg-black before:rounded-full'
+            : ''
         }
       )
     }

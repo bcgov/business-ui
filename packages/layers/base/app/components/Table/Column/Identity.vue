@@ -4,18 +4,20 @@ import type { BadgeProps } from '@nuxt/ui'
 defineProps<{
   label?: string
   badges: BadgeProps[]
+  labelClass?: string
 }>()
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col gap-1">
     <slot>
-      <span v-if="label">{{ label }}</span>
+      <div v-if="label" :class="labelClass">
+        {{ label }}
+      </div>
     </slot>
     <ul
       v-if="badges.length > 0"
       class="flex flex-col gap-2"
-      :class="label ? 'mt-1' : ''"
     >
       <UBadge
         v-for="badge in badges"
