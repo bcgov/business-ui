@@ -9,7 +9,8 @@ export function getTableBadges<T extends { actions: ActionType[] }>(row: TableBu
     [ActionType.ADDRESS_CHANGED]: { label: t('badge.addressChanged') },
     [ActionType.EMAIL_CHANGED]: { label: t('badge.emailChanged') },
     [ActionType.NAME_CHANGED]: { label: t('badge.nameChanged') },
-    [ActionType.ROLES_CHANGED]: { label: t('badge.rolesChanged') }
+    [ActionType.ROLES_CHANGED]: { label: t('badge.rolesChanged') },
+    [ActionType.CHANGED]: { label: t('badge.changed') }
   }
 
   // get unique actions

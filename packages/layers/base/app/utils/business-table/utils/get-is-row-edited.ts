@@ -1,10 +1,7 @@
-import { isEqual } from 'es-toolkit'
-
 /**
-  * Returns true if the given row's old state is not undefined and the old and new state are different
+  * Returns true if the given row's actions have any action other than 'ADDED'
 */
-export function getIsRowEdited<T = unknown>(row: TableBusinessRow<T>): boolean {
-  const oldVal = row.original.old
-  const newVal = row.original.new
-  return !!(oldVal && !isEqual(oldVal, newVal))
+export function getIsRowEdited<T extends { actions: ActionType[] }>(row: TableBusinessRow<T>): boolean {
+  const actions = row.original.new.actions
+  return actions.length > 0 && !actions.includes(ActionType.ADDED)
 }

@@ -6,7 +6,7 @@ describe('getIsRowRemoved', () => {
     const row = {
       original: {
         new: {
-          actions: [ActionType.EDITED, ActionType.REMOVED]
+          actions: [ActionType.CHANGED, ActionType.REMOVED]
         }
       }
     } as any

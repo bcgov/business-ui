@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T extends { actions: ActionType[] }">
 import type { ExpandedState } from '@tanstack/vue-table'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 const props = defineProps<{
   data?: TableBusinessState<T>[]
@@ -8,6 +9,7 @@ const props = defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
 }>()
 
 defineEmits<{
@@ -60,9 +62,11 @@ const expandedTrClass = computed(() => {
   >
     <template #actions-cell="{ row }">
       <TableColumnActions
+        v-if="row.depth === 0 || !getIsRowRemoved(row.getParentRow())"
         :row
         :allowed-actions="allowedActions"
         :prevent-actions="preventActions"
+        :get-custom-dropdown-items="getCustomDropdownItems"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"

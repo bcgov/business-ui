@@ -2,36 +2,39 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'TableParty' }]
 })
 
 const expanded = ref<ExpandedState | undefined>(undefined)
 
-function removeFn(row: TableBusinessRow<PartyStateBase>) {
+function removeFn(row: TableBusinessRow<PartySchema>) {
   console.info('remove: ', row)
   // row.original.new.actions - typed
   // row.original.new.roles - typed
   // row.original.new.address - typed
   // row.original.new.name - typed
 }
-function undoFn(row: TableBusinessRow<PartyStateBase>) {
+function undoFn(row: TableBusinessRow<PartySchema>) {
   console.info('undo: ', row)
 }
 
-function initEditFn(row: TableBusinessRow<PartyStateBase>) {
+function initEditFn(row: TableBusinessRow<PartySchema>) {
   console.info('init edit: ', row)
   expanded.value = { [row.index]: true }
 }
 
-const data: TableBusinessState<PartyStateBase>[] = [
+const data: TableBusinessState<PartySchema>[] = [
   {
     new: {
+      id: '',
       actions: [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
       name: {
         partyType: PartyType.PERSON,
         firstName: 'First New',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {
@@ -56,20 +59,22 @@ const data: TableBusinessState<PartyStateBase>[] = [
       },
       roles: [
         {
-          roleType: RoleType.LIQUIDATOR,
+          roleType: RoleTypeUi.LIQUIDATOR,
           appointmentDate: '2022-10-10',
           cessationDate: null,
-          roleClass: 'AGENT'
+          roleClass: RoleClass.AGENT
         }
       ]
     },
     old: {
+      id: '',
       actions: [ActionType.ADDED],
       name: {
         partyType: PartyType.PERSON,
         firstName: 'First',
         middleName: 'Middle',
-        lastName: 'Last'
+        lastName: 'Last',
+        businessName: ''
       },
       address: {
         deliveryAddress: {
@@ -94,10 +99,10 @@ const data: TableBusinessState<PartyStateBase>[] = [
       },
       roles: [
         {
-          roleType: RoleType.LIQUIDATOR,
+          roleType: RoleTypeUi.LIQUIDATOR,
           appointmentDate: '2022-10-10',
           cessationDate: null,
-          roleClass: 'AGENT'
+          roleClass: RoleClass.AGENT
         }
       ]
     }
