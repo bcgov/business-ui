@@ -21,6 +21,7 @@ export function getParValueColumn<T extends ShareClassSchema>(
       const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 
       const parValue = row.original.new.parValue
+      // TODO: add currency symbol, need to change depending on the currency selected? pounds, euros, etc ??
       const displayText = parValue
         ? parValue
         : t('label.noParValue')

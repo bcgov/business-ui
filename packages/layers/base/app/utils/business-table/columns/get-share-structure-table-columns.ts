@@ -10,7 +10,7 @@ export function getShareStructureTableColumns<
 
   const shareStructureColumns: TableBusinessColumn<T>[] = [
     {
-      accessorKey: 'priority'
+      accessorKey: 'priority' // must include here to use the table ordering
     },
     nameColumn,
     maxColumn,
