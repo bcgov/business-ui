@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ExpandedState } from '@tanstack/vue-table'
+// import type { ExpandedState } from '@tanstack/vue-table'
 
 definePageMeta({
   layout: 'connect-auth',
@@ -166,7 +166,7 @@ const expanded = ref<Record<string, boolean>>(
     >
       <template #expanded="{ row }">
         <div class="max-w-sm">
-          <!-- {{ row }} -->
+          {{ row }}
         </div>
       </template>
     </TableShareStructure>
