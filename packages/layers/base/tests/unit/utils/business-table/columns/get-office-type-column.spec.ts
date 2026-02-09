@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { TableColumnOfficeType } from '#components'
+import { TableColumnIdentity } from '#components'
 import { mockGetColumnMeta, mockGetIsRowRemoved, mockGetTableBadges } from '../../../mocks/business-table-utils'
 
 describe('getOfficeTypeColumn', () => {
@@ -55,8 +55,8 @@ describe('getOfficeTypeColumn', () => {
     expect(mockGetTableBadges).toHaveBeenCalledWith(row)
     expect(mockGetIsRowRemoved).toHaveBeenCalledWith(row)
 
-    expect(cell.type).toBe(TableColumnOfficeType)
-    expect(cell.props.type).toBe('registeredOffice')
+    expect(cell.type).toBe(TableColumnIdentity)
+    expect(cell.props.label).toBe('Registered Office')
     expect(cell.props.badges).toEqual(mockBadges)
     expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
   })

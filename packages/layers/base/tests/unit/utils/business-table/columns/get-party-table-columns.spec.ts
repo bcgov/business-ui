@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
-vi.mock('~/utils/business-table/columns/get-name-column', () => ({
-  getNameColumn: vi.fn(() => ({ id: 'name' }))
+vi.mock('~/utils/business-table/columns/get-party-name-column', () => ({
+  getPartyNameColumn: vi.fn(() => ({ id: 'name' }))
 }))
 
 vi.mock('~/utils/business-table/columns/get-delivery-address-column', () => ({
@@ -28,7 +28,7 @@ describe('getPartyTableColumns', () => {
   it('should call all four get column utils by default', () => {
     getPartyTableColumns()
 
-    expect(getNameColumn).toHaveBeenCalledOnce()
+    expect(getPartyNameColumn).toHaveBeenCalledOnce()
     expect(getDeliveryAddressColumn).toHaveBeenCalledOnce()
     expect(getMailingAddressColumn).toHaveBeenCalledOnce()
     expect(getActionsColumn).toHaveBeenCalledOnce()

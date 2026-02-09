@@ -2,23 +2,53 @@
 import { describe, it, expect } from 'vitest'
 
 describe('getIsRowEdited', () => {
-  it('should return false if row.original.old is undefined', () => {
-    const row = { original: { new: { name: 'New' } }, old: undefined } as any
-    expect(getIsRowEdited(row)).toBe(false)
-  })
+  it('should return true for all ActionTypes other than added', () => {
+    const allNonAddedActions = Object.values(ActionType).filter(a => a !== ActionType.ADDED)
+    const row = {
+      original: {
+        new: {
+          actions: allNonAddedActions
+        }
+      }
+    } as any
 
-  it('should return false if row.original.old is missing', () => {
-    const row = { original: { new: { name: 'New' } } } as any
-    expect(getIsRowEdited(row)).toBe(false)
-  })
-
-  it('should return true if old state exists and new/old state are different', () => {
-    const row = { original: { new: { name: 'Alison' }, old: { name: 'Alice' } } } as any
     expect(getIsRowEdited(row)).toBe(true)
   })
 
-  it('should return false if old state exists and new/old state is the same', () => {
-    const row = { original: { new: { name: 'Alice' }, old: { name: 'Alice' } } } as any
+  it('should return false when all ActionTypes`s are included', () => { // includes ADDED
+    const allActions = Object.values(ActionType)
+    const row = {
+      original: {
+        new: {
+          actions: allActions
+        }
+      }
+    } as any
+
+    expect(getIsRowEdited(row)).toBe(false)
+  })
+
+  it('should return false for all ActionType.ADDED', () => {
+    const row = {
+      original: {
+        new: {
+          actions: [ActionType.ADDED]
+        }
+      }
+    } as any
+
+    expect(getIsRowEdited(row)).toBe(false)
+  })
+
+  it('should return false if actions is empty', () => {
+    const row = {
+      original: {
+        new: {
+          actions: []
+        }
+      }
+    } as any
+
     expect(getIsRowEdited(row)).toBe(false)
   })
 })
