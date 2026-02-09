@@ -2,7 +2,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const { data } = defineProps<{
+const props = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
@@ -18,12 +18,24 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const shareStructureColumns = getShareStructureTableColumns<T>()
-const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
+const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true, default: {} })
+
+watch(() => props.data, (newData) => {
+  if (!newData) {
+    return
+  }
+
+  const allParentIds = Object.fromEntries(
+    newData.map(item => [item.new.id, true])
+  )
+
+  expanded.value = { ...allParentIds, ...(expanded.value as object ?? {}) }
+}, { immediate: true })
 
 function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down') {
   const isShareClass = row.depth === 0
   const list = isShareClass
-    ? data?.map(d => d.new)
+    ? props.data?.map(d => d.new)
     : row.getParentRow()?.original.new.series
 
   if (!list || list.length <= 1) {
@@ -81,16 +93,16 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :get-custom-dropdown-items="getCustomDropdownItems"
     :sorting="[{ id: 'priority', desc: false }]"
     :column-visibility="{ priority: false }"
-    :get-row-id="(row: TableBusinessState<T>) => row.new.uuid"
+    :get-row-id="(row: TableBusinessState<T>) => row.new.id"
     :get-sub-rows="(row: TableBusinessState<T>) => {
       const newSeries = row.new.series || []
       const oldSeries = row.old?.series || []
+
       return newSeries.map(s => ({
         new: s,
-        old: oldSeries.find(os => os.uuid === s.uuid) ?? undefined
-      })) as unknown as TableBusinessState<T>[]
-    }
-    "
+        old: oldSeries.find(os => os.id === s.id)
+      }))
+    }"
     @action-prevented="() => console.log('action prevented')"
   >
     <template #expanded="{ row }">

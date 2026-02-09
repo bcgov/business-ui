@@ -43,7 +43,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: shareClass1Id,
+      id: shareClass1Id,
       series: [
         {
           actions: [ActionType.REMOVED],
@@ -52,7 +52,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: class1Series1Id
+          id: class1Series1Id
         },
         {
           actions: [],
@@ -61,7 +61,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: class1Series2Id
+          id: class1Series2Id
         }
       ]
     },
@@ -75,7 +75,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: shareClass1Id,
+      id: shareClass1Id,
       series: [
         {
           actions: [],
@@ -84,7 +84,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: class1Series1Id
+          id: class1Series1Id
         },
         {
           actions: [],
@@ -93,7 +93,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          uuid: class1Series2Id
+          id: class1Series2Id
         }
       ]
     }
@@ -109,7 +109,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: crypto.randomUUID(),
+      id: crypto.randomUUID(),
       series: [
         // {
         //   actions: [ActionType.ADDED],
@@ -141,7 +141,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasMaximumShares: true,
       hasParValue: true,
       hasRightsOrRestrictions: true,
-      uuid: crypto.randomUUID(),
+      id: crypto.randomUUID(),
       series: []
     }
   }
@@ -149,8 +149,14 @@ const data: TableBusinessState<ShareClassSchema>[] = [
 
 const expanded = ref<Record<string, boolean>>(
   // { 0: true }
-  Object.fromEntries(data.map(item => [item.new.uuid, true]))
+  Object.fromEntries(data.map(item => [item.new.id, true]))
 )
+
+// onMounted(async () => {
+//   const { $businessApi } = useNuxtApp()
+//   const res = await $businessApi('/businesses/BC1480044/share-classes').catch(() => {})
+//   console.log(res)
+// })
 </script>
 
 <template>

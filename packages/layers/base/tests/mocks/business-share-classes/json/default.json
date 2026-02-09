@@ -1,0 +1,146 @@
+{
+    "shareClasses": [
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": false,
+            "hasRightsOrRestrictions": true,
+            "id": 469497,
+            "maxNumberOfShares": null,
+            "name": "Class A Voting Common Shares",
+            "parValue": null,
+            "priority": 1,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": false,
+            "hasRightsOrRestrictions": true,
+            "id": 469499,
+            "maxNumberOfShares": null,
+            "name": "Class B Voting Common Shares",
+            "parValue": null,
+            "priority": 2,
+            "series": [
+              {
+                "name": "Class B Series 1",
+                "priority": 1,
+                "maxNumberOfShares": null,
+                "hasMaximumShares": false,
+                "hasRightsOrRestrictions": false,
+                "id": 948375
+              },
+              {
+                "name": "Class B Series 2",
+                "priority": 2,
+                "maxNumberOfShares": null,
+                "hasMaximumShares": false,
+                "hasRightsOrRestrictions": false,
+                "id": 758463
+              }
+            ]
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": false,
+            "hasRightsOrRestrictions": true,
+            "id": 469501,
+            "maxNumberOfShares": null,
+            "name": "Class C Non-Voting Common Shares",
+            "parValue": null,
+            "priority": 3,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 469503,
+            "maxNumberOfShares": null,
+            "name": "Class D Voting Common Shares",
+            "parValue": 1.0,
+            "priority": 4,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": false,
+            "hasRightsOrRestrictions": true,
+            "id": 469506,
+            "maxNumberOfShares": null,
+            "name": "Class E Non-Voting Preferred Shares",
+            "parValue": null,
+            "priority": 5,
+            "series": [
+              {
+                "name": "Class E Series 1",
+                "priority": 1,
+                "maxNumberOfShares": null,
+                "hasMaximumShares": false,
+                "hasRightsOrRestrictions": false,
+                "id": 3948234
+              },
+              {
+                "name": "Class E Series 2",
+                "priority": 2,
+                "maxNumberOfShares": null,
+                "hasMaximumShares": false,
+                "hasRightsOrRestrictions": false,
+                "id": 9574346
+              }
+            ]
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": false,
+            "hasRightsOrRestrictions": true,
+            "id": 469508,
+            "maxNumberOfShares": null,
+            "name": "Class F Non-Voting Preferred Shares",
+            "parValue": null,
+            "priority": 6,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": false,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 469510,
+            "maxNumberOfShares": null,
+            "name": "Class G Non-Voting Preferred Shares",
+            "parValue": 0.01,
+            "priority": 7,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": true,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 469512,
+            "maxNumberOfShares": 1000,
+            "name": "Class H Voting Preferred Shares",
+            "parValue": 1.0,
+            "priority": 8,
+            "series": []
+        },
+        {
+            "currency": "CAD",
+            "hasMaximumShares": true,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 469514,
+            "maxNumberOfShares": 1000,
+            "name": "Class I Non-Voting Preferred Shares",
+            "parValue": 1.0,
+            "priority": 9,
+            "series": []
+        }
+    ]
+}

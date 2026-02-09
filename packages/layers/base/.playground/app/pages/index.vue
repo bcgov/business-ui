@@ -92,6 +92,15 @@ const componentExamples: DropdownMenuItem[] = [
     ]
   },
   {
+    label: 'ManageShareStructure',
+    children: [
+      {
+        to: localePath('/examples/components/ManageShareStructure'),
+        label: 'Default'
+      }
+    ]
+  },
+  {
     label: 'ModalStaffPay',
     to: localePath('/examples/components/Modal/StaffPay')
   },
