@@ -2,7 +2,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const { data } = defineProps<{
+const props = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
@@ -18,23 +18,34 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const shareStructureColumns = getShareStructureTableColumns<T>()
-const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
+const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true, default: {} })
+
+// ensure all items are always expanded
+watch(() => props.data, (newData) => {
+  if (!newData) {
+    return
+  }
+
+  const allClassRows = Object.fromEntries(newData.map(item => [item.new.id, true]))
+  expanded.value = { ...allClassRows, ...(expanded.value as object ?? {}) }
+}, { immediate: true })
 
 function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down') {
-  const isShareClass = row.depth === 0
-  const list = isShareClass
-    ? data?.map(d => d.new)
+  const isClass = row.depth === 0
+  const classOrSeriesList = isClass
+    ? props.data?.map(d => d.new)
     : row.getParentRow()?.original.new.series
 
-  if (!list || list.length <= 1) {
+  if (!classOrSeriesList || classOrSeriesList.length <= 1) {
     return true
   }
 
   const currentPriority = row.original.new.priority
 
+  // check if the given row has any rows above or below it
   return direction === 'up'
-    ? !list.some(item => item.priority < currentPriority)
-    : !list.some(item => item.priority > currentPriority)
+    ? !classOrSeriesList.some(item => item.priority < currentPriority)
+    : !classOrSeriesList.some(item => item.priority > currentPriority)
 }
 
 function getCustomDropdownItems(row: TableBusinessRow<T>) {
@@ -81,17 +92,16 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :get-custom-dropdown-items="getCustomDropdownItems"
     :sorting="[{ id: 'priority', desc: false }]"
     :column-visibility="{ priority: false }"
-    :get-row-id="(row: TableBusinessState<T>) => row.new.uuid"
+    :get-row-id="(row: TableBusinessState<T>) => row.new.id"
     :get-sub-rows="(row: TableBusinessState<T>) => {
       const newSeries = row.new.series || []
       const oldSeries = row.old?.series || []
+      // normalize sub rows to satisfy type definition
       return newSeries.map(s => ({
         new: s,
-        old: oldSeries.find(os => os.uuid === s.uuid) ?? undefined
-      })) as unknown as TableBusinessState<T>[]
-    }
-    "
-    @action-prevented="() => console.log('action prevented')"
+        old: oldSeries.find(os => os.id === s.id)
+      }))
+    }"
   >
     <template #expanded="{ row }">
       <slot name="expanded" :row />
