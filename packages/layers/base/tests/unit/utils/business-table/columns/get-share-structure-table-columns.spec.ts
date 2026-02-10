@@ -46,7 +46,7 @@ describe('getShareStructureTableColumns', () => {
 
     expect(columns).toHaveLength(7)
 
-    const columnIds = columns.map(c => c.id || (c as any).accessorKey)
+    const columnIds = columns.map(c => c.id)
 
     expect(columnIds).toEqual([
       'priority',
@@ -61,9 +61,10 @@ describe('getShareStructureTableColumns', () => {
 
   it('should include the priority column for ordering only', () => {
     const columns = getShareStructureTableColumns()
-    const priorityColumn = columns.find(c => (c as any).accessorKey === 'priority')
+    const priorityColumn = columns.find(c => c.id === 'priority')
 
     expect(priorityColumn).toBeDefined()
-    expect(priorityColumn).not.toHaveProperty('id')
+    expect(priorityColumn).toHaveProperty('id')
+    expect((priorityColumn as any).accessorKey).toBe('new.priority')
   })
 })
