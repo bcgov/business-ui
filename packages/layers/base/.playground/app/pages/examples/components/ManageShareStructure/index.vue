@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 const { tableState } = useManageShareStructure()
-const structure = mockClasses.shareClasses.map((c) => {
+tableState.value = mockClasses.shareClasses.map((c) => {
   return {
     new: {
       ...c,
@@ -31,10 +31,6 @@ const structure = mockClasses.shareClasses.map((c) => {
     }
   }
 })
-tableState.value = structure
-
-// expandedState.value = Object.fromEntries(tableState.value.map(item => [item.new.id, true]))
-// { 0: true }
 
 const activeClass = ref<ActiveShareClassSchema | undefined>(undefined)
 const activeSeries = ref<ActiveShareSeriesSchema | undefined>(undefined)
