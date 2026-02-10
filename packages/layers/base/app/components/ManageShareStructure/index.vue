@@ -97,6 +97,7 @@ function isRowEditing(rowId: string, depth: number) {
 }
 
 function changePriority(row: TableBusinessRow<ShareClassSchema>, direction: 'up' | 'down') {
+  const selectedRow = row.original.new
   const isClass = row.depth === 0
   const parentRowId = row.getParentRow()?.original.new.id
 
@@ -112,19 +113,13 @@ function changePriority(row: TableBusinessRow<ShareClassSchema>, direction: 'up'
     ? (classOrSeriesList as TableBusinessState<ShareClassSchema>[]).map(item => item.new)
     : (classOrSeriesList as ShareSeriesSchema[])
 
-  const selectedRow = flattenedList.find(item => item.id === row.original.new.id)
-  if (!selectedRow) {
-    return
-  }
-
+  // find the nearest item above or below the selectedRow
   const targetRow = flattenedList
     .filter(item => direction === 'up' ? item.priority < selectedRow.priority : item.priority > selectedRow.priority)
     .sort((a, b) => direction === 'up' ? b.priority - a.priority : a.priority - b.priority)[0]
 
   if (targetRow) {
-    const tempPriority = selectedRow.priority
-    selectedRow.priority = targetRow.priority
-    targetRow.priority = tempPriority
+    [selectedRow.priority, targetRow.priority] = [targetRow.priority, selectedRow.priority]
   }
 }
 
