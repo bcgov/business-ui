@@ -20,6 +20,7 @@ const { t } = useI18n()
 const shareStructureColumns = getShareStructureTableColumns<T>()
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true, default: {} })
 
+// ensure all items are always expanded
 watch(() => props.data, (newData) => {
   if (!newData) {
     return
@@ -33,8 +34,9 @@ watch(() => props.data, (newData) => {
 }, { immediate: true })
 
 function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down') {
-  const isShareClass = row.depth === 0
-  const list = isShareClass
+  const isClass = row.depth === 0
+  // get the list (class or series) to compare
+  const list = isClass
     ? props.data?.map(d => d.new)
     : row.getParentRow()?.original.new.series
 
@@ -44,6 +46,7 @@ function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down
 
   const currentPriority = row.original.new.priority
 
+  // check if the given row has any rows above or below it
   return direction === 'up'
     ? !list.some(item => item.priority < currentPriority)
     : !list.some(item => item.priority > currentPriority)
@@ -97,13 +100,12 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :get-sub-rows="(row: TableBusinessState<T>) => {
       const newSeries = row.new.series || []
       const oldSeries = row.old?.series || []
-
+      // normalize sub rows to satisfy type definition
       return newSeries.map(s => ({
         new: s,
         old: oldSeries.find(os => os.id === s.id)
       }))
     }"
-    @action-prevented="() => console.log('action prevented')"
   >
     <template #expanded="{ row }">
       <slot name="expanded" :row />

@@ -11,10 +11,9 @@ export function getShareStructureTableColumns<
   const shareStructureColumns: TableBusinessColumn<T>[] = [
     {
       id: 'priority',
-      // accessorKey: 'new.priority'
-      accessorFn: (row) => {
-        return 'new' in row ? row.new.priority : (row as unknown as ShareSeriesSchema).priority
-      }
+      // required for table sorting
+      // series rows will have the 'new' property since we are adding it in the get-sub-rows prop
+      accessorKey: 'new.priority'
     },
     nameColumn,
     maxColumn,
