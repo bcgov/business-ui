@@ -26,21 +26,17 @@ watch(() => props.data, (newData) => {
     return
   }
 
-  const allParentIds = Object.fromEntries(
-    newData.map(item => [item.new.id, true])
-  )
-
-  expanded.value = { ...allParentIds, ...(expanded.value as object ?? {}) }
+  const allClassRows = Object.fromEntries(newData.map(item => [item.new.id, true]))
+  expanded.value = { ...allClassRows, ...(expanded.value as object ?? {}) }
 }, { immediate: true })
 
 function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down') {
   const isClass = row.depth === 0
-  // get the list (class or series) to compare
-  const list = isClass
+  const classOrSeriesList = isClass
     ? props.data?.map(d => d.new)
     : row.getParentRow()?.original.new.series
 
-  if (!list || list.length <= 1) {
+  if (!classOrSeriesList || classOrSeriesList.length <= 1) {
     return true
   }
 
@@ -48,8 +44,8 @@ function disableChangePriority(row: TableBusinessRow<T>, direction: 'up' | 'down
 
   // check if the given row has any rows above or below it
   return direction === 'up'
-    ? !list.some(item => item.priority < currentPriority)
-    : !list.some(item => item.priority > currentPriority)
+    ? !classOrSeriesList.some(item => item.priority < currentPriority)
+    : !classOrSeriesList.some(item => item.priority > currentPriority)
 }
 
 function getCustomDropdownItems(row: TableBusinessRow<T>) {

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// import type { ExpandedState } from '@tanstack/vue-table'
-
 definePageMeta({
   layout: 'connect-auth',
   breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'TableShareStructure' }]
@@ -8,10 +6,6 @@ definePageMeta({
 
 function removeFn(row: TableBusinessRow<ShareClassSchema>) {
   console.info('remove: ', row)
-  // row.original.new.actions - typed
-  // row.original.new.roles - typed
-  // row.original.new.address - typed
-  // row.original.new.name - typed
 }
 function undoFn(row: TableBusinessRow<ShareClassSchema>) {
   console.info('undo: ', row)
@@ -110,26 +104,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasParValue: true,
       hasRightsOrRestrictions: true,
       id: crypto.randomUUID(),
-      series: [
-        // {
-        //   actions: [ActionType.ADDED],
-        //   name: 'Class 2 Series 1',
-        //   priority: 1,
-        //   maxNumberOfShares: 5,
-        //   hasMaximumShares: true,
-        //   hasRightsOrRestrictions: true,
-        //   uuid: crypto.randomUUID()
-        // },
-        // {
-        //   actions: [ActionType.ADDED],
-        //   name: 'Class 2 Series 2',
-        //   priority: 2,
-        //   maxNumberOfShares: 5,
-        //   hasMaximumShares: true,
-        //   hasRightsOrRestrictions: true,
-        //   uuid: crypto.randomUUID()
-        // }
-      ]
+      series: []
     },
     old: {
       actions: [ActionType.ADDED],
@@ -147,16 +122,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
   }
 ]
 
-const expanded = ref<Record<string, boolean>>(
-  // { 0: true }
-  Object.fromEntries(data.map(item => [item.new.id, true]))
-)
-
-// onMounted(async () => {
-//   const { $businessApi } = useNuxtApp()
-//   const res = await $businessApi('/businesses/BC1480044/share-classes').catch(() => {})
-//   console.log(res)
-// })
+const expanded = ref<Record<string, boolean>>(Object.fromEntries(data.map(item => [item.new.id, true])))
 </script>
 
 <template>
