@@ -148,7 +148,7 @@ export type ShareClassSchema = z.output<ReturnType<typeof getShareClassSchema>>
 
 // export type FormShareClassRef = InstanceType<typeof FormShareClass>
 
-export function getActiveShareClassSchema(nameList: string[]) {
+export function getActiveShareClassSchema(nameList?: string[]) {
   return getShareClassSchema(nameList).nullable().optional()
 }
 
