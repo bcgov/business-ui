@@ -237,24 +237,22 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
         <template #file="{ file, index }">
           <!-- Mobile fallback -->
           <div v-if="isMobile" class="w-full col-span-12">
-            <div class="h-30 rounded bg-gray-100 flex items-center">
-              <UIcon name="i-mdi-image-outline" class="w-7 h-7 m-auto" />
+            <div class="h-30 rounded bg-gray-100 flex items-center justify-center">
+              <UIcon name="i-mdi-image-outline" class="w-7 h-7 text-gray-400" />
             </div>
           </div>
 
-          <div v-else class="pdf-frame">
-            <div v-if="file?.uploaded">
-              <iframe
-                :key="file?.document?.name"
-                :src="getObjectURL(file?.document) + '#page=1&view=FitH&zoom=page-width'"
-                type="application/pdf"
-                class="pdf-frame__iframe"
-              />
-            </div>
+          <div v-else-if="file?.uploaded" class="pdf-frame">
+            <iframe
+              :key="file?.document?.name"
+              :src="getObjectURL(file?.document) + '#page=1&view=FitH&zoom=page-width'"
+              type="application/pdf"
+              class="pdf-frame__iframe"
+            />
+          </div>
 
-            <div v-else class="w-[8rem] h-30 rounded bg-gray-100 flex items-center">
-              <UIcon name="i-mdi-image-outline" class="w-7 h-7 m-auto" />
-            </div>
+          <div v-else class="w-[16rem] h-30 rounded bg-gray-100 flex items-center justify-center">
+            <UIcon name="i-mdi-image-outline" class="w-8 h-8 text-gray-400" />
           </div>
 
           <!-- File status and metadata -->
