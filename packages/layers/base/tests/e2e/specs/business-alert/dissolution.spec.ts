@@ -88,7 +88,7 @@ test.describe('Business Alerts Tests - Dissolution', () => {
       await expect(contentText).toBeVisible()
       await expect(contentText).toContainText(expectedDate)
       if (overdueTransition) {
-        await expect(contentText).toContainText('an overdue transition application')
+        await expect(contentText).toContainText('an overdue post restoration transition application')
       } else {
         await expect(contentText).toContainText('overdue annual reports')
       }

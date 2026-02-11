@@ -29,7 +29,7 @@ export default {
     dissolution: {
       content: {
         ars: 'The business may be struck from the Corporate Registry as soon as {boldStart}{date}{boldEnd} due to overdue annual reports. Please file the annual reports immediately to return the business to good standing.',
-        ta: 'The business may be struck from the Corporate Registry as soon as {boldStart}{date}{boldEnd} due to an overdue transition application. Please file the transition application immediately to return the business to good standing.'
+        ta: 'The business may be struck from the Corporate Registry as soon as {boldStart}{date}{boldEnd} due to an overdue post restoration transition application. Please file the post restoration transition application immediately to return the business to good standing.'
       },
       contentExtra: {
         default: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
