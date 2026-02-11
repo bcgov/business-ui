@@ -13,21 +13,25 @@ tableState.value = mockClasses.shareClasses.map((c) => {
     new: {
       ...c,
       actions: [],
+      name: c.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
       id: c.id.toString(),
       series: c.series.map(s => ({
         ...s,
         id: s.id.toString(),
-        actions: []
+        actions: [],
+        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
       }))
     },
     old: {
       ...c,
       actions: [],
       id: c.id.toString(),
+      name: c.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
       series: c.series.map(s => ({
         ...s,
         id: s.id.toString(),
-        actions: []
+        actions: [],
+        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
       }))
     }
   }

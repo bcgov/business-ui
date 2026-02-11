@@ -21,7 +21,8 @@ const {
   tableState,
   addNewShareClass,
   removeShareClass,
-  undoShareClass
+  undoShareClass,
+  updateShareClass
   // addNewParty,
   // removeParty,
   // undoParty,
@@ -190,11 +191,20 @@ function clearAllAlerts() {
             <pre>{{ activeSeries }}</pre>
           </div>
           <div v-else>
-            <div>Editing {{ row.original.new.name }}</div>
-            <div>Class or series: {{ row.depth === 1 ? 'Series' : 'Class' }}</div>
-            <pre>{{ row.original.new }}</pre>
+            <FormShareClass
+              v-if="row.depth === 0 && activeClass"
+              v-model="activeClass"
+              :title="'Edit Share Class'"
+              :state-key="stateKey"
+              variant="edit"
+              name="activeClass"
+              @done="() => {
+                updateShareClass(row, activeClass)
+                cleanupForm()
+              }"
+              @cancel="cleanupForm"
+            />
           </div>
-          <UButton label="Cancel" @click="cleanupForm" />
         </div>
         <!-- <FormShareClass
         <FormShareSeries

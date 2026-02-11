@@ -1,12 +1,4 @@
 import type { ExpandedState } from '@tanstack/vue-table'
-// import { isEqual } from 'es-toolkit'
-
-// type EditedSection = 'address' | 'name' | 'roles'
-// const actionsMap: Record<EditedSection, ActionType> = {
-//   name: ActionType.NAME_CHANGED,
-//   address: ActionType.ADDRESS_CHANGED,
-//   roles: ActionType.ROLES_CHANGED
-// }
 
 export const useManageShareStructure = (stateKey: string = 'manage-share-structure') => {
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
@@ -19,7 +11,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const newState: TableBusinessState<ShareClassSchema> = {
       new: {
         ...shareClass,
-        name: shareClass.name + ' Shares',
+        name: shareClass.name,
         actions: [ActionType.ADDED]
       },
       old: undefined
@@ -42,20 +34,36 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
       tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
     } else {
-      const item = tableState.value.find(item => item.new.id === row.original.new.id)
-      if (item) {
-        item.new.actions = [ActionType.REMOVED]
+      const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+      if (rowToUpdate) {
+        rowToUpdate.new.actions = [ActionType.REMOVED]
       }
     }
   }
 
   function undoShareClass(row: TableBusinessRow<ShareClassSchema>): void {
-    const item = tableState.value.find(item => item.new.id === row.original.new.id)
-    const currentPriority = item?.new.priority
-    if (item && row.original.old && currentPriority) {
-      item.new = {
+    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+    const currentPriority = rowToUpdate?.new.priority
+    if (rowToUpdate && row.original.old && currentPriority) {
+      rowToUpdate.new = {
         ...row.original.old,
         priority: currentPriority
+      }
+    }
+  }
+
+  function updateShareClass(row: TableBusinessRow<ShareClassSchema>, shareClass: ActiveShareClassSchema): void {
+    if (!shareClass) {
+      return
+    }
+
+    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+
+    if (rowToUpdate) {
+      rowToUpdate.new = {
+        ...shareClass,
+        name: shareClass.name,
+        actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
       }
     }
   }
@@ -102,7 +110,8 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     tableState,
     addNewShareClass,
     removeShareClass,
-    undoShareClass
+    undoShareClass,
+    updateShareClass
     // updateTable
     // addNewParty,
     // removeParty,
