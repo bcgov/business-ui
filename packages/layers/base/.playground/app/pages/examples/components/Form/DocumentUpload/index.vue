@@ -46,12 +46,6 @@ const state = reactive<Schema>({
           </div>
         </div>
       </div>
-
-      <!-- Empty State -->
-      <div v-else class="mt-8 text-center">
-        <UIcon name="i-mdi-inbox-outline" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
-        <p class="text-gray-500 text-sm">Upload documents to see their details here</p>
-      </div>
     </ConnectPageSection>
 
     <ConnectPageSection
