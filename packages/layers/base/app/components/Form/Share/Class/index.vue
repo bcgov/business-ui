@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Form } from '@nuxt/ui'
+import type { Form, FormErrorEvent } from '@nuxt/ui'
 
 const props = defineProps<{
   variant: 'add' | 'edit'
@@ -18,6 +18,7 @@ const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const { tableState } = useManageShareStructure(props.stateKey)
 const formTarget = 'party-details-form'
+const currencyOptions = getCurrencyList()
 const schema = computed(() => {
   const currentId = model.value.id
   const nameList = tableState.value
@@ -30,20 +31,17 @@ const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
 
 async function onDone() {
-  console.log('done')
-  console.log(model.value)
   try {
     await formRef.value?.validate()
     emit('done')
   } catch (e) {
-    console.log(e.errors)
+    onFormSubmitError(e as FormErrorEvent)
   }
 }
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 
 provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 'text-base font-bold' }, 'Shares') })
-const inputMenuItems = ref(['Backlog', 'Todo', 'In Progress', 'Done'])
 </script>
 
 <template>
@@ -135,7 +133,7 @@ const inputMenuItems = ref(['Backlog', 'Todo', 'In Progress', 'Done'])
                   id="par-value-currency-input"
                   v-model="model.currency"
                   label="Currency"
-                  :items="inputMenuItems"
+                  :items="currencyOptions"
                   class="w-full"
                   :required="model.hasParValue"
                   :disabled="!model.hasParValue"
