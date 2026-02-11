@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useDocumentHandler } from '~/composables/useDocumentHandler'
 import type { SelectMenuItem } from '@nuxt/ui'
 
 /**
@@ -40,9 +39,6 @@ const props = defineProps({
 const emit = defineEmits<{
   (event: 'converted-files', files: any[]): void
 }>()
-
-// Expose URL global object to template
-const URL = window.URL
 
 /** Reactive state and methods for file handling */
 const {

@@ -130,7 +130,7 @@ export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
           state.files[index] = {
             document: file,
             uploaded: false,
-            errorMsg: preResult.error.errors.map((e: Error) => e.message).join(', '),
+            errorMsg: preResult.error.issues[0]?.message || 'Validation failed',
             index
           }
           continue // Skip conversion if pre-upload validation fails
@@ -144,7 +144,7 @@ export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
             state.files[index] = {
               document,
               uploaded: false,
-              errorMsg: postResult.error.errors.map((e: Error) => e.message).join(', '),
+              errorMsg: postResult.error.issues[0]?.message || 'Validation failed',
               index
             }
             continue

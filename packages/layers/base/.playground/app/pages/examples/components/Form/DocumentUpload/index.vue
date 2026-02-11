@@ -1,72 +1,67 @@
 <script setup lang="ts">
-import type { FormSubmitEvent, Form, FormError } from '@nuxt/ui'
-import * as z from 'zod'
-
-const { t } = useI18n()
-
 definePageMeta({
   layout: 'connect-auth'
 })
 
-const schema = z.object({
-  name: z.object({
-    first: z.string().min(1, t('connect.validation.fieldRequired')),
-    middle: z.string().min(1, t('connect.validation.fieldRequired')),
-    last: z.string().min(1, t('connect.validation.fieldRequired'))
-  })
+const { formatBytes } = useDocumentHandler()
+
+type Schema = { documents: Array<File> }
+const state = reactive<Schema>({
+  documents: []
 })
-
-type Schema = z.output<typeof schema>
-type FullSchema = { documentId: DocumentIdSchema } & Schema
-
-const state = reactive<FullSchema>({
-  name: {
-    first: '',
-    middle: '',
-    last: ''
-  },
-  documentId: {
-    documentIdNumber: ''
-  }
-})
-
-const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const docIdRef = useTemplateRef<FormDocumentIdRef>('document-id-ref')
-
-const hasErrors = computed<boolean | undefined>(() => {
-  const errors = formRef.value?.getErrors()
-  // nested doesnt propagate errors reactively
-  // but will propagate on submit
-  // workaround - check nested ref as well
-  const docIdErrors = docIdRef.value?.formRef?.getErrors()
-  return (errors && errors.length > 0) || (docIdErrors && docIdErrors.length > 0)
-})
-const nameError = computed<FormError | undefined>(() => {
-  const errors = formRef.value?.getErrors()
-  return errors?.find(e => e.name?.startsWith('name'))
-})
-
-// loses typing here
-// only accepts FormSubmitEvent<Schema> (not FullSchema)
-// cast type to get type completion if necessary
-async function onSubmit(event: FormSubmitEvent<unknown>) {
-  const data = event.data as FullSchema
-  console.info('Form data: ', data)
-}
 </script>
 
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
+      v-if="state.documents.length > 0"
+      :heading="{ label: 'Documents Summary' }"
+      class="max-w-3xl"
+    >
+      <!-- Documents Summary Section: PLAYGROUND ONLY -->
+      <div class="mt-8 space-y-4">
+        <div class="flex items-center px-4">
+          <UBadge color="blue" variant="soft">
+            {{ state.documents.length }} file{{ state.documents.length !== 1 ? 's' : '' }}
+          </UBadge>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <div class="text-xs font-medium text-gray-600 mb-1">Total Files</div>
+            <div class="text-2xl font-bold text-blue-600">{{ state.documents.length }}</div>
+          </div>
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="text-xs font-medium text-gray-600 mb-1">Total Size</div>
+            <div class="text-2xl font-bold text-green-600">
+              {{ formatBytes(state.documents.reduce((sum, f) => sum + f.size, 0)) }}
+            </div>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-4">
+            <div class="text-xs font-medium text-gray-600 mb-1">All PDFs</div>
+            <div class="text-2xl font-bold text-purple-600">
+              {{ state.documents.every(f => f.type === 'application/pdf') ? '✓' : '!' }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="mt-8 text-center">
+        <UIcon name="i-mdi-inbox-outline" class="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <p class="text-gray-500 text-sm">Upload documents to see their details here</p>
+      </div>
+    </ConnectPageSection>
+
+    <ConnectPageSection
       :heading="{ label: 'Document Upload (default)' }"
-      :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="max-w-3xl"
     >
       <FormDocumentUpload
         ref="document-upload-ref"
-        v-model="state.documentId"
         name="documentUpload"
-        order="1"
+        @converted-files="state.documents = $event"
       />
     </ConnectPageSection>
   </div>
