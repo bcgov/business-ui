@@ -136,6 +136,9 @@ function clearAllAlerts() {
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
+    <p class="pb-4">
+      The share structure must match exactly what is set out in the company’s current memorandum and articles.
+    </p>
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
@@ -144,7 +147,16 @@ function clearAllAlerts() {
       class="w-min"
       @click="initAddItem()"
     />
-
+    <FormShareClass
+      v-if="addingShareClass && activeClass"
+      v-model="activeClass"
+      :title="'Add Share Class'"
+      :state-key="stateKey"
+      variant="add"
+      name="activeClass"
+      @done="() => console.log('done clicked')"
+      @cancel="cleanupForm"
+    />
     <div v-if="addingShareClass && activeClass" class="p-10 border border-black space-y-4">
       <div>Add share class form here</div>
       <pre>{{ activeClass }}</pre>
