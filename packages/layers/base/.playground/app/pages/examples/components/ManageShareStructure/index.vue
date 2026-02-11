@@ -51,9 +51,6 @@ const schema = computed(() => z.object({
   activeClass: getActiveShareClassSchema(),
   activeSeries: getActiveShareSeriesSchema()
 }))
-
-console.log(getCurrencyList())
-console.log(formatCurrency(321.23, 'CNY'))
 </script>
 
 <template>

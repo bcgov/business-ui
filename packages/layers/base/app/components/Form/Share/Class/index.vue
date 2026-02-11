@@ -83,6 +83,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
           }"
+          @update:model-value="model.maxNumberOfShares = null"
         >
           <template #label="{ item }">
             <ConnectFormInput
@@ -108,6 +109,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
           }"
+          @update:model-value="model.parValue = null, model.currency = undefined"
         >
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">

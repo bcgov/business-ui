@@ -19,7 +19,9 @@ const addingSeriesToClassId = ref<string | undefined>(undefined)
 const {
   expandedState,
   tableState,
-  addNewShareClass
+  addNewShareClass,
+  removeShareClass,
+  undoShareClass
   // addNewParty,
   // removeParty,
   // undoParty,
@@ -164,18 +166,6 @@ function clearAllAlerts() {
       @cancel="cleanupForm"
     />
 
-    <!-- TODO: create share class form -->
-    <!-- <FormShareClass
-      v-if="addingShareClass && activeClass"
-      v-model="activeClass"
-      :title="addLabel"
-      name="activeClass"
-      variant="add"
-      :state-key="stateKey"
-      @done="() => addClass(activeClass)"
-      @cancel="cleanupForm"
-    /> -->
-
     <TableShareStructure
       v-model:expanded="expandedState"
       :data="tableState"
@@ -186,8 +176,8 @@ function clearAllAlerts() {
       @init-edit="onInitEdit"
       @move-row="changePriority"
       @add-series="(e: TableBusinessRow<ShareClassSchema>) => initAddItem(e)"
-      @remove="(e: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) => console.log('remove row: ', e)"
-      @undo="(e: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) => console.log('undo row: ', e)"
+      @remove="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : undefined"
+      @undo="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? undoShareClass(row) : undefined"
       @action-prevented="setActiveFormAlert"
     >
       <template #expanded="{ row }">

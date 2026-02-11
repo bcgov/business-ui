@@ -12,72 +12,53 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-table-state`, () => [])
 
-  function updateTable(newState: TableBusinessState<ShareClassSchema>, row?: TableBusinessRow<ShareClassSchema>): void {
-    if (!row) {
-      tableState.value = [
-        JSON.parse(JSON.stringify(newState)),
-        ...tableState.value
-      ]
-    }
-    // } else {
-    //   const rowId = row.original.new.id
-
-    //   const index = row.index
-
-    //   tableState.value = [
-    //     ...tableState.value.slice(0, index),
-    //     JSON.parse(JSON.stringify(newState)),
-    //     ...tableState.value.slice(index + 1)
-    //   ]
-    // }
-  }
-
   function addNewShareClass(shareClass: ActiveShareClassSchema) {
     if (!shareClass) {
       return
     }
-
     const newState: TableBusinessState<ShareClassSchema> = {
       new: {
         ...shareClass,
+        name: shareClass.name + ' Shares',
         actions: [ActionType.ADDED]
       },
       old: undefined
     }
-    updateTable(newState)
+
+    // place new row at the beginning of the list
+    tableState.value = [
+      JSON.parse(JSON.stringify(newState)),
+      ...tableState.value
+    ]
+
+    // increase every row priority that was not the row just added by 1
+    tableState.value.filter(item => item.new.id !== shareClass.id).forEach(item => item.new.priority++)
   }
 
-  // function removeShareClass(row: TableBusinessRow<PartySchema>): void {
-  //   const oldPartyState = row.original.old
-  //   const newPartyState = row.original.new
+  function removeShareClass(row: TableBusinessRow<ShareClassSchema>): void {
+    const removedPriority = row.original.new.priority
 
-  //   if (oldPartyState === undefined) {
-  //     tableState.value = [
-  //       ...tableState.value.slice(0, row.index),
-  //       ...tableState.value.slice(row.index + 1)
-  //     ]
-  //   } else {
-  //     const newState: TableBusinessState<PartySchema> = {
-  //       new: { ...newPartyState, actions: [ActionType.REMOVED] },
-  //       old: oldPartyState
-  //     }
+    if (row.original.old === undefined) {
+      tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
+      tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
+    } else {
+      const item = tableState.value.find(item => item.new.id === row.original.new.id)
+      if (item) {
+        item.new.actions = [ActionType.REMOVED]
+      }
+    }
+  }
 
-  //     updateTable(newState, row)
-  //   }
-  // }
-
-  // function undoParty(row: TableBusinessRow<PartySchema>): void {
-  //   const oldReceiver = row.original.old
-
-  //   if (oldReceiver) {
-  //     const newState: TableBusinessState<PartySchema> = {
-  //       new: oldReceiver,
-  //       old: oldReceiver
-  //     }
-
-  //     updateTable(newState, row)
-  //   }
-  // }
+  function undoShareClass(row: TableBusinessRow<ShareClassSchema>): void {
+    const item = tableState.value.find(item => item.new.id === row.original.new.id)
+    const currentPriority = item?.new.priority
+    if (item && row.original.old && currentPriority) {
+      item.new = {
+        ...row.original.old,
+        priority: currentPriority
+      }
+    }
+  }
 
   // function applyTableEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>): void {
   //   if (!party) {
@@ -119,7 +100,9 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   return {
     expandedState,
     tableState,
-    addNewShareClass
+    addNewShareClass,
+    removeShareClass,
+    undoShareClass
     // updateTable
     // addNewParty,
     // removeParty,
