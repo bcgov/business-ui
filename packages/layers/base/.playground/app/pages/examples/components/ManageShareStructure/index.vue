@@ -47,10 +47,10 @@ const formState = reactive<{
   activeSeries: undefined
 })
 
-const schema = z.object({
+const schema = computed(() => z.object({
   activeClass: getActiveShareClassSchema(),
   activeSeries: getActiveShareSeriesSchema()
-})
+}))
 
 // const allCurrencies = Intl.supportedValuesOf('currency').map((code) => {
 //   try {

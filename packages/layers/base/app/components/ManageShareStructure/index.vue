@@ -147,8 +147,9 @@ function clearAllAlerts() {
       class="w-min"
       @click="initAddItem()"
     />
+    <!-- addingShareClass &&  -->
     <FormShareClass
-      v-if="addingShareClass && activeClass"
+      v-if="activeClass"
       v-model="activeClass"
       :title="'Add Share Class'"
       :state-key="stateKey"

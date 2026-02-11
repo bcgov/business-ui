@@ -16,8 +16,15 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
+const { tableState } = useManageShareStructure(props.stateKey)
 const formTarget = 'party-details-form'
-const schema = getActiveShareClassSchema()
+const schema = computed(() => {
+  const currentId = model.value.id
+  const nameList = tableState.value
+    .filter(item => item.new.id !== currentId)
+    .map(item => item.new.name.toLowerCase().replace(' shares', ''))
+  return getActiveShareClassSchema(nameList)
+})
 
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
@@ -107,7 +114,7 @@ const inputMenuItems = ref(['Backlog', 'Todo', 'In Progress', 'Done'])
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
               <ConnectFormInput
-                v-model="model.parValue"
+                v-model.trim="model.parValue"
                 :disabled="!model.hasParValue"
                 :class="{ 'opacity-75': !model.hasParValue }"
                 input-id="par-value-input"
