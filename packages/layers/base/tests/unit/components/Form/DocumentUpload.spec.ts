@@ -317,7 +317,7 @@ describe('DocumentUpload Component', () => {
       })
 
       const config = wrapper.vm.fileUploadFileConfig
-      expect(config.label).toBe('text-red-600')
+      expect(config.label).toBe('text-error')
       expect(config.base).toBe('border-red-600')
     })
 

@@ -92,7 +92,7 @@ onUnmounted(() => window.removeEventListener('resize', handleResize))
 /** Computed configurations for file upload component */
 const fileUploadFileConfig = computed(() => {
   const baseConfig = showValidationError.value
-    ? { label: 'text-red-600', base: 'border-red-600' }
+    ? { label: 'text-error', base: 'border-red-600' }
     : {}
   if (isMobile.value) {
     return { ...baseConfig, file: 'grid grid-cols-6 gap-1 wrap-anywhere' }
@@ -166,7 +166,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
 
         <template #description>
           <div class="grid">
-            <span v-if="showValidationError" class="text-red-600">
+            <span v-if="showValidationError" class="text-error">
               No documents have been uploaded. Please upload the required document.
             </span>
             {{ uploadDescription }}
@@ -233,7 +233,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
               variant="solid"
               @click="open()"
             />
-            <span class="ml-2 text-blue-500 hidden sm:inline">or drag and drop files here</span>
+            <span class="ml-2 text-primary hidden sm:inline">or drag and drop files here</span>
           </div>
         </template>
 
@@ -242,7 +242,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
           <!-- Mobile fallback -->
           <div v-if="isMobile" class="w-full col-span-12">
             <div class="h-30 rounded bg-gray-100 flex items-center justify-center">
-              <UIcon name="i-mdi-image-outline" class="w-7 h-7 text-gray-400" />
+              <UIcon name="i-mdi-image-outline" class="w-7 h-7 text-neutral" />
             </div>
           </div>
 
@@ -256,29 +256,29 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
           </div>
 
           <div v-else class="w-[16rem] h-30 rounded bg-gray-100 flex items-center justify-center">
-            <UIcon name="i-mdi-image-outline" class="w-8 h-8 text-gray-400" />
+            <UIcon name="i-mdi-image-outline" class="w-8 h-8 text-neutral" />
           </div>
 
           <!-- File status and metadata -->
           <div class="ml-4 w-full max-sm:col-span-12">
             <template v-if="file?.errorMsg">
               <div class="flex items-center">
-                <UIcon name="i-mdi-close-circle" class="text-red-600 size-[20px]" />
-                <span class="ml-2 text-red-600 text-[14px] italic">
+                <UIcon name="i-mdi-close-circle" class="text-error size-[20px]" />
+                <span class="ml-2 text-error text-[14px] italic">
                   Upload of {{ file.document?.name }} failed. {{ file.errorMsg }}
                 </span>
               </div>
             </template>
             <template v-else-if="file?.uploaded">
               <div class="flex items-center">
-                <UIcon name="i-mdi-check-circle" class="text-green-700 size-[20px]" />
+                <UIcon name="i-mdi-check-circle" class="text-success size-[20px]" />
                 <a
                   class="ml-2 text-[16px] italic"
                   :href="getObjectURL(file?.document)"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span class="text-blue-500">{{ file?.document.name }}</span>
+                  <span class="text-primary">{{ file?.document.name }}</span>
                 </a>
               </div>
               <div class="ml-6">

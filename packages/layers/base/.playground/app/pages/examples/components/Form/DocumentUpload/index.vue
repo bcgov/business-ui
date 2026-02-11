@@ -29,26 +29,26 @@ const state = reactive<Schema>({
         <!-- Summary Stats -->
         <div class="mt-6 grid grid-cols-3 gap-4">
           <div class="bg-blue-50 rounded-lg p-4">
-            <div class="text-xs font-medium text-gray-600 mb-1">
+            <div class="text-xs font-medium text-neutral mb-1">
               Total Files
             </div>
-            <div class="text-2xl font-bold text-blue-600">
+            <div class="text-2xl font-bold text-primary">
               {{ state.documents.length }}
             </div>
           </div>
           <div class="bg-green-50 rounded-lg p-4">
-            <div class="text-xs font-medium text-gray-600 mb-1">
+            <div class="text-xs font-medium text-neutral mb-1">
               Total Size
             </div>
-            <div class="text-2xl font-bold text-green-600">
+            <div class="text-2xl font-bold text-success">
               {{ formatBytes(state.documents.reduce((sum, f) => sum + f.size, 0)) }}
             </div>
           </div>
           <div class="bg-purple-50 rounded-lg p-4">
-            <div class="text-xs font-medium text-gray-600 mb-1">
+            <div class="text-xs font-medium text-neutral mb-1">
               All PDFs
             </div>
-            <div class="text-2xl font-bold text-purple-600">
+            <div class="text-2xl font-bold">
               {{ state.documents.every(f => f.type === 'application/pdf') ? '✓' : '!' }}
             </div>
           </div>
