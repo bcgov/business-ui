@@ -52,28 +52,8 @@ const schema = computed(() => z.object({
   activeSeries: getActiveShareSeriesSchema()
 }))
 
-// const allCurrencies = Intl.supportedValuesOf('currency').map((code) => {
-//   try {
-//     const symbol = new Intl.NumberFormat('en-CA', {
-//       style: 'currency',
-//       currency: code,
-//       currencyDisplay: 'narrowSymbol'
-//     })
-//       .formatToParts(0)
-//       .find(p => p.type === 'currency').value
-
-//     const name = new Intl.DisplayNames(['en'], { type: 'currency' }).of(code)
-
-//     return { code, symbol, name }
-//   } catch (e) {
-//     return null // Handle rare unsupported codes
-//   }
-// }).filter(Boolean)
-
-// console.log(allCurrencies)
-
-// const codes = Intl.supportedValuesOf('currency')
-// console.log(codes)
+console.log(getCurrencyList())
+console.log(formatCurrency(321.23, 'CNY'))
 </script>
 
 <template>

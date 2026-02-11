@@ -18,7 +18,8 @@ const addingSeriesToClassId = ref<string | undefined>(undefined)
 
 const {
   expandedState,
-  tableState
+  tableState,
+  addNewShareClass
   // addNewParty,
   // removeParty,
   // undoParty,
@@ -63,6 +64,11 @@ function cleanupForm() {
   addingSeriesToClassId.value = undefined
   activeClass.value = undefined
   activeSeries.value = undefined
+}
+
+function addClass(shareClass: ActiveShareClassSchema) {
+  addNewShareClass(shareClass)
+  cleanupForm()
 }
 
 // consolidate?
@@ -147,22 +153,16 @@ function clearAllAlerts() {
       class="w-min"
       @click="initAddItem()"
     />
-    <!-- addingShareClass &&  -->
     <FormShareClass
-      v-if="activeClass"
+      v-if="addingShareClass && activeClass"
       v-model="activeClass"
       :title="'Add Share Class'"
       :state-key="stateKey"
       variant="add"
       name="activeClass"
-      @done="() => console.log('done clicked')"
+      @done="() => addClass(activeClass)"
       @cancel="cleanupForm"
     />
-    <div v-if="addingShareClass && activeClass" class="p-10 border border-black space-y-4">
-      <div>Add share class form here</div>
-      <pre>{{ activeClass }}</pre>
-      <UButton label="Cancel" @click="cleanupForm" />
-    </div>
 
     <!-- TODO: create share class form -->
     <!-- <FormShareClass

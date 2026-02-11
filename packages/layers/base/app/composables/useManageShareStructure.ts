@@ -12,40 +12,40 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-table-state`, () => [])
 
-  // function
-  // updateTable(newState: TableBusinessState<ShareClassSchema>, row?: TableBusinessRow<ShareClassSchema>): void {
-  //   if (!row) {
-  //     tableState.value = [
-  //       JSON.parse(JSON.stringify(newState)),
-  //       ...tableState.value
-  //     ]
-  //   } else {
-  //     const rowId = row.original.new.id
+  function updateTable(newState: TableBusinessState<ShareClassSchema>, row?: TableBusinessRow<ShareClassSchema>): void {
+    if (!row) {
+      tableState.value = [
+        JSON.parse(JSON.stringify(newState)),
+        ...tableState.value
+      ]
+    }
+    // } else {
+    //   const rowId = row.original.new.id
 
-  //     const index = row.index
+    //   const index = row.index
 
-  //     tableState.value = [
-  //       ...tableState.value.slice(0, index),
-  //       JSON.parse(JSON.stringify(newState)),
-  //       ...tableState.value.slice(index + 1)
-  //     ]
-  //   }
-  // }
+    //   tableState.value = [
+    //     ...tableState.value.slice(0, index),
+    //     JSON.parse(JSON.stringify(newState)),
+    //     ...tableState.value.slice(index + 1)
+    //   ]
+    // }
+  }
 
-  // function addNewShareClass(shareClass: ActiveShareClassSchema) {
-  //   if (!shareClass) {
-  //     return
-  //   }
+  function addNewShareClass(shareClass: ActiveShareClassSchema) {
+    if (!shareClass) {
+      return
+    }
 
-  //   const newState: TableBusinessState<ShareClassSchema> = {
-  //     new: {
-  //       ...shareClass,
-  //       actions: [ActionType.ADDED]
-  //     },
-  //     old: undefined
-  //   }
-  //   updateTable(newState)
-  // }
+    const newState: TableBusinessState<ShareClassSchema> = {
+      new: {
+        ...shareClass,
+        actions: [ActionType.ADDED]
+      },
+      old: undefined
+    }
+    updateTable(newState)
+  }
 
   // function removeShareClass(row: TableBusinessRow<PartySchema>): void {
   //   const oldPartyState = row.original.old
@@ -118,7 +118,8 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
 
   return {
     expandedState,
-    tableState
+    tableState,
+    addNewShareClass
     // updateTable
     // addNewParty,
     // removeParty,
