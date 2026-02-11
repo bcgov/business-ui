@@ -1,22 +1,64 @@
 import { z } from 'zod'
 // import type { FormShareClass } from '#components'
 
-export function getShareSeriesSchema() {
+export function getShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?: number) {
   return z.object({
+    id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
-    name: z.string().min(1).default(''),
     priority: z.number().default(1),
-    maxNumberOfShares: z.number().nullable().default(null),
+    name: z.string()
+      .min(1, 'This field is required')
+      .max(50, 'Maximum 50 characters')
+      .refine(val => !/\b(share|shares|value)\b/i.test(val), 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’')
+      .refine(val => !nameList?.includes(val.toLowerCase().trim()), 'Name must be unique')
+      .default(''),
+    maxNumberOfShares: z.coerce.number('Only enter whole numbers').nullable().default(null),
     hasMaximumShares: z.boolean().default(false),
-    hasRightsOrRestrictions: z.boolean().default(false),
-    id: z.string().default(() => crypto.randomUUID())
+    hasRightsOrRestrictions: z.boolean().default(false)
+  }).superRefine((data, ctx) => {
+    if (data.hasMaximumShares) {
+      const maxShares = data.maxNumberOfShares
+
+      if (maxShares === null || maxShares === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['maxNumberOfShares'],
+          message: 'This field is required'
+        })
+        return
+      }
+
+      if (!Number.isInteger(maxShares)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['maxNumberOfShares'],
+          message: 'Only enter whole numbers'
+        })
+      }
+
+      if (maxShares.toString().length > 16) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['maxNumberOfShares'],
+          message: 'Maximum 16 digits'
+        })
+      }
+
+      if (allowedMaxSharesCount === 0 || (allowedMaxSharesCount && maxShares > allowedMaxSharesCount)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['maxNumberOfShares'],
+          message: 'The maximum number for all series combined cannot exceed the maximum number for the class'
+        })
+      }
+    }
   })
 }
 
 export type ShareSeriesSchema = z.output<ReturnType<typeof getShareSeriesSchema>>
 
-export function getActiveShareSeriesSchema() {
-  return getShareSeriesSchema().nullable().optional()
+export function getActiveShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?: number) {
+  return getShareSeriesSchema(nameList, allowedMaxSharesCount).nullable().optional()
 }
 
 export type ActiveShareSeriesSchema = z.output<ReturnType<typeof getActiveShareSeriesSchema>>
@@ -131,9 +173,9 @@ export function getShareClassSchema(nameList?: string[]) {
         })
       }
 
-      const totalMaxSeries = data.series.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
+      const totalSeriesCount = data.series.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
 
-      if (totalMaxSeries > maxShares) {
+      if (totalSeriesCount > maxShares) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],

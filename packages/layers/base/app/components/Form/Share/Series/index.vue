@@ -7,6 +7,7 @@ const props = defineProps<{
   title: string
   stateKey: string
   nested?: boolean
+  parentRow?: TableBusinessRow<ShareClassSchema>
 }>()
 
 const emit = defineEmits<{
@@ -16,14 +17,18 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
-const { tableState } = useManageShareStructure(props.stateKey)
 const formTarget = 'party-details-form'
 const schema = computed(() => {
   const currentId = model.value.id
-  const nameList = tableState.value
-    .filter(item => item.new.id !== currentId)
-    .map(item => item.new.name.toLowerCase())
-  return getActiveShareSeriesSchema(nameList)
+  const siblingSeries = props.parentRow?.original.new.series.filter(item => item.id !== currentId) || []
+
+  const nameList = siblingSeries.map(item => item.name.toLowerCase())
+
+  const parentMaxShares = props.parentRow?.original.new.maxNumberOfShares || 0
+  const currentSeriesMaxSharesCount = siblingSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
+  const allowedMaxSharesCount = parentMaxShares - currentSeriesMaxSharesCount
+
+  return getActiveShareSeriesSchema(nameList, allowedMaxSharesCount)
 })
 
 const model = defineModel<ShareSeriesSchema>({ required: true })
@@ -100,7 +105,9 @@ provide('UInput-slots-share-series-name-input', { trailing: h('span', { class: '
           </template>
         </URadioGroup>
         <USeparator />
-        <span>No Par Value</span>
+        <p class="text-base">
+          No Par Value
+        </p>
         <USeparator />
         <UFormField name="hasRightsOrRestrictions">
           <UCheckbox

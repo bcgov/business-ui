@@ -22,7 +22,10 @@ const {
   addNewShareClass,
   removeShareClass,
   undoShareClass,
-  updateShareClass
+  updateShareClass,
+  updateShareSeries,
+  undoShareSeries,
+  removeShareSeries
   // addNewParty,
   // removeParty,
   // undoParty,
@@ -74,16 +77,6 @@ function addClass(shareClass: ActiveShareClassSchema) {
   cleanupForm()
 }
 
-// consolidate?
-// function addClass(shareClass: ActiveShareClassSchema) {
-//   // addNewParty(party, roleType)
-//   cleanupForm()
-// }
-// function addSeries(series: ActiveShareSeriesSchema, row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
-//   // addNewParty(party, roleType)
-//   cleanupForm()
-// }
-
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
     activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
@@ -92,11 +85,6 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
   }
   expandedState.value = { [row.id]: true, ...expandedState.value as object }
 }
-
-// function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>) {
-// applyTableEdits(party, row)
-//   cleanupForm()
-// }
 
 function isRowEditing(rowId: string, depth: number) {
   if (depth === 1) {
@@ -177,15 +165,14 @@ function clearAllAlerts() {
       @init-edit="onInitEdit"
       @move-row="changePriority"
       @add-series="(e: TableBusinessRow<ShareClassSchema>) => initAddItem(e)"
-      @remove="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : undefined"
-      @undo="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? undoShareClass(row) : undefined"
+      @remove="
+        (row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : removeShareSeries(row)
+      "
+      @undo="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? undoShareClass(row) : undoShareSeries(row)"
       @action-prevented="setActiveFormAlert"
     >
       <template #expanded="{ row }">
-        <div
-          v-if="isRowEditing(row.original.new.id, row.depth) || addingSeriesToClassId === row.original.new.id"
-          class="p-10 border border-black space-y-4"
-        >
+        <div v-if="isRowEditing(row.original.new.id, row.depth) || addingSeriesToClassId === row.original.new.id">
           <div v-if="addingSeriesToClassId">
             <div>Adding New Series to {{ row.original.new.name }}</div>
             <pre>{{ activeSeries }}</pre>
@@ -200,6 +187,20 @@ function clearAllAlerts() {
               name="activeClass"
               @done="() => {
                 updateShareClass(row, activeClass)
+                cleanupForm()
+              }"
+              @cancel="cleanupForm"
+            />
+            <FormShareSeries
+              v-if="row.depth === 1 && activeSeries"
+              v-model="activeSeries"
+              :title="'Edit Share Series'"
+              :state-key="stateKey"
+              variant="edit"
+              name="activeSeries"
+              :parent-row="row.getParentRow()"
+              @done="() => {
+                updateShareSeries(row, activeSeries)
                 cleanupForm()
               }"
               @cancel="cleanupForm"

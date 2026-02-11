@@ -11,7 +11,6 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const newState: TableBusinessState<ShareClassSchema> = {
       new: {
         ...shareClass,
-        name: shareClass.name,
         actions: [ActionType.ADDED]
       },
       old: undefined
@@ -62,48 +61,85 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     if (rowToUpdate) {
       rowToUpdate.new = {
         ...shareClass,
-        name: shareClass.name,
         actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
       }
     }
   }
 
-  // function applyTableEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>): void {
-  //   if (!party) {
-  //     return
-  //   }
+  function updateShareSeries(row: TableBusinessRow<ShareClassSchema>, shareSeries: ActiveShareSeriesSchema): void {
+    if (!shareSeries) {
+      return
+    }
 
-  //   const originalPartyState = row.original.old
-  //   let newActions: ActionType[] = []
+    const parentId = row.getParentRow()?.original.new.id
+    if (!parentId) {
+      return
+    }
 
-  //   if (originalPartyState === undefined) {
-  //     newActions = [ActionType.ADDED]
-  //   } else {
-  //     const sectionsToCompare: EditedSection[] = ['address', 'name', 'roles']
-  //     const editedSections: EditedSection[] = []
+    const parentRow = tableState.value.find(item => item.new.id === parentId)
 
-  //     for (const section of sectionsToCompare) {
-  //       const originalSection = originalPartyState[section]
-  //       const newSection = party[section]
+    if (parentRow) {
+      const seriesIndex = parentRow.new.series.findIndex(s => s.id === row.original.new.id)
 
-  //       if (!isEqual(originalSection, newSection)) {
-  //         editedSections.push(section)
-  //       }
-  //     }
+      if (seriesIndex !== -1) {
+        parentRow.new.series[seriesIndex] = {
+          ...shareSeries,
+          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+        }
+      }
+    }
+  }
 
-  //     newActions = editedSections.map(section => actionsMap[section])
-  //   }
+  function undoShareSeries(row: TableBusinessRow<ShareClassSchema>): void {
+    const parentId = row.getParentRow()?.original.new.id
+    const oldState = row.original.old
 
-  //   const newState: TableBusinessState<PartySchema> = {
-  //     old: originalPartyState,
-  //     new: {
-  //       ...party,
-  //       actions: newActions
-  //     }
-  //   }
+    if (!parentId || !oldState) {
+      return
+    }
 
-  //   updateTable(newState, row)
-  // }
+    const parentRow = tableState.value.find(item => item.new.id === parentId)
+
+    if (parentRow) {
+      const seriesIndex = parentRow.new.series.findIndex(s => s.id === row.original.new.id)
+
+      if (seriesIndex !== -1) {
+        const currentPriority = parentRow.new.series[seriesIndex]?.priority
+
+        if (currentPriority) {
+          parentRow.new.series[seriesIndex] = {
+            ...oldState,
+            priority: currentPriority
+          }
+        }
+      }
+    }
+  }
+
+  function removeShareSeries(row: TableBusinessRow<ShareClassSchema>): void {
+    const parentId = row.getParentRow()?.original.new.id
+    if (!parentId) {
+      return
+    }
+
+    const parentRow = tableState.value.find(item => item.new.id === parentId)
+    if (!parentRow) {
+      return
+    }
+
+    const seriesArray = parentRow.new.series
+    const removedPriority = row.original.new.priority
+
+    if (row.original.old === undefined) {
+      parentRow.new.series = seriesArray.filter(s => s.id !== row.original.new.id)
+      parentRow.new.series.forEach(s => s.priority > removedPriority && s.priority--)
+    } else {
+      const removedSeries = seriesArray.find(s => s.id === row.original.new.id)
+      if (removedSeries) {
+        removedSeries.actions = [ActionType.REMOVED]
+      }
+    }
+  }
 
   return {
     expandedState,
@@ -111,11 +147,9 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     addNewShareClass,
     removeShareClass,
     undoShareClass,
-    updateShareClass
-    // updateTable
-    // addNewParty,
-    // removeParty,
-    // undoParty,
-    // applyTableEdits
+    updateShareClass,
+    updateShareSeries,
+    undoShareSeries,
+    removeShareSeries
   }
 }
