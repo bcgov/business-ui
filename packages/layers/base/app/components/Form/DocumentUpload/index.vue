@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import type { SelectMenuItem } from '@nuxt/ui'
 
+export interface DocumentUploadProps {
+  validate?: boolean
+  uploadLabel?: string
+  multipleFiles?: boolean
+  maxFileSize?: number
+  acceptedFileTypes?: string[]
+}
+
 /**
- * FileUpload component for handling file uploads with validation.
- * Supports multiple files, drag-and-drop, and displays upload progress.
- *
  * Props:
  * - validate: boolean — Whether to enable validation (default: false)
  * - uploadLabel: string — Label for the upload button (default: 'Upload Files')
@@ -27,17 +32,17 @@ import type { SelectMenuItem } from '@nuxt/ui'
  *   'text/plain'
  * ])
  */
-const props = defineProps({
-  validate: { type: Boolean, default: false },
-  uploadLabel: { type: String, default: 'Upload Files' },
-  multipleFiles: { type: Boolean, default: true },
-  maxFileSize: { type: Number, default: 3 * 1024 * 1024 }, // 3MB
-  acceptedFileTypes: { type: Array<string>, default: () => ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'] },
+const props = withDefaults(defineProps<DocumentUploadProps>(), {
+  validate: false,
+  uploadLabel: 'Upload Files',
+  multipleFiles: true,
+  maxFileSize: () => 3 * 1024 * 1024,
+  acceptedFileTypes: () => ['application/pdf', 'image/jpeg', 'image/png', 'image/gif']
 })
 
 /** Emits an event when files are converted */
 const emit = defineEmits<{
-  (event: 'converted-files', files: any[]): void
+  (event: 'converted-files', files: File[]): void
 }>()
 
 /** Reactive state and methods for file handling */
@@ -50,9 +55,8 @@ const {
 } = useDocumentHandler({
   maxFileSize: props.maxFileSize,
   acceptedFileTypes: props.acceptedFileTypes,
-  onConverted: (files) => emit('converted-files', files)
+  onConverted: files => emit('converted-files', files)
 })
-
 
 /** Label for the file upload component */
 const uploadDescription = computed(() =>
@@ -65,8 +69,8 @@ const uploadDescription = computed(() =>
  * A file is considered valid if it has the `uploaded` property set to true and no `errorMsg`.
  */
 const hasValidUploadedFile = computed(() =>
-  Array.isArray(state.files) &&
-  state.files.some(file => file.uploaded && !file.errorMsg)
+  Array.isArray(state.files)
+  && state.files.some(file => file.uploaded && !file.errorMsg)
 )
 
 /**
@@ -91,7 +95,7 @@ const fileUploadFileConfig = computed(() => {
     ? { label: 'text-red-600', base: 'border-red-600' }
     : {}
   if (isMobile.value) {
-    return { ...baseConfig, file: 'grid grid-cols-6 gap-1 wrap-anywhere' };
+    return { ...baseConfig, file: 'grid grid-cols-6 gap-1 wrap-anywhere' }
   }
   return baseConfig
 })
@@ -104,7 +108,6 @@ const fileUploadFileConfig = computed(() => {
 const mobilePictureHandler = (event: Event) => {
   const input = event.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
-
     // Ensure state.files is always an array before spreading new files into it
     const files = Array.from(input.files)
     state.files = Array.isArray(state.files) ? [...state.files, ...files] : [...files]
@@ -133,9 +136,9 @@ const mobileMenuItems = ref([
 ] satisfies SelectMenuItem[])
 
 /** Refs for mobile file inputs */
-const albumInput = ref<HTMLInputElement | null>(null)
-const cameraInput = ref<HTMLInputElement | null>(null)
-const fileInput = ref<HTMLInputElement | null>(null)
+const albumInput = useTemplateRef<HTMLInputElement>('albumInput')
+const cameraInput = useTemplateRef<HTMLInputElement>('cameraInput')
+const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
 
 /** Trigger input click by type */
 function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
@@ -145,19 +148,21 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
 </script>
 
 <template>
-  <UForm :state="state" class="w-full" >
-    <UFormField name="image">
+  <UForm :state="state" class="w-full">
+    <UFormField name="documentUpload">
       <UFileUpload
         v-model="state.files"
         :label="uploadLabel"
         layout="list"
-        :multiple="multipleFiles"
+        :multiple="props.multipleFiles"
         :interactive="false"
         class="w-full"
         :ui="fileUploadFileConfig"
         @update:model-value="fileHandler"
       >
-        <template #leading>{{ null }}</template>
+        <template #leading>
+          {{ null }}
+        </template>
 
         <template #description>
           <div class="grid">
@@ -169,8 +174,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
         </template>
 
         <template #actions="{ open }">
-
-          <!-- Mobile Device Actions-->
+          <!-- Mobile Device Actions -->
           <template v-if="isMobile">
             <UDropdownMenu
               :items="mobileMenuItems"
@@ -223,7 +227,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
           <!-- Desktop Actions -->
           <div v-else class="flex items-center">
             <UButton
-              :label="'Upload File' + (multipleFiles ? 's' : '')"
+              :label="'Upload File' + (props.multipleFiles ? 's' : '')"
               icon="i-mdi-file-upload-outline"
               color="primary"
               variant="solid"
@@ -298,11 +302,11 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             <UIcon name="i-mdi-close" />
           </UButton>
         </template>
-
       </UFileUpload>
     </UFormField>
   </UForm>
 </template>
+
 <style scoped>
 .pdf-frame {
   max-width: 150px;

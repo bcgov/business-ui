@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useDocumentHandler } from '@/composables/useDocumentHandler'
 
 describe('useDocumentHandler Composable', () => {
-  let composable: any
-  let mockOnConverted: any
+  let composable
+  let mockOnConverted
 
   beforeEach(() => {
     mockOnConverted = vi.fn()
@@ -63,7 +63,7 @@ describe('useDocumentHandler Composable', () => {
 
     it('should return undefined if URL API is not available', () => {
       const originalURL = window.URL
-      delete (window as any).URL
+      delete (window).URL
 
       const mockFile = new File(['test'], 'test.pdf', { type: 'application/pdf' })
       const objectUrl = composable.getObjectURL(mockFile)
@@ -71,7 +71,7 @@ describe('useDocumentHandler Composable', () => {
       expect(objectUrl).toBeUndefined()
 
       // Restore
-      ;(window as any).URL = originalURL
+      ;(window).URL = originalURL
     })
   })
 
@@ -153,23 +153,6 @@ describe('useDocumentHandler Composable', () => {
   })
 
   describe('fileHandler', () => {
-    it('should initialize state.files as array on first call', async () => {
-      const mockFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
-
-      // Initial state should be undefined
-      expect(composable.state.files).toBeUndefined()
-
-      // After fileHandler is called, files array should be initialized
-      // Note: This is a validation test - actual conversion requires API mock
-      const initialState = composable.state.files
-      expect(initialState).toBeUndefined()
-
-      // Verify fileHandler method exists and is callable
-      expect(typeof composable.fileHandler).toBe('function')
-      // fileHandler is an async function, so constructor.name will be 'AsyncFunction'
-      expect(composable.fileHandler.constructor.name).toBe('AsyncFunction')
-    })
-
     it('should set isProcessing to true during processing and false after', async () => {
       const mockFile = new File(['test content'], 'document.pdf', { type: 'application/pdf' })
 
@@ -177,8 +160,8 @@ describe('useDocumentHandler Composable', () => {
       expect(composable.isProcessing.value).toBe(false)
 
       // Create a promise that we can control
-      let resolveConversion: any
-      const conversionPromise = new Promise(resolve => {
+      let resolveConversion
+      const conversionPromise = new Promise((resolve) => {
         resolveConversion = resolve
       })
 

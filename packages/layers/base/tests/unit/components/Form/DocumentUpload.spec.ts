@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import DocumentUpload from '@/components/Form/DocumentUpload/index.vue'
 
 describe('DocumentUpload Component', () => {
-  let wrapper: any
+  let wrapper
 
   beforeEach(() => {
     wrapper = null
@@ -367,7 +367,7 @@ describe('DocumentUpload Component', () => {
         target: {
           files: [mockFile]
         }
-      } as any
+      }
 
       wrapper.vm.mobilePictureHandler(event)
 
@@ -398,14 +398,14 @@ describe('DocumentUpload Component', () => {
         target: {
           files: [mockFile1]
         }
-      } as any
+      }
       wrapper.vm.mobilePictureHandler(event)
 
       event = {
         target: {
           files: [mockFile2]
         }
-      } as any
+      }
       wrapper.vm.mobilePictureHandler(event)
 
       expect(wrapper.vm.state.files).toHaveLength(2)
