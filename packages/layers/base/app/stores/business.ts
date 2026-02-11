@@ -62,6 +62,7 @@ export const useBusinessStore = defineStore('business-store', () => {
       alertList.push({
         alertType: BusinessAlert.DISSOLUTION,
         contentExtra,
+        contentPath: warning?.data?.overdueTransition ? 'content.ta' : 'content.ars',
         date: date || unknownText,
         icon: 'i-mdi-alert',
         label: t(`businessAlert.${BusinessAlert.DISSOLUTION}.label`),

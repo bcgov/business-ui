@@ -25,7 +25,7 @@ defineProps<{ alerts: BusinessAlertItem[] }>()
         <div class="space-y-3" :data-testid="`business-alerts-${item.alertType}-content`">
           <ConnectI18nHelper
             as="p"
-            :translation-path="`businessAlert.${item.alertType}.content`"
+            :translation-path="`businessAlert.${item.alertType}.${item.contentPath || 'content'}`"
             :date="item.date"
             data-testid="business-alerts-content-text"
           />
