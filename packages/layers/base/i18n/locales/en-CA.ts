@@ -118,6 +118,16 @@ export default {
       value: 'Monday to Friday, 8:30am - 4:30pm Pacific Time'
     }
   },
+  documentUpload: {
+    label: 'Upload Files',
+    acceptedFiles: 'Accepted file types:',
+    maxFileSize: 'Max file size',
+    noDocumentsDescription: 'No documents have been uploaded. Please upload the required document.',
+    dragAndDropLabel: 'or drag and drop files here',
+    uploadOf: 'Upload of',
+    uploadFailed: 'failed.',
+    uploading: 'Uploading...'
+  },
   modal: {
     error: {
       business: {

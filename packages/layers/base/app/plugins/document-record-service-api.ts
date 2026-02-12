@@ -6,7 +6,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   const xApiKey = rtc.docApiKey
   const baseURL = rtc.docApiUrl + rtc.docApiVersion
 
-  // $fetch not being recognized
+  // Create $fetch instance with automatic interceptors for auth headers
+  // Supports all HTTP methods (GET, POST, PUT, DELETE, etc.) in options
   const api = ($fetch as $Fetch).create({
     baseURL,
     async onRequest({ options }) {
