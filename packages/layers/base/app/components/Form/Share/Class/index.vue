@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
-const formTarget = 'party-details-form'
+const formTarget = 'share-class-form'
 const currencyOptions = getCurrencyList()
 const schema = computed(() => getActiveShareClassSchema(props.validationContext))
 

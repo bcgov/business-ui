@@ -26,12 +26,13 @@ const {
   updateShareSeries,
   undoShareSeries,
   removeShareSeries,
-  addNewShareSeries
+  addNewShareSeries,
+  changePriority
 } = useManageShareStructure(stateKey)
 
-// const { t } = useI18n()
+const { t } = useI18n()
 const {
-  // setAlert,
+  setAlert,
   clearAlert
 } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
@@ -70,13 +71,17 @@ function getSeriesValidationContext(row: TableBusinessRow<ShareClassSchema>) {
 }
 
 function setActiveFormAlert() {
-  console.info('action prevented, set sub form alert here')
-  // setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+  if (activeClass.value) {
+    setAlert('share-class-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+  if (activeSeries.value) {
+    setAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
   // prevent actions if a sub form is open
-  if (!!activeClass.value || !!activeSeries.value) {
+  if (activeClass.value || activeSeries.value) {
     setActiveFormAlert()
     return
   }
@@ -100,11 +105,6 @@ function cleanupForm() {
   activeSeries.value = undefined
 }
 
-function addClass(shareClass: ActiveShareClassSchema) {
-  addNewShareClass(shareClass)
-  cleanupForm()
-}
-
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
     activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
@@ -119,33 +119,6 @@ function isRowEditing(rowId: string, depth: number) {
     return activeSeries.value?.id === rowId
   }
   return activeClass.value?.id === rowId
-}
-
-function changePriority(row: TableBusinessRow<ShareClassSchema>, direction: 'up' | 'down') {
-  const selectedRow = row.original.new
-  const isClass = row.depth === 0
-  const parentRowId = row.getParentRow()?.original.new.id
-
-  const classOrSeriesList = isClass
-    ? tableState.value
-    : tableState.value.find(item => item.new.id === parentRowId)?.new.series
-
-  if (!classOrSeriesList || classOrSeriesList.length < 2) {
-    return
-  }
-
-  const flattenedList: Array<{ id: string, priority: number }> = isClass
-    ? (classOrSeriesList as TableBusinessState<ShareClassSchema>[]).map(item => item.new)
-    : (classOrSeriesList as ShareSeriesSchema[])
-
-  // find the nearest item above or below the selectedRow
-  const targetRow = flattenedList
-    .filter(item => direction === 'up' ? item.priority < selectedRow.priority : item.priority > selectedRow.priority)
-    .sort((a, b) => direction === 'up' ? b.priority - a.priority : a.priority - b.priority)[0]
-
-  if (targetRow) {
-    [selectedRow.priority, targetRow.priority] = [targetRow.priority, selectedRow.priority]
-  }
 }
 
 function clearAllAlerts() {
@@ -180,7 +153,7 @@ function clearAllAlerts() {
       variant="add"
       name="activeClass"
       :validation-context="classValidationContext"
-      @done="() => addClass(activeClass)"
+      @done="() => { addNewShareClass(activeClass), cleanupForm() }"
       @cancel="cleanupForm"
     />
 
@@ -210,10 +183,7 @@ function clearAllAlerts() {
             variant="edit"
             name="activeClass"
             :validation-context="classValidationContext"
-            @done="() => {
-              updateShareClass(row, activeClass)
-              cleanupForm()
-            }"
+            @done="() => { updateShareClass(row, activeClass), cleanupForm() }"
             @cancel="cleanupForm"
           />
           <FormShareSeries
@@ -224,10 +194,7 @@ function clearAllAlerts() {
             variant="edit"
             name="activeSeries"
             :validation-context="getSeriesValidationContext(row)"
-            @done="() => {
-              updateShareSeries(row, activeSeries)
-              cleanupForm()
-            }"
+            @done="() => { updateShareSeries(row, activeSeries), cleanupForm() }"
             @cancel="cleanupForm"
           />
           <FormShareSeries
@@ -238,10 +205,7 @@ function clearAllAlerts() {
             variant="add"
             name="activeSeries"
             :validation-context="getSeriesValidationContext(row)"
-            @done="() => {
-              addNewShareSeries(row, activeSeries)
-              cleanupForm()
-            }"
+            @done="() => { addNewShareSeries(row, activeSeries), cleanupForm() }"
             @cancel="cleanupForm"
           />
         </div>

@@ -163,6 +163,33 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
   }
 
+  function changePriority(row: TableBusinessRow<ShareClassSchema>, direction: 'up' | 'down') {
+    const selectedRow = row.original.new
+    const isClass = row.depth === 0
+    const parentRowId = row.getParentRow()?.original.new.id
+
+    const classOrSeriesList = isClass
+      ? tableState.value
+      : tableState.value.find(item => item.new.id === parentRowId)?.new.series
+
+    if (!classOrSeriesList || classOrSeriesList.length < 2) {
+      return
+    }
+
+    const flattenedList: Array<{ id: string, priority: number }> = isClass
+      ? (classOrSeriesList as TableBusinessState<ShareClassSchema>[]).map(item => item.new)
+      : (classOrSeriesList as ShareSeriesSchema[])
+
+    // find the nearest item above or below the selectedRow
+    const targetRow = flattenedList
+      .filter(item => direction === 'up' ? item.priority < selectedRow.priority : item.priority > selectedRow.priority)
+      .sort((a, b) => direction === 'up' ? b.priority - a.priority : a.priority - b.priority)[0]
+
+    if (targetRow) {
+      [selectedRow.priority, targetRow.priority] = [targetRow.priority, selectedRow.priority]
+    }
+  }
+
   return {
     expandedState,
     tableState,
@@ -173,6 +200,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     addNewShareSeries,
     updateShareSeries,
     undoShareSeries,
-    removeShareSeries
+    removeShareSeries,
+    changePriority
   }
 }
