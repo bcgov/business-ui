@@ -21,35 +21,51 @@ async function setupPage(page: Page, warnings: BusinessWarning[]) {
 test.describe('Business Alerts Tests - Dissolution', () => {
   const testCases = [
     {
-      testName: '0 delays',
+      testName: '0 delays - ars',
       targetDissolutionDate: '2027-06-03',
       userDelays: 0,
       expectedDate: 'June 3, 2027',
       // eslint-disable-next-line max-len
-      expectedExtraText: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca'
+      expectedExtraText: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca',
+      overdueARs: true,
+      overdueTransition: false
     },
     {
-      testName: '1 delay',
+      testName: '1 delay - transition',
       targetDissolutionDate: '2026-03-21',
       userDelays: 1,
       expectedDate: 'March 21, 2026',
       // eslint-disable-next-line max-len
-      expectedExtraText: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca'
+      expectedExtraText: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca',
+      overdueARs: false,
+      overdueTransition: true
     },
     {
-      testName: '2 delays',
+      testName: '2 delays - ars',
       targetDissolutionDate: '2028-11-13',
       userDelays: 2,
       expectedDate: 'November 13, 2028',
       // eslint-disable-next-line max-len
-      expectedExtraText: 'Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca'
+      expectedExtraText: 'Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca',
+      overdueARs: true,
+      overdueTransition: false
     }
   ]
-  testCases.forEach(({ testName, targetDissolutionDate, userDelays, expectedDate, expectedExtraText }) => {
+  testCases.forEach(({
+    testName,
+    targetDissolutionDate,
+    userDelays,
+    expectedDate,
+    expectedExtraText,
+    overdueARs,
+    overdueTransition
+  }) => {
     test(testName, async ({ page }) => {
       await setupPage(page, [{
         code: ApiWarningCode.DISSOLUTION_IN_PROGRESS,
         data: {
+          overdueARs,
+          overdueTransition,
           stage_1_date: '2025-04-11T00:34:28.974191+00:00',
           targetDissolutionDate,
           targetStage2Date: '2026-03-05',
@@ -71,6 +87,11 @@ test.describe('Business Alerts Tests - Dissolution', () => {
       const contentExtraText = content.getByTestId('business-alerts-content-extra-text')
       await expect(contentText).toBeVisible()
       await expect(contentText).toContainText(expectedDate)
+      if (overdueTransition) {
+        await expect(contentText).toContainText('an overdue post restoration transition application')
+      } else {
+        await expect(contentText).toContainText('overdue annual reports')
+      }
       await expect(contentExtraText).toHaveText(expectedExtraText)
     })
   })
