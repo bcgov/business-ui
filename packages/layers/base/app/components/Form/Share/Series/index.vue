@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   done: []
   cancel: []
+  remove: []
 }>()
 
 const { t } = useI18n()
@@ -110,24 +111,32 @@ provide('UInput-slots-share-series-name-input', { trailing: h('span', { class: '
             :ui="{ label: 'text-base' }"
           />
         </UFormField>
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-          <FormAlertMessage
-            :id="messageId"
-            :message="alerts[formTarget]"
-          />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center justify-between">
           <UButton
-            :data-alert-focus-target="targetId"
-            :aria-describedby="messageId"
-            :label="t('label.done')"
-            class="w-full sm:w-min justify-center"
-            @click="onDone"
-          />
-          <UButton
+            :label="$t('label.remove')"
             variant="outline"
-            :label="t('label.cancel')"
-            class="w-full sm:w-min justify-center"
-            @click="$emit('cancel')"
+            color="error"
+            @click="$emit('remove')"
           />
+          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+            <FormAlertMessage
+              :id="messageId"
+              :message="alerts[formTarget]"
+            />
+            <UButton
+              :data-alert-focus-target="targetId"
+              :aria-describedby="messageId"
+              :label="t('label.done')"
+              class="w-full sm:w-min justify-center"
+              @click="onDone"
+            />
+            <UButton
+              variant="outline"
+              :label="t('label.cancel')"
+              class="w-full sm:w-min justify-center"
+              @click="$emit('cancel')"
+            />
+          </div>
         </div>
       </div>
     </ConnectFieldset>

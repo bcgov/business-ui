@@ -185,6 +185,7 @@ function clearAllAlerts() {
             :validation-context="classValidationContext"
             @done="() => { updateShareClass(row, activeClass), cleanupForm() }"
             @cancel="cleanupForm"
+            @remove="() => { removeShareClass(row), cleanupForm() }"
           />
           <FormShareSeries
             v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
@@ -199,6 +200,7 @@ function clearAllAlerts() {
               cleanupForm()
             }"
             @cancel="cleanupForm"
+            @remove="() => { removeShareSeries(row), cleanupForm() }"
           />
         </div>
       </template>
