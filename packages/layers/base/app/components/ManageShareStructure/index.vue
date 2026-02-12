@@ -62,7 +62,9 @@ function getSeriesValidationContext(row: TableBusinessRow<ShareClassSchema>) {
 
   const classMaxShares = shareClassData.maxNumberOfShares || 0
   const otherSeriesTotalShares = otherSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
-  const maxAllowedShares = classMaxShares - otherSeriesTotalShares
+  const maxAllowedShares = shareClassData.hasMaximumShares
+    ? classMaxShares - otherSeriesTotalShares
+    : Infinity
 
   return {
     existingNames,
