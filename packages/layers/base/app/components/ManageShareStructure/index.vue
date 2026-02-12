@@ -183,9 +183,9 @@ function clearAllAlerts() {
             variant="edit"
             name="activeClass"
             :validation-context="classValidationContext"
-            @done="() => { updateShareClass(row, activeClass), cleanupForm() }"
+            @done="() => updateShareClass(row, activeClass, cleanupForm)"
             @cancel="cleanupForm"
-            @remove="() => { removeShareClass(row), cleanupForm() }"
+            @remove="() => removeShareClass(row, cleanupForm)"
           />
           <FormShareSeries
             v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"

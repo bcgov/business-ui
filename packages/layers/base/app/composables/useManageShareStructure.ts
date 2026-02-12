@@ -2,6 +2,8 @@ import type { ExpandedState } from '@tanstack/vue-table'
 import { isEqual, omit } from 'es-toolkit'
 
 export const useManageShareStructure = (stateKey: string = 'manage-share-structure') => {
+  const { baseModal } = useModal()
+  const { t } = useI18n()
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-table-state`, () => [])
 
@@ -27,16 +29,44 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     tableState.value.filter(item => item.new.id !== shareClass.id).forEach(item => item.new.priority++)
   }
 
-  function removeShareClass(row: TableBusinessRow<ShareClassSchema>): void {
+  function removeShareClass(row: TableBusinessRow<ShareClassSchema>, cleanupForm?: () => void): void {
     const removedPriority = row.original.new.priority
+    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
 
-    if (row.original.old === undefined) {
-      tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
-      tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
+    const applyEdits = () => {
+      if (row.original.old === undefined) {
+        tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
+        tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
+      } else {
+        if (rowToUpdate) {
+          rowToUpdate.new.actions = [ActionType.REMOVED]
+        }
+      }
+    }
+
+    if (rowToUpdate && rowToUpdate.new.series.length) {
+      baseModal.open({
+        title: t('modal.removeClassWithSeries.title'),
+        description: t('modal.removeClassWithSeries.description'),
+        dismissible: false,
+        buttons: [
+          { label: t('label.cancel'), shouldClose: true, variant: 'outline' },
+          {
+            label: t('label.remove'),
+            shouldClose: true,
+            onClick: () => {
+              applyEdits()
+              if (cleanupForm) {
+                cleanupForm()
+              }
+            }
+          }
+        ]
+      })
     } else {
-      const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
-      if (rowToUpdate) {
-        rowToUpdate.new.actions = [ActionType.REMOVED]
+      applyEdits()
+      if (cleanupForm) {
+        cleanupForm()
       }
     }
   }
@@ -52,7 +82,11 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
   }
 
-  function updateShareClass(row: TableBusinessRow<ShareClassSchema>, shareClass: ActiveShareClassSchema): void {
+  function updateShareClass(
+    row: TableBusinessRow<ShareClassSchema>,
+    shareClass: ActiveShareClassSchema,
+    cleanupForm: () => void
+  ) {
     if (!shareClass) {
       return
     }
@@ -60,11 +94,44 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
 
     if (rowToUpdate) {
-      if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
-        rowToUpdate.new = {
-          ...shareClass,
-          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+      // only apply edits if changes have been made, exclude series from the equality check
+      const applyEdits = () => {
+        if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
+          rowToUpdate.new = {
+            ...shareClass,
+            actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+          }
         }
+      }
+
+      const initialMaxShares = row.original.new.maxNumberOfShares
+      const submittedMaxShares = shareClass.maxNumberOfShares
+      const maxSharesChanged = initialMaxShares !== submittedMaxShares
+
+      if ((!shareClass.hasRightsOrRestrictions || maxSharesChanged) && rowToUpdate.new.series.length) {
+        const description = maxSharesChanged
+          ? t('modal.removeShareSeries.changeMaxSharesDescription')
+          : t('modal.removeShareSeries.removeRorDescription')
+        baseModal.open({
+          title: t('modal.removeShareSeries.title'),
+          description,
+          dismissible: false,
+          buttons: [
+            { label: t('label.cancel'), shouldClose: true, variant: 'outline' },
+            {
+              label: t('label.removeSeries'),
+              shouldClose: true,
+              onClick: () => {
+                applyEdits()
+                rowToUpdate.new.series.forEach(s => s.actions = [ActionType.REMOVED])
+                cleanupForm()
+              }
+            }
+          ]
+        })
+      } else {
+        applyEdits()
+        cleanupForm()
       }
     }
   }

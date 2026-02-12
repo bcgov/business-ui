@@ -313,6 +313,15 @@ export default {
         description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
       }
     },
+    removeShareSeries: {
+      title: 'Remove Share Series',
+      removeRorDescription: 'This share class has one or more share series. If you remove the special rights and restrictions of this share class, all associated share series will be removed.',
+      changeMaxSharesDescription: 'To change the maximum number of shares in this class, all associated share series will be removed. Alternatively, you can cancel this action and change your series to have a maximum number.'
+    },
+    removeClassWithSeries: {
+      title: 'Remove Share Class with Series',
+      description: 'This share class has one or more share series. Removing this share class will also remove any associated share series.'
+    },
     unsavedChanges: {
       title: 'Unsaved changes',
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'
@@ -436,6 +445,7 @@ export default {
     pursuantToPlanOfArrangement: 'Pursuant to a Plan of Arrangement',
     REJECTED: 'REJECTED',
     refreshPage: 'Refresh Page',
+    removeSeries: 'Remove Series',
     registration: 'Registration',
     registrationDate: 'Registration Date',
     registrationNumber: 'Registration Number',
