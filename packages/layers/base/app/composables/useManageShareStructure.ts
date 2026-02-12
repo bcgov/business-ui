@@ -1,4 +1,5 @@
 import type { ExpandedState } from '@tanstack/vue-table'
+import { isEqual, omit } from 'es-toolkit'
 
 export const useManageShareStructure = (stateKey: string = 'manage-share-structure') => {
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
@@ -59,9 +60,11 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
 
     if (rowToUpdate) {
-      rowToUpdate.new = {
-        ...shareClass,
-        actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+      if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
+        rowToUpdate.new = {
+          ...shareClass,
+          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+        }
       }
     }
   }
@@ -103,10 +106,13 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     if (parentRow) {
       const seriesIndex = parentRow.new.series.findIndex(s => s.id === row.original.new.id)
 
+      // only apply edits if changes were made
       if (seriesIndex !== -1) {
-        parentRow.new.series[seriesIndex] = {
-          ...shareSeries,
-          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+        if (!isEqual(parentRow.new.series[seriesIndex], shareSeries)) {
+          parentRow.new.series[seriesIndex] = {
+            ...shareSeries,
+            actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+          }
         }
       }
     }
