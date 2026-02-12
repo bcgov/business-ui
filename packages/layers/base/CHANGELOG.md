@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.11.1
+
+### Patch Changes
+
+- [#388](https://github.com/bcgov/business-ui/pull/388) [`5fddcd3`](https://github.com/bcgov/business-ui/commit/5fddcd3ad7f69ef0ed722171a0b9269c29e31493) Thanks [@kialj876](https://github.com/kialj876)! - Business Alerts update to show dissolution content text based on reason
+
 ## 0.11.0
 
 ### Minor Changes
