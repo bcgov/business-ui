@@ -30,4 +30,37 @@ describe.skip('<ModalManageBusiness />', () => { // TODO: figure out how to test
 
     expect(wrapper.html()).toContain('<span>something</span>')
   })
+
+  it('should shows alert when given', async () => {
+    const wrapper = await mountSuspended(ModalManageBusiness, {
+      props: {
+        business: {
+          bn: '123',
+          identifier: '123',
+          legalType: 'some type',
+          name: 'some name',
+          score: 42,
+          status: 'some status'
+        },
+        alert: {
+          color: 'red',
+          translationPath: 'form.manageBusiness.expiredLink',
+          icon: 'i-mdi-warning',
+          variant: 'subtle'
+        }
+      },
+      global: {
+        plugins: [enI18n],
+        provide: {
+          // Mock the modal injection
+          [Symbol('nuxt-ui.modal')]: {
+            open: vi.fn(),
+            close: vi.fn()
+          }
+        }
+      }
+    })
+
+    expect(wrapper.html()).toContain('<span>form.manageBusiness.expiredLink</span>')
+  })
 })

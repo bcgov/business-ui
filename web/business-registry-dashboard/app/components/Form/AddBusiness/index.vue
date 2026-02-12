@@ -17,6 +17,8 @@ defineProps<{
   isCorpOrBenOrCoop: boolean
 }>()
 
+const emit = defineEmits<{ emailSuccess: [void] }>()
+
 type Form = typeof FormAddBusinessBase
 type Success = typeof FormAddBusinessEmailAuthSent
 type Error = typeof FormAddBusinessError
@@ -35,6 +37,11 @@ const successObj = ref<{ type: string, value: string }>()
 function handleError (e: { error: FetchError, type: string }) {
   errorObj.value = e
   currentState.value = 'FormAddBusinessError'
+}
+
+function handleEmailSuccess () {
+  emit('emailSuccess')
+  currentState.value = 'FormAddBusinessEmailAuthSent'
 }
 
 defineExpose({
@@ -56,7 +63,7 @@ defineExpose({
       :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
       @retry="currentState = 'FormAddBusinessBase'"
       @business-error="handleError"
-      @email-success="currentState = 'FormAddBusinessEmailAuthSent'"
+      @email-success="handleEmailSuccess"
     />
   </transition>
 </template>

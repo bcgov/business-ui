@@ -5,6 +5,7 @@ const isSmallScreen = useMediaQuery('(max-width: 640px)')
 const closeButtonRef = ref<InstanceType<typeof UButton> | null>(null)
 
 defineProps<{
+  alert?: ModalAlertProps
   title?: string
   actions?: { label: string, handler:() => void, color?: string, variant?: string }[]
   error?: {
@@ -57,18 +58,32 @@ defineShortcuts({
       }"
     >
       <template #header>
-        <div v-if="title" class="flex items-center justify-between">
-          <span class="pb-3 text-xl font-semibold text-bcGovColor-darkGray">{{ title }}</span>
-          <UButton
-            ref="closeButtonRef"
-            :ui="{ icon: { base: 'shrink-0 scale-150' } }"
-            icon="i-mdi-close"
-            color="primary"
-            :aria-label="$t('btn.close')"
-            square
-            variant="ghost"
-            @click="modalModel = false"
-          />
+        <div v-if="title || alert" class="flex justify-between">
+          <div>
+            <!-- NB: UAlert has a vue warn on close button prop. This will go away when nuxt/ui is upgraded to 4+ -->
+            <UAlert v-if="alert" class="mb-3" v-bind="alert">
+              <template #description>
+                <p class="text-bcGovColor-darkGray">
+                  <ConnectI18nHelper :translation-path="alert.translationPath" />
+                </p>
+              </template>
+            </UAlert>
+            <span v-if="title" class="pb-3 text-xl font-semibold text-bcGovColor-darkGray">
+              {{ title }}
+            </span>
+          </div>
+          <div class="ml-4">
+            <UButton
+              ref="closeButtonRef"
+              :ui="{ icon: { base: 'shrink-0 scale-150' } }"
+              icon="i-mdi-close"
+              color="primary"
+              :aria-label="$t('btn.close')"
+              square
+              variant="ghost"
+              @click="modalModel = false"
+            />
+          </div>
         </div>
       </template>
 
