@@ -24,6 +24,17 @@ const schema = computed(() => getActiveShareClassSchema(props.validationContext)
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
 
+function resetFields(fields: 'parValue' | 'maxShares') {
+  if (fields === 'parValue') {
+    model.value.parValue = null
+    model.value.currency = undefined
+    formRef.value?.clear(/^(parValue|currency)$/)
+  } else if (fields === 'maxShares') {
+    model.value.maxNumberOfShares = null
+    formRef.value?.clear(/^maxNumberOfShares$/)
+  }
+}
+
 async function onDone() {
   try {
     await formRef.value?.validate()
@@ -77,7 +88,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
           }"
-          @update:model-value="model.maxNumberOfShares = null"
+          @update:model-value="resetFields('maxShares')"
         >
           <template #label="{ item }">
             <ConnectFormInput
@@ -103,7 +114,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
           }"
-          @update:model-value="model.parValue = null, model.currency = undefined"
+          @update:model-value="resetFields('parValue')"
         >
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">

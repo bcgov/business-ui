@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import mockClasses from '#test-mocks/business-share-classes/json/default.json'
 
 definePageMeta({
@@ -37,11 +36,7 @@ tableState.value = mockClasses.shareClasses.map((c) => {
   }
 })
 
-// const activeClass = ref<ActiveShareClassSchema | undefined>(undefined)
-// const activeSeries = ref<ActiveShareSeriesSchema | undefined>(undefined)
 const loading = ref(false)
-
-// watch(activeClass, v => console.log(v), { deep: true })
 
 const formState = reactive<{
   activeClass: ActiveShareClassSchema | undefined
@@ -50,11 +45,6 @@ const formState = reactive<{
   activeClass: undefined,
   activeSeries: undefined
 })
-
-const schema = computed(() => z.object({
-  activeClass: getActiveShareClassSchema(),
-  activeSeries: getActiveShareSeriesSchema()
-}))
 </script>
 
 <template>
@@ -63,7 +53,6 @@ const schema = computed(() => z.object({
       :heading="{ label: 'Manage Share Structure - Default' }"
       ui-body="p-10"
     >
-      <!-- <UForm :state="formState" :schema> -->
       <ManageShareStructure
         v-model:active-class="formState.activeClass"
         v-model:active-series="formState.activeSeries"
@@ -72,7 +61,6 @@ const schema = computed(() => z.object({
         add-label="Add Share Class"
         edit-label="Edit Class or series?"
       />
-      <!-- </UForm> -->
     </ConnectPageSection>
   </UContainer>
 </template>

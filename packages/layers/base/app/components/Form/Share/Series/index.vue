@@ -23,6 +23,11 @@ const schema = computed(() => getActiveShareSeriesSchema(props.validationContext
 const model = defineModel<ShareSeriesSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')
 
+function resetFields() {
+  model.value.maxNumberOfShares = null
+  formRef.value?.clear(/^maxNumberOfShares$/)
+}
+
 async function onDone() {
   try {
     await formRef.value?.validate()
@@ -76,7 +81,7 @@ provide('UInput-slots-share-series-name-input', { trailing: h('span', { class: '
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
           }"
-          @update:model-value="model.maxNumberOfShares = null"
+          @update:model-value="resetFields"
         >
           <template #label="{ item }">
             <ConnectFormInput
