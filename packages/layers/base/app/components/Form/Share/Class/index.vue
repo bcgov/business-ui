@@ -47,7 +47,11 @@ async function onDone() {
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 
-provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 'text-base font-bold' }, 'Shares') })
+const hasNameError = computed(() => !!formRef.value?.getErrors().find(e => e.name?.includes('name')))
+const nameInputSlots = computed(() => ({
+  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, 'Shares')
+}))
+provide('UInput-slots-share-class-name-input', nameInputSlots)
 </script>
 
 <template>
