@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SelectMenuItem } from '@nuxt/ui'
 
-export interface DocumentUploadProps {
+interface DocumentUploadProps {
   validate?: boolean
   uploadLabel?: string
   multipleFiles?: boolean
@@ -60,8 +60,8 @@ const {
 
 /** Label for the file upload component */
 const uploadDescription = computed(() =>
-  `Accepted file types: ${props.acceptedFileTypes.map(type => '.' + type.split('/').pop()).join(', ')}.
-   Max file size ${formatBytes(props.maxFileSize, 0)}.`
+  `${$t('documentUpload.acceptedFiles')} ${props.acceptedFileTypes.map(type => '.' + type.split('/').pop()).join(', ')}.
+   ${$t('documentUpload.maxFileSize')} ${formatBytes(props.maxFileSize, 0)}.`
 )
 
 /**
@@ -82,17 +82,12 @@ const showValidationError = computed(() =>
 )
 
 /** Mobile detection and responsive layout handling */
-const isMobile = ref(window.innerWidth < 640)
-function handleResize() {
-  isMobile.value = window.innerWidth < 640
-}
-onMounted(() => window.addEventListener('resize', handleResize))
-onUnmounted(() => window.removeEventListener('resize', handleResize))
+const isMobile = useMediaQuery('(max-width: 640px)')
 
 /** Computed configurations for file upload component */
 const fileUploadFileConfig = computed(() => {
   const baseConfig = showValidationError.value
-    ? { label: 'text-error', base: 'border-red-600' }
+    ? { label: 'text-error', base: 'border-error' }
     : {}
   if (isMobile.value) {
     return { ...baseConfig, file: 'grid grid-cols-6 gap-1 wrap-anywhere' }
@@ -167,7 +162,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
         <template #description>
           <div class="grid">
             <span v-if="showValidationError" class="text-error">
-              No documents have been uploaded. Please upload the required document.
+              {{ $t('documentUpload.noDocumentsDescription') }}
             </span>
             {{ uploadDescription }}
           </div>
@@ -180,7 +175,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
               :items="mobileMenuItems"
             >
               <UButton
-                label="Upload Files"
+                :label="$t('documentUpload.label')"
                 icon="i-mdi-file-upload-outline"
                 color="primary"
                 variant="solid"
@@ -227,13 +222,13 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
           <!-- Desktop Actions -->
           <div v-else class="flex items-center">
             <UButton
-              :label="'Upload File' + (props.multipleFiles ? 's' : '')"
+              :label="$t('documentUpload.label') + (props.multipleFiles ? 's' : '')"
               icon="i-mdi-file-upload-outline"
               color="primary"
               variant="solid"
               @click="open()"
             />
-            <span class="ml-2 text-primary hidden sm:inline">or drag and drop files here</span>
+            <span class="ml-2 text-primary hidden sm:inline">{{ $t('documentUpload.dragAndDropLabel') }}</span>
           </div>
         </template>
 
@@ -265,7 +260,8 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
               <div class="flex items-center">
                 <UIcon name="i-mdi-close-circle" class="text-error size-[20px]" />
                 <span class="ml-2 text-error text-[14px] italic">
-                  Upload of {{ file.document?.name }} failed. {{ file.errorMsg }}
+                  {{ $t('documentUpload.uploadOf') }} {{ file.document?.name }} {{ $t('documentUpload.uploadFailed') }}
+                  {{ file.errorMsg }}
                 </span>
               </div>
             </template>
@@ -287,7 +283,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             </template>
             <template v-else>
               <UProgress class="w-[200px]" color="primary" />
-              <span class="mt-1">Uploading...</span>
+              <span class="mt-1">{{ $t('documentUpload.uploading') }}</span>
             </template>
           </div>
 
@@ -298,7 +294,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             class="max-sm:col-span-12"
             @click="removeFile(index)"
           >
-            <span>{{ file?.uploaded ? 'Remove' : 'Cancel' }}</span>
+            <span>{{ file?.uploaded ? $t('label.remove') : $t('label.cancel') }}</span>
             <UIcon name="i-mdi-close" />
           </UButton>
         </template>

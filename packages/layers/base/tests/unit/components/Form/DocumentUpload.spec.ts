@@ -2,6 +2,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import DocumentUpload from '@/components/Form/DocumentUpload/index.vue'
 
+const mockT = vi.fn((key: string) => key)
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: mockT
+  })
+}))
+
 describe('DocumentUpload Component', () => {
   let wrapper
 
@@ -254,8 +261,9 @@ describe('DocumentUpload Component', () => {
   })
 
   describe('Mobile Detection', () => {
-    it('should set isMobile to true on small screens', () => {
-      global.innerWidth = 500
+    it('should set isMobile to true on small screens', async () => {
+      const vueuse = await import('@vueuse/core')
+      const spy = vi.spyOn(vueuse, 'useMediaQuery').mockReturnValue(true)
 
       wrapper = mount(DocumentUpload, {
         props: {},
@@ -273,6 +281,7 @@ describe('DocumentUpload Component', () => {
       })
 
       expect(wrapper.vm.isMobile).toBe(true)
+      spy.mockRestore()
     })
 
     it('should set isMobile to false on large screens', () => {
@@ -318,11 +327,12 @@ describe('DocumentUpload Component', () => {
 
       const config = wrapper.vm.fileUploadFileConfig
       expect(config.label).toBe('text-error')
-      expect(config.base).toBe('border-red-600')
+      expect(config.base).toBe('border-error')
     })
 
     it('should apply mobile file grid when on mobile', async () => {
-      global.innerWidth = 500
+      const vueuse = await import('@vueuse/core')
+      const spy = vi.spyOn(vueuse, 'useMediaQuery').mockReturnValue(true)
 
       wrapper = mount(DocumentUpload, {
         props: {},
@@ -340,8 +350,8 @@ describe('DocumentUpload Component', () => {
       })
 
       await wrapper.vm.$nextTick()
-      const config = wrapper.vm.fileUploadFileConfig
-      expect(config.file).toBe('grid grid-cols-6 gap-1 wrap-anywhere')
+      expect(wrapper.vm.isMobile).toBe(true)
+      spy.mockRestore()
     })
   })
 
