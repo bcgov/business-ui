@@ -66,6 +66,28 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
   }
 
+  function addNewShareSeries(row: TableBusinessRow<ShareClassSchema>, shareSeries: ActiveShareSeriesSchema) {
+    if (!shareSeries) {
+      return
+    }
+
+    const parentRow = tableState.value.find(item => item.new.id === row.original.new.id)
+    const seriesArray = parentRow?.new.series
+
+    if (seriesArray) {
+      seriesArray.unshift({
+        ...shareSeries,
+        actions: [ActionType.ADDED]
+      })
+      // increase every row priority that was not the row just added by 1
+      seriesArray.forEach((item) => {
+        if (item.id !== shareSeries.id) {
+          item.priority++
+        }
+      })
+    }
+  }
+
   function updateShareSeries(row: TableBusinessRow<ShareClassSchema>, shareSeries: ActiveShareSeriesSchema): void {
     if (!shareSeries) {
       return
@@ -148,6 +170,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     removeShareClass,
     undoShareClass,
     updateShareClass,
+    addNewShareSeries,
     updateShareSeries,
     undoShareSeries,
     removeShareSeries

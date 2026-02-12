@@ -7,7 +7,7 @@ const props = defineProps<{
   title: string
   stateKey: string
   nested?: boolean
-  parentRow?: TableBusinessRow<ShareClassSchema>
+  validationContext?: { existingNames: string[], maxAllowedShares: number }
 }>()
 
 const emit = defineEmits<{
@@ -18,18 +18,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'party-details-form'
-const schema = computed(() => {
-  const currentId = model.value.id
-  const siblingSeries = props.parentRow?.original.new.series.filter(item => item.id !== currentId) || []
-
-  const nameList = siblingSeries.map(item => item.name.toLowerCase())
-
-  const parentMaxShares = props.parentRow?.original.new.maxNumberOfShares || 0
-  const currentSeriesMaxSharesCount = siblingSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
-  const allowedMaxSharesCount = parentMaxShares - currentSeriesMaxSharesCount
-
-  return getActiveShareSeriesSchema(nameList, allowedMaxSharesCount)
-})
+const schema = computed(() => getActiveShareSeriesSchema(props.validationContext))
 
 const model = defineModel<ShareSeriesSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')

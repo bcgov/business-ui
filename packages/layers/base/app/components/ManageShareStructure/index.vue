@@ -25,11 +25,8 @@ const {
   updateShareClass,
   updateShareSeries,
   undoShareSeries,
-  removeShareSeries
-  // addNewParty,
-  // removeParty,
-  // undoParty,
-  // applyTableEdits
+  removeShareSeries,
+  addNewShareSeries
 } = useManageShareStructure(stateKey)
 
 // const { t } = useI18n()
@@ -40,6 +37,37 @@ const {
 const { setAlertText } = useConnectButtonControl()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
+
+const classValidationContext = computed(() => {
+  const currentId = activeClass.value?.id
+  const existingNames = tableState.value
+    .filter(item => item.new.id !== currentId)
+    .map(item => item.new.name.toLowerCase())
+
+  return { existingNames }
+})
+
+function getSeriesValidationContext(row: TableBusinessRow<ShareClassSchema>) {
+  const shareClassData = row.depth === 0 ? row.original.new : row.getParentRow()?.original.new
+
+  if (!shareClassData) {
+    return { existingNames: [], maxAllowedShares: 0 }
+  }
+
+  const currentId = activeSeries.value?.id
+  const otherSeries = shareClassData.series.filter(item => item.id !== currentId) || []
+
+  const existingNames = otherSeries.map(item => item.name.toLowerCase())
+
+  const classMaxShares = shareClassData.maxNumberOfShares || 0
+  const otherSeriesTotalShares = otherSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
+  const maxAllowedShares = classMaxShares - otherSeriesTotalShares
+
+  return {
+    existingNames,
+    maxAllowedShares
+  }
+}
 
 function setActiveFormAlert() {
   console.info('action prevented, set sub form alert here')
@@ -151,6 +179,7 @@ function clearAllAlerts() {
       :state-key="stateKey"
       variant="add"
       name="activeClass"
+      :validation-context="classValidationContext"
       @done="() => addClass(activeClass)"
       @cancel="cleanupForm"
     />
@@ -173,51 +202,49 @@ function clearAllAlerts() {
     >
       <template #expanded="{ row }">
         <div v-if="isRowEditing(row.original.new.id, row.depth) || addingSeriesToClassId === row.original.new.id">
-          <div v-if="addingSeriesToClassId">
-            <div>Adding New Series to {{ row.original.new.name }}</div>
-            <pre>{{ activeSeries }}</pre>
-          </div>
-          <div v-else>
-            <FormShareClass
-              v-if="row.depth === 0 && activeClass"
-              v-model="activeClass"
-              :title="'Edit Share Class'"
-              :state-key="stateKey"
-              variant="edit"
-              name="activeClass"
-              @done="() => {
-                updateShareClass(row, activeClass)
-                cleanupForm()
-              }"
-              @cancel="cleanupForm"
-            />
-            <FormShareSeries
-              v-if="row.depth === 1 && activeSeries"
-              v-model="activeSeries"
-              :title="'Edit Share Series'"
-              :state-key="stateKey"
-              variant="edit"
-              name="activeSeries"
-              :parent-row="row.getParentRow()"
-              @done="() => {
-                updateShareSeries(row, activeSeries)
-                cleanupForm()
-              }"
-              @cancel="cleanupForm"
-            />
-          </div>
+          <FormShareClass
+            v-if="row.depth === 0 && activeClass"
+            v-model="activeClass"
+            :title="'Edit Share Class'"
+            :state-key="stateKey"
+            variant="edit"
+            name="activeClass"
+            :validation-context="classValidationContext"
+            @done="() => {
+              updateShareClass(row, activeClass)
+              cleanupForm()
+            }"
+            @cancel="cleanupForm"
+          />
+          <FormShareSeries
+            v-if="row.depth === 1 && activeSeries"
+            v-model="activeSeries"
+            :title="'Edit Share Series'"
+            :state-key="stateKey"
+            variant="edit"
+            name="activeSeries"
+            :validation-context="getSeriesValidationContext(row)"
+            @done="() => {
+              updateShareSeries(row, activeSeries)
+              cleanupForm()
+            }"
+            @cancel="cleanupForm"
+          />
+          <FormShareSeries
+            v-if="addingSeriesToClassId && activeSeries"
+            v-model="activeSeries"
+            :title="'Add Share Series'"
+            :state-key="stateKey"
+            variant="add"
+            name="activeSeries"
+            :validation-context="getSeriesValidationContext(row)"
+            @done="() => {
+              addNewShareSeries(row, activeSeries)
+              cleanupForm()
+            }"
+            @cancel="cleanupForm"
+          />
         </div>
-        <!-- <FormShareClass
-        <FormShareSeries
-      v-if="activeSeries"
-      v-model="activeSeries"
-      :title="editLabel"
-      name="activeSeries"
-      variant="edit"
-      :state-key="stateKey"
-      @done="() => addSeries(activeSeries)"
-      @cancel="cleanupForm"
-    /> -->
       </template>
     </TableShareStructure>
   </div>

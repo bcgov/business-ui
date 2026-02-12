@@ -1,7 +1,7 @@
 import { z } from 'zod'
 // import type { FormShareClass } from '#components'
 
-export function getShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?: number) {
+export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
   return z.object({
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
@@ -10,7 +10,7 @@ export function getShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?
       .min(1, 'This field is required')
       .max(50, 'Maximum 50 characters')
       .refine(val => !/\b(share|shares|value)\b/i.test(val), 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’')
-      .refine(val => !nameList?.includes(val.toLowerCase().trim()), 'Name must be unique')
+      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), 'Name must be unique')
       .default(''),
     maxNumberOfShares: z.coerce.number('Only enter whole numbers').nullable().default(null),
     hasMaximumShares: z.boolean().default(false),
@@ -44,7 +44,7 @@ export function getShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?
         })
       }
 
-      if (allowedMaxSharesCount === 0 || (allowedMaxSharesCount && maxShares > allowedMaxSharesCount)) {
+      if (context?.maxAllowedShares === 0 || (context?.maxAllowedShares && maxShares > context.maxAllowedShares)) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
@@ -57,13 +57,13 @@ export function getShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?
 
 export type ShareSeriesSchema = z.output<ReturnType<typeof getShareSeriesSchema>>
 
-export function getActiveShareSeriesSchema(nameList?: string[], allowedMaxSharesCount?: number) {
-  return getShareSeriesSchema(nameList, allowedMaxSharesCount).nullable().optional()
+export function getActiveShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
+  return getShareSeriesSchema(context).nullable().optional()
 }
 
 export type ActiveShareSeriesSchema = z.output<ReturnType<typeof getActiveShareSeriesSchema>>
 
-export function getShareClassSchema(nameList?: string[]) {
+export function getShareClassSchema(context?: { existingNames: string[] }) {
   return z.object({
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
@@ -72,7 +72,7 @@ export function getShareClassSchema(nameList?: string[]) {
       .min(1, 'This field is required')
       .max(50, 'Maximum 50 characters')
       .refine(val => !/\b(share|shares|value)\b/i.test(val), 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’')
-      .refine(val => !nameList?.includes(val.toLowerCase().trim()), 'Name must be unique')
+      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), 'Name must be unique')
       .default(''),
     hasParValue: z.boolean().default(false),
     parValue: z.coerce.number('Only enter numbers')
@@ -190,8 +190,8 @@ export type ShareClassSchema = z.output<ReturnType<typeof getShareClassSchema>>
 
 // export type FormShareClassRef = InstanceType<typeof FormShareClass>
 
-export function getActiveShareClassSchema(nameList?: string[]) {
-  return getShareClassSchema(nameList).nullable().optional()
+export function getActiveShareClassSchema(context?: { existingNames: string[] }) {
+  return getShareClassSchema(context).nullable().optional()
 }
 
 export type ActiveShareClassSchema = z.output<ReturnType<typeof getActiveShareClassSchema>>

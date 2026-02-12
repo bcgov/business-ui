@@ -7,6 +7,7 @@ const props = defineProps<{
   title: string
   stateKey: string
   nested?: boolean
+  validationContext?: { existingNames: string[] }
 }>()
 
 const emit = defineEmits<{
@@ -16,16 +17,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
-const { tableState } = useManageShareStructure(props.stateKey)
 const formTarget = 'party-details-form'
 const currencyOptions = getCurrencyList()
-const schema = computed(() => {
-  const currentId = model.value.id
-  const nameList = tableState.value
-    .filter(item => item.new.id !== currentId)
-    .map(item => item.new.name.toLowerCase())
-  return getActiveShareClassSchema(nameList)
-})
+const schema = computed(() => getActiveShareClassSchema(props.validationContext))
 
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
