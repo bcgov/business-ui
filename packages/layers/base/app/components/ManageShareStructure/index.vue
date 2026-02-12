@@ -90,14 +90,23 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
 
   // init add series
   if (addSeriesToRow) {
-    activeSeries.value = activeSeriesSchema.parse({})
-    addingSeriesToClassId.value = addSeriesToRow.original.new.id
-    return
+    const newSeries = activeSeriesSchema.parse({})
+    if (newSeries) {
+      newSeries.hasMaximumShares = true
+      activeSeries.value = newSeries
+      addingSeriesToClassId.value = addSeriesToRow.original.new.id
+      return
+    }
   }
 
   // if no row given, add a new class
-  activeClass.value = activeClassSchema.parse({})
-  addingShareClass.value = true
+  const newClass = activeClassSchema.parse({})
+  if (newClass) {
+    newClass.hasMaximumShares = true
+    newClass.hasParValue = true
+    activeClass.value = newClass
+    addingShareClass.value = true
+  }
 }
 
 function cleanupForm() {

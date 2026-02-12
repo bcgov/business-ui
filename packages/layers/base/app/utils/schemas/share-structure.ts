@@ -106,21 +106,19 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
           path: ['parValue'],
           message: 'This field is required'
         })
-        return
       }
 
-      if (parValue <= 0) {
+      if (parValue && parValue <= 0) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
           message: 'Amount must be greater than 0'
         })
-        return
       }
 
-      const parValueString = parValue.toString()
+      const parValueString = parValue && parValue.toString()
 
-      if (parValueString.replace('.', '').length > 16) {
+      if (parValueString && parValueString.replace('.', '').length > 16) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
@@ -128,15 +126,15 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         })
       }
 
-      const decimalCount = parValueString.split('.')[1]?.length || 0
+      const decimalCount = (parValueString && parValueString.split('.')[1]?.length) || 0
 
-      if (parValue < 1 && decimalCount > 6) {
+      if (parValue && parValue < 1 && decimalCount > 6) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
           message: 'Amounts less than 1 can be entered with up to 6 decimal places'
         })
-      } else if (parValue >= 1 && decimalCount > 2) {
+      } else if (parValue && parValue >= 1 && decimalCount > 2) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
@@ -148,7 +146,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
     if (data.hasMaximumShares) {
       const maxShares = data.maxNumberOfShares
 
-      if (maxShares === null || maxShares === undefined) {
+      if (maxShares === null || maxShares === undefined || maxShares.toString() === '' || maxShares === 0) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
