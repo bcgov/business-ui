@@ -8,6 +8,7 @@ const props = defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
 const emit = defineEmits<{
@@ -90,6 +91,7 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :get-custom-dropdown-items="getCustomDropdownItems"
+    :hide-actions-when="hideActionsWhen"
     :sorting="[{ id: 'priority', desc: false }]"
     :column-visibility="{ priority: false }"
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"

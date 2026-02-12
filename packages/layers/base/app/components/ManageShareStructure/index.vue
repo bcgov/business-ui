@@ -132,6 +132,22 @@ function isRowEditing(rowId: string, depth: number) {
   return activeClass.value?.id === rowId
 }
 
+function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
+  const parentRow = row.getParentRow()
+  // never hide parent row actions
+  if (!parentRow) {
+    return false
+  }
+
+  // default hide series actions when parent is removed
+  if (getIsRowRemoved(row.getParentRow())) {
+    return true
+  }
+
+  // hide series actions when a marked invalid by a destructive class change
+  return (row as unknown as TableBusinessRow<ShareSeriesSchema>).original.new.isInvalid
+}
+
 function clearAllAlerts() {
   clearAlert('share-class-form') // clear alert in sub forms
   clearAlert('share-series-form')
@@ -175,9 +191,10 @@ function clearAllAlerts() {
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
       :prevent-actions="!!activeClass || !!activeSeries"
+      :hide-actions-when="hideRowActionsWhen"
       @init-edit="onInitEdit"
       @move-row="changePriority"
-      @add-series="(e: TableBusinessRow<ShareClassSchema>) => initAddItem(e)"
+      @add-series="(row: TableBusinessRow<ShareClassSchema>) => initAddItem(row)"
       @remove="
         (row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : removeShareSeries(row)
       "

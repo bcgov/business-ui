@@ -123,7 +123,10 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
               shouldClose: true,
               onClick: () => {
                 applyEdits()
-                rowToUpdate.new.series.forEach(s => s.actions = [ActionType.REMOVED])
+                rowToUpdate.new.series.forEach((s) => {
+                  s.actions = [ActionType.REMOVED]
+                  s.isInvalid = true
+                })
                 cleanupForm()
               }
             }
@@ -187,7 +190,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
 
   function undoShareSeries(row: TableBusinessRow<ShareClassSchema>): void {
     const parentId = row.getParentRow()?.original.new.id
-    const oldState = row.original.old
+    const oldState = row.original.old as unknown as ShareSeriesSchema
 
     if (!parentId || !oldState) {
       return

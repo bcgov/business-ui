@@ -14,7 +14,8 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
       .default(''),
     maxNumberOfShares: z.coerce.number('Only enter whole numbers').nullable().default(null),
     hasMaximumShares: z.boolean().default(false),
-    hasRightsOrRestrictions: z.boolean().default(false)
+    hasRightsOrRestrictions: z.boolean().default(false),
+    isInvalid: z.boolean().default(false)
   }).superRefine((data, ctx) => {
     if (data.hasMaximumShares) {
       const maxShares = data.maxNumberOfShares

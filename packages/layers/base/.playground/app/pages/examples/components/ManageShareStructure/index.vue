@@ -18,6 +18,7 @@ tableState.value = mockClasses.shareClasses.map((c) => {
         ...s,
         id: s.id.toString(),
         actions: [],
+        isInvalid: false,
         name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
       }))
     },
@@ -30,6 +31,7 @@ tableState.value = mockClasses.shareClasses.map((c) => {
         ...s,
         id: s.id.toString(),
         actions: [],
+        isInvalid: false,
         name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
       }))
     }

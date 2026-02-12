@@ -140,7 +140,24 @@
             "name": "Class I Non-Voting Preferred Shares",
             "parValue": 1.0,
             "priority": 9,
-            "series": []
+            "series": [
+              {
+                "name": "Class I Series 1 Shares",
+                "priority": 1,
+                "maxNumberOfShares": 500,
+                "hasMaximumShares": true,
+                "hasRightsOrRestrictions": false,
+                "id": 345234
+              },
+              {
+                "name": "Class I Series 2 Shares",
+                "priority": 2,
+                "maxNumberOfShares": 500,
+                "hasMaximumShares": true,
+                "hasRightsOrRestrictions": false,
+                "id": 90458764
+              }
+            ]
         }
     ]
 }
