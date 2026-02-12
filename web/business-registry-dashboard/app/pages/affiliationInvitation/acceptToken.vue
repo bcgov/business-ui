@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { inflate } from 'pako'
 import { StatusCodes } from 'http-status-codes'
 
+const { $businessApi } = useNuxtApp()
 const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
@@ -10,8 +12,23 @@ const toast = useToast()
 // Token parsing
 const parseToken = (encodedToken: string): AffiliationToken => {
   try {
-    const tokenObject = encodedToken.split('.')[0]
-    const decoded = atob(tokenObject as string)
+    // encodedToken = 'eyJpZCI6OCwiZnJvbU9yZ0lkIjoyNTIzLCJ0b09yZ0lkIjoyOTk0LCJidXNpbmVzc0lkZW50aWZpZXIiOiJCQzA4NzEzMzAifQ.ZNPNWg.lrG2RAy9EOXQshT9cMzf1xyEE04'
+    const isCompressed = encodedToken.startsWith('.')
+    const parts = (isCompressed ? encodedToken.slice(1) : encodedToken).split('.')
+
+    // parts[0] = payload, parts[1] = timestamp, parts[2] = signature
+    // itsdangerous uses URL-safe base64, so convert back to standard base64
+    let payload = parts[0]!.replace(/-/g, '+').replace(/_/g, '/')
+    // Add padding if needed
+    while (payload.length % 4) {
+      payload += '='
+    }
+    let decoded = atob(payload)
+    if (isCompressed) {
+      // Need to zlib decompress — use pako or similar
+      const bytes = Uint8Array.from(decoded, c => c.charCodeAt(0))
+      decoded = inflate(bytes, { to: 'string' })
+    }
     return JSON.parse(decoded)
   } catch (error) {
     console.error('Failed to parse token:', error)
@@ -41,7 +58,7 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
   if (!route.meta.checkMagicLink) {
     return
   }
-  const { businessIdentifier: identifier, id: invitationId } = token
+  const { businessIdentifier: identifier, id: invitationId, fromOrgId } = token
 
   try {
     // 1. Accept invitation
@@ -53,24 +70,60 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
     }
   } catch (error: any) {
     console.error(error)
-    // 3. Unauthorized
+    console.error(error?.response)
+    // Generic email affiliation error when there is no fromOrgId (special migration flow affiliation)
+    if (
+      !fromOrgId &&
+      !(
+        error.response?.status === StatusCodes.BAD_REQUEST &&
+        error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION
+      )
+    ) {
+      try {
+        // FUTURE: replace with business layer business store init (handles all mapping, typing, etc.)
+        const businessInfo: {
+          business: {
+            legalType: string
+            legalName: string,
+            state: string
+          }
+        } = await $businessApi(`/businesses/${identifier}/public?slim=true`)
+
+        brdModal.openManageBusiness({
+          identifier,
+          legalType: businessInfo.business.legalType,
+          name: businessInfo.business.legalName,
+          status: businessInfo.business.state
+        }, {
+          color: 'red',
+          translationPath: 'form.manageBusiness.expiredLink',
+          icon: 'i-mdi-warning',
+          variant: 'subtle'
+        })
+      } catch (businessError: any) {
+        console.error(businessError)
+        brdModal.openBusinessAddError()
+      }
+      return
+    }
+    // Unauthorized
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       brdModal.openMagicLinkModal(t('error.magicLinkUnauthorized.title'), t('error.magicLinkUnauthorized.description'))
       return
     }
-    // 4. Expired
+    // Expired
     if (error.response?.status === StatusCodes.BAD_REQUEST &&
-      error.response?._data.code === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION) {
+      error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkExpired.title'), t('error.magicLinkExpired.description', { identifier }))
       return
     }
-    // 5. Already Added
+    // Already Added
     if (error.response?.status === StatusCodes.BAD_REQUEST &&
-      error.response?._data.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION) {
+      error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION) {
       brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
       return
     }
-    // 6. Generic Error
+    // Generic Error
     brdModal.openBusinessAddError()
   }
 }

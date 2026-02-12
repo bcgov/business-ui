@@ -3,8 +3,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const localePath = useLocalePath()
 
   // FUTURE: Temporary fallback until the new BRH home page exists—migration flows
-  // use ?populate= to enter extended auth, but non-migration traffic is routed to BRD for now.
-  if (to.query?.populate) {
+  // use ?token= to enter extended auth, but non-migration traffic is routed to BRD for now.
+  if (to.query?.token) {
     return navigateTo({ path: localePath('/auth/account/select'), query: to.query })
   } else {
     return navigateTo(

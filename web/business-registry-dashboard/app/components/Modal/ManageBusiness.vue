@@ -9,8 +9,11 @@ const { $authApi } = useNuxtApp()
 const ldStore = useConnectLaunchdarklyStore()
 
 const props = defineProps<{
+  alert?: ModalAlertProps
   business: ManageBusinessEvent
 }>()
+
+const emailSent = ref(false)
 
 const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
@@ -143,7 +146,8 @@ onMounted(async () => {
 
 <template>
   <ModalBase
-    :title="$t('form.manageBusiness.heading')"
+    :alert="emailSent ? undefined : alert"
+    :title="emailSent ? $t('form.manageBusiness.headingRequestSent') : $t('form.manageBusiness.heading')"
     @modal-closed="handleEmailAuthSentStateClosed"
   >
     <div class="flex flex-col gap-4 md:w-[700px]">
@@ -226,6 +230,7 @@ onMounted(async () => {
         :accounts="affiliatedAccounts"
         :business-details="businessDetails"
         :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
+        @email-success="emailSent = true"
       />
     </div>
   </ModalBase>

@@ -2,7 +2,7 @@
   "name": "business-registry-dashboard",
   "private": true,
   "type": "module",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
@@ -28,6 +28,7 @@
     "@pinia/testing": "^0.1.7",
     "@playwright/test": "^1.56.1",
     "@testing-library/vue": "^8.1.0",
+    "@types/pako": "^2.0.4",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/parser": "^8.18.2",
     "@vitest/coverage-v8": "^3.2.4",
@@ -53,6 +54,7 @@
     "@vuepic/vue-datepicker": "^8.8.1",
     "http-status-codes": "^2.3.0",
     "moment-timezone": "^0.5.48",
+    "pako": "^2.1.0",
     "uuid": "^10.0.0"
   }
 }
