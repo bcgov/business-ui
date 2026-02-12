@@ -187,25 +187,17 @@ function clearAllAlerts() {
             @cancel="cleanupForm"
           />
           <FormShareSeries
-            v-if="row.depth === 1 && activeSeries"
+            v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
             v-model="activeSeries"
-            :title="'Edit Share Series'"
-            :state-key="stateKey"
-            variant="edit"
             name="activeSeries"
+            :title="addingSeriesToClassId ? 'Add Share Series' : 'Edit Share Series'"
+            :variant="addingSeriesToClassId ? 'add' : 'edit'"
             :validation-context="getSeriesValidationContext(row)"
-            @done="() => { updateShareSeries(row, activeSeries), cleanupForm() }"
-            @cancel="cleanupForm"
-          />
-          <FormShareSeries
-            v-if="addingSeriesToClassId && activeSeries"
-            v-model="activeSeries"
-            :title="'Add Share Series'"
             :state-key="stateKey"
-            variant="add"
-            name="activeSeries"
-            :validation-context="getSeriesValidationContext(row)"
-            @done="() => { addNewShareSeries(row, activeSeries), cleanupForm() }"
+            @done="() => {
+              addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
+              cleanupForm()
+            }"
             @cancel="cleanupForm"
           />
         </div>
