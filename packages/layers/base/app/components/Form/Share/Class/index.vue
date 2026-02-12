@@ -93,7 +93,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model="model.maxNumberOfShares"
+              v-model.number="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
@@ -119,7 +119,7 @@ provide('UInput-slots-share-class-name-input', { trailing: h('span', { class: 't
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
               <ConnectFormInput
-                v-model.trim="model.parValue"
+                v-model.number="model.parValue"
                 :disabled="!model.hasParValue"
                 :class="{ 'opacity-75': !model.hasParValue }"
                 input-id="par-value-input"

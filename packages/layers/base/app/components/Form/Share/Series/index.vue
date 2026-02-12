@@ -86,7 +86,7 @@ provide('UInput-slots-share-series-name-input', { trailing: h('span', { class: '
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model="model.maxNumberOfShares"
+              v-model.number="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
