@@ -12,7 +12,6 @@ const toast = useToast()
 // Token parsing
 const parseToken = (encodedToken: string): AffiliationToken => {
   try {
-    // encodedToken = 'eyJpZCI6OCwiZnJvbU9yZ0lkIjoyNTIzLCJ0b09yZ0lkIjoyOTk0LCJidXNpbmVzc0lkZW50aWZpZXIiOiJCQzA4NzEzMzAifQ.ZNPNWg.lrG2RAy9EOXQshT9cMzf1xyEE04'
     const isCompressed = encodedToken.startsWith('.')
     const parts = (isCompressed ? encodedToken.slice(1) : encodedToken).split('.')
 
