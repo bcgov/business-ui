@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import mockClasses from '#test-mocks/business-share-classes/json/default.json'
 
+// TODO: delete this file before merging
+
 definePageMeta({
-  layout: 'connect-auth',
-  validate: () => useNuxtApp().$config.public.environmentHeader.toLowerCase() === 'development'
+  layout: 'connect-auth'
 })
 
 const { tableState } = useManageShareStructure()
