@@ -48,30 +48,6 @@ const classValidationContext = computed(() => {
   return { existingNames }
 })
 
-function getSeriesValidationContext(row: TableBusinessRow<ShareClassSchema>) {
-  const shareClassData = row.depth === 0 ? row.original.new : row.getParentRow()?.original.new
-
-  if (!shareClassData) {
-    return { existingNames: [], maxAllowedShares: 0 }
-  }
-
-  const currentId = activeSeries.value?.id
-  const otherSeries = shareClassData.series.filter(item => item.id !== currentId) || []
-
-  const existingNames = otherSeries.map(item => item.name.toLowerCase())
-
-  const classMaxShares = shareClassData.maxNumberOfShares || 0
-  const otherSeriesTotalShares = otherSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
-  const maxAllowedShares = shareClassData.hasMaximumShares
-    ? classMaxShares - otherSeriesTotalShares
-    : Infinity
-
-  return {
-    existingNames,
-    maxAllowedShares
-  }
-}
-
 function setActiveFormAlert() {
   if (activeClass.value) {
     setAlert('share-class-form', t('text.finishTaskBeforeOtherChanges'))
@@ -221,7 +197,7 @@ function clearAllAlerts() {
             name="activeSeries"
             :title="addingSeriesToClassId ? 'Add Share Series' : 'Edit Share Series'"
             :variant="addingSeriesToClassId ? 'add' : 'edit'"
-            :validation-context="getSeriesValidationContext(row)"
+            :row="(row)"
             :state-key="stateKey"
             @done="() => {
               addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)

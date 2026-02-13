@@ -7,7 +7,7 @@ const props = defineProps<{
   title: string
   stateKey: string
   nested?: boolean
-  validationContext?: { existingNames: string[], maxAllowedShares: number }
+  row?: TableBusinessRow<ShareClassSchema>
 }>()
 
 const emit = defineEmits<{
@@ -19,7 +19,33 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'share-series-form'
-const schema = computed(() => getActiveShareSeriesSchema(props.validationContext))
+const shareClassData = computed(() =>
+  props.row?.depth === 0 ? props.row.original.new : props.row?.getParentRow()?.original.new
+)
+function getSeriesValidationContext(row?: TableBusinessRow<ShareClassSchema>) {
+  const shareClassData = row?.depth === 0 ? row.original.new : row?.getParentRow()?.original.new
+
+  if (!shareClassData) {
+    return { existingNames: [], maxAllowedShares: 0 }
+  }
+
+  const currentId = model.value.id
+  const otherSeries = shareClassData.series.filter(item => item.id !== currentId) || []
+
+  const existingNames = otherSeries.map(item => item.name.toLowerCase())
+
+  const classMaxShares = shareClassData.maxNumberOfShares || 0
+  const otherSeriesTotalShares = otherSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
+  const maxAllowedShares = shareClassData.hasMaximumShares
+    ? classMaxShares - otherSeriesTotalShares
+    : Infinity
+
+  return {
+    existingNames,
+    maxAllowedShares
+  }
+}
+const schema = computed(() => getActiveShareSeriesSchema(getSeriesValidationContext(props.row)))
 
 const model = defineModel<ShareSeriesSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')
@@ -79,6 +105,7 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
         />
         <USeparator />
         <URadioGroup
+          v-if="!shareClassData?.hasMaximumShares"
           v-model="model.hasMaximumShares"
           size="xl"
           :items="[{ value: true }, { label: 'No Maximum', value: false }]"
@@ -103,6 +130,17 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
             <span v-else>{{ item.label }}</span>
           </template>
         </URadioGroup>
+        <ConnectFormInput
+          v-else
+          v-model.number="model.maxNumberOfShares"
+          :disabled="!model.hasMaximumShares"
+          :class="{ 'opacity-75': !model.hasMaximumShares }"
+          input-id="max-number-shares-input"
+          :label="'Maximum Number of Shares'"
+          name="maxNumberOfShares"
+          :required="model.hasMaximumShares"
+          help="Maximum number of shares in this class"
+        />
         <USeparator />
         <p class="text-base">
           No Par Value
