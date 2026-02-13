@@ -18,44 +18,71 @@ const addingSeriesToClassId = ref<string | undefined>(undefined)
 
 const {
   expandedState,
-  tableState
-  // addNewParty,
-  // removeParty,
-  // undoParty,
-  // applyTableEdits
+  tableState,
+  addNewShareClass,
+  removeShareClass,
+  undoShareClass,
+  updateShareClass,
+  updateShareSeries,
+  undoShareSeries,
+  removeShareSeries,
+  addNewShareSeries,
+  changePriority
 } = useManageShareStructure(stateKey)
 
-// const { t } = useI18n()
+const { t } = useI18n()
 const {
-  // setAlert,
+  setAlert,
   clearAlert
 } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
+const classValidationContext = computed(() => {
+  const currentId = activeClass.value?.id
+  const existingNames = tableState.value
+    .filter(item => item.new.id !== currentId)
+    .map(item => item.new.name.toLowerCase())
+
+  return { existingNames }
+})
+
 function setActiveFormAlert() {
-  console.info('action prevented, set sub form alert here')
-  // setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+  if (activeClass.value) {
+    setAlert('share-class-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+  if (activeSeries.value) {
+    setAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
   // prevent actions if a sub form is open
-  if (!!activeClass.value || !!activeSeries.value) {
+  if (activeClass.value || activeSeries.value) {
     setActiveFormAlert()
     return
   }
 
   // init add series
   if (addSeriesToRow) {
-    activeSeries.value = activeSeriesSchema.parse({})
-    addingSeriesToClassId.value = addSeriesToRow.original.new.id
-    return
+    const newSeries = activeSeriesSchema.parse({})
+    if (newSeries) {
+      newSeries.hasMaximumShares = true
+      activeSeries.value = newSeries
+      addingSeriesToClassId.value = addSeriesToRow.original.new.id
+      return
+    }
   }
 
   // if no row given, add a new class
-  activeClass.value = activeClassSchema.parse({})
-  addingShareClass.value = true
+  const newClass = activeClassSchema.parse({})
+  if (newClass) {
+    newClass.hasMaximumShares = true
+    newClass.hasParValue = true
+    activeClass.value = newClass
+    addingShareClass.value = true
+  }
 }
 
 function cleanupForm() {
@@ -64,16 +91,6 @@ function cleanupForm() {
   activeClass.value = undefined
   activeSeries.value = undefined
 }
-
-// consolidate?
-// function addClass(shareClass: ActiveShareClassSchema) {
-//   // addNewParty(party, roleType)
-//   cleanupForm()
-// }
-// function addSeries(series: ActiveShareSeriesSchema, row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
-//   // addNewParty(party, roleType)
-//   cleanupForm()
-// }
 
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
@@ -84,43 +101,20 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
   expandedState.value = { [row.id]: true, ...expandedState.value as object }
 }
 
-// function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>) {
-// applyTableEdits(party, row)
-//   cleanupForm()
-// }
-
-function isRowEditing(rowId: string, depth: number) {
-  if (depth === 1) {
-    return activeSeries.value?.id === rowId
-  }
-  return activeClass.value?.id === rowId
-}
-
-function changePriority(row: TableBusinessRow<ShareClassSchema>, direction: 'up' | 'down') {
-  const selectedRow = row.original.new
-  const isClass = row.depth === 0
-  const parentRowId = row.getParentRow()?.original.new.id
-
-  const classOrSeriesList = isClass
-    ? tableState.value
-    : tableState.value.find(item => item.new.id === parentRowId)?.new.series
-
-  if (!classOrSeriesList || classOrSeriesList.length < 2) {
-    return
+function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
+  const parentRow = row.getParentRow()
+  // never hide parent row actions
+  if (!parentRow) {
+    return false
   }
 
-  const flattenedList: Array<{ id: string, priority: number }> = isClass
-    ? (classOrSeriesList as TableBusinessState<ShareClassSchema>[]).map(item => item.new)
-    : (classOrSeriesList as ShareSeriesSchema[])
-
-  // find the nearest item above or below the selectedRow
-  const targetRow = flattenedList
-    .filter(item => direction === 'up' ? item.priority < selectedRow.priority : item.priority > selectedRow.priority)
-    .sort((a, b) => direction === 'up' ? b.priority - a.priority : a.priority - b.priority)[0]
-
-  if (targetRow) {
-    [selectedRow.priority, targetRow.priority] = [targetRow.priority, selectedRow.priority]
+  // default hide series actions when parent is removed
+  if (getIsRowRemoved(row.getParentRow())) {
+    return true
   }
+
+  // hide series actions when a marked invalid by a destructive class change
+  return (row as unknown as TableBusinessRow<ShareSeriesSchema>).original.new.isInvalid
 }
 
 function clearAllAlerts() {
@@ -136,6 +130,9 @@ function clearAllAlerts() {
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
+    <p class="pb-4">
+      {{ $t('text.shareStructureMustMatchCompanysCurrentState') }}
+    </p>
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
@@ -144,24 +141,17 @@ function clearAllAlerts() {
       class="w-min"
       @click="initAddItem()"
     />
-
-    <div v-if="addingShareClass && activeClass" class="p-10 border border-black space-y-4">
-      <div>Add share class form here</div>
-      <pre>{{ activeClass }}</pre>
-      <UButton label="Cancel" @click="cleanupForm" />
-    </div>
-
-    <!-- TODO: create share class form -->
-    <!-- <FormShareClass
+    <FormShareClass
       v-if="addingShareClass && activeClass"
       v-model="activeClass"
-      :title="addLabel"
-      name="activeClass"
-      variant="add"
+      :title="$t('label.addShareClass')"
       :state-key="stateKey"
-      @done="() => addClass(activeClass)"
+      variant="add"
+      name="activeClass"
+      :validation-context="classValidationContext"
+      @done="() => { addNewShareClass(activeClass), cleanupForm() }"
       @cancel="cleanupForm"
-    /> -->
+    />
 
     <TableShareStructure
       v-model:expanded="expandedState"
@@ -170,40 +160,44 @@ function clearAllAlerts() {
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
       :prevent-actions="!!activeClass || !!activeSeries"
+      :hide-actions-when="hideRowActionsWhen"
       @init-edit="onInitEdit"
       @move-row="changePriority"
-      @add-series="(e: TableBusinessRow<ShareClassSchema>) => initAddItem(e)"
-      @remove="(e: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) => console.log('remove row: ', e)"
-      @undo="(e: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) => console.log('undo row: ', e)"
+      @add-series="(row: TableBusinessRow<ShareClassSchema>) => initAddItem(row)"
+      @remove="
+        (row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : removeShareSeries(row)
+      "
+      @undo="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? undoShareClass(row) : undoShareSeries(row)"
       @action-prevented="setActiveFormAlert"
     >
       <template #expanded="{ row }">
-        <div
-          v-if="isRowEditing(row.original.new.id, row.depth) || addingSeriesToClassId === row.original.new.id"
-          class="p-10 border border-black space-y-4"
-        >
-          <div v-if="addingSeriesToClassId">
-            <div>Adding New Series to {{ row.original.new.name }}</div>
-            <pre>{{ activeSeries }}</pre>
-          </div>
-          <div v-else>
-            <div>Editing {{ row.original.new.name }}</div>
-            <div>Class or series: {{ row.depth === 1 ? 'Series' : 'Class' }}</div>
-            <pre>{{ row.original.new }}</pre>
-          </div>
-          <UButton label="Cancel" @click="cleanupForm" />
-        </div>
-        <!-- <FormShareClass
+        <FormShareClass
+          v-if="row.depth === 0 && activeClass?.id === row.original.new.id"
+          v-model="activeClass"
+          :title="$t('label.editShareClass')"
+          :state-key="stateKey"
+          variant="edit"
+          name="activeClass"
+          :validation-context="classValidationContext"
+          @done="() => updateShareClass(row, activeClass, cleanupForm)"
+          @cancel="cleanupForm"
+          @remove="() => removeShareClass(row, cleanupForm)"
+        />
         <FormShareSeries
-      v-if="activeSeries"
-      v-model="activeSeries"
-      :title="editLabel"
-      name="activeSeries"
-      variant="edit"
-      :state-key="stateKey"
-      @done="() => addSeries(activeSeries)"
-      @cancel="cleanupForm"
-    /> -->
+          v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
+          v-model="activeSeries"
+          name="activeSeries"
+          :title="addingSeriesToClassId ? $t('label.addShareSeries') : $t('label.editShareSeries')"
+          :variant="addingSeriesToClassId ? 'add' : 'edit'"
+          :row
+          :state-key="stateKey"
+          @done="() => {
+            addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
+            cleanupForm()
+          }"
+          @cancel="cleanupForm"
+          @remove="() => { removeShareSeries(row), cleanupForm() }"
+        />
       </template>
     </TableShareStructure>
   </div>

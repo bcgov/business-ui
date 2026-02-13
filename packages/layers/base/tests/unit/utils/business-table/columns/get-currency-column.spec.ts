@@ -15,9 +15,9 @@ describe('getCurrencyColumn', () => {
     expect(mockGetColumnMeta).toHaveBeenCalledWith('default')
   })
 
-  it('renders the currency label correctly when provided', () => {
+  it('renders the currency label correctly when provided and has parValue', () => {
     const row = {
-      original: { new: { currency: 'CAD' } }
+      original: { new: { currency: 'CAD', hasParValue: true } }
     }
     const column = getCurrencyColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -26,6 +26,20 @@ describe('getCurrencyColumn', () => {
 
     expect(cell.type).toBe('span')
     expect(cell.children).toBe('CAD')
+    expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip')
+  })
+
+  it('renders nothing if not hasParValue', () => {
+    const row = {
+      original: { new: { currency: 'CAD', hasParValue: false } }
+    }
+    const column = getCurrencyColumn() as any
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.type).toBe('span')
+    expect(cell.children).toBe('')
     expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip')
   })
 
