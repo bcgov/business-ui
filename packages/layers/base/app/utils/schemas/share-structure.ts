@@ -189,8 +189,6 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
 
 export type ShareClassSchema = z.output<ReturnType<typeof getShareClassSchema>>
 
-// export type FormShareClassRef = InstanceType<typeof FormShareClass>
-
 export function getActiveShareClassSchema(context?: { existingNames: string[] }) {
   return getShareClassSchema(context).nullable().optional()
 }

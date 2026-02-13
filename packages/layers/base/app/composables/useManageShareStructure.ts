@@ -34,16 +34,19 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
 
     const applyEdits = () => {
+      // if it was a newly added row, fully remove and update other row priorities
       if (row.original.old === undefined) {
         tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
         tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
       } else {
+        // if it was an existing row, add the removed action
         if (rowToUpdate) {
           rowToUpdate.new.actions = [ActionType.REMOVED]
         }
       }
     }
 
+    // open confirmation modal if removing a share class that has series under it
     if (rowToUpdate && rowToUpdate.new.series.length) {
       baseModal.open({
         title: t('modal.removeClassWithSeries.title'),
@@ -104,6 +107,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
         }
       }
 
+      // if changing right or restrictions or max shares count, open confirmation modal that series will also be removed
       const initialMaxShares = row.original.new.maxNumberOfShares
       const submittedMaxShares = shareClass.maxNumberOfShares
       const maxSharesChanged = initialMaxShares !== submittedMaxShares
@@ -228,10 +232,12 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const seriesArray = parentRow.new.series
     const removedPriority = row.original.new.priority
 
+    // if it was a newly added series, remove from list and fix other series priorities
     if (row.original.old === undefined) {
       parentRow.new.series = seriesArray.filter(s => s.id !== row.original.new.id)
       parentRow.new.series.forEach(s => s.priority > removedPriority && s.priority--)
     } else {
+      // if it was an existing series add the removed action
       const removedSeries = seriesArray.find(s => s.id === row.original.new.id)
       if (removedSeries) {
         removedSeries.actions = [ActionType.REMOVED]

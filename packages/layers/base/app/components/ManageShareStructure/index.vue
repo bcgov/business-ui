@@ -101,13 +101,6 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
   expandedState.value = { [row.id]: true, ...expandedState.value as object }
 }
 
-function isRowEditing(rowId: string, depth: number) {
-  if (depth === 1) {
-    return activeSeries.value?.id === rowId
-  }
-  return activeClass.value?.id === rowId
-}
-
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
   const parentRow = row.getParentRow()
   // never hide parent row actions
@@ -178,35 +171,33 @@ function clearAllAlerts() {
       @action-prevented="setActiveFormAlert"
     >
       <template #expanded="{ row }">
-        <div v-if="isRowEditing(row.original.new.id, row.depth) || addingSeriesToClassId === row.original.new.id">
-          <FormShareClass
-            v-if="row.depth === 0 && activeClass"
-            v-model="activeClass"
-            :title="'Edit Share Class'"
-            :state-key="stateKey"
-            variant="edit"
-            name="activeClass"
-            :validation-context="classValidationContext"
-            @done="() => updateShareClass(row, activeClass, cleanupForm)"
-            @cancel="cleanupForm"
-            @remove="() => removeShareClass(row, cleanupForm)"
-          />
-          <FormShareSeries
-            v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
-            v-model="activeSeries"
-            name="activeSeries"
-            :title="addingSeriesToClassId ? 'Add Share Series' : 'Edit Share Series'"
-            :variant="addingSeriesToClassId ? 'add' : 'edit'"
-            :row="(row)"
-            :state-key="stateKey"
-            @done="() => {
-              addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
-              cleanupForm()
-            }"
-            @cancel="cleanupForm"
-            @remove="() => { removeShareSeries(row), cleanupForm() }"
-          />
-        </div>
+        <FormShareClass
+          v-if="row.depth === 0 && activeClass?.id === row.original.new.id"
+          v-model="activeClass"
+          :title="'Edit Share Class'"
+          :state-key="stateKey"
+          variant="edit"
+          name="activeClass"
+          :validation-context="classValidationContext"
+          @done="() => updateShareClass(row, activeClass, cleanupForm)"
+          @cancel="cleanupForm"
+          @remove="() => removeShareClass(row, cleanupForm)"
+        />
+        <FormShareSeries
+          v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
+          v-model="activeSeries"
+          name="activeSeries"
+          :title="addingSeriesToClassId ? 'Add Share Series' : 'Edit Share Series'"
+          :variant="addingSeriesToClassId ? 'add' : 'edit'"
+          :row
+          :state-key="stateKey"
+          @done="() => {
+            addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
+            cleanupForm()
+          }"
+          @cancel="cleanupForm"
+          @remove="() => { removeShareSeries(row), cleanupForm() }"
+        />
       </template>
     </TableShareStructure>
   </div>
