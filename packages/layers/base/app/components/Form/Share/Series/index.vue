@@ -142,7 +142,26 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
           help="Maximum number of shares in this class"
         />
         <USeparator />
-        <p class="text-base">
+        <div
+          v-if="shareClassData?.hasParValue && shareClassData.parValue && shareClassData.currency"
+          class="flex flex-col gap-2 sm:gap-4 sm:flex-row"
+        >
+          <ConnectInput
+            id="par-value-display-input"
+            v-model="shareClassData.parValue"
+            readonly
+            :label="'Par Value'"
+            class="w-full flex-1"
+          />
+          <ConnectInput
+            id="currency-display-input"
+            v-model="shareClassData.currency"
+            readonly
+            :label="'Currency'"
+            class="w-full flex-1"
+          />
+        </div>
+        <p v-else class="text-base">
           No Par Value
         </p>
         <USeparator />
@@ -184,3 +203,15 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
     </ConnectFieldset>
   </UForm>
 </template>
+
+<style scoped>
+@reference "tailwindcss";
+
+:deep(#par-value-display-input) {
+  @apply bg-white shadow-none border-b border-dashed;
+}
+
+:deep(#currency-display-input) {
+  @apply bg-white shadow-none border-b border-dashed;
+}
+</style>
