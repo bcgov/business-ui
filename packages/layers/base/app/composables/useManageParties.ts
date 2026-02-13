@@ -14,6 +14,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   const tableState = useState<TableBusinessState<PartySchema>[]>(`${stateKey}-table-state`, () => [])
 
   function updateTable(newState: TableBusinessState<PartySchema>, row?: TableBusinessRow<PartySchema>): void {
+    console.log(newState)
     if (!row) {
       tableState.value = [
         ...tableState.value,
@@ -30,7 +31,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     }
   }
 
-  function addNewParty(party: ActivePartySchema, roleType?: RoleTypeUi) {
+  function addNewParty(party: ActivePartySchema) {
     if (!party) {
       return
     }
@@ -38,8 +39,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     const newState: TableBusinessState<PartySchema> = {
       new: {
         ...party,
-        actions: [ActionType.ADDED],
-        ...(roleType ? { roles: [{ roleType }] } : {})
+        actions: [ActionType.ADDED]
       },
       old: undefined
     }

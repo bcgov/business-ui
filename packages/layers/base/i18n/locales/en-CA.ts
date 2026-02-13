@@ -543,6 +543,28 @@ export default {
     unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
     undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
   },
+  /* Mappings here are based from the RoleTypeUi enum */
+  roleType: {
+    APPLICANT: 'Applicant',
+    ASSISTANT_SECRETARY: 'Assistant Secretary',
+    CEO: 'Chief Executive Officer',
+    CFO: 'Chief Financial Officer',
+    CHAIR: 'Chair',
+    COMPLETING_PARTY: 'Completing Party',
+    CUSTODIAN: 'Custodian',
+    DIRECTOR: 'Director',
+    INCORPORATOR: 'Incorporator',
+    LIQUIDATOR: 'Liquidator',
+    OFFICER: 'Officer',
+    OTHER: 'Other Office(s)',
+    PRESIDENT: 'President',
+    PARTNER: 'Partner',
+    PROPRIETOR: 'Proprietor',
+    RECEIVER: 'Receiver',
+    SECRETARY: 'Secretary',
+    TREASURER: 'Treasurer',
+    VICE_PRESIDENT: 'Vice President'
+  },
   text: {
     addressChange: 'address change',
     alteration: 'alteration',
@@ -635,6 +657,9 @@ export default {
     onlyNumbers: 'Only enter numbers',
     uniqueName: 'Name must be unique',
     maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
-    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places'
+    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
+    role: {
+      min: 'Choose at least one role'
+    }
   }
 }

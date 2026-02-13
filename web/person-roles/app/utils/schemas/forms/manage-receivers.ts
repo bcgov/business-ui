@@ -2,10 +2,9 @@ import { z } from 'zod'
 
 export function getManageReceiversSchema() {
   return z.object({
-    // TODO: update
     parties: z.array(z.object({
-      new: getPartySchema(),
-      old: getPartySchema().optional()
+      new: getPartySchema(RoleTypeUi.RECEIVER),
+      old: getPartySchema(RoleTypeUi.RECEIVER).optional()
     })),
     courtOrder: getCourtOrderPoaSchema(),
     documentId: getDocumentIdSchema(),
@@ -32,7 +31,7 @@ export function getReceiversSchema() {
       folioNumber: '',
       isPriority: false
     }),
-    activeParty: getActivePartySchema()
+    activeParty: getActivePartySchema(RoleTypeUi.RECEIVER)
   })
 }
 
