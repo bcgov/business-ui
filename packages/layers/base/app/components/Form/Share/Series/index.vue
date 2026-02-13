@@ -19,36 +19,42 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'share-series-form'
-const shareClassData = computed(() =>
-  props.row?.depth === 0 ? props.row.original.new : props.row?.getParentRow()?.original.new
-)
-function getSeriesValidationContext(row?: TableBusinessRow<ShareClassSchema>) {
-  const shareClassData = row?.depth === 0 ? row.original.new : row?.getParentRow()?.original.new
-
-  if (!shareClassData) {
-    return { existingNames: [], maxAllowedShares: 0 }
-  }
-
-  const currentId = model.value.id
-  const otherSeries = shareClassData.series.filter(item => item.id !== currentId) || []
-
-  const existingNames = otherSeries.map(item => item.name.toLowerCase())
-
-  const classMaxShares = shareClassData.maxNumberOfShares || 0
-  const otherSeriesTotalShares = otherSeries.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
-  const maxAllowedShares = shareClassData.hasMaximumShares
-    ? classMaxShares - otherSeriesTotalShares
-    : Infinity
-
-  return {
-    existingNames,
-    maxAllowedShares
-  }
-}
-const schema = computed(() => getActiveShareSeriesSchema(getSeriesValidationContext(props.row)))
 
 const model = defineModel<ShareSeriesSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')
+
+const { targetId, messageId } = attachAlerts(formTarget, model)
+
+const shareClassData = computed(() =>
+  props.row?.depth === 0 ? props.row.original.new : props.row?.getParentRow()?.original.new
+)
+const schema = computed(() => {
+  const classData = shareClassData.value
+
+  if (!classData) {
+    return getActiveShareSeriesSchema({
+      existingNames: [],
+      maxAllowedShares: 0
+    })
+  }
+
+  const currentId = model.value.id
+  const otherSeries = classData.series.filter(s => s.id !== currentId && !s.actions?.includes(ActionType.REMOVED))
+
+  const existingNames = otherSeries.map(s => s.name.toLowerCase())
+
+  const classMaxShares = classData.maxNumberOfShares || 0
+  const otherSeriesTotalShares = otherSeries.reduce((acc, s) => acc + (s.maxNumberOfShares ?? 0), 0)
+
+  const maxAllowedShares = classData.hasMaximumShares
+    ? classMaxShares - otherSeriesTotalShares
+    : Infinity
+
+  return getActiveShareSeriesSchema({
+    existingNames,
+    maxAllowedShares
+  })
+})
 
 function resetFields() {
   model.value.maxNumberOfShares = null
@@ -63,8 +69,6 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
-
-const { targetId, messageId } = attachAlerts(formTarget, model)
 
 const hasNameError = computed(() => !!formRef.value?.getErrors().find(e => e.name?.includes('name')))
 const nameInputSlots = computed(() => ({

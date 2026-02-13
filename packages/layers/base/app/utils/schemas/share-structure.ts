@@ -172,7 +172,9 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         })
       }
 
-      const totalSeriesCount = data.series.reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
+      const totalSeriesCount = data.series
+        .filter(s => !s.actions?.includes(ActionType.REMOVED))
+        .reduce((a, c) => a + (c.maxNumberOfShares ?? 0), 0)
 
       if (totalSeriesCount > maxShares) {
         ctx.addIssue({
