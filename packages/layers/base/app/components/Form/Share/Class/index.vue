@@ -79,16 +79,16 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
         <ConnectFormInput
           v-model="model.name"
           required
-          :label="'Class Name [Shares]'"
+          :label="$t('label.classNameShares')"
           input-id="share-class-name-input"
           name="name"
-          help="Only enter the class name. The word “shares” will be added automatically."
+          :help="$t('text.shareNameHelp')"
         />
         <USeparator />
         <URadioGroup
           v-model="model.hasMaximumShares"
           size="xl"
-          :items="[{ value: true }, { label: 'No Maximum', value: false }]"
+          :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
           :ui="{
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
@@ -98,14 +98,14 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model.number="model.maxNumberOfShares"
+              v-model="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
-              :label="'Maximum Number of Shares'"
+              :label="$t('label.maxNumberOfShares')"
               name="maxNumberOfShares"
               :required="model.hasMaximumShares"
-              help="Maximum number of shares in this class"
+              :help="$t('text.maxNumberOfSharesHelp')"
             />
             <span v-else>{{ item.label }}</span>
           </template>
@@ -114,7 +114,7 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
         <URadioGroup
           v-model="model.hasParValue"
           size="xl"
-          :items="[{ value: true }, { label: 'No Par Value', value: false }]"
+          :items="[{ value: true }, { label: $t('label.noParValue'), value: false }]"
           :ui="{
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
@@ -124,19 +124,18 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
               <ConnectFormInput
-                v-model.number="model.parValue"
+                v-model="model.parValue"
                 :disabled="!model.hasParValue"
                 :class="{ 'opacity-75': !model.hasParValue }"
                 input-id="par-value-input"
-                :label="'Par Value'"
+                :label="$t('label.parValue')"
                 name="parValue"
                 :required="model.hasParValue"
-                help="Initial value of each share"
+                :help="$t('text.parValueHelp')"
                 class="w-full flex-1"
               />
               <UFormField
                 name="currency"
-                help="Initial value of each share"
                 data-testid="form-field-currency"
                 :class="{ 'opacity-75': !model.hasParValue }"
                 class="w-full flex-1"
@@ -144,7 +143,7 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
                 <ConnectInputMenu
                   id="par-value-currency-input"
                   v-model="model.currency"
-                  label="Currency"
+                  :label="$t('label.currency')"
                   :items="currencyOptions"
                   class="w-full"
                   :required="model.hasParValue"
@@ -160,7 +159,7 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
         <UFormField name="hasRightsOrRestrictions">
           <UCheckbox
             v-model="model.hasRightsOrRestrictions"
-            label="This share class has special rights or restrictions"
+            :label="$t('label.shareClassHasRightsOrRestrictions')"
             :ui="{ label: 'text-base' }"
           />
         </UFormField>

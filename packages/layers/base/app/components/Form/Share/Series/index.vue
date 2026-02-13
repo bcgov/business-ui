@@ -72,7 +72,7 @@ async function onDone() {
 
 const hasNameError = computed(() => !!formRef.value?.getErrors().find(e => e.name?.includes('name')))
 const nameInputSlots = computed(() => ({
-  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, 'Shares')
+  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, t('label.shares'))
 }))
 provide('UInput-slots-share-series-name-input', nameInputSlots)
 </script>
@@ -102,17 +102,17 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
         <ConnectFormInput
           v-model="model.name"
           required
-          :label="'Series Name [Shares]'"
+          :label="$t('label.seriesNameShares')"
           input-id="share-series-name-input"
           name="name"
-          help="Only enter the series name. The word “Shares” will be added automatically."
+          :help="$t('text.seriesNameHelp')"
         />
         <USeparator />
         <URadioGroup
           v-if="!shareClassData?.hasMaximumShares"
           v-model="model.hasMaximumShares"
           size="xl"
-          :items="[{ value: true }, { label: 'No Maximum', value: false }]"
+          :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
           :ui="{
             fieldset: 'gap-y-6',
             item: 'items-center gap-4'
@@ -122,28 +122,28 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model.number="model.maxNumberOfShares"
+              v-model="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
-              :label="'Maximum Number of Shares'"
+              :label="$t('label.maxNumberOfShares')"
               name="maxNumberOfShares"
               :required="model.hasMaximumShares"
-              help="Maximum number of shares in this class"
+              :help="$t('text.maxNumberOfSharesHelp')"
             />
             <span v-else>{{ item.label }}</span>
           </template>
         </URadioGroup>
         <ConnectFormInput
           v-else
-          v-model.number="model.maxNumberOfShares"
+          v-model="model.maxNumberOfShares"
           :disabled="!model.hasMaximumShares"
           :class="{ 'opacity-75': !model.hasMaximumShares }"
           input-id="max-number-shares-input"
-          :label="'Maximum Number of Shares'"
+          :label="$t('label.maxNumberOfShares')"
           name="maxNumberOfShares"
           :required="model.hasMaximumShares"
-          help="Maximum number of shares in this class"
+          :help="$t('text.maxNumberOfSharesHelp')"
         />
         <USeparator />
         <div
@@ -154,25 +154,25 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
             id="par-value-display-input"
             v-model="shareClassData.parValue"
             readonly
-            :label="'Par Value'"
+            :label="$t('label.parValue')"
             class="w-full flex-1"
           />
           <ConnectInput
             id="currency-display-input"
             v-model="shareClassData.currency"
             readonly
-            :label="'Currency'"
+            :label="$t('label.currency')"
             class="w-full flex-1"
           />
         </div>
         <p v-else class="text-base">
-          No Par Value
+          {{ $t('label.noParValue') }}
         </p>
         <USeparator />
         <UFormField name="hasRightsOrRestrictions">
           <UCheckbox
             v-model="model.hasRightsOrRestrictions"
-            label="This share class has special rights or restrictions"
+            :label="$t('label.shareClassHasRightsOrRestrictions')"
             :ui="{ label: 'text-base' }"
           />
         </UFormField>

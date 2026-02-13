@@ -1,18 +1,18 @@
 import { z } from 'zod'
-// import type { FormShareClass } from '#components'
 
 export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
+  const t = useNuxtApp().$i18n.t
   return z.object({
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
     priority: z.number().default(1),
     name: z.string()
-      .min(1, 'This field is required')
-      .max(50, 'Maximum 50 characters')
-      .refine(val => !/\b(share|shares|value)\b/i.test(val), 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’')
-      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), 'Name must be unique')
+      .min(1, t('connect.validation.fieldRequired'))
+      .max(50, t('connect.validation.maxChars', 50))
+      .refine(val => !/\b(share|shares|value)\b/i.test(val), t('validation.seriesNameInvalidWords'))
+      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), t('validation.uniqueName'))
       .default(''),
-    maxNumberOfShares: z.coerce.number('Only enter whole numbers').nullable().default(null),
+    maxNumberOfShares: z.coerce.number(t('validation.onlyWholeNumbers')).nullable().default(null),
     hasMaximumShares: z.boolean().default(false),
     hasRightsOrRestrictions: z.boolean().default(false),
     isInvalid: z.boolean().default(false)
@@ -20,11 +20,11 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
     if (data.hasMaximumShares) {
       const maxShares = data.maxNumberOfShares
 
-      if (maxShares === null || maxShares === undefined) {
+      if (maxShares === null || maxShares === undefined || maxShares.toString() === '') {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'This field is required'
+          message: t('connect.validation.fieldRequired')
         })
         return
       }
@@ -33,7 +33,7 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'Only enter whole numbers'
+          message: t('validation.onlyWholeNumbers')
         })
       }
 
@@ -41,7 +41,7 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'Maximum 16 digits'
+          message: t('validation.maxDigits', 16)
         })
       }
 
@@ -49,7 +49,7 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'The maximum number for all series combined cannot exceed the maximum number for the class'
+          message: t('validation.totalOfAllSeriesCantExceedMaxOfClass')
         })
       }
     }
@@ -65,26 +65,28 @@ export function getActiveShareSeriesSchema(context?: { existingNames: string[], 
 export type ActiveShareSeriesSchema = z.output<ReturnType<typeof getActiveShareSeriesSchema>>
 
 export function getShareClassSchema(context?: { existingNames: string[] }) {
+  const t = useNuxtApp().$i18n.t
   return z.object({
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
     priority: z.number().default(1),
     name: z.string()
-      .min(1, 'This field is required')
-      .max(50, 'Maximum 50 characters')
-      .refine(val => !/\b(share|shares|value)\b/i.test(val), 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’')
-      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), 'Name must be unique')
+      .min(1, t('connect.validation.fieldRequired'))
+      .max(50, t('connect.validation.maxChars', 50))
+      .refine(val => !/\b(share|shares|value)\b/i.test(val), t('validation.classNameInvalidWords'))
+      .refine(val => !context?.existingNames?.includes(val.toLowerCase().trim()), t('validation.uniqueName'))
       .default(''),
     hasParValue: z.boolean().default(false),
-    parValue: z.coerce.number('Only enter numbers')
-      .nullable()
-      .default(null),
+    parValue: z.preprocess(
+      val => (val === '' || val === undefined ? null : val),
+      z.coerce.number(t('validation.onlyNumbers')).nullable().default(null)
+    ),
     currency: z.preprocess(
       val => (val === null ? undefined : val),
       z.string().optional()
     ),
     hasMaximumShares: z.boolean().default(false),
-    maxNumberOfShares: z.coerce.number('Only enter whole numbers')
+    maxNumberOfShares: z.coerce.number(t('validation.onlyWholeNumbers'))
       .nullable()
       .default(null),
     hasRightsOrRestrictions: z.boolean().default(false),
@@ -95,7 +97,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['currency'],
-          message: 'This field is required'
+          message: t('connect.validation.fieldRequired')
         })
       }
 
@@ -105,15 +107,13 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
-          message: 'This field is required'
+          message: t('connect.validation.fieldRequired')
         })
-      }
-
-      if (parValue && parValue <= 0) {
+      } else if (parValue <= 0) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
-          message: 'Amount must be greater than 0'
+          message: t('validation.amountMustBeGreaterThan', 0)
         })
       }
 
@@ -123,7 +123,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
-          message: 'Maximum 16 digits'
+          message: t('validation.maxDigits', 16)
         })
       }
 
@@ -133,13 +133,13 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
-          message: 'Amounts less than 1 can be entered with up to 6 decimal places'
+          message: t('validation.maxDecimalsLessThanOne', 6)
         })
       } else if (parValue && parValue >= 1 && decimalCount > 2) {
         ctx.addIssue({
           code: 'custom',
           path: ['parValue'],
-          message: 'Amounts greater than 1 can be entered with up to 2 decimal places'
+          message: t('validation.maxDecimalsGreaterThanOne', 2)
         })
       }
     }
@@ -151,7 +151,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'This field is required'
+          message: t('connect.validation.fieldRequired')
         })
         return
       }
@@ -160,7 +160,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'Only enter whole numbers'
+          message: t('validation.onlyWholeNumbers')
         })
       }
 
@@ -168,7 +168,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'Maximum 16 digits'
+          message: t('validation.maxDigits', 16)
         })
       }
 
@@ -180,7 +180,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: 'The maximum number for all series combined cannot exceed the maximum number for the class'
+          message: t('validation.totalOfAllSeriesCantExceedMaxOfClass')
         })
       }
     }

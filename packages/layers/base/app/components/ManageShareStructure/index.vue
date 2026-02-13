@@ -131,7 +131,7 @@ function clearAllAlerts() {
     @keydown="clearAllAlerts"
   >
     <p class="pb-4">
-      The share structure must match exactly what is set out in the company’s current memorandum and articles.
+      {{ $t('text.shareStructureMustMatchCompanysCurrentState') }}
     </p>
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
@@ -144,7 +144,7 @@ function clearAllAlerts() {
     <FormShareClass
       v-if="addingShareClass && activeClass"
       v-model="activeClass"
-      :title="'Add Share Class'"
+      :title="$t('label.addShareClass')"
       :state-key="stateKey"
       variant="add"
       name="activeClass"
@@ -174,7 +174,7 @@ function clearAllAlerts() {
         <FormShareClass
           v-if="row.depth === 0 && activeClass?.id === row.original.new.id"
           v-model="activeClass"
-          :title="'Edit Share Class'"
+          :title="$t('label.editShareClass')"
           :state-key="stateKey"
           variant="edit"
           name="activeClass"
@@ -187,7 +187,7 @@ function clearAllAlerts() {
           v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
           v-model="activeSeries"
           name="activeSeries"
-          :title="addingSeriesToClassId ? 'Add Share Series' : 'Edit Share Series'"
+          :title="addingSeriesToClassId ? $t('label.addShareSeries') : $t('label.editShareSeries')"
           :variant="addingSeriesToClassId ? 'add' : 'edit'"
           :row
           :state-key="stateKey"
