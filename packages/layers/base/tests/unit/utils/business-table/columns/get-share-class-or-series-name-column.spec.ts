@@ -19,7 +19,7 @@ describe('getShareClassOrSeriesNameColumn', () => {
   it('renders a Class row correctly (depth 0)', () => {
     const row = {
       depth: 0,
-      original: { new: { name: 'Common Shares' } }
+      original: { new: { name: 'Common' } }
     }
     const column = getShareClassOrSeriesNameColumn() as any
 

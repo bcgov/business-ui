@@ -3,7 +3,7 @@ import { isEqual, omit } from 'es-toolkit'
 
 export const useManageShareStructure = (stateKey: string = 'manage-share-structure') => {
   const { baseModal } = useModal()
-  const { t } = useI18n()
+  const { t } = useNuxtApp().$i18n
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-table-state`, () => [])
 
@@ -112,7 +112,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       const submittedMaxShares = shareClass.maxNumberOfShares
       const maxSharesChanged = initialMaxShares !== submittedMaxShares
 
-      if ((!shareClass.hasRightsOrRestrictions || maxSharesChanged) && rowToUpdate.new.series.length) {
+      if ((!shareClass.hasRightsOrRestrictions || maxSharesChanged) && rowToUpdate.new.series?.length) {
         const description = maxSharesChanged
           ? t('modal.removeShareSeries.changeMaxSharesDescription')
           : t('modal.removeShareSeries.removeRorDescription')
