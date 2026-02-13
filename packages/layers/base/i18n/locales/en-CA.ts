@@ -525,6 +525,28 @@ export default {
     unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
     undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
   },
+  /* Mappings here are based from the RoleTypeUi enum */
+  roleType: {
+    APPLICANT: 'Applicant',
+    ASSISTANT_SECRETARY: 'Assistant Secretary',
+    CEO: 'Chief Executive Officer',
+    CFO: 'Chief Financial Officer',
+    CHAIR: 'Chair',
+    COMPLETING_PARTY: 'Completing Party',
+    CUSTODIAN: 'Custodian',
+    DIRECTOR: 'Director',
+    INCORPORATOR: 'Incorporator',
+    LIQUIDATOR: 'Liquidator',
+    OFFICER: 'Officer',
+    OTHER: 'Other Office(s)',
+    PRESIDENT: 'President',
+    PARTNER: 'Partner',
+    PROPRIETOR: 'Proprietor',
+    RECEIVER: 'Receiver',
+    SECRETARY: 'Secretary',
+    TREASURER: 'Treasurer',
+    VICE_PRESIDENT: 'Vice President'
+  },
   text: {
     addressChange: 'address change',
     alteration: 'alteration',
@@ -601,6 +623,9 @@ export default {
     exactDocIDChars: 'Document ID must be 8 characters',
     duplicateDocId: 'A document record already exists with this document ID',
     invalidDocId: 'The number entered is not recognized in our system',
-    invalidEmailAddress: 'Enter a valid email address'
+    invalidEmailAddress: 'Enter a valid email address',
+    role: {
+      min: 'Choose at least one role'
+    }
   }
 }

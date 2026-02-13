@@ -2,10 +2,9 @@ import { z } from 'zod'
 
 export function getManageLiquidatorsSchema() {
   return z.object({
-    // TODO: update
     parties: z.array(z.object({
-      new: getPartySchema(),
-      old: getPartySchema().optional()
+      new: getPartySchema(RoleTypeUi.LIQUIDATOR),
+      old: getPartySchema(RoleTypeUi.LIQUIDATOR).optional()
     })),
     courtOrder: getCourtOrderPoaSchema(),
     documentId: getDocumentIdSchema(),
@@ -54,7 +53,7 @@ export function getLiquidatorsSchema() {
       folioNumber: '',
       isPriority: false
     }),
-    activeParty: getActivePartySchema()
+    activeParty: getActivePartySchema(RoleTypeUi.LIQUIDATOR)
   })
 }
 

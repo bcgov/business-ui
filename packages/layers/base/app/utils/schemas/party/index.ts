@@ -1,19 +1,9 @@
 import { z } from 'zod'
 
 export * from './name'
+export * from './roles'
 
-export function getPartyRoleSchema() {
-  return z.array(z.object({
-    appointmentDate: z.string().optional(),
-    cessationDate: z.string().optional().nullable(),
-    roleClass: z.enum(RoleClass).optional(),
-    roleType: z.enum(RoleTypeUi).optional()
-  })).optional().default([])
-}
-
-export type PartyRoleSchema = z.output<ReturnType<typeof getPartyRoleSchema>>
-
-export function getPartySchema() {
+export function getPartySchema(roleType?: RoleTypeUi) {
   return z.object({
     actions: z.array(z.enum(ActionType)).default(() => []),
     address: getAddressSchema().default(() => ({
@@ -42,17 +32,19 @@ export function getPartySchema() {
       firstName: '',
       middleName: '',
       lastName: '',
-      businessName: ''
+      businessName: '',
+      hasPreferredName: false,
+      preferredName: ''
     }),
-    roles: getPartyRoleSchema().default(() => []),
+    roles: getPartyRoleSchema(roleType),
     id: z.string().optional().default(() => '')
   })
 }
 
 export type PartySchema = z.output<ReturnType<typeof getPartySchema>>
 
-export function getActivePartySchema() {
-  return getPartySchema().nullable().optional()
+export function getActivePartySchema(roleType?: RoleTypeUi) {
+  return getPartySchema(roleType).nullable().optional()
 }
 
 export type ActivePartySchema = z.output<ReturnType<typeof getActivePartySchema>>
