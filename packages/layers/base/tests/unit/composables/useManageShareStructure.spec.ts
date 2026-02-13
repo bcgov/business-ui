@@ -482,7 +482,7 @@ describe('useManageShareStructure', () => {
     })
   })
 
-  describe.only('changePriority', () => {
+  describe('changePriority', () => {
     it('class - should swap priority with the nearest item below when moving down', () => {
       const { tableState, changePriority } = useManageShareStructure('test23')
 
