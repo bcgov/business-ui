@@ -43,13 +43,18 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <div class="w-full border border-black p-10" data-testid="share-structure-section">
-      share structure here
-    </div>
+    <section data-testid="current-structure-section">
+      <h2 class="text-base">
+        3. {{ $t('label.shareStructure') }}
+      </h2>
 
-    <div class="w-full border border-black p-10 space-y-2" data-testid="articles-section">
-      <div>articles here</div>
-      <div>Maybe no date at all? Ignore this section for now</div>
-    </div>
+      <ManageShareStructure
+        v-model:active-class="store.formState.activeClass"
+        v-model:active-series="store.formState.activeSeries"
+        :loading="store.initializing"
+        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
+        :add-label="$t('label.addShareClass')"
+      />
+    </section>
   </div>
 </template>

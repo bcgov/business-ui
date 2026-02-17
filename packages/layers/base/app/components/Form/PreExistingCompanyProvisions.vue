@@ -8,7 +8,7 @@ const rtc = useRuntimeConfig().public
 
 <template>
   <section class="space-y-4">
-    <h2>
+    <h2 class="text-base">
       {{ order ? `${order}. ${$t('label.preExistingCompanyProvisions')}` : $t('label.preExistingCompanyProvisions') }}
     </h2>
 

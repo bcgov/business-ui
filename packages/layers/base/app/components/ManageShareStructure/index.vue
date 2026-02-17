@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const {
   stateKey = 'manage-share-structure',
-  allowedActions
+  allowedActions,
+  readonly
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -9,6 +10,7 @@ const {
   // editLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  readonly?: boolean
 }>()
 
 const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class', { required: true })
@@ -102,6 +104,10 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
+  if (readonly) {
+    return true
+  }
+
   const parentRow = row.getParentRow()
   // never hide parent row actions
   if (!parentRow) {
@@ -134,7 +140,7 @@ function clearAllAlerts() {
       {{ $t('text.shareStructureMustMatchCompanysCurrentState') }}
     </p>
     <UButton
-      v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
+      v-if="(!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)) && !readonly"
       :label="addLabel"
       variant="outline"
       icon="i-mdi-account-plus-outline"
