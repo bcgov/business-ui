@@ -191,13 +191,13 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
             <UButton
               :data-alert-focus-target="targetId"
               :aria-describedby="messageId"
-              :label="t('label.done')"
+              :label="$t('label.done')"
               class="w-full sm:w-min justify-center"
               @click="onDone"
             />
             <UButton
               variant="outline"
-              :label="t('label.cancel')"
+              :label="$t('label.cancel')"
               class="w-full sm:w-min justify-center"
               @click="$emit('cancel')"
             />

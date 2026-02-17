@@ -68,9 +68,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       })
     } else {
       applyEdits()
-      if (cleanupForm) {
-        cleanupForm()
-      }
+      cleanupForm?.()
     }
   }
 

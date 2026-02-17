@@ -49,7 +49,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
 
 const hasNameError = computed(() => !!formRef.value?.getErrors().find(e => e.name?.includes('name')))
 const nameInputSlots = computed(() => ({
-  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, 'Shares')
+  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, t('label.shares'))
 }))
 provide('UInput-slots-share-class-name-input', nameInputSlots)
 </script>
@@ -182,13 +182,13 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
             <UButton
               :data-alert-focus-target="targetId"
               :aria-describedby="messageId"
-              :label="t('label.done')"
+              :label="$t('label.done')"
               class="w-full sm:w-min justify-center"
               @click="onDone"
             />
             <UButton
               variant="outline"
-              :label="t('label.cancel')"
+              :label="$t('label.cancel')"
               class="w-full sm:w-min justify-center"
               @click="$emit('cancel')"
             />
