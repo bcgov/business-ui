@@ -22,8 +22,8 @@ export function formatShareClassesUi(
     }
 
     return {
-      new: { ...formattedClass },
-      old: { ...formattedClass }
+      new: structuredClone(formattedClass),
+      old: structuredClone(formattedClass)
     }
   })
 }
