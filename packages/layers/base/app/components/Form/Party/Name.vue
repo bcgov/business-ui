@@ -5,7 +5,7 @@ import { PartyType } from '#imports'
 defineProps<{
   name?: string
   allowBusinessName?: boolean
-  showPreferredName?: boolean
+  allowPreferredName?: boolean
 }>()
 
 const { t } = useI18n()
@@ -111,34 +111,21 @@ defineExpose({
               :label="t('label.lastName')"
             />
           </div>
-          <div v-if="showPreferredName">
+          <div v-if="allowPreferredName">
             <UCheckbox
               v-model="model.hasPreferredName"
               :label="$t('label.haspreferredName')"
               :ui="{ root: 'items-center' }"
               :class="model.hasPreferredName ? 'mb-6' : ''"
             />
-
-            <UFormField
+            <ConnectFormInput
               v-if="model.hasPreferredName"
-              name="preferredName"
-              class="grow flex-1"
-              :ui="{ label: 'mb-3.5' }"
+              v-model="model.preferredName"
               data-testid="form-group-preferred-name"
-            >
-              <template #default="{ error }">
-                <ConnectInput
-                  id="preferred-name-input"
-                  v-model="model.preferredName"
-                  :invalid="!!error"
-                  :label="$t('label.preferredNameOpt')"
-                />
-                <div
-                  v-if="!error"
-                  class="h-4 mt-1"
-                />
-              </template>
-            </UFormField>
+              name="preferredName"
+              input-id="preferred-name-input"
+              :label="t('label.preferredNameOpt')"
+            />
           </div>
         </div>
         <ConnectFormInput

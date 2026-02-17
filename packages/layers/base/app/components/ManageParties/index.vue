@@ -15,7 +15,7 @@ const {
   partyFormProps?: {
     partyNameProps?: {
       allowBusinessName?: boolean
-      showPreferredName?: boolean
+      allowPreferredName?: boolean
     }
     partyRoleProps?: {
       allowedRoles: RoleTypeUi[]

@@ -7,7 +7,7 @@ const props = defineProps<{
   stateKey: string
   partyNameProps?: {
     allowBusinessName?: boolean
-    showPreferredName?: boolean
+    allowPreferredName?: boolean
   }
   partyRoleProps?: {
     allowedRoles: RoleTypeUi[]

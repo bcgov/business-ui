@@ -173,17 +173,11 @@ useFilingPageWatcher<ReceiverType>({
           :add-label="$t('label.addReceiver')"
           :edit-label="$t('label.editReceiver')"
           :allowed-actions="allowedPartyActions"
-          :role-type="RoleTypeUi.RECEIVER"
           :party-form-props="{
-            partyNameProps: { allowBusinessName: true, showPreferredName: false }
-          }"
-        />
-        <!-- testing example - will remove
-          :party-form-props="{
-            partyNameProps: { allowBusinessName: true, showPreferredName: true },
+            partyNameProps: { allowBusinessName: true, allowPreferredName: true },
             partyRoleProps: { allowedRoles: [RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR, RoleTypeUi.DIRECTOR], roleClass: RoleClass.AGENT }
           }"
-        /> -->
+        />
       </section>
 
       <FormCourtOrderPoa

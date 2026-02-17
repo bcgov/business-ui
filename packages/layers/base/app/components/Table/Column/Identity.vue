@@ -15,6 +15,7 @@ defineProps<{
         {{ label }}
       </div>
     </slot>
+    <slot name="additional-label" />
     <ul
       v-if="badges.length > 0"
       class="flex flex-col gap-2"
