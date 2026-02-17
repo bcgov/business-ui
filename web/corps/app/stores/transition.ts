@@ -1,6 +1,7 @@
 import { cloneDeep } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
+  const service = useBusinessService()
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
@@ -41,6 +42,10 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     // TODO: add table config option to useFiling addresses param
     const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
+
+    const classes = await service.getShareClasses(businessId)
+
+    console.log(classes)
 
     // TODO: load/check/merge draft state
     // const draft = draftFiling?.filing?.changeOfReceivers
