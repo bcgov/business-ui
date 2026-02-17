@@ -46,7 +46,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          id: class1Series1Id
+          id: class1Series1Id,
+          isInvalid: false
         },
         {
           actions: [],
@@ -55,7 +56,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          id: class1Series2Id
+          id: class1Series2Id,
+          isInvalid: false
         }
       ]
     },
@@ -78,7 +80,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          id: class1Series1Id
+          id: class1Series1Id,
+          isInvalid: false
         },
         {
           actions: [],
@@ -87,7 +90,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           maxNumberOfShares: 5,
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
-          id: class1Series2Id
+          id: class1Series2Id,
+          isInvalid: false
         }
       ]
     }

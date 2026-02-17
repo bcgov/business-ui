@@ -10,6 +10,7 @@ const props = defineProps<{
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
+  hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
 defineEmits<{
@@ -62,7 +63,7 @@ const expandedTrClass = computed(() => {
   >
     <template #actions-cell="{ row }">
       <TableColumnActions
-        v-if="row.depth === 0 || !getIsRowRemoved(row.getParentRow())"
+        v-if="(row.depth === 0 || !getIsRowRemoved(row.getParentRow())) && !hideActionsWhen?.(row)"
         :row
         :allowed-actions="allowedActions"
         :prevent-actions="preventActions"
