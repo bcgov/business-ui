@@ -84,6 +84,7 @@ function clearAllAlerts() {
 <template>
   <div
     class="space-y-4"
+    data-testid="manage-parties"
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >

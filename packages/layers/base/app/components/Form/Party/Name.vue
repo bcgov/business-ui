@@ -114,7 +114,7 @@ defineExpose({
           <div v-if="allowPreferredName">
             <UCheckbox
               v-model="model.hasPreferredName"
-              :label="$t('label.haspreferredName')"
+              :label="$t('text.haspreferredName')"
               :ui="{ root: 'items-center' }"
               :class="model.hasPreferredName ? 'mb-6' : ''"
             />

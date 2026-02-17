@@ -92,7 +92,7 @@ defineExpose({
       >
         <!-- @vue-expect-error - incorrectly throwing typing error for @update:model-value -->
         <UCheckboxGroup
-          id="party-role-options"
+          data-testid="party-role-options"
           :model-value="selectedRoles"
           :items="selectableRoles"
           variant="card"

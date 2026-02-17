@@ -14,7 +14,9 @@ const state = reactive<FullSchema>({
   firstName: '',
   middleName: '',
   lastName: '',
-  folioNumber: ''
+  folioNumber: '',
+  hasPreferredName: false,
+  preferredName: ''
 })
 
 const nameRef = useTemplateRef<FormPartyNameRef>('name-ref')
@@ -49,7 +51,12 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
         @submit="onSubmit"
         @error="onFormSubmitError"
       >
-        <FormPartyName ref="name-ref" v-model="state" />
+        <FormPartyName
+          ref="name-ref"
+          v-model="state"
+          allow-business-name
+          allow-preferred-name
+        />
         <div class="bg-shade p-6">
           <FormFolio ref="folio-ref" v-model="state" />
         </div>

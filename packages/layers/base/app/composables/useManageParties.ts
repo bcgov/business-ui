@@ -14,7 +14,6 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   const tableState = useState<TableBusinessState<PartySchema>[]>(`${stateKey}-table-state`, () => [])
 
   function updateTable(newState: TableBusinessState<PartySchema>, row?: TableBusinessRow<PartySchema>): void {
-    console.log(newState)
     if (!row) {
       tableState.value = [
         ...tableState.value,

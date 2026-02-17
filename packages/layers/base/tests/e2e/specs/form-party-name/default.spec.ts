@@ -11,6 +11,10 @@ function getElements(page: Page) {
   const businessNameInput = section.getByLabel('Business Name')
   const lastNameGroup = page.getByTestId('form-group-last-name')
   const businessNameGroup = page.getByTestId('form-group-business-name')
+  const preferredNameCheckbox = section.getByRole(
+    'checkbox', { name: 'This person also has another name they prefer to use' })
+  const preferredNameInput = section.getByLabel('Preferred Name (Optional)')
+  const preferredNameGroup = section.getByTestId('form-group-preferred-name')
   const doneButton = page.getByRole('button', { name: 'Done' })
 
   return {
@@ -23,6 +27,9 @@ function getElements(page: Page) {
     businessNameInput,
     lastNameGroup,
     businessNameGroup,
+    preferredNameCheckbox,
+    preferredNameInput,
+    preferredNameGroup,
     doneButton
   }
 }
@@ -39,7 +46,9 @@ test.describe('FormPartyName', () => {
       firstNameInput,
       middleNameInput,
       lastNameInput,
-      businessNameInput
+      businessNameInput,
+      preferredNameCheckbox,
+      preferredNameInput
     } = getElements(page)
 
     await expect(section).toBeVisible()
@@ -49,13 +58,21 @@ test.describe('FormPartyName', () => {
     await expect(firstNameInput).toBeVisible()
     await expect(middleNameInput).toBeVisible()
     await expect(lastNameInput).toBeVisible()
+    await expect(preferredNameCheckbox).toBeVisible()
+    await expect(preferredNameCheckbox).not.toBeChecked()
+    await expect(preferredNameInput).not.toBeVisible()
     await expect(businessNameInput).not.toBeVisible()
+
+    await preferredNameCheckbox.check()
+    await expect(preferredNameInput).toBeVisible()
 
     await businessRadio.click()
 
     await expect(firstNameInput).not.toBeVisible()
     await expect(middleNameInput).not.toBeVisible()
     await expect(lastNameInput).not.toBeVisible()
+    await expect(preferredNameCheckbox).not.toBeVisible()
+    await expect(preferredNameInput).not.toBeVisible()
     await expect(businessNameInput).toBeVisible()
   })
 
@@ -71,15 +88,23 @@ test.describe('FormPartyName', () => {
       businessNameInput,
       lastNameGroup,
       businessNameGroup,
+      preferredNameCheckbox,
+      preferredNameInput,
+      preferredNameGroup,
       doneButton
     } = getElements(page)
 
     await expect(section).toBeVisible()
 
+    await preferredNameCheckbox.check()
+    await preferredNameInput.fill('j'.repeat(51))
+
     await doneButton.click()
 
     await expect(lastNameInput).toBeFocused()
     await expect(lastNameGroup).toContainText('This field is required')
+
+    await expect(preferredNameGroup).toContainText('Maximum 50 characters')
 
     await businessRadio.click()
     await doneButton.click()
@@ -89,6 +114,11 @@ test.describe('FormPartyName', () => {
 
     await personRadio.click()
     await expect(lastNameGroup).not.toContainText('This field is required')
+    await expect(preferredNameCheckbox).not.toBeChecked()
+    await expect(preferredNameGroup).not.toBeVisible()
+    await preferredNameCheckbox.check()
+    await expect(preferredNameGroup).toBeVisible()
+    await expect(preferredNameGroup).not.toContainText('Maximum 50 characters')
 
     await businessRadio.click()
     await expect(businessNameGroup).not.toContainText('This field is required')
@@ -105,13 +135,17 @@ test.describe('FormPartyName', () => {
       firstNameInput,
       middleNameInput,
       lastNameInput,
-      businessNameInput
+      businessNameInput,
+      preferredNameCheckbox,
+      preferredNameInput
     } = getElements(page)
 
     await expect(section).toBeVisible()
     await firstNameInput.fill('first')
     await middleNameInput.fill('middle')
     await lastNameInput.fill('last')
+    await preferredNameCheckbox.check()
+    await preferredNameInput.fill('preferred')
 
     await expect(firstNameInput).toHaveValue('first')
     await expect(middleNameInput).toHaveValue('middle')
@@ -126,6 +160,9 @@ test.describe('FormPartyName', () => {
     await expect(firstNameInput).toHaveValue('')
     await expect(middleNameInput).toHaveValue('')
     await expect(lastNameInput).toHaveValue('')
+    await expect(preferredNameCheckbox).not.toBeChecked()
+    await preferredNameCheckbox.check()
+    await expect(preferredNameInput).toHaveValue('')
 
     await businessRadio.click()
     await expect(businessNameInput).toHaveValue('')

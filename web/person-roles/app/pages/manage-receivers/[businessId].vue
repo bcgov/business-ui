@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
-import { RoleTypeUi } from '#imports'
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -173,9 +172,9 @@ useFilingPageWatcher<ReceiverType>({
           :add-label="$t('label.addReceiver')"
           :edit-label="$t('label.editReceiver')"
           :allowed-actions="allowedPartyActions"
+          :role-type="RoleTypeUi.RECEIVER"
           :party-form-props="{
-            partyNameProps: { allowBusinessName: true, allowPreferredName: true },
-            partyRoleProps: { allowedRoles: [RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR, RoleTypeUi.DIRECTOR], roleClass: RoleClass.AGENT }
+            partyNameProps: { allowBusinessName: true, allowPreferredName: false }
           }"
         />
       </section>
