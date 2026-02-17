@@ -59,9 +59,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
             shouldClose: true,
             onClick: () => {
               applyEdits()
-              if (cleanupForm) {
-                cleanupForm()
-              }
+              cleanupForm?.()
             }
           }
         ]
