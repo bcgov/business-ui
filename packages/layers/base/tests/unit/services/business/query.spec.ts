@@ -16,6 +16,7 @@ const mockKeys = {
   ledger: vi.fn(),
   linkedNameRequest: vi.fn(),
   parties: vi.fn(),
+  shareClasses: vi.fn(),
   tasks: vi.fn()
 }
 
@@ -264,6 +265,20 @@ describe('useBusinessQuery', () => {
     const custom = partiesOptions(businessId, undefined, { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
     expect(mockKeys.parties).toHaveBeenCalledWith(businessId, undefined)
+  })
+
+  it('shareClassOptions should have correct config', () => {
+    const { shareClassOptions } = useBusinessQuery()
+
+    const options = shareClassOptions(businessId)
+    options.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/share-classes`)
+    expect(mockKeys.shareClasses).toHaveBeenCalledWith(businessId, undefined)
+    expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    const custom = shareClassOptions(businessId, 123, { staleTime: 5000 })
+    expect(custom.staleTime).toBe(5000)
+    expect(mockKeys.shareClasses).toHaveBeenCalledWith(businessId, 123)
   })
 
   it('tasksOptions should have correct config', () => {
