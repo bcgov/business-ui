@@ -43,7 +43,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <section data-testid="current-structure-section">
+    <section data-testid="share-structure-section">
       <h2 class="text-base">
         3. {{ $t('label.shareStructure') }}
       </h2>

@@ -5,7 +5,8 @@ import {
   mockCommonApiCallsForFiling,
   getBusinessAddressesMock,
   getPartiesMock,
-  getBusinessSettingsMock
+  getBusinessSettingsMock,
+  getShareClassesMock
 } from '#test-mocks'
 import { TRANP } from '~~/tests/mocks'
 
@@ -39,7 +40,6 @@ async function assertCorrectDirectors(page: Page) {
   const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(3)
 
-  // TODO: update row assertions with effective date column check once that is available
   const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
   await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
   await expect(firstRow).toContainText('Same as Delivery Address')
@@ -59,6 +59,63 @@ async function assertCorrectDirectors(page: Page) {
 async function assertDocumentDelivery(page: Page) {
   const section = page.getByTestId('document-delivery-section')
   await expect(section).toContainText(getBusinessSettingsMock().contacts[0]!.email)
+}
+
+async function assertCorrectShareStructure(page: Page) {
+  const section = page.getByTestId('share-structure-section')
+  const tbody = section.locator('tbody')
+
+  const rows = tbody.locator('tr')
+
+  const classAColumns = rows.filter({ hasText: 'Class A Voting Common Shares' }).locator('td')
+  expect(classAColumns).toHaveCount(6)
+  await expect(classAColumns).toContainText([
+    'Class A Voting Common Shares',
+    'No Maximum',
+    'No Par Value',
+    '',
+    'Yes'
+  ])
+
+  const classDColumns = rows.filter({ hasText: 'Class D Voting Common Shares' }).locator('td')
+  expect(classDColumns).toHaveCount(6)
+  await expect(classDColumns).toContainText([
+    'Class D Voting Common Shares',
+    'No Maximum',
+    '$1.00',
+    'CAD',
+    'Yes'
+  ])
+
+  const classIColumns = rows.filter({ hasText: 'Class I Non-Voting Preferred Shares' }).locator('td')
+  expect(classIColumns).toHaveCount(6)
+  await expect(classIColumns).toContainText([
+    'Class I Non-Voting Preferred Shares',
+    '1000',
+    '$1.00',
+    'CAD',
+    'Yes'
+  ])
+
+  const classISeries1Columns = rows.filter({ hasText: 'Class I Series 1 Shares' }).locator('td')
+  expect(classISeries1Columns).toHaveCount(6)
+  await expect(classISeries1Columns).toContainText([
+    'Class I Series 1 Shares',
+    '500',
+    'No Par Value',
+    '',
+    'No'
+  ])
+
+  const classISeries2Columns = rows.filter({ hasText: 'Class I Series 2 Shares' }).locator('td')
+  expect(classISeries2Columns).toHaveCount(6)
+  await expect(classISeries2Columns).toContainText([
+    'Class I Series 2 Shares',
+    '500',
+    'No Par Value',
+    '',
+    'No'
+  ])
 }
 
 async function assertCommonElements(page: Page, step?: 1 | 2) {
@@ -93,8 +150,7 @@ async function assertCommonElements(page: Page, step?: 1 | 2) {
   await assertCorrectDirectors(page)
   // has share structure
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
-  // has articles
-  await expect(page.getByTestId('articles-section')).toBeVisible()
+  await assertCorrectShareStructure(page)
 
   // common for staff and client per step assertions
   // add as necessary
@@ -119,6 +175,10 @@ test.describe('Transition - Page init', () => {
         getBusinessAddressesMock(),
         'STAFF'
       )
+      await page.route(`**/api/v2/businesses/${identifier}/share-classes`, async (route) => {
+        await route.fulfill({ json: getShareClassesMock() })
+      })
+
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
     })
@@ -155,6 +215,10 @@ test.describe('Transition - Page init', () => {
         getBusinessAddressesMock(),
         'PREMIUM'
       )
+      await page.route(`**/api/v2/businesses/${identifier}/share-classes`, async (route) => {
+        await route.fulfill({ json: getShareClassesMock() })
+      })
+
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
     })
