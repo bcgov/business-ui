@@ -42,7 +42,7 @@ describe('formatShareClassesUi', () => {
     expect(result[0]!.old!.series[0]!.name).toBe('S1')
   })
 
-  it('should have new and old be equal but not the same reference', () => {
+  it('should have new and old be equal', () => {
     const mockData = [{ id: 1, name: 'Test', series: [] }] as unknown as ShareClass[]
     const result = formatShareClassesUi(mockData)
 
