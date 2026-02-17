@@ -42,10 +42,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     // TODO: add table config option to useFiling addresses param
     const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
-
     const classes = await service.getShareClasses(businessId)
-
-    console.log(classes)
 
     // TODO: load/check/merge draft state
     // const draft = draftFiling?.filing?.changeOfReceivers
@@ -68,10 +65,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
       tableOffices.value = addresses
     }
 
+    if (classes) { // TODO: load/check/merge draft state
+      tableShareClasses.value = formatShareClassesUi(classes)
+    }
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
-    // initialOffices.value = cloneDeep(tableOffices.value)
+    initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initializing.value = false
   }
 
