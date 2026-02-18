@@ -36,6 +36,8 @@ export const useBusinessQueryKeys = () => {
       [...base.value, businessId, 'linked-name-request', nrNumber] as const,
     parties: (businessId: string, query?: Record<string, unknown>) =>
       [...base.value, businessId, 'parties', { ...query }] as const,
+    shareClasses: (businessId: string, classId?: string | number) =>
+      [...base.value, businessId, 'share-classes', classId ?? null] as const,
     tasks: (businessId: string) => [...base.value, businessId, 'tasks'] as const
   }
 

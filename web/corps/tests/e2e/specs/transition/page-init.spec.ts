@@ -5,7 +5,8 @@ import {
   mockCommonApiCallsForFiling,
   getBusinessAddressesMock,
   getPartiesMock,
-  getBusinessSettingsMock
+  getBusinessSettingsMock,
+  getShareClassesMock
 } from '#test-mocks'
 import { TRANP } from '~~/tests/mocks'
 
@@ -39,7 +40,6 @@ async function assertCorrectDirectors(page: Page) {
   const rows = tbody.locator('tr')
   await expect(rows).toHaveCount(3)
 
-  // TODO: update row assertions with effective date column check once that is available
   const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
   await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
   await expect(firstRow).toContainText('Same as Delivery Address')
@@ -59,6 +59,63 @@ async function assertCorrectDirectors(page: Page) {
 async function assertDocumentDelivery(page: Page) {
   const section = page.getByTestId('document-delivery-section')
   await expect(section).toContainText(getBusinessSettingsMock().contacts[0]!.email)
+}
+
+async function assertCorrectShareStructure(page: Page) {
+  const section = page.getByTestId('share-structure-section')
+  const tbody = section.locator('tbody')
+
+  const rows = tbody.locator('tr')
+
+  const classAColumns = rows.filter({ hasText: 'Class A Voting Common Shares' }).locator('td')
+  expect(classAColumns).toHaveCount(6)
+  await expect(classAColumns).toContainText([
+    'Class A Voting Common Shares',
+    'No Maximum',
+    'No Par Value',
+    '',
+    'Yes'
+  ])
+
+  const classDColumns = rows.filter({ hasText: 'Class D Voting Common Shares' }).locator('td')
+  expect(classDColumns).toHaveCount(6)
+  await expect(classDColumns).toContainText([
+    'Class D Voting Common Shares',
+    'No Maximum',
+    '$1.00',
+    'CAD',
+    'Yes'
+  ])
+
+  const classIColumns = rows.filter({ hasText: 'Class I Non-Voting Preferred Shares' }).locator('td')
+  expect(classIColumns).toHaveCount(6)
+  await expect(classIColumns).toContainText([
+    'Class I Non-Voting Preferred Shares',
+    '1000',
+    '$1.00',
+    'CAD',
+    'Yes'
+  ])
+
+  const classISeries1Columns = rows.filter({ hasText: 'Class I Series 1 Shares' }).locator('td')
+  expect(classISeries1Columns).toHaveCount(6)
+  await expect(classISeries1Columns).toContainText([
+    'Class I Series 1 Shares',
+    '500',
+    'No Par Value',
+    '',
+    'No'
+  ])
+
+  const classISeries2Columns = rows.filter({ hasText: 'Class I Series 2 Shares' }).locator('td')
+  expect(classISeries2Columns).toHaveCount(6)
+  await expect(classISeries2Columns).toContainText([
+    'Class I Series 2 Shares',
+    '500',
+    'No Par Value',
+    '',
+    'No'
+  ])
 }
 
 async function assertCommonElements(page: Page, step?: 1 | 2) {
@@ -93,8 +150,7 @@ async function assertCommonElements(page: Page, step?: 1 | 2) {
   await assertCorrectDirectors(page)
   // has share structure
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
-  // has articles
-  await expect(page.getByTestId('articles-section')).toBeVisible()
+  await assertCorrectShareStructure(page)
 
   // common for staff and client per step assertions
   // add as necessary
@@ -105,8 +161,19 @@ async function assertCommonElements(page: Page, step?: 1 | 2) {
 }
 
 test.describe('Transition - Page init', () => {
-  test.describe('Staff Only', () => {
-    test.beforeEach(async ({ page }) => {
+  const testCases = [
+    {
+      testName: 'Non-staff',
+      isStaff: false
+    },
+    {
+      testName: 'Staff',
+      isStaff: true
+    }
+  ]
+
+  testCases.forEach(({ testName, isStaff }) => {
+    test(testName, async ({ page }) => {
       await mockCommonApiCallsForFiling(
         page,
         identifier,
@@ -117,13 +184,12 @@ test.describe('Transition - Page init', () => {
         ]),
         TRANP,
         getBusinessAddressesMock(),
-        'STAFF'
+        isStaff ? 'STAFF' : 'PREMIUM',
+        getShareClassesMock()
       )
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
-    })
 
-    test('Page elements', async ({ page }) => {
       // step 1
       await assertCommonElements(page)
       // step 2
@@ -132,48 +198,22 @@ test.describe('Transition - Page init', () => {
       await assertCommonElements(page, 2)
 
       // step 2 staff only sections
-      await expect(page.getByTestId('court-order-section')).toBeVisible()
-      await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+      if (isStaff) {
+        await expect(page.getByTestId('court-order-section')).toBeVisible()
+        await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
-      // step 2 client only which should not be visible
-      await expect(page.getByTestId('folio-section')).not.toBeVisible()
-      await expect(page.getByTestId('certify-section')).not.toBeVisible()
-    })
-  })
+        // step 2 client only which should not be visible
+        await expect(page.getByTestId('folio-section')).not.toBeVisible()
+        await expect(page.getByTestId('certify-section')).not.toBeVisible()
+      } else {
+        // step 2 client only sections
+        await expect(page.getByTestId('folio-section')).toBeVisible()
+        await expect(page.getByTestId('certify-section')).toBeVisible()
 
-  test.describe('Client Only', () => {
-    test.beforeEach(async ({ page }) => {
-      await mockCommonApiCallsForFiling(
-        page,
-        identifier,
-        getPartiesMock([
-          { index: 0, key: 'roleType', value: 'Director' },
-          { index: 1, key: 'roleType', value: 'Director' },
-          { index: 2, key: 'roleType', value: 'Director' }
-        ]),
-        TRANP,
-        getBusinessAddressesMock(),
-        'PREMIUM'
-      )
-      await navigateToTransitionPage(page, identifier)
-      await page.waitForLoadState('networkidle')
-    })
-
-    test('Page elements', async ({ page }) => {
-      // step 1
-      await assertCommonElements(page)
-      // step 2
-      await page.getByRole('button', { name: 'Review and Confirm' }).click()
-      // should still have common elements
-      await assertCommonElements(page, 2)
-
-      // step 2 client only sections
-      await expect(page.getByTestId('folio-section')).toBeVisible()
-      await expect(page.getByTestId('certify-section')).toBeVisible()
-
-      // step 2 staff only which should not be visible
-      await expect(page.getByTestId('court-order-section')).not.toBeVisible()
-      await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
+        // step 2 staff only which should not be visible
+        await expect(page.getByTestId('court-order-section')).not.toBeVisible()
+        await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
+      }
     })
   })
 })

@@ -273,6 +273,30 @@ export const useBusinessQuery = () => {
     return useQuery(() => partiesOptions(businessId, query, options as DefineOptions<{ parties: OrgPerson[] }>))
   }
 
+  function shareClassOptions(
+    businessId: MaybeRefOrGetter<string>,
+    classId?: string | number,
+    options?: DefineOptions<ShareClassesResponse>
+  ) {
+    const url = classId
+      ? `businesses/${toValue(businessId)}/share-classes/${classId}`
+      : `businesses/${toValue(businessId)}/share-classes`
+    return defineQueryOptions({
+      query: () => $businessApi<ShareClassesResponse>(url),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.shareClasses(toValue(businessId), classId)
+    })
+  }
+
+  function shareClasses(
+    businessId: MaybeRefOrGetter<string>,
+    classId?: string | number,
+    options?: QueryOptions<ShareClassesResponse>
+  ) {
+    return useQuery(() => shareClassOptions(businessId, classId, options as DefineOptions<ShareClassesResponse>))
+  }
+
   function tasksOptions(
     businessId: MaybeRefOrGetter<string>,
     options?: DefineOptions<TaskGetResponse>
@@ -335,6 +359,8 @@ export const useBusinessQuery = () => {
     linkedNameRequestOptions,
     parties,
     partiesOptions,
+    shareClassOptions,
+    shareClasses,
     tasks,
     tasksOptions,
     // auth api queries

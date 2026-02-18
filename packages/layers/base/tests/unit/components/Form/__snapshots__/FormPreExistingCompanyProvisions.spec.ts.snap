@@ -4,7 +4,9 @@ exports[`FormPreExistingCompanyProvisions > matches the snapshot with an order p
 <section
   class="space-y-4"
 >
-  <h2>
+  <h2
+    class="text-base"
+  >
     5. Pre-existing Company Provisions
   </h2>
   <div
@@ -60,7 +62,9 @@ exports[`FormPreExistingCompanyProvisions > matches the snapshot without an orde
 <section
   class="space-y-4"
 >
-  <h2>
+  <h2
+    class="text-base"
+  >
     Pre-existing Company Provisions
   </h2>
   <div

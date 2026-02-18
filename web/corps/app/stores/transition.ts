@@ -1,8 +1,10 @@
 import { cloneDeep } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
+  const service = useBusinessService()
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
+  const { tableState: tableShareClasses } = useManageShareStructure()
   const { getBusinessAddresses } = useBusinessAddresses()
   // const { getPartiesMergedWithRelationships } = useBusinessParty()
   const {
@@ -19,7 +21,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const formState = reactive<TransitionFormSchema>({} as TransitionFormSchema)
   const initialFormState = shallowRef<TransitionFormSchema>({} as TransitionFormSchema)
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
-  const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
+  const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
 
   const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
 
@@ -40,6 +42,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     // TODO: add table config option to useFiling addresses param
     const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
+    const classes = await service.getShareClasses(businessId)
 
     // TODO: load/check/merge draft state
     // const draft = draftFiling?.filing?.changeOfReceivers
@@ -62,10 +65,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
       tableOffices.value = addresses
     }
 
+    if (classes) { // TODO: load/check/merge draft state
+      tableShareClasses.value = formatShareClassesUi(classes)
+    }
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
-    initialOffices.value = cloneDeep(tableOffices.value)
+    initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initializing.value = false
   }
 
@@ -107,13 +114,12 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const defaults = getTransitionSchema(isStaff.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
-    // formState.activeOffice = undefined // TODO - only add if making offices editable
-    // formState.activeShareClass = undefined // TODO
-    // formState.activeShareSeries = undefined // TODO
+    formState.activeClass = undefined
+    formState.activeSeries = undefined
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
-    initialOffices.value = []
+    initialShareClasses.value = []
   }
 
   return {
@@ -121,9 +127,10 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing,
     directors: tableParties,
     offices: tableOffices,
+    shareClasses: tableShareClasses,
     initialFormState,
     initialDirectors,
-    initialOffices,
+    initialShareClasses,
     isStaff,
     init,
     // submit,

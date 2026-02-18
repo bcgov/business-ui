@@ -53,6 +53,7 @@ describe('useBusinessQueryKeys', () => {
       ['ledger', [businessId, '2026-01-13'], ['business', accountId, businessId, 'ledger', { date: '2026-01-13' }]],
       ['linkedNameRequest', [businessId, 'NR 123'], ['business', accountId, businessId, 'linked-name-request', 'NR 123']],
       ['parties', [businessId, { role: 'director' }], ['business', accountId, businessId, 'parties', { role: 'director' }]],
+      ['shareClasses', [businessId, 123], ['business', accountId, businessId, 'share-classes', 123]],
       ['tasks', [businessId], ['business', accountId, businessId, 'tasks']]
     ])('keys.%s should return the correct array structure', (methodName, args, expected) => {
       // @ts-expect-error - can't index method name on keys

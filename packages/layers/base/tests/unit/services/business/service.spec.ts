@@ -14,6 +14,7 @@ const mockQuery = {
   ledgerOptions: vi.fn(),
   linkedNameRequestOptions: vi.fn(),
   partiesOptions: vi.fn(),
+  shareClassOptions: vi.fn(),
   tasksOptions: vi.fn(),
   authInfoOptions: vi.fn()
 }
@@ -202,6 +203,17 @@ describe('useBusinessService', () => {
     expect(opts).toHaveBeenCalledWith(businessId, nrNum)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData)
+  })
+
+  it('getShareClasses should fetch options and call the cache helper', async () => {
+    const mockData = { shareClasses: ['item1', 'item2', 'item3'] }
+    mockGetCachedOrFetch.mockResolvedValue(mockData)
+
+    const result = await service.getShareClasses(businessId)
+    const opts = mockQuery.shareClassOptions
+    expect(opts).toHaveBeenCalledWith(businessId, undefined)
+    expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
+    expect(result).toEqual(mockData.shareClasses)
   })
 
   it('getTasks should fetch options and call the cache helper', async () => {

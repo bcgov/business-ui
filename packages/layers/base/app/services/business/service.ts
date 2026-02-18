@@ -225,6 +225,25 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Fetches business share classes.
+   * @param businessId the business identifier (aka entity inc no)
+   * @param classId the specific share class to fetch
+   * @returns A promise that resolves the business share classes.
+  */
+  async function getShareClasses(businessId: string, classId?: undefined, force?: boolean): Promise<ShareClass[]>
+  async function getShareClasses(businessId: string, classId: string | number, force?: boolean): Promise<ShareClass>
+  async function getShareClasses(
+    businessId: string, classId?: string | number, force = false
+  ): Promise<ShareClass | ShareClass[]> {
+    const options = query.shareClassOptions(businessId, classId)
+    return await getCachedOrFetch(options, force)
+      .then(res => classId
+        ? (res as { shareClass: ShareClass }).shareClass
+        : (res as { shareClasses: ShareClass[] }).shareClasses
+      )
+  }
+
+  /**
    * Fetches business tasks list.
    * @param businessId the business identifier (aka entity inc no)
    * @returns A promise that resolves the business tasks.
@@ -262,6 +281,7 @@ export const useBusinessService = () => {
     getFilingDocumentUrls,
     getLedger,
     getLinkedNameRequest,
+    getShareClasses,
     getTasks,
     getParties
   }
