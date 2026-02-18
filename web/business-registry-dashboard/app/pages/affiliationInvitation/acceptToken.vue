@@ -69,7 +69,6 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
     }
   } catch (error: any) {
     console.error(error)
-    console.error(error?.response)
     // Generic email affiliation error when there is no fromOrgId (special migration flow affiliation)
     if (
       !fromOrgId &&

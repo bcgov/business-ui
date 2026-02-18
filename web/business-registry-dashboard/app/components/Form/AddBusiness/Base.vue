@@ -277,7 +277,7 @@ watch(() => props.authOptions, (newOptions) => {
                 {{ option.label }}
               </span>
               <span
-                v-if="option.slot === 'email-option' && businessDetails.isCoop"
+                v-if="option.slot === 'email-option' && (businessDetails.isCoop || businessDetails.isCorporation)"
                 class="mt-1 text-sm text-bcGovColor-midGray"
               >
                 {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}

@@ -60,7 +60,7 @@ defineShortcuts({
       <template #header>
         <div v-if="title || alert" class="flex justify-between">
           <div>
-            <!-- NB: UAlert has a vue warn on close button prop. This will go away when nuxt/ui is upgraded to 4+ -->
+            <!-- NB: UAlert has a vue warn on close button prop. This will go away when nuxt and nuxt/ui are upgraded to 4+ and 3+ -->
             <UAlert v-if="alert" class="mb-3" v-bind="alert">
               <template #description>
                 <p class="text-bcGovColor-darkGray">
