@@ -318,7 +318,7 @@ export default {
         default: '{boldStart}Incorporation Number:{boldEnd} {number}',
         firm: '{boldStart}Registration Number:{boldEnd} {number}'
       },
-      expiredLink: '{boldStart}Important:{boldEnd} The business was not able to be added to your account due to an expired link or an error. Please send the request again below.',
+      expiredLink: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an expired link or an error. Please send the request again below.',
       missingInfo: {
         p1: 'Some required information for this business is missing.',
         fragmentPrt1: 'The business doesn\'t have an email on file. You can download and submit this',
