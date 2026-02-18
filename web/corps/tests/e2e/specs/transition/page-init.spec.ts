@@ -161,8 +161,19 @@ async function assertCommonElements(page: Page, step?: 1 | 2) {
 }
 
 test.describe('Transition - Page init', () => {
-  test.describe('Staff Only', () => {
-    test.beforeEach(async ({ page }) => {
+  const testCases = [
+    {
+      testName: 'Non-staff',
+      isStaff: false
+    },
+    {
+      testName: 'Staff',
+      isStaff: true
+    }
+  ]
+
+  testCases.forEach(({ testName, isStaff }) => {
+    test(testName, async ({ page }) => {
       await mockCommonApiCallsForFiling(
         page,
         identifier,
@@ -173,15 +184,12 @@ test.describe('Transition - Page init', () => {
         ]),
         TRANP,
         getBusinessAddressesMock(),
-        'STAFF',
+        isStaff ? 'STAFF' : 'PREMIUM',
         getShareClassesMock()
       )
-
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
-    })
 
-    test('Page elements', async ({ page }) => {
       // step 1
       await assertCommonElements(page)
       // step 2
@@ -190,50 +198,22 @@ test.describe('Transition - Page init', () => {
       await assertCommonElements(page, 2)
 
       // step 2 staff only sections
-      await expect(page.getByTestId('court-order-section')).toBeVisible()
-      await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+      if (isStaff) {
+        await expect(page.getByTestId('court-order-section')).toBeVisible()
+        await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
-      // step 2 client only which should not be visible
-      await expect(page.getByTestId('folio-section')).not.toBeVisible()
-      await expect(page.getByTestId('certify-section')).not.toBeVisible()
-    })
-  })
+        // step 2 client only which should not be visible
+        await expect(page.getByTestId('folio-section')).not.toBeVisible()
+        await expect(page.getByTestId('certify-section')).not.toBeVisible()
+      } else {
+        // step 2 client only sections
+        await expect(page.getByTestId('folio-section')).toBeVisible()
+        await expect(page.getByTestId('certify-section')).toBeVisible()
 
-  test.describe('Client Only', () => {
-    test.beforeEach(async ({ page }) => {
-      await mockCommonApiCallsForFiling(
-        page,
-        identifier,
-        getPartiesMock([
-          { index: 0, key: 'roleType', value: 'Director' },
-          { index: 1, key: 'roleType', value: 'Director' },
-          { index: 2, key: 'roleType', value: 'Director' }
-        ]),
-        TRANP,
-        getBusinessAddressesMock(),
-        'PREMIUM',
-        getShareClassesMock()
-      )
-
-      await navigateToTransitionPage(page, identifier)
-      await page.waitForLoadState('networkidle')
-    })
-
-    test('Page elements', async ({ page }) => {
-      // step 1
-      await assertCommonElements(page)
-      // step 2
-      await page.getByRole('button', { name: 'Review and Confirm' }).click()
-      // should still have common elements
-      await assertCommonElements(page, 2)
-
-      // step 2 client only sections
-      await expect(page.getByTestId('folio-section')).toBeVisible()
-      await expect(page.getByTestId('certify-section')).toBeVisible()
-
-      // step 2 staff only which should not be visible
-      await expect(page.getByTestId('court-order-section')).not.toBeVisible()
-      await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
+        // step 2 staff only which should not be visible
+        await expect(page.getByTestId('court-order-section')).not.toBeVisible()
+        await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
+      }
     })
   })
 })
