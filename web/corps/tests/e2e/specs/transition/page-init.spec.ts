@@ -173,11 +173,9 @@ test.describe('Transition - Page init', () => {
         ]),
         TRANP,
         getBusinessAddressesMock(),
-        'STAFF'
+        'STAFF',
+        getShareClassesMock()
       )
-      await page.route(`**/api/v2/businesses/${identifier}/share-classes`, async (route) => {
-        await route.fulfill({ json: getShareClassesMock() })
-      })
 
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')
@@ -213,11 +211,9 @@ test.describe('Transition - Page init', () => {
         ]),
         TRANP,
         getBusinessAddressesMock(),
-        'PREMIUM'
+        'PREMIUM',
+        getShareClassesMock()
       )
-      await page.route(`**/api/v2/businesses/${identifier}/share-classes`, async (route) => {
-        await route.fulfill({ json: getShareClassesMock() })
-      })
 
       await navigateToTransitionPage(page, identifier)
       await page.waitForLoadState('networkidle')

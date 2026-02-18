@@ -19,11 +19,3 @@ export interface ShareClass extends ShareSeries {
 }
 
 export type ShareClassesResponse = { shareClasses: ShareClass[] } | { shareClass: ShareClass }
-
-// Still needed?
-// export interface ShareStructure {
-//   resolutionDates?: string[]
-//   valid?: boolean
-//   changed?: boolean
-//   shareClasses: ShareClass[]
-// }

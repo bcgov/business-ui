@@ -105,7 +105,8 @@ export const mockCommonApiCallsForFiling = async (
   partiesJSON: object | undefined,
   feesJSON: object | undefined,
   addressesJSON: object | undefined,
-  accountType?: string
+  accountType?: string,
+  shareClassesJSON?: object | undefined
 ) => {
   page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
@@ -149,6 +150,11 @@ export const mockCommonApiCallsForFiling = async (
     page.route(`**/api/v2/businesses/${identifier}/addresses`, async (route) => {
       // FUTURE: update roles of parties to match the configurables
       await route.fulfill({ json: addressesJSON })
+    })
+  }
+  if (shareClassesJSON) {
+    page.route(`**/api/v2/businesses/${identifier}/share-classes`, async (route) => {
+      await route.fulfill({ json: shareClassesJSON })
     })
   }
 }
