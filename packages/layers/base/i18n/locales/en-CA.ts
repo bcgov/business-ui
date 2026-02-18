@@ -119,7 +119,7 @@ export default {
     }
   },
   documentUpload: {
-    label: 'Upload Files',
+    label: 'Upload File',
     acceptedFiles: 'Accepted file types:',
     maxFileSize: 'Max file size',
     noDocumentsDescription: 'No documents have been uploaded. Please upload the required document.',

@@ -17,10 +17,13 @@ const partyRoleSchema = getPartyRoleSchema()
 const formRef = useTemplateRef<Form<PartyRoleSchema>>('party-roles-form')
 const formErrors = computed<FormError[] | undefined>(() => formRef.value?.getErrors())
 
-const selectedRoles = computed(() => {
-  return model.value
-    .filter(role => !role.cessationDate)
-    .map(role => role.roleType)
+const selectedRoles = computed({
+  get() {
+    return model.value.filter(role => !role.cessationDate).map(role => role.roleType)
+  },
+  set(newValue) {
+    handleRoleChange(newValue)
+  }
 })
 
 const selectableRoles = computed(() => allowedRoles.map(
@@ -67,7 +70,7 @@ watch(selectedRoles, (v) => {
   if (v.length) {
     formRef.value?.clear()
   }
-}, { deep: true })
+})
 
 defineExpose({
   formRef
@@ -90,17 +93,15 @@ defineExpose({
         id="party-roles"
         :ui="{ error: 'sr-only' }"
       >
-        <!-- @vue-expect-error - incorrectly throwing typing error for @update:model-value -->
         <UCheckboxGroup
+          v-model="selectedRoles"
           data-testid="party-role-options"
-          :model-value="selectedRoles"
           :items="selectableRoles"
           variant="card"
           size="lg"
           :ui="{
             fieldset: 'grid grid-cols-2 gap-4'
           }"
-          @update:model-value="handleRoleChange"
         />
       </UFormField>
     </ConnectFieldset>

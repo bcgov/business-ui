@@ -16,7 +16,7 @@ describe('getPartyNameColumn', () => {
     expect(mockGetColumnMeta).toHaveBeenCalledWith('first')
   })
 
-  it('renders a PERSON name correctly in uppercase', () => {
+  it('renders a PERSON name correctly in uppercase without preferred name', () => {
     const row = {
       original: {
         new: {
@@ -38,6 +38,41 @@ describe('getPartyNameColumn', () => {
     expect(cell.type).toBe(TableColumnIdentity)
     expect(cell.props.label).toBe('JOHN QUINCY DOE')
     expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
+    expect(cell.children['additional-label']).toBeDefined()
+    expect(cell.children['additional-label']()).toEqual([])
+  })
+
+  it('renders a PERSON name correctly in uppercase with preferred name', () => {
+    const preferredName = 'Cool Cat'
+    const row = {
+      original: {
+        new: {
+          name: {
+            partyType: PartyType.PERSON,
+            firstName: 'John',
+            middleName: 'Quincy',
+            lastName: 'Doe',
+            preferredName
+          }
+        }
+      }
+    }
+    const column = getPartyNameColumn() as any
+    mockGetIsRowRemoved.mockReturnValue(false)
+    mockGetTableBadges.mockReturnValue([])
+
+    const cell = column.cell({ row })
+
+    expect(cell.type).toBe(TableColumnIdentity)
+    expect(cell.props.label).toBe('JOHN QUINCY DOE')
+    expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
+    expect(cell.children['additional-label']).toBeDefined()
+    const slot = cell.children['additional-label']()
+    expect(slot.children.length).toBe(2)
+    expect(slot.children[0].children).toBe('Preferred Name:')
+    expect(slot.children[0].props.class).toBe('text-sm italic font-normal')
+    expect(slot.children[1].children).toBe(preferredName.toUpperCase())
+    expect(slot.children[1].props.class).toBe('text-sm')
   })
 
   it('renders a BUSINESS name correctly in uppercase', () => {
