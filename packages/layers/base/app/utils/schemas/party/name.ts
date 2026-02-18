@@ -7,9 +7,9 @@ export function getPartyNameSchema() {
   const personNameSchema = z.object({
     firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
     middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
-    lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 }))
-    // preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })),
-    // hasPreferredName: z.boolean()
+    lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 })),
+    preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })),
+    hasPreferredName: z.boolean()
   })
 
   const orgNameSchema = z.object({
@@ -28,8 +28,8 @@ export function getPartyNameSchema() {
     firstName: z.string().default(''),
     middleName: z.string().default(''),
     lastName: z.string().default(''),
-    // preferredName: z.string().optional(),
-    // hasPreferredName: z.boolean().optional(),
+    preferredName: z.string().optional(),
+    hasPreferredName: z.boolean().optional().default(false),
     businessName: z.string().default('')
   }).superRefine((val, ctx) => {
     const partyType = val.partyType

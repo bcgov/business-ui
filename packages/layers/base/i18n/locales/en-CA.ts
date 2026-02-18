@@ -119,7 +119,7 @@ export default {
     }
   },
   documentUpload: {
-    label: 'Upload Files',
+    label: 'Upload File',
     acceptedFiles: 'Accepted file types:',
     maxFileSize: 'Max file size',
     noDocumentsDescription: 'No documents have been uploaded. Please upload the required document.',
@@ -457,6 +457,7 @@ export default {
     remove: 'Remove',
     requestACopy: 'Request a Copy',
     retrieveBusinessInformation: 'Retrieve Business Information',
+    roles: 'Roles',
     routingSlipNumber: 'Routing Slip Number',
     sameAsDeliveryAddress: 'Same as Delivery Address',
     sameAsMailAddress: 'Same as Mailing Address',
@@ -543,6 +544,28 @@ export default {
     unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
     undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
   },
+  /* Mappings here are based from the RoleTypeUi enum */
+  roleType: {
+    APPLICANT: 'Applicant',
+    ASSISTANT_SECRETARY: 'Assistant Secretary',
+    CEO: 'Chief Executive Officer',
+    CFO: 'Chief Financial Officer',
+    CHAIR: 'Chair',
+    COMPLETING_PARTY: 'Completing Party',
+    CUSTODIAN: 'Custodian',
+    DIRECTOR: 'Director',
+    INCORPORATOR: 'Incorporator',
+    LIQUIDATOR: 'Liquidator',
+    OFFICER: 'Officer',
+    OTHER: 'Other Office(s)',
+    PRESIDENT: 'President',
+    PARTNER: 'Partner',
+    PROPRIETOR: 'Proprietor',
+    RECEIVER: 'Receiver',
+    SECRETARY: 'Secretary',
+    TREASURER: 'Treasurer',
+    VICE_PRESIDENT: 'Vice President'
+  },
   text: {
     addressChange: 'address change',
     alteration: 'alteration',
@@ -572,6 +595,7 @@ export default {
     filingWillTakeEffectOnDate: 'The {filing} will take effect on {boldStart}{date}{boldEnd}.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
     folioDescription: 'This is meant for your own tracking purposes and will appear on your receipt.',
+    haspreferredName: 'This person also has another name they prefer to use',
     incorporation: 'incorporation',
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',
     limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
@@ -635,6 +659,9 @@ export default {
     onlyNumbers: 'Only enter numbers',
     uniqueName: 'Name must be unique',
     maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
-    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places'
+    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
+    role: {
+      min: 'Choose at least one role'
+    }
   }
 }

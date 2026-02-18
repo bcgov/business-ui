@@ -42,6 +42,7 @@ test.describe('Manage Liquidators - Submission', () => {
       const newLiquidator = {
         actions: [ActionType.ADDED],
         entity: {
+          alternateName: '',
           businessName: '',
           familyName: 'last name',
           givenName: 'first name',
@@ -98,6 +99,7 @@ test.describe('Manage Liquidators - Submission', () => {
       const newLiquidator = {
         actions: [ActionType.ADDED],
         entity: {
+          alternateName: '',
           businessName: '',
           familyName: 'last name',
           givenName: 'first name',

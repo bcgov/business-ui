@@ -147,6 +147,9 @@ useFilingPageWatcher<LiquidateType>({
           :edit-label="t('label.editLiquidator')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
+          :party-form-props="{
+            partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+          }"
         />
       </section>
 

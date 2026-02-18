@@ -3,6 +3,7 @@ export function getPartyTableColumns<T extends PartySchema = PartySchema>(
 ): TableBusinessColumn<T>[] {
   const columnMap: Record<TablePartyColumnName, TableBusinessColumn<T>> = {
     name: getPartyNameColumn<T>(),
+    roles: getPartyRolesColumn<T>(),
     delivery: getDeliveryAddressColumn<T>(),
     mailing: getMailingAddressColumn<T>(),
     effectiveDates: getEffectiveDatesColumn<T>(),

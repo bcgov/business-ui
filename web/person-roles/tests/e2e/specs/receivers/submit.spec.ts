@@ -41,6 +41,7 @@ test.describe('Manage Receivers - Submission', () => {
       const newReceiver = {
         actions: [ActionType.ADDED],
         entity: {
+          alternateName: '',
           businessName: '',
           familyName: 'last name',
           givenName: 'first name',

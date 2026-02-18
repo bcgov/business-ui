@@ -33,6 +33,11 @@ const loading = ref(false)
         :empty-text="loading ? `Loading...` : 'No parties'"
         add-label="Add Party"
         edit-label="Edit Party"
+        :columns-to-display="['name', 'roles', 'delivery', 'mailing', 'actions']"
+        :party-form-props="{
+          partyNameProps: { allowBusinessName: true, allowPreferredName: true },
+          partyRoleProps: { allowedRoles: [RoleTypeUi.DIRECTOR, RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR] }
+        }"
       />
     </ConnectPageSection>
   </UContainer>

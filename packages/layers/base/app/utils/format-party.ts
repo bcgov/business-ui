@@ -32,23 +32,27 @@ export const API_ROLE_TO_UI_ROLE_MAP = Object.fromEntries(
 
 function formatRelationshipRolesUi(roles: Role[]): PartyRoleSchema {
   return roles.map((role) => {
+    if (!role.roleType || !API_ROLE_TO_UI_ROLE_MAP[role.roleType]) {
+      // Should never happen
+      console.error('No role type mapping for', role.roleType)
+    }
     return {
       ...role,
-      roleType: role.roleType
-        ? API_ROLE_TO_UI_ROLE_MAP[role.roleType]
-        : undefined
+      roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType]!
     }
   })
 }
 
 function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = false): Role[] {
   return roles.map((role) => {
+    if (!role.roleType || !UI_ROLE_TO_API_ROLE_MAP[role.roleType]) {
+      // Should never happen
+      console.error('No role type mapping for', role.roleType)
+    }
     return {
       ...role,
       cessationDate: isRemoved && !role.cessationDate ? getToday() : role.cessationDate,
-      roleType: role.roleType
-        ? UI_ROLE_TO_API_ROLE_MAP[role.roleType]
-        : undefined
+      roleType: UI_ROLE_TO_API_ROLE_MAP[role.roleType]!
     }
   })
 }
@@ -65,7 +69,9 @@ export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchem
       middleName: party.officer.middleInitial ?? '',
       lastName: party.officer.lastName ?? '',
       businessName: party.officer.organizationName ?? '',
-      partyType: party.officer.partyType || PartyType.PERSON
+      partyType: party.officer.partyType || PartyType.PERSON,
+      hasPreferredName: !!party.officer.alternateName,
+      preferredName: party.officer.alternateName ?? ''
     },
     address: {
       mailingAddress,
@@ -88,7 +94,9 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
       middleName: party.entity.middleInitial ?? '',
       lastName: party.entity.familyName ?? '',
       businessName: party.entity.businessName ?? '',
-      partyType
+      partyType,
+      hasPreferredName: !!party.entity.alternateName,
+      preferredName: party.entity.alternateName ?? ''
     },
     address: {
       mailingAddress,
@@ -109,7 +117,8 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
       givenName: party.name.firstName ?? '',
       middleInitial: party.name.middleName ?? '',
       familyName: party.name.lastName ?? '',
-      businessName: party.name.businessName ?? ''
+      businessName: party.name.businessName ?? '',
+      alternateName: party.name.preferredName ?? ''
     },
     mailingAddress,
     deliveryAddress,

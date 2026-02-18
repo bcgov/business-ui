@@ -5,6 +5,14 @@ const props = defineProps<{
   title: string
   allowedActions?: ManageAllowedAction[]
   stateKey: string
+  partyNameProps?: {
+    allowBusinessName?: boolean
+    allowPreferredName?: boolean
+  }
+  partyRoleProps?: {
+    allowedRoles: RoleTypeUi[]
+    roleClass?: RoleClass
+  }
 }>()
 
 const emit = defineEmits<{
@@ -16,17 +24,19 @@ const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'party-details-form'
 
-type PartyDetails = Pick<PartyStateBase, 'name' | 'address'>
+type PartyDetails = Pick<PartySchema, 'name' | 'address' | 'roles'>
 
 const model = defineModel<PartyDetails>({ required: true })
 
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
+const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 
 async function onDone() {
   // need to validate child refs to get input IDs
   const result = await Promise.allSettled([
     partyNameFormRef.value?.formRef?.validate(),
+    partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate()
   ])
 
@@ -34,7 +44,7 @@ async function onDone() {
 
   if (rejections.length > 0) {
     const errors = rejections.flatMap(r => r.reason.errors)
-    const firstId = errors[0]?.id
+    const firstId = errors[0]?.id || rejections[0]!.reason.formId
     if (firstId) {
       const element = document.getElementById(firstId)
       if (element) {
@@ -56,6 +66,7 @@ function isAllowedAction(action: ManageAllowedAction) {
 }
 
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
+const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
@@ -79,13 +90,23 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
       orientation="horizontal"
       :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
     >
-      <div class="space-y-4">
+      <div class="space-y-6">
         <FormPartyName
           v-if="isNameChangeAllowed"
           ref="party-name-form"
           v-model="model.name"
+          v-bind="partyNameProps"
           :state="model.name"
           name="name"
+        />
+        <FormPartyRole
+          v-if="isRoleChangeAllowed && partyRoleProps"
+          id="party-role-form"
+          ref="party-role-form"
+          v-model="model.roles"
+          v-bind="partyRoleProps"
+          :state="model.roles"
+          name="roles"
         />
         <FormAddress
           v-if="isAddressChangeAllowed"

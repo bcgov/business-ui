@@ -12,6 +12,16 @@ const {
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
   columnsToDisplay?: TablePartyColumnName[]
+  partyFormProps?: {
+    partyNameProps?: {
+      allowBusinessName?: boolean
+      allowPreferredName?: boolean
+    }
+    partyRoleProps?: {
+      allowedRoles: RoleTypeUi[]
+      roleClass?: RoleClass
+    }
+  }
 }>()
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
@@ -29,7 +39,7 @@ const {
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
-const activePartySchema = getActivePartySchema()
+const activePartySchema = getActivePartySchema(roleType)
 
 function setActiveFormAlert() {
   setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
@@ -51,7 +61,7 @@ function cleanupPartyForm() {
 }
 
 function addParty(party: ActivePartySchema) {
-  addNewParty(party, roleType)
+  addNewParty(party)
   cleanupPartyForm()
 }
 
@@ -74,6 +84,7 @@ function clearAllAlerts() {
 <template>
   <div
     class="space-y-4"
+    data-testid="manage-parties"
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
@@ -89,6 +100,7 @@ function clearAllAlerts() {
     <FormPartyDetails
       v-if="addingParty && activeParty"
       v-model="activeParty"
+      v-bind="partyFormProps"
       :title="addLabel"
       name="activeParty"
       variant="add"
@@ -114,6 +126,7 @@ function clearAllAlerts() {
         <FormPartyDetails
           v-if="activeParty"
           v-model="activeParty"
+          v-bind="partyFormProps"
           :title="editLabel"
           :allowed-actions="allowedActions"
           name="activeParty"

@@ -22,16 +22,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
         ? `${nameProps.firstName} ${nameProps.middleName} ${nameProps.lastName}`.toUpperCase()
         : nameProps.businessName?.toUpperCase() || ''
 
-      // FUTURE: add preferred name
-      // const preferredName = computed(() => {
-      //   return // preferred name logic
-      // })
-      // preferredName
-      // ? h('div', { class: 'flex flex-col' }, [
-      //   h('i', { class: 'text-sm italic font-normal' }, t('label.preferredName') + ':'),
-      //   h('span', { class: 'text-sm' }, preferredName.toUpperCase())
-      // ])
-      // : null
+      const preferredName = row.original.new.name.preferredName
 
       return h(
         TableColumnIdentity,
@@ -40,7 +31,13 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
           badges,
           class: cellClass
         },
-        () => []
+        {
+          'additional-label': () => preferredName
+            ? h('div', { class: 'flex flex-col' }, [
+              h('i', { class: 'text-sm italic font-normal' }, t('label.preferredName') + ':'),
+              h('span', { class: 'text-sm' }, preferredName.toUpperCase())])
+            : []
+        }
       )
     }
   }
