@@ -107,7 +107,6 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep1
       v-if="currentStep === 1"
       id="transition-filing-step-1"
-      :missing-share-structure="false"
       @submit="reviewAndConfirm"
     />
     <!-- <UForm

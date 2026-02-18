@@ -2,10 +2,6 @@
 import type { Form } from '@nuxt/ui'
 import { z } from 'zod'
 
-defineProps<{
-  missingShareStructure: boolean
-}>()
-
 const { t } = useI18n()
 const store = useTransitionStore()
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
@@ -115,7 +111,7 @@ const confirmErrors = computed(() => {
       </ConnectFormFieldWrapper>
     </section>
 
-    <section data-testid="share-structure-section" :class="{ 'empty-share-structure-error': missingShareStructure }">
+    <section data-testid="share-structure-section">
       <h2 class="text-base">
         3. {{ $t('label.shareStructure') }}
       </h2>
@@ -133,11 +129,3 @@ const confirmErrors = computed(() => {
     </section>
   </UForm>
 </template>
-
-<style scoped>
-@reference "#connect-theme";
-
-.empty-share-structure-error :deep(td[data-slot="empty"] > div) {
-  @apply text-error;
-}
-</style>
