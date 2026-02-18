@@ -19,8 +19,8 @@ const confirmErrors = computed(() => {
   const errors = formRef.value?.getErrors()
 
   return {
-    confirmOffices: !!errors?.find(e => e.name?.includes('confirmOffices')),
-    confirmDirectors: !!errors?.find(e => e.name?.includes('confirmDirectors'))
+    confirmOffices: errors?.find(e => e.name?.includes('confirmOffices')),
+    confirmDirectors: errors?.find(e => e.name?.includes('confirmDirectors'))
   }
 })
 </script>
@@ -55,18 +55,13 @@ const confirmErrors = computed(() => {
         orientation="horizontal"
         label="Confirm"
         class="bg-white p-6 rounded"
-        :class="{ 'border-l-3 border-error': confirmErrors.confirmOffices }"
+        :error="confirmErrors.confirmOffices"
       >
         <UFormField name="confirmOffices" :ui="{ error: 'sr-only' }">
-          <template #default="{ error }">
-            <UCheckbox
-              v-model="store.formState.confirmOffices"
-              label="I confirm that the office address information listed for this business is correct."
-              :ui="{
-                label: error ? 'text-base text-error' : 'text-base'
-              }"
-            />
-          </template>
+          <UCheckbox
+            v-model="store.formState.confirmOffices"
+            label="I confirm that the office address information listed for this business is correct."
+          />
         </UFormField>
       </ConnectFormFieldWrapper>
     </section>
@@ -95,18 +90,13 @@ const confirmErrors = computed(() => {
         orientation="horizontal"
         label="Confirm"
         class="bg-white p-6 rounded"
-        :class="{ 'border-l-3 border-error': confirmErrors.confirmDirectors }"
+        :error="confirmErrors.confirmDirectors"
       >
         <UFormField name="confirmDirectors" :ui="{ error: 'sr-only' }">
-          <template #default="{ error }">
-            <UCheckbox
-              v-model="store.formState.confirmDirectors"
-              label="I confirm that the director information listed for this business is correct."
-              :ui="{
-                label: error ? 'text-base text-error' : 'text-base'
-              }"
-            />
-          </template>
+          <UCheckbox
+            v-model="store.formState.confirmDirectors"
+            label="I confirm that the director information listed for this business is correct."
+          />
         </UFormField>
       </ConnectFormFieldWrapper>
     </section>
