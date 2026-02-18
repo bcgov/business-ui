@@ -1,5 +1,34 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.12.0
+
+### Minor Changes
+
+- [#392](https://github.com/bcgov/business-ui/pull/392) [`1cee6b8`](https://github.com/bcgov/business-ui/commit/1cee6b88c3a2ad9033bb8aaf77de8ed4138cfd65) Thanks [@deetz99](https://github.com/deetz99)! - ManageShareStructure component, composable and FormShareClass, FormShareSeries child components and validations
+
+### Patch Changes
+
+- [#391](https://github.com/bcgov/business-ui/pull/391) [`717856e`](https://github.com/bcgov/business-ui/commit/717856eaedbd4826a82690f7257126859110e56d) Thanks [@kialj876](https://github.com/kialj876)! - Updated manage parties table to support preferred name and role selection
+
+- [#394](https://github.com/bcgov/business-ui/pull/394) [`252925d`](https://github.com/bcgov/business-ui/commit/252925d4cddfaef16cf80eeb0daf87278c419ace) Thanks [@deetz99](https://github.com/deetz99)! - \n
+
+  **Components**
+
+  - FormPreExistingCompanyProvisions: Set label styling to 16px
+  - ManageShareStructure: add readonly prop to hide actions
+
+  **Interfaces**
+
+  - ShareClass: align with api definition for response type
+
+  **Services**
+
+  - getShareClasses: Query, query key and services wrapper
+
+  **Utils**
+
+  - formatShareClassesUi: format shareClasses response to match table shape
+
 ## 0.11.1
 
 ### Patch Changes
