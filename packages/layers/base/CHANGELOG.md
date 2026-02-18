@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.12.1
+
+### Patch Changes
+
+- [#395](https://github.com/bcgov/business-ui/pull/395) [`4582c8e`](https://github.com/bcgov/business-ui/commit/4582c8e2cff401af0008943be7abe82f05ed6d6f) Thanks [@deetz99](https://github.com/deetz99)! - Fix tailwind reference in FormShareSeries style block
+
 ## 0.12.0
 
 ### Minor Changes
