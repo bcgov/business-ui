@@ -81,6 +81,8 @@ const errorText = computed(() => {
   return { title, description }
 })
 
+const tryAgainButtonText = computed(() => props.errorObj.type ? t('btn.tryDifferentOption') : t('btn.tryAgain'))
+
 const setScreenReaderAlert = (message: string) => {
   ariaAlertText.value = ''
   ariaAlertText.value = message
@@ -97,7 +99,7 @@ onMounted(() => {
   <div class="flex flex-col gap-4 pt-2 text-left">
     <div class="flex">
       <UIcon name="i-mdi-alert" class="mr-2 size-6 text-red-500" />
-      <h2 class="text-base font-semibold text-bcGovColor-midGray">
+      <h2 class="font-bold text-bcGovColor-midGray">
         {{ errorText.title }}
       </h2>
     </div>
@@ -105,7 +107,7 @@ onMounted(() => {
       {{ apiErrorMsg }}
     </p> -->
     <p>{{ errorText.description }}</p>
-    <BCRegContactInfo class="self-start text-left" />
+    <BCRegContactInfo v-if="errorObj.type !== 'passcode'" class="self-start text-left" />
     <div class="flex justify-center gap-2 pt-8">
       <UButton
         :label="$t('btn.cancel')"
@@ -115,7 +117,7 @@ onMounted(() => {
         @click="brdModal.close()"
       />
       <UButton
-        :label="$t('btn.tryAgain')"
+        :label="tryAgainButtonText"
         class="px-7"
         :ui="{ base: 'h-11 rounded' }"
         @click="$emit('retry')"

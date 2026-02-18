@@ -4,6 +4,9 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import AcceptToken from '~/pages/affiliationInvitation/acceptToken.vue'
 import { enI18n } from '~~/tests/mocks/i18n'
 
+const COMPRESSED_TOKEN = '.eJyrVspMUbKyMDHTUUorys_1L0r3BPLzSnNydJRK8lG4SaXFmXmpxcWeKal5JZlpmalFSlZKTs4GFhYWRuYmSrUApKwYSA.aYyj4Q.ZO59NCoNhHR6rHHSEL_-OdTdrQc'
+const UNCOMPRESSED_TOKEN = 'eyJpZCI6OCwiZnJvbU9yZ0lkIjoyNTIzLCJ0b09yZ0lkIjoyOTk0LCJidXNpbmVzc0lkZW50aWZpZXIiOiJCQzA4NzEzMzAifQ.ZNPNWg.lrG2RAy9EOXQshT9cMzf1xyEE04'
+
 // Mock useRoute to provide test route parameters and metadata
 mockNuxtImport('useRoute', () => {
   return () => ({
@@ -80,5 +83,19 @@ describe('AcceptToken Page', () => {
       expect(() => component.parseToken('invalid-token'))
         .toThrow('Invalid token format')
     })
+  })
+
+  it('successfully parses both compressed and uncompressed tokens', () => {
+    const wrapper = mountComponent()
+    const component = wrapper.vm as any
+
+    // Compressed token
+    const compressedToken = component.parseToken(COMPRESSED_TOKEN)
+    expect(compressedToken.businessIdentifier).toBeDefined()
+    expect(compressedToken.id).toBeDefined()
+
+    const uncompressedToken = component.parseToken(UNCOMPRESSED_TOKEN)
+    expect(uncompressedToken.businessIdentifier).toBeDefined()
+    expect(uncompressedToken.id).toBeDefined()
   })
 })

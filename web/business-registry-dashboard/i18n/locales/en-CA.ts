@@ -118,6 +118,7 @@ export default {
     help: 'Help',
     hideHelp: 'Hide Help',
     tryAgain: 'Try Again',
+    tryDifferentOption: 'Try a different option',
     cancel: 'Cancel',
     ok: 'OK',
     refreshPage: 'Refresh Page',
@@ -310,12 +311,14 @@ export default {
       successToast: '{nrNum} was successfully added to your table.'
     },
     manageBusiness: {
-      heading: 'Manage a B.C. Business',
+      heading: 'Access and manage a B.C. Business',
+      headingRequestAccess: 'Request access to business',
       businessName: '{boldStart}Business Name:{boldEnd} {name}',
       businessIdentifier: {
         default: '{boldStart}Incorporation Number:{boldEnd} {number}',
         firm: '{boldStart}Registration Number:{boldEnd} {number}'
       },
+      expiredLink: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an expired link or an error. Please send the request again below.',
       missingInfo: {
         p1: 'Some required information for this business is missing.',
         fragmentPrt1: 'The business doesn\'t have an email on file. You can download and submit this',
@@ -437,11 +440,11 @@ export default {
           401: {
             coop: {
               title: 'Invalid Passcode',
-              description: 'Unable to add the business. The provided passcode is invalid.'
+              description: 'Unable to add the business. The provided password is invalid. Please try again or use one of the other options available if you can no longer remember your password or don’t have access to it.'
             },
             default: {
               title: 'Invalid Password',
-              description: 'Unable to add the business. The provided password is invalid.'
+              description: 'Unable to add the business. The provided password is invalid. Please try again or use one of the other options available if you can no longer remember your password or don’t have access to it.'
             }
           },
           404: {
