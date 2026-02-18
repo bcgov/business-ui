@@ -209,7 +209,7 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "#connect-theme";
 
 :deep(#par-value-display-input) {
   @apply bg-white shadow-none border-b border-dashed;
