@@ -46,6 +46,13 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     }
   })
 
+  function nextStep() {
+    _currentStep.value++
+  }
+  function previousStep() {
+    _currentStep.value--
+  }
+
   function updateButtonControl() {
     const isMultiStep = !!options.steps && options.steps.length > 0
     const stepIndex = currentStep.value - 1
@@ -62,7 +69,7 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
         label: t('label.back'),
         variant: 'outline' as const,
         icon: 'i-mdi-chevron-left',
-        onClick: () => { currentStep.value-- },
+        onClick: previousStep,
         ...options.backButton,
         ...(step?.backButton || {})
       },
@@ -82,7 +89,7 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
         label: isLastStep ? t('label.submit') : t('label.next'),
         trailingIcon: 'i-mdi-chevron-right',
         type: isLastStep ? 'submit' : 'button',
-        onClick: !isLastStep ? () => { currentStep.value++ } : undefined,
+        onClick: !isLastStep ? () => { nextStep() } : undefined,
         ...options.submitFiling,
         ...(step?.submitFiling || {})
       }
@@ -147,6 +154,8 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   )
 
   return {
-    currentStep
+    currentStep,
+    nextStep,
+    previousStep
   }
 }

@@ -7,6 +7,8 @@ const store = useTransitionStore()
 const { initializing } = storeToRefs(store)
 const urlParams = useUrlSearchParams('history')
 const route = useRoute()
+const { setAlert: setPartiesAlert } = useFilingAlerts('manage-parties')
+const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 // const modal = useFilingModals()
 // const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 
@@ -26,6 +28,25 @@ definePageMeta({
 useHead({
   title: t('page.transition.title')
 })
+
+function checkActiveSubForm() {
+  const hasActiveSubForm
+    = (store.formState.activeDirector && setPartiesAlert('party-details-form', t('text.finishTaskBeforeOtherChanges')))
+      || (store.formState.activeClass && setSharesAlert('share-class-form', t('text.finishTaskBeforeOtherChanges')))
+      || (store.formState.activeSeries && setSharesAlert('share-series-form', t('text.finishTaskBeforeOtherChanges')))
+
+  return hasActiveSubForm
+}
+
+function reviewAndConfirm() {
+  if (checkActiveSubForm()) {
+    return
+  }
+  if (store.shareClasses.length == 0) {
+    return setSharesAlert('manage-share-structure', 'Your share structure must contain at least one share class.')
+  }
+  nextStep()
+}
 
 async function submitFiling() {
   console.info('submit filing')
@@ -57,7 +78,7 @@ async function cancelFiling() {
   // await navigateTo(dashboardUrl.value, { external: true })
 }
 
-const { currentStep } = useFilingPageWatcher({
+const { currentStep, nextStep } = useFilingPageWatcher({
   store,
   businessId,
   filingSubType: undefined,
@@ -70,7 +91,10 @@ const { currentStep } = useFilingPageWatcher({
   cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
   submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   steps: [
-    { cancelFiling: { class: 'min-w-[300px] justify-center' }, submitFiling: { label: t('label.reviewAndConfirm') } },
+    {
+      cancelFiling: { class: 'min-w-[300px] justify-center' },
+      submitFiling: { label: t('label.reviewAndConfirm'), form: 'transition-filing-step-1', type: 'submit', onClick: undefined }
+    },
     { submitFiling: { form: 'transition-filing' } }
   ],
   buttonLayout: 'stackedDefault'
@@ -80,7 +104,13 @@ const { currentStep } = useFilingPageWatcher({
 <template>
   <div>
     <ConnectSpinner v-if="initializing" fullscreen />
-    <UForm
+    <FormTransitionStep1
+      v-if="currentStep === 1"
+      id="transition-filing-step-1"
+      :missing-share-structure="false"
+      @submit="reviewAndConfirm"
+    />
+    <!-- <UForm
       id="transition-filing"
       ref="transition-filing"
       :state="store.formState"
@@ -103,6 +133,6 @@ const { currentStep } = useFilingPageWatcher({
 
       <FormTransitionStep1 v-if="currentStep === 1" />
       <FormTransitionStep2 v-if="currentStep === 2" />
-    </UForm>
+    </UForm> -->
   </div>
 </template>

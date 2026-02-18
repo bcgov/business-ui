@@ -66,7 +66,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
     }
 
     if (classes) { // TODO: load/check/merge draft state
-      tableShareClasses.value = formatShareClassesUi(classes)
+      tableShareClasses.value = []
+      // formatShareClassesUi(classes)
     }
 
     await nextTick()
@@ -116,6 +117,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
     formState.activeDirector = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
+    formState.confirmDirectors = false
+    formState.confirmOffices = false
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
