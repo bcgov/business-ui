@@ -63,13 +63,11 @@ async function submitFiling() {
 async function saveFiling(_disableActiveFormCheck = false) {
   console.info('save filing')
   // try {
-  //   await store.submit(false)
-  //   // if resume later, navigate back to business dashboard
-  //   if (resumeLater) {
-  //     await navigateTo(dashboardUrl.value, { external: true })
-  //   }
+  await store.submit(false)
+  // if resume later, navigate back to business dashboard
+  // await navigateTo(dashboardUrl.value, { external: true })
   // } catch (error) {
-  //   await modal.openSaveFilingErrorModal(error)
+  // await modal.openSaveFilingErrorModal(error)
   // }
 }
 

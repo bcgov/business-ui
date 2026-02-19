@@ -1,4 +1,4 @@
-import { cloneDeep } from 'es-toolkit'
+import { cloneDeep, merge } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
   const service = useBusinessService()
@@ -6,14 +6,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { getBusinessAddresses } = useBusinessAddresses()
-  // const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { initFiling } = useFiling()
 
   const businessApi = useBusinessApi()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
-  // const draftFilingState = shallowRef({}) // TODO: add type
+  const draftFilingState = shallowRef({}) // TODO: add type
 
   const formState = reactive<TransitionFormSchema>({} as TransitionFormSchema)
   const initialFormState = shallowRef<TransitionFormSchema>({} as TransitionFormSchema)
@@ -27,7 +27,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     $reset()
 
     const {
-      // draftFiling,
+      draftFiling,
       parties
     } = await initFiling( // TODO: add type
       businessId,
@@ -42,28 +42,43 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const classes = await service.getShareClasses(businessId)
 
     // TODO: load/check/merge draft state
-    // const draft = draftFiling?.filing?.changeOfReceivers
-    // if (draft) {
-    //   draftFilingState.value = draftFiling
-    //   formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
-    //   formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
-    //   formState.documentId.documentIdNumber = draft.documentId ?? ''
-    // }
-
-    if (parties) { // TODO: load/check/merge draft state
-      // const draftRelationships = draft?.relationships
-      // tableParties.value = draftRelationships
-      //   ? getPartiesMergedWithRelationships(parties, draftRelationships)
-      //   : parties
-      tableParties.value = parties
+    const draft = draftFiling?.filing?.transition
+    if (draft) {
+      draftFilingState.value = draftFiling
+      formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
+      formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
+      // formState.documentId.documentIdNumber = draft.documentId ?? ''
     }
 
-    if (addresses) { // TODO: load/check/merge draft state
+    if (parties) {
+      const draftRelationships = draft?.relationships
+      tableParties.value = draftRelationships
+        ? getPartiesMergedWithRelationships(parties, draftRelationships)
+        : parties
+    }
+
+    // offices are not editable, no need to map draft state
+    if (addresses) {
       tableOffices.value = addresses
     }
 
-    if (classes) { // TODO: load/check/merge draft state
-      tableShareClasses.value = formatShareClassesUi(classes)
+    if (classes) {
+      const originalClasses = formatShareClassesUi(classes)
+      const draftClasses = draft?.shareStructure.shareClasses && formatShareClassesUi(draft.shareStructure.shareClasses)
+
+      if (draftClasses) {
+        for (const shareClass of draftClasses) {
+          const classId = shareClass.new.id
+          const existingClass = classId ? originalClasses.find(c => c.new.id === classId) : undefined
+          if (existingClass) {
+            shareClass.old = existingClass.new
+          } else {
+            shareClass.old = undefined
+          }
+        }
+      }
+
+      tableShareClasses.value = draftClasses || originalClasses
     }
 
     await nextTick()
@@ -98,12 +113,13 @@ export const useTransitionStore = defineStore('transition-store', () => {
       hasProvisions: true,
       shareStructure: {
         shareClasses: tableShareClasses.value
-          .filter(c => !c.new.actions.includes(ActionType.REMOVED))
+          .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
           .map(c => ({
             ...c.new,
             name: c.new.name + ' Shares',
+            currency: c.new.currency ?? null,
             series: c.new.series
-              .filter(s => !s.actions.includes(ActionType.REMOVED))
+              .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
               .map(s => ({
                 ...s,
                 name: s.name + ' Shares'
@@ -124,20 +140,20 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     console.log(filingPayload)
 
-    // const draftId = draftFilingState.value?.filing?.header?.filingId
-    // if (draftId || !isSubmission) {
-    //   const filingResp = await businessApi.saveOrUpdateDraftFiling(
-    //     businessStore.businessIdentifier!,
-    //     payload,
-    //     isSubmission,
-    //     draftId as string | number
-    //   )
-    //   draftFilingState.value = filingResp as unknown as ReceiverDraftState
-    //   const urlParams = useUrlSearchParams()
-    //   urlParams.draft = String(filingResp.filing.header.filingId)
-    // } else {
-    await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
-    // }
+    const draftId = draftFilingState.value?.filing?.header?.filingId
+    if (draftId || !isSubmission) {
+      const filingResp = await businessApi.saveOrUpdateDraftFiling(
+        businessStore.businessIdentifier!,
+        filingPayload,
+        isSubmission,
+        draftId as string | number
+      )
+      draftFilingState.value = filingResp // as unknown as ReceiverDraftState
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
+    } else {
+      await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
+    }
   }
 
   function $reset() {
