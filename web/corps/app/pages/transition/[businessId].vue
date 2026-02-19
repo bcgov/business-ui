@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { z } from 'zod'
-import { onFormSubmitError } from '#imports' // auto imports causing type error for this util
-
 const { t } = useI18n()
 const store = useTransitionStore()
 const { initializing } = storeToRefs(store)
@@ -95,7 +92,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
       cancelFiling: { class: 'min-w-[300px] justify-center' },
       submitFiling: { label: t('label.reviewAndConfirm'), form: 'transition-filing-step-1', type: 'submit', onClick: undefined }
     },
-    { submitFiling: { form: 'transition-filing' } }
+    { submitFiling: { form: 'transition-filing-step-2', type: 'submit' } }
   ],
   buttonLayout: 'stackedDefault'
 })
@@ -109,29 +106,10 @@ const { currentStep, nextStep } = useFilingPageWatcher({
       id="transition-filing-step-1"
       @submit="reviewAndConfirm"
     />
-    <!-- <UForm
-      id="transition-filing"
-      ref="transition-filing"
-      :state="store.formState"
-      :schema="z.any()"
-      novalidate
-      class="py-6 space-y-6 sm:py-10 sm:space-y-10"
-      aria-labelledby="filing-h1"
-      @error="onFormSubmitError"
-      @submit="submitFiling"
-    >
-      <div class="space-y-2">
-        <h1 id="filing-h1">
-          {{ $t('page.transition.h1') }}
-        </h1>
-        <ConnectI18nHelper
-          as="p"
-          translation-path="page.transition.desc"
-        />
-      </div>
-
-      <FormTransitionStep1 v-if="currentStep === 1" />
-      <FormTransitionStep2 v-if="currentStep === 2" />
-    </UForm> -->
+    <FormTransitionStep2
+      v-if="currentStep === 2"
+      id="transition-filing-step-2"
+      @submit="() => console.log('submitted')"
+    />
   </div>
 </template>

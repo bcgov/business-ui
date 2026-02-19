@@ -66,8 +66,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     }
 
     if (classes) { // TODO: load/check/merge draft state
-      tableShareClasses.value = []
-      // formatShareClassesUi(classes)
+      tableShareClasses.value = formatShareClassesUi(classes)
     }
 
     await nextTick()

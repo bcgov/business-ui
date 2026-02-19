@@ -49,6 +49,7 @@ export default {
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
+    officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
     shareStructureMustContainAtleastOneClass: 'Your share structure must contain at least one share class.',
     yesCreateLedgerItemForDissolution: 'Yes create a ledger item for this delay of dissolution'
   },

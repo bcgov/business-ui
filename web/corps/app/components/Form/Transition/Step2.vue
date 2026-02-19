@@ -1,17 +1,38 @@
 <script setup lang="ts">
+import type { FormErrorEvent } from '@nuxt/ui'
+import { z } from 'zod'
+
 const store = useTransitionStore()
 const businessStore = useBusinessStore()
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
+const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+
+function onError(event: FormErrorEvent) {
+  const firstError = event?.errors?.[0]
+
+  if (firstError?.name === 'staffPayment.option') {
+    staffPayFormRef.value?.setFocusOnError()
+  } else {
+    onFormSubmitError(event)
+  }
+}
 </script>
 
 <template>
-  <div class="space-y-6 sm:space-y-10">
-    <section class="space-y-4" data-testid="office-addresses-section">
+  <UForm
+    ref="ta-form-step-2"
+    :state="store.formState"
+    :schema="z.any()"
+    novalidate
+    class="py-6 space-y-6 sm:py-10 sm:space-y-10"
+    @error="onError"
+  >
+    <section class="space-y-6" data-testid="review-section">
       <div>
         <h2 class="text-base">
-          1. {{ $t('label.officeAddresses') }}
+          1. {{ $t('label.reviewAndConfirm') }}
         </h2>
-        <p>{{ $t('text.officeAddressesMustBeCorrect') }}</p>
+        <p>{{ $t('text.officeDirectorsSharesMustBeCorrectBeforeFiling') }}</p>
       </div>
 
       <ManageOffices
@@ -22,15 +43,6 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
         :edit-label="$t('label.editOffice')"
         :allowed-actions="[]"
       />
-    </section>
-
-    <section class="space-y-4" data-testid="current-directors-section">
-      <div>
-        <h2 class="text-base">
-          2. {{ $t('label.currentDirectors') }}
-        </h2>
-        <p>{{ $t('text.currentDirectorsMustBeCorrect') }}</p>
-      </div>
 
       <ManageParties
         v-model:active-party="store.formState.activeDirector"
@@ -42,12 +54,6 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
       />
-    </section>
-
-    <section data-testid="share-structure-section">
-      <h2 class="text-base">
-        3. {{ $t('label.shareStructure') }}
-      </h2>
 
       <ManageShareStructure
         v-model:active-class="store.formState.activeClass"
@@ -59,47 +65,33 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
       />
     </section>
 
-    <FormPreExistingCompanyProvisions order="X" data-testid="provisions-section" />
+    <FormPreExistingCompanyProvisions order="2" data-testid="provisions-section" />
 
     <FormDocumentDelivery
       v-if="store.formState.documentDelivery"
       v-model="store.formState.documentDelivery"
-      order="X"
+      order="3"
       name="documentDelivery"
       :loading="store.initializing"
       :registered-office-email="businessStore.businessContact?.email"
     />
 
-    <!-- TODO: help content enhancement? -->
-    <!-- client only -->
     <FormFolio
       v-if="!store.isStaff && store.formState.folio"
       v-model="store.formState.folio"
       data-testid="folio-section"
-      order="X"
+      order="4"
       name="folio"
     />
 
-    <!-- staff only -->
-    <FormCourtOrderPoa
-      v-if="store.isStaff && store.formState.courtOrder"
-      v-model="store.formState.courtOrder"
-      data-testid="court-order-section"
-      :disabled="store.initializing"
-      name="courtOrder"
-      order="X"
-    />
-
-    <!-- client only -->
     <FormCertify
       v-if="!store.isStaff && store.formState.certify"
       v-model="store.formState.certify"
-      order="X"
+      order="5"
       name="certify"
       :description="$t('text.certifyTransitionDescription')"
     />
 
-    <!-- staff only -->
     <ConnectFieldset
       v-if="store.isStaff && store.formState.staffPayment"
       data-testid="staff-payment-section"
@@ -117,5 +109,5 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
         />
       </ConnectFormFieldWrapper>
     </ConnectFieldset>
-  </div>
+  </UForm>
 </template>
