@@ -6,6 +6,7 @@ export default {
     addDirector: 'Add Director',
     addOffice: 'Add Office',
     chooseAnEndDate: 'Choose an end date',
+    confirm: 'Confirm',
     currentDirectors: 'Current Directors',
     delayDate: 'Delay the Time of Dissolution or Cancellation',
     delayFor: 'Delay For',
@@ -42,10 +43,13 @@ export default {
     alertMaxTwoDelays: '{important} Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {email}.',
     certifyDelayDescription: 'Confirm the legal name of the person authorized to complete and submit this filing.',
     certifyTransitionDescription: 'Confirm the legal name of the person authorized to complete and submit this application.',
+    confirmDirectorsCorrect: 'I confirm that the director information listed for this business is correct.',
+    confirmOfficesCorrect: 'I confirm that the office address information listed for this business is correct.',
     currentDirectorsMustBeCorrect: 'Current directors must be correct before filing your application.',
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
+    shareStructureMustContainAtleastOneClass: 'Your share structure must contain at least one share class.',
     yesCreateLedgerItemForDissolution: 'Yes create a ledger item for this delay of dissolution'
   },
   validation: {

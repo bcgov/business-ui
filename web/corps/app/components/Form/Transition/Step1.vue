@@ -53,14 +53,14 @@ const confirmErrors = computed(() => {
 
       <ConnectFormFieldWrapper
         orientation="horizontal"
-        label="Confirm"
+        :label="$t('label.confirm')"
         class="bg-white p-6 rounded"
         :error="confirmErrors.confirmOffices"
       >
         <UFormField name="confirmOffices" :ui="{ error: 'sr-only' }">
           <UCheckbox
             v-model="store.formState.confirmOffices"
-            label="I confirm that the office address information listed for this business is correct."
+            :label="$t('text.confirmOfficesCorrect')"
           />
         </UFormField>
       </ConnectFormFieldWrapper>
@@ -88,14 +88,14 @@ const confirmErrors = computed(() => {
 
       <ConnectFormFieldWrapper
         orientation="horizontal"
-        label="Confirm"
+        :label="$t('label.confirm')"
         class="bg-white p-6 rounded"
         :error="confirmErrors.confirmDirectors"
       >
         <UFormField name="confirmDirectors" :ui="{ error: 'sr-only' }">
           <UCheckbox
             v-model="store.formState.confirmDirectors"
-            label="I confirm that the director information listed for this business is correct."
+            :label="$t('text.confirmDirectorsCorrect')"
           />
         </UFormField>
       </ConnectFormFieldWrapper>

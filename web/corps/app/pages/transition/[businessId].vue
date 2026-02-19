@@ -43,7 +43,7 @@ function reviewAndConfirm() {
     return
   }
   if (store.shareClasses.length == 0) {
-    return setSharesAlert('manage-share-structure', 'Your share structure must contain at least one share class.')
+    return setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
   }
   nextStep()
 }
