@@ -7,7 +7,10 @@ const route = useRoute()
 const { setAlert: setPartiesAlert } = useFilingAlerts('manage-parties')
 const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 // const modal = useFilingModals()
-// const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
+const {
+  handleButtonLoading
+  // setAlertText: setBtnCtrlAlert
+} = useConnectButtonControl()
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
@@ -47,14 +50,14 @@ function reviewAndConfirm() {
 
 async function submitFiling() {
   console.info('submit filing')
-  // try {
-  //   handleButtonLoading(true, 'right', 1)
-  //   console.info('Data: ', e.data)
-  //   await store.submit(true)
-  //   await navigateTo(dashboardUrl.value, { external: true })
-  // } catch {
-  //   handleButtonLoading(false)
-  // }
+  try {
+    handleButtonLoading(true, 'right', 1)
+
+    await store.submit(true)
+    // await navigateTo(dashboardUrl.value, { external: true })
+  } catch {
+    handleButtonLoading(false)
+  }
 }
 
 async function saveFiling(_disableActiveFormCheck = false) {
@@ -90,7 +93,12 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   steps: [
     {
       cancelFiling: { class: 'min-w-[300px] justify-center' },
-      submitFiling: { label: t('label.reviewAndConfirm'), form: 'transition-filing-step-1', type: 'submit', onClick: undefined }
+      submitFiling: {
+        label: t('label.reviewAndConfirm'),
+        form: 'transition-filing-step-1',
+        type: 'submit',
+        onClick: undefined
+      }
     },
     { submitFiling: { form: 'transition-filing-step-2', type: 'submit' } }
   ],
@@ -109,7 +117,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep2
       v-if="currentStep === 2"
       id="transition-filing-step-2"
-      @submit="() => console.log('submitted')"
+      @submit="submitFiling"
     />
   </div>
 </template>

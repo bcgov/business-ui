@@ -52,6 +52,8 @@ const nameInputSlots = computed(() => ({
   trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, t('label.shares'))
 }))
 provide('UInput-slots-share-class-name-input', nameInputSlots)
+provide('UInput-props-max-number-shares-input', { maxlength: '17' })
+provide('UInput-props-par-value-input', { maxlength: '17' })
 </script>
 
 <template>
@@ -98,7 +100,7 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model="model.maxNumberOfShares"
+              v-model.number="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
@@ -124,7 +126,7 @@ provide('UInput-slots-share-class-name-input', nameInputSlots)
           <template #label="{ item }">
             <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
               <ConnectFormInput
-                v-model="model.parValue"
+                v-model.number="model.parValue"
                 :disabled="!model.hasParValue"
                 :class="{ 'opacity-75': !model.hasParValue }"
                 input-id="par-value-input"

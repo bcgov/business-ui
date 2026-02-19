@@ -7,13 +7,10 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { getBusinessAddresses } = useBusinessAddresses()
   // const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const {
-    // getCommonFilingPayloadData,
-    initFiling
-  } = useFiling()
+  const { initFiling } = useFiling()
 
-  // const businessApi = useBusinessApi()
-  // const businessStore = useBusinessStore()
+  const businessApi = useBusinessApi()
+  const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
   // const draftFilingState = shallowRef({}) // TODO: add type
@@ -77,38 +74,71 @@ export const useTransitionStore = defineStore('transition-store', () => {
   }
 
   // TODO: implement submit
-  // async function submit(isSubmission: boolean) {
-  //   const receiverPayload: ReceiverPayload = {
-  //     type: receiverSubType.value,
-  //     relationships: (
-  //       tableState.value.map(relationship => formatRelationshipApi(relationship.new))
-  //       // Only add relationships that have changes
-  //     ).filter(relationship => relationship.actions?.length),
-  //     ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
-  //   }
+  async function submit(isSubmission: boolean) {
+    const transitionPayload: TransitionPayload = {
+      relationships: tableParties.value.map(relationship => formatRelationshipApi(relationship.new)),
+      offices: {
+        registeredOffice: {
+          deliveryAddress: formatAddressApi(
+            tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address.deliveryAddress
+          ),
+          mailingAddress: formatAddressApi(
+            tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address.mailingAddress
+          )
+        },
+        recordsOffice: {
+          deliveryAddress: formatAddressApi(
+            tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address.deliveryAddress
+          ),
+          mailingAddress: formatAddressApi(
+            tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address.mailingAddress
+          )
+        }
+      },
+      hasProvisions: true,
+      shareStructure: {
+        shareClasses: tableShareClasses.value
+          .filter(c => !c.new.actions.includes(ActionType.REMOVED))
+          .map(c => ({
+            ...c.new,
+            name: c.new.name + ' Shares',
+            series: c.new.series
+              .filter(s => !s.actions.includes(ActionType.REMOVED))
+              .map(s => ({
+                ...s,
+                name: s.name + ' Shares'
+              }))
+          }))
+      },
+      ...(formState.documentDelivery?.completingPartyEmail && {
+        contactPoint: { email: formState.documentDelivery.completingPartyEmail }
+      })
+    }
 
-  //   const payload = businessApi.createFilingPayload<ChangeOfReceivers>(
-  //     businessStore.business!,
-  //     FilingType.CHANGE_OF_RECEIVERS,
-  //     { changeOfReceivers: receiverPayload },
-  //     formatStaffPaymentApi(formState.staffPayment)
-  //   )
+    const filingPayload = businessApi.createFilingPayload(
+      businessStore.business!,
+      FilingType.TRANSITION,
+      { transition: transitionPayload },
+      isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : undefined
+    )
 
-  //   const draftId = draftFilingState.value?.filing?.header?.filingId
-  //   if (draftId || !isSubmission) {
-  //     const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfReceivers>(
-  //       businessStore.businessIdentifier!,
-  //       payload,
-  //       isSubmission,
-  //       draftId as string | number
-  //     )
-  //     draftFilingState.value = filingResp as unknown as ReceiverDraftState
-  //     const urlParams = useUrlSearchParams()
-  //     urlParams.draft = String(filingResp.filing.header.filingId)
-  //   } else {
-  //     await businessApi.postFiling(businessStore.businessIdentifier!, payload)
-  //   }
-  // }
+    console.log(filingPayload)
+
+    // const draftId = draftFilingState.value?.filing?.header?.filingId
+    // if (draftId || !isSubmission) {
+    //   const filingResp = await businessApi.saveOrUpdateDraftFiling(
+    //     businessStore.businessIdentifier!,
+    //     payload,
+    //     isSubmission,
+    //     draftId as string | number
+    //   )
+    //   draftFilingState.value = filingResp as unknown as ReceiverDraftState
+    //   const urlParams = useUrlSearchParams()
+    //   urlParams.draft = String(filingResp.filing.header.filingId)
+    // } else {
+    await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
+    // }
+  }
 
   function $reset() {
     const defaults = getTransitionSchema(isStaff.value).parse({})
@@ -135,7 +165,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initialShareClasses,
     isStaff,
     init,
-    // submit,
+    submit,
     $reset
   }
 })
