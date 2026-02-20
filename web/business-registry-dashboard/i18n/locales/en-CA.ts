@@ -356,7 +356,8 @@ export default {
                 },
                 default: {
                   required: 'Password is required',
-                  length: 'Password must be 8 to 15 characters'
+                  length: 'Password must be 8 to 15 characters',
+                  api: 'Password error, please try again or choose an option below | Password error, please try again'
                 }
               }
             }
