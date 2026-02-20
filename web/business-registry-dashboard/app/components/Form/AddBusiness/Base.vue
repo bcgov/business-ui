@@ -42,6 +42,7 @@ const loading = ref<boolean>(false)
 const formState = reactive<{
   partner: { name: string | undefined, certify: boolean | undefined },
   passcode: string | undefined,
+  passcodeErrorCode: number | undefined,
   delegation: { account: { name: string, branchName?: string, uuid: string } | undefined, message: string | undefined },
   options: number,
   selectedOption: string | undefined
@@ -51,6 +52,7 @@ const formState = reactive<{
     certify: undefined
   },
   passcode: undefined,
+  passcodeErrorCode: undefined,
   delegation: {
     account: undefined,
     message: undefined
@@ -78,7 +80,16 @@ const formSchema = computed(() => {
           .refine(val => /^\d+$/.test(val), t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.type'))
         : z.string({ required_error: t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.required') })
           .min(8, t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
-          .max(15, t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
+          .max(15, t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length')),
+      passcodeErrorCode: z.number().optional()
+    }).superRefine((data, ctx) => {
+      if (data.passcodeErrorCode) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['passcode'],
+          message: t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.api', props.authOptions.length)
+        })
+      }
     })
   }
 
@@ -204,12 +215,24 @@ async function submitManageRequest () {
       if (openAuthOption.value.slot === 'firm-option') {
         emit('businessError', { error: e, type: 'firm' })
       } else {
-        emit('businessError', { error: e, type: 'passcode' })
+        formState.passcodeErrorCode = e.response?.status || 500
+        await formRef.value?.validate('passcode', { silent: true })
+        // NB: setting to undefined so that the next time the schema is validated it clears this issue
+        formState.passcodeErrorCode = undefined
       }
     }
   }
   loading.value = false
 }
+
+const hasPasscodeErrors = computed((): boolean => {
+  const errors = formRef.value?.errors || []
+  return !!errors.filter(err => err.path === 'passcode').length
+})
+
+const hasPasscodeOption = computed((): boolean => {
+  return !!props.authOptions.find(option => option.slot === 'passcode-option')
+})
 
 watch(() => formState.selectedOption, () => {
   noOptionAlert.value = false // reset no option alert if selected option changes
@@ -217,6 +240,7 @@ watch(() => formState.selectedOption, () => {
 
   // reset form state if selected option changes
   formState.passcode = undefined
+  formState.passcodeErrorCode = undefined
   formState.delegation.message = undefined
   formState.delegation.account = undefined
   formState.partner.name = undefined
@@ -258,7 +282,10 @@ watch(() => props.authOptions, (newOptions) => {
         <div
           v-for="(option, index) in authOptions"
           :key="option.slot"
-          :class="authOptions.length > 1 ? 'space-y-4 pl-2' : 'space-y-4'"
+          :class="[
+            authOptions.length > 1 ? 'space-y-4 pl-2' : 'space-y-4',
+            option.slot === 'passcode-option' && hasPasscodeErrors ? 'border-l-4 border-red-500' : ''
+          ]"
         >
           <label v-if="authOptions.length > 1" class="flex cursor-pointer items-start space-x-3">
             <input
@@ -277,7 +304,7 @@ watch(() => props.authOptions, (newOptions) => {
                 {{ option.label }}
               </span>
               <span
-                v-if="option.slot === 'email-option' && (businessDetails.isCoop || businessDetails.isCorporation)"
+                v-if="option.slot === 'email-option' && hasPasscodeOption && (businessDetails.isCoop || businessDetails.isCorporation)"
                 class="mt-1 text-sm text-bcGovColor-midGray"
               >
                 {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}
@@ -299,7 +326,9 @@ watch(() => props.authOptions, (newOptions) => {
           <!-- Show content when this option is selected -->
           <div v-if="formState.selectedOption === option.slot" :class="authOptions.length > 1 ? 'ml-7 space-y-4' : 'space-y-4'">
             <!-- passcode option content -->
-            <div v-if="option.slot === 'passcode-option'">
+            <div
+              v-if="option.slot === 'passcode-option'"
+            >
               <UFormGroup
                 :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
                 name="passcode"

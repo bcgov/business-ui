@@ -39,9 +39,6 @@ const errorObj = ref<{ error: FetchError, type: string }>()
 const successObj = ref<{ type: string, value: string }>()
 
 function handleError (e: { error: FetchError, type: string }) {
-  if (e.type === 'passcode') {
-    emit('passcodeError')
-  }
   errorObj.value = e
   currentState.value = 'FormAddBusinessError'
 }

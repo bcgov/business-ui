@@ -14,7 +14,6 @@ const props = defineProps<{
 }>()
 
 const emailSent = ref(false)
-const passcodeError = ref(false)
 
 const loading = ref(true)
 const hasBusinessAuthentication = ref(false)
@@ -147,8 +146,8 @@ onMounted(async () => {
 
 <template>
   <ModalBase
-    :alert="emailSent || passcodeError ? undefined : alert"
-    :title="emailSent || passcodeError ? $t('form.manageBusiness.headingRequestAccess') : $t('form.manageBusiness.heading')"
+    :alert="emailSent ? undefined : alert"
+    :title="emailSent ? $t('form.manageBusiness.headingRequestAccess') : $t('form.manageBusiness.heading')"
     @modal-closed="handleEmailAuthSentStateClosed"
   >
     <div class="flex flex-col gap-4 md:w-[700px]">
@@ -232,8 +231,7 @@ onMounted(async () => {
         :business-details="businessDetails"
         :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
         @email-success="emailSent = true"
-        @passcode-error="passcodeError = true"
-        @retry="emailSent = false; passcodeError = false"
+        @retry="emailSent = false"
       />
     </div>
   </ModalBase>
