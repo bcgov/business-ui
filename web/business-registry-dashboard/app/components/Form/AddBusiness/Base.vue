@@ -326,9 +326,7 @@ watch(() => props.authOptions, (newOptions) => {
           <!-- Show content when this option is selected -->
           <div v-if="formState.selectedOption === option.slot" :class="authOptions.length > 1 ? 'ml-7 space-y-4' : 'space-y-4'">
             <!-- passcode option content -->
-            <div
-              v-if="option.slot === 'passcode-option'"
-            >
+            <div v-if="option.slot === 'passcode-option'">
               <UFormGroup
                 :help="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')"
                 name="passcode"
