@@ -81,6 +81,7 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
 <template>
   <UForm
     ref="share-series-form"
+    :data-testid="`${variant}-share-series-form`"
     :schema
     :name
     :nested

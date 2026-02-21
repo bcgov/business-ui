@@ -48,9 +48,11 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
 
   function nextStep() {
     _currentStep.value++
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
   }
   function previousStep() {
     _currentStep.value--
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
   }
 
   function updateButtonControl() {

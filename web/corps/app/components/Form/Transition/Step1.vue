@@ -31,7 +31,7 @@ const confirmErrors = computed(() => {
     :state="store.formState"
     :schema
     novalidate
-    class="py-6 space-y-6 sm:py-10 sm:space-y-10"
+    class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
     <section class="space-y-4" data-testid="office-addresses-section">

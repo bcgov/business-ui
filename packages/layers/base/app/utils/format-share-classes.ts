@@ -12,6 +12,7 @@ export function formatShareClassesUi(
   return classes.map((c) => {
     const formattedSeries = c.series.map(s => ({
       ...baseFormatter(s),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       isInvalid: (s as any).isInvalid ?? false
     }))
 

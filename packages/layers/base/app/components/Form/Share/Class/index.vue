@@ -59,6 +59,7 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
 <template>
   <UForm
     ref="share-class-form"
+    :data-testid="`${variant}-share-class-form`"
     :schema
     :name
     :nested
@@ -145,6 +146,7 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
                 <ConnectInputMenu
                   id="par-value-currency-input"
                   v-model="model.currency"
+                  data-testid="par-value-currency-input"
                   :label="$t('label.currency')"
                   :items="currencyOptions"
                   class="w-full"

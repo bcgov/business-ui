@@ -1,3 +1,4 @@
+// https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/transition.json
 export interface TransitionPayload extends FilingPayloadData {
   hasProvisions: boolean
   relationships: BusinessRelationship[]
@@ -11,3 +12,9 @@ export interface TransitionPayload extends FilingPayloadData {
   // courtOrder: CourtOrder ???
   // nameTranslation ???
 }
+
+export interface PRTApplication {
+  transition: TransitionPayload
+}
+
+export type TransitionDraftState = FilingGetByIdResponse<PRTApplication>

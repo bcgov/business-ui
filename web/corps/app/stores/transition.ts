@@ -1,4 +1,4 @@
-import { cloneDeep, merge } from 'es-toolkit'
+import { cloneDeep } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
   const service = useBusinessService()
@@ -13,7 +13,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
-  const draftFilingState = shallowRef({}) // TODO: add type
+  const draftFilingState = shallowRef<TransitionDraftState>({} as TransitionDraftState)
 
   const formState = reactive<TransitionFormSchema>({} as TransitionFormSchema)
   const initialFormState = shallowRef<TransitionFormSchema>({} as TransitionFormSchema)
@@ -26,10 +26,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = true
     $reset()
 
-    const {
-      draftFiling,
-      parties
-    } = await initFiling( // TODO: add type
+    const { draftFiling, parties } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
       undefined,
@@ -41,13 +38,22 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
     const classes = await service.getShareClasses(businessId)
 
-    // TODO: load/check/merge draft state
     const draft = draftFiling?.filing?.transition
     if (draft) {
       draftFilingState.value = draftFiling
-      formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
-      formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
-      // formState.documentId.documentIdNumber = draft.documentId ?? ''
+      if (formState.documentDelivery) {
+        formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
+      }
+      if (isStaff.value) {
+        formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
+      } else {
+        if (formState.folio) {
+          formState.folio.folioNumber = draftFiling.filing.header.folioNumber
+        }
+        if (formState.certify) {
+          formState.certify.legalName = draftFiling.filing.header.certifiedBy
+        }
+      }
     }
 
     if (parties) {
@@ -64,7 +70,9 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     if (classes) {
       const originalClasses = formatShareClassesUi(classes)
-      const draftClasses = draft?.shareStructure.shareClasses && formatShareClassesUi(draft.shareStructure.shareClasses)
+      const draftClasses = draft?.shareStructure.shareClasses
+        ? formatShareClassesUi(draft.shareStructure.shareClasses as unknown as ShareClass[])
+        : undefined
 
       if (draftClasses) {
         for (const shareClass of draftClasses) {
@@ -88,26 +96,20 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = false
   }
 
-  // TODO: implement submit
   async function submit(isSubmission: boolean) {
+    const regOffice = tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address
+    const recOffice = tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address
+
     const transitionPayload: TransitionPayload = {
       relationships: tableParties.value.map(relationship => formatRelationshipApi(relationship.new)),
       offices: {
         registeredOffice: {
-          deliveryAddress: formatAddressApi(
-            tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address.deliveryAddress
-          ),
-          mailingAddress: formatAddressApi(
-            tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address.mailingAddress
-          )
+          deliveryAddress: formatAddressApi(regOffice.deliveryAddress),
+          mailingAddress: formatAddressApi(regOffice.mailingAddress)
         },
         recordsOffice: {
-          deliveryAddress: formatAddressApi(
-            tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address.deliveryAddress
-          ),
-          mailingAddress: formatAddressApi(
-            tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address.mailingAddress
-          )
+          deliveryAddress: formatAddressApi(recOffice.deliveryAddress),
+          mailingAddress: formatAddressApi(recOffice.mailingAddress)
         }
       },
       hasProvisions: true,
@@ -117,7 +119,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
           .map(c => ({
             ...c.new,
             name: c.new.name + ' Shares',
-            currency: c.new.currency ?? null,
+            currency: c.new.currency ?? null as unknown as string,
             series: c.new.series
               .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
               .map(s => ({
@@ -135,20 +137,28 @@ export const useTransitionStore = defineStore('transition-store', () => {
       businessStore.business!,
       FilingType.TRANSITION,
       { transition: transitionPayload },
-      isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : undefined
+      {
+        ...(isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : {}),
+        ...(!isStaff.value
+          ? {
+            certifiedBy: formState.certify?.legalName,
+            folioNumber: formState.folio?.folioNumber
+          }
+          : {}
+        )
+      }
     )
-
-    console.log(filingPayload)
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling(
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<PRTApplication>(
         businessStore.businessIdentifier!,
         filingPayload,
         isSubmission,
         draftId as string | number
       )
-      draftFilingState.value = filingResp // as unknown as ReceiverDraftState
+
+      draftFilingState.value = filingResp as unknown as TransitionDraftState
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {

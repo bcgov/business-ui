@@ -24,7 +24,7 @@ function onError(event: FormErrorEvent) {
     :state="store.formState"
     :schema="z.any()"
     novalidate
-    class="py-6 space-y-6 sm:py-10 sm:space-y-10"
+    class="space-y-6 sm:space-y-10"
     @error="onError"
   >
     <section class="space-y-6" data-testid="review-section">
