@@ -104,11 +104,15 @@ export const useTransitionStore = defineStore('transition-store', () => {
       relationships: tableParties.value.map(relationship => formatRelationshipApi(relationship.new)),
       offices: {
         registeredOffice: {
+          // @ts-expect-error - type mismatch between ui and api address interfaces
           deliveryAddress: formatAddressApi(regOffice.deliveryAddress),
+          // @ts-expect-error - type mismatch between ui and api address interfaces
           mailingAddress: formatAddressApi(regOffice.mailingAddress)
         },
         recordsOffice: {
+          // @ts-expect-error - type mismatch between ui and api address interfaces
           deliveryAddress: formatAddressApi(recOffice.deliveryAddress),
+          // @ts-expect-error - type mismatch between ui and api address interfaces
           mailingAddress: formatAddressApi(recOffice.mailingAddress)
         }
       },

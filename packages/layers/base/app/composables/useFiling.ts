@@ -92,7 +92,7 @@ export const useFiling = () => {
 
       if (!isAuthorized || !isAllowed) {
         // no fee code from user allowed filing types for this business
-        // throw new Error('filing-not-allowed')
+        throw new Error('filing-not-allowed')
       }
 
       try {
