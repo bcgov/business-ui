@@ -37,6 +37,7 @@ function onError(event: FormErrorEvent) {
 
       <ManageOffices
         v-model:active-office="activeOffice"
+        data-testid="office-addresses-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
         :add-label="$t('label.addOffice')"
@@ -46,6 +47,7 @@ function onError(event: FormErrorEvent) {
 
       <ManageParties
         v-model:active-party="store.formState.activeDirector"
+        data-testid="current-directors-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :add-label="$t('label.addDirector')"
@@ -58,6 +60,7 @@ function onError(event: FormErrorEvent) {
       <ManageShareStructure
         v-model:active-class="store.formState.activeClass"
         v-model:active-series="store.formState.activeSeries"
+        data-testid="share-structure-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
         :add-label="$t('label.addShareClass')"
