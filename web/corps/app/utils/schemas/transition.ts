@@ -32,8 +32,13 @@ export function getTransitionSchema(isStaff: boolean) {
     documentDelivery: getDocumentDeliverySchema().default(() => ({ completingPartyEmail: '' })),
     activeDirector: getActivePartySchema(),
     activeClass: getActiveShareClassSchema(),
-    activeSeries: getActiveShareSeriesSchema()
-  // activeOffice: getActiveOfficesSchema() // TODO (only if allowing office edits)
+    activeSeries: getActiveShareSeriesSchema(),
+    confirmOffices: z.boolean()
+      .default(true)
+      .refine(val => val === true),
+    confirmDirectors: z.boolean()
+      .default(true)
+      .refine(val => val === true)
   })
 
   if (isStaff) {
@@ -41,6 +46,21 @@ export function getTransitionSchema(isStaff: boolean) {
   } else {
     return schema.extend(getClientTransitionSchema().shape)
   }
+}
+
+export function getTransitionStep1Schema() {
+  const t = useNuxtApp().$i18n.t
+  return z.object({
+    activeDirector: getActivePartySchema(),
+    activeClass: getActiveShareClassSchema(),
+    activeSeries: getActiveShareSeriesSchema(),
+    confirmOffices: z.boolean()
+      .default(true)
+      .refine(val => val === true, t('connect.validation.required')),
+    confirmDirectors: z.boolean()
+      .default(true)
+      .refine(val => val === true, t('connect.validation.required'))
+  })
 }
 
 export type TransitionFormSchema = Partial<

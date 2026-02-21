@@ -34,9 +34,12 @@ const {
 
 const { t } = useI18n()
 const {
+  alerts,
   setAlert,
-  clearAlert
+  clearAlert,
+  attachAlerts
 } = useFilingAlerts(stateKey)
+const { targetId, messageId } = attachAlerts(stateKey, activeClass)
 const { setAlertText } = useConnectButtonControl()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
@@ -139,14 +142,23 @@ function clearAllAlerts() {
     <p class="pb-4">
       {{ $t('text.shareStructureMustMatchCompanysCurrentState') }}
     </p>
-    <UButton
-      v-if="(!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)) && !readonly"
-      :label="addLabel"
-      variant="outline"
-      icon="i-mdi-account-plus-outline"
-      class="w-min"
-      @click="initAddItem()"
-    />
+    <div class="flex flex-wrap gap-4 items-center">
+      <UButton
+        v-if="(!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)) && !readonly"
+        :data-alert-focus-target="targetId"
+        :label="addLabel"
+        :aria-describedby="messageId"
+        variant="outline"
+        icon="i-mdi-account-plus-outline"
+        class="w-min"
+        @click="initAddItem()"
+      />
+      <FormAlertMessage
+        :id="messageId"
+        :message="alerts[stateKey]"
+      />
+    </div>
+
     <FormShareClass
       v-if="addingShareClass && activeClass"
       v-model="activeClass"
@@ -155,6 +167,7 @@ function clearAllAlerts() {
       variant="add"
       name="activeClass"
       :validation-context="classValidationContext"
+      nested
       @done="() => { addNewShareClass(activeClass), cleanupForm() }"
       @cancel="cleanupForm"
     />
@@ -185,6 +198,7 @@ function clearAllAlerts() {
           variant="edit"
           name="activeClass"
           :validation-context="classValidationContext"
+          nested
           @done="() => updateShareClass(row, activeClass, cleanupForm)"
           @cancel="cleanupForm"
           @remove="() => removeShareClass(row, cleanupForm)"
@@ -197,6 +211,7 @@ function clearAllAlerts() {
           :variant="addingSeriesToClassId ? 'add' : 'edit'"
           :row
           :state-key="stateKey"
+          nested
           @done="() => {
             addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
             cleanupForm()

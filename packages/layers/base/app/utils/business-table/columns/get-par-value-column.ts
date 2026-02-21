@@ -22,7 +22,7 @@ export function getParValueColumn<T extends ShareClassSchema>(
 
       const parValue = row.original.new.parValue
       const displayText = parValue
-        ? formatCurrency(parValue, row.original.new.currency ?? '')
+        ? formatCurrency(parValue, row.original.new.currency ?? '', 6)
         : t('label.noParValue')
 
       return h(
