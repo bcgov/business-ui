@@ -350,14 +350,15 @@ export default {
               },
               error: {
                 coop: {
-                  required: 'Passcode is required, enter the passcode you have setup in Corporate Online',
+                  required: 'Please enter the passcode you have setup in Corporate Online',
                   length: 'Passcode must be exactly 9 digits',
-                  type: 'Passcode must be numeric'
+                  type: 'Passcode must be numeric',
+                  api: 'Please enter the correct passcode | Please enter the correct passcode or choose a different option below'
                 },
                 default: {
-                  required: 'Password is required',
+                  required: 'Please enter the password you have setup in Corporate Online',
                   length: 'Password must be 8 to 15 characters',
-                  api: 'Password error, please try again or choose an option below | Password error, please try again'
+                  api: 'Please enter the correct password | Please enter the correct password or choose a different option below'
                 }
               }
             }

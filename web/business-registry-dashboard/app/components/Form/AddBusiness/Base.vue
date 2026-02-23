@@ -84,10 +84,13 @@ const formSchema = computed(() => {
       passcodeErrorCode: z.number().optional()
     }).superRefine((data, ctx) => {
       if (data.passcodeErrorCode) {
+        const message = props.businessDetails.isCoop
+          ? t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.api', props.authOptions.length)
+          : t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.api', props.authOptions.length)
         ctx.addIssue({
           code: 'custom',
           path: ['passcode'],
-          message: t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.api', props.authOptions.length)
+          message
         })
       }
     })
