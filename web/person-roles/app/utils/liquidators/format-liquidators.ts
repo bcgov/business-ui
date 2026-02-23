@@ -28,10 +28,7 @@ export function formatLiquidatorsApi(
     ...(changedRelationships.length > 0 && { relationships: changedRelationships }),
     ...((isIntent || hasOfficeChange) && {
       offices: {
-        liquidationRecordsOffice: {
-          mailingAddress: formatAddressApi(formState.recordsOffice.mailingAddress as ConnectAddress),
-          deliveryAddress: formatAddressApi(formState.recordsOffice.deliveryAddress as ConnectAddress)
-        }
+        liquidationRecordsOffice: formatOfficeApi(formState.recordsOffice)
       }
     })
   }

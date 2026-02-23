@@ -139,7 +139,7 @@ function clearAllAlerts() {
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
-    <p class="pb-4">
+    <p v-if="!readonly" class="pb-4">
       {{ $t('text.shareStructureMustMatchCompanysCurrentState') }}
     </p>
     <div class="flex flex-wrap gap-4 items-center">

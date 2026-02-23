@@ -23,7 +23,7 @@ export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiB
   }
 }
 
-export function formatAddressApi(address: ConnectAddress | undefined): ApiAddress {
+export function formatAddressApi(address: ConnectAddress | AddressSchema['deliveryAddress'] | undefined): ApiAddress {
   return {
     streetAddress: address?.street ?? '',
     streetAddressAdditional: address?.streetAdditional ?? '',
@@ -32,5 +32,14 @@ export function formatAddressApi(address: ConnectAddress | undefined): ApiAddres
     postalCode: address?.postalCode ?? '',
     addressCountry: address?.country ?? '',
     deliveryInstructions: address?.locationDescription ?? ''
+  }
+}
+
+export function formatOfficeApi(
+  office: UiBaseAddressObj | undefined
+): { mailingAddress: ApiAddress, deliveryAddress: ApiAddress } {
+  return {
+    mailingAddress: formatAddressApi(office?.mailingAddress),
+    deliveryAddress: formatAddressApi(office?.deliveryAddress)
   }
 }

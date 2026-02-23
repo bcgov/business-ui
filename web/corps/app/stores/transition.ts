@@ -97,24 +97,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
   }
 
   async function submit(isSubmission: boolean) {
-    const regOffice = tableOffices.value.find(o => o.new.type === 'registeredOffice')?.new.address
-    const recOffice = tableOffices.value.find(o => o.new.type === 'recordsOffice')?.new.address
+    const regOffice = tableOffices.value.find(o => o.new.type === OfficeType.REGISTERED)?.new.address
+    const recOffice = tableOffices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
 
     const transitionPayload: TransitionPayload = {
       relationships: tableParties.value.map(relationship => formatRelationshipApi(relationship.new)),
       offices: {
-        registeredOffice: {
-          // @ts-expect-error - type mismatch between ui and api address interfaces
-          deliveryAddress: formatAddressApi(regOffice.deliveryAddress),
-          // @ts-expect-error - type mismatch between ui and api address interfaces
-          mailingAddress: formatAddressApi(regOffice.mailingAddress)
-        },
-        recordsOffice: {
-          // @ts-expect-error - type mismatch between ui and api address interfaces
-          deliveryAddress: formatAddressApi(recOffice.deliveryAddress),
-          // @ts-expect-error - type mismatch between ui and api address interfaces
-          mailingAddress: formatAddressApi(recOffice.mailingAddress)
-        }
+        registeredOffice: formatOfficeApi(regOffice),
+        recordsOffice: formatOfficeApi(recOffice)
       },
       hasProvisions: true,
       shareStructure: {
