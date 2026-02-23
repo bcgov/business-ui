@@ -20,7 +20,7 @@ export function getShareSeriesSchema(context?: { existingNames: string[], maxAll
     if (data.hasMaximumShares) {
       const maxShares = data.maxNumberOfShares
 
-      if (maxShares === null || maxShares === undefined || maxShares.toString() === '') {
+      if (maxShares === null || maxShares === undefined || maxShares.toString() === '' || maxShares === 0) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
