@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.14.0
+
+### Minor Changes
+
+- [#401](https://github.com/bcgov/business-ui/pull/401) [`2af84d3`](https://github.com/bcgov/business-ui/commit/2af84d37940c1d9bb9ecd8c5a65d246ffee3967a) Thanks [@deetz99](https://github.com/deetz99)! - Update getShareSeriesSchema to error when maxNumberOfShares === 0, validate series names against all existing series in share structure.
+
 ## 0.13.0
 
 ### Minor Changes
