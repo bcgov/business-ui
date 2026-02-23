@@ -1,5 +1,13 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.13.0
+
+### Minor Changes
+
+- [#400](https://github.com/bcgov/business-ui/pull/400) [`5981ee1`](https://github.com/bcgov/business-ui/commit/5981ee1eaf486f394e04392767d9a52662d3b596) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dep to latest version.
+
+- [#398](https://github.com/bcgov/business-ui/pull/398) [`b23621f`](https://github.com/bcgov/business-ui/commit/b23621f71bdc64f0e11d5adf286e42051f25a1c2) Thanks [@deetz99](https://github.com/deetz99)! - maxlength and number modifier on FormShareClass and FormShareSeries, add useFilingAlerts and attach in ManageShareStructure, nextStep, previousStep and scroll to top in useFilingPageWatcher, digit accuracy in formatCurrency, default checkbox styling in app config, formatOfficeApi util
+
 ## 0.12.1
 
 ### Patch Changes
