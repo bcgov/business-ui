@@ -75,11 +75,13 @@ const nameInputSlots = computed(() => ({
   trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, t('label.shares'))
 }))
 provide('UInput-slots-share-series-name-input', nameInputSlots)
+provide('UInput-props-max-number-shares-input', { maxlength: '17' })
 </script>
 
 <template>
   <UForm
     ref="share-series-form"
+    :data-testid="`${variant}-share-series-form`"
     :schema
     :name
     :nested
@@ -122,7 +124,7 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
           <template #label="{ item }">
             <ConnectFormInput
               v-if="item.value"
-              v-model="model.maxNumberOfShares"
+              v-model.number="model.maxNumberOfShares"
               :disabled="!model.hasMaximumShares"
               :class="{ 'opacity-75': !model.hasMaximumShares }"
               input-id="max-number-shares-input"
@@ -136,7 +138,8 @@ provide('UInput-slots-share-series-name-input', nameInputSlots)
         </URadioGroup>
         <ConnectFormInput
           v-else
-          v-model="model.maxNumberOfShares"
+          v-model.number="model.maxNumberOfShares"
+          maxlength="17"
           :disabled="!model.hasMaximumShares"
           :class="{ 'opacity-75': !model.hasMaximumShares }"
           input-id="max-number-shares-input"

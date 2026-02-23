@@ -6,17 +6,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { getBusinessAddresses } = useBusinessAddresses()
-  // const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const {
-    // getCommonFilingPayloadData,
-    initFiling
-  } = useFiling()
+  const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { initFiling } = useFiling()
 
-  // const businessApi = useBusinessApi()
-  // const businessStore = useBusinessStore()
+  const businessApi = useBusinessApi()
+  const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
-  // const draftFilingState = shallowRef({}) // TODO: add type
+  const draftFilingState = shallowRef<TransitionDraftState>({} as TransitionDraftState)
 
   const formState = reactive<TransitionFormSchema>({} as TransitionFormSchema)
   const initialFormState = shallowRef<TransitionFormSchema>({} as TransitionFormSchema)
@@ -29,10 +26,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = true
     $reset()
 
-    const {
-      // draftFiling,
-      parties
-    } = await initFiling( // TODO: add type
+    const { draftFiling, parties } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
       undefined,
@@ -44,29 +38,55 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
     const classes = await service.getShareClasses(businessId)
 
-    // TODO: load/check/merge draft state
-    // const draft = draftFiling?.filing?.changeOfReceivers
-    // if (draft) {
-    //   draftFilingState.value = draftFiling
-    //   formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
-    //   formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
-    //   formState.documentId.documentIdNumber = draft.documentId ?? ''
-    // }
-
-    if (parties) { // TODO: load/check/merge draft state
-      // const draftRelationships = draft?.relationships
-      // tableParties.value = draftRelationships
-      //   ? getPartiesMergedWithRelationships(parties, draftRelationships)
-      //   : parties
-      tableParties.value = parties
+    const draft = draftFiling?.filing?.transition
+    if (draft) {
+      draftFilingState.value = draftFiling
+      if (formState.documentDelivery) {
+        formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
+      }
+      if (isStaff.value) {
+        formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
+      } else {
+        if (formState.folio) {
+          formState.folio.folioNumber = draftFiling.filing.header.folioNumber
+        }
+        if (formState.certify) {
+          formState.certify.legalName = draftFiling.filing.header.certifiedBy
+        }
+      }
     }
 
-    if (addresses) { // TODO: load/check/merge draft state
+    if (parties) {
+      const draftRelationships = draft?.relationships
+      tableParties.value = draftRelationships
+        ? getPartiesMergedWithRelationships(parties, draftRelationships)
+        : parties
+    }
+
+    // offices are not editable, no need to map draft state
+    if (addresses) {
       tableOffices.value = addresses
     }
 
-    if (classes) { // TODO: load/check/merge draft state
-      tableShareClasses.value = formatShareClassesUi(classes)
+    if (classes) {
+      const originalClasses = formatShareClassesUi(classes)
+      const draftClasses = draft?.shareStructure.shareClasses
+        ? formatShareClassesUi(draft.shareStructure.shareClasses as unknown as ShareClass[])
+        : undefined
+
+      if (draftClasses) {
+        for (const shareClass of draftClasses) {
+          const classId = shareClass.new.id
+          const existingClass = classId ? originalClasses.find(c => c.new.id === classId) : undefined
+          if (existingClass) {
+            shareClass.old = existingClass.new
+          } else {
+            shareClass.old = undefined
+          }
+        }
+      }
+
+      tableShareClasses.value = draftClasses || originalClasses
     }
 
     await nextTick()
@@ -76,39 +96,69 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = false
   }
 
-  // TODO: implement submit
-  // async function submit(isSubmission: boolean) {
-  //   const receiverPayload: ReceiverPayload = {
-  //     type: receiverSubType.value,
-  //     relationships: (
-  //       tableState.value.map(relationship => formatRelationshipApi(relationship.new))
-  //       // Only add relationships that have changes
-  //     ).filter(relationship => relationship.actions?.length),
-  //     ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
-  //   }
+  async function submit(isSubmission: boolean) {
+    const regOffice = tableOffices.value.find(o => o.new.type === OfficeType.REGISTERED)?.new.address
+    const recOffice = tableOffices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
 
-  //   const payload = businessApi.createFilingPayload<ChangeOfReceivers>(
-  //     businessStore.business!,
-  //     FilingType.CHANGE_OF_RECEIVERS,
-  //     { changeOfReceivers: receiverPayload },
-  //     formatStaffPaymentApi(formState.staffPayment)
-  //   )
+    const transitionPayload: TransitionPayload = {
+      relationships: tableParties.value.map(relationship => formatRelationshipApi(relationship.new)),
+      offices: {
+        registeredOffice: formatOfficeApi(regOffice),
+        recordsOffice: formatOfficeApi(recOffice)
+      },
+      hasProvisions: true,
+      shareStructure: {
+        shareClasses: tableShareClasses.value
+          .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
+          .map(c => ({
+            ...c.new,
+            name: c.new.name + ' Shares',
+            currency: c.new.currency ?? null as unknown as string,
+            series: c.new.series
+              .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
+              .map(s => ({
+                ...s,
+                name: s.name + ' Shares'
+              }))
+          }))
+      },
+      ...(formState.documentDelivery?.completingPartyEmail && {
+        contactPoint: { email: formState.documentDelivery.completingPartyEmail }
+      })
+    }
 
-  //   const draftId = draftFilingState.value?.filing?.header?.filingId
-  //   if (draftId || !isSubmission) {
-  //     const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfReceivers>(
-  //       businessStore.businessIdentifier!,
-  //       payload,
-  //       isSubmission,
-  //       draftId as string | number
-  //     )
-  //     draftFilingState.value = filingResp as unknown as ReceiverDraftState
-  //     const urlParams = useUrlSearchParams()
-  //     urlParams.draft = String(filingResp.filing.header.filingId)
-  //   } else {
-  //     await businessApi.postFiling(businessStore.businessIdentifier!, payload)
-  //   }
-  // }
+    const filingPayload = businessApi.createFilingPayload(
+      businessStore.business!,
+      FilingType.TRANSITION,
+      { transition: transitionPayload },
+      {
+        ...(isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : {}),
+        ...(!isStaff.value
+          ? {
+            certifiedBy: formState.certify?.legalName,
+            folioNumber: formState.folio?.folioNumber
+          }
+          : {}
+        )
+      }
+    )
+
+    const draftId = draftFilingState.value?.filing?.header?.filingId
+    if (draftId || !isSubmission) {
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<PRTApplication>(
+        businessStore.businessIdentifier!,
+        filingPayload,
+        isSubmission,
+        draftId as string | number
+      )
+
+      draftFilingState.value = filingResp as unknown as TransitionDraftState
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
+    } else {
+      await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
+    }
+  }
 
   function $reset() {
     const defaults = getTransitionSchema(isStaff.value).parse({})
@@ -116,6 +166,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
     formState.activeDirector = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
+    formState.confirmDirectors = false
+    formState.confirmOffices = false
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
@@ -133,7 +185,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initialShareClasses,
     isStaff,
     init,
-    // submit,
+    submit,
     $reset
   }
 })

@@ -192,6 +192,12 @@ test.describe('Transition - Page init', () => {
 
       // step 1
       await assertCommonElements(page)
+      await page.getByRole('checkbox', {
+        name: 'I confirm that the office address information listed for this business is correct.'
+      }).check()
+      await page.getByRole('checkbox', {
+        name: 'I confirm that the director information listed for this business is correct.'
+      }).check()
       // step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
       // should still have common elements
@@ -199,7 +205,6 @@ test.describe('Transition - Page init', () => {
 
       // step 2 staff only sections
       if (isStaff) {
-        await expect(page.getByTestId('court-order-section')).toBeVisible()
         await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
         // step 2 client only which should not be visible
@@ -211,7 +216,6 @@ test.describe('Transition - Page init', () => {
         await expect(page.getByTestId('certify-section')).toBeVisible()
 
         // step 2 staff only which should not be visible
-        await expect(page.getByTestId('court-order-section')).not.toBeVisible()
         await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
       }
     })
