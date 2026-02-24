@@ -101,15 +101,14 @@ export default {
         feeLabel: 'Change Addresses of Liquidators',
         h1: 'Change Addresses of Liquidators',
         title: 'Change Addresses of Liquidators - People Roles - BC Registries and Online Services'
+      },
+      liquidationReport: {
+        desc: 'Some liquidation report descriptive text',
+        feeCode: 'LIQUR',
+        feeLabel: 'Liquidation Report',
+        h1: 'Liquidation Report',
+        title: 'Liquidation Report - People Roles - BC Registries and Online Services'
       }
-      // TODO: liquidation report
-      // liquidationReport: {
-      //   desc: 'Some liquidation descriptive text',
-      //   feeCode: 'LIQUR',
-      //   feeLabel: 'Liquidation Report',
-      //   h1: 'Liquidation Report',
-      //   title: 'Liquidation Report - People Roles - BC Registries and Online Services'
-      // }
     },
     changeOfReceivers: {
       amendReceiver: {

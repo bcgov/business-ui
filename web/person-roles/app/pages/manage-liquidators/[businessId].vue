@@ -9,7 +9,6 @@ definePageMeta({
   validate(route) {
     const filingSubType = route.params.filingSubType as string
     return Object.values(LiquidateType).includes(filingSubType as LiquidateType)
-      && filingSubType as LiquidateType !== LiquidateType.REPORT // TODO: temporary until liquidation report is complete
   }
 })
 
@@ -42,7 +41,7 @@ const allowedPartyActions = computed(() => {
     [LiquidateType.APPOINT]: [ManageAllowedAction.ADD],
     [LiquidateType.CEASE]: [ManageAllowedAction.REMOVE],
     [LiquidateType.INTENT]: [ManageAllowedAction.ADD],
-    [LiquidateType.REPORT]: undefined
+    [LiquidateType.REPORT]: []
   }
   return actionMap[filingSubType]
 })
@@ -154,6 +153,7 @@ useFilingPageWatcher<LiquidateType>({
       </section>
 
       <FormCourtOrderPoa
+        v-if="filingSubType !== LiquidateType.REPORT"
         ref="court-order-poa-ref"
         v-model="liquidatorStore.formState.courtOrder"
         data-testid="court-order-section"
@@ -164,6 +164,7 @@ useFilingPageWatcher<LiquidateType>({
       />
 
       <FormDocumentId
+        v-if="filingSubType !== LiquidateType.REPORT"
         ref="document-id-ref"
         v-model="liquidatorStore.formState.documentId"
         data-testid="document-id-section"
@@ -194,13 +195,12 @@ useFilingPageWatcher<LiquidateType>({
         </ConnectFormFieldWrapper>
       </ConnectFieldset>
 
-      <!-- TODO: add text/translation -->
       <ConnectFieldset
         data-testid="staff-payment-section"
-        :label="(isIntentOrAddressChange ? '5. ' : '4.') + 'Staff Payment'"
+        :label="(isIntentOrAddressChange ? '5. ' : '4.') + $t('label.staffPayment')"
         body-variant="card"
       >
-        <ConnectFormFieldWrapper label="Payment" orientation="horizontal">
+        <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
           <StaffPayment
             ref="staff-pay-ref"
             v-model="liquidatorStore.formState.staffPayment"
