@@ -1,7 +1,8 @@
 <script setup lang="ts">
 const {
   stateKey = 'manage-offices',
-  allowedActions
+  allowedActions,
+  allowAddOfficeType
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -9,6 +10,7 @@ const {
   editLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  allowAddOfficeType?: OfficeType
 }>()
 
 const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office', { required: true })
@@ -28,6 +30,17 @@ const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
 const activeOfficeSchema = getActiveOfficesSchema()
 
+const tableHasAddType = computed(() => {
+  return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
+})
+const allowAddOffice = computed(() => {
+  const hasAllowedActions = !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+  if (!allowAddOfficeType) {
+    return hasAllowedActions
+  }
+  return !tableHasAddType.value && hasAllowedActions
+})
+
 function setActiveFormAlert() {
   setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
 }
@@ -37,7 +50,7 @@ function initAddOffice() {
     setActiveFormAlert()
     return
   }
-  activeOffice.value = activeOfficeSchema.parse({})
+  activeOffice.value = activeOfficeSchema.parse({ type: allowAddOfficeType })
   addingOffice.value = true
 }
 
@@ -75,7 +88,7 @@ function clearAllAlerts() {
     @keydown="clearAllAlerts"
   >
     <UButton
-      v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
+      v-if="allowAddOffice"
       :label="addLabel"
       variant="outline"
       icon="i-mdi-account-plus-outline"
