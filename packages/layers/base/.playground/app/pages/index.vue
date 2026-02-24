@@ -41,10 +41,10 @@ const componentExamples: DropdownMenuItem[] = [
       {
         label: 'Allowed Actions',
         children: [
-          // { // FUTURE: complete once 'add' functionality complete in ManageOffices
-          //   label: 'Add',
-          //   to: localePath('/examples/components/ManageOffices/allowed-actions/add')
-          // },
+          {
+            label: 'Add',
+            to: localePath('/examples/components/ManageOffices/allowed-actions/add')
+          },
           {
             label: 'Edits',
             to: localePath('/examples/components/ManageOffices/allowed-actions/edits')
