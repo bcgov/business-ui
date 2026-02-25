@@ -67,6 +67,7 @@ const delivery = getFakeAddress()
 describe('useLiquidatorStore', () => {
   const store = useLiquidatorStore()
   const { tableState } = useManageParties()
+  const { tableState: tableOffices } = useManageOffices()
   const schemaDefault = getLiquidatorsSchema().parse({})
 
   beforeEach(() => {
@@ -75,6 +76,7 @@ describe('useLiquidatorStore', () => {
     setActivePinia(pinia)
     store.$reset()
     tableState.value = []
+    tableOffices.value = []
   })
 
   it('initializes with the correct default state', () => {
@@ -91,7 +93,9 @@ describe('useLiquidatorStore', () => {
             firstName: person.firstName,
             middleName: person.middleName,
             lastName: person.lastName,
-            businessName: ''
+            businessName: '',
+            preferredName: '',
+            hasPreferredName: false
           },
           { delivery, mailing },
           [ActionType.ADDED]
@@ -138,10 +142,6 @@ describe('useLiquidatorStore', () => {
         expect(store.initializing).toBe(false)
 
         expect(tableState.value).toEqual(partiesResponse.data)
-        expect(store.formState.recordsOffice.deliveryAddress)
-          .toEqual(addressesResponse.liquidationRecordsOffice?.deliveryAddress)
-        expect(store.formState.recordsOffice.mailingAddress)
-          .toEqual(addressesResponse.liquidationRecordsOffice?.mailingAddress)
       })
 
       it('should set empty table when API returns no parties', async () => {
@@ -286,13 +286,14 @@ describe('useLiquidatorStore', () => {
       store.formState.staffPayment = { option: StaffPaymentOption.BCOL }
       // @ts-expect-error - partial object
       store.formState.activeParty = { id: 'X' }
-      // @ts-expect-error - incorrect object
-      store.currentLiquidationOffice = { some: 'address' }
+      // @ts-expect-error - partial object
+      store.formState.activeOffice = { id: 'X' }
 
       store.$reset()
 
       expect(store.formState).toEqual(schemaDefault)
-      expect(store.currentLiquidationOffice).toBeUndefined()
+      expect(store.formState.activeParty).toBeUndefined()
+      expect(store.formState.activeOffice).toBeUndefined()
     })
   })
 })
