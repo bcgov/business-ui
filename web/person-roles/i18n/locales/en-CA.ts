@@ -34,6 +34,7 @@ export default {
     haspreferredName: 'This person also has another name they prefer to use',
     liquidationRecordsOfficeAddress: 'Liquidation Records Office Address',
     loading: 'Loading',
+    noOffice: 'No Office',
     officerChange: 'Officer Change',
     receiverChange: 'Receiver Change',
     liquidatorChange: 'Liquidator Change',

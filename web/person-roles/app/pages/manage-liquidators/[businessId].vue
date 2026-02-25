@@ -46,9 +46,19 @@ const allowedPartyActions = computed(() => {
   return actionMap[filingSubType]
 })
 
+const allowedOfficeActions = computed(() => {
+  const actionMap: Record<LiquidateType, ManageAllowedAction[] | undefined> = {
+    [LiquidateType.ADDRESS]: [ManageAllowedAction.ADDRESS_CHANGE],
+    [LiquidateType.APPOINT]: [],
+    [LiquidateType.CEASE]: [],
+    [LiquidateType.INTENT]: [ManageAllowedAction.ADD],
+    [LiquidateType.REPORT]: []
+  }
+  return actionMap[filingSubType]
+})
+
 async function submitFiling() {
   try {
-    // TODO: check if filing has new data before submit
     handleButtonLoading(true, 'right', 1)
     await liquidatorStore.submit(true)
     await navigateTo(dashboardUrl.value, { external: true })
@@ -128,22 +138,22 @@ useFilingPageWatcher<LiquidateType>({
     >
       <div class="space-y-1">
         <h1 id="filing-title">
-          {{ t(`page.${FILING_TYPE}.${filingSubType}.h1`) }}
+          {{ $t(`page.${FILING_TYPE}.${filingSubType}.h1`) }}
         </h1>
-        <p>{{ t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
+        <p>{{ $t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
       </div>
 
       <section class="space-y-4" data-testid="liquidator-info-section">
         <h2 class="text-base">
-          1. {{ t('label.liquidatorInfo') }}
+          1. {{ $t('label.liquidatorInfo') }}
         </h2>
 
         <ManageParties
           v-model:active-party="liquidatorStore.formState.activeParty"
           :loading="liquidatorStore.initializing"
-          :empty-text="liquidatorStore.initializing ? `${t('label.loading')}...` : t('text.noLiquidators')"
-          :add-label="t('label.addLiquidator')"
-          :edit-label="t('label.editLiquidator')"
+          :empty-text="liquidatorStore.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
+          :add-label="$t('label.addLiquidator')"
+          :edit-label="$t('label.editLiquidator')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
@@ -174,26 +184,28 @@ useFilingPageWatcher<LiquidateType>({
         :state="liquidatorStore.formState.documentId"
       />
 
-      <ConnectFieldset
+      <section
         v-if="isIntentOrAddressChange"
+        class="space-y-4"
         data-testid="records-office-section"
-        :label="'4. ' + t('label.liquidationRecordsOfficeAddress')"
-        :description="t('text.liquidationRecordsOfficeAddressDesc')"
-        body-variant="card"
       >
-        <ConnectFormFieldWrapper
-          :label="t('label.liquidationRecordsOfficeAddress')"
-          orientation="horizontal"
-        >
-          <FormAddress
-            id="records-office"
-            v-model="liquidatorStore.formState.recordsOffice"
-            :disabled="initializing"
-            name="recordsOffice"
-            nested
-          />
-        </ConnectFormFieldWrapper>
-      </ConnectFieldset>
+        <div>
+          <h2 class="text-base">
+            4. {{ $t('label.liquidationRecordsOfficeAddress') }}
+          </h2>
+          <p>{{ $t('text.liquidationRecordsOfficeAddressDesc') }}</p>
+        </div>
+
+        <ManageOffices
+          v-model:active-office="liquidatorStore.formState.activeOffice"
+          :loading="liquidatorStore.initializing"
+          :empty-text="liquidatorStore.initializing ? `${t('label.loading')}...` : t('label.noOffice')"
+          :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.LIQUIDATION}`) })"
+          :edit-label="$t('label.editOffice')"
+          :allowed-actions="allowedOfficeActions"
+          :allow-add-office-type="OfficeType.LIQUIDATION"
+        />
+      </section>
 
       <ConnectFieldset
         data-testid="staff-payment-section"
