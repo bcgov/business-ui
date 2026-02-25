@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.14.1
+
+### Patch Changes
+
+- [#404](https://github.com/bcgov/business-ui/pull/404) [`fff181d`](https://github.com/bcgov/business-ui/commit/fff181dc81927cbd22f883f44865f8f4aa8eb82b) Thanks [@kialj876](https://github.com/kialj876)! - Minor business alert copy update
+
 ## 0.14.0
 
 ### Minor Changes
