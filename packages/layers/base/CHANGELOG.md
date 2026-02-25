@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.14.2
+
+### Patch Changes
+
+- [#406](https://github.com/bcgov/business-ui/pull/406) [`1b0c755`](https://github.com/bcgov/business-ui/commit/1b0c755ce7bf5e6b4de376297c208a540c3b6c87) Thanks [@kialj876](https://github.com/kialj876)! - Update connect layer dependency for account flow updates
+
 ## 0.14.1
 
 ### Patch Changes
