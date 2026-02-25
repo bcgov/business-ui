@@ -46,7 +46,7 @@ test.describe('Business Alerts Tests - Dissolution', () => {
       userDelays: 2,
       expectedDate: 'November 13, 2028',
       // eslint-disable-next-line max-len
-      expectedExtraText: 'Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca',
+      expectedExtraText: 'The maximum number of dissolution delays has been used. Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing BCRegistries@gov.bc.ca',
       overdueARs: true,
       overdueTransition: false
     }
