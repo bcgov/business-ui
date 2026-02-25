@@ -33,7 +33,7 @@ export default {
       },
       contentExtra: {
         default: 'You can request up to two 6-month delays to postpone dissolution. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
-        maxDelaysReached: 'Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
+        maxDelaysReached: 'The maximum number of dissolution delays has been used. Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {link}',
         emailLink: "BCRegistries{'@'}gov.bc.ca",
         emailTo: "mailto:bcregistries{'@'}gov.bc.ca"
       },
