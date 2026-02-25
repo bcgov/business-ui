@@ -4,7 +4,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const accountStore = useConnectAccountStore()
   if (to.query.accountid) {
     // FUTURE: can remove this after this UI is upgraded to use @sbc-connect layers instead of @daxiom/nuxt-core-layer-test
-    accountStore.switchCurrentAccount(to.query.accountid as string)
+    // @ts-expect-error typing is incorrect for this function
+    accountStore.switchCurrentAccount(Number(to.query.accountid))
   }
 
   // If accountid and populate are in the query params, redirect to /account/<id>
