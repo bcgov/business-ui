@@ -28,6 +28,7 @@ export default {
     changeAddress: 'Change Address',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
+    confirm: 'Confirm',
     editLiquidator: 'Edit Liquidator',
     editOfficer: 'Edit Officer',
     editReceiver: 'Edit Receiver',
@@ -44,6 +45,8 @@ export default {
     roles: 'Roles'
   },
   text: {
+    confirmLiquidatorsCorrect: 'I confirm that the liquidator information listed for this business is correct.',
+    confirmOfficesCorrect: 'I confirm that the office address information listed for this business is correct.',
     noLiquidators: 'There are currently no liquidators.',
     noOfficers: 'There are currently no officers.',
     noReceivers: 'There are currently no Receivers.',

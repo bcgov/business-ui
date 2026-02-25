@@ -9,27 +9,11 @@ export function getLiquidatorsSchema() {
     documentId: getDocumentIdSchema().default({
       documentIdNumber: ''
     }),
-    // recordsOffice: getAddressSchema().default({
-    //   deliveryAddress: {
-    //     street: '',
-    //     streetAdditional: '',
-    //     city: '',
-    //     region: '',
-    //     postalCode: '',
-    //     country: 'CA',
-    //     locationDescription: ''
-    //   },
-    //   mailingAddress: {
-    //     street: '',
-    //     streetAdditional: '',
-    //     city: '',
-    //     region: '',
-    //     postalCode: '',
-    //     country: 'CA',
-    //     locationDescription: ''
-    //   },
-    //   sameAs: false
-    // }),
+    certify: getCertifySchema().default({
+      isCertified: false,
+      legalName: ''
+    }),
+    folio: getFolioSchema().default({ folioNumber: '' }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,
       bcolAccountNumber: '',
@@ -39,7 +23,9 @@ export function getLiquidatorsSchema() {
       isPriority: false
     }),
     activeParty: getActivePartySchema(RoleTypeUi.LIQUIDATOR),
-    activeOffice: getActiveOfficesSchema()
+    activeOffice: getActiveOfficesSchema(),
+    confirmOffices: z.boolean().default(false),
+    confirmParties: z.boolean().default(false)
   })
 }
 
