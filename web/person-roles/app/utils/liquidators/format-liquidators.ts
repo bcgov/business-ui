@@ -1,6 +1,5 @@
 export function formatLiquidatorsApi(
   tableState: TableBusinessState<PartySchema>[],
-  formState: LiquidatorFormSchema,
   type: LiquidateType,
   commonData: FilingPayloadData,
   tableOffices: TableBusinessState<OfficesSchema>[]

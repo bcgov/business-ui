@@ -26,16 +26,33 @@ function createPartyMock(
   }
 }
 
-describe('format-liquidators', () => {
-  describe('formatLiquidatorsApi', () => {
-    it(`${LiquidateType.INTENT} - should correctly map form state and add common data to payload`, () => {
-      const person = getFakePerson()
-      const business = getFakePerson()
-      const mailing = getFakeAddress()
-      const delivery = getFakeAddress()
-      const officeMailing = getFakeAddress()
-      const officeDelivery = getFakeAddress()
+function createOfficeTableMock(
+  mailing: ConnectAddress,
+  delivery: ConnectAddress,
+  actions: ActionType[] = [],
+  type: OfficeType = OfficeType.LIQUIDATION
+): TableBusinessState<OfficesSchema> {
+  const office = {
+    type,
+    actions,
+    address: { mailingAddress: mailing, deliveryAddress: delivery, sameAs: false }
+  }
+  return {
+    new: { ...office },
+    old: { ...office, actions: [] }
+  }
+}
 
+describe('format-liquidators', () => {
+  const person = getFakePerson()
+  const business = getFakePerson()
+  const mailing = getFakeAddress()
+  const delivery = getFakeAddress()
+  const officeMailing = getFakeAddress()
+  const officeDelivery = getFakeAddress()
+
+  describe('formatLiquidatorsApi', () => {
+    it(`${LiquidateType.INTENT} - should correctly format parties, offices and add common data to payload`, () => {
       const newPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
@@ -49,6 +66,8 @@ describe('format-liquidators', () => {
         { delivery, mailing },
         [ActionType.ADDED]
       )
+
+      const mockOfficeTable = [createOfficeTableMock(officeMailing, officeDelivery)]
 
       const newBusiness = createPartyMock(
         {
@@ -83,13 +102,6 @@ describe('format-liquidators', () => {
         unchangedPerson
       ]
 
-      const mockFormState = {
-        recordsOffice: {
-          mailingAddress: formatAddressUi(officeMailing),
-          deliveryAddress: formatAddressUi(officeDelivery)
-        }
-      }
-
       const mockCommonData = {
         courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true },
         documentId: '12345678'
@@ -99,9 +111,9 @@ describe('format-liquidators', () => {
 
       const result = formatLiquidatorsApi(
         mockTableState,
-        mockFormState as LiquidatorFormSchema,
         type,
-        mockCommonData
+        mockCommonData,
+        mockOfficeTable
       )
 
       expect(result.type).toBe(LiquidateType.INTENT)
@@ -156,15 +168,7 @@ describe('format-liquidators', () => {
       })
     })
 
-    /* eslint-disable-next-line max-len */
-    it(`${LiquidateType.APPOINT} - should correctly map form state, add common data to payload and exclude office addresses`, () => {
-      const person = getFakePerson()
-      const business = getFakePerson()
-      const mailing = getFakeAddress()
-      const delivery = getFakeAddress()
-      const officeMailing = getFakeAddress()
-      const officeDelivery = getFakeAddress()
-
+    it(`${LiquidateType.APPOINT} - should correctly format payload and exclude office addresses`, () => {
       const newPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
@@ -212,25 +216,20 @@ describe('format-liquidators', () => {
         unchangedPerson
       ]
 
-      const mockFormState = {
-        recordsOffice: {
-          mailingAddress: formatAddressUi(officeMailing),
-          deliveryAddress: formatAddressUi(officeDelivery)
-        }
-      }
-
       const mockCommonData = {
         courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true },
         documentId: '12345678'
       }
 
+      const mockOfficeTable = [createOfficeTableMock(officeMailing, officeDelivery)]
+
       const type = LiquidateType.APPOINT
 
       const result = formatLiquidatorsApi(
         mockTableState,
-        mockFormState as LiquidatorFormSchema,
         type,
-        mockCommonData
+        mockCommonData,
+        mockOfficeTable
       )
 
       expect(result.type).toBe(LiquidateType.APPOINT)
@@ -278,69 +277,36 @@ describe('format-liquidators', () => {
     describe(`${LiquidateType.ADDRESS}`, () => {
       const officeMailing = getFakeAddress()
       const officeDelivery = getFakeAddress()
-      const currentOfficeMock: UiBaseAddressObj = {
-        mailingAddress: formatAddressUi(officeMailing),
-        deliveryAddress: formatAddressUi(officeDelivery),
-        sameAs: false
-      }
-      it('should include offices when addresses have changed', () => {
-        const changedMailing = { ...officeMailing, streetAddress: 'New Street 123' }
 
-        const mockFormState = {
-          recordsOffice: {
-            mailingAddress: formatAddressUi(changedMailing),
-            deliveryAddress: formatAddressUi(officeDelivery)
-          }
-        }
+      it('should include offices when addresses have changed', () => {
+        const mockOfficeTable = [
+          createOfficeTableMock(officeMailing, officeDelivery, [ActionType.ADDRESS_CHANGED])
+        ]
 
         const result = formatLiquidatorsApi(
           [],
-          mockFormState as LiquidatorFormSchema,
           LiquidateType.ADDRESS,
           {},
-          currentOfficeMock
+          mockOfficeTable
         )
 
         expect(result.offices).toBeDefined()
-        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe('New Street 123')
+        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe(officeMailing.street)
       })
 
       it('should exclude offices when addresses are identical to current', () => {
-        const mockFormState = {
-          recordsOffice: {
-            mailingAddress: formatAddressUi(officeMailing),
-            deliveryAddress: formatAddressUi(officeDelivery)
-          }
-        }
+        const mockOfficeTable = [
+          createOfficeTableMock(officeMailing, officeDelivery, [])
+        ]
 
         const result = formatLiquidatorsApi(
           [],
-          mockFormState as LiquidatorFormSchema,
           LiquidateType.ADDRESS,
           {},
-          currentOfficeMock
+          mockOfficeTable
         )
 
         expect(result.offices).toBeUndefined()
-      })
-
-      it('should include formState offices even if currentLiquidationOffice is undefined', () => {
-        const mockFormState = {
-          recordsOffice: {
-            mailingAddress: formatAddressUi(officeMailing),
-            deliveryAddress: formatAddressUi(officeDelivery)
-          }
-        }
-
-        const result = formatLiquidatorsApi(
-          [],
-          mockFormState as LiquidatorFormSchema,
-          LiquidateType.ADDRESS,
-          {},
-          undefined
-        )
-
-        expect(result.offices).toBeDefined()
       })
     })
   })
@@ -348,6 +314,10 @@ describe('format-liquidators', () => {
   it('should exclude relationships property if none have changes/actions', () => {
     const officeMailing = getFakeAddress()
     const officeDelivery = getFakeAddress()
+
+    const mockOfficeTable = [
+      createOfficeTableMock(officeMailing, officeDelivery, [ActionType.ADDED])
+    ]
 
     const unchangedPerson = createPartyMock(
       {
@@ -363,27 +333,21 @@ describe('format-liquidators', () => {
       []
     )
 
-    const mockFormState = {
-      recordsOffice: {
-        mailingAddress: formatAddressUi({ ...officeMailing, streetAddress: 'Changed St' }),
-        deliveryAddress: formatAddressUi(officeDelivery)
-      }
-    }
-
     const result = formatLiquidatorsApi(
       [unchangedPerson],
-      mockFormState as LiquidatorFormSchema,
       LiquidateType.ADDRESS,
       {},
-      {
-        mailingAddress: formatAddressUi(officeMailing),
-        deliveryAddress: formatAddressUi(officeDelivery),
-        sameAs: false
-      }
+      mockOfficeTable
     )
 
     expect(result.offices).toBeDefined()
     expect(result.relationships).toBeUndefined()
     expect(Object.keys(result)).not.toContain('relationships')
+  })
+
+  it('should remove offices property if LIQUIDATION office is missing from the table array', () => {
+    const result = formatLiquidatorsApi([], LiquidateType.INTENT, {}, [])
+
+    expect(result.offices).toBeUndefined()
   })
 })

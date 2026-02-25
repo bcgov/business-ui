@@ -67,7 +67,6 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   async function submit(isSubmission: boolean) {
     const liquidatorPayload = formatLiquidatorsApi(
       tableState.value,
-      formState,
       liquidateSubType.value,
       getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
       tableOffices.value
