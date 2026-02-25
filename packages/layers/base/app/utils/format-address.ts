@@ -1,7 +1,8 @@
 import { isEqual } from 'es-toolkit'
 
-export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress {
+export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress | AddressSchema['deliveryAddress'] {
   return {
+    id: address?.id,
     street: address?.streetAddress ?? '',
     streetAdditional: address?.streetAddressAdditional ?? '',
     city: address?.addressCity ?? '',
@@ -23,8 +24,11 @@ export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiB
   }
 }
 
-export function formatAddressApi(address: ConnectAddress | AddressSchema['deliveryAddress'] | undefined): ApiAddress {
+export function formatAddressApi(
+  address: (ConnectAddress | AddressSchema['deliveryAddress']) & { id?: number } | undefined
+): ApiAddress {
   return {
+    id: address?.id,
     streetAddress: address?.street ?? '',
     streetAddressAdditional: address?.streetAdditional ?? '',
     addressCity: address?.city ?? '',

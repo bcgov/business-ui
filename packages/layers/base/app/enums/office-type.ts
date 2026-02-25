@@ -6,6 +6,5 @@ export enum OfficeType {
   RECORDS = 'recordsOffice',
   CUSTODIAL = 'custodialOffice',
   BUSINESS = 'businessOffice',
-  LIQUIDATION = 'liquidationRecordsOffice',
-  UNKNOWN = 'unknown' // FUTURE: remove once 'add' functionality complete in ManageOffices
+  LIQUIDATION = 'liquidationRecordsOffice'
 }

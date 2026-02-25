@@ -1,20 +1,5 @@
 import { z } from 'zod'
 
-export function getManageLiquidatorsSchema() {
-  return z.object({
-    parties: z.array(z.object({
-      new: getPartySchema(RoleTypeUi.LIQUIDATOR),
-      old: getPartySchema(RoleTypeUi.LIQUIDATOR).optional()
-    })),
-    courtOrder: getCourtOrderPoaSchema(),
-    documentId: getDocumentIdSchema(),
-    recordsOffice: getAddressSchema(),
-    staffPayment: getStaffPaymentSchema()
-  })
-}
-
-export type ManageLiquidatorsSchema = z.output<ReturnType<typeof getManageLiquidatorsSchema>>
-
 export function getLiquidatorsSchema() {
   return z.object({
     courtOrder: getCourtOrderPoaSchema().default({
@@ -24,27 +9,27 @@ export function getLiquidatorsSchema() {
     documentId: getDocumentIdSchema().default({
       documentIdNumber: ''
     }),
-    recordsOffice: getAddressSchema().default({
-      deliveryAddress: {
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      mailingAddress: {
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      sameAs: false
-    }),
+    // recordsOffice: getAddressSchema().default({
+    //   deliveryAddress: {
+    //     street: '',
+    //     streetAdditional: '',
+    //     city: '',
+    //     region: '',
+    //     postalCode: '',
+    //     country: 'CA',
+    //     locationDescription: ''
+    //   },
+    //   mailingAddress: {
+    //     street: '',
+    //     streetAdditional: '',
+    //     city: '',
+    //     region: '',
+    //     postalCode: '',
+    //     country: 'CA',
+    //     locationDescription: ''
+    //   },
+    //   sameAs: false
+    // }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,
       bcolAccountNumber: '',
@@ -53,7 +38,8 @@ export function getLiquidatorsSchema() {
       folioNumber: '',
       isPriority: false
     }),
-    activeParty: getActivePartySchema(RoleTypeUi.LIQUIDATOR)
+    activeParty: getActivePartySchema(RoleTypeUi.LIQUIDATOR),
+    activeOffice: getActiveOfficesSchema()
   })
 }
 

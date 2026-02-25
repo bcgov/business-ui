@@ -376,6 +376,7 @@ export default {
     done: 'Done',
     downloadAll: 'Download All',
     edit: 'Edit',
+    editOffice: 'Edit Office',
     editShareClass: 'Edit Share Class',
     editShareSeries: 'Edit Share Series',
     effectiveDates: 'Effective Dates',

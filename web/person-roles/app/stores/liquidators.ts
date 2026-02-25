@@ -1,7 +1,9 @@
 export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
+  const { tableState: tableOffices } = useManageOffices()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getCommonFilingPayloadData, initFiling } = useFiling()
 
   const businessApi = useBusinessApi()
@@ -23,13 +25,18 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     liquidateSubType.value = filingSubType
     $reset()
 
+    // only fetch liquidation records office if it's a change address or liq report filing
+    const officeParams = [LiquidateType.ADDRESS, LiquidateType.REPORT, LiquidateType.INTENT].includes(filingSubType)
+      ? [OfficeType.LIQUIDATION]
+      : undefined
+
     const { draftFiling, parties, addresses } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
       filingSubType,
       draftId,
       { roleType: RoleType.LIQUIDATOR },
-      filingSubType === LiquidateType.ADDRESS
+      officeParams
     )
 
     const draft = draftFiling?.filing?.changeOfLiquidators
@@ -38,7 +45,6 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
       formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
       formState.documentId.documentIdNumber = draft.documentId ?? ''
-      formState.recordsOffice = formatBaseAddressUi(draft.offices?.liquidationRecordsOffice)
     }
 
     if (parties) {
@@ -48,13 +54,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
         : parties
     }
 
-    const office = addresses?.liquidationRecordsOffice
-    if (office) {
-      currentLiquidationOffice.value = { ...office }
-
-      if (!draftId || !draft?.offices) {
-        formState.recordsOffice = { ...office }
-      }
+    if (addresses) {
+      const draftOffice = draft?.offices && formatAddressTableState(draft.offices, [OfficeType.LIQUIDATION])
+      tableOffices.value = draftOffice
+        ? formatDraftTableState(addresses, draftOffice)
+        : addresses
     }
 
     await nextTick()
@@ -67,7 +71,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       formState,
       liquidateSubType.value,
       getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
-      currentLiquidationOffice.value
+      tableOffices.value
     )
 
     const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
@@ -97,7 +101,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const defaults = liquidatorSchema.parse({})
     Object.assign(formState, defaults)
     formState.activeParty = undefined
-    currentLiquidationOffice.value = undefined
+    formState.activeOffice = undefined
   }
 
   return {
