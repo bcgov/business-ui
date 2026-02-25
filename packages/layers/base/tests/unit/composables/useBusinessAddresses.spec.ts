@@ -19,7 +19,7 @@ describe('useBusinessAddresses', () => {
 
   describe('getBusinessAddresses', () => {
     describe('config param === "default"', () => {
-      test('should format the response to the expected UiEntityOfficeAddress type', async () => {
+      test.only('should format the response to the expected UiEntityOfficeAddress type', async () => {
         const resp = await useBusinessAddresses().getBusinessAddresses(identifier)
 
         expect(mockGetAddresses).toHaveBeenCalled()

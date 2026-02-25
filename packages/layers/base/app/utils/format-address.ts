@@ -1,4 +1,4 @@
-import { isEqual } from 'es-toolkit'
+import { isEqual, omit } from 'es-toolkit'
 
 export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress | AddressSchema['deliveryAddress'] {
   return {
@@ -20,7 +20,7 @@ export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiB
   return {
     mailingAddress,
     deliveryAddress,
-    sameAs: hasMailing && isEqual(mailingAddress, deliveryAddress)
+    sameAs: hasMailing && isEqual(omit(mailingAddress, ['id']), omit(deliveryAddress, ['id']))
   }
 }
 
