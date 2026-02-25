@@ -73,12 +73,12 @@ const allowedOfficeActions = computed(() => {
 
 async function submitFiling() {
   try {
-    // handleButtonLoading(true, 'right', 1)
+    handleButtonLoading(true, 'right', 1)
     await store.submit(true)
-    // await navigateTo(dashboardUrl.value, { external: true })
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    // await modal.openSaveFilingErrorModal(error)
-    // handleButtonLoading(false)
+    await modal.openSaveFilingErrorModal(error)
+    handleButtonLoading(false)
   }
 }
 
@@ -113,7 +113,6 @@ async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
 
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
-  console.log(firstError)
 
   if (firstError?.name === 'staffPayment.option') {
     staffPayFormRef.value?.setFocusOnError()
@@ -250,28 +249,9 @@ useFilingPageWatcher<LiquidateType>({
         :state="store.formState.documentId"
       />
 
-      <FormFolio
-        v-if="!store.isStaff && isReport"
-        v-model="store.formState.folio"
-        data-testid="folio-section"
-        :disabled="store.initializing"
-        name="folio"
-        order="4"
-      />
-
-      <FormCertify
-        v-if="!store.isStaff && isReport"
-        v-model="store.formState.certify"
-        data-testid="certify-section"
-        :disabled="store.initializing"
-        name="certify"
-        order="4"
-      />
-
       <ConnectFieldset
-        v-if="store.isStaff"
         data-testid="staff-payment-section"
-        :label="(showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
+        :label="(isReport ? '3. ' : showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
         body-variant="card"
       >
         <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
