@@ -26,16 +26,16 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = true
     $reset()
 
-    const { draftFiling, parties } = await initFiling<PRTApplication>(
+    const { draftFiling, parties, addresses } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
       undefined,
       draftId,
-      { roleType: RoleType.DIRECTOR }
+      { roleType: RoleType.DIRECTOR },
+      [OfficeType.RECORDS, OfficeType.REGISTERED]
     )
 
-    // TODO: add table config option to useFiling addresses param
-    const addresses = await getBusinessAddresses(businessId, 'table', [OfficeType.RECORDS, OfficeType.REGISTERED])
+    // TODO: add classes to initFiling?
     const classes = await service.getShareClasses(businessId)
 
     const draft = draftFiling?.filing?.transition
