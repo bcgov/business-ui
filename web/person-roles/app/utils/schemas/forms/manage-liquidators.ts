@@ -9,11 +9,6 @@ export function getLiquidatorsSchema() {
     documentId: getDocumentIdSchema().default({
       documentIdNumber: ''
     }),
-    certify: getCertifySchema().default({
-      isCertified: false,
-      legalName: ''
-    }),
-    folio: getFolioSchema().default({ folioNumber: '' }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,
       bcolAccountNumber: '',
