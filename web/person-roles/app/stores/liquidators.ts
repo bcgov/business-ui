@@ -11,9 +11,10 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
-  const currentLiquidationOffice = shallowRef<UiBaseAddressObj | undefined>(undefined)
   const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
+
+  const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
 
   async function init(businessId: string, filingSubType?: LiquidateType, draftId?: string) {
     if (!filingSubType) {
@@ -66,35 +67,36 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   }
 
   async function submit(isSubmission: boolean) {
-    const liquidatorPayload = formatLiquidatorsApi(
-      tableState.value,
-      formState,
-      liquidateSubType.value,
-      getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
-      tableOffices.value
-    )
+    console.log('FORM STATE: ', formState)
+    // const liquidatorPayload = formatLiquidatorsApi(
+    //   tableState.value,
+    //   formState,
+    //   liquidateSubType.value,
+    //   getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
+    //   tableOffices.value
+    // )
 
-    const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
-      businessStore.business!,
-      FilingType.CHANGE_OF_LIQUIDATORS,
-      { changeOfLiquidators: liquidatorPayload },
-      formatStaffPaymentApi(formState.staffPayment)
-    )
+    // const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
+    //   businessStore.business!,
+    //   FilingType.CHANGE_OF_LIQUIDATORS,
+    //   { changeOfLiquidators: liquidatorPayload },
+    //   formatStaffPaymentApi(formState.staffPayment)
+    // )
 
-    const draftId = draftFilingState.value?.filing?.header?.filingId
-    if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
-        businessStore.businessIdentifier!,
-        payload,
-        isSubmission,
-        draftId as string | number
-      )
-      draftFilingState.value = filingResp as unknown as LiquidatorDraftState
-      const urlParams = useUrlSearchParams()
-      urlParams.draft = String(filingResp.filing.header.filingId)
-    } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, payload)
-    }
+    // const draftId = draftFilingState.value?.filing?.header?.filingId
+    // if (draftId || !isSubmission) {
+    //   const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
+    //     businessStore.businessIdentifier!,
+    //     payload,
+    //     isSubmission,
+    //     draftId as string | number
+    //   )
+    //   draftFilingState.value = filingResp as unknown as LiquidatorDraftState
+    //   const urlParams = useUrlSearchParams()
+    //   urlParams.draft = String(filingResp.filing.header.filingId)
+    // } else {
+    //   await businessApi.postFiling(businessStore.businessIdentifier!, payload)
+    // }
   }
 
   function $reset() {
@@ -109,7 +111,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     initializing,
     liquidateSubType,
     draftFilingState,
-    currentLiquidationOffice,
+    isStaff,
     init,
     submit,
     $reset
