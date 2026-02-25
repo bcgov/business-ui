@@ -5,7 +5,6 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
-  const { getBusinessAddresses } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { initFiling } = useFiling()
 
