@@ -127,11 +127,11 @@ useFilingPageWatcher<LiquidateType>({
   draftId: urlParams.draft as string | undefined,
   filingType: FilingType.CHANGE_OF_LIQUIDATORS,
   filingSubType,
-  saveFiling: { onClick: () => saveFiling(true) },
+  saveFiling: isReport ? null : { onClick: () => saveFiling(true) },
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'liquidator-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(false, true)
+  setOnBeforeSessionExpired: isReport ? async () => undefined : () => saveFiling(false, true)
 })
 </script>
 
