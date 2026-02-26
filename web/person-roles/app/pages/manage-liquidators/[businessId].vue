@@ -175,6 +175,7 @@ useFilingPageWatcher<LiquidateType>({
         />
 
         <ConnectFormFieldWrapper
+          v-if="isReport"
           orientation="horizontal"
           :label="$t('label.confirm')"
           class="bg-white p-6 rounded"
