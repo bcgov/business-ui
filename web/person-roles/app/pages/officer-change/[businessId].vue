@@ -10,7 +10,7 @@ const businessStore = useBusinessStore()
 const { setAlertText } = useConnectButtonControl()
 const modal = useFilingModals()
 const businessApi = useBusinessApi()
-const { breadcrumbs, dashboardUrl, dashboardOrEditUrl } = useFilingNavigation(t('page.changeOfOfficers.h1'))
+const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.changeOfOfficers.h1'))
 
 useHead({
   title: t('page.changeOfOfficers.title')
@@ -129,7 +129,7 @@ async function cancelFiling() {
   if (officerStore.checkHasChanges('save')) {
     await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
   } else {
-    await navigateTo(dashboardOrEditUrl.value, { external: true })
+    await navigateTo(dashboardUrl.value, { external: true })
   }
 }
 

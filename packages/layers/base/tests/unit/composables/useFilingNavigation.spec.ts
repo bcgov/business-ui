@@ -37,25 +37,19 @@ describe('useFilingNavigation', () => {
       expect(isDraft.value).toBe(false)
     })
 
-    it('should return the correct dashboard and edit URLs', () => {
-      const { dashboardUrl, editUrl } = useFilingNavigation()
+    it('should return the correct dashboard URL', () => {
+      const { dashboardUrl } = useFilingNavigation()
       expect(dashboardUrl.value).toBe(`http://dashboard/${identifier}?accountid=${testAccountId}`)
-      expect(editUrl.value).toBe(`http://edit/${identifier}/alteration?accountid=${testAccountId}`)
-    })
-
-    it('dashboardOrEditUrl should return the edit URL', () => {
-      const { dashboardOrEditUrl, editUrl } = useFilingNavigation()
-      expect(dashboardOrEditUrl.value).toBe(editUrl.value)
     })
 
     it('should return the correct breadcrumbs for a non-draft filing', () => {
-      const { breadcrumbs, editUrl } = useFilingNavigation()
+      const { breadcrumbs, dashboardUrl } = useFilingNavigation()
       const breadcrumbItems = breadcrumbs.value
 
       expect(breadcrumbItems).toHaveLength(4)
 
       expect(breadcrumbItems[2]!.label).toBe('Company Information Page')
-      expect(breadcrumbItems[2]!.to).toBe(editUrl.value)
+      expect(breadcrumbItems[2]!.to).toBe(dashboardUrl.value)
     })
   })
 
@@ -69,10 +63,6 @@ describe('useFilingNavigation', () => {
       expect(isDraft.value).toBe(true)
     })
 
-    it('dashboardOrEditUrl should return the dashboard URL', () => {
-      const { dashboardOrEditUrl, dashboardUrl } = useFilingNavigation()
-      expect(dashboardOrEditUrl.value).toBe(dashboardUrl.value)
-    })
 
     it('should return the correct breadcrumbs for a draft filing', () => {
       const { breadcrumbs, dashboardUrl } = useFilingNavigation()
@@ -86,17 +76,15 @@ describe('useFilingNavigation', () => {
   })
 
   describe('Computeds', () => {
-    it('should update URLs and breadcrumbs when the route query changes', async () => {
-      const { isDraft, dashboardOrEditUrl, breadcrumbs, editUrl } = useFilingNavigation()
+    it('should update breadcrumbs when the route query changes', async () => {
+      const { isDraft, breadcrumbs } = useFilingNavigation()
       expect(isDraft.value).toBe(false)
-      expect(dashboardOrEditUrl.value).toBe(editUrl.value)
       expect(breadcrumbs.value[2]!.label).toBe('Company Information Page')
 
       mockRoute.query = { draft: 'filing-123' }
       await nextTick()
 
       expect(isDraft.value).toBe(true)
-      expect(dashboardOrEditUrl.value).not.toBe(editUrl.value)
       expect(breadcrumbs.value[2]!.label).toBe('Test Business Inc.')
     })
   })

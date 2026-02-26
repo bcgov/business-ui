@@ -3,7 +3,7 @@ export const useFilingModals = () => {
   const t = useNuxtApp().$i18n.t
   const rtc = useRuntimeConfig().public
   const accountStore = useConnectAccountStore()
-  const { dashboardUrl, dashboardOrEditUrl } = useFilingNavigation()
+  const { dashboardUrl } = useFilingNavigation()
 
   async function openUnsavedChangesModal(revokeBeforeUnloadEvent: (() => void) | null) {
     await baseModal.open({
@@ -19,7 +19,7 @@ export const useFilingModals = () => {
             if (revokeBeforeUnloadEvent) {
               revokeBeforeUnloadEvent()
             }
-            await navigateTo(dashboardOrEditUrl.value, {
+            await navigateTo(dashboardUrl.value, {
               external: true
             })
           }
@@ -50,7 +50,7 @@ export const useFilingModals = () => {
       buttons: [
         {
           label: t('label.goBack'),
-          to: dashboardOrEditUrl.value,
+          to: dashboardUrl.value,
           external: true,
           variant: 'outline'
         },
@@ -92,7 +92,7 @@ export const useFilingModals = () => {
         : [
           {
             label: t('label.goBack'),
-            to: dashboardOrEditUrl.value,
+            to: dashboardUrl.value,
             variant: 'outline',
             external: true
           },
@@ -108,7 +108,7 @@ export const useFilingModals = () => {
       buttons: [
         {
           label: t('label.goBack'),
-          to: dashboardOrEditUrl.value,
+          to: dashboardUrl.value,
           external: true
         }
       ],

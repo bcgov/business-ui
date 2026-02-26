@@ -161,6 +161,14 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     { immediate: true }
   )
 
+  // Watch breadcrumbs and update the component when they change
+  watch(
+    () => options.breadcrumbs.value,
+    (newBreadcrumbs) => {
+      setBreadcrumbs(newBreadcrumbs)
+    }
+  )
+
   return {
     currentStep,
     nextStep,
