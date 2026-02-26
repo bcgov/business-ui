@@ -21,12 +21,11 @@ const testCases = [
   {
     type: LiquidateType.ADDRESS,
     h1: 'Change Addresses of Liquidators'
+  },
+  {
+    type: LiquidateType.REPORT,
+    h1: 'Liquidation Report'
   }
-  // TODO: report filing
-  // {
-  //   type: LiquidateType.REPORT,
-  //   h1: 'Change Addresses of Liquidators'
-  // },
 ]
 
 test.describe('Manage Liquidators - Page init', () => {
@@ -64,15 +63,28 @@ test.describe('Manage Liquidators - Page init', () => {
       // has fee summary
       expect(page.getByTestId('fee-widget')).toBeVisible()
       // has buttons
-      expect(page.getByTestId('connect-button-control-wrapper')).toBeVisible()
+      const buttonControl = page.getByTestId('connect-button-control-wrapper')
+      expect(buttonControl).toBeVisible()
+      if (type === LiquidateType.REPORT) { // liq report has no save draft button
+        await expect(buttonControl.getByRole('button')).toHaveCount(2)
+        await expect(buttonControl).not.toContainText('Save and Resume Later')
+      } else {
+        await expect(buttonControl.getByRole('button')).toHaveCount(3)
+        await expect(buttonControl).toContainText('Save and Resume Later')
+      }
       // has footer
       expect(page.getByTestId('connect-main-footer')).toBeVisible()
       // has form elemenets
       expect(page.getByTestId('liquidator-info-section')).toBeVisible()
-      expect(page.getByTestId('court-order-section')).toBeVisible()
-      expect(page.getByTestId('document-id-section')).toBeVisible()
+
+      if (type !== LiquidateType.REPORT) {
+        expect(page.getByTestId('court-order-section')).toBeVisible()
+        expect(page.getByTestId('document-id-section')).toBeVisible()
+      }
+
       expect(page.getByTestId('staff-payment-section')).toBeVisible()
-      if (type === LiquidateType.INTENT || type === LiquidateType.ADDRESS) {
+
+      if (type === LiquidateType.INTENT || type === LiquidateType.ADDRESS || type === LiquidateType.REPORT) {
         expect(page.getByTestId('records-office-section')).toBeVisible()
       } else {
         expect(page.getByTestId('records-office-section')).not.toBeVisible()
