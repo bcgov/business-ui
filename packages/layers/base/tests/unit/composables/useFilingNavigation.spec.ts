@@ -48,7 +48,7 @@ describe('useFilingNavigation', () => {
 
       expect(breadcrumbItems).toHaveLength(4)
 
-      expect(breadcrumbItems[2]!.label).toBe('Company Information Page')
+      expect(breadcrumbItems[2]!.label).toBe('Test Business Inc.')
       expect(breadcrumbItems[2]!.to).toBe(dashboardUrl.value)
     })
   })
@@ -63,7 +63,6 @@ describe('useFilingNavigation', () => {
       expect(isDraft.value).toBe(true)
     })
 
-
     it('should return the correct breadcrumbs for a draft filing', () => {
       const { breadcrumbs, dashboardUrl } = useFilingNavigation()
       const breadcrumbItems = breadcrumbs.value
@@ -75,11 +74,11 @@ describe('useFilingNavigation', () => {
     })
   })
 
-  describe('Computeds', () => {
-    it('should update breadcrumbs when the route query changes', async () => {
+  describe('Computed breadcrumb', () => {
+    it('should preserve breadcrumbs when the route query changes', async () => {
       const { isDraft, breadcrumbs } = useFilingNavigation()
       expect(isDraft.value).toBe(false)
-      expect(breadcrumbs.value[2]!.label).toBe('Company Information Page')
+      expect(breadcrumbs.value[2]!.label).toBe('Test Business Inc.')
 
       mockRoute.query = { draft: 'filing-123' }
       await nextTick()
