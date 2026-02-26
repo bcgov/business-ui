@@ -149,24 +149,16 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
 
       // trigger full page init only when account changes
       if (newAccountId !== oldAccountId) {
-        setBreadcrumbs(options.breadcrumbs.value)
-
         setOnBeforeSessionExpired(async () => {
           await options.setOnBeforeSessionExpired()
         })
 
         await options.store.init(options.businessId, options.filingSubType, options.draftId)
+
+        setBreadcrumbs(options.breadcrumbs.value)
       }
     },
     { immediate: true }
-  )
-
-  // Watch breadcrumbs and update the component when they change
-  watch(
-    () => options.breadcrumbs.value,
-    (newBreadcrumbs) => {
-      setBreadcrumbs(newBreadcrumbs)
-    }
   )
 
   return {
