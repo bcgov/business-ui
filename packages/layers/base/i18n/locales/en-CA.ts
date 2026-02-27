@@ -355,7 +355,6 @@ export default {
     classNameShares: 'Class Name [Shares]',
     close: 'Close',
     closeDetails: 'Close Details',
-    companyInformationPage: 'Company Information Page',
     completingParty: 'Completing Party',
     continuationPending: 'Continuation Pending',
     continuationOutComplete: 'Continuation Out Complete',

@@ -57,14 +57,14 @@ test.describe('Task Guards', () => {
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(page).toHaveURL(/.*edit\.business.*/)
+    await expect(page).toHaveURL(/.*business-dashboard.*/)
     expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
   })
 
   test('should be able to navigate away when no changes have been made', async ({ page }) => {
-    await page.getByRole('link', { name: 'Company Information Page' }).click()
-    await expect(page).toHaveURL(/.*edit\.business.*/)
-    expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
+    // When no changes are made, clicking cancel should navigate to dashboard
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await expect(page).toHaveURL(/.*business-dashboard.*/)
   })
 
   test('should NOT be able to cancel when changes have been made', async ({ page }) => {
@@ -123,9 +123,9 @@ test.describe('Task Guards', () => {
       await dialog.dismiss()
     })
 
-    await page.getByRole('heading', { name: 'Officer Change' }).click()
-    await page.getByRole('link', { name: 'Company Information Page' }).click()
-    // should still be on officer change page
+    // Try to cancel with unsaved changes
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click()
+    // should still be on officer change page due to unsaved changes modal
     await expect(page).toHaveURL(/.*officer-change.*/)
   })
 

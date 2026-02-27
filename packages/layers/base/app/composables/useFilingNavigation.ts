@@ -13,12 +13,6 @@ export const useFilingNavigation = (filingLabel?: string) => {
     `${rtc.businessDashboardUrl}${businessId}?accountid=${accountStore.currentAccount.id}`
   )
 
-  const editUrl = computed(() =>
-    `${rtc.businessEditUrl}${businessId}/alteration?accountid=${accountStore.currentAccount.id}`
-  )
-
-  const dashboardOrEditUrl = computed(() => isDraft.value ? dashboardUrl.value : editUrl.value)
-
   const breadcrumbs = computed(() => [
     {
       label: t('label.bcRegistriesDashboard'),
@@ -32,10 +26,8 @@ export const useFilingNavigation = (filingLabel?: string) => {
       external: true
     },
     {
-      label: isDraft.value
-        ? businessStore.business?.legalName
-        : t('label.companyInformationPage'),
-      to: dashboardOrEditUrl.value,
+      label: businessStore.business?.legalName,
+      to: dashboardUrl.value,
       external: true
     },
     {
@@ -46,8 +38,6 @@ export const useFilingNavigation = (filingLabel?: string) => {
   return {
     isDraft,
     dashboardUrl,
-    editUrl,
-    dashboardOrEditUrl,
     breadcrumbs
   }
 }

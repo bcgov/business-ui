@@ -33,6 +33,10 @@ mockNuxtImport('useConnectAccountStore', () => () => ({
   currentAccount: { id: 'test-account-id' }
 }))
 
+mockNuxtImport('useBusinessStore', () => () => ({
+  business: { legalName: 'Test Business Inc.', identifier: 'BC1234567' }
+}))
+
 describe('useFilingModals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -56,7 +60,7 @@ describe('useFilingModals', () => {
     })
 
     describe('When draft is NOT present', () => {
-      it('should call revoke event and navigate to business edit when "Exit" button is clicked', async () => {
+      it('should call revoke event and navigate to business dashboard when "Exit" button is clicked', async () => {
         const { openUnsavedChangesModal } = useFilingModals()
         const mockRevokeEvent = vi.fn()
 
@@ -68,7 +72,7 @@ describe('useFilingModals', () => {
         expect(mockRevokeEvent).toHaveBeenCalledOnce()
         expect(mockNavigateTo).toHaveBeenCalledOnce()
         expect(mockNavigateTo).toHaveBeenCalledWith(
-          'http://business-edit/BC1234567/alteration?accountid=test-account-id', { external: true }
+          'http://business-dashboard-example/BC1234567?accountid=test-account-id', { external: true }
         )
       })
     })
@@ -149,7 +153,7 @@ describe('useFilingModals', () => {
         expect(callArgs.i18nPrefix).toBe('modal.error.filing.notAllowed')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
-        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
         expect(callArgs.buttons[1].label).toBe('Refresh Page')
       })
     })
@@ -238,7 +242,7 @@ describe('useFilingModals', () => {
         expect(callArgs.i18nPrefix).toBe('modal.error.filing.init')
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
-        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
         expect(callArgs.buttons[1].label).toBe('Refresh Page')
       })
 
@@ -251,7 +255,7 @@ describe('useFilingModals', () => {
         const callArgs = mockErrorModalOpen.mock.calls[0]![0]
         expect(callArgs.buttons).toHaveLength(2)
         expect(callArgs.buttons[0].label).toBe('Go Back')
-        expect(callArgs.buttons[0].to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
       })
     })
 
@@ -307,7 +311,7 @@ describe('useFilingModals', () => {
         expect(callArgs.buttons).toHaveLength(1)
         const button = callArgs.buttons[0]
         expect(button.label).toBe('Go Back')
-        expect(button.to).toBe('http://business-edit/BC1234567/alteration?accountid=test-account-id')
+        expect(button.to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
         expect(button.external).toBe(true)
       })
     })
