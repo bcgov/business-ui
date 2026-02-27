@@ -27,15 +27,18 @@ vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
   }
 })
 
+const mockGetFeatureFlag = vi.fn()
+mockNuxtImport('useConnectLaunchDarkly', () => () => ({
+  getFeatureFlag: mockGetFeatureFlag
+}))
+
 const mockBusiness = {
   identifier,
   legalName: 'Test Inc.',
-  legalType: 'CC'
+  legalType: 'BC'
 }
 mockNuxtImport('useBusinessStore', () => () => ({
-  business: {
-    value: mockBusiness
-  },
+  business: mockBusiness,
   businessIdentifier: identifier
 }))
 
@@ -75,6 +78,7 @@ describe('useOfficerStore', () => {
     setActivePinia(pinia)
     store.$reset()
     tableState.value = []
+    mockGetFeatureFlag.mockResolvedValue('BC')
   })
 
   it('initializes with the correct default state', () => {
@@ -108,25 +112,12 @@ describe('useOfficerStore', () => {
           parties: partiesResponse.data
         })
 
-        await store.init(identifier, LiquidateType.INTENT)
+        await store.init(identifier)
 
         expect(store.initializing).toBe(false)
 
         expect(tableState.value).toEqual(partiesResponse.data)
         expect(store.formState).toEqual(schemaDefault)
-      })
-
-      it('should init records office when filing type = address change', async () => {
-        mockInitFiling.mockResolvedValue({
-          draftFiling: undefined,
-          parties: partiesResponse.data
-        })
-
-        await store.init(identifier, LiquidateType.ADDRESS)
-
-        expect(store.initializing).toBe(false)
-
-        expect(tableState.value).toEqual(partiesResponse.data)
       })
 
       it('should set empty table when API returns no parties', async () => {
@@ -135,7 +126,7 @@ describe('useOfficerStore', () => {
           parties: []
         })
 
-        await store.init(identifier, LiquidateType.INTENT)
+        await store.init(identifier)
         expect(tableState.value).toEqual([])
       })
     })
@@ -245,8 +236,6 @@ describe('useOfficerStore', () => {
     it('restores defaults from schema', () => {
       // @ts-expect-error - partial object
       store.formState.activeParty = { id: 'X' }
-      // @ts-expect-error - incorrect object
-      store.currentLiquidationOffice = { some: 'address' }
 
       store.$reset()
 
