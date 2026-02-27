@@ -28,6 +28,9 @@ test.describe('Manage Liquidators - Submission', () => {
 
   test.describe('Happy paths', () => {
     test('intentToLiquidate', async ({ page }) => {
+      page.route(`**/api/v2/businesses/${identifier}/addresses`, async (route) => {
+        await route.fulfill({ json: {} })
+      })
       await navigateToManageLiquidatorsPage(page, LiquidateType.INTENT)
       await page.waitForLoadState('networkidle')
       const address = {
@@ -70,7 +73,9 @@ test.describe('Manage Liquidators - Submission', () => {
       await addButton.click()
       await fillOutNewRelationship(page, newLiquidator)
       const officeParent = page.getByTestId('records-office-section')
+      await officeParent.getByRole('button', { name: 'Add Liquidation Records Office' }).click()
       await fillOutAddress(page, address, 'delivery', true, officeParent)
+      await officeParent.getByRole('button', { name: 'Done' }).click()
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
       expect(staffNoFeeRadio).toBeVisible()
       await staffNoFeeRadio.click()
@@ -212,7 +217,9 @@ test.describe('Manage Liquidators - Submission', () => {
         await expect(existingLiquidator).toContainText('TESTER TESTING', { timeout: 10000 })
 
         const officeParent = page.getByTestId('records-office-section')
+        await officeParent.getByRole('button', { name: 'Change' }).click()
         await fillOutAddress(page, newAddress, 'delivery', true, officeParent)
+        await officeParent.getByRole('button', { name: 'Done' }).click()
         const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
         expect(staffNoFeeRadio).toBeVisible()
         await staffNoFeeRadio.click()
@@ -230,6 +237,28 @@ test.describe('Manage Liquidators - Submission', () => {
         expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress)
           .toEqual(newAddress)
       })
+    })
+
+    test('liquidationReport', async ({ page }) => {
+      await navigateToManageLiquidatorsPage(page, LiquidateType.REPORT)
+      await page.waitForLoadState('networkidle')
+      await page.getByTestId('liquidator-info-section').getByRole('checkbox').first().check()
+      await page.getByTestId('records-office-section').getByRole('checkbox').first().check()
+      const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
+      expect(staffNoFeeRadio).toBeVisible()
+      await staffNoFeeRadio.click()
+
+      const submitBtn = page.getByRole('button', { name: 'Submit' })
+      expect(submitBtn).toBeVisible()
+      const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
+      await submitBtn.click()
+      const request = await submitRequest
+      const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
+      const col = requestBody.filing.changeOfLiquidators
+      expect(col.type).toBe(LiquidateType.REPORT)
+      expect(col.changeOfLiquidatorsDate).toBe('2025-12-30')
+      expect(col).not.toHaveProperty('offices')
+      expect(col).not.toHaveProperty('relationships')
     })
   })
 })

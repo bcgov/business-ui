@@ -1,10 +1,10 @@
 interface StepOverride {
   leftStacked?: boolean
   rightStacked?: boolean
-  saveFiling?: ConnectButton
-  cancelFiling?: ConnectButton
-  submitFiling?: ConnectButton
-  backButton?: ConnectButton
+  saveFiling?: ConnectButton | null
+  cancelFiling?: ConnectButton | null
+  submitFiling?: ConnectButton | null
+  backButton?: ConnectButton | null
 }
 
 interface FilingPageWatcherOptions<T> {
@@ -13,10 +13,10 @@ interface FilingPageWatcherOptions<T> {
   filingType: FilingType
   filingSubType?: T
   draftId?: string
-  saveFiling: ConnectButton
-  cancelFiling: ConnectButton
-  submitFiling?: ConnectButton
-  backButton?: ConnectButton
+  saveFiling: ConnectButton | null
+  cancelFiling: ConnectButton | null
+  submitFiling?: ConnectButton | null
+  backButton?: ConnectButton | null
   steps?: StepOverride[] // pass array of objects to use steps - object can be empty
   breadcrumbs: Ref<ConnectBreadcrumb[]>
   setOnBeforeSessionExpired: () => Promise<void>
@@ -68,39 +68,45 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     const isLastStep = !isMultiStep || currentStep.value === (options.steps?.length || 1)
 
     const step = options.steps?.[stepIndex] ?? {}
-    // TODO: figure out why `block: true` attr not working in button control
-    // and other styling - ticket 32262
 
     // button defaults with main override and step override
-    const buttons: Record<'back' | 'cancel' | 'save' | 'primary', ConnectButton> = {
-      back: {
-        label: t('label.back'),
-        variant: 'outline' as const,
-        icon: 'i-mdi-chevron-left',
-        onClick: previousStep,
-        ...options.backButton,
-        ...(step?.backButton || {})
-      },
-      cancel: {
-        label: t('label.cancel'),
-        variant: 'outline' as const,
-        ...options.cancelFiling,
-        ...(step?.cancelFiling || {})
-      },
-      save: {
-        label: t('label.saveResumeLater'),
-        variant: 'outline' as const,
-        ...options.saveFiling,
-        ...(step?.saveFiling || {})
-      },
-      primary: {
-        label: isLastStep ? t('label.submit') : t('label.next'),
-        trailingIcon: 'i-mdi-chevron-right',
-        type: isLastStep ? 'submit' : 'button',
-        onClick: !isLastStep ? () => { nextStep() } : undefined,
-        ...options.submitFiling,
-        ...(step?.submitFiling || {})
-      }
+    const buttons: Partial<Record<'back' | 'cancel' | 'save' | 'primary', ConnectButton>> = {
+      ...((options.backButton !== null && step?.backButton !== null) && {
+        back: {
+          label: t('label.back'),
+          variant: 'outline' as const,
+          icon: 'i-mdi-chevron-left',
+          onClick: previousStep,
+          ...options.backButton,
+          ...(step?.backButton || {})
+        }
+      }),
+      ...((options.cancelFiling !== null && step?.cancelFiling !== null) && {
+        cancel: {
+          label: t('label.cancel'),
+          variant: 'outline' as const,
+          ...options.cancelFiling,
+          ...(step?.cancelFiling || {})
+        }
+      }),
+      ...((options.saveFiling !== null && step?.saveFiling !== null) && {
+        save: {
+          label: t('label.saveResumeLater'),
+          variant: 'outline' as const,
+          ...options.saveFiling,
+          ...(step?.saveFiling || {})
+        }
+      }),
+      ...((options.submitFiling !== null && step?.submitFiling !== null) && {
+        primary: {
+          label: isLastStep ? t('label.submit') : t('label.next'),
+          trailingIcon: 'i-mdi-chevron-right',
+          type: isLastStep ? 'submit' : 'button',
+          onClick: !isLastStep ? () => { nextStep() } : undefined,
+          ...options.submitFiling,
+          ...(step?.submitFiling || {})
+        }
+      })
     }
 
     // predefined button group order/grouping
@@ -117,9 +123,12 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
 
     const layout = buttonLayouts[options.buttonLayout || 'bottomDefault']
 
-    function getGroupButtons(btns: ConnectButton[]) {
+    function getGroupButtons(btns: (ConnectButton | null | undefined)[]) {
       // remove back button if not multi step or if its the first step
-      return btns.filter((btn) => {
+      return btns.filter((btn): btn is ConnectButton => {
+        if (!btn) {
+          return false
+        }
         if (btn === buttons.back) {
           return isMultiStep && !isFirstStep
         }
