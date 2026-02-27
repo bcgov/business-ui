@@ -34,7 +34,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       [OfficeType.RECORDS, OfficeType.REGISTERED]
     )
 
-    // TODO: add classes to initFiling?
+    // FUTURE: add classes to initFiling
     const classes = await service.getShareClasses(businessId)
 
     const draft = draftFiling?.filing?.transition
