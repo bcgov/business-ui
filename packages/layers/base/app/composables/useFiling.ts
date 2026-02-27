@@ -64,7 +64,6 @@ export const useFiling = () => {
         ? getBusinessAddresses(businessId)
         : undefined
 
-      console.log(1)
       const [
         _tombstoneInit,
         _businessInit,
@@ -80,7 +79,7 @@ export const useFiling = () => {
         permissionsStore.init(businessId),
         addressesPromise
       ])
-      console.log(2)
+
       const isAuthorized = permissionsStore.isAuthorizedByFilingType(
         filingName,
         filingSubType as FilingSubType
@@ -118,13 +117,10 @@ export const useFiling = () => {
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
-        console.log(3)
         modal.openGetDraftFilingErrorModal(error)
       } else if (error instanceof Error && error.message === 'filing-not-allowed') {
-        console.log(4)
         modal.openFilingNotAllowedErrorModal()
       } else {
-        console.log(5)
         modal.openInitFilingErrorModal(error)
       }
       return {
