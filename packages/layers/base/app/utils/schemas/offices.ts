@@ -6,7 +6,6 @@ export function getOfficesSchema() {
     type: z.enum(OfficeType).default(() => OfficeType.REGISTERED),
     address: getAddressSchema().default(() => ({
       deliveryAddress: {
-        id: undefined,
         street: '',
         streetAdditional: '',
         city: '',
@@ -16,7 +15,6 @@ export function getOfficesSchema() {
         locationDescription: ''
       },
       mailingAddress: {
-        id: undefined,
         street: '',
         streetAdditional: '',
         city: '',

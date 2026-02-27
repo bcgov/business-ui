@@ -13,14 +13,12 @@ tableState.value = Object.entries(mockOffices).map(([key, value]) => {
     new: {
       type: key as OfficeType,
       actions: [],
-      address: formatBaseAddressUi(value),
-      id: ''
+      address: formatBaseAddressUi(value)
     },
     old: {
       type: key as OfficeType,
       actions: [],
-      address: formatBaseAddressUi(value),
-      id: ''
+      address: formatBaseAddressUi(value)
     }
   }
 })

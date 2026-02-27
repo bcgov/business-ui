@@ -197,8 +197,7 @@ test.describe('Manage Liquidators - Submission', () => {
         expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
         expect(requestBody.filing.changeOfLiquidators.relationships!.length).toBe(1)
         expect(requestBody.filing.changeOfLiquidators.relationships![0]!.actions).toEqual([ActionType.ADDRESS_CHANGED])
-        expect(requestBody.filing.changeOfLiquidators.relationships![0]!.deliveryAddress)
-          .toMatchObject(newAddress as unknown as Record<string, unknown>)
+        expect(requestBody.filing.changeOfLiquidators.relationships![0]!.deliveryAddress).toEqual(newAddress)
       })
 
       test('change address of the liquidation records office', async ({ page }) => {
@@ -234,9 +233,9 @@ test.describe('Manage Liquidators - Submission', () => {
         expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
         expect(requestBody.filing.changeOfLiquidators.relationships).toBeUndefined()
         expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.deliveryAddress)
-          .toMatchObject(newAddress as unknown as Record<string, unknown>)
+          .toEqual(newAddress)
         expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress)
-          .toMatchObject(newAddress as unknown as Record<string, unknown>)
+          .toEqual(newAddress)
       })
     })
 

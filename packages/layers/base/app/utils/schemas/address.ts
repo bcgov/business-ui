@@ -2,7 +2,7 @@ import type { FormAddress } from '#components'
 import { z } from 'zod'
 
 export function getAddressSchema() {
-  const reqSchema = getRequiredAddressSchema().safeExtend({ id: z.number().optional() })
+  const reqSchema = getRequiredAddressSchema()
 
   return z.object({
     deliveryAddress: reqSchema,
