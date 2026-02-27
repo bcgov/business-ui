@@ -2,17 +2,14 @@ import { test, expect } from '@playwright/test'
 import {
   getRandomRoles,
   setupOfficerChangePage,
-  completeOfficerForm,
   openOfficerForm,
   assertNameTableCell,
-  getTableRowForPerson,
-  getOfficerForm
+  getTableRowForPerson
 } from '../../test-utils'
-import { getFakeAddress, getFakePerson } from '#e2e-utils'
-import { businessBC1234567, partiesBC1234567 } from '~~/tests/mocks'
+import { fillOutNewRelationship, getFakeAddress, getFakePerson } from '#e2e-utils'
+import { partiesBC1234567 } from '~~/tests/mocks'
 
 const initialOfficer = partiesBC1234567.parties[0]!
-const initialOfficerPerson = { lastName: initialOfficer.officer.lastName }
 
 test.describe('Task Guards', () => {
   test.beforeEach(async ({ page }) => {
@@ -22,27 +19,27 @@ test.describe('Task Guards', () => {
   test('should prevent filing submit when form is open for new officer', async ({ page }) => {
     await openOfficerForm(page)
     await page.getByRole('button', { name: 'Submit' }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before making other changes.')
   })
 
   test('should prevent filing save and resume when form is open for new officer', async ({ page }) => {
     await openOfficerForm(page)
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before saving.')
   })
 
   test('should prevent filing submit when form is open when editing existing officer', async ({ page }) => {
-    const row = getTableRowForPerson(page, initialOfficerPerson)
+    const row = getTableRowForPerson(page, initialOfficer.officer.lastName)
     await openOfficerForm(page, row)
     await page.getByRole('button', { name: 'Submit' }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before submitting.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before submitting.')
   })
 
   test('should prevent filing save and resume when form is open when editing existing officer', async ({ page }) => {
-    const row = getTableRowForPerson(page, initialOfficerPerson)
+    const row = getTableRowForPerson(page, initialOfficer.officer.lastName)
     await openOfficerForm(page, row)
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
-    await expect(getOfficerForm(page)).toContainText('Finish this task before saving.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before saving.')
   })
 
   test('should prevent filing submit when no changes have been made', async ({ page }) => {
@@ -57,34 +54,21 @@ test.describe('Task Guards', () => {
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
-    expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
-  })
-
-  test('should be able to navigate away when no changes have been made', async ({ page }) => {
-    // When no changes are made, clicking cancel should navigate to dashboard
-    await page.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(page).toHaveURL(/.*business-dashboard.*/)
+    // should be redirected to dashboard page
+    await expect(page).not.toHaveURL(/.*officer-change.*/)
+    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should NOT be able to cancel when changes have been made', async ({ page }) => {
-    // get random test data
-    const person = getFakePerson()
     const roles = getRandomRoles()
-    const deliveryAddress = getFakeAddress()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
 
-    // open form - will be closed by helper util
     await openOfficerForm(page)
-    await completeOfficerForm(
-      page,
-      person,
-      roles,
-      deliveryAddress,
-      'same'
-    )
-
-    // assert table data
-    await assertNameTableCell(page, person, ['ADDED'])
+    await fillOutNewRelationship(page, newRelationship)
 
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
 
@@ -98,23 +82,18 @@ test.describe('Task Guards', () => {
   })
 
   test('should NOT be able to navigate away when changes have been made', async ({ page }) => {
-    // get random test data
-    const person = getFakePerson()
     const roles = getRandomRoles()
-    const deliveryAddress = getFakeAddress()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
 
-    // open form - will be closed by helper util
     await openOfficerForm(page)
-    await completeOfficerForm(
-      page,
-      person,
-      roles,
-      deliveryAddress,
-      'same'
-    )
+    await fillOutNewRelationship(page, newRelationship)
 
     // assert table data
-    await assertNameTableCell(page, person, ['ADDED'])
+    await assertNameTableCell(page, newRelationship, ['ADDED'])
 
     // https://playwright.dev/docs/dialogs#beforeunload-dialog
     page.on('dialog', async (dialog) => {
@@ -134,22 +113,22 @@ test.describe('Task Guards', () => {
     await openOfficerForm(page)
 
     // try to edit the existing officer
-    const row = getTableRowForPerson(page, initialOfficerPerson)
+    const row = getTableRowForPerson(page, initialOfficer.officer.lastName)
     await openOfficerForm(page, row)
 
     // form should have error text
-    await expect(getOfficerForm(page)).toContainText('Finish this task before making other changes.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before making other changes.')
   })
 
   test('should prevent making changes when form is open for editing officer', async ({ page }) => {
     // open the form to edit the existing officer
-    const row = getTableRowForPerson(page, initialOfficerPerson)
+    const row = getTableRowForPerson(page, initialOfficer.officer.lastName)
     await openOfficerForm(page, row)
 
     // try to open add officer form
     await openOfficerForm(page)
 
     // form should have error text
-    await expect(getOfficerForm(page)).toContainText('Finish this task before making other changes.')
+    await expect(page.getByTestId('party-details-form')).toContainText('Finish this task before making other changes.')
   })
 })

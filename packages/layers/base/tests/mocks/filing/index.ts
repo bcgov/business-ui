@@ -5,14 +5,13 @@ const { resolve } = createResolver(import.meta.url)
 
 type FilingOverride = { key: string, value: object | object[] }
 
-export const getFilingMock = (overrides: FilingOverride[] = []) => {
-  const json = JSON.parse(fs.readFileSync(resolve('./json/changeOfOfficersDRAFT.json'), 'utf8'))
+export const getFilingMock = (filingType: string, status: string, overrides: FilingOverride[] = []) => {
+  const json = JSON.parse(fs.readFileSync(resolve(`./json/${filingType}${status}.json`), 'utf8'))
   for (const override of overrides) {
     try {
-      // @ts-expect-error assume that we are giving allowable indexes and keys in the overrides
-      json[index][override.key] = override.value
+      json[override.key] = override.value
     } catch (e) {
-      console.error('Invalid party override given', e)
+      console.error('Invalid filing override given', e)
     }
   }
   return json

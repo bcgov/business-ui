@@ -13,7 +13,7 @@ export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions:
     meta,
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'min-w-48 max-w-48 overflow-clip'
+      const defaultClass = 'min-w-40 max-w-40 overflow-clip'
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       return h(

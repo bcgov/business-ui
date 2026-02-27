@@ -1,18 +1,19 @@
 import { test, expect } from '@playwright/test'
+import type { BusinessRelationship } from '#business/app/interfaces/business-relationship'
+import type { Role } from '#business/app/interfaces/role'
+import { fillOutNewRelationship } from '#business/tests/e2e/test-utils'
 import {
-  getRandomRoles,
   setupOfficerChangePage,
-  completeOfficerForm,
   openOfficerForm,
   assertNameTableCell,
   assertRoles,
   assertAddress,
+  getRandomRoles,
   getTableRowForPerson
 } from '../../test-utils'
-import { getFakeAddress, getFakePerson } from '#e2e-utils'
-import { businessBC1234567 } from '~~/tests/mocks'
+import { getFakeAddress, getFakePerson, roleDisplayText } from '#e2e-utils'
 
-const identifier = businessBC1234567.business.identifier
+const identifier = 'BC1234567'
 
 test.describe('Adding Officers', () => {
   test.beforeEach(async ({ page }) => {
@@ -21,109 +22,95 @@ test.describe('Adding Officers', () => {
 
   test('submit single officer, multiple roles, delivery/mailing address equal', async ({ page }) => {
     // get random test data
-    const person = getFakePerson()
     const roles = getRandomRoles()
-    const deliveryAddress = getFakeAddress()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
 
-    // open form - will be closed by helper util
     await openOfficerForm(page)
-    await completeOfficerForm(
-      page,
-      person,
-      roles,
-      deliveryAddress,
-      'same'
-    )
+    await fillOutNewRelationship(page, newRelationship)
 
     // assert table data
-    await assertNameTableCell(page, person, ['ADDED'])
-    await assertRoles(page, person, roles)
-    await assertAddress(page, person, 2, deliveryAddress)
-    await assertAddress(page, person, 3, 'same')
-
-    // submit filing
-    await page.getByRole('button', { name: 'Submit' }).click()
-
-    // should be redirected to dashboard page - user will be redirected to bcreg sign in page as test run with mock user
-    await expect(page).not.toHaveURL(/.*officer-change.*/)
-    // await expect(page).toHaveURL(/.*business-dashboard.*/) // can use this instead once real logins are sorted out
-    // expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
-  })
-
-  test('submit multiple officers, multiple roles, different delivery/mailing addresses', async ({ page }) => {
-    // get random test data
-    const person1 = getFakePerson()
-    const roles1 = getRandomRoles()
-    const deliveryAddress1 = getFakeAddress()
-    const mailingAddress1 = getFakeAddress()
-    const person2 = getFakePerson()
-    const roles2 = getRandomRoles()
-    const deliveryAddress2 = getFakeAddress()
-    const mailingAddress2 = getFakeAddress()
-
-    // open form - will be closed by helper util
-    await openOfficerForm(page)
-    await completeOfficerForm(
-      page,
-      person1,
-      roles1,
-      deliveryAddress1,
-      mailingAddress1
-    )
-    // re-open to submit second officer
-    await openOfficerForm(page)
-    await completeOfficerForm(
-      page,
-      person2,
-      roles2,
-      deliveryAddress2,
-      mailingAddress2
-    )
-
-    // assert table columns for first officer
-    await assertNameTableCell(page, person1, ['ADDED'])
-    await assertRoles(page, person1, roles1)
-    await assertAddress(page, person1, 2, deliveryAddress1)
-    await assertAddress(page, person1, 3, mailingAddress1)
-    // assert table columns for second officer
-    await assertNameTableCell(page, person2, ['ADDED'])
-    await assertRoles(page, person2, roles2)
-    await assertAddress(page, person2, 2, deliveryAddress2)
-    await assertAddress(page, person2, 3, mailingAddress2)
+    await assertNameTableCell(page, newRelationship, ['ADDED'])
+    const expectedRoles = roles.map(role => roleDisplayText(role))
+    await assertRoles(page, newRelationship, expectedRoles)
+    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress)
+    await assertAddress(page, newRelationship, 3, 'same')
 
     // submit filing
     await page.getByRole('button', { name: 'Submit' }).click()
 
     // should be redirected to dashboard page
-    // should be redirected to dashboard page - user will be redirected to bcreg sign in page as test run with mock user
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    // await expect(page).toHaveURL(/.*business-dashboard.*/) // can use this instead once real logins are sorted out
-    // expect(page.getByText(businessBC1234567.business.legalName).first()).toBeDefined()
+    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+  })
+
+  test('submit multiple officers, multiple roles, different delivery/mailing addresses', async ({ page }) => {
+    // get random test data
+    const roles1 = getRandomRoles()
+    const newRelationship1: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles1.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress(),
+      mailingAddress: getFakeAddress()
+    }
+    const roles2 = getRandomRoles()
+    const newRelationship2: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles2.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress(),
+      mailingAddress: getFakeAddress()
+    }
+
+    // open form - will be closed by helper util
+    await openOfficerForm(page)
+    await fillOutNewRelationship(page, newRelationship1)
+    // re-open to submit second officer
+    await openOfficerForm(page)
+    await fillOutNewRelationship(page, newRelationship2)
+
+    // assert table columns for first officer
+    await assertNameTableCell(page, newRelationship1, ['ADDED'])
+    const expectedRoles1 = roles1.map(role => roleDisplayText(role))
+    await assertRoles(page, newRelationship1, expectedRoles1)
+    await assertAddress(page, newRelationship1, 2, newRelationship1.deliveryAddress)
+    await assertAddress(page, newRelationship1, 3, newRelationship1.mailingAddress!)
+    // assert table columns for second officer
+    await assertNameTableCell(page, newRelationship1, ['ADDED'])
+    const expectedRoles2 = roles2.map(role => roleDisplayText(role))
+    await assertRoles(page, newRelationship2, expectedRoles2)
+    await assertAddress(page, newRelationship2, 2, newRelationship2.deliveryAddress)
+    await assertAddress(page, newRelationship2, 3, newRelationship2.mailingAddress!)
+
+    // submit filing
+    await page.getByRole('button', { name: 'Submit' }).click()
+
+    // should be redirected to dashboard page
+    await expect(page).not.toHaveURL(/.*officer-change.*/)
+    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should allow canceling the form without adding an officer', async ({ page }) => {
     // get random test data
-    const person = getFakePerson()
     const roles = getRandomRoles()
-    const deliveryAddress = getFakeAddress()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
 
     // open form - will be closed by helper util
     await openOfficerForm(page)
 
     // complete form and hit cancel instead of done
-    await completeOfficerForm(
-      page,
-      person,
-      roles,
-      deliveryAddress,
-      'same',
-      true
-    )
+    await fillOutNewRelationship(page, newRelationship, true)
 
     // assert officer not added to table
     const table = page.getByRole('table')
     expect(table).toBeDefined()
-    const row = table.getByRole('row').filter({ hasText: person.lastName.toUpperCase() })
+    const row = table.getByRole('row').filter({ hasText: newRelationship.entity.familyName!.toUpperCase() })
     expect(row).toHaveCount(0)
 
     // submit filing
@@ -134,11 +121,20 @@ test.describe('Adding Officers', () => {
   })
 
   test('should be able to remove a newly added officer', async ({ page }) => {
-    // complete form
-    const person = getFakePerson()
+    // get random test data
+    const roles = getRandomRoles()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
+    // open form - will be closed by helper util
     await openOfficerForm(page)
-    await completeOfficerForm(page, person, ['President'], getFakeAddress(), 'same')
-    const row = getTableRowForPerson(page, person)
+
+    // complete form
+    await fillOutNewRelationship(page, newRelationship)
+
+    const row = getTableRowForPerson(page, newRelationship.entity.familyName!)
     await expect(row).toBeVisible()
 
     // open more actions button, select remove
@@ -156,8 +152,18 @@ test.describe('Adding Officers', () => {
   })
 
   test('should display an error modal if the filing POST request fails', async ({ page }) => {
+    // get random test data
+    const roles = getRandomRoles()
+    const newRelationship: BusinessRelationship = {
+      entity: getFakePerson(),
+      roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
+      deliveryAddress: getFakeAddress()
+    }
+    // open form - will be closed by helper util
     await openOfficerForm(page)
-    await completeOfficerForm(page, getFakePerson(), ['Secretary'], getFakeAddress(), 'same')
+
+    // complete form
+    await fillOutNewRelationship(page, newRelationship)
 
     await page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
       await route.fulfill({ status: 500, json: { message: 'Internal Server Error' } })
@@ -170,7 +176,7 @@ test.describe('Adding Officers', () => {
     await expect(modal).toContainText('An Error Occurred')
     await expect(modal)
       .toContainText("We couldn't complete your request due to an internal error. Please try again later.")
-    await expect(page).not.toHaveURL(/.*business-dashboard.*/)
     await expect(page).toHaveURL(/.*officer-change.*/)
+    expect(page.getByText('Redirected to playwright mocked business dashboard')).not.toBeVisible()
   })
 })

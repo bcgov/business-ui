@@ -53,7 +53,7 @@ test.describe('Page init errors', () => {
 
     testCases.forEach(({ status, expectedText }) => {
       test(`should display "${expectedText}" modal if the parties fetch fails with ${status}`, async ({ page }) => {
-        await page.route(`*/**/businesses/${identifier}/parties?classType=officer`, async (route) => {
+        await page.route(`*/**/businesses/${identifier}/parties?classType=OFFICER`, async (route) => {
           await route.fulfill({ status })
         })
 
@@ -94,7 +94,7 @@ test.describe('Page init errors', () => {
     await expect(modal).toContainText('Page not available')
     await expect(modal).toContainText(
       // eslint-disable-next-line max-len
-      'This page is not available for this business. Check that your business type hasn’t changed and if any drafts or tasks are waiting to be completed.'
+      'This filing is not available for this type of business. If you believe this is an error, please contact support.Page not availableThis filing is not available for this type of business. If you believe this is an error, please contact support.'
     )
   })
 

@@ -68,7 +68,7 @@ async function submitFiling() {
       return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
     if (receiverStore.formState.activeParty !== undefined) {
-      return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSave'))
+      return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSubmit'))
     }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)

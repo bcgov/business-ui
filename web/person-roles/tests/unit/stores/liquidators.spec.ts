@@ -41,7 +41,7 @@ mockNuxtImport('useBusinessStore', () => () => ({
 
 function createPartyMock(
   nameData: PartySchema['name'],
-  addressData: { delivery: ConnectAddress, mailing: ConnectAddress },
+  addressData: { delivery: ApiAddress, mailing: ApiAddress },
   actions: ActionType[] = [],
   id: string = ''
 ) {
@@ -52,8 +52,8 @@ function createPartyMock(
       name: nameData,
       roles: [{ roleType: RoleTypeUi.LIQUIDATOR }],
       address: {
-        mailingAddress: addressData.mailing,
-        deliveryAddress: addressData.delivery,
+        mailingAddress: formatAddressUi(addressData.mailing),
+        deliveryAddress: formatAddressUi(addressData.delivery),
         sameAs: false
       }
     }
@@ -88,10 +88,12 @@ describe('useLiquidatorStore', () => {
         createPartyMock(
           {
             partyType: PartyType.PERSON,
-            firstName: person.firstName,
-            middleName: person.middleName,
-            lastName: person.lastName,
-            businessName: ''
+            firstName: person.givenName,
+            middleName: person.middleInitial,
+            lastName: person.familyName,
+            businessName: '',
+            preferredName: '',
+            hasPreferredName: false
           },
           { delivery, mailing },
           [ActionType.ADDED]
@@ -102,10 +104,10 @@ describe('useLiquidatorStore', () => {
     const addressesResponse = {
       liquidationRecordsOffice: {
         mailingAddress: {
-          ...getFakeAddress()
+          ...formatAddressUi(getFakeAddress())
         },
         deliveryAddress: {
-          ...getFakeAddress()
+          ...formatAddressUi(getFakeAddress())
         },
         sameAs: false
       }

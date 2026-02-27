@@ -1,5 +1,8 @@
 import { isEqual } from 'es-toolkit'
-import { formatAddressApi } from './format-address'
+// NB: direct imports needed so that this util can be used in e2e tests
+import { ActionType } from '#business/app/enums/action-type'
+import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
+import { formatAddressApi, formatAddressUi } from './format-address'
 
 const ROLE_RELATIONSHIPS: [RoleTypeUi, RoleType][] = [
   [RoleTypeUi.APPLICANT, RoleType.APPLICANT],
@@ -49,10 +52,14 @@ function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = false): 
       // Should never happen
       console.error('No role type mapping for', role.roleType)
     }
+    const convertedRole = UI_ROLE_TO_API_ROLE_MAP[role.roleType]!
     return {
       ...role,
       cessationDate: isRemoved && !role.cessationDate ? getToday() : role.cessationDate,
-      roleType: UI_ROLE_TO_API_ROLE_MAP[role.roleType]!
+      roleType: [RoleType.CEO, RoleType.CFO].includes(convertedRole)
+        // FUTURE - update schema so that we don't need to do this
+        ? convertedRole.toLocaleUpperCase() as RoleType
+        : convertedRole
     }
   })
 }

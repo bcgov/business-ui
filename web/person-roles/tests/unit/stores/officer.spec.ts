@@ -1,453 +1,256 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import type { Row } from '@tanstack/vue-table'
-import { businessBC1234567 } from '~~/tests/mocks'
+import { getFakePerson, getFakeAddress } from '#e2e-utils'
 
 const identifier = 'BC1234567'
 
-const mockRoute = reactive({
-  params: { businessId: identifier },
-  query: {} as { draft?: string }
-})
-mockNuxtImport('useRoute', () => () => mockRoute)
-
-const mockService = {
-  getParties: vi.fn()
+const mockCreateFilingPayload = vi.fn()
+const mockSaveOrUpdateDraftFiling = vi.fn()
+const mockPostFiling = vi.fn()
+const mockBusinessApi = {
+  createFilingPayload: mockCreateFilingPayload,
+  saveOrUpdateDraftFiling: mockSaveOrUpdateDraftFiling,
+  postFiling: mockPostFiling
 }
-mockNuxtImport('useBusinessService', () => () => mockService)
+mockNuxtImport('useBusinessApi', () => () => mockBusinessApi)
 
-const mockUseFiling = {
-  initFiling: vi.fn()
-}
-mockNuxtImport('useFiling', () => () => mockUseFiling)
-
-const mockErrorModalOpen = vi.fn()
-const mockBaseModalOpen = vi.fn()
-mockNuxtImport('useModal', () => {
-  return () => ({
-    errorModal: {
-      open: mockErrorModalOpen
-    },
-    baseModal: {
-      open: mockBaseModalOpen
-    }
-  })
+const mockInitFiling = vi.fn()
+vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('#business/app/composables/useFiling')>()
+  return {
+    ...actual,
+    useFiling: () => ({
+      ...actual.useFiling(),
+      initFiling: mockInitFiling
+    })
+  }
 })
-mockNuxtImport('useRuntimeConfig', () => () => (
-  {
-    public: {
-      businessDashboardUrl: 'http://business-dashboard-url/',
-      businessEditUrl: 'http://business-edit/'
+
+const mockBusiness = {
+  identifier,
+  legalName: 'Test Inc.',
+  legalType: 'CC'
+}
+mockNuxtImport('useBusinessStore', () => () => ({
+  business: {
+    value: mockBusiness
+  },
+  businessIdentifier: identifier
+}))
+
+function createPartyMock(
+  nameData: PartySchema['name'],
+  addressData: { delivery: ApiAddress, mailing: ApiAddress },
+  actions: ActionType[] = [],
+  id: string = ''
+) {
+  return {
+    new: {
+      id,
+      actions,
+      name: nameData,
+      roles: [{ roleType: RoleTypeUi.PRESIDENT, roleClass: RoleClass.OFFICER }],
+      address: {
+        mailingAddress: formatAddressUi(addressData.mailing),
+        deliveryAddress: formatAddressUi(addressData.delivery),
+        sameAs: false
+      }
     }
   }
-))
+}
 
-mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 123 } }))
-mockNuxtImport('useConnectTombstone', () => () => ({
-  tombstone: {
-    value: { loading: false, title: {}, subtitles: [], sideDetails: [] }
-  },
-  $reset: vi.fn()
-}))
-
-vi.mock('@sbc-connect/nuxt-forms/app/utils/zod-schemas/addresses', () => ({
-  getRequiredAddressSchema: vi.fn()
-}))
-
-const mockNuxtAppHook = vi.fn()
-mockNuxtImport('useNuxtApp', () => () => ({
-  callHook: mockNuxtAppHook,
-  $i18n: { t: (key: string) => key }
-}))
-
-const mockGetFeatureFlag = vi.fn()
-mockNuxtImport('useConnectLaunchDarkly', () => () => ({
-  getFeatureFlag: mockGetFeatureFlag
-}))
-
-const businessId = 'BC123'
-const mockBusiness = { identifier: businessId, legalName: 'Test Inc.', legalType: 'CC' } as BusinessData
-const mockIsAllowedFiling = vi.fn()
-mockNuxtImport('useBusinessStore', () => () => ({
-  business: ref(mockBusiness),
-  businessName: ref(mockBusiness.legalName),
-  businessContact: ref({ contacts: [], corpType: {} }),
-  businessFolio: ref(''),
-  isAllowedFiling: mockIsAllowedFiling,
-  init: vi.fn(() => [undefined, undefined])
-}))
+const person = getFakePerson()
+const mailing = getFakeAddress()
+const delivery = getFakeAddress()
 
 describe('useOfficerStore', () => {
-  let store: ReturnType<typeof useOfficerStore>
+  const store = useOfficerStore()
+  const { tableState } = useManageParties()
+  const schemaDefault = getOfficersSchema().parse({})
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.resetAllMocks()
     const pinia = createPinia()
     setActivePinia(pinia)
-    store = useOfficerStore()
     store.$reset()
-    mockGetFeatureFlag.mockResolvedValue('CC')
+    tableState.value = []
   })
 
-  test('initializes with the correct default state', () => {
+  it('initializes with the correct default state', () => {
     expect(store.initializing).toBe(false)
-    expect(store.addingOfficer).toBe(false)
-    expect(store.officerTableState).toEqual([])
-    expect(store.initialOfficers).toEqual([])
+    expect(store.formState).toEqual(schemaDefault)
   })
 
-  describe('initOfficerStore', () => {
-    const mockParties = { parties: [{ officer: { id: 1, firstName: 'Initial' }, roles: [] }] as unknown as OrgPerson[] }
-
-    // Starting a new filing (no draftId)
-    describe('when starting a new filing', () => {
-      test('should fully initialize state if filing is allowed and no pending tasks exist', async () => {
-        mockIsAllowedFiling.mockReturnValue(true) // Filing is allowed
-        mockService.getParties.mockResolvedValue(mockParties.parties)
-        mockUseFiling.initFiling.mockResolvedValue(
+  describe('init(businessId, draftId?)', () => {
+    const partiesResponse = {
+      data: [
+        createPartyMock(
           {
-            draftFiling: undefined
-          })
+            partyType: PartyType.PERSON,
+            firstName: person.givenName,
+            middleName: person.middleInitial,
+            lastName: person.familyName,
+            businessName: '',
+            preferredName: '',
+            hasPreferredName: false
+          },
+          { delivery, mailing },
+          [ActionType.ADDED]
+        )
+      ]
+    }
 
-        // init store
-        await store.init(businessId, undefined, undefined)
+    describe('when starting a new filing (no draftId)', () => {
+      it('should set table state from parties response and init formState defaults', async () => {
+        mockInitFiling.mockResolvedValue({
+          draftFiling: undefined,
+          parties: partiesResponse.data
+        })
 
-        // assert
+        await store.init(identifier, LiquidateType.INTENT)
+
         expect(store.initializing).toBe(false)
-        expect(mockErrorModalOpen).not.toHaveBeenCalled()
-        expect(store.initialOfficers).toHaveLength(1)
-        expect(store.initialOfficers[0]!.firstName).toBe('Initial')
-        expect(store.officerTableState[0]!.new.firstName).toBe('Initial')
-        expect(mockErrorModalOpen).not.toHaveBeenCalled()
+
+        expect(tableState.value).toEqual(partiesResponse.data)
+        expect(store.formState).toEqual(schemaDefault)
       })
 
-      test('should show modal and return early if filing is not allowed', async () => {
-        mockIsAllowedFiling.mockReturnValue(false)
+      it('should init records office when filing type = address change', async () => {
+        mockInitFiling.mockResolvedValue({
+          draftFiling: undefined,
+          parties: partiesResponse.data
+        })
 
-        // init store
-        await store.init(businessId, undefined, undefined)
+        await store.init(identifier, LiquidateType.ADDRESS)
 
-        // assert
-        expect(mockErrorModalOpen).toHaveBeenCalled()
-        expect(store.officerTableState).toHaveLength(0)
+        expect(store.initializing).toBe(false)
+
+        expect(tableState.value).toEqual(partiesResponse.data)
       })
 
-      test('should initialize with an empty state for a business with no officers', async () => {
-        // mock no parties
-        mockService.getParties.mockResolvedValue([])
-        mockIsAllowedFiling.mockReturnValue(true)
-        mockUseFiling.initFiling.mockResolvedValue({ draftFiling: undefined })
+      it('should set empty table when API returns no parties', async () => {
+        mockInitFiling.mockResolvedValue({
+          draftFiling: undefined,
+          parties: []
+        })
 
-        // init store
-        await store.init(businessBC1234567.business.identifier, undefined, undefined)
-
-        // assert
-        expect(store.initialOfficers).toHaveLength(0)
-        expect(store.officerTableState).toHaveLength(0)
-        expect(mockErrorModalOpen).not.toHaveBeenCalled()
+        await store.init(identifier, LiquidateType.INTENT)
+        expect(tableState.value).toEqual([])
       })
     })
 
-    // Loading from a draft filing
     describe('when loading a draft filing', () => {
       const draftId = 'draft123'
 
-      test('should load and populate state from a valid draft', async () => {
-        const draftResponse = {
+      it('should populate form and table from draft filing', async () => {
+        const draft = {
           filing: {
-            changeOfOfficers: [{ new: { firstName: 'Draft Officer' } }]
+            changeOfOfficers: {
+              relationships: partiesResponse.data.map(item => formatRelationshipApi(item.new))
+            },
+            header: {
+              accountId: 123,
+              folioNumber: 'test-folio'
+            }
           }
         }
 
-        // mocks
-        mockService.getParties.mockResolvedValue(mockParties.parties)
-        mockUseFiling.initFiling.mockResolvedValue({ draftFiling: draftResponse })
+        mockInitFiling.mockResolvedValue({
+          draftFiling: draft,
+          parties: partiesResponse.data
+        })
 
-        // init store
-        await store.init(businessId, undefined, draftId)
+        await store.init(identifier, draftId)
 
-        // assert
-        expect(store.officerTableState[0]!.new.firstName).toBe('Draft Officer')
-        expect(store.filingDraftState.filing.changeOfOfficers[0]!.new.firstName).toBe('Draft Officer')
-        expect(store.initialOfficers[0]!.firstName).toBe('Initial') // Initial state is still loaded for history
+        expect(tableState.value).toEqual(partiesResponse.data)
+        expect(store.initializing).toBe(false)
       })
-    })
 
-    // error handling
-    test('should show a generic error modal if an API call fails', async () => {
-      // mock api error
-      const apiError = new Error('Network Failed')
-      mockService.getParties.mockRejectedValue(apiError)
+      it('falls back to parties when draft has no filing data', async () => {
+        mockInitFiling.mockResolvedValue({
+          draftFiling: {},
+          parties: partiesResponse.data
+        })
 
-      // init store
-      await store.init(businessId, undefined, undefined)
-
-      // assert
-      expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
-        error: expect.any(Error),
-        i18nPrefix: 'modal.error.filing.init',
-        buttons: expect.any(Array)
-      }))
-      expect(store.initializing).toBe(false)
+        await store.init(identifier, draftId)
+        expect(tableState.value).toEqual(partiesResponse.data)
+      })
     })
   })
 
-  describe('Actions and State Changes', () => {
-    describe('addNewOfficer', () => {
-      test('adds a new officer to the table state', () => {
-        // mock the address validation to succeed
-        // @ts-expect-error - safeParse return type requires data object
-        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
-        const newOfficer = { firstName: 'Test' } as Officer
+  describe('submit', () => {
+    it.each([
+      {
+        isSubmission: false,
+        draftId: undefined,
+        expectedMethod: 'saveOrUpdateDraftFiling',
+        desc: 'should create a fresh draft'
+      },
+      {
+        isSubmission: false,
+        draftId: 'draft-123',
+        expectedMethod: 'saveOrUpdateDraftFiling',
+        desc: 'should update an existing draft'
+      },
+      {
+        isSubmission: true,
+        draftId: 'draft-123',
+        expectedMethod: 'saveOrUpdateDraftFiling',
+        desc: 'should submit draft as final filing'
+      },
+      {
+        isSubmission: true,
+        draftId: undefined,
+        expectedMethod: 'postFiling',
+        desc: 'should submit filing without draft'
+      }
+    ])('$desc (isSubmission: $isSubmission, hasDraft: $draftId)', async (
+      { isSubmission, draftId, expectedMethod }
+    ) => {
+      if (draftId) {
+        store.draftFilingState = {
+          filing: { header: { filingId: draftId } }
+        } as unknown as OfficersDraftState
+      } else {
+        store.draftFilingState = {} as OfficersDraftState
+      }
 
-        // add officer
-        store.addNewOfficer(newOfficer)
+      mockCreateFilingPayload.mockReturnValue({ filing: {} })
+      mockSaveOrUpdateDraftFiling.mockResolvedValue({ filing: { header: { filingId: 'new-id' } } })
+      mockPostFiling.mockResolvedValue({ filing: { header: { filingId: 'final-id' } } })
 
-        // assert
-        expect(store.officerTableState).toHaveLength(1)
-        expect(store.officerTableState[0]!.new.firstName).toBe('Test')
-      })
+      await store.submit(isSubmission)
 
-      test('resets mailing address if validation fails', () => {
-        // mock the address validation to FAIL
-        // @ts-expect-error - safeParse return type requires data object
-        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: false }) })
-        const newOfficer = { firstName: 'Test', mailingAddress: { street: 'invalid' } } as Officer
-
-        // add officer
-        store.addNewOfficer(newOfficer)
-
-        // assert
-        expect(store.officerTableState).toHaveLength(1)
-        // mailing address should be reset to empty string
-        expect(store.officerTableState[0]!.new.mailingAddress.street).toBe('')
-      })
-    })
-
-    describe('removeOfficer', () => {
-      test('marks an existing officer as removed', () => {
-        const existingOfficer = { id: '1', firstName: 'Carol', roles: [{ roleType: 'CEO', cessationDate: null }] }
-        const row = {
-          index: 0,
-          original: { new: existingOfficer, old: existingOfficer }
-        } as unknown as Row<OfficerTableState>
-        store.officerTableState = [row.original]
-
-        store.removeOfficer(row)
-
-        expect(store.officerTableState[0]!.new!.roles[0]!.cessationDate).toBeDefined()
-      })
-
-      test('deletes a newly added officer from the table', () => {
-        const newOfficer = { firstName: 'Temp' }
-        const row = {
-          index: 0,
-          original: { state: { officer: newOfficer, actions: ['added'] }, history: [] }
-        } as unknown as Row<OfficerTableState>
-        store.officerTableState = [row.original]
-
-        store.removeOfficer(row)
-
-        expect(store.officerTableState).toHaveLength(0)
-      })
-    })
-
-    describe('undoOfficer', () => {
-      test('reverts an officer to its previous state', () => {
-        const originalState = { firstName: 'Original' }
-        const editedState = { firstName: 'Edited' }
-        const row = {
-          index: 0,
-          original: { new: editedState, old: originalState }
-        } as unknown as Row<OfficerTableState>
-        store.officerTableState = [row.original]
-
-        store.undoOfficer(row)
-
-        expect(store.officerTableState[0]!.new.firstName).toBe('Original')
-      })
-    })
-
-    describe('editOfficer', () => {
-      test('updates an officer and their actions', () => {
-        // mock the address validation to succeed
-        // @ts-expect-error - safeParse return type requires data object
-        vi.mocked(getRequiredAddressSchema).mockReturnValue({ safeParse: () => ({ success: true }) })
-        const originalOfficer = { id: '1', firstName: 'Carol' } as Officer
-        const row = { index: 0, original: { new: originalOfficer } }
-        store.officerTableState = [row.original]
-        const newData = { ...originalOfficer, firstName: 'Caroline' }
-
-        store.editOfficer(newData, row as unknown as Row<OfficerTableState>)
-
-        expect(store.officerTableState[0]!.new.firstName).toBe('Caroline')
-      })
-    })
-
-    describe('initOfficerEdit', () => {
-      test('sets the editState and expands the row', () => {
-        const officer = { firstName: 'Carol' } as Officer
-        const row = { index: 1, original: { new: officer } }
-
-        store.initOfficerEdit(row as unknown as Row<OfficerTableState>)
-
-        expect(store.editState.firstName).toBe('Carol')
-        expect(store.expanded).toEqual({ 1: true })
-      })
-    })
-
-    describe('cancelOfficerEdit', () => {
-      test('resets the editState and expanded state', () => {
-        store.editState = { firstName: 'Editing' } as Officer
-        store.expanded = { 0: true }
-
-        store.cancelOfficerEdit()
-
-        expect(store.editState).toEqual({})
-        expect(store.expanded).toBeUndefined()
-      })
-    })
-
-    describe('checkHasActiveForm', () => {
-      test('should return true and call hook if adding an officer', async () => {
-        store.addingOfficer = true
-
-        const result = await store.checkHasActiveForm('submit')
-
-        expect(result).toBe(true)
-        expect(mockNuxtAppHook).toHaveBeenCalledOnce()
-        expect(mockNuxtAppHook).toHaveBeenCalledWith('app:officer-form:incomplete', expect.any(Object))
-      })
-
-      test('should return true and call hook if editing an officer', async () => {
-        store.editState = { id: '123' } as Officer
-
-        const result = await store.checkHasActiveForm('save')
-
-        expect(result).toBe(true)
-        expect(mockNuxtAppHook).toHaveBeenCalledOnce()
-      })
-
-      test('should return false and not call hook if no form is active', async () => {
-        store.addingOfficer = false
-        store.editState = {} as Officer
-
-        const result = await store.checkHasActiveForm('change')
-
-        expect(result).toBe(false)
-        expect(mockNuxtAppHook).not.toHaveBeenCalled()
-      })
-    })
-
-    describe('checkHasChanges', () => {
-      const initialOfficer = { id: '1', firstName: 'Initial' } as Officer
-      const draftOfficer = { id: '1', firstName: 'Draft Version' } as Officer
-      const editedOfficer = { id: '1', firstName: 'Edited Version' } as Officer
-
-      const createTableState = (officer: Officer): OfficerTableState => ({
-        new: officer
-      })
-
-      beforeEach(() => {
-        store.initialOfficers = [{ ...initialOfficer }]
-        store.officerTableState = [createTableState({ ...initialOfficer })]
-        store.filingDraftState = {
-          filing: {
-            changeOfOfficers: [createTableState(draftOfficer)],
-            header: {
-              folioNumber: ''
-            }
-          },
-          errors: []
-        } as unknown as OfficersDraftFiling
-      })
-
-      describe('when "when" is "submit"', () => {
-        test('should return false if table state is identical to initial state', () => {
-          expect(store.checkHasChanges('submit')).toBe(false)
-        })
-
-        test('should return true if table state is different from initial state', () => {
-          store.officerTableState = [createTableState(editedOfficer)]
-          expect(store.checkHasChanges('submit')).toBe(true)
-        })
-
-        test('should return true even if table state matches draft state (but differs from initial)', () => {
-          store.filingDraftState.filing.changeOfOfficers = [createTableState(draftOfficer)]
-          store.officerTableState = [createTableState(draftOfficer)]
-          // The check should ignore the draft and compare to initial, so this is a change.
-          expect(store.checkHasChanges('submit')).toBe(true)
-        })
-
-        test('should return true when an officer is added', () => {
-          const newOfficer = { id: '2', firstName: 'New' } as Officer
-          store.officerTableState.push(createTableState(newOfficer))
-          expect(store.checkHasChanges('submit')).toBe(true)
-        })
-      })
-
-      describe('when "when" is "save"', () => {
-        test('should return false if table state is identical to initial state', () => {
-          expect(store.checkHasChanges('save')).toBe(false)
-        })
-
-        test('should return true if no draft exists and table state differs from initial', () => {
-          store.officerTableState = [createTableState(editedOfficer)]
-          expect(store.checkHasChanges('save')).toBe(true)
-        })
-
-        describe('and a draft exists', () => {
-          beforeEach(() => {
-            store.filingDraftState.filing.changeOfOfficers = [createTableState(draftOfficer)]
-          })
-
-          test('should return false if table state is identical to draft state', () => {
-            store.officerTableState = [createTableState(draftOfficer)]
-            expect(store.checkHasChanges('save')).toBe(false)
-          })
-
-          test('should return true if table state is different from draft state', () => {
-            store.officerTableState = [createTableState(editedOfficer)]
-            expect(store.checkHasChanges('save')).toBe(true)
-          })
-
-          test('should return false if table state is reverted back to initial state', () => {
-            store.officerTableState = [createTableState({ ...initialOfficer })]
-            expect(store.checkHasChanges('save')).toBe(false)
-          })
-        })
-      })
+      if (expectedMethod === 'saveOrUpdateDraftFiling') {
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
+          identifier,
+          expect.any(Object),
+          isSubmission,
+          draftId
+        )
+        expect(mockPostFiling).not.toHaveBeenCalled()
+        expect(useUrlSearchParams().draft).toBe('new-id')
+      } else {
+        expect(mockPostFiling).toHaveBeenCalledWith(
+          identifier,
+          expect.any(Object)
+        )
+        expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+      }
     })
   })
 
   describe('$reset', () => {
-    test('should reset all properties to their initial values', () => {
-      store.addingOfficer = true
-      store.initialOfficers = [{ firstName: 'Test' }] as unknown as Officer[]
-      store.officerTableState = [{ state: {} }] as unknown as OfficerTableState[]
-      store.folio.number = '123'
+    it('restores defaults from schema', () => {
+      // @ts-expect-error - partial object
+      store.formState.activeParty = { id: 'X' }
+      // @ts-expect-error - incorrect object
+      store.currentLiquidationOffice = { some: 'address' }
 
       store.$reset()
 
-      expect(store.addingOfficer).toBe(false)
-      expect(store.initialOfficers).toEqual([])
-      expect(store.officerTableState).toEqual([])
-      expect(store.folio.number).toEqual('')
-    })
-  })
-
-  describe('Computed Properties', () => {
-    describe('disableActions', () => {
-      test('should be true if adding an officer', () => {
-        store.addingOfficer = true
-        expect(store.disableActions).toBe(true)
-      })
-
-      test('should be true if a row is expanded for editing', () => {
-        store.expanded = { 0: true }
-        expect(store.disableActions).toBe(true)
-      })
+      expect(store.formState).toEqual(schemaDefault)
     })
   })
 })

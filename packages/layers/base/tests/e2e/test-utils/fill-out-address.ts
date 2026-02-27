@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { nextTick } from 'vue'
 import type { Locator, Page } from '@playwright/test'
 import type { ApiAddress } from '#business/app/interfaces/address'
 
@@ -16,6 +17,7 @@ export async function fillOutAddress(
     const cityInput = addressLocator.getByTestId(`${type}-address-input-city`)
     const provinceSelect = addressLocator.getByTestId(`${type}-address-input-region`)
     const postalCodeInput = addressLocator.getByTestId(`${type}-address-input-postalCode`)
+    const deliveryInstructionsInput = addressLocator.getByTestId(`${type}-address-input-locationDescription`)
     const sameAsCheckbox = addressLocator.getByRole('checkbox', { name: 'Same as Delivery Address' })
     await expect(streetInput).toBeVisible()
     await streetInput.fill(address.streetAddress)
@@ -23,12 +25,22 @@ export async function fillOutAddress(
     await cityInput.fill(address.addressCity)
     await expect(provinceSelect).toBeVisible()
     await provinceSelect.click()
-    await page.getByRole('option', { name: 'British Columbia' }).click()
+    const optionsList = page.getByRole('listbox') // listbox is a teleport on the page body
+    await expect(optionsList).toBeVisible()
+    // use keyboard instead of click actions
+    // element out of viewport bug on firefox (works fine when manually testing but failing in pw browser)
+    await page.keyboard.type(address.addressRegion!)
+    await page.keyboard.press('Enter')
+    await expect(optionsList).not.toBeVisible()
     await expect(postalCodeInput).toBeVisible()
     await postalCodeInput.fill(address.postalCode)
+    await deliveryInstructionsInput.fill(address.deliveryInstructions || '')
+    // Sometimes it needs a tick to update the store after this
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 1000))
     if (sameAs) {
       await expect(sameAsCheckbox).toBeVisible()
-      await sameAsCheckbox.check()
+      await sameAsCheckbox.check({ force: true })
     }
   }).toPass()
 }

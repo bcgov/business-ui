@@ -7,7 +7,7 @@ export const useBusinessParty = () => {
     roleType?: RoleType
   ): Promise<TableBusinessState<PartySchema>[] | undefined> {
     const resp = await service.getParties(businessId, {
-      ...(roleClass ? { roleClass } : {}),
+      ...(roleClass ? { classType: roleClass } : {}),
       ...(roleType ? { role: roleType } : {})
     })
 

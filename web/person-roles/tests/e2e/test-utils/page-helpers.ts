@@ -1,18 +1,12 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import type { ApiAddress } from '#business/app/interfaces/address'
+import type { BusinessRelationship } from '#business/app/interfaces/business-relationship'
 import { NOCOI, businessBC1234567, tasksBC1234567, partiesBC1234567 } from '~~/tests/mocks'
 import { provinceSubdivisions } from './data'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
-import type { getFakePerson, getFakeAddress } from '#e2e-utils'
-import { fillAddressFields } from '#e2e-utils'
 
-type Person = ReturnType<typeof getFakePerson>
-type PersonLastNameRequired = Partial<Person> & Pick<Person, 'lastName'>
 const identifier = businessBC1234567.business.identifier
-
-export function getOfficerForm(page: Page) {
-  return page.getByTestId('officer-form')
-}
 
 export async function navigateToOfficerChangePage(page: Page) {
   const networkResponse = page.waitForResponse('*/**/businesses/**/*')
@@ -67,38 +61,14 @@ export async function setupOfficerChangePage(page: Page, includeNavigation = tru
   }
 }
 
-export function getTableRowForPerson(page: Page, person: PersonLastNameRequired) {
+export function getTableRowForPerson(page: Page, lastName: string) {
   const table = page.getByRole('table')
   expect(table).toBeDefined()
   const row = table.locator('tbody').getByRole('row').filter({
-    has: page.locator('td:first-child', { hasText: person.lastName.toUpperCase() })
+    has: page.locator('td:first-child', { hasText: lastName.toUpperCase() })
   })
   expect(row).toBeDefined()
   return row
-}
-
-export async function fillNameFields(page: Page, person: PersonLastNameRequired) {
-  if (person.firstName) {
-    await page.getByTestId('first-name-input').fill(person.firstName)
-  }
-  if (person.middleName) {
-    await page.getByTestId('middle-name-input').fill(person.middleName)
-  }
-  if (person.lastName) {
-    await page.getByTestId('last-name-input').fill(person.lastName)
-  }
-  if (person.preferredName) {
-    await page.getByRole('checkbox', { name: 'This person also has another name they prefer to use' }).setChecked(true)
-    await page.getByTestId('preferred-name-input').fill(person.preferredName)
-  }
-}
-
-export async function selectRoles(page: Page, roles: string[]) {
-  const rolesFieldset = page.locator('fieldset').filter({ hasText: 'Roles' })
-
-  for (const role of roles) {
-    await rolesFieldset.getByRole('checkbox', { name: role, exact: true }).setChecked(true)
-  }
 }
 
 export async function openOfficerForm(page: Page, row?: Locator) {
@@ -118,64 +88,30 @@ export async function openOfficerForm(page: Page, row?: Locator) {
     await addOfficerButton.click()
   }
   // form should be visible after either scenario
-  await expect(page.getByTestId('officer-form')).toBeVisible()
-}
-
-// must open form before using this as this can be used for the add or edit flow
-export async function completeOfficerForm(
-  page: Page,
-  person: PersonLastNameRequired,
-  roles: string[],
-  deliveryAddress: ReturnType<typeof getFakeAddress>,
-  mailingAddress: ReturnType<typeof getFakeAddress> | 'same',
-  cancel: boolean = false
-) {
-  const form = page.getByTestId('officer-form')
-
-  // reset all roles before continuing
-  const rolesFieldset = page.locator('fieldset').filter({ hasText: 'Roles' })
-  const checkedCheckboxes = await rolesFieldset.getByRole('checkbox', { checked: true }).all()
-  for (const checkbox of checkedCheckboxes) {
-    await checkbox.setChecked(false)
-  }
-
-  // fill out name fields
-  await fillNameFields(page, person)
-  // select roles
-  await selectRoles(page, roles)
-  // fill out delivery address
-  await fillAddressFields(page, 'delivery', deliveryAddress)
-  await fillAddressFields(page, 'mailing', mailingAddress)
-
-  if (cancel) {
-    await form.getByRole('button', { name: 'Cancel' }).click()
-  } else {
-    await form.getByRole('button', { name: 'Done' }).click()
-  }
-  // form should be closed
-  await expect(form).not.toBeVisible()
+  await expect(page.getByTestId('party-details-form')).toBeVisible()
 }
 
 export async function assertNameTableCell(
   page: Page,
-  person: PersonLastNameRequired,
+  relationship: BusinessRelationship,
   badges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>,
   notBadges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>
 ) {
-  const row = getTableRowForPerson(page, person)
+  const row = getTableRowForPerson(page, relationship.entity.familyName!)
   const tableCell = row.getByRole('cell').first()
-
-  if (person.firstName) {
-    await expect(tableCell).toContainText(person.firstName.toUpperCase())
+  const person = relationship.entity
+  if (person.givenName) {
+    await expect(tableCell).toContainText(person.givenName.toUpperCase())
   }
-  if (person.middleName) {
-    await expect(tableCell).toContainText(person.middleName.toUpperCase())
+  if (person.middleInitial) {
+    await expect(tableCell).toContainText(person.middleInitial.toUpperCase())
   }
-  if (person.lastName) {
-    await expect(tableCell).toContainText(person.lastName.toUpperCase())
+  if (person.familyName) {
+    await expect(tableCell).toContainText(person.familyName.toUpperCase())
   }
-  if (person.preferredName) {
+  if (person.alternateName) {
     await expect(tableCell).toContainText('Preferred Name')
+    await expect(tableCell).toContainText(person.alternateName.toUpperCase())
   }
   if (badges) {
     for (const badge of badges) {
@@ -189,8 +125,8 @@ export async function assertNameTableCell(
   }
 }
 
-export async function assertRoles(page: Page, person: PersonLastNameRequired, roles: string[]) {
-  const row = getTableRowForPerson(page, person)
+export async function assertRoles(page: Page, person: BusinessRelationship, roles: string[]) {
+  const row = getTableRowForPerson(page, person.entity.familyName!)
   for (const role of roles) {
     await expect(row.getByRole('cell').nth(1)).toContainText(role)
   }
@@ -198,22 +134,22 @@ export async function assertRoles(page: Page, person: PersonLastNameRequired, ro
 
 export async function assertAddress(
   page: Page,
-  person: PersonLastNameRequired,
+  person: BusinessRelationship,
   column: 2 | 3,
-  address: ReturnType<typeof getFakeAddress> | 'same'
+  address: ApiAddress | 'same'
 ) {
-  const row = getTableRowForPerson(page, person)
+  const row = getTableRowForPerson(page, person.entity.familyName!)
   if (address === 'same') {
     await expect(row.getByRole('cell').nth(column)).toContainText('Same as Delivery Address')
   } else {
-    await expect(row.getByRole('cell').nth(column)).toContainText(address.street)
-    await expect(row.getByRole('cell').nth(column)).toContainText(address.city)
-    const region = address.region.length === 2 // dont convert if region already in iso2 format
-      ? address.region
-      : provinceSubdivisions.find(province => province.name === address.region)!.code
-    await expect(row.getByRole('cell').nth(column)).toContainText(region)
+    await expect(row.getByRole('cell').nth(column)).toContainText(address.streetAddress)
+    await expect(row.getByRole('cell').nth(column)).toContainText(address.addressCity)
+    const region = address.addressRegion!.length === 2 // dont convert if region already in iso2 format
+      ? address.addressRegion
+      : provinceSubdivisions.find(province => province.name === address.addressRegion)!.code
+    await expect(row.getByRole('cell').nth(column)).toContainText(region!)
     await expect(row.getByRole('cell').nth(column)).toContainText(address.postalCode)
     await expect(row.getByRole('cell').nth(column)).toContainText('Canada')
-    await expect(row.getByRole('cell').nth(column)).toContainText(address.locationDescription)
+    await expect(row.getByRole('cell').nth(column)).toContainText(address.deliveryInstructions || '')
   }
 }
