@@ -92,8 +92,8 @@ test.describe('Manage Liquidators - Page init', () => {
 
       // only report should have confirm checkboxes for records office and liquidators sections
       if (type === LiquidateType.REPORT) {
-        expect(page.getByTestId('records-office-section').getByRole('checkbox')).toBeVisible()
-        expect(page.getByTestId('liquidator-info-section').getByRole('checkbox')).toBeVisible()
+        expect(page.getByTestId('records-office-section').getByRole('checkbox').first()).toBeVisible()
+        expect(page.getByTestId('liquidator-info-section').getByRole('checkbox').first()).toBeVisible()
       } else {
         expect(page.getByTestId('records-office-section').getByRole('checkbox')).not.toBeVisible()
         expect(page.getByTestId('liquidator-info-section').getByRole('checkbox')).not.toBeVisible()
