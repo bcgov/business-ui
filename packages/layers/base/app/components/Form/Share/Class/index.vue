@@ -25,6 +25,16 @@ const schema = computed(() => getActiveShareClassSchema(props.validationContext)
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
 
+const formErrors = computed(() => {
+  const errors = formRef.value?.getErrors()
+
+  return {
+    name: !!errors?.find(e => e.name?.includes('name')),
+    maxShares: !!errors?.find(e => e.name?.includes('maxNumberOfShares')),
+    parValue: !!errors?.find(e => e.name?.includes('parValue'))
+  }
+})
+
 function resetFields(fields: 'parValue' | 'maxShares') {
   if (fields === 'parValue') {
     model.value.parValue = null
@@ -47,9 +57,8 @@ async function onDone() {
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 
-const hasNameError = computed(() => !!formRef.value?.getErrors().find(e => e.name?.includes('name')))
 const nameInputSlots = computed(() => ({
-  trailing: h('span', { class: ['text-base font-bold', hasNameError.value ? 'text-error' : ''] }, t('label.shares'))
+  trailing: h('span', { class: ['text-base font-bold', formErrors.value.name ? 'text-error' : ''] }, t('label.shares'))
 }))
 provide('UInput-slots-share-class-name-input', nameInputSlots)
 provide('UInput-props-max-number-shares-input', { maxlength: '17' })
@@ -77,13 +86,17 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
         </span>
       </legend>
       <div
-        class="divide-y divide-shade bg-white"
+        class="bg-white"
         :class="{
           'rounded shadow': variant === 'add',
           'border-l-3 border-error': alerts[formTarget]
         }"
       >
-        <ConnectFormFieldWrapper :label="$t('label.className')" nested>
+        <ConnectFormFieldWrapper
+          :label="$t('label.className')"
+          nested
+          :error="formErrors.name"
+        >
           <ConnectFormInput
             v-model="model.name"
             required
@@ -94,7 +107,11 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
           />
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.maxNumberOfShares')" nested>
+        <ConnectFormFieldWrapper
+          :label="$t('label.maxNumberOfShares')"
+          nested
+          :error="formErrors.maxShares"
+        >
           <URadioGroup
             v-model="model.hasMaximumShares"
             size="xl"
@@ -122,7 +139,11 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
           </URadioGroup>
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.parValue')" nested>
+        <ConnectFormFieldWrapper
+          :label="$t('label.parValue')"
+          nested
+          :error="formErrors.parValue"
+        >
           <URadioGroup
             v-model="model.hasParValue"
             size="xl"

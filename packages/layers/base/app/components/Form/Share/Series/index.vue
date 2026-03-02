@@ -26,6 +26,15 @@ const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 
+const formErrors = computed(() => {
+  const errors = formRef.value?.getErrors()
+
+  return {
+    name: !!errors?.find(e => e.name?.includes('name')),
+    maxShares: !!errors?.find(e => e.name?.includes('maxNumberOfShares'))
+  }
+})
+
 const shareClassData = computed(() =>
   props.row?.depth === 0 ? props.row.original.new : props.row?.getParentRow()?.original.new
 )
@@ -98,13 +107,17 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
         </span>
       </legend>
       <div
-        class="divide-y divide-shade bg-white"
+        class="bg-white"
         :class="{
           'rounded shadow': variant === 'add',
           'border-l-3 border-error': alerts[formTarget]
         }"
       >
-        <ConnectFormFieldWrapper :label="$t('label.seriesName')" nested>
+        <ConnectFormFieldWrapper
+          :label="$t('label.seriesName')"
+          nested
+          :error="formErrors.name"
+        >
           <ConnectFormInput
             v-model="model.name"
             required
@@ -115,7 +128,11 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
           />
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.maxNumberOfShares')" nested>
+        <ConnectFormFieldWrapper
+          :label="$t('label.maxNumberOfShares')"
+          nested
+          :error="formErrors.maxShares"
+        >
           <URadioGroup
             v-if="!shareClassData?.hasMaximumShares"
             v-model="model.hasMaximumShares"
