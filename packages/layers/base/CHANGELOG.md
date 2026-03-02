@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.15.0
+
+### Minor Changes
+
+- [#408](https://github.com/bcgov/business-ui/pull/408) [`76966ed`](https://github.com/bcgov/business-ui/commit/76966ed43f8fb03cfcc25453c5e168ba5d0acf26) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Updated breadcrumbs and routing
+
+### Patch Changes
+
+- [#410](https://github.com/bcgov/business-ui/pull/410) [`1fc4b25`](https://github.com/bcgov/business-ui/commit/1fc4b25aa995bbb764afb9776923c66d4e60ae50) Thanks [@kialj876](https://github.com/kialj876)! - small party mapping updates, party table role col width reduced
+
 ## 0.14.2
 
 ### Patch Changes
