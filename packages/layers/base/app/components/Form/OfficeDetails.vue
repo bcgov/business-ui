@@ -39,46 +39,52 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     :data-testid="formTarget"
     :name
     nested
-    class="bg-white"
-    :class="{
-      'p-6 rounded shadow': variant === 'add',
-      'px-6 py-4': variant === 'edit',
-      'border-l-3 border-error': alerts[formTarget]
-    }"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset
-      :data-testid="formTarget"
-      :label="title"
-      orientation="horizontal"
-      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
+    <fieldset
+      class="divide-y divide-shade bg-white"
+      :class="{
+        'rounded shadow': variant === 'add',
+        'border-l-3 border-error': alerts[formTarget]
+      }"
     >
-      <FormAddress
-        v-if="model"
-        ref="address-form"
-        v-model="model.address"
-        nested
-        name="address"
-      />
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-        <FormAlertMessage
-          :id="messageId"
-          :message="alerts[formTarget]"
+      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
+        <UIcon
+          name="i-mdi-account-supervisor"
+          class="size-6 shrink-0 text-primary"
         />
-        <UButton
-          :data-alert-focus-target="targetId"
-          :aria-describedby="messageId"
-          :label="t('label.done')"
-          class="w-full sm:w-min justify-center"
-          @click="onDone"
+        <span class="font-semibold text-neutral-highlighted text-base">
+          {{ title }}
+        </span>
+      </legend>
+      <div>
+        <FormAddress
+          v-if="model"
+          ref="address-form"
+          v-model="model.address"
+          nested
+          name="address"
         />
-        <UButton
-          variant="outline"
-          :label="t('label.cancel')"
-          class="w-full sm:w-min justify-center"
-          @click="$emit('cancel')"
-        />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
+          />
+          <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
+            :label="t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="onDone"
+          />
+          <UButton
+            variant="outline"
+            :label="t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('cancel')"
+          />
+        </div>
       </div>
-    </ConnectFieldset>
+    </fieldset>
   </UForm>
 </template>

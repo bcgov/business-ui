@@ -39,6 +39,7 @@ defineExpose({
         <ConnectFormFieldWrapper
           :label="$t('label.planOfArrangement')"
           orientation="horizontal"
+          nested
         >
           <UFormField name="hasPoa">
             <UCheckbox
@@ -52,6 +53,7 @@ defineExpose({
           :label="$t('label.courtOrderNumber')"
           orientation="horizontal"
           :error="courtOrderNumberError"
+          nested
         >
           <ConnectFormInput
             v-model="model.courtOrderNumber"

@@ -3,7 +3,8 @@ import type { FormError } from '@nuxt/ui'
 
 const {
   orientation = 'horizontal',
-  bodyVariant = 'none'
+  bodyVariant = 'none',
+  nested
 } = defineProps<{
   label?: string
   description?: string
@@ -20,7 +21,7 @@ const descriptionId = id + '-description'
 
 const bodyClassMap: Record<FieldsetBodyVariant, string> = {
   none: '',
-  card: 'p-4 sm:p-6 bg-white rounded shadow-xs'
+  card: 'bg-white rounded shadow-xs'
 }
 
 const bodyClass = bodyClassMap[bodyVariant]
@@ -67,10 +68,7 @@ const bodyClass = bodyClassMap[bodyVariant]
 
       <div
         class="flex-1"
-        :class="[
-          bodyClass,
-          (error && bodyVariant === 'card') ? 'border-error border-l-3' : 'border-transparent border-l-3'
-        ]"
+        :class="bodyClass"
       >
         <slot />
       </div>

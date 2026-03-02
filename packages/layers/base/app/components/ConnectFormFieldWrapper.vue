@@ -8,13 +8,15 @@ const {
   error?: FormError | boolean
   showErrorMsg?: boolean
   orientation?: 'vertical' | 'horizontal'
+  nested?: boolean
 }>()
 </script>
 
 <template>
   <div
     :class="[
-      'py-6 px-4 sm:py-10 sm:px-8 flex gap-4 sm:gap-6',
+      'flex gap-4 sm:gap-6',
+      { 'py-6 px-4 sm:py-10 sm:px-8': nested },
       orientation === 'horizontal' ? 'flex-col sm:flex-row' : 'flex-col',
       error ? 'border-error border-l-3' : 'border-transparent border-l-3'
     ]"

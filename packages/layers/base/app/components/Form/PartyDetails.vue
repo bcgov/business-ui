@@ -77,7 +77,6 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     :name
     nested
     :data-testid="formTarget"
-    class="space-y-6"
     @keydown.enter.prevent.stop="onDone"
   >
     <fieldset
@@ -96,50 +95,52 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           {{ title }}
         </span>
       </legend>
-      <FormPartyName
-        v-if="isNameChangeAllowed"
-        ref="party-name-form"
-        v-model="model.name"
-        v-bind="partyNameProps"
-        :state="model.name"
-        name="name"
-      />
-      <FormPartyRole
-        v-if="isRoleChangeAllowed && partyRoleProps"
-        id="party-role-form"
-        ref="party-role-form"
-        v-model="model.roles"
-        v-bind="partyRoleProps"
-        :state="model.roles"
-        name="roles"
-      />
-      <FormAddress
-        v-if="isAddressChangeAllowed"
-        ref="address-form"
-        v-model="model.address"
-        :state="model.address"
-        nested
-        name="address"
-      />
+      <div class="space-y-6">
+        <FormPartyName
+          v-if="isNameChangeAllowed"
+          ref="party-name-form"
+          v-model="model.name"
+          v-bind="partyNameProps"
+          :state="model.name"
+          name="name"
+        />
+        <FormPartyRole
+          v-if="isRoleChangeAllowed && partyRoleProps"
+          id="party-role-form"
+          ref="party-role-form"
+          v-model="model.roles"
+          v-bind="partyRoleProps"
+          :state="model.roles"
+          name="roles"
+        />
+        <FormAddress
+          v-if="isAddressChangeAllowed"
+          ref="address-form"
+          v-model="model.address"
+          :state="model.address"
+          nested
+          name="address"
+        />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
+          />
+          <UButton
+            variant="outline"
+            :label="t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('cancel')"
+          />
+          <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
+            :label="t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="onDone"
+          />
+        </div>
+      </div>
     </fieldset>
-    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-      <FormAlertMessage
-        :id="messageId"
-        :message="alerts[formTarget]"
-      />
-      <UButton
-        variant="outline"
-        :label="t('label.cancel')"
-        class="w-full sm:w-min justify-center"
-        @click="$emit('cancel')"
-      />
-      <UButton
-        :data-alert-focus-target="targetId"
-        :aria-describedby="messageId"
-        :label="t('label.done')"
-        class="w-full sm:w-min justify-center"
-        @click="onDone"
-      />
-    </div>
   </UForm>
 </template>

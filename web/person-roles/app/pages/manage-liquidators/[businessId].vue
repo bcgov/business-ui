@@ -255,10 +255,12 @@ useFilingPageWatcher<LiquidateType>({
         orientation="vertical"
         :label="(isReport ? '3. ' : showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
         body-variant="card"
+        :error="staffPayFormRef?.formRef?.getErrors()[0]"
       >
         <ConnectFormFieldWrapper
           :label="$t('label.payment')"
           orientation="horizontal"
+          nested
         >
           <StaffPayment
             ref="staff-pay-ref"

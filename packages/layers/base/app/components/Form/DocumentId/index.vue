@@ -95,6 +95,7 @@ provide('UInput-props-document-id-number-input', uInputProps)
           :label="$t('label.documentId')"
           orientation="horizontal"
           :error="documentIdError"
+          nested
         >
           <ConnectFormInput
             v-model="model.documentIdNumber"
