@@ -41,13 +41,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     nested
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset
-      class="divide-y divide-shade bg-white"
-      :class="{
-        'rounded shadow': variant === 'add',
-        'border-l-3 border-error': alerts[formTarget]
-      }"
-    >
+    <fieldset>
       <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
         <UIcon
           name="i-mdi-account-supervisor"
@@ -57,7 +51,13 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           {{ title }}
         </span>
       </legend>
-      <div>
+      <div
+        class="divide-y divide-shade bg-white"
+        :class="{
+          'rounded shadow': variant === 'add',
+          'border-l-3 border-error': alerts[formTarget]
+        }"
+      >
         <FormAddress
           v-if="model"
           ref="address-form"
@@ -65,25 +65,25 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-          <FormAlertMessage
-            :id="messageId"
-            :message="alerts[formTarget]"
-          />
-          <UButton
-            :data-alert-focus-target="targetId"
-            :aria-describedby="messageId"
-            :label="t('label.done')"
-            class="w-full sm:w-min justify-center"
-            @click="onDone"
-          />
-          <UButton
-            variant="outline"
-            :label="t('label.cancel')"
-            class="w-full sm:w-min justify-center"
-            @click="$emit('cancel')"
-          />
-        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
+        <FormAlertMessage
+          :id="messageId"
+          :message="alerts[formTarget]"
+        />
+        <UButton
+          :data-alert-focus-target="targetId"
+          :aria-describedby="messageId"
+          :label="t('label.done')"
+          class="w-full sm:w-min justify-center"
+          @click="onDone"
+        />
+        <UButton
+          variant="outline"
+          :label="t('label.cancel')"
+          class="w-full sm:w-min justify-center"
+          @click="$emit('cancel')"
+        />
       </div>
     </fieldset>
   </UForm>
