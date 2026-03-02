@@ -56,7 +56,8 @@ export default defineConfig<ConfigOptions>({
     timeout: 60000,
     env: {
       playwright: 'true',
-      playwrightFetchTestAccount: 'true'
+      playwrightFetchTestAccount: 'true',
+      NUXT_PUBLIC_LD_CLIENT_ID: 'fake'
     }
   }
 })
