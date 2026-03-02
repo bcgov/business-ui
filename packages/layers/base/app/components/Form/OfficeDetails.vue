@@ -72,17 +72,17 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           :message="alerts[formTarget]"
         />
         <UButton
+          variant="outline"
+          :label="t('label.cancel')"
+          class="w-full sm:w-min justify-center"
+          @click="$emit('cancel')"
+        />
+        <UButton
           :data-alert-focus-target="targetId"
           :aria-describedby="messageId"
           :label="t('label.done')"
           class="w-full sm:w-min justify-center"
           @click="onDone"
-        />
-        <UButton
-          variant="outline"
-          :label="t('label.cancel')"
-          class="w-full sm:w-min justify-center"
-          @click="$emit('cancel')"
         />
       </div>
     </fieldset>
