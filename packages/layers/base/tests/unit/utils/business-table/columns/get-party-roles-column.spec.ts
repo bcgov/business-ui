@@ -42,6 +42,6 @@ describe('getPartyRolesColumn', () => {
 
     expect(cell.type).toBe(TableColumnRoles)
     expect(cell.props.roles).toEqual(roles)
-    expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip')
+    expect(cell.props.class).toBe('min-w-40 max-w-40 overflow-clip')
   })
 })

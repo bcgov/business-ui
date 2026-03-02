@@ -108,9 +108,7 @@ export const mockCommonApiCallsForFiling = async (
   accountType?: string,
   shareClassesJSON?: object | undefined
 ) => {
-  page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
-    await route.fulfill({ json: getLdarklyFlagsMock() })
-  })
+  mockLdarkly(page)
   mockApiCallsForSetAccount(page, accountType)
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
     await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
@@ -157,4 +155,16 @@ export const mockCommonApiCallsForFiling = async (
       await route.fulfill({ json: shareClassesJSON })
     })
   }
+}
+
+export const mockLdarkly = async (page: Page) => {
+  page.route('https://app.launchdarkly.com/sdk/goals/*', async (route) => {
+    await route.fulfill({ json: [], status: 304 })
+  })
+  page.route('https://app.launchdarkly.com/sdk/evalx/**/*', async (route) => {
+    await route.fulfill({ json: getLdarklyFlagsMock() })
+  })
+  page.route('https://events.launchdarkly.com/events/bulk/*', async (route) => {
+    await route.fulfill({ status: 202 })
+  })
 }

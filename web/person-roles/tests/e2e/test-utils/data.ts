@@ -16,14 +16,14 @@ export function getFakeAddress() {
 
 export function getRandomRoles() {
   const roles = [
-    'Chief Executive Officer',
+    'Ceo',
     'Treasurer',
-    'Chief Financial Officer',
+    'Cfo',
     'Secretary',
     'President',
     'Assistant Secretary',
     'Vice President',
-    'Other Office(s)',
+    'Other',
     'Chair'
   ]
 

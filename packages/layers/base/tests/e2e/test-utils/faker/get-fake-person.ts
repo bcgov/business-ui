@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
 
 export function getFakePerson() {
-  const firstName = faker.person.firstName()
-  const lastName = faker.person.lastName()
+  const givenName = faker.person.firstName()
+  const familyName = faker.person.lastName()
   return {
-    firstName,
-    middleName: faker.person.middleName(),
-    lastName,
-    preferredName: `${firstName} ${lastName}`
+    givenName,
+    middleInitial: faker.person.middleName(),
+    familyName,
+    alternateName: `${givenName} ${familyName}`
   }
 }

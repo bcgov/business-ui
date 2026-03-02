@@ -35,7 +35,7 @@ test.describe('Manage Liquidators - Submission', () => {
         streetAddressAdditional: '',
         addressCity: 'city',
         addressCountry: 'CA',
-        addressRegion: 'BC',
+        addressRegion: 'AB',
         deliveryInstructions: '',
         postalCode: 'V1N 4H8'
       }
@@ -92,7 +92,7 @@ test.describe('Manage Liquidators - Submission', () => {
         streetAddressAdditional: '',
         addressCity: 'city',
         addressCountry: 'CA',
-        addressRegion: 'BC',
+        addressRegion: 'AB',
         deliveryInstructions: '',
         postalCode: 'V1N 4H8'
       }
@@ -167,7 +167,7 @@ test.describe('Manage Liquidators - Submission', () => {
           streetAddressAdditional: '',
           addressCity: 'newCity',
           addressCountry: 'CA',
-          addressRegion: 'BC',
+          addressRegion: 'QC',
           deliveryInstructions: '',
           postalCode: 'V1N 4H8'
         }
@@ -203,7 +203,7 @@ test.describe('Manage Liquidators - Submission', () => {
           streetAddressAdditional: '',
           addressCity: 'newCity',
           addressCountry: 'CA',
-          addressRegion: 'BC',
+          addressRegion: 'AB',
           deliveryInstructions: '',
           postalCode: 'V1N 4H8'
         }

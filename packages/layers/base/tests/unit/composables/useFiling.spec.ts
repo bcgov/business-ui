@@ -44,7 +44,7 @@ describe('useFiling', () => {
     const businessPermissionsMock = getPermissionsMock()
     const businessSettingsMock = getBusinessSettingsMock()
     const partiesMock = getPartiesMock()
-    const draftFilingMock = getFilingMock()
+    const draftFilingMock = getFilingMock('changeOfOfficers', 'DRAFT')
 
     beforeEach(async () => {
       vi.resetAllMocks()

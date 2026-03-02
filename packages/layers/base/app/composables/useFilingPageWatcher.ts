@@ -7,8 +7,11 @@ interface StepOverride {
   backButton?: ConnectButton
 }
 
+type InitSubTypeFiling<T> = (businessId: string, filingSubType?: T, draftId?: string) => Promise<void>
+type InitFiling = (businessId: string, draftId?: string) => Promise<void>
+
 interface FilingPageWatcherOptions<T> {
-  store: { init: (businessId: string, filingSubType?: T, draftId?: string) => Promise<void> }
+  store: { init: InitSubTypeFiling<T> | InitFiling }
   businessId: string
   filingType: FilingType
   filingSubType?: T
@@ -153,7 +156,13 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
           await options.setOnBeforeSessionExpired()
         })
 
-        await options.store.init(options.businessId, options.filingSubType, options.draftId)
+        if (options.filingSubType) {
+          const initFn = options.store.init as InitSubTypeFiling<T>
+          await initFn(options.businessId, options.filingSubType, options.draftId)
+        } else {
+          const initFn = options.store.init as InitFiling
+          await initFn(options.businessId, options.draftId)
+        }
 
         setBreadcrumbs(options.breadcrumbs.value)
       }

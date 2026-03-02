@@ -22,7 +22,6 @@ export const partiesBC1234567 = {
         streetAddressAdditional: ''
       },
       officer: {
-        email: null,
         firstName: 'CRYSTAL',
         id: 615058,
         lastName: 'GUENTHER',
@@ -32,7 +31,6 @@ export const partiesBC1234567 = {
       roles: [
         {
           appointmentDate: '2025-06-24',
-          cessationDate: null,
           roleClass: 'OFFICER',
           roleType: 'Ceo'
         }

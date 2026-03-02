@@ -29,6 +29,7 @@ export default {
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
     editLiquidator: 'Edit Liquidator',
+    editOfficer: 'Edit Officer',
     editReceiver: 'Edit Receiver',
     haspreferredName: 'This person also has another name they prefer to use',
     liquidationRecordsOfficeAddress: 'Liquidation Records Office Address',

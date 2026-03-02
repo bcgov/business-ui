@@ -6,66 +6,52 @@
     "filing": {
         "business": {
             "foundingDate": "1980-12-23T08:00:00+00:00",
-            "identifier": "BC0223072",
-            "legalName": "MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST",
+            "identifier": "BC1234567",
+            "legalName": "Officer Change Test Business",
             "legalType": "BC"
         },
-        "changeOfOfficers": [
-            {
-                "new": {
+        "changeOfOfficers": {
+            "relationships": [
+                {
+                    "actions": ["NAME_CHANGED", "ROLES_CHANGED", "ADDRESS_CHANGED"],
+                    "entity": {
+                        "identifier": "615058",
+                        "givenName": "New",
+                        "familyName": "Test",
+                        "alternateName": "New Name Preferred"
+                    },
                     "deliveryAddress": {
-                        "city": "North York",
-                        "country": "CA",
-                        "locationDescription": "",
+                        "addressCity": "North York",
+                        "addressCountry": "CA",
+                        "deliveryInstructions": "",
                         "postalCode": "M6B 1W8",
-                        "region": "ON",
-                        "street": "123-160 Tycos Dr",
-                        "streetAdditional": ""
+                        "addressRegion": "BC",
+                        "streetAddress": "123-160 Tycos Dr Draft",
+                        "streetAddressAdditional": ""
                     },
-                    "firstName": "Tetster",
-                    "hasPreferredName": false,
-                    "lastName": "Test",
                     "mailingAddress": {
-                        "city": "North York",
-                        "country": "CA",
-                        "locationDescription": "",
+                        "addressCity": "North York",
+                        "addressCountry": "CA",
+                        "deliveryInstructions": "",
                         "postalCode": "M6B 1W8",
-                        "region": "ON",
-                        "street": "123-160 Tycos Dr",
-                        "streetAdditional": ""
+                        "addressRegion": "BC",
+                        "streetAddress": "123-160 Tycos Dr Draft",
+                        "streetAddressAdditional": ""
                     },
-                    "middleName": "",
-                    "preferredName": "",
                     "roles": [
                         {
-                            "appointmentDate": "2025-11-12",
-                            "cessationDate": null,
                             "roleClass": "OFFICER",
-                            "roleType": "CEO"
+                            "roleType": "Chair"
                         },
                         {
-                            "appointmentDate": "2025-11-12",
-                            "cessationDate": null,
                             "roleClass": "OFFICER",
-                            "roleType": "TREASURER"
-                        },
-                        {
-                            "appointmentDate": "2025-11-12",
-                            "cessationDate": null,
-                            "roleClass": "OFFICER",
-                            "roleType": "SECRETARY"
-                        },
-                        {
-                            "appointmentDate": "2025-11-12",
-                            "cessationDate": null,
-                            "roleClass": "OFFICER",
-                            "roleType": "CFO"
+                            "roleType": "Vice President"
                         }
                     ],
                     "sameAsDelivery": true
                 }
-            }
-        ],
+            ]
+        },
         "header": {
             "accountId": 3040,
             "affectedFilings": [],
@@ -77,7 +63,7 @@
             "deletionLocked": false,
             "effectiveDate": "2025-11-12T18:41:07.615199+00:00",
             "filingId": 206789,
-            "folioNumber": "",
+            "folioNumber": "test-folio1234",
             "inColinOnly": false,
             "isCorrected": false,
             "isCorrectionPending": false,

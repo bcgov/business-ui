@@ -7,7 +7,7 @@ vi.mock('@sbc-connect/nuxt-business-base/app/utils/date', () => ({
 
 function createPartyMock(
   nameData: PartySchema['name'],
-  addressData: { delivery: ConnectAddress, mailing: ConnectAddress },
+  addressData: { delivery: ApiAddress, mailing: ApiAddress },
   actions: ActionType[] = [],
   id: string = ''
 ) {
@@ -18,8 +18,8 @@ function createPartyMock(
       name: nameData,
       roles: [{ roleType: RoleTypeUi.LIQUIDATOR }],
       address: {
-        mailingAddress: addressData.mailing,
-        deliveryAddress: addressData.delivery,
+        mailingAddress: formatAddressUi(addressData.mailing),
+        deliveryAddress: formatAddressUi(addressData.delivery),
         sameAs: false
       }
     }
@@ -39,10 +39,12 @@ describe('format-liquidators', () => {
       const newPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
-          firstName: person.firstName,
-          middleName: person.middleName,
-          lastName: person.lastName,
-          businessName: ''
+          firstName: person.givenName,
+          middleName: person.middleInitial,
+          lastName: person.familyName,
+          businessName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { delivery, mailing },
         [ActionType.ADDED]
@@ -50,11 +52,13 @@ describe('format-liquidators', () => {
 
       const newBusiness = createPartyMock(
         {
-          businessName: `${business.firstName} ${business.lastName}`,
+          businessName: `${business.givenName} ${business.familyName}`,
           partyType: PartyType.ORGANIZATION,
           firstName: '',
           middleName: '',
-          lastName: ''
+          lastName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { mailing, delivery },
         [ActionType.ADDED]
@@ -63,10 +67,12 @@ describe('format-liquidators', () => {
       const unchangedPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
-          firstName: person.firstName,
-          middleName: person.middleName,
-          lastName: person.lastName,
-          businessName: ''
+          firstName: person.givenName,
+          middleName: person.middleInitial,
+          lastName: person.familyName,
+          businessName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { delivery, mailing }
       )
@@ -79,8 +85,8 @@ describe('format-liquidators', () => {
 
       const mockFormState = {
         recordsOffice: {
-          mailingAddress: officeMailing,
-          deliveryAddress: officeDelivery
+          mailingAddress: formatAddressUi(officeMailing),
+          deliveryAddress: formatAddressUi(officeDelivery)
         }
       }
 
@@ -111,14 +117,14 @@ describe('format-liquidators', () => {
       expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
-          givenName: person.firstName,
+          givenName: person.givenName,
           businessName: ''
         },
         deliveryAddress: {
-          streetAddress: delivery.street
+          streetAddress: delivery.streetAddress
         },
         mailingAddress: {
-          streetAddress: mailing.street
+          streetAddress: mailing.streetAddress
         }
       })
 
@@ -127,13 +133,13 @@ describe('format-liquidators', () => {
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
-          businessName: `${business.firstName} ${business.lastName}`
+          businessName: `${business.givenName} ${business.familyName}`
         },
         deliveryAddress: {
-          streetAddress: delivery.street
+          streetAddress: delivery.streetAddress
         },
         mailingAddress: {
-          streetAddress: mailing.street
+          streetAddress: mailing.streetAddress
         }
       })
 
@@ -141,10 +147,10 @@ describe('format-liquidators', () => {
       expect(result.offices).toMatchObject({
         liquidationRecordsOffice: {
           deliveryAddress: {
-            streetAddress: officeDelivery.street
+            streetAddress: officeDelivery.streetAddress
           },
           mailingAddress: {
-            streetAddress: officeMailing.street
+            streetAddress: officeMailing.streetAddress
           }
         }
       })
@@ -162,10 +168,12 @@ describe('format-liquidators', () => {
       const newPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
-          firstName: person.firstName,
-          middleName: person.middleName,
-          lastName: person.lastName,
-          businessName: ''
+          firstName: person.givenName,
+          middleName: person.middleInitial,
+          lastName: person.familyName,
+          businessName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { delivery, mailing },
         [ActionType.ADDED]
@@ -173,11 +181,13 @@ describe('format-liquidators', () => {
 
       const newBusiness = createPartyMock(
         {
-          businessName: `${business.firstName} ${business.lastName}`,
+          businessName: `${business.givenName} ${business.familyName}`,
           partyType: PartyType.ORGANIZATION,
           firstName: '',
           middleName: '',
-          lastName: ''
+          lastName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { mailing, delivery },
         [ActionType.ADDED]
@@ -186,10 +196,12 @@ describe('format-liquidators', () => {
       const unchangedPerson = createPartyMock(
         {
           partyType: PartyType.PERSON,
-          firstName: person.firstName,
-          middleName: person.middleName,
-          lastName: person.lastName,
-          businessName: ''
+          firstName: person.givenName,
+          middleName: person.middleInitial,
+          lastName: person.familyName,
+          businessName: '',
+          preferredName: '',
+          hasPreferredName: false
         },
         { delivery, mailing }
       )
@@ -202,8 +214,8 @@ describe('format-liquidators', () => {
 
       const mockFormState = {
         recordsOffice: {
-          mailingAddress: officeMailing,
-          deliveryAddress: officeDelivery
+          mailingAddress: formatAddressUi(officeMailing),
+          deliveryAddress: formatAddressUi(officeDelivery)
         }
       }
 
@@ -234,14 +246,14 @@ describe('format-liquidators', () => {
       expect(result.relationships![0]).toMatchObject({
         actions: [ActionType.ADDED],
         entity: {
-          givenName: person.firstName,
+          givenName: person.givenName,
           businessName: ''
         },
         deliveryAddress: {
-          streetAddress: delivery.street
+          streetAddress: delivery.streetAddress
         },
         mailingAddress: {
-          streetAddress: mailing.street
+          streetAddress: mailing.streetAddress
         }
       })
 
@@ -250,13 +262,13 @@ describe('format-liquidators', () => {
         actions: [ActionType.ADDED],
         entity: {
           givenName: '',
-          businessName: `${business.firstName} ${business.lastName}`
+          businessName: `${business.givenName} ${business.familyName}`
         },
         deliveryAddress: {
-          streetAddress: delivery.street
+          streetAddress: delivery.streetAddress
         },
         mailingAddress: {
-          streetAddress: mailing.street
+          streetAddress: mailing.streetAddress
         }
       })
 
@@ -267,17 +279,17 @@ describe('format-liquidators', () => {
       const officeMailing = getFakeAddress()
       const officeDelivery = getFakeAddress()
       const currentOfficeMock: UiBaseAddressObj = {
-        mailingAddress: officeMailing,
-        deliveryAddress: officeDelivery,
+        mailingAddress: formatAddressUi(officeMailing),
+        deliveryAddress: formatAddressUi(officeDelivery),
         sameAs: false
       }
       it('should include offices when addresses have changed', () => {
-        const changedMailing = { ...officeMailing, street: 'New Street 123' }
+        const changedMailing = { ...officeMailing, streetAddress: 'New Street 123' }
 
         const mockFormState = {
           recordsOffice: {
-            mailingAddress: changedMailing,
-            deliveryAddress: officeDelivery
+            mailingAddress: formatAddressUi(changedMailing),
+            deliveryAddress: formatAddressUi(officeDelivery)
           }
         }
 
@@ -296,8 +308,8 @@ describe('format-liquidators', () => {
       it('should exclude offices when addresses are identical to current', () => {
         const mockFormState = {
           recordsOffice: {
-            mailingAddress: officeMailing,
-            deliveryAddress: officeDelivery
+            mailingAddress: formatAddressUi(officeMailing),
+            deliveryAddress: formatAddressUi(officeDelivery)
           }
         }
 
@@ -315,8 +327,8 @@ describe('format-liquidators', () => {
       it('should include formState offices even if currentLiquidationOffice is undefined', () => {
         const mockFormState = {
           recordsOffice: {
-            mailingAddress: officeMailing,
-            deliveryAddress: officeDelivery
+            mailingAddress: formatAddressUi(officeMailing),
+            deliveryAddress: formatAddressUi(officeDelivery)
           }
         }
 
@@ -338,15 +350,23 @@ describe('format-liquidators', () => {
     const officeDelivery = getFakeAddress()
 
     const unchangedPerson = createPartyMock(
-      { partyType: PartyType.PERSON, firstName: 'John', lastName: 'Doe', businessName: '', middleName: '' },
+      {
+        partyType: PartyType.PERSON,
+        firstName: 'John',
+        lastName: 'Doe',
+        businessName: '',
+        middleName: '',
+        preferredName: '',
+        hasPreferredName: false
+      },
       { delivery: officeDelivery, mailing: officeMailing },
       []
     )
 
     const mockFormState = {
       recordsOffice: {
-        mailingAddress: { ...officeMailing, street: 'Changed St' },
-        deliveryAddress: officeDelivery
+        mailingAddress: formatAddressUi({ ...officeMailing, streetAddress: 'Changed St' }),
+        deliveryAddress: formatAddressUi(officeDelivery)
       }
     }
 
@@ -355,7 +375,11 @@ describe('format-liquidators', () => {
       mockFormState as LiquidatorFormSchema,
       LiquidateType.ADDRESS,
       {},
-      { mailingAddress: officeMailing, deliveryAddress: officeDelivery, sameAs: false }
+      {
+        mailingAddress: formatAddressUi(officeMailing),
+        deliveryAddress: formatAddressUi(officeDelivery),
+        sameAs: false
+      }
     )
 
     expect(result.offices).toBeDefined()
