@@ -67,7 +67,8 @@ describe('format-liquidators', () => {
         [ActionType.ADDED]
       )
 
-      const mockOfficeTable = [createOfficeTableMock(officeMailing, officeDelivery)]
+      // @ts-expect-error - type mismatch between mock helper and address
+      const mockOfficeTable = [createOfficeTableMock(formatAddressUi(officeMailing), formatAddressUi(officeDelivery))]
 
       const newBusiness = createPartyMock(
         {
@@ -221,7 +222,8 @@ describe('format-liquidators', () => {
         documentId: '12345678'
       }
 
-      const mockOfficeTable = [createOfficeTableMock(officeMailing, officeDelivery)]
+      // @ts-expect-error - type mismatch between mock helper and address
+      const mockOfficeTable = [createOfficeTableMock(formatAddressUi(officeMailing), formatAddressUi(officeDelivery))]
 
       const type = LiquidateType.APPOINT
 
@@ -280,7 +282,12 @@ describe('format-liquidators', () => {
 
       it('should include offices when addresses have changed', () => {
         const mockOfficeTable = [
-          createOfficeTableMock(officeMailing, officeDelivery, [ActionType.ADDRESS_CHANGED])
+          createOfficeTableMock(
+            // @ts-expect-error - type mismatch between mock helper and address
+            formatAddressUi(officeMailing),
+            formatAddressUi(officeDelivery),
+            [ActionType.ADDRESS_CHANGED]
+          )
         ]
 
         const result = formatLiquidatorsApi(
@@ -291,12 +298,13 @@ describe('format-liquidators', () => {
         )
 
         expect(result.offices).toBeDefined()
-        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe(officeMailing.street)
+        expect(result.offices?.liquidationRecordsOffice.mailingAddress.streetAddress).toBe(officeMailing.streetAddress)
       })
 
       it('should exclude offices when addresses are identical to current', () => {
         const mockOfficeTable = [
-          createOfficeTableMock(officeMailing, officeDelivery, [])
+          // @ts-expect-error - type mismatch between mock helper and address
+          createOfficeTableMock(formatAddressUi(officeMailing), formatAddressUi(officeDelivery), [])
         ]
 
         const result = formatLiquidatorsApi(
@@ -316,7 +324,8 @@ describe('format-liquidators', () => {
     const officeDelivery = getFakeAddress()
 
     const mockOfficeTable = [
-      createOfficeTableMock(officeMailing, officeDelivery, [ActionType.ADDED])
+      // @ts-expect-error - type mismatch between mock helper and address
+      createOfficeTableMock(formatAddressUi(officeMailing), formatAddressUi(officeDelivery), [ActionType.ADDED])
     ]
 
     const unchangedPerson = createPartyMock(
