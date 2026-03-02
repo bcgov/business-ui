@@ -33,11 +33,13 @@ defineExpose({
       :label="order ? `${order}. ${$t('label.folioOrRefNumber')}` : $t('label.folioOrRefNumber')"
       :description="$t('text.folioDescription')"
       body-variant="card"
+      orientation="vertical"
     >
       <ConnectFormFieldWrapper
         :label="$t('label.folioOrRefNumber')"
         orientation="horizontal"
         :error="formError"
+        nested
       >
         <ConnectFormInput
           v-model="model.folioNumber"
