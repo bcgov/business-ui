@@ -50,6 +50,12 @@
                     "type": "changeAddressLiquidator"
                 },
                 {
+                    "displayName": "Liquidation Report",
+                    "feeCode": "LIQUR",
+                    "name": "changeOfLiquidators",
+                    "type": "liquidationReport"
+                },
+                {
                     "displayName": "Amend Receiver",
                     "feeCode": "AMEND",
                     "name": "changeOfReceivers",

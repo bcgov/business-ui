@@ -8,7 +8,7 @@ describe('getOfficesSchema', () => {
 
     expect(result.success).toBe(true)
     expect(result.data!.actions).toEqual([])
-    expect(result.data!.type).toBe(OfficeType.UNKNOWN)
+    expect(result.data!.type).toBe(OfficeType.REGISTERED)
     expect(result.data!.address.sameAs).toBe(false)
     expect(result.data!.address.deliveryAddress.country).toBe('CA')
     expect(result.data!.address.deliveryAddress.street).toBe('')

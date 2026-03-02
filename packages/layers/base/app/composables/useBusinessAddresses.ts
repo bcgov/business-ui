@@ -1,5 +1,8 @@
+import { isEqual } from 'es-toolkit'
+
 export const useBusinessAddresses = () => {
   const service = useBusinessService()
+  const allOfficeTypes = Object.values(OfficeType)
 
   async function getBusinessAddresses(
     businessId: string,
@@ -18,8 +21,7 @@ export const useBusinessAddresses = () => {
   ): Promise<UiEntityOfficeAddress | TableBusinessState<OfficesSchema>[]> {
     const res = await service.getAddresses(businessId)
 
-    const allTypes = Object.values(OfficeType) as Exclude<OfficeType, OfficeType.UNKNOWN>[]
-    const filteredTypes = allTypes.filter(type =>
+    const filteredTypes = allOfficeTypes.filter(type =>
       res[type as keyof ApiEntityOfficeAddress] && (!officeTypes || officeTypes.includes(type))
     )
 
@@ -34,18 +36,56 @@ export const useBusinessAddresses = () => {
 
     // return TableBusinessState<OfficesSchema> array if table config option provided
     // used for ManageOffices functionality
-    return filteredTypes.map((type) => {
+    return formatAddressTableState(res, filteredTypes)
+  }
+
+  function formatAddressTableState(
+    addresses: ApiEntityOfficeAddress,
+    officeTypes?: OfficeType[]
+  ): TableBusinessState<OfficesSchema>[] {
+    const types = officeTypes ?? allOfficeTypes
+    return types.map((type) => {
       const formatted = {
         type,
         actions: [],
-        address: formatBaseAddressUi(res[type])
+        address: formatBaseAddressUi(addresses[type])
       }
-      return { new: { ...formatted }, old: { ...formatted }
+
+      return {
+        new: { ...formatted },
+        old: { ...formatted }
+      }
+    })
+  }
+
+  function formatDraftTableState(
+    tableState: TableBusinessState<OfficesSchema>[],
+    draftState: TableBusinessState<OfficesSchema>[]
+  ): TableBusinessState<OfficesSchema>[] {
+    return draftState.map((draft) => {
+      const oldOffice = tableState.find(o => o.new.type === draft.new.type)
+      const addressChanged = oldOffice && !isEqual(draft.new.address, oldOffice.new.address)
+
+      let actions: ActionType[] = []
+      if (addressChanged) {
+        actions = [ActionType.ADDRESS_CHANGED]
+      } else if (!oldOffice) {
+        actions = [ActionType.ADDED]
+      }
+
+      return {
+        new: {
+          ...draft.new,
+          actions
+        },
+        old: oldOffice ? { ...oldOffice.new } : undefined
       }
     })
   }
 
   return {
-    getBusinessAddresses
+    getBusinessAddresses,
+    formatAddressTableState,
+    formatDraftTableState
   }
 }

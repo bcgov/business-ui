@@ -1,6 +1,6 @@
 import { isEqual } from 'es-toolkit'
 
-export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress {
+export function formatAddressUi(address: ApiAddress | undefined): ConnectAddress | AddressSchema['deliveryAddress'] {
   return {
     street: address?.streetAddress ?? '',
     streetAdditional: address?.streetAddressAdditional ?? '',

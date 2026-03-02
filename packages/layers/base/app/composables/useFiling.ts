@@ -43,7 +43,7 @@ export const useFiling = () => {
     filingSubType?: string,
     draftId?: string,
     partiesParams?: { roleClass?: RoleClass, roleType?: RoleType },
-    includeAddresses?: boolean
+    officeTypes?: OfficeType[]
   ) {
     try {
       // throw error and show modal if invalid business ID
@@ -60,8 +60,8 @@ export const useFiling = () => {
         ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType)
         : undefined
 
-      const addressesPromise = includeAddresses
-        ? getBusinessAddresses(businessId)
+      const addressesPromise = officeTypes
+        ? getBusinessAddresses(businessId, 'table', officeTypes)
         : undefined
 
       const [

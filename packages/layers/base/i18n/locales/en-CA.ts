@@ -330,6 +330,7 @@ export default {
   label: {
     actions: 'Actions',
     addDetail: 'Add Detail',
+    addOfficeType: 'Add {type}',
     addSeries: 'Add Series',
     addShareClass: 'Add Share Class',
     addShareSeries: 'Add Share Series',
@@ -374,6 +375,7 @@ export default {
     done: 'Done',
     downloadAll: 'Download All',
     edit: 'Edit',
+    editOffice: 'Edit Office',
     editShareClass: 'Edit Share Class',
     editShareSeries: 'Edit Share Series',
     effectiveDates: 'Effective Dates',
@@ -541,9 +543,7 @@ export default {
     recordsOffice: 'Records Office',
     businessOffice: 'Business Office',
     liquidationRecordsOffice: 'Liquidation Records Office',
-    custodial: 'Custodial Office',
-    unknown: 'Unknown Office', // FUTURE: remove once 'add' functionality complete in ManageOffices
-    undefined: 'Unknown Office' // FUTURE: remove once 'add' functionality complete in ManageOffices
+    custodialOffice: 'Custodial Office'
   },
   /* Mappings here are based from the RoleTypeUi enum */
   roleType: {

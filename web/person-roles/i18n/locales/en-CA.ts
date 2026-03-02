@@ -28,12 +28,14 @@ export default {
     changeAddress: 'Change Address',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
+    confirm: 'Confirm',
     editLiquidator: 'Edit Liquidator',
     editOfficer: 'Edit Officer',
     editReceiver: 'Edit Receiver',
     haspreferredName: 'This person also has another name they prefer to use',
     liquidationRecordsOfficeAddress: 'Liquidation Records Office Address',
     loading: 'Loading',
+    noOffice: 'No Office',
     officerChange: 'Officer Change',
     receiverChange: 'Receiver Change',
     liquidatorChange: 'Liquidator Change',
@@ -43,6 +45,8 @@ export default {
     roles: 'Roles'
   },
   text: {
+    confirmLiquidatorsCorrect: 'I confirm that the liquidator information listed for this business is correct.',
+    confirmOfficesCorrect: 'I confirm that the office address information listed for this business is correct.',
     noLiquidators: 'There are currently no liquidators.',
     noOfficers: 'There are currently no officers.',
     noReceivers: 'There are currently no Receivers.',
@@ -102,15 +106,14 @@ export default {
         feeLabel: 'Change Addresses of Liquidators',
         h1: 'Change Addresses of Liquidators',
         title: 'Change Addresses of Liquidators - People Roles - BC Registries and Online Services'
+      },
+      liquidationReport: {
+        desc: 'Some liquidation report descriptive text',
+        feeCode: 'LIQUR',
+        feeLabel: 'Liquidation Report',
+        h1: 'Liquidation Report',
+        title: 'Liquidation Report - People Roles - BC Registries and Online Services'
       }
-      // TODO: liquidation report
-      // liquidationReport: {
-      //   desc: 'Some liquidation descriptive text',
-      //   feeCode: 'LIQUR',
-      //   feeLabel: 'Liquidation Report',
-      //   h1: 'Liquidation Report',
-      //   title: 'Liquidation Report - People Roles - BC Registries and Online Services'
-      // }
     },
     changeOfReceivers: {
       amendReceiver: {
