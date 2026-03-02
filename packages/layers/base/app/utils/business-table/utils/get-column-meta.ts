@@ -3,7 +3,7 @@ export function getColumnMeta<T = unknown>(option: TableColumnMetaOption = 'defa
     default: {
       class: {
         th: '',
-        td: 'px-2'
+        td: 'px-2 py-4'
       }
     },
     first: {

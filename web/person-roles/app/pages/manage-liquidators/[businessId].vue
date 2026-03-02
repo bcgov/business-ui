@@ -252,10 +252,14 @@ useFilingPageWatcher<LiquidateType>({
 
       <ConnectFieldset
         data-testid="staff-payment-section"
+        orientation="vertical"
         :label="(isReport ? '3. ' : showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
         body-variant="card"
       >
-        <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
+        <ConnectFormFieldWrapper
+          :label="$t('label.payment')"
+          orientation="horizontal"
+        >
           <StaffPayment
             ref="staff-pay-ref"
             v-model="store.formState.staffPayment"

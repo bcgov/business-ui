@@ -17,6 +17,7 @@ const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-clas
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series', { required: true })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
+let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
 
 const {
   expandedState,
@@ -101,6 +102,10 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
 }
 
 function cleanupForm() {
+  if (currentEditingRow) {
+    currentEditingRow.isEditing = false
+  }
+
   addingShareClass.value = false
   addingSeriesToClassId.value = undefined
   activeClass.value = undefined
@@ -110,8 +115,12 @@ function cleanupForm() {
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
     activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
+    currentEditingRow = row.original.new
+    currentEditingRow.isEditing = true
   } else {
     activeClass.value = activeClassSchema.parse({ ...row.original.new })
+    currentEditingRow = row.original.new
+    currentEditingRow.isEditing = true
   }
   expandedState.value = { [row.id]: true, ...expandedState.value as object }
 }

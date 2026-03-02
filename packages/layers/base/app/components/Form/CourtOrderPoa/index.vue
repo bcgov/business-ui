@@ -33,8 +33,9 @@ defineExpose({
       :label="order ? `${order}. ${$t('label.courtOrderAndPoa')}` : $t('label.courtOrderAndPoa')"
       :description="$t('text.courtOrderAndPoaDescription')"
       body-variant="card"
+      orientation="vertical"
     >
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
         <ConnectFormFieldWrapper
           :label="$t('label.planOfArrangement')"
           orientation="horizontal"

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends { actions: ActionType[] }">
+<script setup lang="ts" generic="T extends { actions: ActionType[], isEditing: boolean }">
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
@@ -44,6 +44,8 @@ const expandedTrClass = computed(() => {
 
   return classes
 })
+
+const trClass = '[&:has([data-is-editing="true"])]:hidden'
 </script>
 
 <template>
@@ -57,11 +59,16 @@ const expandedTrClass = computed(() => {
       root: 'bg-white rounded-sm ring ring-gray-200',
       tbody: 'px-10',
       th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'text-neutral-highlighted align-top text-sm whitespace-normal',
-      tr: expandedTrClass
+      td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
+      tr: trClass // expandedTrClass // 'data-[expanded=true]:hidden'
     }"
   >
     <template #actions-cell="{ row }">
+      <div
+        v-if="row.original.new.isEditing && row.depth === 0"
+        data-is-editing="true"
+        class="hidden"
+      />
       <TableColumnActions
         v-if="(row.depth === 0 || !getIsRowRemoved(row.getParentRow())) && !hideActionsWhen?.(row)"
         :row

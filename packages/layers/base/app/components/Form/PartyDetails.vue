@@ -76,66 +76,70 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
   <UForm
     :name
     nested
-    class="bg-white"
-    :class="{
-      'p-6 rounded shadow': variant === 'add',
-      'px-6 py-4': variant === 'edit',
-      'border-l-3 border-error': alerts[formTarget]
-    }"
+    :data-testid="formTarget"
+    class="space-y-6"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset
-      :data-testid="formTarget"
-      :label="title"
-      orientation="horizontal"
-      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
+    <fieldset
+      class="divide-y divide-shade bg-white"
+      :class="{
+        'rounded shadow': variant === 'add',
+        'border-l-3 border-error': alerts[formTarget]
+      }"
     >
-      <div class="space-y-6">
-        <FormPartyName
-          v-if="isNameChangeAllowed"
-          ref="party-name-form"
-          v-model="model.name"
-          v-bind="partyNameProps"
-          :state="model.name"
-          name="name"
+      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
+        <UIcon
+          name="i-mdi-account-supervisor"
+          class="size-6 shrink-0 text-primary"
         />
-        <FormPartyRole
-          v-if="isRoleChangeAllowed && partyRoleProps"
-          id="party-role-form"
-          ref="party-role-form"
-          v-model="model.roles"
-          v-bind="partyRoleProps"
-          :state="model.roles"
-          name="roles"
-        />
-        <FormAddress
-          v-if="isAddressChangeAllowed"
-          ref="address-form"
-          v-model="model.address"
-          :state="model.address"
-          nested
-          name="address"
-        />
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-          <FormAlertMessage
-            :id="messageId"
-            :message="alerts[formTarget]"
-          />
-          <UButton
-            :data-alert-focus-target="targetId"
-            :aria-describedby="messageId"
-            :label="t('label.done')"
-            class="w-full sm:w-min justify-center"
-            @click="onDone"
-          />
-          <UButton
-            variant="outline"
-            :label="t('label.cancel')"
-            class="w-full sm:w-min justify-center"
-            @click="$emit('cancel')"
-          />
-        </div>
-      </div>
-    </ConnectFieldset>
+        <span class="font-semibold text-neutral-highlighted text-base">
+          {{ title }}
+        </span>
+      </legend>
+      <FormPartyName
+        v-if="isNameChangeAllowed"
+        ref="party-name-form"
+        v-model="model.name"
+        v-bind="partyNameProps"
+        :state="model.name"
+        name="name"
+      />
+      <FormPartyRole
+        v-if="isRoleChangeAllowed && partyRoleProps"
+        id="party-role-form"
+        ref="party-role-form"
+        v-model="model.roles"
+        v-bind="partyRoleProps"
+        :state="model.roles"
+        name="roles"
+      />
+      <FormAddress
+        v-if="isAddressChangeAllowed"
+        ref="address-form"
+        v-model="model.address"
+        :state="model.address"
+        nested
+        name="address"
+      />
+    </fieldset>
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+      <FormAlertMessage
+        :id="messageId"
+        :message="alerts[formTarget]"
+      />
+      <UButton
+        variant="outline"
+        :label="t('label.cancel')"
+        class="w-full sm:w-min justify-center"
+        @click="$emit('cancel')"
+      />
+      <UButton
+        :data-alert-focus-target="targetId"
+        :aria-describedby="messageId"
+        :label="t('label.done')"
+        class="w-full sm:w-min justify-center"
+        @click="onDone"
+      />
+    </div>
   </UForm>
 </template>

@@ -72,9 +72,30 @@ defineExpose({
     :nested
     :name
     novalidate
-    class="flex flex-col gap-6"
+    class="flex flex-col divide-y divide-shade"
   >
-    <ConnectFieldset :label="$t('label.deliveryAddress')" :error="formErrors?.delivery">
+    <ConnectFieldset
+      :label="$t('label.mailingAddress')"
+      :error="formErrors?.mailing"
+    >
+      <div class="flex flex-col gap-6">
+        <ConnectFormAddress
+          id="mailing-address"
+          v-model="model.mailingAddress"
+          schema-prefix="mailingAddress"
+          @should-validate="formRef?.clear(/^mailingAddress.*/)"
+        />
+        <UCheckbox
+          v-model="model.sameAs"
+          :label="$t('label.deliveryAddressSameAsMailing')"
+        />
+      </div>
+    </ConnectFieldset>
+    <ConnectFieldset
+      v-if="!model.sameAs"
+      :label="$t('label.deliveryAddress')"
+      :error="formErrors?.delivery"
+    >
       <ConnectFormAddress
         id="delivery-address"
         v-model="model.deliveryAddress"
@@ -84,26 +105,8 @@ defineExpose({
         @should-validate="formRef?.clear(/^deliveryAddress.*/)"
       />
     </ConnectFieldset>
-    <ConnectFieldset
-      :label="$t('label.mailingAddress')"
-      :error="formErrors?.mailing"
-    >
-      <div class="flex flex-col gap-6">
-        <UCheckbox
-          v-model="model.sameAs"
-          :label="$t('label.sameAsDeliveryAddress')"
-        />
-        <ConnectFormAddress
-          v-if="!model.sameAs"
-          id="mailing-address"
-          v-model="model.mailingAddress"
-          schema-prefix="mailingAddress"
-          @should-validate="formRef?.clear(/^mailingAddress.*/)"
-        />
-      </div>
-    </ConnectFieldset>
     <slot v-if="!nested" name="actions">
-      <div class="flex gap-6 justify-end">
+      <div class="flex gap-6 justify-end py-6 px-4 sm:py-10 sm:px-8">
         <UButton type="submit" :label="$t('label.done')" />
         <UButton
           variant="outline"

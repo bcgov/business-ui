@@ -88,6 +88,7 @@ provide('UInput-props-document-id-number-input', uInputProps)
       :label="order ? `${order}. ${$t('label.documentId')}` : $t('label.documentId')"
       :description="$t('text.documentIdDescription')"
       body-variant="card"
+      orientation="vertical"
     >
       <div class="flex flex-col gap-4">
         <ConnectFormFieldWrapper
