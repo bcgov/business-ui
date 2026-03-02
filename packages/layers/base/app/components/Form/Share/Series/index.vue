@@ -85,99 +85,111 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
     :name
     :nested
     :state="model"
-    class="bg-white"
-    :class="{
-      'p-6 rounded shadow': variant === 'add',
-      'px-6 py-4': variant === 'edit',
-      'border-l-3 border-error': alerts[formTarget]
-    }"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset
-      :data-testid="formTarget"
-      :label="title"
-      orientation="horizontal"
-      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
-    >
-      <div class="space-y-6">
-        <ConnectFormInput
-          v-model="model.name"
-          required
-          :label="$t('label.seriesNameShares')"
-          input-id="share-series-name-input"
-          name="name"
-          :help="$t('text.seriesNameHelp')"
+    <fieldset :data-testid="formTarget">
+      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
+        <UIcon
+          name="i-mdi-sitemap"
+          class="size-6 shrink-0 text-primary"
         />
+        <span class="font-semibold text-neutral-highlighted text-base">
+          {{ title }}
+        </span>
+      </legend>
+      <div
+        class="divide-y divide-shade bg-white"
+        :class="{
+          'rounded shadow': variant === 'add',
+          'border-l-3 border-error': alerts[formTarget]
+        }"
+      >
+        <ConnectFormFieldWrapper :label="$t('label.seriesName')" nested>
+          <ConnectFormInput
+            v-model="model.name"
+            required
+            :label="$t('label.seriesNameShares')"
+            input-id="share-series-name-input"
+            name="name"
+            :help="$t('text.seriesNameHelp')"
+          />
+        </ConnectFormFieldWrapper>
         <USeparator />
-        <URadioGroup
-          v-if="!shareClassData?.hasMaximumShares"
-          v-model="model.hasMaximumShares"
-          size="xl"
-          :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
-          :ui="{
-            fieldset: 'gap-y-6',
-            item: 'items-center gap-4'
-          }"
-          @update:model-value="resetFields"
-        >
-          <template #label="{ item }">
-            <ConnectFormInput
-              v-if="item.value"
-              v-model.number="model.maxNumberOfShares"
-              :disabled="!model.hasMaximumShares"
-              :class="{ 'opacity-75': !model.hasMaximumShares }"
-              input-id="max-number-shares-input"
-              :label="$t('label.maxNumberOfShares')"
-              name="maxNumberOfShares"
-              :required="model.hasMaximumShares"
-              :help="$t('text.maxNumberOfSharesHelp')"
+        <ConnectFormFieldWrapper :label="$t('label.maxNumberOfShares')" nested>
+          <URadioGroup
+            v-if="!shareClassData?.hasMaximumShares"
+            v-model="model.hasMaximumShares"
+            size="xl"
+            :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
+            :ui="{
+              fieldset: 'gap-y-6',
+              item: 'items-center gap-4'
+            }"
+            @update:model-value="resetFields"
+          >
+            <template #label="{ item }">
+              <ConnectFormInput
+                v-if="item.value"
+                v-model.number="model.maxNumberOfShares"
+                :disabled="!model.hasMaximumShares"
+                :class="{ 'opacity-75': !model.hasMaximumShares }"
+                input-id="max-number-shares-input"
+                :label="$t('label.maxNumberOfShares')"
+                name="maxNumberOfShares"
+                :required="model.hasMaximumShares"
+                :help="$t('text.maxNumberOfSharesHelp')"
+              />
+              <span v-else>{{ item.label }}</span>
+            </template>
+          </URadioGroup>
+          <ConnectFormInput
+            v-else
+            v-model.number="model.maxNumberOfShares"
+            maxlength="17"
+            :disabled="!model.hasMaximumShares"
+            :class="{ 'opacity-75': !model.hasMaximumShares }"
+            input-id="max-number-shares-input"
+            :label="$t('label.maxNumberOfShares')"
+            name="maxNumberOfShares"
+            :required="model.hasMaximumShares"
+            :help="$t('text.maxNumberOfSharesHelp')"
+          />
+        </ConnectFormFieldWrapper>
+        <USeparator />
+        <ConnectFormFieldWrapper :label="$t('label.parValue')" nested>
+          <div
+            v-if="shareClassData?.hasParValue && shareClassData.parValue && shareClassData.currency"
+            class="flex flex-col gap-2 sm:gap-4 sm:flex-row"
+          >
+            <ConnectInput
+              id="par-value-display-input"
+              v-model="shareClassData.parValue"
+              readonly
+              :label="$t('label.parValue')"
+              class="w-full flex-1"
             />
-            <span v-else>{{ item.label }}</span>
-          </template>
-        </URadioGroup>
-        <ConnectFormInput
-          v-else
-          v-model.number="model.maxNumberOfShares"
-          maxlength="17"
-          :disabled="!model.hasMaximumShares"
-          :class="{ 'opacity-75': !model.hasMaximumShares }"
-          input-id="max-number-shares-input"
-          :label="$t('label.maxNumberOfShares')"
-          name="maxNumberOfShares"
-          :required="model.hasMaximumShares"
-          :help="$t('text.maxNumberOfSharesHelp')"
-        />
+            <ConnectInput
+              id="currency-display-input"
+              v-model="shareClassData.currency"
+              readonly
+              :label="$t('label.currency')"
+              class="w-full flex-1"
+            />
+          </div>
+          <p v-else class="text-base">
+            {{ $t('label.noParValue') }}
+          </p>
+        </ConnectFormFieldWrapper>
         <USeparator />
-        <div
-          v-if="shareClassData?.hasParValue && shareClassData.parValue && shareClassData.currency"
-          class="flex flex-col gap-2 sm:gap-4 sm:flex-row"
-        >
-          <ConnectInput
-            id="par-value-display-input"
-            v-model="shareClassData.parValue"
-            readonly
-            :label="$t('label.parValue')"
-            class="w-full flex-1"
-          />
-          <ConnectInput
-            id="currency-display-input"
-            v-model="shareClassData.currency"
-            readonly
-            :label="$t('label.currency')"
-            class="w-full flex-1"
-          />
-        </div>
-        <p v-else class="text-base">
-          {{ $t('label.noParValue') }}
-        </p>
-        <USeparator />
-        <UFormField name="hasRightsOrRestrictions">
-          <UCheckbox
-            v-model="model.hasRightsOrRestrictions"
-            :label="$t('label.shareClassHasRightsOrRestrictions')"
-            :ui="{ label: 'text-base' }"
-          />
-        </UFormField>
+        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" nested>
+          <UFormField name="hasRightsOrRestrictions">
+            <UCheckbox
+              v-model="model.hasRightsOrRestrictions"
+              :label="$t('label.shareClassHasRightsOrRestrictions')"
+              :ui="{ label: 'text-base' }"
+            />
+          </UFormField>
+        </ConnectFormFieldWrapper>
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center justify-between">
           <UButton
             :label="$t('label.remove')"
@@ -191,22 +203,22 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
               :message="alerts[formTarget]"
             />
             <UButton
+              variant="outline"
+              :label="$t('label.cancel')"
+              class="w-full sm:w-min justify-center"
+              @click="$emit('cancel')"
+            />
+            <UButton
               :data-alert-focus-target="targetId"
               :aria-describedby="messageId"
               :label="$t('label.done')"
               class="w-full sm:w-min justify-center"
               @click="onDone"
             />
-            <UButton
-              variant="outline"
-              :label="$t('label.cancel')"
-              class="w-full sm:w-min justify-center"
-              @click="$emit('cancel')"
-            />
           </div>
         </div>
       </div>
-    </ConnectFieldset>
+    </fieldset>
   </UForm>
 </template>
 

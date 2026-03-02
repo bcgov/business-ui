@@ -13,10 +13,12 @@ const model = defineModel<boolean>({ required: true })
     :label="order ? `${order}. ${t('label.addToLedgerOpt')}` : t('label.addToLedgerOpt')"
     :description="t('text.addToLedgerDescription')"
     body-variant="card"
+    orientation="vertical"
   >
     <ConnectFormFieldWrapper
       :label="t('label.addToLedger')"
       orientation="horizontal"
+      nested
     >
       <UFormField :name>
         <UCheckbox

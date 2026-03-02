@@ -64,141 +64,153 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
     :name
     :nested
     :state="model"
-    class="bg-white"
-    :class="{
-      'p-6 rounded shadow': variant === 'add',
-      'px-6 py-4': variant === 'edit',
-      'border-l-3 border-error': alerts[formTarget]
-    }"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset
-      :data-testid="formTarget"
-      :label="title"
-      orientation="horizontal"
-      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
-    >
-      <div class="space-y-6">
-        <ConnectFormInput
-          v-model="model.name"
-          required
-          :label="$t('label.classNameShares')"
-          input-id="share-class-name-input"
-          name="name"
-          :help="$t('text.shareNameHelp')"
+    <fieldset :data-testid="formTarget">
+      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
+        <UIcon
+          name="i-mdi-sitemap"
+          class="size-6 shrink-0 text-primary"
         />
+        <span class="font-semibold text-neutral-highlighted text-base">
+          {{ title }}
+        </span>
+      </legend>
+      <div
+        class="divide-y divide-shade bg-white"
+        :class="{
+          'rounded shadow': variant === 'add',
+          'border-l-3 border-error': alerts[formTarget]
+        }"
+      >
+        <ConnectFormFieldWrapper :label="$t('label.className')" nested>
+          <ConnectFormInput
+            v-model="model.name"
+            required
+            :label="$t('label.classNameShares')"
+            input-id="share-class-name-input"
+            name="name"
+            :help="$t('text.shareNameHelp')"
+          />
+        </ConnectFormFieldWrapper>
         <USeparator />
-        <URadioGroup
-          v-model="model.hasMaximumShares"
-          size="xl"
-          :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
-          :ui="{
-            fieldset: 'gap-y-6',
-            item: 'items-center gap-4'
-          }"
-          @update:model-value="resetFields('maxShares')"
-        >
-          <template #label="{ item }">
-            <ConnectFormInput
-              v-if="item.value"
-              v-model.number="model.maxNumberOfShares"
-              :disabled="!model.hasMaximumShares"
-              :class="{ 'opacity-75': !model.hasMaximumShares }"
-              input-id="max-number-shares-input"
-              :label="$t('label.maxNumberOfShares')"
-              name="maxNumberOfShares"
-              :required="model.hasMaximumShares"
-              :help="$t('text.maxNumberOfSharesHelp')"
-            />
-            <span v-else>{{ item.label }}</span>
-          </template>
-        </URadioGroup>
-        <USeparator />
-        <URadioGroup
-          v-model="model.hasParValue"
-          size="xl"
-          :items="[{ value: true }, { label: $t('label.noParValue'), value: false }]"
-          :ui="{
-            fieldset: 'gap-y-6',
-            item: 'items-center gap-4'
-          }"
-          @update:model-value="resetFields('parValue')"
-        >
-          <template #label="{ item }">
-            <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
+        <ConnectFormFieldWrapper :label="$t('label.maxNumberOfShares')" nested>
+          <URadioGroup
+            v-model="model.hasMaximumShares"
+            size="xl"
+            :items="[{ value: true }, { label: $t('label.noMaximum'), value: false }]"
+            :ui="{
+              fieldset: 'gap-y-6',
+              item: 'items-center gap-4'
+            }"
+            @update:model-value="resetFields('maxShares')"
+          >
+            <template #label="{ item }">
               <ConnectFormInput
-                v-model.number="model.parValue"
-                :disabled="!model.hasParValue"
-                :class="{ 'opacity-75': !model.hasParValue }"
-                input-id="par-value-input"
-                :label="$t('label.parValue')"
-                name="parValue"
-                :required="model.hasParValue"
-                :help="$t('text.parValueHelp')"
-                class="w-full flex-1"
+                v-if="item.value"
+                v-model.number="model.maxNumberOfShares"
+                :disabled="!model.hasMaximumShares"
+                :class="{ 'opacity-75': !model.hasMaximumShares }"
+                input-id="max-number-shares-input"
+                :label="$t('label.maxNumberOfShares')"
+                name="maxNumberOfShares"
+                :required="model.hasMaximumShares"
+                :help="$t('text.maxNumberOfSharesHelp')"
               />
-              <UFormField
-                name="currency"
-                data-testid="form-field-currency"
-                :class="{ 'opacity-75': !model.hasParValue }"
-                class="w-full flex-1"
-              >
-                <ConnectInputMenu
-                  id="par-value-currency-input"
-                  v-model="model.currency"
-                  data-testid="par-value-currency-input"
-                  :label="$t('label.currency')"
-                  :items="currencyOptions"
-                  class="w-full"
-                  :required="model.hasParValue"
-                  :disabled="!model.hasParValue"
-                  open-on-focus
-                />
-              </UFormField>
-            </div>
-            <span v-else>{{ item.label }}</span>
-          </template>
-        </URadioGroup>
+              <span v-else>{{ item.label }}</span>
+            </template>
+          </URadioGroup>
+        </ConnectFormFieldWrapper>
         <USeparator />
-        <UFormField name="hasRightsOrRestrictions">
-          <UCheckbox
-            v-model="model.hasRightsOrRestrictions"
-            :label="$t('label.shareClassHasRightsOrRestrictions')"
-            :ui="{ label: 'text-base' }"
+        <ConnectFormFieldWrapper :label="$t('label.parValue')" nested>
+          <URadioGroup
+            v-model="model.hasParValue"
+            size="xl"
+            :items="[{ value: true }, { label: $t('label.noParValue'), value: false }]"
+            :ui="{
+              fieldset: 'gap-y-6',
+              item: 'items-center gap-4'
+            }"
+            @update:model-value="resetFields('parValue')"
+          >
+            <template #label="{ item }">
+              <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
+                <ConnectFormInput
+                  v-model.number="model.parValue"
+                  :disabled="!model.hasParValue"
+                  :class="{ 'opacity-75': !model.hasParValue }"
+                  input-id="par-value-input"
+                  :label="$t('label.parValue')"
+                  name="parValue"
+                  :required="model.hasParValue"
+                  :help="$t('text.parValueHelp')"
+                  class="w-full flex-1"
+                />
+                <UFormField
+                  name="currency"
+                  data-testid="form-field-currency"
+                  :class="{ 'opacity-75': !model.hasParValue }"
+                  class="w-full flex-1"
+                >
+                  <ConnectInputMenu
+                    id="par-value-currency-input"
+                    v-model="model.currency"
+                    data-testid="par-value-currency-input"
+                    :label="$t('label.currency')"
+                    :items="currencyOptions"
+                    class="w-full"
+                    :required="model.hasParValue"
+                    :disabled="!model.hasParValue"
+                    open-on-focus
+                  />
+                </UFormField>
+              </div>
+              <span v-else>{{ item.label }}</span>
+            </template>
+          </URadioGroup>
+        </ConnectFormFieldWrapper>
+        <USeparator />
+        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" nested>
+          <UFormField name="hasRightsOrRestrictions">
+            <UCheckbox
+              v-model="model.hasRightsOrRestrictions"
+              :label="$t('label.shareClassHasRightsOrRestrictions')"
+              :ui="{ label: 'text-base' }"
+            />
+          </UFormField>
+        </ConnectFormFieldWrapper>
+      </div>
+      <div
+        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center mt-6"
+        :class="variant === 'edit' ? 'justify-between' : 'justify-end'"
+      >
+        <UButton
+          v-if="variant === 'edit'"
+          :label="$t('label.remove')"
+          variant="outline"
+          color="error"
+          @click="$emit('remove')"
+        />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
           />
-        </UFormField>
-        <div
-          class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center"
-          :class="variant === 'edit' ? 'justify-between' : 'justify-end'"
-        >
           <UButton
-            v-if="variant === 'edit'"
-            :label="$t('label.remove')"
             variant="outline"
-            color="error"
-            @click="$emit('remove')"
+            :label="$t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('cancel')"
           />
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-            <FormAlertMessage
-              :id="messageId"
-              :message="alerts[formTarget]"
-            />
-            <UButton
-              :data-alert-focus-target="targetId"
-              :aria-describedby="messageId"
-              :label="$t('label.done')"
-              class="w-full sm:w-min justify-center"
-              @click="onDone"
-            />
-            <UButton
-              variant="outline"
-              :label="$t('label.cancel')"
-              class="w-full sm:w-min justify-center"
-              @click="$emit('cancel')"
-            />
-          </div>
+          <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
+            :label="$t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="onDone"
+          />
         </div>
       </div>
-    </ConnectFieldset>
+    </fieldset>
   </UForm>
 </template>

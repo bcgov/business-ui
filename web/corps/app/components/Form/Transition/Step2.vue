@@ -100,8 +100,14 @@ function onError(event: FormErrorEvent) {
       data-testid="staff-payment-section"
       :label="`4. ${$t('label.staffPayment')}`"
       body-variant="card"
+      orientation="vertical"
+      :error="staffPayFormRef?.formRef?.getErrors()[0]"
     >
-      <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
+      <ConnectFormFieldWrapper
+        :label="$t('label.payment')"
+        orientation="horizontal"
+        nested
+      >
         <StaffPayment
           ref="staff-pay-ref"
           v-model="store.formState.staffPayment"

@@ -41,11 +41,13 @@ defineExpose({
       :label="order ? `${order}. ${$t('label.documentDelivery')}` : $t('label.documentDelivery')"
       :description="$t('text.documentDeliveryDescription')"
       body-variant="card"
+      orientation="vertical"
     >
-      <div class="space-y-6">
+      <div>
         <ConnectFormFieldWrapper
           :label="$t('officeType.registeredOffice')"
           orientation="horizontal"
+          nested
         >
           <USkeleton v-if="loading" class="h-6 w-48" />
           <span v-else>{{ registeredOfficeEmail }}</span>
@@ -54,6 +56,7 @@ defineExpose({
           :label="$t('label.completingParty')"
           orientation="horizontal"
           :error="formError"
+          nested
         >
           <ConnectFormInput
             v-model="model.completingPartyEmail"
