@@ -25,7 +25,7 @@ const initialOfficer = partiesBC1234567.parties[0]!
 const initialRelationshipUi = formatPartyUi(initialOfficer as OrgPerson)
 const initialRelationship = formatRelationshipApi(initialRelationshipUi)
 // FUTURE: playwright not liking the second region dropdown (leaves first one open)
-delete newRelationship.mailingAddress
+delete newRelationship.deliveryAddress
 
 test.describe('Draft Officers', () => {
   // test.use({ storageState: 'tests/e2e/.auth/bcsc-user.json' })
@@ -61,7 +61,7 @@ test.describe('Draft Officers', () => {
     await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     const expectedRoles = ['Vice President', 'Chair']
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress)
+    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
     await assertAddress(page, newRelationship, 3, 'same')
 
     // save and resume later filing
@@ -82,7 +82,7 @@ test.describe('Draft Officers', () => {
     // page should reload with saved draft data
     await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress)
+    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
     await assertAddress(page, newRelationship, 3, 'same')
 
     // // should also include folio
@@ -100,7 +100,7 @@ test.describe('Draft Officers', () => {
       ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED']
     )
     await assertRoles(page, initialRelationship, ['Chief Executive Officer'])
-    await assertAddress(page, initialRelationship, 2, initialRelationship.deliveryAddress)
+    await assertAddress(page, initialRelationship, 2, initialRelationship.deliveryAddress!)
     await assertAddress(page, initialRelationship, 3, 'same')
   })
 

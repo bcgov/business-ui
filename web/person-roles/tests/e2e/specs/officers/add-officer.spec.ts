@@ -26,7 +26,8 @@ test.describe('Adding Officers', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      deliveryAddress: getFakeAddress(),
+      mailingAddress: getFakeAddress()
     }
 
     await openOfficerForm(page)
@@ -36,8 +37,8 @@ test.describe('Adding Officers', () => {
     await assertNameTableCell(page, newRelationship, ['ADDED'])
     const expectedRoles = roles.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress)
-    await assertAddress(page, newRelationship, 3, 'same')
+    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress!)
+    await assertAddress(page, newRelationship, 3, newRelationship.mailingAddress!)
 
     // submit filing
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -75,13 +76,13 @@ test.describe('Adding Officers', () => {
     await assertNameTableCell(page, newRelationship1, ['ADDED'])
     const expectedRoles1 = roles1.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship1, expectedRoles1)
-    await assertAddress(page, newRelationship1, 2, newRelationship1.deliveryAddress)
+    await assertAddress(page, newRelationship1, 2, newRelationship1.deliveryAddress!)
     await assertAddress(page, newRelationship1, 3, newRelationship1.mailingAddress!)
     // assert table columns for second officer
     await assertNameTableCell(page, newRelationship1, ['ADDED'])
     const expectedRoles2 = roles2.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship2, expectedRoles2)
-    await assertAddress(page, newRelationship2, 2, newRelationship2.deliveryAddress)
+    await assertAddress(page, newRelationship2, 2, newRelationship2.deliveryAddress!)
     await assertAddress(page, newRelationship2, 3, newRelationship2.mailingAddress!)
 
     // submit filing
@@ -126,7 +127,8 @@ test.describe('Adding Officers', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      deliveryAddress: getFakeAddress(),
+      mailingAddress: getFakeAddress()
     }
     // open form - will be closed by helper util
     await openOfficerForm(page)
@@ -157,7 +159,8 @@ test.describe('Adding Officers', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      deliveryAddress: getFakeAddress(),
+      mailingAddress: getFakeAddress()
     }
     // open form - will be closed by helper util
     await openOfficerForm(page)

@@ -64,7 +64,7 @@ test.describe('Task Guards', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      mailingAddress: getFakeAddress()
     }
 
     await openOfficerForm(page)
@@ -86,7 +86,7 @@ test.describe('Task Guards', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      mailingAddress: getFakeAddress()
     }
 
     await openOfficerForm(page)
