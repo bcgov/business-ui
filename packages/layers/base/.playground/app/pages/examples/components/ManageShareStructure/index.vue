@@ -14,12 +14,14 @@ tableState.value = mockClasses.shareClasses.map((c) => {
       actions: [],
       name: c.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
       id: c.id.toString(),
+      isEditing: false,
       series: c.series.map(s => ({
         ...s,
         id: s.id.toString(),
         actions: [],
         isInvalid: false,
-        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
+        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
+        isEditing: false
       }))
     },
     old: {
@@ -27,12 +29,14 @@ tableState.value = mockClasses.shareClasses.map((c) => {
       actions: [],
       id: c.id.toString(),
       name: c.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
+      isEditing: false,
       series: c.series.map(s => ({
         ...s,
         id: s.id.toString(),
         actions: [],
         isInvalid: false,
-        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
+        name: s.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
+        isEditing: false
       }))
     }
   }

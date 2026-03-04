@@ -3,10 +3,7 @@ import { z } from 'zod'
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
-  middleware: [
-    // Check for login redirect
-    'connect-auth'
-  ]
+  middleware: ['connect-auth']
 })
 
 const { t } = useI18n()

@@ -21,7 +21,8 @@ function createPartyMock(
         mailingAddress: formatAddressUi(addressData.mailing),
         deliveryAddress: formatAddressUi(addressData.delivery),
         sameAs: false
-      }
+      },
+      isEditing: false
     }
   }
 }
@@ -35,7 +36,8 @@ function createOfficeTableMock(
   const office = {
     type,
     actions,
-    address: { mailingAddress: mailing, deliveryAddress: delivery, sameAs: false }
+    address: { mailingAddress: mailing, deliveryAddress: delivery, sameAs: false },
+    isEditing: false
   }
   return {
     new: { ...office },
