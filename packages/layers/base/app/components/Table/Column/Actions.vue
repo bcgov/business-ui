@@ -64,7 +64,7 @@ const availableActions = computed(() => {
 
   if (canChange.value && !isRemoved.value) {
     actions.push({
-      label: t('label.change'),
+      label: isAdded.value ? t('label.edit') : t('label.change'),
       icon: 'i-mdi-pencil',
       click: () => emitAction('init-edit')
     })
