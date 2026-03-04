@@ -42,7 +42,7 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
   >
     <template #actions-cell="{ row }">
       <div
-        v-if="row.original.new.isEditing && row.depth === 0"
+        v-if="row.original.new.isEditing"
         data-is-editing="true"
         class="hidden"
       />
@@ -60,9 +60,7 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     </template>
 
     <template #expanded="{ row }">
-      <div class="py-4 sm:py-7.5">
-        <slot name="expanded" :row />
-      </div>
+      <slot name="expanded" :row />
     </template>
 
     <template #empty>

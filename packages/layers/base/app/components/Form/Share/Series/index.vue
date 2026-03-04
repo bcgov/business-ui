@@ -20,6 +20,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'share-series-form'
+const labelId = useId()
 
 const model = defineModel<ShareSeriesSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareSeriesSchema>>('share-series-form')
@@ -96,23 +97,25 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
     :state="model"
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset :data-testid="formTarget">
-      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
-        <UIcon
-          name="i-mdi-sitemap"
-          class="size-6 shrink-0 text-primary"
+    <fieldset :aria-labelledby="labelId" :data-testid="formTarget">
+      <legend class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full bg-primary text-white">
+        <div class="flex items-center gap-2.5">
+          <UIcon
+            :name="variant === 'add' ? 'i-mdi-plus' : 'i-mdi-edit'"
+            class="size-6 shrink-0 text-white"
+          />
+          <span :id="labelId" class="font-semibold text-base">
+            {{ title }}
+          </span>
+        </div>
+        <UButton
+          :label="$t('label.cancel')"
+          class="font-normal p-0"
+          trailing-icon="i-mdi-close"
+          @click="$emit('cancel')"
         />
-        <span class="font-semibold text-neutral-highlighted text-base">
-          {{ title }}
-        </span>
       </legend>
-      <div
-        class="bg-white"
-        :class="{
-          'rounded shadow': variant === 'add',
-          'border-l-3 border-error': alerts[formTarget]
-        }"
-      >
+      <div class="bg-white border border-gray-200 shadow">
         <ConnectFormFieldWrapper
           :label="$t('label.seriesName')"
           nested
@@ -207,32 +210,32 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
             />
           </UFormField>
         </ConnectFormFieldWrapper>
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center justify-between">
-          <UButton
-            :label="$t('label.remove')"
-            variant="outline"
-            color="error"
-            @click="$emit('remove')"
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center justify-between mt-6">
+        <UButton
+          :label="$t('label.remove')"
+          variant="outline"
+          color="error"
+          @click="$emit('remove')"
+        />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
           />
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-            <FormAlertMessage
-              :id="messageId"
-              :message="alerts[formTarget]"
-            />
-            <UButton
-              variant="outline"
-              :label="$t('label.cancel')"
-              class="w-full sm:w-min justify-center"
-              @click="$emit('cancel')"
-            />
-            <UButton
-              :data-alert-focus-target="targetId"
-              :aria-describedby="messageId"
-              :label="$t('label.done')"
-              class="w-full sm:w-min justify-center"
-              @click="onDone"
-            />
-          </div>
+          <UButton
+            variant="outline"
+            :label="$t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('cancel')"
+          />
+          <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
+            :label="$t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="onDone"
+          />
         </div>
       </div>
     </fieldset>

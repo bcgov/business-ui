@@ -27,7 +27,9 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :prevent-actions="preventActions"
   >
     <template #expanded="{ row }">
-      <slot name="expanded" :row />
+      <div class="py-4 sm:py-7.5">
+        <slot name="expanded" :row />
+      </div>
     </template>
   </TableBusiness>
 </template>

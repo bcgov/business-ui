@@ -21,6 +21,7 @@ const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'share-class-form'
 const currencyOptions = getCurrencyList()
 const schema = computed(() => getActiveShareClassSchema(props.validationContext))
+const labelId = useId()
 
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
@@ -75,19 +76,36 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
     :state="model"
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset :data-testid="formTarget">
-      <legend class="py-4 px-4 sm:px-8 bg-shade-secondary flex items-center gap-2.5 w-full">
-        <UIcon
-          name="i-mdi-sitemap"
-          class="size-6 shrink-0 text-primary"
+    <fieldset :aria-labelledby="labelId" :data-testid="formTarget">
+      <legend
+        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full"
+        :class="{
+          'bg-shade-secondary text-neutral-highlighted': variant === 'add',
+          'bg-primary text-white': variant === 'edit'
+        }"
+      >
+        <div class="flex items-center gap-2.5">
+          <UIcon
+            :name="variant === 'add' ? 'i-mdi-sitemap' : 'i-mdi-edit'"
+            class="size-6 shrink-0"
+            :class="variant === 'add' ? 'text-primary' : 'text-white'"
+          />
+          <span :id="labelId" class="font-semibold text-base">
+            {{ title }}
+          </span>
+        </div>
+        <UButton
+          v-if="variant === 'edit'"
+          :label="$t('label.cancel')"
+          class="font-normal p-0"
+          trailing-icon="i-mdi-close"
+          @click="$emit('cancel')"
         />
-        <span class="font-semibold text-neutral-highlighted text-base">
-          {{ title }}
-        </span>
       </legend>
       <div
         class="bg-white"
         :class="{
+          'border border-gray-200': variant === 'edit',
           'rounded shadow': variant === 'add',
           'border-l-3 border-error': alerts[formTarget]
         }"

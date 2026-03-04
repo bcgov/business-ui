@@ -330,6 +330,7 @@ export default {
   label: {
     actions: 'Actions',
     addDetail: 'Add Detail',
+    addingSeriesToClass: 'Adding Series to {name} Shares',
     addOfficeType: 'Add {type}',
     addSeries: 'Add Series',
     addShareClass: 'Add Share Class',
