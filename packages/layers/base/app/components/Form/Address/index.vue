@@ -77,6 +77,7 @@ defineExpose({
     <ConnectFieldset
       :label="$t('label.mailingAddress')"
       :error="formErrors?.mailing"
+      padding-class="xy-default"
     >
       <div class="flex flex-col gap-6">
         <ConnectFormAddress
@@ -95,6 +96,7 @@ defineExpose({
       v-if="!model.sameAs"
       :label="$t('label.deliveryAddress')"
       :error="formErrors?.delivery"
+      padding-class="xy-default"
     >
       <ConnectFormAddress
         id="delivery-address"

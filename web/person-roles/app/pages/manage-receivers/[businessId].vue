@@ -207,7 +207,7 @@ useFilingPageWatcher<ReceiverType>({
         <ConnectFormFieldWrapper
           :label="$t('label.payment')"
           orientation="horizontal"
-          nested
+          padding-class="xy-default"
         >
           <StaffPayment
             ref="staff-pay-ref"

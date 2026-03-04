@@ -2,21 +2,28 @@
 import type { FormError } from '@nuxt/ui'
 
 const {
-  orientation = 'horizontal'
+  orientation = 'horizontal',
+  paddingClass = 'x-default'
 } = defineProps<{
   label: string
   error?: FormError | boolean
   showErrorMsg?: boolean
   orientation?: 'vertical' | 'horizontal'
-  nested?: boolean
+  paddingClass?: 'x-default' | 'xy-default' | string
 }>()
+
+const padding = paddingClass === 'x-default'
+  ? 'px-4 sm:px-8'
+  : paddingClass === 'xy-default'
+    ? 'py-6 px-4 sm:py-10 sm:px-8'
+    : paddingClass
 </script>
 
 <template>
   <div
     :class="[
       'flex gap-4 sm:gap-6',
-      { 'py-6 px-4 sm:py-10 sm:px-8': nested },
+      padding,
       orientation === 'horizontal' ? 'flex-col sm:flex-row' : 'flex-col',
       error ? 'border-error border-l-3' : 'border-transparent border-l-3'
     ]"

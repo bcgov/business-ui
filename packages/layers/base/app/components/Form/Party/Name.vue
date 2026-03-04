@@ -70,7 +70,7 @@ defineExpose({
     <ConnectFieldset
       :label="t('label.personOrOrgName')"
       :error="formErrors && formErrors[0]"
-      nested
+      padding-class="xy-default"
     >
       <div class="space-y-6">
         <div v-if="allowBusinessName" class="space-y-6">

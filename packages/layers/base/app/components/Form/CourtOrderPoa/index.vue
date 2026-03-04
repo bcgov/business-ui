@@ -35,11 +35,10 @@ defineExpose({
       body-variant="card"
       orientation="vertical"
     >
-      <div class="flex flex-col">
+      <div class="flex flex-col gap-6 py-6">
         <ConnectFormFieldWrapper
           :label="$t('label.planOfArrangement')"
           orientation="horizontal"
-          nested
         >
           <UFormField name="hasPoa">
             <UCheckbox
@@ -53,7 +52,6 @@ defineExpose({
           :label="$t('label.courtOrderNumber')"
           orientation="horizontal"
           :error="courtOrderNumberError"
-          nested
         >
           <ConnectFormInput
             v-model="model.courtOrderNumber"

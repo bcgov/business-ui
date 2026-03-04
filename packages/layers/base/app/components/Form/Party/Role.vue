@@ -88,6 +88,7 @@ defineExpose({
       :label="$t('label.roles')"
       :error="formErrors && formErrors[0]"
       :show-error-msg="true"
+      padding-class="xy-default"
     >
       <UFormField
         id="party-roles"

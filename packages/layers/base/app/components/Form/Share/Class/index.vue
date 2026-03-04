@@ -112,8 +112,8 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
       >
         <ConnectFormFieldWrapper
           :label="$t('label.className')"
-          nested
           :error="formErrors.name"
+          padding-class="xy-default"
         >
           <ConnectFormInput
             v-model="model.name"
@@ -127,8 +127,8 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
         <USeparator />
         <ConnectFormFieldWrapper
           :label="$t('label.maxNumberOfShares')"
-          nested
           :error="formErrors.maxShares"
+          padding-class="xy-default"
         >
           <URadioGroup
             v-model="model.hasMaximumShares"
@@ -159,8 +159,8 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
         <USeparator />
         <ConnectFormFieldWrapper
           :label="$t('label.parValue')"
-          nested
           :error="formErrors.parValue"
+          padding-class="xy-default"
         >
           <URadioGroup
             v-model="model.hasParValue"
@@ -209,7 +209,7 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
           </URadioGroup>
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" nested>
+        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" padding-class="xy-default">
           <UFormField name="hasRightsOrRestrictions">
             <UCheckbox
               v-model="model.hasRightsOrRestrictions"

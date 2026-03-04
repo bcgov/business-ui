@@ -73,7 +73,7 @@ defineExpose({
         :label="t('label.delayFor')"
         orientation="horizontal"
         :error="dateError"
-        nested
+        padding-class="xy-default"
       >
         <div class="flex flex-col gap-4">
           <UFormField name="option">

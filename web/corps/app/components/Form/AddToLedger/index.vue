@@ -18,7 +18,7 @@ const model = defineModel<boolean>({ required: true })
     <ConnectFormFieldWrapper
       :label="t('label.addToLedger')"
       orientation="horizontal"
-      nested
+      padding-class="xy-default"
     >
       <UFormField :name>
         <UCheckbox

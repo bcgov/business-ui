@@ -43,11 +43,10 @@ defineExpose({
       body-variant="card"
       orientation="vertical"
     >
-      <div>
+      <div class="flex flex-col gap-6 py-6">
         <ConnectFormFieldWrapper
           :label="$t('officeType.registeredOffice')"
           orientation="horizontal"
-          nested
         >
           <USkeleton v-if="loading" class="h-6 w-48" />
           <span v-else>{{ registeredOfficeEmail }}</span>
@@ -56,7 +55,6 @@ defineExpose({
           :label="$t('label.completingParty')"
           orientation="horizontal"
           :error="formError"
-          nested
         >
           <ConnectFormInput
             v-model="model.completingPartyEmail"

@@ -4,7 +4,7 @@ import type { FormError } from '@nuxt/ui'
 const {
   orientation = 'horizontal',
   bodyVariant = 'none',
-  nested
+  paddingClass = 'x-default'
 } = defineProps<{
   label?: string
   description?: string
@@ -12,7 +12,7 @@ const {
   showErrorMsg?: boolean
   orientation?: 'vertical' | 'horizontal'
   bodyVariant?: FieldsetBodyVariant
-  nested?: boolean
+  paddingClass?: 'x-default' | 'xy-default' | string
 }>()
 
 const id = useId()
@@ -25,6 +25,12 @@ const bodyClassMap: Record<FieldsetBodyVariant, string> = {
 }
 
 const bodyClass = bodyClassMap[bodyVariant]
+
+const padding = paddingClass === 'x-default'
+  ? 'px-4 sm:px-8'
+  : paddingClass === 'xy-default'
+    ? 'py-6 px-4 sm:py-10 sm:px-8'
+    : paddingClass
 </script>
 
 <template>
@@ -32,7 +38,7 @@ const bodyClass = bodyClassMap[bodyVariant]
     <div
       :class="[
         'flex gap-4 sm:gap-6',
-        { 'py-6 px-4 sm:py-10 sm:px-8': bodyVariant === 'none' || nested },
+        bodyVariant === 'none' ? padding : '',
         orientation === 'horizontal' ? 'flex-col sm:flex-row' : 'flex-col',
         (error && bodyVariant === 'none') ? 'border-error border-l-3' : 'border-transparent border-l-3'
       ]"

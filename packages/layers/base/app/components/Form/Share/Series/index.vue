@@ -118,8 +118,8 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
       <div class="bg-white border border-gray-200 shadow">
         <ConnectFormFieldWrapper
           :label="$t('label.seriesName')"
-          nested
           :error="formErrors.name"
+          padding-class="xy-default"
         >
           <ConnectFormInput
             v-model="model.name"
@@ -133,8 +133,8 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
         <USeparator />
         <ConnectFormFieldWrapper
           :label="$t('label.maxNumberOfShares')"
-          nested
           :error="formErrors.maxShares"
+          padding-class="xy-default"
         >
           <URadioGroup
             v-if="!shareClassData?.hasMaximumShares"
@@ -176,7 +176,7 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
           />
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.parValue')" nested>
+        <ConnectFormFieldWrapper :label="$t('label.parValue')" padding-class="xy-default">
           <div
             v-if="shareClassData?.hasParValue && shareClassData.parValue && shareClassData.currency"
             class="flex flex-col gap-2 sm:gap-4 sm:flex-row"
@@ -201,7 +201,7 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
           </p>
         </ConnectFormFieldWrapper>
         <USeparator />
-        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" nested>
+        <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" padding-class="xy-default">
           <UFormField name="hasRightsOrRestrictions">
             <UCheckbox
               v-model="model.hasRightsOrRestrictions"

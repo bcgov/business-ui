@@ -39,7 +39,7 @@ defineExpose({
         :label="$t('label.folioOrRefNumber')"
         orientation="horizontal"
         :error="formError"
-        nested
+        padding-class="xy-default"
       >
         <ConnectFormInput
           v-model="model.folioNumber"
