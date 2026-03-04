@@ -37,7 +37,8 @@ export function getPartySchema(roleType?: RoleTypeUi) {
       preferredName: ''
     }),
     roles: getPartyRoleSchema(roleType),
-    id: z.string().optional().default(() => '')
+    id: z.string().optional().default(() => ''),
+    isEditing: z.boolean().default(false)
   })
 }
 

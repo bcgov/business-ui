@@ -2,7 +2,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const props = defineProps<{
+defineProps<{
   data?: TableBusinessState<T>[]
   columns: TableBusinessColumn<T>[]
   loading?: boolean
@@ -22,29 +22,6 @@ defineEmits<{
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
-const expandedTrClass = computed(() => {
-  const expandedKeys = (typeof expanded.value === 'object' && expanded.value !== null)
-    ? Object.keys(expanded.value)
-    : []
-
-  const rowIndex = expandedKeys.length > 0 ? Number(expandedKeys[0]) : undefined
-
-  const isFirstRow = rowIndex === 0
-  const isLastRow = props.data && rowIndex !== undefined && rowIndex === props.data.length - 1
-
-  let classes = 'data-[expanded=true]:[&+tr>td]:p-0 '
-
-  if (!isFirstRow) {
-    classes += 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade '
-  }
-
-  if (!isLastRow) {
-    classes += '[&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
-  }
-
-  return classes
-})
-
 const trClass = '[&:has([data-is-editing="true"])]:hidden'
 </script>
 
@@ -60,7 +37,7 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
       tbody: 'px-10',
       th: 'text-neutral-highlighted px-2',
       td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
-      tr: trClass // expandedTrClass // 'data-[expanded=true]:hidden'
+      tr: trClass
     }"
   >
     <template #actions-cell="{ row }">

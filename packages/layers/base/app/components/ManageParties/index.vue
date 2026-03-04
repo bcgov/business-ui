@@ -25,6 +25,7 @@ const {
 }>()
 
 let editLabel = ''
+let currentEditingRow: PartySchema | null = null
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
 
@@ -57,6 +58,9 @@ function initAddParty() {
 }
 
 function cleanupPartyForm() {
+  if (currentEditingRow) {
+    currentEditingRow.isEditing = false
+  }
   addingParty.value = false
   expandedState.value = undefined
   activeParty.value = undefined
@@ -67,16 +71,19 @@ function addParty(party: ActivePartySchema) {
   cleanupPartyForm()
 }
 
-async function initEditParty(row: TableBusinessRow<PartySchema>) {
+function initEditParty(row: TableBusinessRow<PartySchema>) {
   // FUTURE: handle the incomplete address parsing in connect layer
   if (activePartySchema.safeParse({ ...row.original.new })?.success) {
     activeParty.value = activePartySchema.parse({ ...row.original.new })
   } else {
     activeParty.value = JSON.parse(JSON.stringify({ ...row.original.new }))
   }
-  await nextTick()
+
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+
   editLabel = ''
-  const nameProps = activeParty.value?.name
+  const nameProps = row.original.new.name
   if (nameProps) {
     const name = nameProps.partyType === PartyType.PERSON
       ? `${nameProps.firstName} ${nameProps.middleName} ${nameProps.lastName}`.toUpperCase()
