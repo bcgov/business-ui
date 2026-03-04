@@ -37,7 +37,7 @@ describe('getPartyNameColumn', () => {
 
     expect(cell.type).toBe(TableColumnIdentity)
     expect(cell.props.label).toBe('JOHN QUINCY DOE')
-    expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
+    expect(cell.props.class).toBe('font-bold flex flex-col gap-2')
     expect(cell.children['additional-label']).toBeDefined()
     expect(cell.children['additional-label']()).toEqual([])
   })
@@ -65,7 +65,7 @@ describe('getPartyNameColumn', () => {
 
     expect(cell.type).toBe(TableColumnIdentity)
     expect(cell.props.label).toBe('JOHN QUINCY DOE')
-    expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
+    expect(cell.props.class).toBe('font-bold flex flex-col gap-2')
     expect(cell.children['additional-label']).toBeDefined()
     const slot = cell.children['additional-label']()
     expect(slot.children.length).toBe(2)

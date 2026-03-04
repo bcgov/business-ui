@@ -18,7 +18,7 @@ export async function fillOutAddress(
     const provinceSelect = addressLocator.getByTestId(`${type}-address-input-region`)
     const postalCodeInput = addressLocator.getByTestId(`${type}-address-input-postalCode`)
     const deliveryInstructionsInput = addressLocator.getByTestId(`${type}-address-input-locationDescription`)
-    const sameAsCheckbox = addressLocator.getByRole('checkbox', { name: 'Same as Delivery Address' })
+    const sameAsCheckbox = addressLocator.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
     await expect(streetInput).toBeVisible()
     await streetInput.fill(address.streetAddress)
     await expect(cityInput).toBeVisible()

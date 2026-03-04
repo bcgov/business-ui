@@ -62,7 +62,7 @@ describe('getEffectiveDatesColumn', () => {
     expect(mockGetIsRowRemoved).toHaveBeenCalledWith(row)
 
     expect(cell.type).toBe('span')
-    expect(cell.props.class).toEqual('min-w-48 max-w-48 overflow-clip')
+    expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip')
     expect(cell.children).toContain('April 12, 2025 to current')
   })
 

@@ -6,7 +6,7 @@ describe('getColumnMeta', () => {
 
     expect(result).toEqual({
       class: {
-        td: 'px-2',
+        td: 'px-2 py-4',
         th: ''
       }
     })

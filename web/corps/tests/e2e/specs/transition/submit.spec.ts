@@ -63,7 +63,7 @@ async function editAndConfirmDirectors(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'WALLABY WAY ' })
   await rowToEdit.getByRole('button', { name: 'Change' }).click()
-  await directors.getByTestId('delivery-address-input-streetAdditional').fill('Unit 1A')
+  await directors.getByTestId('mailing-address-input-streetAdditional').fill('Unit 1A')
   await directors.getByRole('button', { name: 'Done' }).click()
 
   await page.getByRole('checkbox', {
@@ -158,7 +158,7 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
   expect(filing.transition.contactPoint).toEqual(contactPoint)
 
   expect(filing.transition.relationships).toHaveLength(3)
-  expect(filing.transition.relationships[1]?.deliveryAddress.streetAddressAdditional).toEqual('Unit 1A')
+  expect(filing.transition.relationships[0]?.mailingAddress?.streetAddressAdditional).toEqual('Unit 1A')
 
   const classes = filing.transition.shareStructure.shareClasses
   expect(classes).toHaveLength(9)

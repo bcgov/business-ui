@@ -8,7 +8,7 @@ const getElements = (page: Page) => {
   const lastNameInput = page.getByLabel('Last Name')
   const deliveryAddress = page.getByTestId('delivery-address-container')
   const mailingAddress = page.getByTestId('mailing-address-container')
-  const checkbox = page.getByRole('checkbox', { name: 'Same as Delivery Address' })
+  const checkbox = page.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
 
   return {
     doneButton,
