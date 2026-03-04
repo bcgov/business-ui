@@ -39,7 +39,7 @@ const loading = ref(false)
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
         :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.CUSTODIAL}`) })"
-        edit-label="Edit Office"
+        section-label="Offices"
         :allowed-actions="[ManageAllowedAction.ADD]"
         :allow-add-office-type="OfficeType.CUSTODIAL"
       />

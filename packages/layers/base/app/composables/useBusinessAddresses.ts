@@ -48,7 +48,8 @@ export const useBusinessAddresses = () => {
       const formatted = {
         type,
         actions: [],
-        address: formatBaseAddressUi(addresses[type])
+        address: formatBaseAddressUi(addresses[type]),
+        isEditing: false
       }
 
       return {

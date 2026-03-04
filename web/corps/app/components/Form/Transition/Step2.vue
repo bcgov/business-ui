@@ -41,7 +41,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
         :add-label="$t('label.addOffice')"
-        :edit-label="$t('label.editOffice')"
+        :section-label="$t('label.offices')"
         :allowed-actions="[]"
       />
 
@@ -51,7 +51,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :add-label="$t('label.addDirector')"
-        :edit-label="$t('label.editDirector')"
+        :section-label="$t('label.directors')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"

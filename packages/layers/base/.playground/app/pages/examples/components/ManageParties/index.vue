@@ -32,7 +32,7 @@ const loading = ref(false)
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
         add-label="Add Party"
-        edit-label="Edit Party"
+        section-label="Parties"
         :columns-to-display="['name', 'roles', 'delivery', 'mailing', 'actions']"
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: true },

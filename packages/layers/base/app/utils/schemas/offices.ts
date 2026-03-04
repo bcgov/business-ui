@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export function getOfficesSchema() {
   return z.object({
+    isEditing: z.boolean().default(false),
     actions: z.array(z.enum(ActionType)).default(() => []),
     type: z.enum(OfficeType).default(() => OfficeType.REGISTERED),
     address: getAddressSchema().default(() => ({

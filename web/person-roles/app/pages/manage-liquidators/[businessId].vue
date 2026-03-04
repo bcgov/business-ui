@@ -166,7 +166,7 @@ useFilingPageWatcher<LiquidateType>({
           :loading="store.initializing"
           :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
           :add-label="$t('label.addLiquidator')"
-          :edit-label="$t('label.editLiquidator')"
+          :section-label="$t('label.liquidators')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
@@ -207,7 +207,7 @@ useFilingPageWatcher<LiquidateType>({
           :loading="store.initializing"
           :empty-text="store.initializing ? `${t('label.loading')}...` : t('label.noOffice')"
           :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.LIQUIDATION}`) })"
-          :edit-label="$t('label.editOffice')"
+          :section-label="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
         />

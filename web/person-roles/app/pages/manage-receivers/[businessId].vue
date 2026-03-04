@@ -170,7 +170,7 @@ useFilingPageWatcher<ReceiverType>({
           :loading="receiverStore.initializing"
           :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
           :add-label="$t('label.addReceiver')"
-          :edit-label="$t('label.editReceiver')"
+          :section-label="$t('label.receivers')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.RECEIVER"
           :party-form-props="{

@@ -40,7 +40,7 @@ const loading = ref(false)
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
         add-label="Add Office"
-        edit-label="Edit Office"
+        section-label="Offices"
       />
     </ConnectPageSection>
   </UContainer>
