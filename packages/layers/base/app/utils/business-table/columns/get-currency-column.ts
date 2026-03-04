@@ -16,7 +16,7 @@ export function getCurrencyColumn<T extends ShareClassSchema>(
       const isRowRemoved = getIsRowRemoved(row)
       const isParentRowRemoved = isSeries && getIsRowRemoved(row.getParentRow()!)
 
-      const defaultClass = 'min-w-48 max-w-48 overflow-clip'
+      const defaultClass = 'min-w-40 max-w-40 overflow-clip'
       // apply opacity whether the current or parent row is removed
       const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 

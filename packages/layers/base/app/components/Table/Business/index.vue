@@ -56,9 +56,9 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     :columns
     sticky
     :ui="{
-      root: 'bg-white rounded-sm ring ring-gray-200',
+      root: 'bg-white rounded-sm',
       tbody: 'px-10',
-      th: 'bg-shade-secondary text-neutral-highlighted px-2',
+      th: 'text-neutral-highlighted px-2',
       td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
       tr: trClass // expandedTrClass // 'data-[expanded=true]:hidden'
     }"
@@ -83,7 +83,9 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     </template>
 
     <template #expanded="{ row }">
-      <slot name="expanded" :row />
+      <div class="py-4 sm:py-7.5">
+        <slot name="expanded" :row />
+      </div>
     </template>
 
     <template #empty>

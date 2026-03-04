@@ -21,7 +21,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
   const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
 
-  async function init(businessId: string, filingSubType?: ReceiverType, draftId?: string) {
+  async function init(businessId: string, draftId?: string) {
     initializing.value = true
     $reset()
 

@@ -161,6 +161,7 @@ useFilingPageWatcher({
         :empty-text="officerStore.initializing ? `${$t('label.loading')}...` : $t('text.noOfficers')"
         :add-label="$t('label.addOfficer')"
         :edit-label="$t('label.editOfficer')"
+        :section-label="$t('label.officers')"
         :columns-to-display="['name', 'roles', 'delivery', 'mailing', 'actions']"
         :party-form-props="{
           partyNameProps: { allowBusinessName: false, allowPreferredName: true },

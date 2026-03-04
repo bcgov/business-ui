@@ -28,12 +28,12 @@ const formErrors = computed<{
   }
 })
 
-// reset mailing address if 'sameAs' is checked and the user makes changes to delivery address
+// reset delivery address if 'sameAs' is checked and the user makes changes to mailing address
 watchDebounced(
-  model.value.deliveryAddress,
+  model.value.mailingAddress,
   () => {
     if (model.value.sameAs) {
-      model.value.mailingAddress = {
+      model.value.deliveryAddress = {
         street: '',
         streetAdditional: '',
         city: '',
@@ -53,7 +53,7 @@ watch(
   () => model.value.sameAs,
   (v) => {
     if (v) {
-      model.value.mailingAddress = { ...model.value.deliveryAddress }
+      model.value.deliveryAddress = { ...model.value.mailingAddress }
     }
   }
 )
