@@ -71,10 +71,10 @@ export function getTableRowForPerson(page: Page, lastName: string) {
   return row
 }
 
-export async function openOfficerForm(page: Page, row?: Locator) {
+export async function openOfficerForm(page: Page, row?: Locator, isEdit = false) {
   if (row) { // pass a row to open the form in edit mode
     await expect(row).toBeVisible()
-    const changeButton = row.getByRole('button', { name: 'Change' })
+    const changeButton = row.getByRole('button', { name: isEdit ? 'Edit' : 'Change' })
     if (await changeButton.isVisible()) { // if no edits or newly added, there will be a change button
       await changeButton.click()
     } else { // if edits to existing officer, need to access change button in more actions menu

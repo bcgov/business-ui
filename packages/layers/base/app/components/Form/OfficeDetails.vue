@@ -32,6 +32,7 @@ async function onDone() {
 }
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
+const labelId = useId()
 </script>
 
 <template>
@@ -39,31 +40,60 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     :data-testid="formTarget"
     :name
     nested
-    class="bg-white"
-    :class="{
-      'p-6 rounded shadow': variant === 'add',
-      'px-6 py-4': variant === 'edit',
-      'border-l-3 border-error': alerts[formTarget]
-    }"
     @keydown.enter.prevent.stop="onDone"
   >
-    <ConnectFieldset
-      :data-testid="formTarget"
-      :label="title"
-      orientation="horizontal"
-      :error="alerts[formTarget] ? { message: alerts[formTarget]! } : undefined"
-    >
-      <FormAddress
-        v-if="model"
-        ref="address-form"
-        v-model="model.address"
-        nested
-        name="address"
-      />
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
+    <fieldset :aria-labelledby="labelId">
+      <legend
+        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full"
+        :class="{
+          'bg-shade-secondary text-neutral-highlighted': variant === 'add',
+          'bg-primary text-white': variant === 'edit'
+        }"
+      >
+        <div class="flex items-center gap-2.5">
+          <UIcon
+            :name="variant === 'add' ? 'i-mdi-domain' : 'i-mdi-edit'"
+            class="size-6 shrink-0"
+            :class="variant === 'add' ? 'text-primary' : 'text-white'"
+          />
+          <span :id="labelId" class="font-semibold text-base">
+            {{ title }}
+          </span>
+        </div>
+        <UButton
+          v-if="variant === 'edit'"
+          :label="$t('label.cancel')"
+          class="font-normal p-0"
+          trailing-icon="i-mdi-close"
+          @click="$emit('cancel')"
+        />
+      </legend>
+      <div
+        class="divide-y divide-shade bg-white"
+        :class="{
+          'border border-gray-200': variant === 'edit',
+          'rounded shadow': variant === 'add',
+          'border-l-3 border-error': alerts[formTarget]
+        }"
+      >
+        <FormAddress
+          v-if="model"
+          ref="address-form"
+          v-model="model.address"
+          nested
+          name="address"
+        />
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
         <FormAlertMessage
           :id="messageId"
           :message="alerts[formTarget]"
+        />
+        <UButton
+          variant="outline"
+          :label="t('label.cancel')"
+          class="w-full sm:w-min justify-center"
+          @click="$emit('cancel')"
         />
         <UButton
           :data-alert-focus-target="targetId"
@@ -72,13 +102,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           class="w-full sm:w-min justify-center"
           @click="onDone"
         />
-        <UButton
-          variant="outline"
-          :label="t('label.cancel')"
-          class="w-full sm:w-min justify-center"
-          @click="$emit('cancel')"
-        />
       </div>
-    </ConnectFieldset>
+    </fieldset>
   </UForm>
 </template>

@@ -7,7 +7,6 @@ const {
   loading?: boolean
   emptyText?: string
   addLabel: string
-  // editLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
   readonly?: boolean
@@ -17,6 +16,8 @@ const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-clas
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series', { required: true })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
+let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
+let editLabel = ''
 
 const {
   expandedState,
@@ -86,6 +87,7 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
       newSeries.hasMaximumShares = true
       activeSeries.value = newSeries
       addingSeriesToClassId.value = addSeriesToRow.original.new.id
+      editLabel = t('label.addingSeriesToClass', { name: addSeriesToRow.original.new.name })
       return
     }
   }
@@ -101,6 +103,10 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
 }
 
 function cleanupForm() {
+  if (currentEditingRow) {
+    currentEditingRow.isEditing = false
+  }
+
   addingShareClass.value = false
   addingSeriesToClassId.value = undefined
   activeClass.value = undefined
@@ -113,6 +119,9 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
   } else {
     activeClass.value = activeClassSchema.parse({ ...row.original.new })
   }
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+  editLabel = t('label.editingItemName', { name: `${row.original.new.name} ${t('label.shares')}` })
   expandedState.value = { [row.id]: true, ...expandedState.value as object }
 }
 
@@ -182,55 +191,74 @@ function clearAllAlerts() {
       @cancel="cleanupForm"
     />
 
-    <TableShareStructure
-      v-model:expanded="expandedState"
-      :data="tableState"
-      :loading
-      :empty-text="emptyText"
-      :allowed-actions="allowedActions"
-      :prevent-actions="!!activeClass || !!activeSeries"
-      :hide-actions-when="hideRowActionsWhen"
-      @init-edit="onInitEdit"
-      @move-row="changePriority"
-      @add-series="(row: TableBusinessRow<ShareClassSchema>) => initAddItem(row)"
-      @remove="
-        (row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? removeShareClass(row) : removeShareSeries(row)
-      "
-      @undo="(row: TableBusinessRow<ShareClassSchema>) => row.depth === 0 ? undoShareClass(row) : undoShareSeries(row)"
-      @action-prevented="setActiveFormAlert"
+    <ConnectPageSection
+      :heading="{
+        label: $t('label.shareStructure'),
+        icon: 'i-mdi-sitemap',
+        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
+      }"
     >
-      <template #expanded="{ row }">
-        <FormShareClass
-          v-if="row.depth === 0 && activeClass?.id === row.original.new.id"
-          v-model="activeClass"
-          :title="$t('label.editShareClass')"
-          :state-key="stateKey"
-          variant="edit"
-          name="activeClass"
-          :validation-context="classValidationContext"
-          nested
-          @done="() => updateShareClass(row, activeClass, cleanupForm)"
-          @cancel="cleanupForm"
-          @remove="() => removeShareClass(row, cleanupForm)"
-        />
-        <FormShareSeries
-          v-if="activeSeries && (row.depth === 1 || addingSeriesToClassId === row.original.new.id)"
-          v-model="activeSeries"
-          name="activeSeries"
-          :title="addingSeriesToClassId ? $t('label.addShareSeries') : $t('label.editShareSeries')"
-          :variant="addingSeriesToClassId ? 'add' : 'edit'"
-          :row
-          :state-key="stateKey"
-          :existing-names="allSeriesNames"
-          nested
-          @done="() => {
-            addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
-            cleanupForm()
-          }"
-          @cancel="cleanupForm"
-          @remove="() => { removeShareSeries(row), cleanupForm() }"
-        />
-      </template>
-    </TableShareStructure>
+      <div class="px-4 sm:px-5">
+        <TableShareStructure
+          v-model:expanded="expandedState"
+          :data="tableState"
+          :loading
+          :empty-text="emptyText"
+          :allowed-actions="allowedActions"
+          :prevent-actions="!!activeClass || !!activeSeries"
+          :hide-actions-when="hideRowActionsWhen"
+          @init-edit="onInitEdit"
+          @move-row="changePriority"
+          @add-series="(row: TableBusinessRow<ShareClassSchema>) => initAddItem(row)"
+          @remove="(row: TableBusinessRow<ShareClassSchema>) =>
+            row.depth === 0 ? removeShareClass(row) : removeShareSeries(row)"
+          @undo="(row: TableBusinessRow<ShareClassSchema>) =>
+            row.depth === 0 ? undoShareClass(row) : undoShareSeries(row)
+          "
+          @action-prevented="setActiveFormAlert"
+        >
+          <template #expanded="{ row }">
+            <div v-if="row.depth === 0 && activeClass?.id === row.original.new.id" class="py-4 sm:py-7.5">
+              <FormShareClass
+                v-model="activeClass"
+                :title="editLabel"
+                :state-key="stateKey"
+                variant="edit"
+                name="activeClass"
+                :validation-context="classValidationContext"
+                nested
+                @done="() => updateShareClass(row, activeClass, cleanupForm)"
+                @cancel="cleanupForm"
+                @remove="() => removeShareClass(row, cleanupForm)"
+              />
+            </div>
+            <div
+              v-if="activeSeries && (
+                (row.depth === 1 && activeSeries.id === row.original.new.id)
+                || addingSeriesToClassId === row.original.new.id
+              )"
+              class="py-4 sm:py-7.5"
+            >
+              <FormShareSeries
+                v-model="activeSeries"
+                name="activeSeries"
+                :title="editLabel"
+                :variant="addingSeriesToClassId ? 'add' : 'edit'"
+                :row
+                :state-key="stateKey"
+                :existing-names="allSeriesNames"
+                nested
+                @done="() => {
+                  addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)
+                  cleanupForm()
+                }"
+                @cancel="cleanupForm"
+                @remove="() => { removeShareSeries(row), cleanupForm() }"
+              />
+            </div>
+          </template>
+        </TableShareStructure>
+      </div>
+    </ConnectPageSection>
   </div>
 </template>

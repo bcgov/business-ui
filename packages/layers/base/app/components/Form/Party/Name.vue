@@ -67,7 +67,11 @@ defineExpose({
     nested
     :name
   >
-    <ConnectFieldset :label="t('label.personOrOrgName')" :error="formErrors && formErrors[0]">
+    <ConnectFieldset
+      :label="t('label.personOrOrgName')"
+      :error="formErrors && formErrors[0]"
+      padding-class="xy-default"
+    >
       <div class="space-y-6">
         <div v-if="allowBusinessName" class="space-y-6">
           <URadioGroup

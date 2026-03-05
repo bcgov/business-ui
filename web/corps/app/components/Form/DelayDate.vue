@@ -67,11 +67,13 @@ defineExpose({
       :label="order ? `${order}. ${t('label.delayDate')}` : t('label.delayDate')"
       :description="t('text.delayDateDescription')"
       body-variant="card"
+      orientation="vertical"
     >
       <ConnectFormFieldWrapper
         :label="t('label.delayFor')"
         orientation="horizontal"
         :error="dateError"
+        padding-class="xy-default"
       >
         <div class="flex flex-col gap-4">
           <UFormField name="option">

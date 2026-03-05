@@ -7,7 +7,7 @@ const {
   loading?: boolean
   emptyText?: string
   addLabel: string
-  editLabel: string
+  sectionLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
   allowAddOfficeType?: OfficeType
@@ -29,6 +29,9 @@ const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
 const activeOfficeSchema = getActiveOfficesSchema()
+
+let editLabel = ''
+let currentEditingRow: OfficesSchema | null = null
 
 const tableHasAddType = computed(() => {
   return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
@@ -55,6 +58,9 @@ function initAddOffice() {
 }
 
 function cleanupOfficeForm() {
+  if (currentEditingRow) {
+    currentEditingRow.isEditing = false
+  }
   addingOffice.value = false
   expandedState.value = undefined
   activeOffice.value = undefined
@@ -66,7 +72,12 @@ function addOffice(office: ActiveOfficesSchema) {
 }
 
 function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
+  editLabel = t('label.editingItemName', { name: t(`officeType.${row.original.new.type}`) })
   activeOffice.value = activeOfficeSchema.parse({ ...row.original.new })
+
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+
   expandedState.value = { [row.index]: true }
 }
 
@@ -74,6 +85,8 @@ function applyEdits(office: ActiveOfficesSchema, row: TableBusinessRow<OfficesSc
   applyTableEdits(office, row)
   cleanupOfficeForm()
 }
+
+// OFFICE FORM HEADING AND TEXT COLOUR -- HIDE ROW BEING EDITED - THEN DO THE SAME TO SHARE STRUCTURE
 
 function clearAllAlerts() {
   clearAlert('office-address-form') // clear alert in sub form
@@ -107,30 +120,40 @@ function clearAllAlerts() {
       @cancel="cleanupOfficeForm"
     />
 
-    <TableOffices
-      v-model:expanded="expandedState"
-      :data="tableState"
-      :loading
-      :empty-text="emptyText"
-      :allowed-actions="allowedActions"
-      :prevent-actions="!!activeOffice"
-      @action-prevented="setActiveFormAlert"
-      @init-edit="initEditOffice"
-      @remove="removeOffice"
-      @undo="undoOffice"
+    <ConnectPageSection
+      :heading="{
+        label: sectionLabel,
+        icon: 'i-mdi-domain',
+        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
+      }"
     >
-      <template #expanded="{ row }">
-        <FormOfficeDetails
-          v-if="activeOffice"
-          v-model="activeOffice"
-          variant="edit"
-          name="activeOffice"
-          :title="editLabel"
-          :state-key="stateKey"
-          @done="() => applyEdits(activeOffice, row)"
-          @cancel="cleanupOfficeForm"
-        />
-      </template>
-    </TableOffices>
+      <div class="px-4 sm:px-5">
+        <TableOffices
+          v-model:expanded="expandedState"
+          :data="tableState"
+          :loading
+          :empty-text="emptyText"
+          :allowed-actions="allowedActions"
+          :prevent-actions="!!activeOffice"
+          @action-prevented="setActiveFormAlert"
+          @init-edit="initEditOffice"
+          @remove="removeOffice"
+          @undo="undoOffice"
+        >
+          <template #expanded="{ row }">
+            <FormOfficeDetails
+              v-if="activeOffice"
+              v-model="activeOffice"
+              variant="edit"
+              name="activeOffice"
+              :title="editLabel"
+              :state-key="stateKey"
+              @done="() => applyEdits(activeOffice, row)"
+              @cancel="cleanupOfficeForm"
+            />
+          </template>
+        </TableOffices>
+      </div>
+    </ConnectPageSection>
   </div>
 </template>

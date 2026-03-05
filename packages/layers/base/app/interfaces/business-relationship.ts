@@ -10,7 +10,7 @@ export interface BusinessEntity {
 }
 
 export interface BusinessRelationship {
-  deliveryAddress: ApiAddress
+  deliveryAddress?: ApiAddress
   mailingAddress?: ApiAddress
   roles: Role[]
   entity: Partial<BusinessEntity>

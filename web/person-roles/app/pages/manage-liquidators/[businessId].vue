@@ -166,7 +166,7 @@ useFilingPageWatcher<LiquidateType>({
           :loading="store.initializing"
           :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
           :add-label="$t('label.addLiquidator')"
-          :edit-label="$t('label.editLiquidator')"
+          :section-label="$t('label.liquidators')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
@@ -207,7 +207,7 @@ useFilingPageWatcher<LiquidateType>({
           :loading="store.initializing"
           :empty-text="store.initializing ? `${t('label.loading')}...` : t('label.noOffice')"
           :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.LIQUIDATION}`) })"
-          :edit-label="$t('label.editOffice')"
+          :section-label="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
         />
@@ -252,10 +252,16 @@ useFilingPageWatcher<LiquidateType>({
 
       <ConnectFieldset
         data-testid="staff-payment-section"
+        orientation="vertical"
         :label="(isReport ? '3. ' : showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
         body-variant="card"
+        :error="staffPayFormRef?.formRef?.getErrors()[0]"
       >
-        <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
+        <ConnectFormFieldWrapper
+          :label="$t('label.payment')"
+          orientation="horizontal"
+          padding-class="xy-default"
+        >
           <StaffPayment
             ref="staff-pay-ref"
             v-model="store.formState.staffPayment"

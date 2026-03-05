@@ -3,6 +3,7 @@ import { z } from 'zod'
 export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
   const t = useNuxtApp().$i18n.t
   return z.object({
+    isEditing: z.boolean().default(false),
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
     priority: z.number().default(1),
@@ -67,6 +68,7 @@ export type ActiveShareSeriesSchema = z.output<ReturnType<typeof getActiveShareS
 export function getShareClassSchema(context?: { existingNames: string[] }) {
   const t = useNuxtApp().$i18n.t
   return z.object({
+    isEditing: z.boolean().default(false),
     id: z.string().default(() => crypto.randomUUID()),
     actions: z.array(z.enum(ActionType)).default(() => []),
     priority: z.number().default(1),

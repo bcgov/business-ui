@@ -20,7 +20,7 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
       const isRowRemoved = getIsRowRemoved(row)
       const isParentRowRemoved = isSeries && getIsRowRemoved(row.getParentRow()!)
 
-      const defaultClass = 'font-bold min-w-48 max-w-48' // flex flex-col gap-2
+      const defaultClass = 'font-bold min-w-40 max-w-40' // flex flex-col gap-2
       // apply opacity whether the current or parent row is removed
       const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 

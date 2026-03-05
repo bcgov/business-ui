@@ -27,7 +27,7 @@ test.describe('FormAddress (default)', () => {
     await expect(mailingAddress.getByTestId('mailing-address-field-postalCode')).toBeVisible()
     await expect(mailingAddress.getByTestId('mailing-address-field-locationDescription')).toBeVisible()
     // same as checkbox
-    await expect(page.getByRole('checkbox', { name: 'Same as Delivery Address' })).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })).toBeVisible()
     // actions
     await expect(page.getByRole('button', { name: 'Done' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible()
@@ -57,8 +57,8 @@ test.describe('FormAddress (default)', () => {
     await expect(page.getByTestId('delivery-address-container')).toBeVisible()
     // mailing address elements
     await expect(page.getByTestId('mailing-address-container')).toBeVisible()
-    await page.getByText('Same as Delivery Address').click()
-    await expect(page.getByTestId('mailing-address-container')).not.toBeVisible()
+    await page.getByText('Delivery Address same as Mailing Address').click()
+    await expect(page.getByTestId('delivery-address-container')).not.toBeVisible()
   })
 
   test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
@@ -70,10 +70,10 @@ test.describe('FormAddress (default)', () => {
     const mailingAddress = page.getByTestId('mailing-address-container')
     await expect(deliveryAddress).toBeVisible()
     await expect(mailingAddress).toBeVisible()
-    await page.getByText('Same as Delivery Address').click()
+    await page.getByText('Delivery Address same as Mailing Address').click()
 
-    await expect(mailingAddress).not.toBeVisible()
-    await deliveryAddress.getByTestId('delivery-address-input-streetAdditional').fill('updated')
-    await expect(mailingAddress).toBeVisible()
+    await expect(deliveryAddress).not.toBeVisible()
+    await mailingAddress.getByTestId('mailing-address-input-streetAdditional').fill('updated')
+    await expect(deliveryAddress).toBeVisible()
   })
 })

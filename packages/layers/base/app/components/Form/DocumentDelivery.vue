@@ -41,8 +41,9 @@ defineExpose({
       :label="order ? `${order}. ${$t('label.documentDelivery')}` : $t('label.documentDelivery')"
       :description="$t('text.documentDeliveryDescription')"
       body-variant="card"
+      orientation="vertical"
     >
-      <div class="space-y-6">
+      <div class="flex flex-col gap-6 py-6">
         <ConnectFormFieldWrapper
           :label="$t('officeType.registeredOffice')"
           orientation="horizontal"

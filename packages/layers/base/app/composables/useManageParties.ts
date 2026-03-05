@@ -14,19 +14,15 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   const tableState = useState<TableBusinessState<PartySchema>[]>(`${stateKey}-table-state`, () => [])
 
   function updateTable(newState: TableBusinessState<PartySchema>, row?: TableBusinessRow<PartySchema>): void {
-    if (!row) {
-      tableState.value = [
-        ...tableState.value,
-        JSON.parse(JSON.stringify(newState))
-      ]
-    } else {
-      const index = row.index
+    const newItem = JSON.parse(JSON.stringify(newState))
 
-      tableState.value = [
-        ...tableState.value.slice(0, index),
-        JSON.parse(JSON.stringify(newState)),
-        ...tableState.value.slice(index + 1)
-      ]
+    if (!row) {
+      tableState.value = [newItem, ...tableState.value]
+    } else {
+      const otherRows = tableState.value.filter(
+        item => item.new.id !== row.original.new.id
+      )
+      tableState.value = [newItem, ...otherRows]
     }
   }
 

@@ -193,7 +193,7 @@ describe('TableColumnActions', () => {
       expect(wrapper.findComponent(UButton).exists()).toBe(false)
     })
 
-    it('should show Change and Remove for a NEW row if allowedActions is empty', async () => {
+    it('should show Edit and Remove for a NEW row if allowedActions is empty', async () => {
       mockGetIsRowRemoved.mockReturnValue(false)
       mockGetIsRowEdited.mockReturnValue(false)
 
@@ -203,7 +203,7 @@ describe('TableColumnActions', () => {
       })
 
       expect(wrapper.findComponent(UButton).exists()).toBe(true)
-      expect(wrapper.findComponent(UButton).props('label')).toBe('label.change')
+      expect(wrapper.findComponent(UButton).props('label')).toBe('label.edit')
 
       const dropdown = wrapper.findComponent(UDropdownMenu as any)
       expect(dropdown.exists()).toBe(true)

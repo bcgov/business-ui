@@ -1,8 +1,8 @@
-<script setup lang="ts" generic="T extends { actions: ActionType[] }">
+<script setup lang="ts" generic="T extends { actions: ActionType[], isEditing: boolean }">
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-const props = defineProps<{
+defineProps<{
   data?: TableBusinessState<T>[]
   columns: TableBusinessColumn<T>[]
   loading?: boolean
@@ -22,28 +22,7 @@ defineEmits<{
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
-const expandedTrClass = computed(() => {
-  const expandedKeys = (typeof expanded.value === 'object' && expanded.value !== null)
-    ? Object.keys(expanded.value)
-    : []
-
-  const rowIndex = expandedKeys.length > 0 ? Number(expandedKeys[0]) : undefined
-
-  const isFirstRow = rowIndex === 0
-  const isLastRow = props.data && rowIndex !== undefined && rowIndex === props.data.length - 1
-
-  let classes = 'data-[expanded=true]:[&+tr>td]:p-0 '
-
-  if (!isFirstRow) {
-    classes += 'data-[expanded=true]:border-t-6 data-[expanded=true]:border-shade '
-  }
-
-  if (!isLastRow) {
-    classes += '[&[data-expanded=true]+tr]:border-b-6 [&[data-expanded=true]+tr]:border-shade'
-  }
-
-  return classes
-})
+const trClass = '[&:has([data-is-editing="true"])]:hidden'
 </script>
 
 <template>
@@ -54,14 +33,19 @@ const expandedTrClass = computed(() => {
     :columns
     sticky
     :ui="{
-      root: 'bg-white rounded-sm ring ring-gray-200',
+      root: 'bg-white rounded-sm',
       tbody: 'px-10',
-      th: 'bg-shade-secondary text-neutral-highlighted px-2',
-      td: 'text-neutral-highlighted align-top text-sm whitespace-normal',
-      tr: expandedTrClass
+      th: 'text-neutral-highlighted px-2',
+      td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
+      tr: trClass
     }"
   >
     <template #actions-cell="{ row }">
+      <div
+        v-if="row.original.new.isEditing"
+        data-is-editing="true"
+        class="hidden"
+      />
       <TableColumnActions
         v-if="(row.depth === 0 || !getIsRowRemoved(row.getParentRow())) && !hideActionsWhen?.(row)"
         :row

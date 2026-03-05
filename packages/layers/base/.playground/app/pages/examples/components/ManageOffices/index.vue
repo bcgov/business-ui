@@ -14,13 +14,13 @@ tableState.value = Object.entries(mockOffices).map(([key, value]) => {
       type: key as OfficeType,
       actions: [],
       address: formatBaseAddressUi(value),
-      id: ''
+      isEditing: false
     },
     old: {
       type: key as OfficeType,
       actions: [],
       address: formatBaseAddressUi(value),
-      id: ''
+      isEditing: false
     }
   }
 })
@@ -40,7 +40,7 @@ const loading = ref(false)
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
         add-label="Add Office"
-        edit-label="Edit Office"
+        section-label="Offices"
       />
     </ConnectPageSection>
   </UContainer>

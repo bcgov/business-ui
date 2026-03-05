@@ -148,14 +148,14 @@ describe('useBusinessAddresses', () => {
     describe('formatDraftTableState', () => {
       const { formatDraftTableState } = useBusinessAddresses()
       const baseOffice: TableBusinessState<OfficesSchema> = {
-        new: { type: OfficeType.REGISTERED, address: mockAddress, actions: [] },
-        old: { type: OfficeType.REGISTERED, address: mockAddress, actions: [] }
+        new: { type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false },
+        old: { type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false }
       }
 
       test('should add ADDRESS_CHANGED action when addresses are not equal', () => {
         const changedAddress = { ...mockAddress, street: '456 New St' }
         const draft: TableBusinessState<OfficesSchema> = {
-          new: { type: OfficeType.REGISTERED, address: changedAddress, actions: [] },
+          new: { type: OfficeType.REGISTERED, address: changedAddress, actions: [], isEditing: false },
           old: undefined
         }
 
@@ -167,7 +167,7 @@ describe('useBusinessAddresses', () => {
 
       test('should add ADDED action when the office type doesnt exist in initial state', () => {
         const draft: TableBusinessState<OfficesSchema> = {
-          new: { type: OfficeType.LIQUIDATION, address: mockAddress, actions: [] },
+          new: { type: OfficeType.LIQUIDATION, address: mockAddress, actions: [], isEditing: false },
           old: undefined as any
         }
 
@@ -179,7 +179,7 @@ describe('useBusinessAddresses', () => {
 
       test('should set actions to empty array no changes between initial and draft state', () => {
         const draft: TableBusinessState<OfficesSchema> = {
-          new: { type: OfficeType.REGISTERED, address: mockAddress, actions: [] },
+          new: { type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false },
           old: undefined as any
         }
 

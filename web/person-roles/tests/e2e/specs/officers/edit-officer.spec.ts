@@ -35,7 +35,7 @@ test.describe('Editing Officers', () => {
     const updatedRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      mailingAddress: getFakeAddress()
     }
 
     const row = getTableRowForPerson(page, initialRelationship.entity.familyName!)
@@ -49,7 +49,7 @@ test.describe('Editing Officers', () => {
     await assertNameTableCell(page, updatedRelationship, ['ADDRESS CHANGED', 'NAME CHANGED', 'ROLES CHANGED'])
 
     // delivery should be updated
-    await assertAddress(page, updatedRelationship, 2, updatedRelationship.deliveryAddress)
+    await assertAddress(page, updatedRelationship, 2, updatedRelationship.mailingAddress!)
     // mailing should be empty
     await assertAddress(page, updatedRelationship, 3, 'same')
 
@@ -66,7 +66,7 @@ test.describe('Editing Officers', () => {
     const updatedRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      mailingAddress: getFakeAddress()
     }
 
     const row = getTableRowForPerson(page, initialRelationship.entity.familyName!)
@@ -115,7 +115,7 @@ test.describe('Editing Officers', () => {
     // edit/assert address once
     const newAddress1 = getFakeAddress()
     await openOfficerForm(page, row)
-    await fillOutAddress(page, newAddress1, 'delivery', true)
+    await fillOutAddress(page, newAddress1, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, initialRelationship, 2, newAddress1)
     await assertAddress(page, initialRelationship, 3, 'same')
@@ -123,7 +123,7 @@ test.describe('Editing Officers', () => {
     // edit/assert address a second time
     const newAddress2 = getFakeAddress()
     await openOfficerForm(page, row)
-    await fillOutAddress(page, newAddress2, 'delivery', true)
+    await fillOutAddress(page, newAddress2, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, initialRelationship, 2, newAddress2)
     await assertAddress(page, initialRelationship, 3, 'same')
@@ -150,7 +150,7 @@ test.describe('Editing Officers', () => {
     const newRelationship: BusinessRelationship = {
       entity: getFakePerson(),
       roles: roles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)),
-      deliveryAddress: getFakeAddress()
+      mailingAddress: getFakeAddress()
     }
 
     // add new officer
@@ -163,13 +163,13 @@ test.describe('Editing Officers', () => {
     await assertNameTableCell(page, newRelationship, ['ADDED'])
     const expectedRoles = roles.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress)
+    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
     await assertAddress(page, newRelationship, 3, 'same')
 
     // edit/assert address
     const newAddress = getFakeAddress()
-    await openOfficerForm(page, row)
-    await fillOutAddress(page, newAddress, 'delivery', true)
+    await openOfficerForm(page, row, true)
+    await fillOutAddress(page, newAddress, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
     // should have new adddress
     await assertAddress(page, newRelationship, 2, newAddress)
@@ -179,7 +179,7 @@ test.describe('Editing Officers', () => {
 
     // edit/assert name
     const newPerson = getFakePerson()
-    await openOfficerForm(page, row)
+    await openOfficerForm(page, row, true)
     // edit first name only
     await page.getByTestId('first-name-input').fill(newPerson.givenName)
     await page.getByRole('button', { name: 'Done' }).click()
@@ -191,7 +191,7 @@ test.describe('Editing Officers', () => {
 
     // edit/assert roles
     const newRoles = getRandomRoles()
-    await openOfficerForm(page, row)
+    await openOfficerForm(page, row, true)
     await fillOutRoles(page, newRoles.map(role => ({ roleType: role, roleClass: 'OFFICER' } as Role)))
     await page.getByRole('button', { name: 'Done' }).click()
     await expect(row.getByRole('cell').nth(0)).toContainText('ADDED')

@@ -47,7 +47,7 @@ const confirmErrors = computed(() => {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
         :add-label="$t('label.addOffice')"
-        :edit-label="$t('label.editOffice')"
+        :section-label="$t('label.offices')"
         :allowed-actions="[]"
       />
 
@@ -79,7 +79,7 @@ const confirmErrors = computed(() => {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :add-label="$t('label.addDirector')"
-        :edit-label="$t('label.editDirector')"
+        :section-label="$t('label.directors')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"

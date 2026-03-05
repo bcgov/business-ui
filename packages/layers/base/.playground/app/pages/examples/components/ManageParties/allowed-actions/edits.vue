@@ -54,7 +54,7 @@ const selectedItems = ref([
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
         add-label="Add Party"
-        edit-label="Edit Party"
+        section-label="Parties"
         :allowed-actions="selectedItems"
       />
     </ConnectPageSection>

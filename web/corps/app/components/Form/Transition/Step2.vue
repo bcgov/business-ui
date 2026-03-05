@@ -41,7 +41,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
         :add-label="$t('label.addOffice')"
-        :edit-label="$t('label.editOffice')"
+        :section-label="$t('label.offices')"
         :allowed-actions="[]"
       />
 
@@ -51,7 +51,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :add-label="$t('label.addDirector')"
-        :edit-label="$t('label.editDirector')"
+        :section-label="$t('label.directors')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
@@ -100,8 +100,14 @@ function onError(event: FormErrorEvent) {
       data-testid="staff-payment-section"
       :label="`4. ${$t('label.staffPayment')}`"
       body-variant="card"
+      orientation="vertical"
+      :error="staffPayFormRef?.formRef?.getErrors()[0]"
     >
-      <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
+      <ConnectFormFieldWrapper
+        :label="$t('label.payment')"
+        orientation="horizontal"
+        padding-class="xy-default"
+      >
         <StaffPayment
           ref="staff-pay-ref"
           v-model="store.formState.staffPayment"

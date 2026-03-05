@@ -55,7 +55,8 @@ function createPartyMock(
         mailingAddress: formatAddressUi(addressData.mailing),
         deliveryAddress: formatAddressUi(addressData.delivery),
         sameAs: false
-      }
+      },
+      isEditing: false
     }
   }
 }

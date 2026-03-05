@@ -14,7 +14,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
     cell: ({ row }) => {
       const badges = getTableBadges(row)
       const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'font-bold min-w-48 max-w-48 flex flex-col gap-2'
+      const defaultClass = 'font-bold flex flex-col gap-2'
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
       const nameProps = row.original.new.name
 

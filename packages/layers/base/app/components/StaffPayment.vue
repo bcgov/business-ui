@@ -29,7 +29,7 @@ const radioItems: RadioGroupItem[] = [
   { label: t('label.noFee'), value: StaffPaymentOption.NO_FEE }
 ]
 
-const staffPaymentForm = useTemplateRef<Form<StaffPaymentSchema>>('staffPaymentForm')
+const formRef = useTemplateRef<Form<StaffPaymentSchema>>('staff-pay-form')
 watch(() => staffPayment.value.option, async (val) => {
   feeStore.updateAllFees(staffPayment.value.isPriority, val === StaffPaymentOption.NO_FEE)
 
@@ -38,7 +38,7 @@ watch(() => staffPayment.value.option, async (val) => {
   }
   // NB: needs to render in the dom before clearing the validation.
   await nextTick()
-  staffPaymentForm.value?.clear()
+  formRef.value?.clear()
 })
 
 watch(() => staffPayment.value.isPriority, (val) => {
@@ -48,7 +48,7 @@ watch(() => staffPayment.value.isPriority, (val) => {
 function setFocusOnError() {
   // @ts-expect-error - $el not typed on form ref // TODO: this should be fixed in th elatest verison of nuxt ui
   // shouldn't need to use .$el anymore
-  const form = staffPaymentForm.value?.$el as HTMLDivElement | undefined
+  const form = formRef.value?.$el as HTMLDivElement | undefined
 
   if (form) {
     const radio = form.querySelector('button[role="radio"][value="NO_FEE"]')
@@ -62,13 +62,14 @@ function setFocusOnError() {
 }
 
 defineExpose({
-  setFocusOnError
+  setFocusOnError,
+  formRef
 })
 </script>
 
 <template>
   <UForm
-    ref="staffPaymentForm"
+    ref="staff-pay-form"
     class="space-y-4"
     :schema
     nested

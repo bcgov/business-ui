@@ -6,8 +6,8 @@ const {
 } = defineProps<{
   loading?: boolean
   emptyText?: string
+  sectionLabel: string
   addLabel: string
-  editLabel: string
   roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
@@ -23,6 +23,9 @@ const {
     }
   }
 }>()
+
+let editLabel = ''
+let currentEditingRow: PartySchema | null = null
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
 
@@ -55,6 +58,9 @@ function initAddParty() {
 }
 
 function cleanupPartyForm() {
+  if (currentEditingRow) {
+    currentEditingRow.isEditing = false
+  }
   addingParty.value = false
   expandedState.value = undefined
   activeParty.value = undefined
@@ -71,6 +77,19 @@ function initEditParty(row: TableBusinessRow<PartySchema>) {
     activeParty.value = activePartySchema.parse({ ...row.original.new })
   } else {
     activeParty.value = JSON.parse(JSON.stringify({ ...row.original.new }))
+  }
+
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+
+  editLabel = ''
+  const nameProps = row.original.new.name
+  if (nameProps) {
+    const name = nameProps.partyType === PartyType.PERSON
+      ? `${nameProps.firstName} ${nameProps.middleName} ${nameProps.lastName}`.toUpperCase()
+      : nameProps.businessName?.toUpperCase() || ''
+
+    editLabel = t('label.editingItemName', { name })
   }
   expandedState.value = { [row.index]: true }
 }
@@ -114,33 +133,43 @@ function clearAllAlerts() {
       @cancel="cleanupPartyForm"
     />
 
-    <TableParty
-      v-model:expanded="expandedState"
-      :data="tableState"
-      :loading
-      :empty-text="emptyText"
-      :allowed-actions="allowedActions"
-      :prevent-actions="!!activeParty"
-      :columns="columnsToDisplay"
-      @init-edit="initEditParty"
-      @remove="removeParty"
-      @undo="undoParty"
-      @action-prevented="setActiveFormAlert"
+    <ConnectPageSection
+      :heading="{
+        label: sectionLabel,
+        icon: 'i-mdi-account-supervisor',
+        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
+      }"
     >
-      <template #expanded="{ row }">
-        <FormPartyDetails
-          v-if="activeParty"
-          v-model="activeParty"
-          v-bind="partyFormProps"
-          :title="editLabel"
+      <div class="px-4 sm:px-5">
+        <TableParty
+          v-model:expanded="expandedState"
+          :data="tableState"
+          :loading
+          :empty-text="emptyText"
           :allowed-actions="allowedActions"
-          name="activeParty"
-          variant="edit"
-          :state-key="stateKey"
-          @cancel="cleanupPartyForm"
-          @done="() => applyEdits(activeParty, row)"
-        />
-      </template>
-    </TableParty>
+          :prevent-actions="!!activeParty"
+          :columns="columnsToDisplay"
+          @init-edit="initEditParty"
+          @remove="removeParty"
+          @undo="undoParty"
+          @action-prevented="setActiveFormAlert"
+        >
+          <template #expanded="{ row }">
+            <FormPartyDetails
+              v-if="activeParty"
+              v-model="activeParty"
+              v-bind="partyFormProps"
+              :title="editLabel"
+              :allowed-actions="allowedActions"
+              name="activeParty"
+              variant="edit"
+              :state-key="stateKey"
+              @cancel="cleanupPartyForm"
+              @done="() => applyEdits(activeParty, row)"
+            />
+          </template>
+        </TableParty>
+      </div>
+    </ConnectPageSection>
   </div>
 </template>

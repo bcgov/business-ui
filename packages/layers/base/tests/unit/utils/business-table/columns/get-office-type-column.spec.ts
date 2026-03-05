@@ -58,7 +58,7 @@ describe('getOfficeTypeColumn', () => {
     expect(cell.type).toBe(TableColumnIdentity)
     expect(cell.props.label).toBe('Registered Office')
     expect(cell.props.badges).toEqual(mockBadges)
-    expect(cell.props.class).toBe('font-bold min-w-48 max-w-48 flex flex-col gap-2')
+    expect(cell.props.class).toBe('font-bold min-w-40 max-w-40 flex flex-col gap-2')
   })
 
   it('cell should add "opacity-50" when row is removed', () => {

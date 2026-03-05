@@ -27,7 +27,7 @@ describe('getMaxNumberOfSharesColumn', () => {
 
     expect(cell.type).toBe('span')
     expect(cell.children).toBe('1000')
-    expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip')
+    expect(cell.props.class).toBe('min-w-40 max-w-40 overflow-clip')
   })
 
   it('renders "No Maximum" label when maxNumberOfShares is missing', () => {
