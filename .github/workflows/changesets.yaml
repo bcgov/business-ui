@@ -7,7 +7,6 @@ on:
       - main
       - develop
       - release/**
-      - feature-business-layer
     paths:
       - "packages/**"
 
@@ -20,6 +19,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
 
@@ -35,7 +35,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'pnpm'
       
       - name: Install dependencies
@@ -50,4 +50,3 @@ jobs:
           createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
