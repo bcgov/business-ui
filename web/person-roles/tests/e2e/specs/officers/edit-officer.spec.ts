@@ -49,9 +49,9 @@ test.describe('Editing Officers', () => {
     await assertNameTableCell(page, updatedRelationship, ['ADDRESS CHANGED', 'NAME CHANGED', 'ROLES CHANGED'])
 
     // delivery should be updated
-    await assertAddress(page, updatedRelationship, 2, updatedRelationship.mailingAddress!)
+    await assertAddress(page, updatedRelationship, 1, updatedRelationship.mailingAddress!)
     // mailing should be empty
-    await assertAddress(page, updatedRelationship, 3, 'same')
+    await assertAddress(page, updatedRelationship, 2, 'same')
 
     // should be redirected to business dashboard on submit
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -117,25 +117,25 @@ test.describe('Editing Officers', () => {
     await openOfficerForm(page, row)
     await fillOutAddress(page, newAddress1, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
-    await assertAddress(page, initialRelationship, 2, newAddress1)
-    await assertAddress(page, initialRelationship, 3, 'same')
+    await assertAddress(page, initialRelationship, 1, newAddress1)
+    await assertAddress(page, initialRelationship, 2, 'same')
     await assertNameTableCell(page, initialRelationship, ['ADDRESS CHANGED'])
     // edit/assert address a second time
     const newAddress2 = getFakeAddress()
     await openOfficerForm(page, row)
     await fillOutAddress(page, newAddress2, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
-    await assertAddress(page, initialRelationship, 2, newAddress2)
-    await assertAddress(page, initialRelationship, 3, 'same')
+    await assertAddress(page, initialRelationship, 1, newAddress2)
+    await assertAddress(page, initialRelationship, 2, 'same')
     await assertNameTableCell(page, initialRelationship, ['ADDRESS CHANGED'])
 
     // undo changes
     await row.getByRole('button', { name: 'Undo' }).click()
 
     // address should have initial state
-    await expect(row.getByRole('cell').nth(2)).not.toContainText(newAddress1.streetAddress)
-    await expect(row.getByRole('cell').nth(2)).not.toContainText(newAddress2.streetAddress)
-    await expect(row.getByRole('cell').nth(2)).toContainText(initialOfficer.deliveryAddress.streetAddress)
+    await expect(row.getByRole('cell').nth(1)).not.toContainText(newAddress1.streetAddress)
+    await expect(row.getByRole('cell').nth(1)).not.toContainText(newAddress2.streetAddress)
+    await expect(row.getByRole('cell').nth(1)).toContainText(initialOfficer.deliveryAddress.streetAddress)
     // name column shouldnt have ADDRESS CHANGED badge anymore
     await expect(row.getByRole('cell').nth(0)).not.toContainText('ADDRESS CHANGED')
   })
@@ -163,8 +163,8 @@ test.describe('Editing Officers', () => {
     await assertNameTableCell(page, newRelationship, ['ADDED'])
     const expectedRoles = roles.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
-    await assertAddress(page, newRelationship, 3, 'same')
+    await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
+    await assertAddress(page, newRelationship, 2, 'same')
 
     // edit/assert address
     const newAddress = getFakeAddress()
@@ -172,7 +172,7 @@ test.describe('Editing Officers', () => {
     await fillOutAddress(page, newAddress, 'mailing', true)
     await page.getByRole('button', { name: 'Done' }).click()
     // should have new adddress
-    await assertAddress(page, newRelationship, 2, newAddress)
+    await assertAddress(page, newRelationship, 1, newAddress)
     // should still only have ADDED badge
     await expect(row.getByRole('cell').nth(0)).toContainText('ADDED')
     await expect(row.getByRole('cell').nth(0)).not.toContainText('ADDRESS CHANGED')

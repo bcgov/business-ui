@@ -76,7 +76,7 @@ describe('getDeliveryAddressColumn', () => {
 
     expect(cell.type).toBe(TableColumnDeliveryAddress)
     expect(cell.props.data).toEqual(addressData)
-    expect(cell.props.class).toEqual('min-w-48 max-w-48 overflow-clip')
+    expect(cell.props.class).toEqual('min-w-48 max-w-48 overflow-clip break-words')
   })
 
   it('cell should add "opacity-50" when row is removed', () => {

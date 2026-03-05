@@ -13,7 +13,7 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
     meta,
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'min-w-48 max-w-48 overflow-clip'
+      const defaultClass = 'min-w-48 max-w-48 overflow-clip break-words'
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       return h(

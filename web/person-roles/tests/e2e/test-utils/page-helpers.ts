@@ -128,19 +128,19 @@ export async function assertNameTableCell(
 export async function assertRoles(page: Page, person: BusinessRelationship, roles: string[]) {
   const row = getTableRowForPerson(page, person.entity.familyName!)
   for (const role of roles) {
-    await expect(row.getByRole('cell').nth(1)).toContainText(role)
+    await expect(row.getByRole('cell').nth(3)).toContainText(role)
   }
 }
 
 export async function assertAddress(
   page: Page,
   person: BusinessRelationship,
-  column: 2 | 3,
+  column: 1 | 2,
   address: ApiAddress | 'same'
 ) {
   const row = getTableRowForPerson(page, person.entity.familyName!)
   if (address === 'same') {
-    await expect(row.getByRole('cell').nth(column)).toContainText('Same as Delivery Address')
+    await expect(row.getByRole('cell').nth(column)).toContainText('Same as Mailing Address')
   } else {
     await expect(row.getByRole('cell').nth(column)).toContainText(address.streetAddress)
     await expect(row.getByRole('cell').nth(column)).toContainText(address.addressCity)

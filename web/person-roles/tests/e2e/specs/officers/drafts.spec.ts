@@ -61,8 +61,8 @@ test.describe('Draft Officers', () => {
     await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     const expectedRoles = ['Vice President', 'Chair']
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
-    await assertAddress(page, newRelationship, 3, 'same')
+    await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
+    await assertAddress(page, newRelationship, 2, 'same')
 
     // save and resume later filing
     await page.getByRole('button', { name: 'Save and Resume Later', exact: true }).click()
@@ -82,8 +82,8 @@ test.describe('Draft Officers', () => {
     // page should reload with saved draft data
     await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
-    await assertAddress(page, newRelationship, 3, 'same')
+    await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
+    await assertAddress(page, newRelationship, 2, 'same')
 
     // // should also include folio
     await expect(page.getByTestId('folio-input')).toHaveValue(testFolio)
@@ -100,8 +100,8 @@ test.describe('Draft Officers', () => {
       ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED']
     )
     await assertRoles(page, initialRelationship, ['Chief Executive Officer'])
-    await assertAddress(page, initialRelationship, 2, initialRelationship.deliveryAddress!)
-    await assertAddress(page, initialRelationship, 3, 'same')
+    await assertAddress(page, initialRelationship, 1, initialRelationship.deliveryAddress!)
+    await assertAddress(page, initialRelationship, 2, 'same')
   })
 
   test('should submit the expected payload and redirect', async ({ page }) => {

@@ -33,7 +33,7 @@ const loading = ref(false)
         :empty-text="loading ? `Loading...` : 'No parties'"
         add-label="Add Party"
         section-label="Parties"
-        :columns-to-display="['name', 'roles', 'delivery', 'mailing', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'actions']"
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: true },
           partyRoleProps: { allowedRoles: [RoleTypeUi.DIRECTOR, RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR] }

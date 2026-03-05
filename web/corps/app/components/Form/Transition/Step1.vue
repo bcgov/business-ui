@@ -82,7 +82,7 @@ const confirmErrors = computed(() => {
         :section-label="$t('label.directors')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeDirector"
       />
 

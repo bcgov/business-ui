@@ -40,8 +40,8 @@ describe('getPartyTableColumns', () => {
     expect(columns).toHaveLength(4)
     expect(columns.map(c => c.id)).toEqual([
       'name',
-      'deliveryAddress',
       'mailingAddress',
+      'deliveryAddress',
       'actions'
     ])
   })

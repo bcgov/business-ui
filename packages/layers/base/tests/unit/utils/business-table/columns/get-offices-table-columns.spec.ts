@@ -36,8 +36,8 @@ describe('getOfficesTableColumns', () => {
     expect(columns).toHaveLength(4)
     expect(columns.map(c => c.id)).toEqual([
       'office-type',
-      'deliveryAddress',
       'mailingAddress',
+      'deliveryAddress',
       'actions'
     ])
   })
