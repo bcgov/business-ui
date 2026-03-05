@@ -608,7 +608,7 @@ export default {
         },
         TMP: {
           title: 'Delete Draft',
-          description: 'This action will permanently delete the application and all associated information. You will need to start a new application to complete the post restoration transition.',
+          description: 'This action will permanently delete the application and all associated information. You will need to start a new application to complete the {FILING_TYPE}.',
           primaryBtnLabel: 'Delete Draft',
           secondaryBtnLabel: 'Go Back'
         },

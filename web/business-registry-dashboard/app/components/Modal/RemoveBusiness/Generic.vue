@@ -23,7 +23,7 @@ function selectDescription (removeBusinessPayload: RemoveBusinessPayload) {
       {{ $t(`modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.title`) }}
     </h2>
     <p class="mb-4">
-      {{ $t(selectDescription(removeBusinessPayload)) }}
+      {{ $t(selectDescription(removeBusinessPayload), { FILING_TYPE: affiliationType(removeBusinessPayload.business) || '' }) }}
     </p>
     <div class="mt-2 flex flex-wrap items-center justify-center gap-4">
       <UButton
