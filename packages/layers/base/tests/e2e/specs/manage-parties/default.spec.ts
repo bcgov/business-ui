@@ -90,7 +90,7 @@ test.describe('ManageParties', () => {
 
     // should display all roles
     for (const role of roles) {
-      await expect(columns[1]!).toContainText(role.roleType)
+      await expect(columns[3]!).toContainText(role.roleType)
     }
   })
 })
