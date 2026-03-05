@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.17.0
+
+### Minor Changes
+
+- [#415](https://github.com/bcgov/business-ui/pull/415) [`12b83c3`](https://github.com/bcgov/business-ui/commit/12b83c36e2567bfe67ff2dfbffde786d11ddb665) Thanks [@deetz99](https://github.com/deetz99)! - PartyTable and OfficesTable: reorder columns mailing then delivery address, fix overflow text in table cells not wrapping.
+
 ## 0.16.0
 
 ### Minor Changes
