@@ -6,8 +6,8 @@ export function getOfficesTableColumns<T extends OfficesSchema = OfficesSchema>(
 
   const officesColumns: TableBusinessColumn<T>[] = [
     typeColumn,
-    deliveryColumn,
     mailingColumn,
+    deliveryColumn,
     actionsColumn
   ]
 

@@ -2,7 +2,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
-  columns = ['name', 'delivery', 'mailing', 'actions']
+  columns = ['name', 'mailing', 'delivery', 'actions']
 } = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean

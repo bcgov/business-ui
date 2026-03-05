@@ -1,12 +1,20 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   data: AddressSchema
 }>()
+
+const addressSchema = getRequiredAddressSchema()
+const isValidAddress = computed(() => (addressSchema.safeParse(props.data.mailingAddress)).success)
 </script>
 
 <template>
-  <ConnectAddressDisplay
-    :address="data.deliveryAddress"
-    :text-decor="true"
-  />
+  <div>
+    <span v-if="data.sameAs">{{ $t('label.sameAsMailingAddress') }}</span>
+    <span v-else-if="!isValidAddress">{{ $t('label.notEntered') }}</span>
+    <ConnectAddressDisplay
+      v-else
+      :address="data.mailingAddress"
+      :text-decor="true"
+    />
+  </div>
 </template>

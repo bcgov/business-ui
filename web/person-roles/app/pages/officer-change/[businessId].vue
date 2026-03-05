@@ -159,7 +159,7 @@ useFilingPageWatcher({
         :add-label="$t('label.addOfficer')"
         :edit-label="$t('label.editOfficer')"
         :section-label="$t('label.officers')"
-        :columns-to-display="['name', 'roles', 'delivery', 'mailing', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'actions']"
         :party-form-props="{
           partyNameProps: { allowBusinessName: false, allowPreferredName: true },
           partyRoleProps: { allowedRoles: officerRoles, roleClass: RoleClass.OFFICER }

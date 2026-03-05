@@ -19,9 +19,9 @@ test.describe('ManageParties', () => {
     const columns = await rows[0]!.locator('td').all()
     expect(columns.length).toBe(5)
     expect(columns[0]!).toHaveText('TESTER  TESTING')
-    expect(columns[1]!).toHaveText('Director')
-    expect(columns[2]!).toContainText('5-14505 Boul De Pierrefonds,')
-    expect(columns[3]!).toHaveText('Same as Delivery Address')
+    expect(columns[1]!).toContainText('5-14505 Boul De Pierrefonds,')
+    expect(columns[2]!).toHaveText('Same as Mailing Address')
+    expect(columns[3]!).toContainText('Director')
     expect(columns[4]!).toContainText('Change')
   })
 

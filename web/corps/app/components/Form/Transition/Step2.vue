@@ -54,7 +54,7 @@ function onError(event: FormErrorEvent) {
         :section-label="$t('label.directors')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
       />
 
       <ManageShareStructure
