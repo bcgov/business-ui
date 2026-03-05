@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.16.0
+
+### Minor Changes
+
+- [#412](https://github.com/bcgov/business-ui/pull/412) [`d8bfe3a`](https://github.com/bcgov/business-ui/commit/d8bfe3a900a631f88ec5b6b371261b708a8c3246) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay version, update all sub form components padding and styling.
+
 ## 0.15.0
 
 ### Minor Changes
