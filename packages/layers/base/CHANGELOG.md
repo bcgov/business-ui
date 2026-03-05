@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.17.1
+
+### Patch Changes
+
+- [#417](https://github.com/bcgov/business-ui/pull/417) [`07701e7`](https://github.com/bcgov/business-ui/commit/07701e714c0b784081334fc2ed5c46cd784b04ca) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dep
+
 ## 0.17.0
 
 ### Minor Changes
