@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.17.2
+
+### Patch Changes
+
+- [#419](https://github.com/bcgov/business-ui/pull/419) [`f9bf892`](https://github.com/bcgov/business-ui/commit/f9bf892ef88a19d64b728406e8c62df8fd3c8465) Thanks [@kialj876](https://github.com/kialj876)! - Minor party role mapping update
+
 ## 0.17.1
 
 ### Patch Changes
