@@ -4,3 +4,9 @@ export interface DissolutionPayload extends FilingPayloadData {
   delayType?: DelayOption
   dissolutionDate?: IsoDatePacific
 }
+
+export interface DissolutionApplication {
+  dissolution: DissolutionPayload
+}
+
+export type DissolutionDraftState = FilingGetByIdResponse<DissolutionApplication>

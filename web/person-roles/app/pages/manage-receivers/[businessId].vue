@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
+import type { FetchError } from 'ofetch'
 import { z } from 'zod'
 
 definePageMeta({
@@ -75,6 +76,11 @@ async function submitFiling() {
     revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
+    const e = error as FetchError<ReceiverDraftState>
+    // in case there was a failure and it saved a draft
+    const filingResp = e.response?._data
+    const urlParams = useUrlSearchParams()
+    urlParams.draft = String(filingResp?.filing?.header?.filingId)
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -129,10 +135,6 @@ useFilingPageWatcher<ReceiverType>({
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'receiver-filing' },
   breadcrumbs,
-  // TODO: currently even if a draft is saved it doesnt include the
-  // draft url param to reload the draft once the user logs back in
-  // need to sort out why and fix
-  // ticket 32173
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {
       await saveFiling(false)

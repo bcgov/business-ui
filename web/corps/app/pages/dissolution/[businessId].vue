@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { onFormSubmitError } from '#imports' // auto imports causing type error for this util
 import { DateTime } from 'luxon'
@@ -67,7 +68,13 @@ async function submitFiling(e: FormSubmitEvent<unknown>) {
     console.info('Data: ', e.data)
     await store.submit(true)
     await navigateTo(dashboardUrl.value, { external: true })
-  } catch {
+  } catch (error) {
+    const e = error as FetchError<DissolutionDraftState>
+    // in case there was a failure and it saved a draft
+    const filingResp = e.response?._data
+    const urlParams = useUrlSearchParams()
+    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
   }
 }

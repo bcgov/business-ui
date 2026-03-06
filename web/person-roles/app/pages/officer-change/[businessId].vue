@@ -12,7 +12,7 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
 const officerStore = useOfficerStore()
-const { draftFilingState, initializing } = storeToRefs(officerStore)
+const { initializing } = storeToRefs(officerStore)
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const { setAlert: setSubFormAlert } = useFilingAlerts('manage-parties')
 
@@ -74,7 +74,6 @@ async function submitFiling() {
     const e = error as FetchError<OfficersDraftState>
     // in case there was a failure and it saved a draft
     const filingResp = e.response?._data
-    draftFilingState.value = filingResp as OfficersDraftState
     const urlParams = useUrlSearchParams()
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
     await modal.openSaveFilingErrorModal(error)

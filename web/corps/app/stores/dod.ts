@@ -10,8 +10,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const formState = reactive(schema.parse({}))
   const initializing = ref<boolean>(false)
   const dissolutionSubType = ref<DissolutionType>(DissolutionType.DELAY)
-  const draftFilingState = shallowRef<FilingGetByIdResponse<{ dissolution: DissolutionPayload }>>(
-    {} as FilingGetByIdResponse<{ dissolution: DissolutionPayload }>)
+  const draftFilingState = shallowRef<DissolutionDraftState>({} as DissolutionDraftState)
   const dissolutionInfo = shallowRef({
     targetDissolutionDate: '',
     targetStage2Date: '',
@@ -88,7 +87,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       )
     }
 
-    const payload = businessApi.createFilingPayload<{ dissolution: DissolutionPayload }>(
+    const payload = businessApi.createFilingPayload<DissolutionApplication>(
       businessStore.business!,
       FilingType.DISSOLUTION,
       { dissolution: dissolutionPayload },
@@ -102,14 +101,14 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     const headers = { 'hide-in-ledger': String(!formState.addToLedger && isStaff.value) }
     // const headers = {}
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<{ dissolution: DissolutionPayload }>(
+      const filingResp = await businessApi.saveOrUpdateDraftFiling<DissolutionApplication>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
         draftId as string | number,
         headers
       )
-      draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<{ dissolution: DissolutionPayload }>
+      draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<DissolutionApplication>
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {

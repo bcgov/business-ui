@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormErrorEvent, Form } from '@nuxt/ui'
+import type { FetchError } from 'ofetch'
 import { z } from 'zod'
 
 definePageMeta({
@@ -77,6 +78,11 @@ async function submitFiling() {
     await store.submit(true)
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
+    const e = error as FetchError<LiquidatorDraftState>
+    // in case there was a failure and it saved a draft
+    const filingResp = e.response?._data
+    const urlParams = useUrlSearchParams()
+    urlParams.draft = String(filingResp?.filing?.header?.filingId)
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
   }
