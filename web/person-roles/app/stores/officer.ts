@@ -81,7 +81,8 @@ export const useOfficerStore = defineStore('officer-store', () => {
     const payload = businessApi.createFilingPayload<ChangeOfOfficers>(
       businessStore.business!,
       FilingType.CHANGE_OF_OFFICERS,
-      { changeOfOfficers: officersPayload }
+      { changeOfOfficers: officersPayload },
+      { folioNumber: formState.folio.folioNumber }
     )
 
     const draftId = draftFilingState.value?.filing?.header?.filingId

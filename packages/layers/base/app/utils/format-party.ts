@@ -39,9 +39,17 @@ function formatRelationshipRolesUi(roles: Role[]): PartyRoleSchema {
       // Should never happen
       console.error('No role type mapping for', role.roleType)
     }
+    // FUTURE: remove this and below - needed for drafts due to schema being inconsistent with UI/API response mappings
+    // @ts-expect-error - special case due to ^
+    const convertedRole = role.roleType == 'CEO'
+      ? RoleTypeUi.CEO
+      // @ts-expect-error - special case due to ^^
+      : role.roleType == 'CFO'
+        ? RoleTypeUi.CFO
+        : API_ROLE_TO_UI_ROLE_MAP[role.roleType]!
     return {
       ...role,
-      roleType: API_ROLE_TO_UI_ROLE_MAP[role.roleType]!
+      roleType: convertedRole
     }
   })
 }
