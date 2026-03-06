@@ -607,10 +607,10 @@ export default {
           secondaryBtnLabel: 'Keep Name Request'
         },
         TMP: {
-          title: 'Delete Incorporation Application?',
-          description: 'Deleting this incorporation application will remove the application from your Business Registry list. The business associated with this application will not be incorporated. If this incorporation application was associated with a Name Request, the Name Request can still be used to incorporate a business.',
-          primaryBtnLabel: 'Delete Incorporation Application',
-          secondaryBtnLabel: 'Keep Incorporation Application'
+          title: 'Delete Draft',
+          description: 'This action will permanently delete the application and all associated information. You will need to start a new application to complete the {FILING_TYPE}.',
+          primaryBtnLabel: 'Delete Draft',
+          secondaryBtnLabel: 'Go Back'
         },
         ATMP: {
           title: 'Delete Amalgamation Application?',
