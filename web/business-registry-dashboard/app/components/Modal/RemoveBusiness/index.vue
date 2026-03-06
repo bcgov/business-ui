@@ -48,7 +48,7 @@ function tryAgain () {
     <transition name="fade" mode="out-in">
       <ModalRemoveBusinessGeneric
         v-if="type === 'generic' && !hasError"
-        class="md:w-[600px]"
+        class="md:w-[700px]"
         :loading
         :remove-business-payload="removeBusinessPayload"
         @confirm="removeBusiness('', false)"
