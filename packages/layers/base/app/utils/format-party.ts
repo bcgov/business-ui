@@ -46,7 +46,7 @@ function formatRelationshipRolesUi(roles: Role[]): PartyRoleSchema {
   })
 }
 
-function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = false): Role[] {
+export function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = false): Role[] {
   return roles.map((role) => {
     if (!role.roleType || !UI_ROLE_TO_API_ROLE_MAP[role.roleType]) {
       // Should never happen

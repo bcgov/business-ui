@@ -8,6 +8,7 @@ export default {
     added: 'ADDED',
     addressChanged: 'ADDRESS CHANGED',
     changed: 'CHANGED',
+    corrected: 'CORRECTED',
     emailChanged: 'EMAIL CHANGED',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',

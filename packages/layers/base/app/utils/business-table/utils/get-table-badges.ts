@@ -7,6 +7,7 @@ export function getTableBadges<T extends { actions: ActionType[] }>(row: TableBu
     [ActionType.ADDED]: { label: t('badge.added') },
     [ActionType.REMOVED]: { label: t('badge.removed'), color: 'neutral' as const },
     [ActionType.ADDRESS_CHANGED]: { label: t('badge.addressChanged') },
+    [ActionType.CORRECTED]: { label: t('badge.corrected') },
     [ActionType.EMAIL_CHANGED]: { label: t('badge.emailChanged') },
     [ActionType.NAME_CHANGED]: { label: t('badge.nameChanged') },
     [ActionType.ROLES_CHANGED]: { label: t('badge.rolesChanged') },
@@ -24,5 +25,5 @@ export function getTableBadges<T extends { actions: ActionType[] }>(row: TableBu
     return [badgeMap.REMOVED]
   }
 
-  return rowActions.map(action => badgeMap[action])
+  return rowActions.map(action => badgeMap[action]).filter(Boolean)
 }
