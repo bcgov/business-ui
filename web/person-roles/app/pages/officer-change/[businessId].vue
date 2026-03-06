@@ -72,10 +72,8 @@ async function submitFiling() {
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     const e = error as FetchError<OfficersDraftState>
-    console.log(e.response)
     // in case there was a failure and it saved a draft
     const filingResp = e.response?._data
-    console.log(filingResp)
     draftFilingState.value = filingResp as OfficersDraftState
     const urlParams = useUrlSearchParams()
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
