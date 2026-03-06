@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FetchError } from 'ofetch'
+
 const { t } = useI18n()
 const store = useTransitionStore()
 const { initializing } = storeToRefs(store)
@@ -50,6 +52,11 @@ async function submitFiling() {
     await store.submit(true)
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
+    const e = error as FetchError<TransitionDraftState>
+    // in case there was a failure and it saved a draft
+    const filingResp = e.response?._data
+    const urlParams = useUrlSearchParams()
+    urlParams.draft = String(filingResp?.filing?.header?.filingId)
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
   }

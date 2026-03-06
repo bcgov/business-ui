@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
+import type { FetchError } from 'ofetch'
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -70,6 +71,11 @@ async function submitFiling() {
     revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
+    const e = error as FetchError<OfficersDraftState>
+    // in case there was a failure and it saved a draft
+    const filingResp = e.response?._data
+    const urlParams = useUrlSearchParams()
+    urlParams.draft = String(filingResp?.filing?.header?.filingId)
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
