@@ -93,9 +93,6 @@ test.describe('Manage Officers - Submission', () => {
       mailingAddress: address,
       roles: [{ roleType: RoleType.CEO, roleClass: RoleClass.OFFICER }]
     }
-    const innerPayload: OfficersPayload = {
-      relationships: [newOfficer]
-    }
     const testFolio = '1234'
 
     const addButton = page.getByRole('button', { name: 'Add Officer' })
