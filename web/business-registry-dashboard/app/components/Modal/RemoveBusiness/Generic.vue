@@ -19,7 +19,7 @@ function selectDescription (removeBusinessPayload: RemoveBusinessPayload) {
 </script>
 <template>
   <div class="flex flex-col text-left">
-    <h2 class="text-xl font-semibold mb-4">
+    <h2 class="mb-4 text-xl font-semibold">
       {{ $t(`modal.removeBusiness.generic.${removeBusinessPayload.business.corpType.code}.title`) }}
     </h2>
     <p class="mb-4">
