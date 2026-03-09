@@ -1,39 +1,44 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
-import { isEqual } from 'es-toolkit'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
-/** Whether any offices were changed (compare current vs initial) */
+/**
+ * Change detection for review sections.
+ *
+ * These check the `actions` array on each table entry rather than comparing
+ * current vs initial snapshots. This is necessary because when resuming a
+ * saved draft, the initial snapshot IS the merged (draft + original) state,
+ * so initial === current. The `actions` array (e.g. ["ADDRESS_CHANGED"],
+ * ["CORRECTED"]) is the reliable indicator that a correction change exists.
+ */
+
+/** Whether any offices were changed */
 const hasOfficeChanges = computed(() => {
-  return !isEqual(
-    store.offices.map(o => o.new),
-    store.initialFormState
-  ) && store.offices.some(o => o.new.actions?.length > 0)
+  return store.offices.some(o => o.new.actions?.length > 0)
 })
 
-/** Whether any directors were changed (compare current vs initial snapshot) */
+/** Whether any directors were changed */
 const hasDirectorChanges = computed(() => {
-  return !isEqual(store.directors, store.initialDirectors)
+  return store.directors.some(d => d.new.actions.length > 0)
 })
 
-/** Whether any share classes were changed (compare current vs initial snapshot) */
+/** Whether any share classes were changed */
 const hasShareStructureChanges = computed(() => {
-  return !isEqual(store.shareClasses, store.initialShareClasses)
+  return store.shareClasses.some(sc => sc.new.actions.length > 0)
 })
 
-/** Whether any receivers were changed (compare current vs initial snapshot) */
+/** Whether any receivers were changed */
 const hasReceiverChanges = computed(() => {
-  return !isEqual(store.receivers, store.initialReceivers)
+  return store.receivers.some(r => r.new.actions.length > 0)
 })
 
-/** Whether any liquidators were changed (compare current vs initial snapshot) */
+/** Whether any liquidators were changed */
 const hasLiquidatorChanges = computed(() => {
-  return !isEqual(store.liquidators, store.initialLiquidators)
+  return store.liquidators.some(l => l.new.actions.length > 0)
 })
 
 /** Whether the correction comment was changed */
@@ -83,7 +88,7 @@ function onError(event: FormErrorEvent) {
       <UAlert
         v-if="!hasAnyChanges"
         icon="i-mdi-information-outline"
-        color="red"
+        color="warning"
         :description="$t('form.manageBusiness.noOptionAlert')"
         title="No changes have been made to the business data. Please go back and make corrections before submitting."
         data-testid="no-changes-alert"
@@ -92,12 +97,12 @@ function onError(event: FormErrorEvent) {
       <!-- Office Addresses (readonly, only if changed) -->
       <ManageOffices
         v-if="hasOfficeChanges"
-        v-model:active-office="activeOffice"
+        v-model:active-office="store.formState.activeOffice"
         data-testid="review-office-addresses-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :section-label="$t('label.officeAddresses')"
         :add-label="$t('label.addOffice')"
-        :edit-label="$t('label.editOffice')"
         :allowed-actions="[]"
       />
 
@@ -108,8 +113,8 @@ function onError(event: FormErrorEvent) {
         data-testid="review-current-directors-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :section-label="$t('label.currentDirectors')"
         :add-label="$t('label.addDirector')"
-        :edit-label="$t('label.editDirector')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
@@ -135,8 +140,8 @@ function onError(event: FormErrorEvent) {
         data-testid="review-receivers-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+        :section-label="$t('label.receivers')"
         :add-label="$t('label.addReceiver')"
-        :edit-label="$t('label.editReceiver')"
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
@@ -150,8 +155,8 @@ function onError(event: FormErrorEvent) {
         data-testid="review-liquidators-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+        :section-label="$t('label.liquidators')"
         :add-label="$t('label.addLiquidator')"
-        :edit-label="$t('label.editLiquidator')"
         :role-type="RoleTypeUi.LIQUIDATOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
@@ -205,9 +210,13 @@ function onError(event: FormErrorEvent) {
       v-if="store.isStaff && store.formState.staffPayment"
       data-testid="staff-payment-section"
       :label="`3. ${$t('label.staffPayment')}`"
+      orientation="vertical"
       body-variant="card"
     >
-      <ConnectFormFieldWrapper :label="$t('label.payment')" orientation="horizontal">
+      <ConnectFormFieldWrapper
+        :label="$t('label.payment')"
+        orientation="horizontal"
+        padding-class="xy-default">
         <StaffPayment
           ref="staff-pay-ref"
           v-model="store.formState.staffPayment"

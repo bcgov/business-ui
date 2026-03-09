@@ -3,6 +3,7 @@ export default {
   label: {
     addDirector: 'Add Director',
     addLiquidator: 'Add Liquidator',
+    addOffice: 'Add Office',
     addReceiver: 'Add Receiver',
     addToLedger: 'Add to ledger',
     addToLedgerOpt: 'Add to ledger (Optional)',
@@ -13,17 +14,12 @@ export default {
     delayDate: 'Delay the Time of Dissolution or Cancellation',
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
-    editLiquidator: 'Edit Liquidator',
-    editOffice: 'Edit Office',
-    editReceiver: 'Edit Receiver',
     important: 'Important',
-    liquidators: 'Liquidators',
     noDirectors: 'No Directors',
     noLiquidators: 'There are currently no liquidators.',
     noOffices: 'No Offices',
     noReceivers: 'There are currently no receivers.',
     officeAddresses: 'Office Addresses',
-    receivers: 'Receivers',
     reviewAndConfirm: 'Review and Confirm',
     selectADate: 'Select a date',
     sixMonths: '6 Months'
@@ -32,7 +28,7 @@ export default {
     correction: {
       desc: 'This filing will correct the information in the original {boldStart}{filingType}{boldEnd} filing from {boldStart}{filingDate}{boldEnd}. Changes made in this correction will be applied to the business record.',
       feeCode: 'CRCTN',
-      feeLabel: 'Register Correction Application',
+      feeLabel: 'Correction',
       h1: 'Correction',
       title: 'Correction - BC Registries and Online Services'
     },
@@ -56,7 +52,7 @@ export default {
   text: {
     addToLedgerDescription: 'If you require this delay of dissolution to be ledgered, select the box below.',
     alertMaxTwoDelays: '{important} Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {email}.',
-    // certifyCorrectionDescription: 'Confirm the legal name of the person authorized to complete and submit this correction.',
+    certifyCorrectionDescription: 'Confirm the legal name of the person authorized to complete and submit this correction.',
     certifyDelayDescription: 'Confirm the legal name of the person authorized to complete and submit this filing.',
     certifyTransitionDescription: 'Confirm the legal name of the person authorized to complete and submit this application.',
     confirmDirectorsCorrect: 'I confirm that the director information listed for this business is correct.',
@@ -67,6 +63,8 @@ export default {
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     liquidatorsMustBeCorrect: 'Liquidator information must be correct before filing your application.',
+    noChangesToSave: 'There are no changes to save.',
+    noChangesToSubmit: 'There are no changes to submit.',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
     officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
     receiversMustBeCorrect: 'Receiver information must be correct before filing your application.',

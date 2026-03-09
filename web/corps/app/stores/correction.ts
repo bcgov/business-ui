@@ -21,6 +21,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialReceivers = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
+  const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
 
   /** The original filing being corrected (fetched by correctedFilingId) */
@@ -302,6 +303,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors.value = cloneDeep(tableParties.value)
     initialReceivers.value = cloneDeep(tableReceivers.value)
     initialLiquidators.value = cloneDeep(tableLiquidators.value)
+    initialOffices.value = cloneDeep(tableOffices.value)
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
@@ -424,6 +426,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeDirector = undefined
     formState.activeReceiver = undefined
     formState.activeLiquidator = undefined
+    formState.activeOffice = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
 
@@ -437,6 +440,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors.value = []
     initialReceivers.value = []
     initialLiquidators.value = []
+    initialOffices.value = []
     initialShareClasses.value = []
   }
 
@@ -458,6 +462,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors,
     initialReceivers,
     initialLiquidators,
+    initialOffices,
     initialShareClasses,
     isStaff,
     init,

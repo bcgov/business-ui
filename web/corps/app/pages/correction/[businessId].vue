@@ -4,13 +4,15 @@ const store = useCorrectionStore()
 const { initializing } = storeToRefs(store)
 const route = useRoute()
 const { setAlert: setPartiesAlert } = useFilingAlerts('manage-parties')
+const { setAlert: setOfficesAlert } = useFilingAlerts('manage-offices')
 const { setAlert: setReceiversAlert } = useFilingAlerts('manage-receivers')
 const { setAlert: setLiquidatorsAlert } = useFilingAlerts('manage-liquidators')
 const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
 const {
-  handleButtonLoading
+  handleButtonLoading,
+  setAlertText: setBtnCtrlAlert
 } = useConnectButtonControl()
 
 const { getFilingName } = useFiling()
@@ -18,6 +20,31 @@ const { getFilingName } = useFiling()
 const businessId = route.params.businessId as string
 const filingId = route.params.filingId as string // the pre-created correction draft filing ID
 const FILING_TYPE = FilingType.CORRECTION
+
+const {
+  canSubmit,
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [() => store.initialFormState, () => store.formState],
+    [() => store.initialDirectors, () => store.directors],
+    [() => store.initialReceivers, () => store.receivers],
+    [() => store.initialLiquidators, () => store.liquidators],
+    [() => store.initialOffices, () => store.offices],
+    [() => store.initialShareClasses, () => store.shareClasses]
+  ],
+  // At least one correctable section must have changes to allow submission
+  () => {
+    return store.directors.some(d => d.new.actions.length > 0)
+      || store.receivers.some(r => r.new.actions.length > 0)
+      || store.liquidators.some(l => l.new.actions.length > 0)
+      || store.offices.some(o => o.new.actions?.length > 0)
+      || store.shareClasses.some(sc => sc.new.actions.length > 0)
+  }
+)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons-stacked',
@@ -48,7 +75,8 @@ const originalFilingDate = computed(() => {
 function checkActiveSubForm() {
   const alertMsg = t('text.finishTaskBeforeOtherChanges')
   const hasActiveSubForm
-    = (store.formState.activeDirector && setPartiesAlert('party-details-form', alertMsg))
+    = (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
+      || (store.formState.activeDirector && setPartiesAlert('party-details-form', alertMsg))
       || (store.formState.activeReceiver && setReceiversAlert('party-details-form', alertMsg))
       || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
       || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
@@ -58,35 +86,64 @@ function checkActiveSubForm() {
 }
 
 function reviewAndConfirm() {
+  setBtnCtrlAlert(undefined)
   if (checkActiveSubForm()) {
     return
+  }
+  if (!canSubmit()) {
+    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'left', 1)
   }
   nextStep()
 }
 
 async function submitFiling() {
   try {
+    setBtnCtrlAlert(undefined)
+    if (checkActiveSubForm()) {
+      return
+    }
+    if (!canSubmit()) {
+      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
+    }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true) {
   try {
+    if (enableUnsavedChangesBlock) {
+      setBtnCtrlAlert(undefined)
+      if (checkActiveSubForm()) {
+        return
+      }
+      if (!canSave()) {
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+      }
+    }
     await store.submit(false)
+    revokeBeforeUnload()
     if (resumeLater) {
       await navigateTo(dashboardUrl.value, { external: true })
     }
   } catch (error) {
-    modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
 async function cancelFiling() {
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
@@ -96,7 +153,11 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: filingId, // route param filingId = the pre-created correction draft's filing ID
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(),
+  setOnBeforeSessionExpired: async () => {
+    if (canSave()) {
+      await saveFiling(false, false)
+    }
+  },
   backButton: { removeAlertSpacing: true },
   saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },

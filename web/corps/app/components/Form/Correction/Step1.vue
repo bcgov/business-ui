@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import type { Form } from '@nuxt/ui'
-
 const store = useCorrectionStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
-
-const _formRef = useTemplateRef<Form<unknown>>('correction-form-step-1')
 
 const directorAllowedActions = [
   ManageAllowedAction.ADD,
@@ -39,11 +34,11 @@ const receiverLiquidatorAllowedActions = [
       </div>
 
       <ManageOffices
-        v-model:active-office="activeOffice"
+        v-model:active-office="store.formState.activeOffice"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :section-label="$t('label.officeAddresses')"
         :add-label="$t('label.addOffice')"
-        :edit-label="$t('label.editOffice')"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       />
     </section>
@@ -61,8 +56,8 @@ const receiverLiquidatorAllowedActions = [
         v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :section-label="$t('label.currentDirectors')"
         :add-label="$t('label.addDirector')"
-        :edit-label="$t('label.editDirector')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="directorAllowedActions"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
@@ -103,8 +98,8 @@ const receiverLiquidatorAllowedActions = [
         state-key="manage-receivers"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+        :section-label="$t('label.receivers')"
         :add-label="$t('label.addReceiver')"
-        :edit-label="$t('label.editReceiver')"
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="receiverLiquidatorAllowedActions"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
@@ -130,8 +125,8 @@ const receiverLiquidatorAllowedActions = [
         state-key="manage-liquidators"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+        :section-label="$t('label.liquidators')"
         :add-label="$t('label.addLiquidator')"
-        :edit-label="$t('label.editLiquidator')"
         :role-type="RoleTypeUi.LIQUIDATOR"
         :allowed-actions="receiverLiquidatorAllowedActions"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
@@ -142,7 +137,7 @@ const receiverLiquidatorAllowedActions = [
       />
     </section>
 
-    <!-- Section: Correction Detail Comment (number adjusts based on visible sections) -->
+    <!-- Section: Correction Detail Comment -->
     <section class="space-y-4" data-testid="correction-comment-section">
       <h2 class="text-base">
         PLACEHOLDER COMPONENT: {{ $t('label.correctionComment') }}
