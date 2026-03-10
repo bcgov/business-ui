@@ -9,6 +9,7 @@ const {
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  actionOverride?: ActionType
   columns?: TablePartyColumnName[]
 }>()
 
@@ -25,6 +26,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :columns="partyColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
+    :action-override="actionOverride"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

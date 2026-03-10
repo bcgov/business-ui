@@ -6,7 +6,7 @@ const actionsMap: Record<EditedSection, ActionType> = {
   address: ActionType.ADDRESS_CHANGED
 }
 
-export const useManageOffices = (stateKey: string = 'manage-offices') => {
+export const useManageOffices = (stateKey: string = 'manage-offices', actionOverride?: ActionType) => {
   const addingOffice = useState<boolean>(`${stateKey}-adding-state`, () => false)
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<OfficesSchema>[]>(`${stateKey}-table-state`, () => [])
@@ -98,7 +98,7 @@ export const useManageOffices = (stateKey: string = 'manage-offices') => {
         }
       }
 
-      newActions = editedSections.map(section => actionsMap[section])
+      newActions = editedSections.map(section => actionOverride ?? actionsMap[section])
     }
 
     const newState: TableBusinessState<OfficesSchema> = {

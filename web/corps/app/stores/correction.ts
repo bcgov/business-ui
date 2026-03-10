@@ -125,6 +125,21 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
+    // Normalize actions from the API to use CORRECTED for all edit-type actions.
+    // The API may return "ADDRESS_CHANGED", "NAME_CHANGED", "ROLES_CHANGED", "CHANGED",
+    // "EDITED", or "CORRECTED" — in a correction context, all of these should display as CORRECTED.
+    const CORRECTION_ACTION_MAP: Record<string, ActionType> = {
+      ADDRESS_CHANGED: ActionType.CORRECTED,
+      NAME_CHANGED: ActionType.CORRECTED,
+      ROLES_CHANGED: ActionType.CORRECTED,
+      CHANGED: ActionType.CORRECTED,
+      EDITED: ActionType.CORRECTED,
+      CORRECTED: ActionType.CORRECTED
+    }
+    function normalizeCorrectionActions(actions: (string | ActionType)[]): ActionType[] {
+      return actions.map(a => CORRECTION_ACTION_MAP[a] ?? a) as ActionType[]
+    }
+
     // Parties / Directors
     if (parties) {
       if (draft?.parties?.length) {
@@ -142,8 +157,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         )
         const draftPartiesFormatted: TableBusinessState<PartySchema>[] = draftDirectors.map((dp) => {
           const formatted = formatPartyUi(dp, RoleType.DIRECTOR)
-          // Preserve actions from the draft (formatPartyUi defaults to [])
-          formatted.actions = dp.actions ?? []
+          // Normalize actions from the draft (e.g. "ADDRESS_CHANGED" → "CORRECTED")
+          formatted.actions = normalizeCorrectionActions(dp.actions ?? [])
           return { new: formatted, old: undefined }
         })
 
@@ -181,7 +196,12 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           draft.offices as ApiEntityOfficeAddress,
           [OfficeType.RECORDS, OfficeType.REGISTERED]
         )
-        tableOffices.value = formatDraftTableState(addresses, draftOffices)
+        const mergedOffices = formatDraftTableState(addresses, draftOffices)
+        // Normalize actions (e.g. ADDRESS_CHANGED → CORRECTED) for correction context
+        tableOffices.value = mergedOffices.map(o => ({
+          ...o,
+          new: { ...o.new, actions: normalizeCorrectionActions(o.new.actions) }
+        }))
       } else {
         tableOffices.value = addresses
       }
@@ -194,14 +214,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       if (draft?.shareStructure?.shareClasses?.length) {
         // Draft share classes may use singular `action` (e.g. "EDITED") from the API —
         // normalize to plural `actions` array before formatting.
-        // The API uses "EDITED" but the UI uses ActionType.CHANGED for badge display.
-        const API_ACTION_MAP: Record<string, ActionType> = {
-          EDITED: ActionType.CHANGED,
-          CORRECTED: ActionType.CORRECTED
-        }
         const normalizedClasses = draft.shareStructure.shareClasses.map((sc: Record<string, unknown>) => {
           const rawActions: string[] = (sc.actions as string[]) ?? (sc.action ? [sc.action as string] : [])
-          const actions = rawActions.map(a => API_ACTION_MAP[a] ?? a)
+          const actions = normalizeCorrectionActions(rawActions)
           return { ...sc, actions }
         })
         const draftClasses = formatShareClassesUi(normalizedClasses as unknown as ShareClass[])
@@ -235,7 +250,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         if (draftReceivers.length) {
           const draftReceiversFormatted: TableBusinessState<PartySchema>[] = draftReceivers.map((dp) => {
             const formatted = formatPartyUi(dp, RoleType.RECEIVER)
-            formatted.actions = dp.actions ?? []
+            formatted.actions = normalizeCorrectionActions(dp.actions ?? [])
             return { new: formatted, old: undefined }
           })
           const merged = [...receivers]
@@ -271,7 +286,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         if (draftLiquidators.length) {
           const draftLiquidatorsFormatted: TableBusinessState<PartySchema>[] = draftLiquidators.map((dp) => {
             const formatted = formatPartyUi(dp, RoleType.LIQUIDATOR)
-            formatted.actions = dp.actions ?? []
+            formatted.actions = normalizeCorrectionActions(dp.actions ?? [])
             return { new: formatted, old: undefined }
           })
           const merged = [...liquidators]

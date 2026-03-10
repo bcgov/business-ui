@@ -7,6 +7,7 @@ defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  actionOverride?: ActionType
 }>()
 
 const officesColumns = getOfficesTableColumns<T>()
@@ -22,6 +23,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :columns="officesColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
+    :action-override="actionOverride"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

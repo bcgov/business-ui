@@ -358,6 +358,7 @@ export default {
     className: 'Class Name',
     classNameShares: 'Class Name [Shares]',
     close: 'Close',
+    correct: 'Correct',
     closeDetails: 'Close Details',
     completingParty: 'Completing Party',
     continuationPending: 'Continuation Pending',

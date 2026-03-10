@@ -8,6 +8,7 @@ const props = defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  actionOverride?: ActionType
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
@@ -90,6 +91,7 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :columns="shareStructureColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
+    :action-override="actionOverride"
     :get-custom-dropdown-items="getCustomDropdownItems"
     :hide-actions-when="hideActionsWhen"
     :sorting="[{ id: 'priority', desc: false }]"

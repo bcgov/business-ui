@@ -2,13 +2,15 @@
 const {
   stateKey = 'manage-share-structure',
   allowedActions,
-  readonly
+  readonly,
+  actionOverride
 } = defineProps<{
   loading?: boolean
   emptyText?: string
   addLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  actionOverride?: ActionType
   readonly?: boolean
 }>()
 
@@ -31,7 +33,7 @@ const {
   removeShareSeries,
   addNewShareSeries,
   changePriority
-} = useManageShareStructure(stateKey)
+} = useManageShareStructure(stateKey, actionOverride)
 
 const { t } = useI18n()
 const {
@@ -206,6 +208,7 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeClass || !!activeSeries"
+          :action-override="actionOverride"
           :hide-actions-when="hideRowActionsWhen"
           @init-edit="onInitEdit"
           @move-row="changePriority"
