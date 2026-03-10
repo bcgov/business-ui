@@ -18,6 +18,7 @@ export default {
     noDirectors: 'No Directors',
     noLiquidators: 'There are currently no liquidators.',
     noOffices: 'No Offices',
+    originalFilingDate: 'Original Filing Date',
     noReceivers: 'There are currently no receivers.',
     officeAddresses: 'Office Addresses',
     reviewAndConfirm: 'Review and Confirm',

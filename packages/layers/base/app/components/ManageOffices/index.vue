@@ -3,7 +3,7 @@ const {
   stateKey = 'manage-offices',
   allowedActions,
   allowAddOfficeType,
-  actionOverride
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -11,7 +11,7 @@ const {
   sectionLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
-  actionOverride?: ActionType
+  labelOverrides?: TableLabelOverrides
   allowAddOfficeType?: OfficeType
 }>()
 
@@ -25,7 +25,7 @@ const {
   removeOffice,
   undoOffice,
   applyTableEdits
-} = useManageOffices(stateKey, actionOverride)
+} = useManageOffices(stateKey)
 
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
@@ -137,7 +137,7 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeOffice"
-          :action-override="actionOverride"
+          :label-overrides="labelOverrides"
           @action-prevented="setActiveFormAlert"
           @init-edit="initEditOffice"
           @remove="removeOffice"

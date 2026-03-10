@@ -9,7 +9,7 @@ defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
-  actionOverride?: ActionType
+  labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
@@ -52,7 +52,7 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
         :row
         :allowed-actions="allowedActions"
         :prevent-actions="preventActions"
-        :action-override="actionOverride"
+        :label-overrides="labelOverrides"
         :get-custom-dropdown-items="getCustomDropdownItems"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"

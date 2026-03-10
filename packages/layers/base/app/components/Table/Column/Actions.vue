@@ -5,13 +5,13 @@ const {
   row,
   allowedActions,
   preventActions,
-  actionOverride,
+  labelOverrides,
   getCustomDropdownItems
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
-  actionOverride?: ActionType
+  labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
 }>()
 
@@ -24,10 +24,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-/** Map of ActionType overrides to their corresponding edit button labels */
-const actionLabelMap: Partial<Record<ActionType, string>> = {
-  [ActionType.CORRECTED]: t('label.correct')
-}
 
 function isActionAllowed(action: ManageAllowedAction) {
   return !allowedActions || allowedActions.includes(action)
@@ -73,7 +69,7 @@ const availableActions = computed(() => {
     actions.push({
       label: isAdded.value
         ? t('label.edit')
-        : (actionOverride && actionLabelMap[actionOverride]) || t('label.change'),
+        : labelOverrides?.editLabel || t('label.change'),
       icon: 'i-mdi-pencil',
       click: () => emitAction('init-edit')
     })

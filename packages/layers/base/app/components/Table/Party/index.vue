@@ -2,18 +2,19 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
-  columns = ['name', 'mailing', 'delivery', 'actions']
+  columns = ['name', 'mailing', 'delivery', 'actions'],
+  labelOverrides
 } = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
-  actionOverride?: ActionType
+  labelOverrides?: TableLabelOverrides
   columns?: TablePartyColumnName[]
 }>()
 
-const partyColumns = getPartyTableColumns<T>(columns)
+const partyColumns = getPartyTableColumns<T>(columns, labelOverrides?.badges)
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 </script>
 
@@ -26,7 +27,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :columns="partyColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
-    :action-override="actionOverride"
+    :label-overrides="labelOverrides"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

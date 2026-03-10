@@ -64,12 +64,12 @@ const originalFilingName = computed(() => {
   return getFilingName(store.correctedFilingType) ?? store.correctedFilingType
 })
 
-/** Formatted date of the original filing */
+/** Formatted date of the original filing (e.g. "February 8, 2021") */
 const originalFilingDate = computed(() => {
   if (!store.correctedFilingDate) {
     return ''
   }
-  return store.correctedFilingDate
+  return toReadableDate(store.correctedFilingDate)
 })
 
 function checkActiveSubForm() {
@@ -185,6 +185,9 @@ const { currentStep, nextStep } = useFilingPageWatcher({
       <h1 id="filing-h1">
         {{ $t('page.correction.h1') }}
       </h1>
+      <p v-if="originalFilingDate">
+        <strong>{{ $t('label.originalFilingDate') }}:</strong> {{ originalFilingDate }}
+      </p>
       <ConnectI18nHelper
         as="p"
         translation-path="page.correction.desc"

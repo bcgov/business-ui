@@ -8,7 +8,7 @@ const actionsMap: Record<EditedSection, ActionType> = {
   roles: ActionType.ROLES_CHANGED
 }
 
-export const useManageParties = (stateKey: string = 'manage-parties', actionOverride?: ActionType) => {
+export const useManageParties = (stateKey: string = 'manage-parties') => {
   const addingParty = useState<boolean>(`${stateKey}-adding-state`, () => false)
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<PartySchema>[]>(`${stateKey}-table-state`, () => [])
@@ -96,7 +96,7 @@ export const useManageParties = (stateKey: string = 'manage-parties', actionOver
         }
       }
 
-      newActions = editedSections.map(section => actionOverride ?? actionsMap[section])
+      newActions = editedSections.map(section => actionsMap[section])
     }
 
     const newState: TableBusinessState<PartySchema> = {

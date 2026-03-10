@@ -1,7 +1,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 import { isEqual, omit } from 'es-toolkit'
 
-export const useManageShareStructure = (stateKey: string = 'manage-share-structure', actionOverride?: ActionType) => {
+export const useManageShareStructure = (stateKey: string = 'manage-share-structure') => {
   const { baseModal } = useModal()
   const { t } = useNuxtApp().$i18n
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
@@ -98,7 +98,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
         if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
           rowToUpdate.new = {
             ...shareClass,
-            actions: row.original.old ? [actionOverride ?? ActionType.CHANGED] : [ActionType.ADDED]
+            actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
           }
         }
       }
@@ -181,7 +181,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
         if (!isEqual(parentRow.new.series[seriesIndex], shareSeries)) {
           parentRow.new.series[seriesIndex] = {
             ...shareSeries,
-            actions: row.original.old ? [actionOverride ?? ActionType.CHANGED] : [ActionType.ADDED]
+            actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
           }
         }
       }

@@ -2,7 +2,8 @@ import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
 
 export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: ActionType[] }>(
-  metaOption: TableColumnMetaOption = 'first'
+  metaOption: TableColumnMetaOption = 'first',
+  badgeLabelOverrides?: Partial<Record<ActionType, string>>
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
@@ -12,7 +13,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
     header: t('label.name'),
     meta,
     cell: ({ row }) => {
-      const badges = getTableBadges(row)
+      const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-36 max-w-36 font-bold flex flex-col gap-2 break-words'
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass

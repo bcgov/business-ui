@@ -14,6 +14,9 @@ const receiverLiquidatorAllowedActions = [
   ManageAllowedAction.NAME_CHANGE,
   ManageAllowedAction.REMOVE
 ]
+
+/** Display-level label overrides for correction context */
+const correctionLabelOverrides = useCorrectionLabelOverrides()
 </script>
 
 <template>
@@ -40,7 +43,7 @@ const receiverLiquidatorAllowedActions = [
         :section-label="$t('label.officeAddresses')"
         :add-label="$t('label.addOffice')"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        :action-override="ActionType.CORRECTED"
+        :label-overrides="correctionLabelOverrides"
       />
     </section>
 
@@ -61,7 +64,7 @@ const receiverLiquidatorAllowedActions = [
         :add-label="$t('label.addDirector')"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="directorAllowedActions"
-        :action-override="ActionType.CORRECTED"
+        :label-overrides="correctionLabelOverrides"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
         form-party-details-name="activeDirector"
       />
@@ -82,7 +85,7 @@ const receiverLiquidatorAllowedActions = [
           : $t('label.noShareClasses')
         "
         :add-label="$t('label.addShareClass')"
-        :action-override="ActionType.CORRECTED"
+        :label-overrides="correctionLabelOverrides"
       />
     </section>
 
@@ -105,7 +108,7 @@ const receiverLiquidatorAllowedActions = [
         :add-label="$t('label.addReceiver')"
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="receiverLiquidatorAllowedActions"
-        :action-override="ActionType.CORRECTED"
+        :label-overrides="correctionLabelOverrides"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
         form-party-details-name="activeReceiver"
         :party-form-props="{
@@ -133,7 +136,7 @@ const receiverLiquidatorAllowedActions = [
         :add-label="$t('label.addLiquidator')"
         :role-type="RoleTypeUi.LIQUIDATOR"
         :allowed-actions="receiverLiquidatorAllowedActions"
-        :action-override="ActionType.CORRECTED"
+        :label-overrides="correctionLabelOverrides"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
         form-party-details-name="activeLiquidator"
         :party-form-props="{

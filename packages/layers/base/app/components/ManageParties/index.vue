@@ -3,7 +3,7 @@ const {
   roleType,
   stateKey = 'manage-parties',
   allowedActions,
-  actionOverride
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -12,7 +12,7 @@ const {
   roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
-  actionOverride?: ActionType
+  labelOverrides?: TableLabelOverrides
   columnsToDisplay?: TablePartyColumnName[]
   partyFormProps?: {
     partyNameProps?: {
@@ -39,7 +39,7 @@ const {
   removeParty,
   undoParty,
   applyTableEdits
-} = useManageParties(stateKey, actionOverride)
+} = useManageParties(stateKey)
 
 const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
@@ -150,7 +150,7 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeParty"
-          :action-override="actionOverride"
+          :label-overrides="labelOverrides"
           :columns="columnsToDisplay"
           @init-edit="initEditParty"
           @remove="removeParty"

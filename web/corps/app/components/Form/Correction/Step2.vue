@@ -6,6 +6,9 @@ const store = useCorrectionStore()
 const businessStore = useBusinessStore()
 const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
 
+/** Display-level label overrides for correction context */
+const correctionLabelOverrides = useCorrectionLabelOverrides()
+
 /**
  * Change detection for review sections.
  *
@@ -104,6 +107,7 @@ function onError(event: FormErrorEvent) {
         :section-label="$t('label.officeAddresses')"
         :add-label="$t('label.addOffice')"
         :allowed-actions="[]"
+        :label-overrides="correctionLabelOverrides"
       />
 
       <!-- Directors (readonly, only if changed) -->
@@ -118,6 +122,7 @@ function onError(event: FormErrorEvent) {
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
+        :label-overrides="correctionLabelOverrides"
       />
 
       <!-- Share Structure (readonly, only if changed) -->
@@ -130,6 +135,7 @@ function onError(event: FormErrorEvent) {
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
         :add-label="$t('label.addShareClass')"
         readonly
+        :label-overrides="correctionLabelOverrides"
       />
 
       <!-- Receivers (readonly, only if changed) -->
@@ -145,6 +151,7 @@ function onError(event: FormErrorEvent) {
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
+        :label-overrides="correctionLabelOverrides"
       />
 
       <!-- Liquidators (readonly, only if changed) -->
@@ -160,6 +167,7 @@ function onError(event: FormErrorEvent) {
         :role-type="RoleTypeUi.LIQUIDATOR"
         :allowed-actions="[]"
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
+        :label-overrides="correctionLabelOverrides"
       />
 
       <!-- Correction Comment (always shown if present) -->
