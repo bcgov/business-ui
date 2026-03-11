@@ -5,9 +5,16 @@ import { FilingType } from '../../../../../app/enums/filing-type'
 import { toFormattedDateStr } from '../../../../../app/utils/date'
 import { mockApiCallsForLedger } from '../../../../mocks/mock-helpers'
 
-const today = DateTime.fromJSDate(new Date(), { zone: 'America/Vancouver' })
-const tomorrow = (today.plus({ days: 1 })).set({ hour: 0, minute: 1 })
-const futureDateStr = `${tomorrow.weekdayShort}, ${tomorrow.day} ${tomorrow.monthShort} ${tomorrow.year} 01:01:00 PDT`
+// Use a fixed future date to avoid flaky tests caused by CI running near midnight Pacific time.
+// Convert to UTC so the string uses GMT (matching the format in mock JSON files).
+const futureDate = DateTime.fromObject(
+  { year: 2027, month: 6, day: 15, hour: 7, minute: 1 },
+  { zone: 'UTC' }
+)
+// eslint-disable-next-line max-len
+const futureDateStr = `${futureDate.weekdayShort}, ${futureDate.day} ${futureDate.monthShort} ${futureDate.year} 07:01:00 GMT`
+// The app converts to Pacific time for display — June 15 2027 07:01 UTC = June 15 2027 00:01 PDT (12:01 am)
+const futureDatePacific = futureDate.setZone('America/Vancouver')
 
 test.describe('Business Ledger Tests (future effective)', () => {
   test.beforeEach(async ({ page }) => {
@@ -55,9 +62,9 @@ test.describe('Business Ledger Tests (future effective)', () => {
       ],
       subtitle: [
         // eslint-disable-next-line max-len
-        `FUTURE EFFECTIVE FILINGPAID (filed by Tester Testing on Feb 21, 2025) EFFECTIVE as of ${toFormattedDateStr(tomorrow.toJSDate(), DateTime.DATE_MED)}`,
+        `FUTURE EFFECTIVE FILINGPAID (filed by Tester Testing on Feb 21, 2025) EFFECTIVE as of ${toFormattedDateStr(futureDatePacific.toJSDate(), DateTime.DATE_MED)}`,
         // eslint-disable-next-line max-len
-        `FILED AND PENDING (filed by Tester Testing on Oct 10, 2025) EFFECTIVE as of ${toFormattedDateStr(tomorrow.toJSDate(), DateTime.DATE_MED)}`
+        `FILED AND PENDING (filed by Tester Testing on Oct 10, 2025) EFFECTIVE as of ${toFormattedDateStr(futureDatePacific.toJSDate(), DateTime.DATE_MED)}`
       ]
     }
     for (let i = 0; i < ledgerItems.length; i++) {
@@ -88,9 +95,9 @@ test.describe('Business Ledger Tests (future effective)', () => {
       ],
       bodyText1: [
         // eslint-disable-next-line max-len
-        `The incorporation will take effect on ${toFormattedDateStr(tomorrow.toJSDate(), DateTime.DATE_FULL)} at 12:01 am Pacific time.`,
+        `The incorporation will take effect on ${toFormattedDateStr(futureDatePacific.toJSDate(), DateTime.DATE_FULL)} at 12:01 am Pacific time.`,
         // eslint-disable-next-line max-len
-        `The address change will take effect on ${toFormattedDateStr(tomorrow.toJSDate(), DateTime.DATE_FULL)} at 12:01 am Pacific time.`
+        `The address change will take effect on ${toFormattedDateStr(futureDatePacific.toJSDate(), DateTime.DATE_FULL)} at 12:01 am Pacific time.`
       ],
       bodyText2: [
         // eslint-disable-next-line max-len
