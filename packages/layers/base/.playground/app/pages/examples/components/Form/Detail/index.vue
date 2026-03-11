@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent, Form } from '@nuxt/ui'
 
-const { t } = useI18n()
-
 definePageMeta({
   layout: 'connect-auth'
 })
