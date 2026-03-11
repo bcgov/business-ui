@@ -50,7 +50,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             name="correctionDetail"
             order="1"
             :max-length="200"
-            :filingDate="correctionDate"
+            :filing-date="correctionDate"
           />
         </div>
         <div class="flex gap-6 justify-end">

@@ -47,7 +47,7 @@ defineExpose({
     >
       <ConnectFormFieldWrapper
         :label="$t('label.detail')"
-        :showErrorMsg="true"
+        :show-error-msg="true"
       >
         <div class="flex w-full flex-col gap-2">
           <label
