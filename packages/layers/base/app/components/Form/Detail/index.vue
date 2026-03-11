@@ -48,15 +48,15 @@ defineExpose({
       <ConnectFormFieldWrapper
         :label="$t('label.detail')"
         :show-error-msg="true"
+        class="pt-5"
       >
         <div class="flex w-full flex-col gap-2">
-          <label
+          <p
             v-if="correctionLabel"
-            :for="formDetailTextareaId"
             class="font-semibold text-neutral-highlighted"
           >
             {{ correctionLabel }}
-          </label>
+          </p>
           <UFormField
             name="detail"
             eager-validation
