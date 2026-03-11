@@ -370,6 +370,7 @@ export default {
     datNumber: 'DAT Number',
     deliveryAddress: 'Delivery Address',
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
+    detail: 'Detail',
     details: 'Details',
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',
