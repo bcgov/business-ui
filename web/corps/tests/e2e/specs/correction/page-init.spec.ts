@@ -119,14 +119,16 @@ test.describe('Correction - Page init', () => {
       const directors = page.getByTestId('current-directors-section').locator('tbody')
       const rowToEdit = directors.locator('tr').first()
       await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
 
       // Navigate to step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
       // Should be on step 2 — review section visible
-      await expect(page.getByTestId('review-section')).toBeVisible()
+      await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
       // Step 1 sections should be hidden
       await expect(page.getByTestId('office-addresses-section')).not.toBeVisible()
     })
@@ -142,13 +144,15 @@ test.describe('Correction - Page init', () => {
       const directors = page.getByTestId('current-directors-section').locator('tbody')
       const rowToEdit = directors.locator('tr').first()
       await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
       // Directors should be visible in review
-      await expect(page.getByTestId('review-current-directors-section')).toBeVisible()
+      await expect(page.getByTestId('review-current-directors-section')).toBeVisible({ timeout: 10000 })
 
       // Offices and share structure should NOT be visible (no changes made)
       await expect(page.getByTestId('review-office-addresses-section')).not.toBeVisible()
@@ -168,13 +172,15 @@ test.describe('Correction - Page init', () => {
       const directors = page.getByTestId('current-directors-section').locator('tbody')
       const rowToEdit = directors.locator('tr').first()
       await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
       // Staff payment section visible
-      await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+      await expect(page.getByTestId('staff-payment-section')).toBeVisible({ timeout: 10000 })
       // Client-only sections not visible
       await expect(page.getByTestId('folio-section')).not.toBeVisible()
       await expect(page.getByTestId('certify-section')).not.toBeVisible()

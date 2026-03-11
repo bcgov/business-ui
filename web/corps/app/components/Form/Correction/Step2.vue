@@ -107,6 +107,7 @@ function onError(event: FormErrorEvent) {
         :section-label="$t('label.officeAddresses')"
         :add-label="$t('label.addOffice')"
         :allowed-actions="[]"
+        readonly
         :label-overrides="correctionLabelOverrides"
       />
 

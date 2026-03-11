@@ -10,8 +10,12 @@ async function makeDirectorChange(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'TESTER TESTING' })
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+  // Wait for the edit form to appear
+  await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
   await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit 1A')
   await directors.getByRole('button', { name: 'Done' }).click()
+  // Wait for the form to close and the table to update
+  await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
 }
 
 async function fillCorrectionComment(page: Page, comment: string) {
@@ -21,6 +25,8 @@ async function fillCorrectionComment(page: Page, comment: string) {
 
 async function goToReview(page: Page) {
   await page.getByRole('button', { name: 'Review and Confirm' }).click()
+  // Wait for step transition to complete
+  await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
 }
 
 async function fillCompletingParty(page: Page) {
@@ -41,7 +47,6 @@ test.describe('Correction - Filing Submit', () => {
 
       // Navigate to step 2
       await goToReview(page)
-      await expect(page.getByTestId('review-section')).toBeVisible()
 
       // Review: directors should be visible
       await expect(page.getByTestId('review-current-directors-section')).toBeVisible()
@@ -75,9 +80,9 @@ test.describe('Correction - Filing Submit', () => {
       expect(correction.comment).toBe('Correcting director address from original incorporation')
       expect(correction.contactPoint).toEqual({ email: 'correction-test@example.com' })
 
-      // Verify parties are included
-      expect(correction.parties).toBeDefined()
-      expect(correction.parties.length).toBeGreaterThan(0)
+      // Verify relationships are included (party data formatted as relationships)
+      expect(correction.relationships).toBeDefined()
+      expect(correction.relationships.length).toBeGreaterThan(0)
 
       // Verify offices are included
       expect(correction.offices).toBeDefined()

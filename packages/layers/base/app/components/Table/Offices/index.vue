@@ -10,6 +10,7 @@ const {
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
+  hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
 const officesColumns = getOfficesTableColumns<T>(labelOverrides?.badges)
@@ -26,6 +27,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
+    :hide-actions-when="hideActionsWhen"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

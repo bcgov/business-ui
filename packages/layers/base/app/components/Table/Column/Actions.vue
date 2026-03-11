@@ -54,11 +54,6 @@ const canChange = computed(() => {
 })
 
 const availableActions = computed(() => {
-  // When allowedActions is explicitly an empty array, no actions should be shown
-  if (allowedActions && allowedActions.length === 0) {
-    return []
-  }
-
   const actions = []
 
   if (isRemovedOrEdited.value) {
