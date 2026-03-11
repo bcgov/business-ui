@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Form } from '@nuxt/ui'
-import type { DetailSchema } from '../../../utils/schemas/detail'
-import { getDetailSchema } from '../../../utils/schemas/detail'
+
+const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
   name?: string
@@ -10,8 +10,6 @@ const props = withDefaults(defineProps<{
   description?: string
   maxLength?: number
 }>(), {
-  description: 'Enter a Detail that will appear on the ledger for this entity.',
-  rowCount: 1,
   maxLength: 1945
 })
 
@@ -19,11 +17,12 @@ const model = defineModel<DetailSchema>({ required: true })
 const formRef = useTemplateRef<Form<DetailSchema>>('detail-form')
 const formDetailTextareaId = useId()
 const detailSchema = computed(() => getDetailSchema(props.maxLength))
-const fieldsetLabel = computed(() => props.order ? `${props.order}. Detail` : 'Detail')
+const fieldsetLabel = computed(() => props.order ? `${props.order}. ${t('label.detail')}` : t('label.detail'))
+const fieldsetDescription = computed(() => props.description ?? t('text.detailDescription'))
 const characterCount = computed(() => model.value?.detail?.length ?? 0)
 const correctionLabel = computed(() => {
   return props.filingDate
-    ? `Correction for Registration filed on ${props.filingDate}`
+    ? t('text.correctionForRegistrationFiledOn', { date: props.filingDate })
     : undefined
 })
 
@@ -42,7 +41,7 @@ defineExpose({
   >
     <ConnectFieldset
       :label="fieldsetLabel"
-      :description="props.description"
+      :description="fieldsetDescription"
       body-variant="card"
       orientation="vertical"
     >
