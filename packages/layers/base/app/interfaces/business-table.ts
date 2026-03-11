@@ -23,4 +23,3 @@ export interface TableLabelOverrides {
   /** Override badge text for specific action types (e.g. { ADDRESS_CHANGED: 'CORRECTED' }) */
   badges?: Partial<Record<ActionType, string>>
 }
-

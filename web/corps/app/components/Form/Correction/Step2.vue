@@ -224,7 +224,8 @@ function onError(event: FormErrorEvent) {
       <ConnectFormFieldWrapper
         :label="$t('label.payment')"
         orientation="horizontal"
-        padding-class="xy-default">
+        padding-class="xy-default"
+      >
         <StaffPayment
           ref="staff-pay-ref"
           v-model="store.formState.staffPayment"

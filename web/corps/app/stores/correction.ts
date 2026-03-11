@@ -60,17 +60,15 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initializing.value = true
     $reset()
 
-    const { draftFiling, parties: allParties, addresses } = await initFiling<CorrectionFiling>(
+    const { draftFiling, parties: allParties, addresses, shareClasses } = await initFiling<CorrectionFiling>(
       businessId,
       FilingType.CORRECTION,
       undefined,
       draftId,
       {}, // fetch all parties (no role filter) — 1 API call for directors, receivers, liquidators
-      [OfficeType.RECORDS, OfficeType.REGISTERED]
+      [OfficeType.RECORDS, OfficeType.REGISTERED],
+      true // fetch share classes
     )
-
-    // Fetch share classes for the business
-    const classes = await service.getShareClasses(businessId)
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
@@ -136,29 +134,24 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       })
     }
 
+    // Draft parties/relationships — prefer `relationships` (new format with `entity`),
+    // fall back to `parties` (legacy OrgPerson format with `officer`) for existing drafts.
+    const draftRelationships = draft?.relationships as BusinessRelationship[] | undefined
+    const draftParties = draft?.parties as OrgPerson[] | undefined
+
     // Parties / Directors
     if (parties) {
-      if (draft?.parties?.length) {
-        // Draft parties are in OrgPerson format — format them to PartySchema,
-        // then merge with the original fetched parties so that:
-        //   - existing parties are updated with draft changes (matched by officer.id)
-        //   - new parties from draft are added
-        //   - actions from the draft (e.g. "ADDRESS_CHANGED") are preserved as-is
-        //
-        // Filter to only include parties that have a Director role —
-        // the draft includes ALL parties (e.g. Completing Party) but
-        // the directors table only shows directors.
-        const draftDirectors = draft.parties.filter(
+      if (draftRelationships?.length) {
+        // New format: draft relationships use `entity` — use formatRelationshipUi
+        const draftDirectors = draftRelationships.filter(
           dp => dp.roles?.some(r => r.roleType === RoleType.DIRECTOR)
         )
         const draftPartiesFormatted: TableBusinessState<PartySchema>[] = draftDirectors.map((dp) => {
-          const formatted = formatPartyUi(dp, RoleType.DIRECTOR)
-          // Normalize actions from the draft (e.g. "EDITED" → valid ActionType)
+          const formatted = formatRelationshipUi(dp)
           formatted.actions = normalizeApiActions(dp.actions ?? [])
           return { new: formatted, old: undefined }
         })
 
-        // Start with the original business parties, then overlay draft changes
         const merged = [...parties]
         for (const draftEntry of draftPartiesFormatted) {
           const draftId = draftEntry.new.id
@@ -167,13 +160,39 @@ export const useCorrectionStore = defineStore('correction-store', () => {
             : -1
 
           if (existingIdx >= 0) {
-            // Preserve the old (original) state and apply the draft as the new state
             merged[existingIdx] = {
               new: draftEntry.new,
               old: { ...merged[existingIdx]!.new }
             }
           } else {
-            // New party added in the correction draft
+            merged.push(draftEntry)
+          }
+        }
+        tableParties.value = merged
+      } else if (draftParties?.length) {
+        // Legacy format: draft parties use `officer` — use formatPartyUi
+        const draftDirectors = draftParties.filter(
+          dp => dp.roles?.some(r => r.roleType === RoleType.DIRECTOR)
+        )
+        const draftPartiesFormatted: TableBusinessState<PartySchema>[] = draftDirectors.map((dp) => {
+          const formatted = formatPartyUi(dp, RoleType.DIRECTOR)
+          formatted.actions = normalizeApiActions(dp.actions ?? [])
+          return { new: formatted, old: undefined }
+        })
+
+        const merged = [...parties]
+        for (const draftEntry of draftPartiesFormatted) {
+          const draftId = draftEntry.new.id
+          const existingIdx = draftId
+            ? merged.findIndex(p => p.new.id === draftId)
+            : -1
+
+          if (existingIdx >= 0) {
+            merged[existingIdx] = {
+              new: draftEntry.new,
+              old: { ...merged[existingIdx]!.new }
+            }
+          } else {
             merged.push(draftEntry)
           }
         }
@@ -204,8 +223,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     // Share structure
-    if (classes) {
-      const originalClasses = formatShareClassesUi(classes)
+    if (shareClasses) {
+      const originalClasses = formatShareClassesUi(shareClasses)
 
       if (draft?.shareStructure?.shareClasses?.length) {
         // Draft share classes may use singular `action` (e.g. "EDITED") from the API —
@@ -239,35 +258,57 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     // Receivers — fetch from business, merge with draft if applicable
     if (receivers) {
-      if (draft?.parties?.length) {
-        const draftReceivers = draft.parties.filter(
-          dp => dp.roles?.some(r => r.roleType === RoleType.RECEIVER)
-        )
-        if (draftReceivers.length) {
-          const draftReceiversFormatted: TableBusinessState<PartySchema>[] = draftReceivers.map((dp) => {
-            const formatted = formatPartyUi(dp, RoleType.RECEIVER)
-            formatted.actions = normalizeApiActions(dp.actions ?? [])
-            return { new: formatted, old: undefined }
-          })
-          const merged = [...receivers]
-          for (const draftEntry of draftReceiversFormatted) {
-            const draftEntryId = draftEntry.new.id
-            const existingIdx = draftEntryId
-              ? merged.findIndex(p => p.new.id === draftEntryId)
-              : -1
-            if (existingIdx >= 0) {
-              merged[existingIdx] = {
-                new: draftEntry.new,
-                old: { ...merged[existingIdx]!.new }
-              }
-            } else {
-              merged.push(draftEntry)
+      const draftReceiverEntries = draftRelationships?.filter(
+        dp => dp.roles?.some(r => r.roleType === RoleType.RECEIVER)
+      )
+      const legacyDraftReceivers = draftParties?.filter(
+        dp => dp.roles?.some(r => r.roleType === RoleType.RECEIVER)
+      )
+
+      if (draftReceiverEntries?.length) {
+        const draftReceiversFormatted: TableBusinessState<PartySchema>[] = draftReceiverEntries.map((dp) => {
+          const formatted = formatRelationshipUi(dp)
+          formatted.actions = normalizeApiActions(dp.actions ?? [])
+          return { new: formatted, old: undefined }
+        })
+        const merged = [...receivers]
+        for (const draftEntry of draftReceiversFormatted) {
+          const draftEntryId = draftEntry.new.id
+          const existingIdx = draftEntryId
+            ? merged.findIndex(p => p.new.id === draftEntryId)
+            : -1
+          if (existingIdx >= 0) {
+            merged[existingIdx] = {
+              new: draftEntry.new,
+              old: { ...merged[existingIdx]!.new }
             }
+          } else {
+            merged.push(draftEntry)
           }
-          tableReceivers.value = merged
-        } else {
-          tableReceivers.value = receivers
         }
+        tableReceivers.value = merged
+      } else if (legacyDraftReceivers?.length) {
+        const draftReceiversFormatted: TableBusinessState<PartySchema>[] = legacyDraftReceivers.map((dp) => {
+          const formatted = formatPartyUi(dp, RoleType.RECEIVER)
+          formatted.actions = normalizeApiActions(dp.actions ?? [])
+          return { new: formatted, old: undefined }
+        })
+        const merged = [...receivers]
+        for (const draftEntry of draftReceiversFormatted) {
+          const draftEntryId = draftEntry.new.id
+          const existingIdx = draftEntryId
+            ? merged.findIndex(p => p.new.id === draftEntryId)
+            : -1
+          if (existingIdx >= 0) {
+            merged[existingIdx] = {
+              new: draftEntry.new,
+              old: { ...merged[existingIdx]!.new }
+            }
+          } else {
+            merged.push(draftEntry)
+          }
+        }
+        tableReceivers.value = merged
       } else {
         tableReceivers.value = receivers
       }
@@ -275,35 +316,57 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     // Liquidators — fetch from business, merge with draft if applicable
     if (liquidators) {
-      if (draft?.parties?.length) {
-        const draftLiquidators = draft.parties.filter(
-          dp => dp.roles?.some(r => r.roleType === RoleType.LIQUIDATOR)
-        )
-        if (draftLiquidators.length) {
-          const draftLiquidatorsFormatted: TableBusinessState<PartySchema>[] = draftLiquidators.map((dp) => {
-            const formatted = formatPartyUi(dp, RoleType.LIQUIDATOR)
-            formatted.actions = normalizeApiActions(dp.actions ?? [])
-            return { new: formatted, old: undefined }
-          })
-          const merged = [...liquidators]
-          for (const draftEntry of draftLiquidatorsFormatted) {
-            const draftEntryId = draftEntry.new.id
-            const existingIdx = draftEntryId
-              ? merged.findIndex(p => p.new.id === draftEntryId)
-              : -1
-            if (existingIdx >= 0) {
-              merged[existingIdx] = {
-                new: draftEntry.new,
-                old: { ...merged[existingIdx]!.new }
-              }
-            } else {
-              merged.push(draftEntry)
+      const draftLiquidatorEntries = draftRelationships?.filter(
+        dp => dp.roles?.some(r => r.roleType === RoleType.LIQUIDATOR)
+      )
+      const legacyDraftLiquidators = draftParties?.filter(
+        dp => dp.roles?.some(r => r.roleType === RoleType.LIQUIDATOR)
+      )
+
+      if (draftLiquidatorEntries?.length) {
+        const draftLiquidatorsFormatted: TableBusinessState<PartySchema>[] = draftLiquidatorEntries.map((dp) => {
+          const formatted = formatRelationshipUi(dp)
+          formatted.actions = normalizeApiActions(dp.actions ?? [])
+          return { new: formatted, old: undefined }
+        })
+        const merged = [...liquidators]
+        for (const draftEntry of draftLiquidatorsFormatted) {
+          const draftEntryId = draftEntry.new.id
+          const existingIdx = draftEntryId
+            ? merged.findIndex(p => p.new.id === draftEntryId)
+            : -1
+          if (existingIdx >= 0) {
+            merged[existingIdx] = {
+              new: draftEntry.new,
+              old: { ...merged[existingIdx]!.new }
             }
+          } else {
+            merged.push(draftEntry)
           }
-          tableLiquidators.value = merged
-        } else {
-          tableLiquidators.value = liquidators
         }
+        tableLiquidators.value = merged
+      } else if (legacyDraftLiquidators?.length) {
+        const draftLiquidatorsFormatted: TableBusinessState<PartySchema>[] = legacyDraftLiquidators.map((dp) => {
+          const formatted = formatPartyUi(dp, RoleType.LIQUIDATOR)
+          formatted.actions = normalizeApiActions(dp.actions ?? [])
+          return { new: formatted, old: undefined }
+        })
+        const merged = [...liquidators]
+        for (const draftEntry of draftLiquidatorsFormatted) {
+          const draftEntryId = draftEntry.new.id
+          const existingIdx = draftEntryId
+            ? merged.findIndex(p => p.new.id === draftEntryId)
+            : -1
+          if (existingIdx >= 0) {
+            merged[existingIdx] = {
+              new: draftEntry.new,
+              old: { ...merged[existingIdx]!.new }
+            }
+          } else {
+            merged.push(draftEntry)
+          }
+        }
+        tableLiquidators.value = merged
       } else {
         tableLiquidators.value = liquidators
       }
@@ -343,31 +406,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       type: correctionType.value,
       legalType: businessStore.business?.legalType as CorpTypeCd,
 
-      // Parties — correction API expects OrgPerson format (with `officer`, not `entity`)
+      // Parties — formatted as relationships (with `entity`), matching transition store pattern
       // All party types (directors, receivers, liquidators) are combined in one array
-      parties: [
+      relationships: [
         ...tableParties.value,
         ...tableReceivers.value,
         ...tableLiquidators.value
-      ].map((entry) => {
-        const p = entry.new
-        const mailingAddress = formatAddressApi(p.address.mailingAddress as ConnectAddress)
-        const deliveryAddress = formatAddressApi(p.address.deliveryAddress as ConnectAddress)
-        return {
-          officer: {
-            id: p.id ? Number(p.id) : undefined,
-            partyType: p.name.partyType || PartyType.PERSON,
-            firstName: p.name.firstName ?? '',
-            middleInitial: p.name.middleName ?? '',
-            lastName: p.name.lastName ?? '',
-            organizationName: p.name.businessName ?? ''
-          },
-          mailingAddress,
-          deliveryAddress,
-          roles: formatRelationshipRolesApi(p.roles, p.actions.includes(ActionType.REMOVED)),
-          actions: p.actions
-        } as OrgPerson
-      }),
+      ].map(entry => formatRelationshipApi(entry.new)),
 
       // Offices
       offices: {
@@ -377,19 +422,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
       // Share structure
       shareStructure: {
-        shareClasses: tableShareClasses.value
-          .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
-          .map(c => ({
-            ...c.new,
-            name: c.new.name + ' Shares',
-            currency: c.new.currency ?? null as unknown as string,
-            series: c.new.series
-              .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
-              .map(s => ({
-                ...s,
-                name: s.name + ' Shares'
-              }))
-          }))
+        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission)
       },
 
       // Court order (common filing data)

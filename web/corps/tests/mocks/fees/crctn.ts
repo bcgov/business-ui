@@ -27,4 +27,3 @@ export const CRCTN_NO_FEE = {
   },
   total: 0.0
 }
-

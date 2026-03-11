@@ -24,7 +24,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-
 function isActionAllowed(action: ManageAllowedAction) {
   return !allowedActions || allowedActions.includes(action)
 }
