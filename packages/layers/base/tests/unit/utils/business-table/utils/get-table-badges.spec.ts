@@ -6,7 +6,7 @@ describe('getTableBadges', () => {
     const row = {
       original: {
         new: {
-          actions: [ActionType.EDITED, ActionType.ADDED, ActionType.NAME_CHANGED, ActionType.REMOVED]
+          actions: [ActionType.CHANGED, ActionType.ADDED, ActionType.NAME_CHANGED, ActionType.REMOVED]
         }
       }
     } as any
@@ -21,7 +21,7 @@ describe('getTableBadges', () => {
     const row = {
       original: {
         new: {
-          actions: [ActionType.EDITED, ActionType.REMOVED, ActionType.NAME_CHANGED]
+          actions: [ActionType.CHANGED, ActionType.REMOVED, ActionType.NAME_CHANGED]
         }
       }
     } as any
@@ -34,11 +34,11 @@ describe('getTableBadges', () => {
   })
 
   it('should return all badges if ADDED/REMOVED are absent', () => {
-    const actions = [ActionType.EDITED, ActionType.NAME_CHANGED, ActionType.ADDRESS_CHANGED]
+    const actions = [ActionType.NAME_CHANGED, ActionType.ADDRESS_CHANGED]
     const row = { original: { new: { actions } } } as any
 
     const result = getTableBadges(row)
-    expect(result).toHaveLength(3)
+    expect(result).toHaveLength(2)
   })
 
   it('should return an empty array if actions array is empty', () => {
@@ -50,11 +50,29 @@ describe('getTableBadges', () => {
   })
 
   it('should remove duplicate actions', () => {
-    const actions = [ActionType.EDITED, ActionType.EDITED, ActionType.EDITED]
+    const actions = [ActionType.CHANGED, ActionType.CHANGED, ActionType.CHANGED]
     const row = { original: { new: { actions } } } as any
 
     const result = getTableBadges(row)
 
     expect(result).toHaveLength(1)
+  })
+
+  it('should filter out unknown action types', () => {
+    const actions = ['UNKNOWN_ACTION' as ActionType, ActionType.NAME_CHANGED]
+    const row = { original: { new: { actions } } } as any
+
+    const result = getTableBadges(row)
+    expect(result).toHaveLength(1)
+    expect(result[0]!.label).toBe('NAME CHANGED')
+  })
+
+  it('should return CORRECTED badge for corrected action', () => {
+    const actions = [ActionType.CORRECTED]
+    const row = { original: { new: { actions } } } as any
+
+    const result = getTableBadges(row)
+    expect(result).toHaveLength(1)
+    expect(result[0]!.label).toBe('CORRECTED')
   })
 })

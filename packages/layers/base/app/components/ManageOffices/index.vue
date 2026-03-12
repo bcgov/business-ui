@@ -2,7 +2,9 @@
 const {
   stateKey = 'manage-offices',
   allowedActions,
-  allowAddOfficeType
+  allowAddOfficeType,
+  readonly,
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -10,7 +12,9 @@ const {
   sectionLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  labelOverrides?: TableLabelOverrides
   allowAddOfficeType?: OfficeType
+  readonly?: boolean
 }>()
 
 const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office', { required: true })
@@ -37,12 +41,19 @@ const tableHasAddType = computed(() => {
   return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
 })
 const allowAddOffice = computed(() => {
+  if (readonly) {
+    return false
+  }
   const hasAllowedActions = !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
   if (!allowAddOfficeType) {
     return hasAllowedActions
   }
   return !tableHasAddType.value && hasAllowedActions
 })
+
+function hideRowActionsWhen() {
+  return !!readonly
+}
 
 function setActiveFormAlert() {
   setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
@@ -135,6 +146,8 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeOffice"
+          :label-overrides="labelOverrides"
+          :hide-actions-when="hideRowActionsWhen"
           @action-prevented="setActiveFormAlert"
           @init-edit="initEditOffice"
           @remove="removeOffice"

@@ -143,6 +143,6 @@ describe('getPartyNameColumn', () => {
     const cell = column.cell({ row })
 
     expect(cell.props.badges).toEqual(mockBadges)
-    expect(mockGetTableBadges).toHaveBeenCalledWith(row)
+    expect(mockGetTableBadges).toHaveBeenCalledWith(row, undefined)
   })
 })

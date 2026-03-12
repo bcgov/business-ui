@@ -1,15 +1,19 @@
 <script setup lang="ts" generic="T extends OfficesSchema = OfficesSchema">
 import type { ExpandedState } from '@tanstack/vue-table'
 
-defineProps<{
+const {
+  labelOverrides
+} = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  labelOverrides?: TableLabelOverrides
+  hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
-const officesColumns = getOfficesTableColumns<T>()
+const officesColumns = getOfficesTableColumns<T>(labelOverrides?.badges)
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 </script>
 
@@ -22,6 +26,8 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :columns="officesColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
+    :label-overrides="labelOverrides"
+    :hide-actions-when="hideActionsWhen"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

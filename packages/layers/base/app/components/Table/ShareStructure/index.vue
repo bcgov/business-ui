@@ -8,6 +8,7 @@ const props = defineProps<{
   emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  labelOverrides?: TableLabelOverrides
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
@@ -18,7 +19,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const shareStructureColumns = getShareStructureTableColumns<T>()
+const shareStructureColumns = getShareStructureTableColumns<T>(props.labelOverrides?.badges)
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true, default: {} })
 
 // ensure all items are always expanded
@@ -90,6 +91,7 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :columns="shareStructureColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
+    :label-overrides="labelOverrides"
     :get-custom-dropdown-items="getCustomDropdownItems"
     :hide-actions-when="hideActionsWhen"
     :sorting="[{ id: 'priority', desc: false }]"

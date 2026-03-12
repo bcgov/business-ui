@@ -1,7 +1,7 @@
 export function getShareStructureTableColumns<
   T extends ShareClassSchema = ShareClassSchema
->(): TableBusinessColumn<T>[] {
-  const nameColumn = getShareClassOrSeriesNameColumn<T>()
+>(badgeLabelOverrides?: Partial<Record<ActionType, string>>): TableBusinessColumn<T>[] {
+  const nameColumn = getShareClassOrSeriesNameColumn<T>('first', badgeLabelOverrides)
   const maxColumn = getMaxNumberOfSharesColumn<T>()
   const parValueColumn = getParValueColumn<T>()
   const currencyColumn = getCurrencyColumn<T>()

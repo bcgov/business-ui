@@ -5,11 +5,13 @@ const {
   row,
   allowedActions,
   preventActions,
+  labelOverrides,
   getCustomDropdownItems
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
+  labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
 }>()
 
@@ -64,7 +66,9 @@ const availableActions = computed(() => {
 
   if (canChange.value && !isRemoved.value) {
     actions.push({
-      label: isAdded.value ? t('label.edit') : t('label.change'),
+      label: isAdded.value
+        ? t('label.edit')
+        : labelOverrides?.editLabel || t('label.change'),
       icon: 'i-mdi-pencil',
       click: () => emitAction('init-edit')
     })

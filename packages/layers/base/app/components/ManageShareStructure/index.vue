@@ -2,13 +2,15 @@
 const {
   stateKey = 'manage-share-structure',
   allowedActions,
-  readonly
+  readonly,
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
   addLabel: string
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  labelOverrides?: TableLabelOverrides
   readonly?: boolean
 }>()
 
@@ -206,6 +208,7 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeClass || !!activeSeries"
+          :label-overrides="labelOverrides"
           :hide-actions-when="hideRowActionsWhen"
           @init-edit="onInitEdit"
           @move-row="changePriority"
