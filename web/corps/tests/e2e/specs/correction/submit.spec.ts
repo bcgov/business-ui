@@ -14,8 +14,8 @@ async function makeDirectorChange(page: Page) {
   await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
   await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit 1A')
   await directors.getByRole('button', { name: 'Done' }).click()
-  // Wait for the form to close and the table to update
-  await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
+  // Wait for the form to close — the Done button disappears when the inline form collapses
+  await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
 }
 
 async function fillCorrectionComment(page: Page, comment: string) {

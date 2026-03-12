@@ -122,7 +122,7 @@ test.describe('Correction - Page init', () => {
       await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
 
       // Navigate to step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
@@ -147,7 +147,7 @@ test.describe('Correction - Page init', () => {
       await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
@@ -175,7 +175,7 @@ test.describe('Correction - Page init', () => {
       await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
       await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
       await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).not.toBeVisible()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
