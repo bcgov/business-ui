@@ -83,3 +83,24 @@ export function daysBetween(startDate: Date, endDate: Date) {
   const date2 = DateTime.fromJSDate(endDate)
   return date1.isValid && date2.isValid ? date2.diff(date1, 'days').toObject().days : undefined
 }
+
+/**
+ * Converts an ISO date string (e.g. "2021-02-08") to a human-readable date string.
+ * Defaults to DATE_FULL format (e.g. "February 8, 2021").
+ *
+ * @param dateStr - An ISO date string (YYYY-MM-DD or full ISO 8601).
+ * @param format - A Luxon DateTimeFormatOptions object. Defaults to DateTime.DATE_FULL.
+ * @param timezone - An IANA timezone string. Defaults to 'America/Vancouver'.
+ * @returns The formatted date string, or the original string if parsing fails.
+ *
+ * @example toReadableDate('2021-02-08') // "February 8, 2021"
+ * @example toReadableDate('2021-02-08', DateTime.DATE_MED) // "Feb 8, 2021"
+ */
+export function toReadableDate(
+  dateStr: string,
+  format: DateTimeFormatOptions = DateTime.DATE_FULL,
+  timezone = 'America/Vancouver'
+): string {
+  const dt = DateTime.fromISO(dateStr, { zone: timezone })
+  return dt.isValid ? dt.toLocaleString(format) : dateStr
+}

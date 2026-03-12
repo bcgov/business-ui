@@ -1,7 +1,6 @@
 import { cloneDeep } from 'es-toolkit'
 
 export const useTransitionStore = defineStore('transition-store', () => {
-  const service = useBusinessService()
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
@@ -25,17 +24,15 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = true
     $reset()
 
-    const { draftFiling, parties, addresses } = await initFiling<PRTApplication>(
+    const { draftFiling, parties, addresses, shareClasses } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
       undefined,
       draftId,
       { roleType: RoleType.DIRECTOR },
-      [OfficeType.RECORDS, OfficeType.REGISTERED]
+      [OfficeType.RECORDS, OfficeType.REGISTERED],
+      true // fetch share classes
     )
-
-    // FUTURE: add classes to initFiling
-    const classes = await service.getShareClasses(businessId)
 
     const draft = draftFiling?.filing?.transition
     if (draft) {
@@ -67,8 +64,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
       tableOffices.value = addresses
     }
 
-    if (classes) {
-      const originalClasses = formatShareClassesUi(classes)
+    if (shareClasses) {
+      const originalClasses = formatShareClassesUi(shareClasses)
       const draftClasses = draft?.shareStructure.shareClasses
         ? formatShareClassesUi(draft.shareStructure.shareClasses as unknown as ShareClass[])
         : undefined
@@ -107,19 +104,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       },
       hasProvisions: true,
       shareStructure: {
-        shareClasses: tableShareClasses.value
-          .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
-          .map(c => ({
-            ...c.new,
-            name: c.new.name + ' Shares',
-            currency: c.new.currency ?? null as unknown as string,
-            series: c.new.series
-              .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
-              .map(s => ({
-                ...s,
-                name: s.name + ' Shares'
-              }))
-          }))
+        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission)
       },
       ...(formState.documentDelivery?.completingPartyEmail && {
         contactPoint: { email: formState.documentDelivery.completingPartyEmail }

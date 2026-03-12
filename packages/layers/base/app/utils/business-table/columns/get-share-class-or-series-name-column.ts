@@ -2,7 +2,8 @@ import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
 
 export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
-  metaOption: TableColumnMetaOption = 'first'
+  metaOption: TableColumnMetaOption = 'first',
+  badgeLabelOverrides?: Partial<Record<ActionType, string>>
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
@@ -25,7 +26,7 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
       const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 
       // if the parent row is removed, show no badges on the series
-      const badges = isParentRowRemoved ? [] : getTableBadges(row)
+      const badges = isParentRowRemoved ? [] : getTableBadges(row, badgeLabelOverrides)
 
       const label = row.original.new.name + ' ' + t('label.shares')
 

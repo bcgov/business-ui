@@ -2,7 +2,8 @@
 const {
   roleType,
   stateKey = 'manage-parties',
-  allowedActions
+  allowedActions,
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -11,6 +12,7 @@ const {
   roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
+  labelOverrides?: TableLabelOverrides
   columnsToDisplay?: TablePartyColumnName[]
   partyFormProps?: {
     partyNameProps?: {
@@ -148,6 +150,7 @@ function clearAllAlerts() {
           :empty-text="emptyText"
           :allowed-actions="allowedActions"
           :prevent-actions="!!activeParty"
+          :label-overrides="labelOverrides"
           :columns="columnsToDisplay"
           @init-edit="initEditParty"
           @remove="removeParty"

@@ -2,7 +2,8 @@ import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
 
 export function getOfficeTypeColumn<T extends { type: OfficeType, actions: ActionType[] }>(
-  metaOption: TableColumnMetaOption = 'first'
+  metaOption: TableColumnMetaOption = 'first',
+  badgeLabelOverrides?: Partial<Record<ActionType, string>>
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
@@ -12,7 +13,7 @@ export function getOfficeTypeColumn<T extends { type: OfficeType, actions: Actio
     header: t('label.office'),
     meta,
     cell: ({ row }) => {
-      const badges = getTableBadges(row)
+      const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'font-bold min-w-40 max-w-40 flex flex-col gap-2'
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass

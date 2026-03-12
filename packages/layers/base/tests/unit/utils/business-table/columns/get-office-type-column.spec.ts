@@ -52,7 +52,7 @@ describe('getOfficeTypeColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(mockGetTableBadges).toHaveBeenCalledWith(row)
+    expect(mockGetTableBadges).toHaveBeenCalledWith(row, undefined)
     expect(mockGetIsRowRemoved).toHaveBeenCalledWith(row)
 
     expect(cell.type).toBe(TableColumnIdentity)

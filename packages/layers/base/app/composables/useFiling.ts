@@ -43,7 +43,8 @@ export const useFiling = () => {
     filingSubType?: string,
     draftId?: string,
     partiesParams?: { roleClass?: RoleClass, roleType?: RoleType },
-    officeTypes?: OfficeType[]
+    officeTypes?: OfficeType[],
+    fetchShareClasses?: boolean
   ) {
     try {
       // throw error and show modal if invalid business ID
@@ -64,20 +65,26 @@ export const useFiling = () => {
         ? getBusinessAddresses(businessId, 'table', officeTypes)
         : undefined
 
+      const shareClassesPromise = fetchShareClasses
+        ? service.getShareClasses(businessId)
+        : undefined
+
       const [
         _tombstoneInit,
         _businessInit,
         draftFiling,
         parties,
         _permissions,
-        addresses
+        addresses,
+        shareClasses
       ] = await Promise.all([
         setFilingDefault(businessId, false),
         businessStore.init(businessId, false, false, false, true),
         draftPromise,
         partiesPromise,
         permissionsStore.init(businessId),
-        addressesPromise
+        addressesPromise,
+        shareClassesPromise
       ])
 
       const isAuthorized = permissionsStore.isAuthorizedByFilingType(
@@ -113,7 +120,8 @@ export const useFiling = () => {
       return {
         draftFiling,
         parties,
-        addresses
+        addresses,
+        shareClasses
       }
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
@@ -126,7 +134,8 @@ export const useFiling = () => {
       return {
         draftFiling: undefined,
         parties: undefined,
-        addresses: undefined
+        addresses: undefined,
+        shareClasses: undefined
       }
     }
   }
