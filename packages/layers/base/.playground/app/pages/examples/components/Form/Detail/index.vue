@@ -2,7 +2,8 @@
 import type { FormSubmitEvent, Form } from '@nuxt/ui'
 
 definePageMeta({
-  layout: 'connect-auth'
+  layout: 'connect-auth',
+  breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'Form Detail' }]
 })
 
 const correctionDate = 'February 26, 2026'
