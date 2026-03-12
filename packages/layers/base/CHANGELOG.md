@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.18.0
+
+### Minor Changes
+
+- [#421](https://github.com/bcgov/business-ui/pull/421) [`547653e`](https://github.com/bcgov/business-ui/commit/547653e8d7f7a25d209086a335440477261b4de5) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Component refactors to support dynamic labels for corrections
+
+### Patch Changes
+
+- [#419](https://github.com/bcgov/business-ui/pull/419) [`f9bf892`](https://github.com/bcgov/business-ui/commit/f9bf892ef88a19d64b728406e8c62df8fd3c8465) Thanks [@kialj876](https://github.com/kialj876)! - Minor party role mapping update
+
 ## 0.17.1
 
 ### Patch Changes
