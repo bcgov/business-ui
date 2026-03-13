@@ -43,6 +43,7 @@ const {
       || store.liquidators.some(l => l.new.actions.length > 0)
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
+      || store.hasCommentChanges
   }
 )
 
@@ -91,7 +92,7 @@ function reviewAndConfirm() {
     return
   }
   if (!canSubmit()) {
-    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', [1])
+    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
   }
   nextStep()
 }

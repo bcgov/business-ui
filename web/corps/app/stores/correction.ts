@@ -24,6 +24,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
 
+  const hasCommentChanges = computed(() => {
+    const initialComment = initialFormState.value.comment?.detail?.trim() ?? ''
+    const currentComment = formState.comment?.detail?.trim() ?? ''
+
+    return currentComment !== initialComment
+  })
+
   /** The original filing being corrected (fetched by correctedFilingId) */
   const correctedFiling = shallowRef<FilingGetByIdResponse<FilingRecord> | undefined>(undefined)
 
@@ -88,7 +95,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       correctionType.value = draft.type
 
       // Comment (may be empty on initial draft)
-      formState.comment = draft.comment ?? ''
+      formState.comment = { detail: draft.comment ?? '' }
 
       // Document delivery
       if (formState.documentDelivery) {
@@ -233,7 +240,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const recOffice = tableOffices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
 
     const correctionPayload: CorrectionPayload = {
-      comment: formState.comment ?? '',
+      comment: formState.comment?.detail ?? '',
       correctedFilingId: correctedFilingId.value!,
       correctedFilingType: correctedFilingType.value,
       correctedFilingDate: correctedFilingDate.value || undefined,
@@ -342,6 +349,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialLiquidators,
     initialOffices,
     initialShareClasses,
+    hasCommentChanges,
     isStaff,
     init,
     submit,
