@@ -92,7 +92,7 @@ function reviewAndConfirm() {
     return
   }
   if (!canSubmit()) {
-    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
+    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', [1])
   }
   nextStep()
 }
