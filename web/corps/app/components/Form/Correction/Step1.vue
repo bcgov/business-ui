@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
+
 const store = useCorrectionStore()
 
 const directorAllowedActions = [
@@ -17,6 +19,17 @@ const receiverLiquidatorAllowedActions = [
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = useCorrectionLabelOverrides()
+
+const correctedFilingDateDisplay = computed(() => {
+  return store.correctedFilingDate ? toReadableDate(store.correctedFilingDate) : undefined
+})
+
+const correctionComment = computed({
+  get: () => store.formState.comment ?? { detail: '' },
+  set: value => {
+    store.formState.comment = value
+  }
+})
 </script>
 
 <template>
@@ -147,21 +160,13 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
 
     <!-- Section: Correction Detail Comment -->
     <section class="space-y-4" data-testid="correction-comment-section">
-      <h2 class="text-base">
-        PLACEHOLDER COMPONENT: {{ $t('label.correctionComment') }}
-      </h2>
-      <p>{{ $t('text.correctionCommentDescription') }}</p>
-      <div class="rounded bg-white p-6">
-        <UFormField name="comment">
-          <UTextarea
-            v-model="store.formState.comment"
-            :placeholder="$t('text.correctionCommentDescription')"
-            :maxlength="4096"
-            :rows="5"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
+      <FormDetail
+        v-model="correctionComment"
+        name="comment"
+        :filing-date="correctedFilingDateDisplay"
+        :description="$t('text.correctionCommentDescription')"
+        :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
+      />
     </section>
   </UForm>
 </template>

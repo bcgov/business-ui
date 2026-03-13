@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+export const CORRECTION_DETAIL_COMMENT_MAX_LENGTH = 1046
+
 function getClientCorrectionSchema() {
   return z.object({
     certify: getCertifySchema().default({
@@ -28,13 +30,8 @@ function getStaffCorrectionSchema() {
 }
 
 export function getCorrectionSchema(isStaff: boolean) {
-  const t = useNuxtApp().$i18n.t
-
   const schema = z.object({
-    comment: z.string()
-      .min(1, t('connect.validation.fieldRequired'))
-      .max(4096, t('connect.validation.maxChars', 4096))
-      .default(''),
+    comment: getDetailSchema(CORRECTION_DETAIL_COMMENT_MAX_LENGTH).default({ detail: '' }),
     documentDelivery: getDocumentDeliverySchema().default(() => ({ completingPartyEmail: '' })),
     activeDirector: getActivePartySchema(),
     activeReceiver: getActivePartySchema(RoleTypeUi.RECEIVER),
