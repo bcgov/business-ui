@@ -115,7 +115,7 @@ function clearAllAlerts() {
       v-if="allowAddOffice"
       :label="addLabel"
       variant="outline"
-      icon="i-mdi-account-plus-outline"
+      icon="i-mdi-plus"
       class="w-min"
       @click="initAddOffice"
     />

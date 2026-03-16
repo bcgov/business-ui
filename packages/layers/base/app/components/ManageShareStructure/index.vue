@@ -170,7 +170,7 @@ function clearAllAlerts() {
         :label="addLabel"
         :aria-describedby="messageId"
         variant="outline"
-        icon="i-mdi-account-plus-outline"
+        icon="i-mdi-plus"
         class="w-min"
         @click="initAddItem()"
       />

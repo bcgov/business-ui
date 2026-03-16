@@ -118,7 +118,7 @@ function clearAllAlerts() {
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
       variant="outline"
-      icon="i-mdi-account-plus-outline"
+      icon="i-mdi-plus"
       class="w-min"
       @click="initAddParty"
     />
