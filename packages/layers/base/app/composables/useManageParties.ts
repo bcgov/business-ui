@@ -19,10 +19,13 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     if (!row) {
       tableState.value = [newItem, ...tableState.value]
     } else {
-      const otherRows = tableState.value.filter(
-        item => item.new.id !== row.original.new.id
-      )
-      tableState.value = [newItem, ...otherRows]
+      const index = row.index
+
+      tableState.value = [
+        ...tableState.value.slice(0, index),
+        JSON.parse(JSON.stringify(newState)),
+        ...tableState.value.slice(index + 1)
+      ]
     }
   }
 
