@@ -34,13 +34,13 @@ describe('TableColumnDeliveryAddress', () => {
     expect(addressDisplay.exists()).toBe(false)
   })
 
-  it('should display "Not Entered" when mailing address is invalid', async () => {
+  it('should display "Not Entered" when delivery address is invalid', async () => {
     const wrapper = await mountSuspended(TableColumnDeliveryAddress, {
       props: {
         data: {
-          deliveryAddress: defaultProps.data.deliveryAddress,
+          mailingAddress: defaultProps.data.deliveryAddress,
           // @ts-expect-error - partial object
-          mailingAddress: {
+          deliveryAddress: {
             street: '123 Main St'
             // missing required properties
           },
