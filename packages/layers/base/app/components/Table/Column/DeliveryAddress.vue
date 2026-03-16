@@ -4,7 +4,7 @@ const props = defineProps<{
 }>()
 
 const addressSchema = getRequiredAddressSchema()
-const isValidAddress = computed(() => (addressSchema.safeParse(props.data.mailingAddress)).success)
+const isValidAddress = computed(() => (addressSchema.safeParse(props.data.deliveryAddress)).success)
 </script>
 
 <template>
@@ -13,7 +13,7 @@ const isValidAddress = computed(() => (addressSchema.safeParse(props.data.mailin
     <span v-else-if="!isValidAddress">{{ $t('label.notEntered') }}</span>
     <ConnectAddressDisplay
       v-else
-      :address="data.mailingAddress"
+      :address="data.deliveryAddress"
       :text-decor="true"
     />
   </div>

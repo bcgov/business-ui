@@ -61,12 +61,12 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   }
 
   function undoParty(row: TableBusinessRow<PartySchema>): void {
-    const oldReceiver = row.original.old
+    const oldState = row.original.old
 
-    if (oldReceiver) {
+    if (oldState) {
       const newState: TableBusinessState<PartySchema> = {
-        new: oldReceiver,
-        old: oldReceiver
+        new: oldState,
+        old: oldState
       }
 
       updateTable(newState, row)
