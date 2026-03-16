@@ -376,7 +376,7 @@ export default {
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',
     documentDelivery: 'Document Delivery',
-    documentId: 'Document Id',
+    documentId: 'Document ID',
     documentIdOpt: 'Document ID (Optional)',
     done: 'Done',
     downloadAll: 'Download All',
