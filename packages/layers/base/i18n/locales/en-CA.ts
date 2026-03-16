@@ -656,6 +656,7 @@ export default {
     classNameInvalidWords: 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
+    enterLastName: 'Enter a last name',
     fieldRequired: 'This field is required',
     routingSlipNumber: 'Routing Slip Number must be 9 digits',
     routingSlipNumberEmpty: 'Enter FAS Routing Slip Number',

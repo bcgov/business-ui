@@ -68,7 +68,7 @@ defineExpose({
     :name
   >
     <ConnectFieldset
-      :label="t('label.personOrOrgName')"
+      :label="t('label.legalName')"
       :error="formErrors && formErrors[0]"
       padding-class="xy-default"
     >
