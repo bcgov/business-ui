@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const CORRECTION_DETAIL_COMMENT_MAX_LENGTH = 1046
+export const CORRECTION_DETAIL_COMMENT_MAX_LENGTH = 1932
 
 function getClientCorrectionSchema() {
   return z.object({

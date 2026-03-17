@@ -99,11 +99,11 @@ describe('Correction Schema', () => {
   })
 
   describe('Comment validation', () => {
-    it('should allow an empty comment detail by default', () => {
+    it('should fail when comment is empty (min length 1)', () => {
       const schema = getCorrectionSchema(true)
       const result = schema.safeParse({ comment: { detail: '' } })
 
-      expect(result.success).toBe(true)
+      expect(result.success).toBe(false)
     })
 
     it('should accept a valid comment', () => {

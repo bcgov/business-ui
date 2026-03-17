@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   description?: string
   maxLength?: number
 }>(), {
-  maxLength: 1945
+  maxLength: 1932
 })
 
 const model = defineModel<DetailSchema>({ required: true })
