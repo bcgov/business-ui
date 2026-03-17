@@ -17,14 +17,7 @@ const model = defineModel<DetailSchema>({ required: true })
 const formRef = useTemplateRef<Form<DetailSchema>>('detail-form')
 const formDetailTextareaId = useId()
 const detailSchema = computed(() => getDetailSchema(props.maxLength))
-const fieldsetLabel = computed(() => props.order ? `${props.order}. ${t('label.detail')}` : t('label.detail'))
-const fieldsetDescription = computed(() => props.description ?? t('text.detailDescription'))
 const characterCount = computed(() => model.value?.detail?.length ?? 0)
-const correctionLabel = computed(() => {
-  return props.filingDate
-    ? t('text.correctionForRegistrationFiledOn', { date: props.filingDate })
-    : undefined
-})
 
 defineExpose({
   formRef
@@ -40,8 +33,8 @@ defineExpose({
     :name="props.name"
   >
     <ConnectFieldset
-      :label="fieldsetLabel"
-      :description="fieldsetDescription"
+      :label="props.order ? `${props.order}. ${t('label.detail')}` : t('label.detail')"
+      :description="props.description ?? t('text.detailDescription')"
       body-variant="card"
       orientation="vertical"
     >
@@ -52,10 +45,10 @@ defineExpose({
       >
         <div class="flex w-full flex-col gap-2">
           <p
-            v-if="correctionLabel"
+            v-if="props.filingDate"
             class="font-semibold text-neutral-highlighted"
           >
-            {{ correctionLabel }}
+            {{ t('text.correctionForRegistrationFiledOn', { date: props.filingDate }) }}
           </p>
           <UFormField
             name="detail"

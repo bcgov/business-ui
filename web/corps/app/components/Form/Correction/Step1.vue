@@ -19,17 +19,6 @@ const receiverLiquidatorAllowedActions = [
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = useCorrectionLabelOverrides()
-
-const correctedFilingDateDisplay = computed(() => {
-  return store.correctedFilingDate ? toReadableDate(store.correctedFilingDate) : undefined
-})
-
-const correctionComment = computed({
-  get: () => store.formState.comment ?? { detail: '' },
-  set: value => {
-    store.formState.comment = value
-  }
-})
 </script>
 
 <template>
@@ -161,9 +150,9 @@ const correctionComment = computed({
     <!-- Section: Correction Detail Comment -->
     <section class="space-y-4" data-testid="correction-comment-section">
       <FormDetail
-        v-model="correctionComment"
+        v-model="store.correctionComment"
         name="comment"
-        :filing-date="correctedFilingDateDisplay"
+        :filing-date="store.correctedFilingDateDisplay"
         :description="$t('text.correctionCommentDescription')"
         :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
       />
