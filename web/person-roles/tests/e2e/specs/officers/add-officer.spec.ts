@@ -37,8 +37,8 @@ test.describe('Adding Officers', () => {
     await assertNameTableCell(page, newRelationship, ['ADDED'])
     const expectedRoles = roles.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship, expectedRoles)
-    await assertAddress(page, newRelationship, 1, newRelationship.deliveryAddress!)
-    await assertAddress(page, newRelationship, 2, newRelationship.mailingAddress!)
+    await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
+    await assertAddress(page, newRelationship, 2, newRelationship.deliveryAddress!)
 
     // submit filing
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -76,14 +76,14 @@ test.describe('Adding Officers', () => {
     await assertNameTableCell(page, newRelationship1, ['ADDED'])
     const expectedRoles1 = roles1.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship1, expectedRoles1)
-    await assertAddress(page, newRelationship1, 1, newRelationship1.deliveryAddress!)
-    await assertAddress(page, newRelationship1, 2, newRelationship1.mailingAddress!)
+    await assertAddress(page, newRelationship1, 1, newRelationship1.mailingAddress!)
+    await assertAddress(page, newRelationship1, 2, newRelationship1.deliveryAddress!)
     // assert table columns for second officer
     await assertNameTableCell(page, newRelationship1, ['ADDED'])
     const expectedRoles2 = roles2.map(role => roleDisplayText(role))
     await assertRoles(page, newRelationship2, expectedRoles2)
-    await assertAddress(page, newRelationship2, 1, newRelationship2.deliveryAddress!)
-    await assertAddress(page, newRelationship2, 2, newRelationship2.mailingAddress!)
+    await assertAddress(page, newRelationship2, 1, newRelationship2.mailingAddress!)
+    await assertAddress(page, newRelationship2, 2, newRelationship2.deliveryAddress!)
 
     // submit filing
     await page.getByRole('button', { name: 'Submit' }).click()

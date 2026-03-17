@@ -158,7 +158,7 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
   expect(filing.transition.contactPoint).toEqual(contactPoint)
 
   expect(filing.transition.relationships).toHaveLength(3)
-  expect(filing.transition.relationships[0]?.mailingAddress?.streetAddressAdditional).toEqual('Unit 1A')
+  expect(filing.transition.relationships[1]?.mailingAddress?.streetAddressAdditional).toEqual('Unit 1A')
 
   const classes = filing.transition.shareStructure.shareClasses
   expect(classes).toHaveLength(9)
