@@ -38,12 +38,14 @@ const {
   ],
   // At least one correctable section must have changes to allow submission
   () => {
+    const hasValidComment = !!store.formState.comment?.detail?.trim()
+
     return store.directors.some(d => d.new.actions.length > 0)
       || store.receivers.some(r => r.new.actions.length > 0)
       || store.liquidators.some(l => l.new.actions.length > 0)
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
-      || store.hasCommentChanges
+      || (store.hasCommentChanges && hasValidComment)
   }
 )
 
@@ -92,7 +94,7 @@ function reviewAndConfirm() {
     return
   }
   if (!canSubmit()) {
-    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', [1])
+    return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
   }
   nextStep()
 }
