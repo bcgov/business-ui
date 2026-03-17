@@ -27,7 +27,7 @@ const showLiqRecordsOffice = [LiquidateType.INTENT, LiquidateType.ADDRESS, Liqui
 const isReport = filingSubType === LiquidateType.REPORT
 const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}.${filingSubType}.h1`))
 const formRef = useTemplateRef<Form<LiquidatorFormSchema>>('liquidator-filing')
-const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 useHead({
   title: t(`page.${FILING_TYPE}.${filingSubType}.title`)
@@ -256,28 +256,12 @@ useFilingPageWatcher<LiquidateType>({
         :state="store.formState.documentId"
       />
 
-      <ConnectFieldset
-        data-testid="staff-payment-section"
-        orientation="vertical"
-        :label="(isReport ? '3. ' : showLiqRecordsOffice ? '5. ' : '4.') + $t('label.staffPayment')"
-        body-variant="card"
-        :error="staffPayFormRef?.formRef?.getErrors()[0]"
-      >
-        <ConnectFormFieldWrapper
-          :label="$t('label.payment')"
-          orientation="horizontal"
-          padding-class="xy-default"
-        >
-          <StaffPayment
-            ref="staff-pay-ref"
-            v-model="store.formState.staffPayment"
-            :disabled="store.initializing"
-            :show-priority="true"
-            name="staffPayment"
-            :enable-auto-reset="!store.initializing"
-          />
-        </ConnectFormFieldWrapper>
-      </ConnectFieldset>
+      <StaffPaymentFieldset
+        ref="staff-pay-ref"
+        v-model="store.formState.staffPayment"
+        :order="isReport ? 3 : showLiqRecordsOffice ? 5 : 4"
+        :initializing="store.initializing"
+      />
     </UForm>
   </div>
 </template>

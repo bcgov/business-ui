@@ -220,7 +220,7 @@ function clearAllAlerts() {
         @action-prevented="setActiveFormAlert"
       >
         <template #expanded="{ row }">
-          <div v-if="row.depth === 0 && activeClass?.id === row.original.new.id" class="px-4 sm:px-6">
+          <div v-if="row.depth === 0 && activeClass?.id === row.original.new.id" class="p-4 sm:p-6">
             <FormShareClass
               v-model="activeClass"
               :title="editLabel"
@@ -239,7 +239,7 @@ function clearAllAlerts() {
               (row.depth === 1 && activeSeries.id === row.original.new.id)
               || addingSeriesToClassId === row.original.new.id
             )"
-            class="px-4 sm:px-6"
+            class="p-4 sm:p-6"
           >
             <FormShareSeries
               v-model="activeSeries"

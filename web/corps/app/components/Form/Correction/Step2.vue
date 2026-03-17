@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
-const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = useCorrectionLabelOverrides()
@@ -215,27 +215,12 @@ function onError(event: FormErrorEvent) {
     />
 
     <!-- Section 3 (staff): Staff Payment -->
-    <ConnectFieldset
+    <StaffPaymentFieldset
       v-if="store.isStaff && store.formState.staffPayment"
-      data-testid="staff-payment-section"
-      :label="`3. ${$t('label.staffPayment')}`"
-      orientation="vertical"
-      body-variant="card"
-    >
-      <ConnectFormFieldWrapper
-        :label="$t('label.payment')"
-        orientation="horizontal"
-        padding-class="xy-default"
-      >
-        <StaffPayment
-          ref="staff-pay-ref"
-          v-model="store.formState.staffPayment"
-          :disabled="store.initializing"
-          :show-priority="true"
-          name="staffPayment"
-          :enable-auto-reset="!store.initializing"
-        />
-      </ConnectFormFieldWrapper>
-    </ConnectFieldset>
+      ref="staff-pay-ref"
+      v-model="store.formState.staffPayment"
+      order="3"
+      :initializing="store.initializing"
+    />
   </UForm>
 </template>

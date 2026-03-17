@@ -5,7 +5,7 @@ import { z } from 'zod'
 const store = useTransitionStore()
 const businessStore = useBusinessStore()
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
-const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
@@ -95,28 +95,12 @@ function onError(event: FormErrorEvent) {
       :description="$t('text.certifyTransitionDescription')"
     />
 
-    <ConnectFieldset
+    <StaffPaymentFieldset
       v-if="store.isStaff && store.formState.staffPayment"
-      data-testid="staff-payment-section"
-      :label="`4. ${$t('label.staffPayment')}`"
-      body-variant="card"
-      orientation="vertical"
-      :error="staffPayFormRef?.formRef?.getErrors()[0]"
-    >
-      <ConnectFormFieldWrapper
-        :label="$t('label.payment')"
-        orientation="horizontal"
-        padding-class="xy-default"
-      >
-        <StaffPayment
-          ref="staff-pay-ref"
-          v-model="store.formState.staffPayment"
-          :disabled="store.initializing"
-          :show-priority="true"
-          name="staffPayment"
-          :enable-auto-reset="!store.initializing"
-        />
-      </ConnectFormFieldWrapper>
-    </ConnectFieldset>
+      ref="staff-pay-ref"
+      v-model="store.formState.staffPayment"
+      order="4"
+      :initializing="store.initializing"
+    />
   </UForm>
 </template>
