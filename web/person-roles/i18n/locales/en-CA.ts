@@ -74,11 +74,6 @@ export default {
   page: {
     // Below sections are named based on filing type and filing sub type
     changeOfLiquidators: {
-      // TODO: remove once sub types are in
-      // h1: 'Manage Liquidators',
-      // title: 'Manage Liquidators - People Roles - BC Registries and Online Services',
-      // feeCode: 'LQSIN',
-      // feeLabel: 'Manage Liquidators',
       intentToLiquidate: {
         desc: 'Some intent to liquidate descriptive text',
         feeCode: 'LQSIN',
@@ -134,14 +129,14 @@ export default {
         desc: 'Some cease receiver descriptive text',
         feeCode: 'NOCER',
         feeLabel: 'Cease Receivers or Receiver Managers',
-        h1: 'Cease Receivers or Reveiver Managers',
+        h1: 'Cease Receivers or Receiver Managers',
         title: 'Cease Receivers - People Roles - BC Registries and Online Services'
       },
       changeAddressReceiver: {
         desc: 'Some change address receiver descriptive text',
         feeCode: 'NOCRM',
-        feeLabel: 'Change Addresses of Receivers or Reveiver Managers',
-        h1: 'Change Addresses of Receivers or Reveiver Managers',
+        feeLabel: 'Change Addresses of Receivers or Receiver Managers',
+        h1: 'Change Addresses of Receivers or Receiver Managers',
         title: 'Change Receiver Addresses - People Roles - BC Registries and Online Services'
       }
     },
