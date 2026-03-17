@@ -69,7 +69,7 @@ defineExpose({
             </template>
           </UFormField>
           <div
-            class="text-right text-sm"
+            class="text-right text-sm pb-8"
             :class="characterCount > props.maxLength ? 'text-error' : 'text-neutral'"
           >
             {{ characterCount }} / {{ props.maxLength }}
