@@ -23,6 +23,10 @@ const confirmErrors = computed(() => {
     confirmDirectors: errors?.find(e => e.name?.includes('confirmDirectors'))
   }
 })
+
+defineExpose({
+  formRef
+})
 </script>
 
 <template>
