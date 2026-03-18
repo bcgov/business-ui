@@ -7,44 +7,71 @@ const identifier = 'BC1234567'
 
 const testCases = [
   {
+    testName: 'intent',
     type: LiquidateType.INTENT,
-    h1: 'Intent to Liquidate'
+    h1: 'Intent to Liquidate',
+    inLiquidation: false
   },
   {
+    testName: 'appoint - not in liquidation',
     type: LiquidateType.APPOINT,
-    h1: 'Appoint Liquidators'
+    h1: 'Appoint Liquidators',
+    inLiquidation: false
   },
   {
+    testName: 'appoint - already in liquidation',
+    type: LiquidateType.APPOINT,
+    h1: 'Appoint Liquidators',
+    inLiquidation: true
+  },
+  {
+    testName: 'cease',
     type: LiquidateType.CEASE,
-    h1: 'Cease Liquidators'
+    h1: 'Cease Liquidators',
+    inLiquidation: true
   },
   {
+    testName: 'address',
     type: LiquidateType.ADDRESS,
-    h1: 'Change Addresses of Liquidators'
+    h1: 'Change Addresses of Liquidators',
+    inLiquidation: true
   },
   {
+    testName: 'report',
     type: LiquidateType.REPORT,
-    h1: 'Liquidation Report'
+    h1: 'Liquidation Report',
+    inLiquidation: true
   }
 ]
 
-test.describe('Manage Liquidators - Page init', () => {
-  test.beforeEach(async ({ page }) => {
-    await mockCommonApiCallsForFiling(
-      page,
-      identifier,
-      getPartiesMock([
-        { index: 0, key: 'roleType', value: 'Liquidator' },
-        { index: 1, key: 'roleType', value: 'Liquidator' },
-        { index: 2, key: 'roleType', value: 'Liquidator' }
-      ]),
-      undefined,
-      getBusinessAddressesMock()
-    )
-  })
+testCases.forEach(({ testName, type, h1, inLiquidation }) => {
+  test.describe(`Manage Liquidators - Page init ${testName}`, () => {
+    test.beforeEach(async ({ page }) => {
+      const partiesMock = inLiquidation
+        ? getPartiesMock([
+          { index: 0, key: 'roleType', value: 'Liquidator' },
+          { index: 1, key: 'roleType', value: 'Liquidator' },
+          { index: 2, key: 'roleType', value: 'Liquidator' }])
+        : { parties: [] }
 
-  testCases.forEach(({ type, h1 }) => {
-    test(`Basic initialization - ${type}`, async ({ page }) => {
+      const officesMock = getBusinessAddressesMock()
+      if (!inLiquidation) {
+        delete officesMock['liquidationRecordsOffice']
+      }
+
+      await mockCommonApiCallsForFiling(
+        page,
+        identifier,
+        partiesMock,
+        undefined,
+        officesMock,
+        undefined,
+        undefined,
+        [{ key: 'inLiquidation', value: inLiquidation }]
+      )
+    })
+
+    test('Basic initialization', async ({ page }) => {
       await navigateToManageLiquidatorsPage(page, type)
       await page.waitForLoadState('networkidle')
 
@@ -84,7 +111,12 @@ test.describe('Manage Liquidators - Page init', () => {
 
       expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
-      if (type === LiquidateType.INTENT || type === LiquidateType.ADDRESS || type === LiquidateType.REPORT) {
+      if (
+        type === LiquidateType.INTENT
+        || type === LiquidateType.ADDRESS
+        || type === LiquidateType.REPORT
+        || (type === LiquidateType.APPOINT && !inLiquidation)
+      ) {
         expect(page.getByTestId('records-office-section')).toBeVisible()
       } else {
         expect(page.getByTestId('records-office-section')).not.toBeVisible()

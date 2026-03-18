@@ -18,12 +18,16 @@ const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
 const store = useLiquidatorStore()
+const { business } = storeToRefs(useBusinessStore())
 const { handleButtonLoading } = useConnectButtonControl()
 
 const FILING_TYPE = FilingType.CHANGE_OF_LIQUIDATORS
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as LiquidateType
-const showLiqRecordsOffice = [LiquidateType.INTENT, LiquidateType.ADDRESS, LiquidateType.REPORT].includes(filingSubType)
+const showLiqRecordsOffice = computed(() => (
+  [LiquidateType.INTENT, LiquidateType.ADDRESS, LiquidateType.REPORT].includes(filingSubType)
+  || (LiquidateType.APPOINT && !business.value?.inLiquidation)
+))
 const isReport = filingSubType === LiquidateType.REPORT
 const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}.${filingSubType}.h1`))
 const formRef = useTemplateRef<Form<LiquidatorFormSchema>>('liquidator-filing')
@@ -64,7 +68,7 @@ const allowedPartyActions = computed(() => {
 const allowedOfficeActions = computed(() => {
   const actionMap: Record<LiquidateType, ManageAllowedAction[] | undefined> = {
     [LiquidateType.ADDRESS]: [ManageAllowedAction.ADDRESS_CHANGE],
-    [LiquidateType.APPOINT]: [],
+    [LiquidateType.APPOINT]: !business.value?.inLiquidation ? [ManageAllowedAction.ADD] : [],
     [LiquidateType.CEASE]: [],
     [LiquidateType.INTENT]: [ManageAllowedAction.ADD],
     [LiquidateType.REPORT]: []
@@ -241,7 +245,7 @@ useFilingPageWatcher<LiquidateType>({
         data-testid="court-order-section"
         :disabled="store.initializing"
         name="courtOrder"
-        order="3"
+        :order="showLiqRecordsOffice ? 3 : 2"
         :state="store.formState.courtOrder"
       />
 
@@ -252,7 +256,7 @@ useFilingPageWatcher<LiquidateType>({
         data-testid="document-id-section"
         :disabled="store.initializing"
         name="documentId"
-        order="4"
+        :order="showLiqRecordsOffice ? 4 : 3"
         :state="store.formState.documentId"
       />
 
