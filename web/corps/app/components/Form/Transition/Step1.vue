@@ -84,6 +84,7 @@ const confirmErrors = computed(() => {
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
         :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeDirector"
+        :label-overrides="{ editLabel: $t('label.changeAddress') }"
       />
 
       <ConnectFormFieldWrapper

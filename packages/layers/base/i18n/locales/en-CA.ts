@@ -355,6 +355,7 @@ export default {
     cashOrCheque: 'Cash or Cheque',
     certify: 'Certify',
     change: 'Change',
+    changeAddress: 'Change Address',
     className: 'Class Name',
     classNameShares: 'Class Name [Shares]',
     close: 'Close',
