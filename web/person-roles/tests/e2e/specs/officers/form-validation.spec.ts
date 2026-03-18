@@ -17,7 +17,7 @@ test.describe('Form Validation', () => {
 
     test('should display required field errors on submit', async ({ page }) => {
       await page.getByRole('button', { name: 'Done' }).click()
-      await expect(page.getByTestId('form-group-last-name')).toContainText('This field is required')
+      await expect(page.getByTestId('form-group-last-name')).toContainText('Enter a last name')
       await expect(page.getByTestId('delivery-address-field-street')).toContainText('This field is required')
       await expect(page.locator('fieldset').filter({ hasText: 'Roles' }).first())
         .toContainText('Choose at least one role')

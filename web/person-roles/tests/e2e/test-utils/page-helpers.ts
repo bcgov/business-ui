@@ -111,7 +111,7 @@ export async function assertNameTableCell(
   }
   if (person.alternateName) {
     await expect(tableCell).toContainText('Preferred Name')
-    await expect(tableCell).toContainText(person.alternateName.toUpperCase())
+    await expect(tableCell).toContainText(person.alternateName)
   }
   if (badges) {
     for (const badge of badges) {

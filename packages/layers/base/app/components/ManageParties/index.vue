@@ -118,7 +118,7 @@ function clearAllAlerts() {
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
       variant="outline"
-      icon="i-mdi-account-plus-outline"
+      icon="i-mdi-plus"
       class="w-min"
       @click="initAddParty"
     />
@@ -142,22 +142,22 @@ function clearAllAlerts() {
         ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
       }"
     >
-      <div class="px-4 sm:px-5">
-        <TableParty
-          v-model:expanded="expandedState"
-          :data="tableState"
-          :loading
-          :empty-text="emptyText"
-          :allowed-actions="allowedActions"
-          :prevent-actions="!!activeParty"
-          :label-overrides="labelOverrides"
-          :columns="columnsToDisplay"
-          @init-edit="initEditParty"
-          @remove="removeParty"
-          @undo="undoParty"
-          @action-prevented="setActiveFormAlert"
-        >
-          <template #expanded="{ row }">
+      <TableParty
+        v-model:expanded="expandedState"
+        :data="tableState"
+        :loading
+        :empty-text="emptyText"
+        :allowed-actions="allowedActions"
+        :prevent-actions="!!activeParty"
+        :label-overrides="labelOverrides"
+        :columns="columnsToDisplay"
+        @init-edit="initEditParty"
+        @remove="removeParty"
+        @undo="undoParty"
+        @action-prevented="setActiveFormAlert"
+      >
+        <template #expanded="{ row }">
+          <div class="px-4 sm:px-6">
             <FormPartyDetails
               v-if="activeParty"
               v-model="activeParty"
@@ -170,9 +170,9 @@ function clearAllAlerts() {
               @cancel="cleanupPartyForm"
               @done="() => applyEdits(activeParty, row)"
             />
-          </template>
-        </TableParty>
-      </div>
+          </div>
+        </template>
+      </TableParty>
     </ConnectPageSection>
   </div>
 </template>

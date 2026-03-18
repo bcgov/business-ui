@@ -35,10 +35,11 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     sticky
     :ui="{
       root: 'bg-white rounded-sm',
-      tbody: 'px-10',
-      th: 'text-neutral-highlighted px-2',
+      tbody: 'divide-y-0',
+      th: 'text-neutral-highlighted px-2 bg-white',
       td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
-      tr: trClass
+      /* eslint-disable-next-line max-len */
+      tr: `${trClass} relative after:absolute after:content-[''] after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200 last:after:hidden in-[thead]:after:hidden`
     }"
   >
     <template #actions-cell="{ row }">

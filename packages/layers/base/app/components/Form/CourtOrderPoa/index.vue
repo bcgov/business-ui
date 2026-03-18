@@ -34,6 +34,7 @@ defineExpose({
       :description="$t('text.courtOrderAndPoaDescription')"
       body-variant="card"
       orientation="vertical"
+      :error="courtOrderNumberError"
     >
       <div class="flex flex-col gap-6 py-6">
         <ConnectFormFieldWrapper
@@ -51,7 +52,6 @@ defineExpose({
         <ConnectFormFieldWrapper
           :label="$t('label.courtOrderNumber')"
           orientation="horizontal"
-          :error="courtOrderNumberError"
         >
           <ConnectFormInput
             v-model="model.courtOrderNumber"

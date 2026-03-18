@@ -7,7 +7,7 @@ export function getPartyNameSchema() {
   const personNameSchema = z.object({
     firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
     middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
-    lastName: z.string().min(1, t('validation.fieldRequired')).max(30, t('connect.validation.maxChars', { count: 30 })),
+    lastName: z.string().min(1, t('validation.enterLastName')).max(30, t('connect.validation.maxChars', { count: 30 })),
     preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })),
     hasPreferredName: z.boolean()
   })

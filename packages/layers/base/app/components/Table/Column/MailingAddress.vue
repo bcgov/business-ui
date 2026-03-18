@@ -6,7 +6,7 @@ defineProps<{
 
 <template>
   <ConnectAddressDisplay
-    :address="data.deliveryAddress"
+    :address="data.mailingAddress"
     :text-decor="true"
   />
 </template>

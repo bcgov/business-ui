@@ -70,8 +70,8 @@ describe('getPartyNameColumn', () => {
     const slot = cell.children['additional-label']()
     expect(slot.children.length).toBe(2)
     expect(slot.children[0].children).toBe('Preferred Name:')
-    expect(slot.children[0].props.class).toBe('text-sm italic font-normal')
-    expect(slot.children[1].children).toBe(preferredName.toUpperCase())
+    expect(slot.children[0].props.class).toBe('text-sm italic')
+    expect(slot.children[1].children).toBe(preferredName)
     expect(slot.children[1].props.class).toBe('text-sm')
   })
 

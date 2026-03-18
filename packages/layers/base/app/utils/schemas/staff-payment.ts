@@ -1,4 +1,4 @@
-import type { StaffPayment } from '#components'
+import type { StaffPayment, StaffPaymentFieldset } from '#components'
 import { z } from 'zod'
 
 export function getStaffPaymentSchema() {
@@ -64,3 +64,5 @@ export function getStaffPaymentSchema() {
 export type StaffPaymentSchema = z.output<ReturnType<typeof getStaffPaymentSchema>>
 
 export type StaffPaymentFormRef = InstanceType<typeof StaffPayment>
+
+export type StaffPaymentFieldsetRef = InstanceType<typeof StaffPaymentFieldset>

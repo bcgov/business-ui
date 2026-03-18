@@ -19,10 +19,13 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     if (!row) {
       tableState.value = [newItem, ...tableState.value]
     } else {
-      const otherRows = tableState.value.filter(
-        item => item.new.id !== row.original.new.id
-      )
-      tableState.value = [newItem, ...otherRows]
+      const index = row.index
+
+      tableState.value = [
+        ...tableState.value.slice(0, index),
+        JSON.parse(JSON.stringify(newState)),
+        ...tableState.value.slice(index + 1)
+      ]
     }
   }
 
@@ -61,12 +64,12 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   }
 
   function undoParty(row: TableBusinessRow<PartySchema>): void {
-    const oldReceiver = row.original.old
+    const oldState = row.original.old
 
-    if (oldReceiver) {
+    if (oldState) {
       const newState: TableBusinessState<PartySchema> = {
-        new: oldReceiver,
-        old: oldReceiver
+        new: oldState,
+        old: oldState
       }
 
       updateTable(newState, row)
