@@ -26,7 +26,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
-    set: value => {
+    set: (value) => {
       formState.comment = value
     }
   })
