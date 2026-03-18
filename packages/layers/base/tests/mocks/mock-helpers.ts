@@ -14,7 +14,7 @@ import {
   getPermissionsMock,
   getUserSettingsMock
 } from '#test-mocks'
-import type { LedgerMockItem } from '#test-mocks'
+import type { BusinessOverride, LedgerMockItem } from '#test-mocks'
 
 export const mockApiCallsForSetAccount = async (
   page: Page,
@@ -106,12 +106,15 @@ export const mockCommonApiCallsForFiling = async (
   feesJSON: object | undefined,
   addressesJSON: object | undefined,
   accountType?: string,
-  shareClassesJSON?: object | undefined
+  shareClassesJSON?: object | undefined,
+  businessOverrides?: BusinessOverride[]
 ) => {
   mockLdarkly(page)
   mockApiCallsForSetAccount(page, accountType)
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
-    await route.fulfill({ json: getBusinessMock([{ key: 'identifier', value: identifier }]) })
+    await route.fulfill({
+      json: getBusinessMock([{ key: 'identifier', value: identifier }, ...(businessOverrides || [])])
+    })
   })
   page.route(`**/api/v1/entities/${identifier}`, async (route) => {
     await route.fulfill({ json: getBusinessSettingsMock() })

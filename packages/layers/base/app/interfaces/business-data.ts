@@ -10,6 +10,7 @@ export interface BusinessDataPublic {
   goodStanding: boolean
   identifier: string
   inDissolution: boolean
+  inLiquidation: boolean
   legalName: string
   legalType: CorpTypeCd
   lastModified: ApiDateTimeUtc

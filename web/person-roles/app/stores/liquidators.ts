@@ -24,8 +24,13 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     liquidateSubType.value = filingSubType
     $reset()
 
-    // only fetch liquidation records office if it's a change address or liq report filing
-    const officeParams = [LiquidateType.ADDRESS, LiquidateType.REPORT, LiquidateType.INTENT].includes(filingSubType)
+    // only fetch liquidation records office if an appoint, change address, intent or liq report filing
+    const officeParams = [
+      LiquidateType.ADDRESS,
+      LiquidateType.APPOINT,
+      LiquidateType.REPORT,
+      LiquidateType.INTENT
+    ].includes(filingSubType)
       ? [OfficeType.LIQUIDATION]
       : undefined
 
