@@ -65,7 +65,9 @@ export default defineNuxtConfig({
     public: {
       version: `Corps UI v${process.env.npm_package_version || ''}`,
       disStageDelay: '',
-      playwright: process.env.playwright === 'true'
+      playwright: process.env.playwright === 'true',
+      sessionInactivityTimeout: '5000',
+      sessionModalTimeout: '10000'
     }
   }
 })
