@@ -2,6 +2,9 @@
   "name": "@sbc-connect/playwright-config",
   "type": "module",
   "version": "0.0.11",
+  "engines": {
+    "node": ">=24"
+  },
   "repository": "github:bcgov/business-ui",
   "main": "./playwright.config.ts",
   "private": true,

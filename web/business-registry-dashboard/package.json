@@ -3,6 +3,9 @@
   "private": true,
   "type": "module",
   "version": "1.2.12",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
