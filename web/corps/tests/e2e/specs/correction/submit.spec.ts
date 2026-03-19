@@ -43,18 +43,18 @@ test.describe('Correction - Filing Submit', () => {
 
       // Step 1: Make changes
       await makeDirectorChange(page)
-      await fillCorrectionComment(page, 'Correcting director address from original incorporation')
 
       // Navigate to step 2
       await goToReview(page)
 
       // Review: directors should be visible
       await expect(page.getByTestId('review-current-directors-section')).toBeVisible()
-      // Review: comment should be visible
-      await expect(page.getByTestId('review-comment-section')).toBeVisible()
-      await expect(page.getByTestId('review-comment-section')).toContainText(
-        'Correcting director address from original incorporation'
-      )
+
+      // Step 2: Fill correction comment (now on step 2)
+      await fillCorrectionComment(page, 'Correcting director address from original incorporation')
+
+      // Correction comment section should be visible on step 2
+      await expect(page.getByTestId('correction-comment-section')).toBeVisible()
 
       // Fill completing party email
       await fillCompletingParty(page)

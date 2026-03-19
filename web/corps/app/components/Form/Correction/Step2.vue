@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
@@ -51,7 +52,6 @@ const hasAnyChanges = computed(() => {
     || hasShareStructureChanges.value
     || hasReceiverChanges.value
     || hasLiquidatorChanges.value
-    || store.hasCommentChanges
 })
 
 function onError(event: FormErrorEvent) {
@@ -166,56 +166,54 @@ function onError(event: FormErrorEvent) {
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
         :label-overrides="correctionLabelOverrides"
       />
-
-      <!-- Correction Comment (always shown if present) -->
-      <div
-        v-if="store.hasCommentChanges"
-        class="rounded bg-white p-6 space-y-2"
-        data-testid="review-comment-section"
-      >
-        <h3 class="font-semibold">
-          {{ $t('label.correctionComment') }}
-        </h3>
-        <p class="whitespace-pre-wrap">
-          {{ store.formState.comment?.detail }}
-        </p>
-      </div>
     </section>
 
-    <!-- Section 2: Document Delivery -->
+    <!-- Section 2: Correction Detail Comment -->
+    <section class="space-y-4" data-testid="correction-comment-section">
+      <FormDetail
+        v-model="store.correctionComment"
+        name="comment"
+        order="2"
+        :filing-date="store.correctedFilingDateDisplay"
+        :description="$t('text.correctionCommentDescription')"
+        :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
+      />
+    </section>
+
+    <!-- Section 3: Document Delivery -->
     <FormDocumentDelivery
       v-if="store.formState.documentDelivery"
       v-model="store.formState.documentDelivery"
-      order="2"
+      order="3"
       name="documentDelivery"
       :loading="store.initializing"
       :registered-office-email="businessStore.businessContact?.email"
     />
 
-    <!-- Section 3 (client): Folio -->
+    <!-- Section 4 (client): Folio -->
     <FormFolio
       v-if="!store.isStaff && store.formState.folio"
       v-model="store.formState.folio"
       data-testid="folio-section"
-      order="3"
+      order="4"
       name="folio"
     />
 
-    <!-- Section 4 (client): Certify -->
+    <!-- Section 5 (client): Certify -->
     <FormCertify
       v-if="!store.isStaff && store.formState.certify"
       v-model="store.formState.certify"
-      order="4"
+      order="5"
       name="certify"
       :description="$t('text.certifyCorrectionDescription')"
     />
 
-    <!-- Section 3 (staff): Staff Payment -->
+    <!-- Section 4 (staff): Staff Payment -->
     <StaffPaymentFieldset
       v-if="store.isStaff && store.formState.staffPayment"
       ref="staff-pay-ref"
       v-model="store.formState.staffPayment"
-      order="3"
+      order="4"
       :initializing="store.initializing"
     />
   </UForm>

@@ -40,8 +40,8 @@ async function assertStep1Sections(page: Page) {
   await expect(page.getByTestId('receivers-section')).toBeVisible()
   // has liquidators section
   await expect(page.getByTestId('liquidators-section')).toBeVisible()
-  // has correction comment section
-  await expect(page.getByTestId('correction-comment-section')).toBeVisible()
+  // correction comment section should NOT be on step 1 (it's on step 2)
+  await expect(page.getByTestId('correction-comment-section')).not.toBeVisible()
 }
 
 async function assertCorrectOffices(page: Page) {
@@ -129,6 +129,8 @@ test.describe('Correction - Page init', () => {
 
       // Should be on step 2 — review section visible
       await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
+      // Correction comment section should be on step 2
+      await expect(page.getByTestId('correction-comment-section')).toBeVisible()
       // Step 1 sections should be hidden
       await expect(page.getByTestId('office-addresses-section')).not.toBeVisible()
     })
