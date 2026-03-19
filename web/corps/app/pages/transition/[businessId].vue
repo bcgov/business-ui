@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { FormErrorEvent } from '@nuxt/ui'
 import type { FetchError } from 'ofetch'
+import type { FormTransitionStep1 } from '#components'
 
 const { t } = useI18n()
 const store = useTransitionStore()
@@ -11,9 +13,10 @@ const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.transition.h1'))
 const modal = useFilingModals()
 const {
-  handleButtonLoading
-  // setAlertText: setBtnCtrlAlert
+  handleButtonLoading,
+  setAlertText: setBtnCtrlAlert
 } = useConnectButtonControl()
+const step1Ref = useTemplateRef<InstanceType<typeof FormTransitionStep1>>('step-1-ref')
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
@@ -36,14 +39,23 @@ function checkActiveSubForm() {
   return hasActiveSubForm
 }
 
-function reviewAndConfirm() {
-  if (checkActiveSubForm()) {
-    return
+async function reviewAndConfirm() {
+  try {
+    await step1Ref.value?.formRef?.validate()
+    if (checkActiveSubForm()) {
+      return
+    }
+    if (store.shareClasses.length == 0) {
+      setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
+      throw new Error('missing-share-structure')
+    }
+    nextStep()
+  } catch (e) {
+    if (e && typeof e === 'object' && 'errors' in e) {
+      onFormSubmitError(e as FormErrorEvent)
+    }
+    setBtnCtrlAlert(t('validation.pleaseCompleteRequiredInfo'), 'right', 1)
   }
-  if (store.shareClasses.length == 0) {
-    return setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
-  }
-  nextStep()
 }
 
 async function submitFiling() {
@@ -92,12 +104,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   steps: [
     {
       cancelFiling: { class: 'min-w-[300px] justify-center' },
-      submitFiling: {
-        label: t('label.reviewAndConfirm'),
-        form: 'transition-filing-step-1',
-        type: 'submit',
-        onClick: undefined
-      }
+      submitFiling: { label: t('label.reviewAndConfirm'), onClick: reviewAndConfirm }
     },
     { submitFiling: { form: 'transition-filing-step-2', type: 'submit' } }
   ],
@@ -120,7 +127,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep1
       v-if="currentStep === 1"
       id="transition-filing-step-1"
-      @submit="reviewAndConfirm"
+      ref="step-1-ref"
     />
     <FormTransitionStep2
       v-if="currentStep === 2"

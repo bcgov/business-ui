@@ -355,6 +355,7 @@ export default {
     cashOrCheque: 'Cash or Cheque',
     certify: 'Certify',
     change: 'Change',
+    changeAddress: 'Change Address',
     className: 'Class Name',
     classNameShares: 'Class Name [Shares]',
     close: 'Close',
@@ -659,26 +660,27 @@ export default {
     classNameInvalidWords: 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
+    duplicateDocId: 'A document record already exists with this document ID',
     enterLastName: 'Enter a last name',
+    exactDocIDChars: 'Document ID must be 8 characters',
     fieldRequired: 'This field is required',
+    invalidDocId: 'The number entered is not recognized in our system',
+    invalidEmailAddress: 'Enter a valid email address',
+    maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
+    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
+    maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    onlyNumbers: 'Only enter numbers',
+    onlyWholeNumbers: 'Only enter whole numbers',
+    pleaseCompleteRequiredInfo: '< Please complete required information',
+    role: {
+      min: 'Choose at least one role'
+    },
     routingSlipNumber: 'Routing Slip Number must be 9 digits',
     routingSlipNumberEmpty: 'Enter FAS Routing Slip Number',
     selectAPaymentOption: 'Select a payment option',
     seriesNameInvalidWords: 'Series name cannot contain the term ‘share’, ‘shares’, or ‘value’',
-    exactDocIDChars: 'Document ID must be 8 characters',
-    duplicateDocId: 'A document record already exists with this document ID',
-    invalidDocId: 'The number entered is not recognized in our system',
-    invalidEmailAddress: 'Enter a valid email address',
-    maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
-    minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
     totalOfAllSeriesCantExceedMaxOfClass: 'The maximum number for all series combined cannot exceed the maximum number for the class',
-    onlyWholeNumbers: 'Only enter whole numbers',
-    onlyNumbers: 'Only enter numbers',
-    uniqueName: 'Name must be unique',
-    maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
-    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
-    role: {
-      min: 'Choose at least one role'
-    }
+    uniqueName: 'Name must be unique'
   }
 }
