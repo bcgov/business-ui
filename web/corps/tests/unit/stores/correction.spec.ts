@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../app/utils/schemas/correction'
+
 /**
  * Unit tests for the correction store.
  *
@@ -48,7 +50,7 @@ describe('Correction Schema', () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toMatchObject({
-        comment: '',
+        comment: { detail: '' },
         documentDelivery: { completingPartyEmail: '' },
         courtOrder: { hasPoa: false, courtOrderNumber: '' },
         staffPayment: {
@@ -79,7 +81,7 @@ describe('Correction Schema', () => {
 
       expect(result.success).toBe(true)
       expect(result.data).toMatchObject({
-        comment: '',
+        comment: { detail: '' },
         documentDelivery: { completingPartyEmail: '' },
         certify: { isCertified: false, legalName: '' },
         folio: { folioNumber: '' }
@@ -99,31 +101,31 @@ describe('Correction Schema', () => {
   describe('Comment validation', () => {
     it('should fail when comment is empty (min length 1)', () => {
       const schema = getCorrectionSchema(true)
-      const result = schema.safeParse({ comment: '' })
+      const result = schema.safeParse({ comment: { detail: '' } })
 
       expect(result.success).toBe(false)
     })
 
     it('should accept a valid comment', () => {
       const schema = getCorrectionSchema(true)
-      const result = schema.safeParse({ comment: 'Correcting director mailing address' })
+      const result = schema.safeParse({ comment: { detail: 'Correcting director mailing address' } })
 
       expect(result.success).toBe(true)
-      expect(result.data!.comment).toBe('Correcting director mailing address')
+      expect(result.data!.comment).toEqual({ detail: 'Correcting director mailing address' })
     })
 
-    it('should reject a comment exceeding 4096 characters', () => {
+    it('should reject a comment exceeding the configured max length', () => {
       const schema = getCorrectionSchema(true)
-      const longComment = 'a'.repeat(4097)
-      const result = schema.safeParse({ comment: longComment })
+      const longComment = 'a'.repeat(CORRECTION_DETAIL_COMMENT_MAX_LENGTH + 1)
+      const result = schema.safeParse({ comment: { detail: longComment } })
 
       expect(result.success).toBe(false)
     })
 
-    it('should accept a comment at exactly 4096 characters', () => {
+    it('should accept a comment at exactly the configured max length', () => {
       const schema = getCorrectionSchema(true)
-      const maxComment = 'a'.repeat(4096)
-      const result = schema.safeParse({ comment: maxComment })
+      const maxComment = 'a'.repeat(CORRECTION_DETAIL_COMMENT_MAX_LENGTH)
+      const result = schema.safeParse({ comment: { detail: maxComment } })
 
       expect(result.success).toBe(true)
     })

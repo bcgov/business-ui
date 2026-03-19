@@ -44,11 +44,6 @@ const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
 })
 
-/** Whether the correction comment was changed */
-const hasCommentChanges = computed(() => {
-  return !!store.formState.comment && store.formState.comment.trim().length > 0
-})
-
 /** Whether any correctable section has changes — used to show a warning if nothing changed */
 const hasAnyChanges = computed(() => {
   return hasOfficeChanges.value
@@ -56,6 +51,7 @@ const hasAnyChanges = computed(() => {
     || hasShareStructureChanges.value
     || hasReceiverChanges.value
     || hasLiquidatorChanges.value
+    || store.hasCommentChanges
 })
 
 function onError(event: FormErrorEvent) {
@@ -173,7 +169,7 @@ function onError(event: FormErrorEvent) {
 
       <!-- Correction Comment (always shown if present) -->
       <div
-        v-if="hasCommentChanges"
+        v-if="store.hasCommentChanges"
         class="rounded bg-white p-6 space-y-2"
         data-testid="review-comment-section"
       >
@@ -181,7 +177,7 @@ function onError(event: FormErrorEvent) {
           {{ $t('label.correctionComment') }}
         </h3>
         <p class="whitespace-pre-wrap">
-          {{ store.formState.comment }}
+          {{ store.formState.comment?.detail }}
         </p>
       </div>
     </section>
