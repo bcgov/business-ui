@@ -123,6 +123,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   function $reset() {
     const emptyObj = schema.parse({})
     Object.assign(formState, emptyObj)
+    initialFormState.value = emptyObj
   }
 
   return {

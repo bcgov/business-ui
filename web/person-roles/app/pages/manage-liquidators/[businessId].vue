@@ -19,7 +19,9 @@ const route = useRoute()
 const modal = useFilingModals()
 const store = useLiquidatorStore()
 const { business } = storeToRefs(useBusinessStore())
-const { handleButtonLoading } = useConnectButtonControl()
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
+const { setAlert: setPartiesAlert } = useFilingAlerts('manage-parties')
+const { setAlert: setOfficesAlert } = useFilingAlerts('manage-offices')
 
 const FILING_TYPE = FilingType.CHANGE_OF_LIQUIDATORS
 const businessId = route.params.businessId as string
@@ -76,10 +78,45 @@ const allowedOfficeActions = computed(() => {
   return actionMap[filingSubType]
 })
 
+const {
+  canSubmit,
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [() => store.initialFormState, () => store.formState],
+    [() => store.initialLiquidators, () => store.liquidators],
+    [() => store.initialOffices, () => store.offices]
+  ],
+  isReport
+    ? undefined
+    : () => store.liquidators.some(l => l.new.actions.length > 0)
+      || store.offices.some(o => o.new.actions.length > 0)
+)
+
+function checkActiveSubForm() {
+  const alertMsg = t('text.finishTaskBeforeOtherChanges')
+  const hasActiveSubForm
+    = (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
+      || (store.formState.activeParty && setPartiesAlert('party-details-form', alertMsg))
+
+  return hasActiveSubForm
+}
+
 async function submitFiling() {
   try {
+    setBtnCtrlAlert(undefined)
+    if (checkActiveSubForm()) {
+      return
+    }
+    if (!canSubmit()) {
+      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
+    }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     const e = error as FetchError<LiquidatorDraftState>
@@ -89,35 +126,35 @@ async function submitFiling() {
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
 async function cancelFiling() {
-  // TODO: should checkHasChanges to common parties code? Effects quite a few things across the code
-  // if (officerStore.checkHasChanges('save')) {
-  //   await modal.openUnsavedChangesModal(revokeBeforeUnloadEvent)
-  // } else {
-  //   await navigateTo(dashboardOrEditUrl.value, { external: true })
-  // }
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-async function saveFiling(resumeLater = false, disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    if (!disableActiveFormCheck && useManageParties().addingParty.value) {
-      // TODO: temporary text - update in lang file or change this to scroll etc.
-      useConnectButtonControl().setAlertText('Please complete your expanded Liquidator above', 'left', 0)
-      return
+    if (enableUnsavedChangesBlock) {
+      if (checkActiveSubForm()) {
+        return
+      }
+      if (!canSave()) {
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+      }
     }
-
     await store.submit(false)
-
-    // if resume later, navigate back to business dashboard
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
-    }
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    await modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
@@ -141,7 +178,18 @@ useFilingPageWatcher<LiquidateType>({
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'liquidator-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: isReport ? async () => undefined : () => saveFiling(false, true)
+  setOnBeforeSessionExpired: async () => {
+    if (canSave() && !isReport) {
+      await saveFiling(false)
+    }
+  }
+})
+
+onMounted(() => {
+  if (isReport) {
+    // disable unsaved changes check for Liquidation Report (no drafts)
+    revokeBeforeUnload()
+  }
 })
 </script>
 
@@ -246,7 +294,6 @@ useFilingPageWatcher<LiquidateType>({
         :disabled="store.initializing"
         name="courtOrder"
         :order="showLiqRecordsOffice ? 3 : 2"
-        :state="store.formState.courtOrder"
       />
 
       <FormDocumentId
@@ -257,7 +304,6 @@ useFilingPageWatcher<LiquidateType>({
         :disabled="store.initializing"
         name="documentId"
         :order="showLiqRecordsOffice ? 4 : 3"
-        :state="store.formState.documentId"
       />
 
       <StaffPaymentFieldset
