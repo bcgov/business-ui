@@ -1,3 +1,4 @@
+import { cloneDeep } from 'es-toolkit'
 // TODO - FUTURE - maybe consolidate 'delay' store with other dissolution filings if possible
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const { currentAccount } = storeToRefs(useConnectAccountStore())
@@ -8,6 +9,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const businessStore = useBusinessStore()
 
   const formState = reactive(schema.parse({}))
+  const initialFormState = shallowRef<DodSchema>({} as DodSchema)
   const initializing = ref<boolean>(false)
   const dissolutionSubType = ref<DissolutionType>(DissolutionType.DELAY)
   const draftFilingState = shallowRef<DissolutionDraftState>({} as DissolutionDraftState)
@@ -73,6 +75,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       isStage1: !dissolutionWarning?.data?.stage_2_date,
       userDelays: dissolutionWarning?.data?.userDelays || 0
     }
+    initialFormState.value = cloneDeep(formState)
     initializing.value = false
   }
 
@@ -127,6 +130,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     formState,
     initializing,
     isStaff,
+    initialFormState,
     init,
     submit,
     $reset
