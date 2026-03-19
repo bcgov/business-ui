@@ -75,35 +75,35 @@ export default {
     // Below sections are named based on filing type and filing sub type
     changeOfLiquidators: {
       intentToLiquidate: {
-        desc: 'Some intent to liquidate descriptive text',
+        desc: '',
         feeCode: 'LQSIN',
         feeLabel: 'Intent to Liquidate',
         h1: 'Intent to Liquidate',
         title: 'Intent to Liquidate - People Roles - BC Registries and Online Services'
       },
       appointLiquidator: {
-        desc: 'Some appoint Liquidator descriptive text',
+        desc: '',
         feeCode: 'NOAPL',
         feeLabel: 'Appoint Liquidators',
         h1: 'Appoint Liquidators',
         title: 'Appoint Liquidators - People Roles - BC Registries and Online Services'
       },
       ceaseLiquidator: {
-        desc: 'Some cease Liquidator descriptive text',
+        desc: '',
         feeCode: 'NOCEL',
         feeLabel: 'Cease Liquidators',
         h1: 'Cease Liquidators',
         title: 'Cease Liquidators - People Roles - BC Registries and Online Services'
       },
       changeAddressLiquidator: {
-        desc: 'Some change address Liquidator descriptive text',
+        desc: '',
         feeCode: 'NOCAL',
         feeLabel: 'Change Addresses of Liquidators',
         h1: 'Change Addresses of Liquidators',
         title: 'Change Addresses of Liquidators - People Roles - BC Registries and Online Services'
       },
       liquidationReport: {
-        desc: 'Some liquidation report descriptive text',
+        desc: '',
         feeCode: 'LIQUR',
         feeLabel: 'Liquidation Report',
         h1: 'Liquidation Report',
@@ -112,28 +112,28 @@ export default {
     },
     changeOfReceivers: {
       amendReceiver: {
-        desc: 'Some amend receiver descriptive text',
+        desc: '',
         feeCode: 'AMEND',
         feeLabel: 'Amend Receiver or Receiver Manager Information',
         h1: 'Amend Receiver or Receiver Manager Information',
         title: 'Amend Receivers - People Roles - BC Registries and Online Services'
       },
       appointReceiver: {
-        desc: 'Some appoint receiver descriptive text',
+        desc: '',
         feeCode: 'NOARM',
         feeLabel: 'Appoint Receivers or Receiver Managers',
         h1: 'Appoint Receivers or Receiver Managers',
         title: 'Appoint Receivers - People Roles - BC Registries and Online Services'
       },
       ceaseReceiver: {
-        desc: 'Some cease receiver descriptive text',
+        desc: '',
         feeCode: 'NOCER',
         feeLabel: 'Cease Receivers or Receiver Managers',
         h1: 'Cease Receivers or Receiver Managers',
         title: 'Cease Receivers - People Roles - BC Registries and Online Services'
       },
       changeAddressReceiver: {
-        desc: 'Some change address receiver descriptive text',
+        desc: '',
         feeCode: 'NOCRM',
         feeLabel: 'Change Addresses of Receivers or Receiver Managers',
         h1: 'Change Addresses of Receivers or Receiver Managers',
