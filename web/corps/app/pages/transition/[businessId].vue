@@ -95,8 +95,13 @@ async function submitFiling() {
 
 async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    if (enableUnsavedChangesBlock && !canSave()) {
-      return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
+    if (enableUnsavedChangesBlock) {
+      if (checkActiveSubForm()) {
+        return
+      }
+      if (!canSave()) {
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
+      }
     }
     await store.submit(false)
     revokeBeforeUnload()
