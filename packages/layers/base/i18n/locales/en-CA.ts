@@ -454,6 +454,7 @@ export default {
     PENDING: 'PENDING',
     pacificTime: 'Pacific time',
     personOrOrgName: 'Person or Business Name',
+    personsName: "Person's Name",
     phone: 'Phone',
     planOfArrangement: 'Plan of Arrangement',
     preExistingCompanyProvisions: 'Pre-existing Company Provisions',

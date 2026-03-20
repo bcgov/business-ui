@@ -65,6 +65,20 @@ export interface CorrectionPayload extends FilingPayloadData {
   // All party types (directors, receivers, liquidators) are combined in one array
   relationships?: BusinessRelationship[]
 
+  // Completing party (client corrections) — uses legacy parties format
+  parties?: Array<{
+    officer: {
+      firstName: string
+      middleName?: string
+      lastName: string
+    }
+    mailingAddress: ApiAddress
+    roles: Array<{
+      roleType: string
+      appointmentDate?: string
+    }>
+  }>
+
   // Share structure corrections
   // API returns ShareClass format with extra `action` (singular) field;
   // UI submits with `actions` (plural) array — using flexible type for both directions

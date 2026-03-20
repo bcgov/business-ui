@@ -190,30 +190,29 @@ function onError(event: FormErrorEvent) {
       :registered-office-email="businessStore.businessContact?.email"
     />
 
-    <!-- Section 4 (client): Folio -->
-    <FormFolio
-      v-if="!store.isStaff && store.formState.folio"
-      v-model="store.formState.folio"
-      data-testid="folio-section"
+    <!-- Section 4 (client): Completing Party -->
+    <FormCompletingParty
+      v-if="!store.isStaffCorrectionType && store.formState.completingParty"
+      v-model="store.formState.completingParty"
       order="4"
-      name="folio"
+      name="completingParty"
     />
 
     <!-- Section 5 (client): Certify -->
     <FormCertify
-      v-if="!store.isStaff && store.formState.certify"
+      v-if="!store.isStaffCorrectionType && store.formState.certify"
       v-model="store.formState.certify"
       order="5"
       name="certify"
       :description="$t('text.certifyCorrectionDescription')"
     />
 
-    <!-- Section 4 (staff): Staff Payment -->
+    <!-- Staff Payment (always present, order is dynamic) -->
     <StaffPaymentFieldset
-      v-if="store.isStaff && store.formState.staffPayment"
+      v-if="store.formState.staffPayment"
       ref="staff-pay-ref"
       v-model="store.formState.staffPayment"
-      order="4"
+      :order="store.isStaffCorrectionType ? 4 : 6"
       :initializing="store.initializing"
     />
   </UForm>

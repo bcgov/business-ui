@@ -122,8 +122,33 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       if (formState.certify) {
         formState.certify.legalName = header.certifiedBy ?? ''
       }
-      if (formState.folio) {
-        formState.folio.folioNumber = header.folioNumber ?? ''
+
+      // Completing party (client corrections only)
+      if (draft.parties && formState.completingParty) {
+        const cp = (draft.parties as Array<Record<string, unknown>>)?.find(
+          (p: Record<string, unknown>) => {
+            const roles = p.roles as Array<Record<string, string>>
+            return roles?.some(r => r.roleType === 'completing_party')
+          }
+        )
+        if (cp) {
+          const officer = cp.officer as Record<string, string> | undefined
+          formState.completingParty.firstName = officer?.firstName ?? ''
+          formState.completingParty.middleName = officer?.middleName ?? ''
+          formState.completingParty.lastName = officer?.lastName ?? ''
+          if (cp.mailingAddress) {
+            const addr = cp.mailingAddress as Record<string, string>
+            formState.completingParty.mailingAddress = {
+              street: addr.streetAddress ?? '',
+              streetAdditional: addr.streetAddressAdditional ?? '',
+              city: addr.addressCity ?? '',
+              region: addr.addressRegion ?? '',
+              postalCode: addr.postalCode ?? '',
+              country: addr.addressCountry ?? '',
+              locationDescription: addr.deliveryInstructions ?? ''
+            }
+          }
+        }
       }
     }
 
@@ -283,6 +308,21 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Document delivery / contact point
       ...(formState.documentDelivery?.completingPartyEmail && {
         contactPoint: { email: formState.documentDelivery.completingPartyEmail }
+      }),
+
+      // Completing party (client corrections)
+      ...(formState.completingParty?.lastName && {
+        parties: [
+          {
+            officer: {
+              firstName: formState.completingParty.firstName,
+              middleName: formState.completingParty.middleName || undefined,
+              lastName: formState.completingParty.lastName
+            },
+            mailingAddress: formatAddressApi(formState.completingParty.mailingAddress),
+            roles: [{ roleType: 'completing_party', appointmentDate: getToday('America/Vancouver') }]
+          }
+        ]
       })
 
       // TODO: add nameRequest, nameTranslations, startDate, provisionsRemoved
@@ -295,8 +335,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       { correction: correctionPayload },
       {
         ...formatStaffPaymentApi(formState.staffPayment!),
-        ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {}),
-        ...(formState.folio?.folioNumber ? { folioNumber: formState.folio.folioNumber } : {})
+        ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {})
       }
     )
 
@@ -317,7 +356,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   }
 
   function $reset() {
-    const defaults = getCorrectionSchema(isStaff.value).parse({})
+    correctedFilingId.value = undefined
+    correctedFilingType.value = FilingType.UNKNOWN
+    correctedFilingDate.value = ''
+    correctionType.value = CorrectionType.CLIENT
+    correctedFiling.value = undefined
+
+    const defaults = getCorrectionSchema(isStaffCorrectionType.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
     formState.activeReceiver = undefined
@@ -326,11 +371,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeClass = undefined
     formState.activeSeries = undefined
 
-    correctedFilingId.value = undefined
-    correctedFilingType.value = FilingType.UNKNOWN
-    correctedFilingDate.value = ''
-    correctionType.value = CorrectionType.CLIENT
-    correctedFiling.value = undefined
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []

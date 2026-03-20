@@ -163,6 +163,31 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByTestId('review-liquidators-section')).not.toBeVisible()
     })
 
+    test('should show completing party on step 2 for client corrections', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN, 'STAFF', 'CLIENT')
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await page.waitForLoadState('networkidle')
+
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      // Make a change to navigate to step 2
+      const directors = page.getByTestId('current-directors-section').locator('tbody')
+      const rowToEdit = directors.locator('tr').first()
+      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
+      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
+      await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+
+      await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+      // Completing party and certify should be visible for client corrections
+      await expect(page.getByTestId('completing-party-section')).toBeVisible({ timeout: 10000 })
+      await expect(page.getByTestId('certify-section')).toBeVisible()
+      // Staff payment is always present
+      await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+    })
+
     test('should show staff payment on step 2 for staff users', async ({ page }) => {
       await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
       await navigateToCorrectionPage(page, identifier, filingId)
@@ -184,7 +209,7 @@ test.describe('Correction - Page init', () => {
       // Staff payment section visible
       await expect(page.getByTestId('staff-payment-section')).toBeVisible({ timeout: 10000 })
       // Client-only sections not visible
-      await expect(page.getByTestId('folio-section')).not.toBeVisible()
+      await expect(page.getByTestId('completing-party-section')).not.toBeVisible()
       await expect(page.getByTestId('certify-section')).not.toBeVisible()
     })
   })
@@ -206,6 +231,55 @@ test.describe('Correction - Page init', () => {
       const offices = page.getByTestId('office-addresses-section')
       await expect(offices.getByRole('button', { name: 'Correct' }).first()).toBeVisible()
       await expect(offices.getByRole('button', { name: 'Change' })).not.toBeVisible()
+    })
+  })
+
+  test.describe('Step 2 review sections', () => {
+    test('should show review sections as readonly with no action buttons', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await page.waitForLoadState('networkidle')
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      // Edit a director to create a change
+      const directors = page.getByTestId('current-directors-section').locator('tbody')
+      const rowToEdit = directors.locator('tr').first()
+      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
+      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Review Test')
+      await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+
+      await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+      // Review director section should be visible but in readonly mode (no Correct/Change buttons)
+      const reviewDirectors = page.getByTestId('review-current-directors-section')
+      await expect(reviewDirectors).toBeVisible({ timeout: 10000 })
+      await expect(reviewDirectors.getByRole('button', { name: 'Correct' })).not.toBeVisible()
+      await expect(reviewDirectors.getByRole('button', { name: 'Change' })).not.toBeVisible()
+      await expect(reviewDirectors.getByRole('button', { name: 'Remove' })).not.toBeVisible()
+    })
+
+    test('should not show no-changes alert when changes exist', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await page.waitForLoadState('networkidle')
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      // Edit a director to create a change
+      const directors = page.getByTestId('current-directors-section').locator('tbody')
+      const rowToEdit = directors.locator('tr').first()
+      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
+      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Change Test')
+      await directors.getByRole('button', { name: 'Done' }).click()
+      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+
+      await page.getByRole('button', { name: 'Review and Confirm' }).click()
+      await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
+
+      // No-changes alert should NOT be visible when changes exist
+      await expect(page.getByTestId('no-changes-alert')).not.toBeVisible()
     })
   })
 })

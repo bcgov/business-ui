@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Form } from '@nuxt/ui'
+import type { FormError, Form } from '@nuxt/ui'
 
 const { t } = useI18n()
 
@@ -18,6 +18,11 @@ const formRef = useTemplateRef<Form<DetailSchema>>('detail-form')
 const formDetailTextareaId = useId()
 const detailSchema = computed(() => getDetailSchema(props.maxLength))
 const characterCount = computed(() => model.value?.detail?.length ?? 0)
+
+const formError = computed<FormError | undefined>(() => {
+  const errors = formRef.value?.getErrors()
+  return errors?.find(e => e.name === 'detail')
+})
 
 defineExpose({
   formRef
@@ -40,8 +45,8 @@ defineExpose({
     >
       <ConnectFormFieldWrapper
         :label="$t('label.detail')"
-        :show-error-msg="true"
-        class="pt-5"
+        :error="formError"
+        padding-class="xy-default"
       >
         <div class="flex w-full flex-col gap-2">
           <p
