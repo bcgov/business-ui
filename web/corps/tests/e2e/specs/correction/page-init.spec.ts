@@ -6,6 +6,22 @@ import { CRCTN, CRCTN_NO_FEE } from '~~/tests/mocks'
 const identifier = 'BC1234567'
 const filingId = '999001'
 
+/** Edit a director's address inline and wait for the form to close (CI-resilient). */
+async function makeDirectorEdit(page: Page, fillValue: string) {
+  const directors = page.getByTestId('current-directors-section').locator('tbody')
+  const rowToEdit = directors.locator('tr').first()
+  const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
+  await rowToEdit.getByRole('button', { name: 'Correct' }).click()
+  await expect(streetInput).toBeVisible()
+  await expect(async () => {
+    if (await streetInput.isVisible()) {
+      await streetInput.fill(fillValue)
+      await directors.getByRole('button', { name: 'Done' }).click()
+    }
+    await expect(streetInput).not.toBeVisible()
+  }).toPass({ timeout: 15000 })
+}
+
 async function assertCommonElements(page: Page) {
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
   // has auth header
@@ -116,13 +132,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Edit a director's address to create a change
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Corrected Unit')
 
       // Navigate to step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
@@ -143,13 +153,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Only edit a director
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Corrected Unit')
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
@@ -171,13 +175,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Make a change to navigate to step 2
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Corrected Unit')
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
@@ -196,13 +194,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Make a change so we can navigate to step 2
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Corrected Unit')
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
@@ -242,13 +234,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Edit a director to create a change
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Review Test')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Review Test')
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
@@ -267,13 +253,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // Edit a director to create a change
-      const directors = page.getByTestId('current-directors-section').locator('tbody')
-      const rowToEdit = directors.locator('tr').first()
-      await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await directors.getByTestId('mailing-address-input-streetAdditional').fill('Change Test')
-      await directors.getByRole('button', { name: 'Done' }).click()
-      await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await makeDirectorEdit(page, 'Change Test')
 
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
       await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
