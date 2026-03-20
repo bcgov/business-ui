@@ -2,6 +2,7 @@
 import type { FormErrorEvent } from '@nuxt/ui'
 import type { FetchError } from 'ofetch'
 import type { FormTransitionStep1 } from '#components'
+import { omit } from 'es-toolkit'
 
 const { t } = useI18n()
 const store = useTransitionStore()
@@ -20,6 +21,22 @@ const step1Ref = useTemplateRef<InstanceType<typeof FormTransitionStep1>>('step-
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
+
+const {
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [
+      () => omit(store.initialFormState, ['confirmDirectors', 'confirmOffices']),
+      () => omit(store.formState, ['confirmDirectors', 'confirmOffices'])
+    ],
+    [() => store.initialDirectors, () => store.directors],
+    [() => store.initialShareClasses, () => store.shareClasses]
+  ]
+)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons-stacked',
@@ -62,6 +79,7 @@ async function submitFiling() {
   try {
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     const e = error as FetchError<TransitionDraftState>
@@ -71,21 +89,30 @@ async function submitFiling() {
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    await store.submit(false)
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
+    if (enableUnsavedChangesBlock && !canSave()) {
+      return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
     }
+    await store.submit(false)
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
 async function cancelFiling() {
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
@@ -96,7 +123,11 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(),
+  setOnBeforeSessionExpired: async () => {
+    if (canSave()) {
+      await saveFiling(false)
+    }
+  },
   backButton: { removeAlertSpacing: true },
   saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
