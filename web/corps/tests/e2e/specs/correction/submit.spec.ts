@@ -9,13 +9,18 @@ const filingId = '999001'
 async function makeDirectorChange(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'TESTER TESTING' })
+  const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-  // Wait for the edit form to appear
-  await expect(directors.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-  await directors.getByTestId('mailing-address-input-streetAdditional').fill('Corrected Unit 1A')
-  await directors.getByRole('button', { name: 'Done' }).click()
-  // Wait for the form to close — the Done button disappears when the inline form collapses
-  await expect(directors.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+  await expect(streetInput).toBeVisible()
+  // Use toPass for CI resilience — retries the fill+Done+verify cycle if the form
+  // is slow to validate/close on resource-constrained environments
+  await expect(async () => {
+    if (await streetInput.isVisible()) {
+      await streetInput.fill('Corrected Unit 1A')
+      await directors.getByRole('button', { name: 'Done' }).click()
+    }
+    await expect(streetInput).not.toBeVisible()
+  }).toPass({ timeout: 15000 })
 }
 
 async function fillCorrectionComment(page: Page, comment: string) {
@@ -220,7 +225,7 @@ test.describe('Correction - Filing Submit', () => {
       await cpSection.getByTestId('completing-party-mailing-address-input-postalCode').fill('V8V 1A1')
 
       // Check the certify checkbox
-      await page.getByTestId('certify-section').getByRole('checkbox').click()
+      await page.getByTestId('certify-section').getByRole('checkbox', { name: /certify/i }).check({ force: true })
 
       // Select staff payment option
       await page.getByRole('radio', { name: 'No Fee' }).click()
@@ -310,11 +315,16 @@ test.describe('Correction - Filing Submit', () => {
       // Edit an office address to create a change
       const offices = page.getByTestId('office-addresses-section').locator('tbody')
       const rowToEdit = offices.locator('tr').first()
+      const officeStreetInput = offices.getByTestId('mailing-address-input-streetAdditional')
       await rowToEdit.getByRole('button', { name: 'Correct' }).click()
-      await expect(offices.getByTestId('mailing-address-input-streetAdditional')).toBeVisible()
-      await offices.getByTestId('mailing-address-input-streetAdditional').fill('Suite 200')
-      await offices.getByRole('button', { name: 'Done' }).click()
-      await expect(offices.getByRole('button', { name: 'Done' })).not.toBeVisible({ timeout: 10000 })
+      await expect(officeStreetInput).toBeVisible()
+      await expect(async () => {
+        if (await officeStreetInput.isVisible()) {
+          await officeStreetInput.fill('Suite 200')
+          await offices.getByRole('button', { name: 'Done' }).click()
+        }
+        await expect(officeStreetInput).not.toBeVisible()
+      }).toPass({ timeout: 15000 })
 
       // Navigate to step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()

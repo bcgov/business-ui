@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const store = useCorrectionStore()
 
 const directorAllowedActions = [

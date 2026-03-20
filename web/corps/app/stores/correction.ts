@@ -371,7 +371,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeClass = undefined
     formState.activeSeries = undefined
 
-
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
     initialReceivers.value = []

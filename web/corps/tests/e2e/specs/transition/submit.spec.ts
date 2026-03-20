@@ -143,6 +143,8 @@ async function editShares(page: Page) {
 
 async function goToReview(page: Page) {
   await page.getByRole('button', { name: 'Review and Confirm' }).click()
+  // Wait for step 2 to render before interacting with its elements
+  await expect(page.getByTestId('document-delivery-section')).toBeVisible({ timeout: 10000 })
 }
 
 async function fillCompletingParty(page: Page) {
