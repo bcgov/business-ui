@@ -14,7 +14,7 @@ function getClientCorrectionSchema() {
         city: '',
         region: '',
         postalCode: '',
-        country: '',
+        country: 'CA',
         locationDescription: ''
       }
     })),
