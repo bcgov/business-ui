@@ -124,18 +124,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
 
       // Completing party (client corrections only) — read from relationships (new format)
+      // The draft may contain multiple relationships with a "Completing Party" role:
+      // one from the original filing (e.g. an incorporator who was also the completing party)
+      // and one ADDED during this correction. We want the ADDED one.
       const draftAllRelationships = draft?.relationships as BusinessRelationship[] | undefined
       if (draftAllRelationships && formState.completingParty) {
         const cpRelationship = draftAllRelationships.find(
           r => r.roles?.some(role => role.roleType === RoleType.COMPLETING_PARTY)
+            && r.actions?.includes(ActionType.ADDED)
         )
         if (cpRelationship) {
-          formState.completingParty.firstName = cpRelationship.entity?.givenName ?? ''
-          formState.completingParty.middleName = cpRelationship.entity?.middleInitial ?? ''
-          formState.completingParty.lastName = cpRelationship.entity?.familyName ?? ''
-          if (cpRelationship.mailingAddress) {
-            formState.completingParty.mailingAddress = formatAddressUi(cpRelationship.mailingAddress) as ConnectAddress
-          }
+          Object.assign(formState.completingParty, formatCompletingPartyRelationshipUi(cpRelationship))
         }
       }
     }
@@ -280,7 +279,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ].map(entry => formatRelationshipApi(entry.new)).concat(
         // Completing party (client corrections) — submitted as a relationship
         formState.completingParty?.lastName
-          ? [formatCompletingPartyRelationship(formState.completingParty)]
+          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
           : []
       ),
 
