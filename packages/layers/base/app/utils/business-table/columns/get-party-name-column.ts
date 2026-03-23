@@ -36,7 +36,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
           'additional-label': () => preferredName
             ? h('div', { class: 'flex flex-col' }, [
               h('i', { class: 'text-sm italic' }, t('label.preferredName') + ':'),
-              h('span', { class: 'text-sm' }, preferredName)])
+              h('span', { class: 'text-sm font-normal' }, preferredName)])
             : []
         }
       )
