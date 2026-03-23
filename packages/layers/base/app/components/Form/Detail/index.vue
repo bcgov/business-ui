@@ -33,7 +33,6 @@ defineExpose({
   <UForm
     ref="detail-form"
     :schema="detailSchema"
-    class="gap-6 flex flex-col"
     nested
     :name="props.name"
   >
@@ -74,7 +73,7 @@ defineExpose({
             </template>
           </UFormField>
           <div
-            class="text-right text-sm pb-8"
+            class="text-right text-sm"
             :class="characterCount > props.maxLength ? 'text-error' : 'text-neutral'"
           >
             {{ characterCount }} / {{ props.maxLength }}

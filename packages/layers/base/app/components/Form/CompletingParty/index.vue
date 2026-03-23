@@ -42,52 +42,51 @@ defineExpose({
       data-testid="completing-party-section"
       orientation="vertical"
     >
-      <div class="flex flex-col gap-6 py-6">
-        <!-- Person's Name -->
-        <ConnectFormFieldWrapper
-          :label="$t('label.personsName')"
-          orientation="horizontal"
-          :error="nameErrors"
-        >
-          <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
-            <ConnectFormInput
-              v-model="model.firstName"
-              data-testid="completing-party-first-name"
-              name="firstName"
-              input-id="completing-party-first-name-input"
-              :label="$t('label.firstName')"
-            />
-            <ConnectFormInput
-              v-model="model.middleName"
-              data-testid="completing-party-middle-name"
-              name="middleName"
-              input-id="completing-party-middle-name-input"
-              :label="$t('label.middleNameOpt')"
-            />
-            <ConnectFormInput
-              v-model="model.lastName"
-              data-testid="completing-party-last-name"
-              name="lastName"
-              input-id="completing-party-last-name-input"
-              :label="$t('label.lastName')"
-            />
-          </div>
-        </ConnectFormFieldWrapper>
-
-        <!-- Mailing Address -->
-        <ConnectFormFieldWrapper
-          :label="$t('label.mailingAddress')"
-          orientation="horizontal"
-          :error="addressErrors"
-        >
-          <ConnectFormAddress
-            id="completing-party-mailing-address"
-            v-model="model.mailingAddress"
-            schema-prefix="mailingAddress"
-            @should-validate="formRef?.clear(/^mailingAddress.*/)"
+      <!-- Person's Name -->
+      <ConnectFormFieldWrapper
+        :label="$t('label.personsName')"
+        orientation="horizontal"
+        :error="nameErrors"
+        padding-class="xy-default"
+      >
+        <div class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
+          <ConnectFormInput
+            v-model="model.firstName"
+            data-testid="completing-party-first-name"
+            name="firstName"
+            input-id="completing-party-first-name-input"
+            :label="$t('label.firstName')"
           />
-        </ConnectFormFieldWrapper>
-      </div>
+          <ConnectFormInput
+            v-model="model.middleName"
+            data-testid="completing-party-middle-name"
+            name="middleName"
+            input-id="completing-party-middle-name-input"
+            :label="$t('label.middleNameOpt')"
+          />
+          <ConnectFormInput
+            v-model="model.lastName"
+            data-testid="completing-party-last-name"
+            name="lastName"
+            input-id="completing-party-last-name-input"
+            :label="$t('label.lastName')"
+          />
+        </div>
+      </ConnectFormFieldWrapper>
+
+      <!-- Mailing Address -->
+      <ConnectFormFieldWrapper
+        :label="$t('label.mailingAddress')"
+        orientation="horizontal"
+        :error="addressErrors"
+      >
+        <ConnectFormAddress
+          id="completing-party-mailing-address"
+          v-model="model.mailingAddress"
+          schema-prefix="mailingAddress"
+          @should-validate="formRef?.clear(/^mailingAddress.*/)"
+        />
+      </ConnectFormFieldWrapper>
     </ConnectFieldset>
   </UForm>
 </template>

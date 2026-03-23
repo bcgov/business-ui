@@ -143,3 +143,22 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
     actions: party.actions
   }
 }
+
+/**
+ * Format a CompletingPartySchema (from the completing party form) into a BusinessRelationship.
+ * This bridges the form schema to the relationship API format so completing party
+ * is submitted consistently with other party types (directors, receivers, etc.).
+ */
+export function formatCompletingPartyRelationship(cp: CompletingPartySchema): BusinessRelationship {
+  const mailingAddress = formatAddressApi(cp.mailingAddress as ConnectAddress)
+  return {
+    entity: {
+      givenName: cp.firstName ?? '',
+      middleInitial: cp.middleName ?? '',
+      familyName: cp.lastName ?? ''
+    },
+    mailingAddress,
+    roles: [{ roleType: RoleType.COMPLETING_PARTY, appointmentDate: getToday('America/Vancouver') }],
+    actions: [ActionType.ADDED]
+  }
+}

@@ -123,30 +123,18 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         formState.certify.legalName = header.certifiedBy ?? ''
       }
 
-      // Completing party (client corrections only)
-      if (draft.parties && formState.completingParty) {
-        const cp = (draft.parties as Array<Record<string, unknown>>)?.find(
-          (p: Record<string, unknown>) => {
-            const roles = p.roles as Array<Record<string, string>>
-            return roles?.some(r => r.roleType === 'completing_party')
-          }
+      // Completing party (client corrections only) — read from relationships (new format)
+      const draftAllRelationships = draft?.relationships as BusinessRelationship[] | undefined
+      if (draftAllRelationships && formState.completingParty) {
+        const cpRelationship = draftAllRelationships.find(
+          r => r.roles?.some(role => role.roleType === RoleType.COMPLETING_PARTY)
         )
-        if (cp) {
-          const officer = cp.officer as Record<string, string> | undefined
-          formState.completingParty.firstName = officer?.firstName ?? ''
-          formState.completingParty.middleName = officer?.middleName ?? ''
-          formState.completingParty.lastName = officer?.lastName ?? ''
-          if (cp.mailingAddress) {
-            const addr = cp.mailingAddress as Record<string, string>
-            formState.completingParty.mailingAddress = {
-              street: addr.streetAddress ?? '',
-              streetAdditional: addr.streetAddressAdditional ?? '',
-              city: addr.addressCity ?? '',
-              region: addr.addressRegion ?? '',
-              postalCode: addr.postalCode ?? '',
-              country: addr.addressCountry ?? '',
-              locationDescription: addr.deliveryInstructions ?? ''
-            }
+        if (cpRelationship) {
+          formState.completingParty.firstName = cpRelationship.entity?.givenName ?? ''
+          formState.completingParty.middleName = cpRelationship.entity?.middleInitial ?? ''
+          formState.completingParty.lastName = cpRelationship.entity?.familyName ?? ''
+          if (cpRelationship.mailingAddress) {
+            formState.completingParty.mailingAddress = formatAddressUi(cpRelationship.mailingAddress) as ConnectAddress
           }
         }
       }
@@ -284,12 +272,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       legalType: businessStore.business?.legalType as CorpTypeCd,
 
       // Parties — formatted as relationships (with `entity`), matching transition store pattern
-      // All party types (directors, receivers, liquidators) are combined in one array
+      // All party types (directors, receivers, liquidators, completing party) are combined in one array
       relationships: [
         ...tableParties.value,
         ...tableReceivers.value,
         ...tableLiquidators.value
-      ].map(entry => formatRelationshipApi(entry.new)),
+      ].map(entry => formatRelationshipApi(entry.new)).concat(
+        // Completing party (client corrections) — submitted as a relationship
+        formState.completingParty?.lastName
+          ? [formatCompletingPartyRelationship(formState.completingParty)]
+          : []
+      ),
 
       // Offices
       offices: {
@@ -308,21 +301,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Document delivery / contact point
       ...(formState.documentDelivery?.completingPartyEmail && {
         contactPoint: { email: formState.documentDelivery.completingPartyEmail }
-      }),
-
-      // Completing party (client corrections)
-      ...(formState.completingParty?.lastName && {
-        parties: [
-          {
-            officer: {
-              firstName: formState.completingParty.firstName,
-              middleName: formState.completingParty.middleName || undefined,
-              lastName: formState.completingParty.lastName
-            },
-            mailingAddress: formatAddressApi(formState.completingParty.mailingAddress),
-            roles: [{ roleType: 'completing_party', appointmentDate: getToday('America/Vancouver') }]
-          }
-        ]
       })
 
       // TODO: add nameRequest, nameTranslations, startDate, provisionsRemoved
