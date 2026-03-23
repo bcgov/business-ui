@@ -267,7 +267,7 @@ test.describe('Manage Liquidators - Submission', () => {
       const submitBtn = page.getByRole('button', { name: 'Submit' })
       expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
-      await submitBtn.click()
+      await submitBtn.click({ delay: 500 })
       const request = await submitRequest
       const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
       const col = requestBody.filing.changeOfLiquidators
