@@ -195,7 +195,7 @@ describe('Correction Schema', () => {
         city: '',
         region: '',
         postalCode: '',
-        country: ''
+        country: 'CA'
       })
     })
   })
