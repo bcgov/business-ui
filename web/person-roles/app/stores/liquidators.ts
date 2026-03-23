@@ -1,3 +1,5 @@
+import { cloneDeep } from 'es-toolkit'
+
 export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
@@ -13,6 +15,9 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
   const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
+  const initialFormState = shallowRef<LiquidatorFormSchema>({} as LiquidatorFormSchema)
+  const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
+  const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
 
   async function init(businessId: string, filingSubType?: LiquidateType, draftId?: string) {
     if (!filingSubType) {
@@ -66,6 +71,9 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     }
 
     await nextTick()
+    initialFormState.value = cloneDeep(formState)
+    initialLiquidators.value = cloneDeep(tableState.value)
+    initialOffices.value = cloneDeep(tableOffices.value)
     initializing.value = false
   }
 
@@ -105,6 +113,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     Object.assign(formState, defaults)
     formState.activeParty = undefined
     formState.activeOffice = undefined
+    initialFormState.value = cloneDeep(formState)
   }
 
   return {
@@ -112,6 +121,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     initializing,
     liquidateSubType,
     draftFilingState,
+    initialFormState,
+    initialLiquidators,
+    initialOffices,
+    liquidators: tableState,
+    offices: tableOffices,
     init,
     submit,
     $reset

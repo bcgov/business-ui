@@ -65,11 +65,11 @@ const {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (!canSubmit()) {
-      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
-    }
     if (receiverStore.formState.activeParty !== undefined) {
       return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSubmit'))
+    }
+    if (!canSubmit()) {
+      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)

@@ -72,7 +72,7 @@ describe('getPartyNameColumn', () => {
     expect(slot.children[0].children).toBe('Preferred Name:')
     expect(slot.children[0].props.class).toBe('text-sm italic')
     expect(slot.children[1].children).toBe(preferredName)
-    expect(slot.children[1].props.class).toBe('text-sm')
+    expect(slot.children[1].props.class).toBe('text-sm font-normal')
   })
 
   it('renders a BUSINESS name correctly in uppercase', () => {

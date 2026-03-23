@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
 import type { FetchError } from 'ofetch'
 import { z } from 'zod'
-import { onFormSubmitError } from '#imports' // auto imports causing type error for this util
 import { DateTime } from 'luxon'
 
 const { t } = useI18n()
@@ -11,7 +9,7 @@ const { initializing } = storeToRefs(store)
 const urlParams = useUrlSearchParams()
 const route = useRoute()
 const modal = useFilingModals()
-const { handleButtonLoading } = useConnectButtonControl()
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const rtc = useRuntimeConfig().public
 
 const businessId = route.params.businessId as string
@@ -62,11 +60,23 @@ const delayDateDisplay = computed<string>((previous) => {
   }
 })
 
-async function submitFiling(e: FormSubmitEvent<unknown>) {
+// no canSubmit check as no changes are actually required to submit the filing
+const {
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [() => store.initialFormState, () => store.formState]
+  ]
+)
+
+async function submitFiling() {
   try {
     handleButtonLoading(true, 'right', 1)
-    console.info('Data: ', e.data)
     await store.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     const e = error as FetchError<DissolutionDraftState>
@@ -76,23 +86,30 @@ async function submitFiling(e: FormSubmitEvent<unknown>) {
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    await store.submit(false)
-    // if resume later, navigate back to business dashboard
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
+    if (enableUnsavedChangesBlock && !canSave()) {
+      return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
     }
+    await store.submit(false)
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    await modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
 async function cancelFiling() {
-  // TODO: check has changes, display modal if unsaved changes
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
@@ -106,7 +123,11 @@ useFilingPageWatcher<DissolutionType>({
   cancelFiling: { onClick: cancelFiling },
   submitFiling: { form: 'dod-filing' },
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(false, true)
+  setOnBeforeSessionExpired: async () => {
+    if (canSave()) {
+      await saveFiling(false)
+    }
+  }
 })
 </script>
 
