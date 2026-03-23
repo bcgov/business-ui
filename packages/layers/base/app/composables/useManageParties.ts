@@ -17,7 +17,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     const newItem = JSON.parse(JSON.stringify(newState))
 
     if (!row) {
-      tableState.value = [newItem, ...tableState.value]
+      tableState.value = [...tableState.value, newItem]
     } else {
       const index = row.index
 
