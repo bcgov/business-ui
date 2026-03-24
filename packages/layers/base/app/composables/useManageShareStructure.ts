@@ -98,6 +98,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
         if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
           rowToUpdate.new = {
             ...shareClass,
+            currencyAdditional: undefined,
             actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
           }
         }

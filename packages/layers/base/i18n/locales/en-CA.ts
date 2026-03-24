@@ -595,6 +595,7 @@ export default {
     courtOrderAndPoaDescription: 'If this filing is pursuant to a court order, enter the court order number. If this filing is pursuant to a plan of arrangement, enter the court order number and select the Plan of Arrangement checkbox.',
     courtOrdersHaveBeenFiled: 'Court order(s) have been filed on this company. Review the filing history for impacts to business information.',
     correctionForRegistrationFiledOn: 'Correction for Registration filed on {date}',
+    currencyOtherNotSupported: '{boldStart}Currency Update:{boldEnd} The currency option “Other” is no longer supported in the new BC Registries system. Please select a valid currency from the dropdown list.',
     dateToCurrent: '{date} to current',
     detailDescription: 'Enter a Detail that will appear on the ledger for this entity.',
     dissolution: 'dissolution',

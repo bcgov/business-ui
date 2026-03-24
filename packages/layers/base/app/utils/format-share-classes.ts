@@ -6,7 +6,8 @@ export function formatShareClassesUi(
     ...item,
     id: item.id.toString(),
     actions: item.actions ?? [],
-    name: item.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
+    name: item.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
+    isEditing: false
   })
 
   return classes.map((c) => {
@@ -19,6 +20,7 @@ export function formatShareClassesUi(
     const formattedClass = {
       ...baseFormatter(c),
       currency: c.currency ?? undefined,
+      currencyAdditional: c.currencyAdditional ?? undefined,
       series: formattedSeries
     }
 
@@ -48,7 +50,8 @@ export function formatShareClassesApi(
     .map(c => ({
       ...c.new,
       name: c.new.name + ' Shares',
-      currency: c.new.currency ?? null as unknown as string,
+      currency: c.new.currency ?? null,
+      currencyAdditional: c.new.currencyAdditional ?? null,
       series: c.new.series
         .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
         .map(s => ({

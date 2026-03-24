@@ -87,6 +87,10 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
       val => (val === null ? undefined : val),
       z.string().optional()
     ),
+    currencyAdditional: z.preprocess(
+      val => (val === null ? undefined : val),
+      z.string().optional()
+    ),
     hasMaximumShares: z.boolean().default(false),
     maxNumberOfShares: z.coerce.number(t('validation.onlyWholeNumbers'))
       .nullable()

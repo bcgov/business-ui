@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FormShareClass } from '#components'
+
 const {
   stateKey = 'manage-share-structure',
   allowedActions,
@@ -115,7 +117,7 @@ function cleanupForm() {
   activeSeries.value = undefined
 }
 
-function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
+async function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
     activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
   } else {
