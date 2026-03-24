@@ -176,10 +176,12 @@ defineExpose({
           :label="$t('label.parValue')"
           :error="formErrors.parValue"
           padding-class="xy-default"
+          data-testid="par-value-section"
         >
           <div class="space-y-4">
             <UAlert
               v-if="model.hasParValue && !model.currency && model.currencyAdditional"
+              data-testid="currency-update-alert"
               color="warning"
               variant="subtle"
               icon="i-mdi-alert"
