@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
-
 const store = useCorrectionStore()
 
 const directorAllowedActions = [
@@ -144,17 +142,6 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: false }
         }"
-      />
-    </section>
-
-    <!-- Section: Correction Detail Comment -->
-    <section class="space-y-4" data-testid="correction-comment-section">
-      <FormDetail
-        v-model="store.correctionComment"
-        name="comment"
-        :filing-date="store.correctedFilingDateDisplay"
-        :description="$t('text.correctionCommentDescription')"
-        :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
       />
     </section>
   </UForm>

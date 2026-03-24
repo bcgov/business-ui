@@ -9,9 +9,9 @@ describe('getCorrectionSchema', () => {
     // Staff should have courtOrder + staffPayment
     expect(result.data).toHaveProperty('courtOrder')
     expect(result.data).toHaveProperty('staffPayment')
-    // Staff should NOT have certify + folio
+    // Staff should NOT have certify + completingParty
     expect(result.data).not.toHaveProperty('certify')
-    expect(result.data).not.toHaveProperty('folio')
+    expect(result.data).not.toHaveProperty('completingParty')
   })
 
   it('should produce a valid client schema with expected shape', () => {
@@ -19,12 +19,12 @@ describe('getCorrectionSchema', () => {
     const result = schema.safeParse({})
 
     expect(result.success).toBe(true)
-    // Client should have certify + folio
+    // Client should have certify + completingParty + staffPayment
     expect(result.data).toHaveProperty('certify')
-    expect(result.data).toHaveProperty('folio')
-    // Client should NOT have courtOrder + staffPayment
+    expect(result.data).toHaveProperty('completingParty')
+    expect(result.data).toHaveProperty('staffPayment')
+    // Client should NOT have courtOrder
     expect(result.data).not.toHaveProperty('courtOrder')
-    expect(result.data).not.toHaveProperty('staffPayment')
   })
 
   it('should include common fields in both schemas', () => {
@@ -35,6 +35,7 @@ describe('getCorrectionSchema', () => {
       expect(result.success).toBe(true)
       expect(result.data).toHaveProperty('comment')
       expect(result.data).toHaveProperty('documentDelivery')
+      expect(result.data).toHaveProperty('staffPayment')
     }
   })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Form } from '@nuxt/ui'
+import type { FormError, Form } from '@nuxt/ui'
 
 const { t } = useI18n()
 
@@ -19,6 +19,11 @@ const formDetailTextareaId = useId()
 const detailSchema = computed(() => getDetailSchema(props.maxLength))
 const characterCount = computed(() => model.value?.detail?.length ?? 0)
 
+const formError = computed<FormError | undefined>(() => {
+  const errors = formRef.value?.getErrors()
+  return errors?.find(e => e.name === 'detail')
+})
+
 defineExpose({
   formRef
 })
@@ -28,7 +33,6 @@ defineExpose({
   <UForm
     ref="detail-form"
     :schema="detailSchema"
-    class="gap-6 flex flex-col"
     nested
     :name="props.name"
   >
@@ -40,8 +44,8 @@ defineExpose({
     >
       <ConnectFormFieldWrapper
         :label="$t('label.detail')"
-        :show-error-msg="true"
-        class="pt-5"
+        :error="formError"
+        padding-class="xy-default"
       >
         <div class="flex w-full flex-col gap-2">
           <p
@@ -69,7 +73,7 @@ defineExpose({
             </template>
           </UFormField>
           <div
-            class="text-right text-sm pb-8"
+            class="text-right text-sm"
             :class="characterCount > props.maxLength ? 'text-error' : 'text-neutral'"
           >
             {{ characterCount }} / {{ props.maxLength }}

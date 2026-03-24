@@ -122,8 +122,20 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       if (formState.certify) {
         formState.certify.legalName = header.certifiedBy ?? ''
       }
-      if (formState.folio) {
-        formState.folio.folioNumber = header.folioNumber ?? ''
+
+      // Completing party (client corrections only) — read from relationships (new format)
+      // The draft may contain multiple relationships with a "Completing Party" role:
+      // one from the original filing (e.g. an incorporator who was also the completing party)
+      // and one ADDED during this correction. We want the ADDED one.
+      const draftAllRelationships = draft?.relationships as BusinessRelationship[] | undefined
+      if (draftAllRelationships && formState.completingParty) {
+        const cpRelationship = draftAllRelationships.find(
+          r => r.roles?.some(role => role.roleType === RoleType.COMPLETING_PARTY)
+            && r.actions?.includes(ActionType.ADDED)
+        )
+        if (cpRelationship) {
+          Object.assign(formState.completingParty, formatCompletingPartyRelationshipUi(cpRelationship))
+        }
       }
     }
 
@@ -259,12 +271,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       legalType: businessStore.business?.legalType as CorpTypeCd,
 
       // Parties — formatted as relationships (with `entity`), matching transition store pattern
-      // All party types (directors, receivers, liquidators) are combined in one array
+      // All party types (directors, receivers, liquidators, completing party) are combined in one array
       relationships: [
         ...tableParties.value,
         ...tableReceivers.value,
         ...tableLiquidators.value
-      ].map(entry => formatRelationshipApi(entry.new)),
+      ].map(entry => formatRelationshipApi(entry.new)).concat(
+        // Completing party (client corrections) — submitted as a relationship
+        formState.completingParty?.lastName
+          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
+          : []
+      ),
 
       // Offices
       offices: {
@@ -295,8 +312,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       { correction: correctionPayload },
       {
         ...formatStaffPaymentApi(formState.staffPayment!),
-        ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {}),
-        ...(formState.folio?.folioNumber ? { folioNumber: formState.folio.folioNumber } : {})
+        ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {})
       }
     )
 
@@ -317,7 +333,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   }
 
   function $reset() {
-    const defaults = getCorrectionSchema(isStaff.value).parse({})
+    correctedFilingId.value = undefined
+    correctedFilingType.value = FilingType.UNKNOWN
+    correctedFilingDate.value = ''
+    correctionType.value = CorrectionType.CLIENT
+    correctedFiling.value = undefined
+
+    const defaults = getCorrectionSchema(isStaffCorrectionType.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
     formState.activeReceiver = undefined
@@ -325,12 +347,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeOffice = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
-
-    correctedFilingId.value = undefined
-    correctedFilingType.value = FilingType.UNKNOWN
-    correctedFilingDate.value = ''
-    correctionType.value = CorrectionType.CLIENT
-    correctedFiling.value = undefined
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []

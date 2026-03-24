@@ -64,13 +64,13 @@ describe('Correction Schema', () => {
       })
     })
 
-    it('should NOT include client-only fields (certify, folio)', () => {
+    it('should NOT include client-only fields (certify, completingParty)', () => {
       const schema = getCorrectionSchema(true)
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
       expect(result.data).not.toHaveProperty('certify')
-      expect(result.data).not.toHaveProperty('folio')
+      expect(result.data).not.toHaveProperty('completingParty')
     })
   })
 
@@ -84,17 +84,23 @@ describe('Correction Schema', () => {
         comment: { detail: '' },
         documentDelivery: { completingPartyEmail: '' },
         certify: { isCertified: false, legalName: '' },
-        folio: { folioNumber: '' }
+        staffPayment: {
+          option: StaffPaymentOption.NONE
+        },
+        completingParty: {
+          firstName: '',
+          middleName: '',
+          lastName: ''
+        }
       })
     })
 
-    it('should NOT include staff-only fields (courtOrder, staffPayment)', () => {
+    it('should NOT include staff-only fields (courtOrder)', () => {
       const schema = getCorrectionSchema(false)
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
       expect(result.data).not.toHaveProperty('courtOrder')
-      expect(result.data).not.toHaveProperty('staffPayment')
     })
   })
 
@@ -128,6 +134,127 @@ describe('Correction Schema', () => {
       const result = schema.safeParse({ comment: { detail: maxComment } })
 
       expect(result.success).toBe(true)
+    })
+  })
+
+  describe('Court order validation (staff)', () => {
+    it('should include courtOrder with defaults for staff schema', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.courtOrder).toEqual({
+        hasPoa: false,
+        courtOrderNumber: ''
+      })
+    })
+
+    it('should accept a court order number', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({
+        comment: { detail: 'Test' },
+        courtOrder: { hasPoa: false, courtOrderNumber: 'CO-12345' }
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data!.courtOrder!.courtOrderNumber).toBe('CO-12345')
+    })
+
+    it('should accept hasPoa set to true', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({
+        comment: { detail: 'Test' },
+        courtOrder: { hasPoa: true, courtOrderNumber: 'CO-12345' }
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data!.courtOrder!.hasPoa).toBe(true)
+    })
+  })
+
+  describe('Completing party validation (client)', () => {
+    it('should include completingParty with defaults for client schema', () => {
+      const schema = getCorrectionSchema(false)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.completingParty).toMatchObject({
+        firstName: '',
+        middleName: '',
+        lastName: ''
+      })
+    })
+
+    it('should include mailing address defaults for completing party', () => {
+      const schema = getCorrectionSchema(false)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.completingParty!.mailingAddress).toMatchObject({
+        street: '',
+        city: '',
+        region: '',
+        postalCode: '',
+        country: 'CA'
+      })
+    })
+  })
+
+  describe('Staff payment validation', () => {
+    it('should default staff payment option to NONE', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.staffPayment.option).toBe(StaffPaymentOption.NONE)
+    })
+
+    it('should include all staff payment fields with defaults', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.staffPayment).toMatchObject({
+        option: StaffPaymentOption.NONE,
+        bcolAccountNumber: '',
+        datNumber: '',
+        routingSlipNumber: '',
+        folioNumber: '',
+        isPriority: false
+      })
+    })
+
+    it('should include staffPayment for both staff and client schemas', () => {
+      for (const isStaff of [true, false]) {
+        const schema = getCorrectionSchema(isStaff)
+        const result = schema.safeParse({})
+
+        expect(result.success).toBe(true)
+        expect(result.data!.staffPayment).toBeDefined()
+        expect(result.data!.staffPayment.option).toBe(StaffPaymentOption.NONE)
+      }
+    })
+  })
+
+  describe('Document delivery defaults', () => {
+    it('should default completingPartyEmail to empty string', () => {
+      const schema = getCorrectionSchema(true)
+      const result = schema.safeParse({})
+
+      expect(result.success).toBe(true)
+      expect(result.data!.documentDelivery).toEqual({
+        completingPartyEmail: ''
+      })
+    })
+
+    it('should include documentDelivery for both staff and client schemas', () => {
+      for (const isStaff of [true, false]) {
+        const schema = getCorrectionSchema(isStaff)
+        const result = schema.safeParse({})
+
+        expect(result.success).toBe(true)
+        expect(result.data!.documentDelivery).toBeDefined()
+      }
     })
   })
 

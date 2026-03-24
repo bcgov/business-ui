@@ -13,9 +13,9 @@ const model = defineModel<CertifySchema>({ required: true })
 
 const formRef = useTemplateRef<Form<CertifySchema>>('certify-form')
 
-const legalNameError = computed<FormError | undefined>(() => {
+const formError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
-  return errors?.find(e => e.name === 'legalName')
+  return errors?.find(e => e.name === 'legalName' || e.name === 'isCertified')
 })
 
 const today = getToday('America/Vancouver')
@@ -37,11 +37,13 @@ defineExpose({
       :description
       body-variant="card"
       data-testid="certify-section"
+      orientation="vertical"
     >
       <ConnectFormFieldWrapper
         :label="$t('label.legalName')"
         orientation="horizontal"
-        :error="legalNameError"
+        :error="formError"
+        padding-class="xy-default"
       >
         <div class="flex flex-col gap-4">
           <ConnectFormInput
