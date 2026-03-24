@@ -35,7 +35,11 @@ const clientHeaderPayload = {
 
 const contactPoint = { email: 'comp-party@example.com' }
 
-async function setupPage(page: Page, accountType: 'STAFF' | 'PREMIUM') {
+async function setupPage(
+  page: Page,
+  accountType: 'STAFF' | 'PREMIUM',
+  shareClassMock: 'default' | 'currency-other' = 'default'
+) {
   await mockCommonApiCallsForFiling(
     page,
     identifier,
@@ -47,7 +51,7 @@ async function setupPage(page: Page, accountType: 'STAFF' | 'PREMIUM') {
     TRANP,
     getBusinessAddressesMock(),
     accountType,
-    getShareClassesMock()
+    getShareClassesMock(shareClassMock)
   )
   await navigateToTransitionPage(page, identifier)
   await page.waitForLoadState('networkidle')
@@ -283,4 +287,58 @@ test.describe('Transition - Filing Submit', () => {
       await assertFinalRedirect(page)
     })
   }
+
+  test('Staff - share classes with currency `OTHER`', async ({ page }) => {
+    await setupPage(page, 'STAFF', 'currency-other')
+    await confirmOffices(page)
+    await editAndConfirmDirectors(page)
+
+    // edit only 1 share class with an invalid currency - do not edit the other 2 invalid share class currencies
+    const classA = page.getByRole('row').filter({ hasText: 'Class A - Common Stock Shares' })
+    await classA.getByRole('button', { name: 'Change' }).click()
+    const scForm = page.getByTestId('edit-share-class-form')
+    await expect(scForm).toBeVisible()
+    await scForm.getByTestId('par-value-currency-input').click()
+    await page.getByRole('option', { name: 'CAD' }).click()
+    await scForm.getByRole('button', { name: 'Done' }).click()
+    await expect(scForm).not.toBeVisible()
+    await goToReview(page)
+    await fillCompletingParty(page)
+    await page.getByRole('radio', { name: 'BC OnLine' }).click()
+    await page.getByTestId('bcolnumberinput').fill(staffHeaderPayload.bcolAccountNumber)
+    await page.getByTestId('datnumberinput').fill(staffHeaderPayload.datNumber)
+    await page.getByTestId('folionumber').fill(staffHeaderPayload.folioNumber)
+    await page.getByRole('checkbox', { name: 'Priority (Add $100.00)' }).check()
+
+    const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
+    await page.getByRole('button', { name: 'Submit' }).click()
+    const request = await submitRequest
+    const requestBody = request.postDataJSON() as FilingSubmissionBody<{ transition: TransitionPayload }>
+
+    // assert request body correctly removes currencyAdditional
+    // from edited row but persists currencyAdditional on non-edited rows
+    expect(requestBody.filing.header).toEqual(staffHeaderPayload)
+    const filing = requestBody.filing
+    expect(filing.transition.offices).toHaveProperty('recordsOffice')
+    expect(filing.transition.offices).toHaveProperty('registeredOffice')
+    expect(filing.transition.offices.registeredOffice.deliveryAddress!.addressCity).toBe('Vancouver')
+
+    expect(filing.transition.contactPoint).toEqual(contactPoint)
+
+    expect(filing.transition.relationships).toHaveLength(3)
+    expect(filing.transition.relationships[1]?.mailingAddress?.streetAddressAdditional).toEqual('Unit 1A')
+
+    const classes = filing.transition.shareStructure.shareClasses
+    expect(classes).toHaveLength(3)
+
+    const getByName = (name: string) => classes.find(c => c.name === name)
+
+    const classAPayload = getByName('Class A - Common Stock Shares')
+
+    expect(classAPayload!.actions).toContain('CHANGED')
+    expect(classAPayload!.currencyAdditional).toBeNull()
+
+    expect(getByName('Class B - Preferred Stock Shares')!.currencyAdditional).toBe('Percent of Company’s Net')
+    expect(getByName('Class C - Executive stock Shares')!.currencyAdditional).toBe('Bitcoin')
+  })
 })
