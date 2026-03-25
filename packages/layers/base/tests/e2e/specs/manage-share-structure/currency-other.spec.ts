@@ -227,7 +227,6 @@ test.describe('ManageShareStructure (currency other)', () => {
     // open edit series form, assert currencyAdditional value displayed correctly, close form
     await classASeries.getByRole('button', { name: 'Change' }).click()
     await expect(ssForm).toBeVisible()
-    ssForm.getByTestId('currency-display-input').click()
     await expect(ssForm.getByTestId('currency-display-input')).toHaveValue('Percent of the share')
     await ssForm.getByRole('button', { name: 'Cancel' }).first().click()
     await expect(ssForm).not.toBeVisible()
