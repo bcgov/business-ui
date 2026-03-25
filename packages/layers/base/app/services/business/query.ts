@@ -247,6 +247,7 @@ export const useBusinessQuery = () => {
     nrNumber: MaybeRefOrGetter<string>,
     options?: QueryOptions<NameRequest>
   ) {
+    // DISCUSS IN PR: Remove businessId from here? It is not relevant to the request. Complicates query keys a little
     return useQuery(() => linkedNameRequestOptions(businessId, nrNumber, options as DefineOptions<NameRequest>))
   }
 
