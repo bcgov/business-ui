@@ -117,9 +117,17 @@ function cleanupForm() {
 
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
   if (row.depth === 1) {
-    activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
+    if (activeSeriesSchema.safeParse({ ...row.original.new })?.success) {
+      activeSeries.value = activeSeriesSchema.parse({ ...row.original.new })
+    } else {
+      activeSeries.value = JSON.parse(JSON.stringify({ ...row.original.new }))
+    }
   } else {
-    activeClass.value = activeClassSchema.parse({ ...row.original.new })
+    if (activeClassSchema.safeParse({ ...row.original.new })?.success) {
+      activeClass.value = activeClassSchema.parse({ ...row.original.new })
+    } else {
+      activeClass.value = JSON.parse(JSON.stringify({ ...row.original.new }))
+    }
   }
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
