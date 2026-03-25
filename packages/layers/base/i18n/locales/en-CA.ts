@@ -560,8 +560,9 @@ export default {
     AML: 'Amalgamation | an Amalgamation',
     CHG: 'Change of Name | a Change of Name',
     CNV: 'Alteration | an Alteration',
+    MVE: 'Continuation In | a Continuation In',
     NEW: 'New Business | a New Business',
-    REST: 'Restoration | a Restoration'
+    REH: 'Restoration | a Restoration'
   },
   officeType: {
     registeredOffice: 'Registered Office',

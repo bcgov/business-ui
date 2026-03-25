@@ -112,8 +112,8 @@ const validateNrNumber = useDebounceFn(async (nrNum: string) => {
       icon.value = { class: 'text-error' }
       const statusCode = getErrorStatus(err)
       validationError.value = [400, 403, 404].includes(statusCode!)
-        ? t(`validation.nrNumber.errorCode.${NameRequestState.NOT_FOUND}`)
-        : t('validation.nrNumber.errorCode.undefined')
+        ? t(`validation.nrNumber.errorState.${NameRequestState.NOT_FOUND}`)
+        : t('validation.nrNumber.errorState.undefined')
     } finally {
       isLoading.value = false
     }
@@ -141,7 +141,7 @@ const uInputProps = computed<InputProps>(() => {
 })
 
 // Provide custom props for UInput
-provide('UInput-props-nr-input', uInputProps)
+provide('UInput-props-nr-number-input', uInputProps)
 
 defineExpose({ formRef })
 </script>
@@ -155,8 +155,9 @@ defineExpose({ formRef })
   >
     <ConnectFormInput
       v-model="model.nrNumber"
+      data-testid="form-group-nr-number"
       :help="$t('text.exampleNR1234567')"
-      input-id="nr-input"
+      input-id="nr-number-input"
       :label="$t('label.enterTheNrNumber')"
       mask="NR #######"
       name="nrNumber"
