@@ -75,11 +75,10 @@ function addParty(party: ActivePartySchema) {
 
 function initEditParty(row: TableBusinessRow<PartySchema>) {
   // FUTURE: handle the incomplete address parsing in connect layer
-  if (activePartySchema.safeParse({ ...row.original.new })?.success) {
-    activeParty.value = activePartySchema.parse({ ...row.original.new })
-  } else {
-    activeParty.value = JSON.parse(JSON.stringify({ ...row.original.new }))
-  }
+  const parsedParty = activePartySchema.safeParse({ ...row.original.new })
+  activeParty.value = parsedParty.success
+    ? parsedParty.data
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
 
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
