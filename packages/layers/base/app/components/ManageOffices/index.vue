@@ -85,7 +85,7 @@ function addOffice(office: ActiveOfficesSchema) {
 function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
   const parsedOffice = activeOfficeSchema.safeParse({ ...row.original.new })
   const office = parsedOffice.success
-    ? activeOfficeSchema.parse({ ...row.original.new })
+    ? parsedOffice.data
     : JSON.parse(JSON.stringify({ ...row.original.new }))
 
   activeOffice.value = office
