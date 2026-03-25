@@ -2,9 +2,7 @@ import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, reactive, ref } from 'vue'
 
-import ManageParties from '../../../app/components/ManageParties/index.vue'
-import ManageOffices from '../../../app/components/ManageOffices/index.vue'
-import ManageShareStructure from '../../../app/components/ManageShareStructure/index.vue'
+import { ManageParties, ManageOffices, ManageShareStructure } from '#components'
 
 // --- Mock composables used by the three manager components ---
 
