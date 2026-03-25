@@ -162,51 +162,74 @@ describe('Common table managers — init-edit with valid schema data', () => {
       { addLabel: 'unused-label', sectionLabel: 'Parties', activeParty: undefined },
       TablePartyStub, row)
 
-    const emitted = wrapper.emitted('update:active-party')?.[0]?.[0] as { name: { partyType: string } }
+    const emitted = wrapper.emitted('update:active-party')?.[0]?.[0] as {
+      name: { partyType: string }
+      address: { sameAs: boolean, mailingAddress: { country: string } }
+    }
     expect(emitted.name.partyType).toBe(PartyType.PERSON)
+    expect(emitted.address.sameAs).toBe(false)
+    expect(emitted.address.mailingAddress.country).toBe('CA')
     expect(row.original.new.isEditing).toBe(true)
   })
 
   it('ManageOffices: emits schema-parsed data when valid', async () => {
-    const row = { index: 0, original: { new: { isEditing: false, type: OfficeType.REGISTERED, actions: [] } } }
+    const row = { index: 0, original: { new: { isEditing: false, actions: [] } } }
     const wrapper = await emitInitEdit(ManageOffices,
       { addLabel: 'unused-label', sectionLabel: 'Offices', activeOffice: undefined },
       TableOfficesStub, row)
 
-    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as { type: string }
+    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as {
+      type: string
+      address: { sameAs: boolean, mailingAddress: { country: string } }
+    }
     expect(emitted.type).toBe(OfficeType.REGISTERED)
+    expect(emitted.address.sameAs).toBe(false)
+    expect(emitted.address.mailingAddress.country).toBe('CA')
     expect(row.original.new.isEditing).toBe(true)
   })
 
   it('ManageShareStructure class: emits schema-parsed data when valid', async () => {
     const row = {
       id: 'c1', depth: 0, original: { new: {
-        isEditing: false, id: 'c1', name: 'Alpha', priority: 1, actions: [], series: [],
-        hasParValue: false, hasMaximumShares: false, hasRightsOrRestrictions: false
+        isEditing: false, id: 'c1', name: 'Alpha', priority: 1, actions: [],
+        hasParValue: false, hasMaximumShares: false
       } }
     }
     const wrapper = await emitInitEdit(ManageShareStructure,
       { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
       TableShareStructureStub, row)
 
-    const emitted = wrapper.emitted('update:active-class')?.[0]?.[0] as { name: string }
+    const emitted = wrapper.emitted('update:active-class')?.[0]?.[0] as {
+      name: string
+      series: unknown[]
+      hasRightsOrRestrictions: boolean
+    }
     expect(emitted.name).toBe('Alpha')
+    expect(emitted.series).toEqual([])
+    expect(emitted.hasRightsOrRestrictions).toBe(false)
     expect(row.original.new.isEditing).toBe(true)
   })
 
   it('ManageShareStructure series: emits schema-parsed data when valid', async () => {
     const row = {
       id: 's1', depth: 1, original: { new: {
-        isEditing: false, id: 's1', name: 'Beta', priority: 1, actions: [],
-        hasMaximumShares: false, hasRightsOrRestrictions: false
+        isEditing: false, id: 's1', name: 'Beta', priority: 1, actions: []
       } }
     }
     const wrapper = await emitInitEdit(ManageShareStructure,
       { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
       TableShareStructureStub, row)
 
-    const emitted = wrapper.emitted('update:active-series')?.[0]?.[0] as { name: string }
+    const emitted = wrapper.emitted('update:active-series')?.[0]?.[0] as {
+      name: string
+      hasMaximumShares: boolean
+      hasRightsOrRestrictions: boolean
+      isInvalid: boolean
+    }
     expect(emitted.name).toBe('Beta')
+    expect(emitted.hasMaximumShares).toBe(false)
+    expect(emitted.hasRightsOrRestrictions).toBe(false)
+    expect(emitted.isInvalid).toBe(false)
     expect(row.original.new.isEditing).toBe(true)
   })
 })

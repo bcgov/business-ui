@@ -83,12 +83,17 @@ function addOffice(office: ActiveOfficesSchema) {
 }
 
 function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
-  editLabel = t('label.editingItemName', { name: t(`officeType.${row.original.new.type}`) })
-  if (activeOfficeSchema.safeParse({ ...row.original.new })?.success) {
-    activeOffice.value = activeOfficeSchema.parse({ ...row.original.new })
-  } else {
-    activeOffice.value = JSON.parse(JSON.stringify({ ...row.original.new }))
-  }
+  const parsedOffice = activeOfficeSchema.safeParse({ ...row.original.new })
+  const office = parsedOffice.success
+    ? activeOfficeSchema.parse({ ...row.original.new })
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
+
+  activeOffice.value = office
+
+  const officeType = office?.type
+  editLabel = Object.values(OfficeType).includes(officeType as OfficeType)
+    ? t('label.editingItemName', { name: t(`officeType.${officeType}`) })
+    : t('label.editOffice')
 
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
