@@ -289,6 +289,28 @@ describe('useManageShareStructure', () => {
         expect(openModalMock).not.toHaveBeenCalled()
         expect(cleanup).toHaveBeenCalled()
       })
+
+      it('should always set currencyAdditional to undefined when making any changes', () => {
+        const { tableState, updateShareClass } = useManageShareStructure('test-currency-additonal-change')
+        const cleanup = vi.fn()
+
+        const rowData = {
+          new: {
+            id: '1',
+            maxNumberOfShares: 100,
+            currencyAdditional: 'Some Invalid Value',
+            series: []
+          },
+          old: { id: '1' }
+        }
+        tableState.value = [rowData] as any
+
+        const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
+        updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
+
+        expect(tableState.value[0]!.new.currencyAdditional).toBeUndefined()
+        expect(cleanup).toHaveBeenCalled()
+      })
     })
   })
 

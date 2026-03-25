@@ -29,6 +29,20 @@ describe('getCurrencyColumn', () => {
     expect(cell.props.class).toBe('min-w-40 max-w-40 overflow-clip')
   })
 
+  it('renders the currencyAdditional correctly when provided and has parValue', () => {
+    const row = {
+      original: { new: { currency: 'OTHER', currencyAdditional: 'Bitcoin', hasParValue: true } }
+    }
+    const column = getCurrencyColumn() as any
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.type).toBe('span')
+    expect(cell.children).toBe('Bitcoin')
+    expect(cell.props.class).toBe('min-w-40 max-w-40 overflow-clip')
+  })
+
   it('renders nothing if not hasParValue', () => {
     const row = {
       original: { new: { currency: 'CAD', hasParValue: false } }

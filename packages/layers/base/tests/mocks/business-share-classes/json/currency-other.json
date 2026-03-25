@@ -1,0 +1,78 @@
+{
+    "shareClasses": [
+        {
+            "currency": "OTHER",
+            "currencyAdditional": "Percent of the share",
+            "hasMaximumShares": false,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 1065936,
+            "maxNumberOfShares": null,
+            "name": "Class A - Common Stock Shares",
+            "parValue": 1.0,
+            "priority": 1,
+            "series": [
+                {
+                    "hasMaximumShares": false,
+                    "hasRightsOrRestrictions": true,
+                    "id": 461077,
+                    "maxNumberOfShares": null,
+                    "name": "Seed Shares",
+                    "priority": 1
+                }
+            ]
+        },
+        {
+            "currency": "OTHER",
+            "currencyAdditional": "Percent of Company’s Net",
+            "hasMaximumShares": false,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 1065941,
+            "maxNumberOfShares": null,
+            "name": "Class B - Preferred Stock Shares",
+            "parValue": 2.0,
+            "priority": 2,
+            "series": [
+                {
+                    "hasMaximumShares": false,
+                    "hasRightsOrRestrictions": true,
+                    "id": 461078,
+                    "maxNumberOfShares": null,
+                    "name": "Pre-Seed Shares",
+                    "priority": 1
+                },
+                {
+                    "hasMaximumShares": false,
+                    "hasRightsOrRestrictions": true,
+                    "id": 461079,
+                    "maxNumberOfShares": null,
+                    "name": "Seed Shares",
+                    "priority": 2
+                }
+            ]
+        },
+        {
+            "currency": "OTHER",
+            "currencyAdditional": "Bitcoin",
+            "hasMaximumShares": false,
+            "hasParValue": true,
+            "hasRightsOrRestrictions": true,
+            "id": 1065944,
+            "maxNumberOfShares": null,
+            "name": "Class C - Executive stock Shares",
+            "parValue": 100.0,
+            "priority": 3,
+            "series": [
+                {
+                    "hasMaximumShares": false,
+                    "hasRightsOrRestrictions": true,
+                    "id": 461080,
+                    "maxNumberOfShares": null,
+                    "name": "Pre-Seed Shares",
+                    "priority": 1
+                }
+            ]
+        }
+    ]
+}
