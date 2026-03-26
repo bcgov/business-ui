@@ -247,7 +247,9 @@ export const useBusinessQuery = () => {
     nrNumber: MaybeRefOrGetter<string>,
     options?: QueryOptions<NameRequest>
   ) {
-    // DISCUSS IN PR: Remove businessId from here? It is not relevant to the request. Complicates query keys a little
+    // NOTE: "businessId" is only used to keep the caching key consistent with other calls
+    // - this simplifies invalidating the cache across the business calls
+    // - if this call is being made outside of any business context then an empty string can be passed.
     return useQuery(() => linkedNameRequestOptions(businessId, nrNumber, options as DefineOptions<NameRequest>))
   }
 

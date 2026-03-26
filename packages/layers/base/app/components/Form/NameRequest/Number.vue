@@ -2,6 +2,7 @@
 import type { Form, InputProps } from '@nuxt/ui'
 
 const {
+  businessIdentifier = '',
   businessType,
   nrAllowedActionTypes,
   filingName,
@@ -11,6 +12,7 @@ const {
   businessType: CorpTypeCd
   filingName: string
   nrAllowedActionTypes: NrRequestActionCode[]
+  businessIdentifier?: string
   name?: string
   nrAllowedBusinessTypes?: CorpTypeCd[]
 }>()
@@ -94,13 +96,13 @@ const getNrErrorMsg = (nameRequest: NameRequest) => {
   }
 }
 
-const validateNrNumber = useDebounceFn(async (nrNum: string) => {
+const validateNrNumber = async (nrNum: string) => {
   icon.value = { class: 'text-primary' }
   if (nrNum.length && NR_NUM_REGEX.test(nrNum)) {
     isLoading.value = true
     formRef.value?.clear('nrNumber')
     try {
-      const nameRequest = await service.getLinkedNameRequest('', nrNum)
+      const nameRequest = await service.getLinkedNameRequest(businessIdentifier, nrNum)
       validationError.value = getNrErrorMsg(nameRequest) ?? ''
       if (validationError.value) {
         icon.value = { class: 'text-error' }
@@ -118,13 +120,13 @@ const validateNrNumber = useDebounceFn(async (nrNum: string) => {
       isLoading.value = false
     }
   } else {
-    // invlaid format - set error validation
+    // invalid format - set error validation
     validationError.value = t('validation.nrNumber.invalid')
   }
   formRef.value?.validate({ silent: true })
-}, 1000)
+}
 
-watch(() => model.value.nrNumber, validateNrNumber)
+watchDebounced(() => model.value.nrNumber, validateNrNumber, { debounce: 1000 })
 
 const icon = ref<{ class: string, name?: string }>({ class: 'text-primary' })
 

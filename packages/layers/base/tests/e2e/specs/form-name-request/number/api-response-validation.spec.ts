@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
 
-import { NrRequestActionCode } from '../../../../../app/enums/name-request-code'
-import { NameRequestState } from '../../../../../app/enums/name-request-state'
-import { CorpTypeCd } from '../../../../../app/enums/corp-type-cd'
-import { fillOutNrNumber } from '../../../test-utils'
-import { getNameRequestMock } from '../../../../mocks/name-request'
+import { NrRequestActionCode } from '#business/app/enums/name-request-code'
+import { NameRequestState } from '#business/app/enums/name-request-state'
+import { CorpTypeCd } from '#business/app/enums/corp-type-cd'
+import { fillOutNrNumber } from '#e2e-utils'
+import { getNameRequestMock } from '#test-mocks'
 
 const API_SUCCESS_RESPONSE_CASES = [
   {

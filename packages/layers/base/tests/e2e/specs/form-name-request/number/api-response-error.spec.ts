@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-import { fillOutNrNumber } from '../../../test-utils'
+import { fillOutNrNumber } from '#e2e-utils'
 
 const API_FAILURE_RESPONSE_CASES = [
   {

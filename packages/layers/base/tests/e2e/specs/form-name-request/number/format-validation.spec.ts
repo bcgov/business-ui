@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
-import { fillOutNrNumber, selectDone } from '../../../test-utils'
-import { getNameRequestMock } from '../../../../mocks/name-request'
+import { fillOutNrNumber, selectDone } from '#e2e-utils'
+import { getNameRequestMock } from '#test-mocks'
 
 const INPUT_FORMAT_CASES = [
   {
