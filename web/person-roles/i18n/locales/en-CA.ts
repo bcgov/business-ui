@@ -1,5 +1,17 @@
 /* eslint-disable max-len */
 export default {
+  connect: {
+    label: {
+      sbcAccountCreation: 'Create a BC Registries Account',
+    },
+    page: {
+      login: {
+        h1: 'Log in to BC Registries',
+        description: 'In order to use this service, you’ll need one of the following logins. This login will be'
+          + ' linked to your BC Registries account for identity verification purposes.'
+      }
+    }
+  },
   badge: {
     rolesChanged: 'ROLES CHANGED',
     nameChanged: 'NAME CHANGED',
