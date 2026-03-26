@@ -390,6 +390,7 @@ export default {
     effectiveDates: 'Effective Dates',
     email: 'Email',
     emailAddressOpt: 'Email Address (Optional)',
+    enterTheNrNumber: 'Enter the NR Number',
     exitWithoutSaving: 'Exit Without Saving',
     extensionOfLimitedRestoration: 'Extension of Limited Restoration',
     FILED: 'FILED',
@@ -553,6 +554,16 @@ export default {
   filingText: {
     agmExtension: 'The {agmyear} AGM must be held by {boldStart}{agmduedate}{boldEnd}.'
   },
+  nameRequestAction: {
+    /* Mappings here are based from the NrRequestActionCode enum */
+    // FUTURE: fill these out as needed
+    AML: 'Amalgamation | an Amalgamation',
+    CHG: 'Change of Name | a Change of Name',
+    CNV: 'Alteration | an Alteration',
+    MVE: 'Continuation In | a Continuation In',
+    NEW: 'New Business | a New Business',
+    REH: 'Restoration | a Restoration'
+  },
   officeType: {
     registeredOffice: 'Registered Office',
     recordsOffice: 'Records Office',
@@ -605,6 +616,7 @@ export default {
     documentDeliveryDescription: 'Copies of the transition documents will be sent to the email addresses listed below.',
     documentIdDescription: 'Enter the 8-digit Document ID number, also referred to as the barcode number. If you do not have one, leave the field empty to generate a Document ID upon submission.',
     effectiveAsOf: 'EFFECTIVE as of',
+    exampleNR1234567: 'Example: NR 1234567',
     expiredConsent: 'This consent is expired. Please resubmit the {name} application for authorization to become a foreign corporation.',
     FiledBySubmitterOn: 'Filed by {submitter} on',
     filedBySubmitterOn: 'filed by {submitter} on',
@@ -672,6 +684,23 @@ export default {
     maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
     maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
     minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    nrNumber: {
+      errorState: {
+        // Mappings here are based from the NameRequestState enum
+        CONSUMED: 'The specified name request has already been consumed.',
+        EXPIRED: 'The specified name request has expired.',
+        INVALID: 'The specified name request is not valid.',
+        INVALID_ACTION_TYPE: 'This Name Request is for {nrActionType}. For this {filingName} you can only use the following Name Request types: {expectedNrActionTypes}',
+        INVALID_LEGAL_TYPE: 'This Name Request is for a {nrBusinessType}. You need to use a name request for a {expectedNrBusinessType}.',
+        INVALID_LEGAL_TYPE_FOR_ACTION_TYPE: 'You cannot change a {businessType} to a {nrBusinessType}. If you need assistance, contact BC Registry staff.',
+        NEED_CONSENT: 'The specified name request is awaiting consent.',
+        NOT_APPROVED: 'The specified name request has not been approved.',
+        NOT_FOUND: 'We could not find a match for the information you have entered. Please verify the NR Number and try again.',
+        undefined: 'An unexpected error has occurred.'
+      },
+      invalid: 'Name Request Number is invalid',
+      required: 'Name Request Number is required'
+    },
     onlyNumbers: 'Only enter numbers',
     onlyWholeNumbers: 'Only enter whole numbers',
     pleaseCompleteRequiredInfo: '< Please complete required information',
