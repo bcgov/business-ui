@@ -186,7 +186,7 @@ export function getShareClassSchema(context?: { existingNames: string[] }) {
         ctx.addIssue({
           code: 'custom',
           path: ['maxNumberOfShares'],
-          message: t('validation.totalOfAllSeriesCantExceedMaxOfClass')
+          message: t('validation.maxSharesOfClassCannotBeLessThanAllSeriesCombined')
         })
       }
     }

@@ -684,6 +684,7 @@ export default {
     maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
     maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
     minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    maxSharesOfClassCannotBeLessThanAllSeriesCombined: 'The maximum number for the class cannot be less than the maximum number of all series combined.',
     nrNumber: {
       errorState: {
         // Mappings here are based from the NameRequestState enum
