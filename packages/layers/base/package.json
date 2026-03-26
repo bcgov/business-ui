@@ -2,6 +2,9 @@
   "name": "@sbc-connect/nuxt-business-base",
   "type": "module",
   "version": "0.18.0",
+  "engines": {
+    "node": ">=24"
+  },
   "repository": "github:bcgov/business-ui",
   "license": "BSD-3-Clause",
   "main": "./nuxt.config.ts",
