@@ -7,7 +7,11 @@ export function formatLiquidatorsApi(
   const changedRelationships = tableState.map(rel => formatRelationshipApi(rel.new)).filter(rel => rel.actions?.length)
   const office = tableOffices.find(o => o.new.type === OfficeType.LIQUIDATION)?.new
   const isIntent = type === LiquidateType.INTENT
-  const hasOfficeChange = type === LiquidateType.ADDRESS && office && office?.actions.length > 0
+  const hasOfficeChange = (
+    [LiquidateType.ADDRESS, LiquidateType.APPOINT].includes(type)
+    && office
+    && office?.actions.length > 0
+  )
   const includeOffice = (isIntent || hasOfficeChange) && !!office
 
   return {

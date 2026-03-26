@@ -65,6 +65,15 @@ const schema = computed(() => {
   })
 })
 
+const currencyDisplay = computed(() => {
+  const { hasParValue, currency, currencyAdditional } = shareClassData.value as ShareClassSchema
+  return hasParValue
+    ? currency === 'OTHER'
+      ? currencyAdditional || ''
+      : currency
+    : ''
+})
+
 function resetFields() {
   model.value.maxNumberOfShares = null
   formRef.value?.clear(/^maxNumberOfShares$/)
@@ -190,7 +199,7 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
             />
             <ConnectInput
               id="currency-display-input"
-              v-model="shareClassData.currency"
+              v-model="currencyDisplay"
               readonly
               :label="$t('label.currency')"
               class="w-full flex-1"

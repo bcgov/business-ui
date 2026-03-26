@@ -9,7 +9,7 @@ export function getColumnMeta<T = unknown>(option: TableColumnMetaOption = 'defa
     first: {
       class: {
         th: 'pl-6',
-        td: 'pr-2 py-4 pl-6'
+        td: 'pl-6 pr-2 py-4'
       }
     },
     last: {

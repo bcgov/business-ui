@@ -355,6 +355,7 @@ export default {
     cashOrCheque: 'Cash or Cheque',
     certify: 'Certify',
     change: 'Change',
+    changeAddress: 'Change Address',
     className: 'Class Name',
     classNameShares: 'Class Name [Shares]',
     close: 'Close',
@@ -372,12 +373,13 @@ export default {
     datNumber: 'DAT Number',
     deliveryAddress: 'Delivery Address',
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
+    detail: 'Detail',
     details: 'Details',
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',
     documentDelivery: 'Document Delivery',
-    documentId: 'Document Id',
-    documentIdOpt: 'Document Id (Optional)',
+    documentId: 'Document ID',
+    documentIdOpt: 'Document ID (Optional)',
     done: 'Done',
     downloadAll: 'Download All',
     edit: 'Edit',
@@ -452,6 +454,7 @@ export default {
     PENDING: 'PENDING',
     pacificTime: 'Pacific time',
     personOrOrgName: 'Person or Business Name',
+    personsName: "Person's Name",
     phone: 'Phone',
     planOfArrangement: 'Plan of Arrangement',
     preExistingCompanyProvisions: 'Pre-existing Company Provisions',
@@ -592,7 +595,10 @@ export default {
     continueOut: 'continue out',
     courtOrderAndPoaDescription: 'If this filing is pursuant to a court order, enter the court order number. If this filing is pursuant to a plan of arrangement, enter the court order number and select the Plan of Arrangement checkbox.',
     courtOrdersHaveBeenFiled: 'Court order(s) have been filed on this company. Review the filing history for impacts to business information.',
+    correctionForRegistrationFiledOn: 'Correction for Registration filed on {date}',
+    currencyOtherNotSupported: '{boldStart}Currency Update:{boldEnd} The currency option “Other” is no longer supported in the new BC Registries system. Please select a valid currency from the dropdown list.',
     dateToCurrent: '{date} to current',
+    detailDescription: 'Enter a Detail that will appear on the ledger for this entity.',
     dissolution: 'dissolution',
     dissolutionCompletedFirm: 'The statement of dissolution for {entitytitle} {name} was successfully submitted on {boldStart}{submitteddate}{boldEnd} with dissolution date of {boldStart}{dissolutiondate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
     dissolutionCompletedNonFirm: 'The {entitytitle} {name} was successfully {boldStart}dissolved on {effectivedate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',
@@ -656,25 +662,27 @@ export default {
     classNameInvalidWords: 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
+    duplicateDocId: 'A document record already exists with this document ID',
+    enterLastName: 'Enter a last name',
+    exactDocIDChars: 'Document ID must be 8 characters',
     fieldRequired: 'This field is required',
+    invalidDocId: 'The number entered is not recognized in our system',
+    invalidEmailAddress: 'Enter a valid email address',
+    maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
+    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
+    maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
+    onlyNumbers: 'Only enter numbers',
+    onlyWholeNumbers: 'Only enter whole numbers',
+    pleaseCompleteRequiredInfo: '< Please complete required information',
+    role: {
+      min: 'Choose at least one role'
+    },
     routingSlipNumber: 'Routing Slip Number must be 9 digits',
     routingSlipNumberEmpty: 'Enter FAS Routing Slip Number',
     selectAPaymentOption: 'Select a payment option',
     seriesNameInvalidWords: 'Series name cannot contain the term ‘share’, ‘shares’, or ‘value’',
-    exactDocIDChars: 'Document ID must be 8 characters',
-    duplicateDocId: 'A document record already exists with this document ID',
-    invalidDocId: 'The number entered is not recognized in our system',
-    invalidEmailAddress: 'Enter a valid email address',
-    maxDigits: 'Maximum 0 digits | Maximum 1 digit | Maximum {count} digits', // 0/1 most likely will never be used but required for pluralization
-    minDigits: 'Minimum 0 digits | Minimum 1 digit | Minimum {count} digits', // 0/1 most likely will never be used but required for pluralization
     totalOfAllSeriesCantExceedMaxOfClass: 'The maximum number for all series combined cannot exceed the maximum number for the class',
-    onlyWholeNumbers: 'Only enter whole numbers',
-    onlyNumbers: 'Only enter numbers',
-    uniqueName: 'Name must be unique',
-    maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',
-    maxDecimalsGreaterThanOne: 'Amounts greater than 1 can be entered with up to {count} decimal places',
-    role: {
-      min: 'Choose at least one role'
-    }
+    uniqueName: 'Name must be unique'
   }
 }

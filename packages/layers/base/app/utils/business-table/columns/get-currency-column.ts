@@ -20,10 +20,11 @@ export function getCurrencyColumn<T extends ShareClassSchema>(
       // apply opacity whether the current or parent row is removed
       const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 
-      const currency = row.original.new.currency
-      const hasParValue = row.original.new.hasParValue
-      const displayText = currency && hasParValue
-        ? currency
+      const { currency, currencyAdditional, hasParValue } = row.original.new
+      const displayText = hasParValue
+        ? currency === 'OTHER'
+          ? currencyAdditional || ''
+          : currency
         : ''
 
       return h(

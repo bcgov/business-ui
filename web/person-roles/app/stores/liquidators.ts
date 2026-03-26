@@ -1,3 +1,5 @@
+import { cloneDeep } from 'es-toolkit'
+
 export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
@@ -13,6 +15,9 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const draftFilingState = shallowRef<LiquidatorDraftState>({} as LiquidatorDraftState)
   const liquidateSubType = ref<LiquidateType>(LiquidateType.INTENT)
   const formState = reactive<LiquidatorFormSchema>(liquidatorSchema.parse({}))
+  const initialFormState = shallowRef<LiquidatorFormSchema>({} as LiquidatorFormSchema)
+  const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
+  const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
 
   async function init(businessId: string, filingSubType?: LiquidateType, draftId?: string) {
     if (!filingSubType) {
@@ -24,8 +29,13 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     liquidateSubType.value = filingSubType
     $reset()
 
-    // only fetch liquidation records office if it's a change address or liq report filing
-    const officeParams = [LiquidateType.ADDRESS, LiquidateType.REPORT, LiquidateType.INTENT].includes(filingSubType)
+    // only fetch liquidation records office if an appoint, change address, intent or liq report filing
+    const officeParams = [
+      LiquidateType.ADDRESS,
+      LiquidateType.APPOINT,
+      LiquidateType.REPORT,
+      LiquidateType.INTENT
+    ].includes(filingSubType)
       ? [OfficeType.LIQUIDATION]
       : undefined
 
@@ -61,6 +71,9 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     }
 
     await nextTick()
+    initialFormState.value = cloneDeep(formState)
+    initialLiquidators.value = cloneDeep(tableState.value)
+    initialOffices.value = cloneDeep(tableOffices.value)
     initializing.value = false
   }
 
@@ -100,6 +113,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     Object.assign(formState, defaults)
     formState.activeParty = undefined
     formState.activeOffice = undefined
+    initialFormState.value = cloneDeep(formState)
   }
 
   return {
@@ -107,6 +121,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     initializing,
     liquidateSubType,
     draftFilingState,
+    initialFormState,
+    initialLiquidators,
+    initialOffices,
+    liquidators: tableState,
+    offices: tableOffices,
     init,
     submit,
     $reset

@@ -1,5 +1,42 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.18.0
+
+### Minor Changes
+
+- [#422](https://github.com/bcgov/business-ui/pull/422) [`7dc0aec`](https://github.com/bcgov/business-ui/commit/7dc0aec1696a953d9ecf6034fa286a781934871a) Thanks [@eve-git](https://github.com/eve-git)! - Adds a reusable “Ledger Detail” form component and validation schema to the base layer
+
+- [#432](https://github.com/bcgov/business-ui/pull/432) [`656cddf`](https://github.com/bcgov/business-ui/commit/656cddff391b6faf8034d794ce69789b5d619400) Thanks [@eve-git](https://github.com/eve-git)! - Update the nuxt-pay version to incorporate the latest connect-nuxt address form changes, resolving the issue where postal code was not optional for certain countries.
+
+- [#423](https://github.com/bcgov/business-ui/pull/423) [`c6a037a`](https://github.com/bcgov/business-ui/commit/c6a037ac491e2c549dfcbe47b78c88d02ce36b51) Thanks [@deetz99](https://github.com/deetz99)! - <br>
+
+  - move court order poa error line to card body
+  - party details form - change fieldset label to 'Legal Name'
+  - change all 'add' icons to be plus symbol only
+  - ManageX components table padding updates
+  - Create StaffPaymentFieldset component
+  - StaffPayment hide no option error text prop
+  - fix mailing/delivery address displaying in the wrong column
+  - revert party edits so edited rows stay in place (new rows still go to the top)
+  - bold preferred name label and remove uppercase for preferredname value
+  - change last name required validation text
+  - capitalize 'ID' in 'Document ID' label
+  - update connect pay dep
+
+- [#421](https://github.com/bcgov/business-ui/pull/421) [`547653e`](https://github.com/bcgov/business-ui/commit/547653e8d7f7a25d209086a335440477261b4de5) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Component refactors to support dynamic labels for corrections
+
+### Patch Changes
+
+- [#426](https://github.com/bcgov/business-ui/pull/426) [`7d7c784`](https://github.com/bcgov/business-ui/commit/7d7c78454a476d185509a70a77963eeea3e20b20) Thanks [@deetz99](https://github.com/deetz99)! - Add 'Please Complete Required Information' and 'Change Address' i18n translations
+
+- [#419](https://github.com/bcgov/business-ui/pull/419) [`f9bf892`](https://github.com/bcgov/business-ui/commit/f9bf892ef88a19d64b728406e8c62df8fd3c8465) Thanks [@kialj876](https://github.com/kialj876)! - Minor party role mapping update
+
+- [#433](https://github.com/bcgov/business-ui/pull/433) [`4b8ead1`](https://github.com/bcgov/business-ui/commit/4b8ead12212830243392f301d89cb0f557c85d10) Thanks [@deetz99](https://github.com/deetz99)! - useManageParties composable: newly added parties to end of list instead of beginning
+
+- [#424](https://github.com/bcgov/business-ui/pull/424) [`255bc10`](https://github.com/bcgov/business-ui/commit/255bc1089792aabb5b617a593cd12326e1a8a2d2) Thanks [@kialj876](https://github.com/kialj876)! - Added inLiquidation to business typing, minor updates to mocking
+
+- [#431](https://github.com/bcgov/business-ui/pull/431) [`9acbe37`](https://github.com/bcgov/business-ui/commit/9acbe3733faa6203e124097be963bda8420228c4) Thanks [@deetz99](https://github.com/deetz99)! - Remove bold font styling from Party table Preferred Name value
+
 ## 0.17.1
 
 ### Patch Changes

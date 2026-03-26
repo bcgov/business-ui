@@ -105,6 +105,10 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Modal/StaffPay')
   },
   {
+    label: 'FormDetail',
+    to: localePath('/examples/components/Form/Detail')
+  },
+  {
     label: 'FormDocumentDelivery',
     to: localePath('/examples/components/Form/DocumentDelivery')
   },

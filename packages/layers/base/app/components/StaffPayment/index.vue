@@ -5,6 +5,7 @@ const staffPayment = defineModel<StaffPaymentSchema>({ required: true })
 const { enableAutoReset = true } = defineProps<{
   showPriority?: boolean
   enableAutoReset?: boolean
+  hideNoOptionErrorText?: boolean
 }>()
 
 const { t } = useI18n()
@@ -75,7 +76,7 @@ defineExpose({
     nested
   >
     <Divide class="*:pt-8" orientation="vertical">
-      <UFormField name="option" :ui="{ error: 'text-base p-0' }">
+      <UFormField name="option" :ui="{ error: hideNoOptionErrorText ? 'sr-only' : 'text-base p-0' }">
         <URadioGroup
           v-model="staffPayment.option"
           :items="radioItems"

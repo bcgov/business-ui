@@ -4,10 +4,33 @@ import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
 import { fillOutAddress, fillOutNewRelationship, selectDone } from '#business/tests/e2e/test-utils'
-import { mockCommonApiCallsForFiling, getPartiesMock, getBusinessAddressesMock } from '#test-mocks'
+import { getBusinessMock, getPartiesMock, getBusinessAddressesMock, mockCommonApiCallsForFiling } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
+const address = {
+  streetAddress: 'street',
+  streetAddressAdditional: '',
+  addressCity: 'city',
+  addressCountry: 'CA',
+  addressRegion: 'AB',
+  deliveryInstructions: '',
+  postalCode: 'V1N 4H8'
+}
+const newLiquidator = {
+  actions: [ActionType.ADDED],
+  entity: {
+    alternateName: '',
+    businessName: '',
+    familyName: 'last name',
+    givenName: 'first name',
+    identifier: '',
+    middleInitial: ''
+  },
+  deliveryAddress: address,
+  mailingAddress: address,
+  roles: [{ roleType: RoleType.LIQUIDATOR }]
+}
 
 test.describe('Manage Liquidators - Submission', () => {
   test.beforeEach(async ({ page }) => {
@@ -33,29 +56,6 @@ test.describe('Manage Liquidators - Submission', () => {
       })
       await navigateToManageLiquidatorsPage(page, LiquidateType.INTENT)
       await page.waitForLoadState('networkidle')
-      const address = {
-        streetAddress: 'street',
-        streetAddressAdditional: '',
-        addressCity: 'city',
-        addressCountry: 'CA',
-        addressRegion: 'AB',
-        deliveryInstructions: '',
-        postalCode: 'V1N 4H8'
-      }
-      const newLiquidator = {
-        actions: [ActionType.ADDED],
-        entity: {
-          alternateName: '',
-          businessName: '',
-          familyName: 'last name',
-          givenName: 'first name',
-          identifier: '',
-          middleInitial: ''
-        },
-        deliveryAddress: address,
-        mailingAddress: address,
-        roles: [{ roleType: RoleType.LIQUIDATOR }]
-      }
       const innerPayload: LiquidatorPayload = {
         relationships: [newLiquidator],
         type: LiquidateType.INTENT,
@@ -89,53 +89,69 @@ test.describe('Manage Liquidators - Submission', () => {
       expect(requestBody.filing.changeOfLiquidators).toEqual(innerPayload)
     })
 
-    test('appointLiquidator', async ({ page }) => {
-      await navigateToManageLiquidatorsPage(page, LiquidateType.APPOINT)
-      await page.waitForLoadState('networkidle')
-      const address = {
-        streetAddress: 'street',
-        streetAddressAdditional: '',
-        addressCity: 'city',
-        addressCountry: 'CA',
-        addressRegion: 'AB',
-        deliveryInstructions: '',
-        postalCode: 'V1N 4H8'
+    const appointTestCases = [
+      {
+        testName: 'not in liquidation',
+        inLiquidation: false
+      },
+      {
+        testName: 'already in liquidation',
+        inLiquidation: true
       }
-      const newLiquidator = {
-        actions: [ActionType.ADDED],
-        entity: {
-          alternateName: '',
-          businessName: '',
-          familyName: 'last name',
-          givenName: 'first name',
-          identifier: '',
-          middleInitial: ''
-        },
-        deliveryAddress: address,
-        mailingAddress: address,
-        roles: [{ roleType: RoleType.LIQUIDATOR }]
-      }
-      const innerPayload: LiquidatorPayload = {
-        relationships: [newLiquidator],
-        type: LiquidateType.APPOINT,
-        changeOfLiquidatorsDate: '2025-12-30'
-      }
+    ]
+    appointTestCases.forEach(({ testName, inLiquidation }) => {
+      test(`appointLiquidator - ${testName}`, async ({ page }) => {
+        if (inLiquidation) {
+          // override business mock for to return inLiquidation
+          page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
+            await route.fulfill({
+              json: getBusinessMock([{ key: 'identifier', value: identifier }, { key: 'inLiquidation', value: true }])
+            })
+          })
+        } else {
+          // override business address mock to empty
+          page.route(`**/api/v2/businesses/${identifier}/addresses`, async (route) => {
+            await route.fulfill({ json: {} })
+          })
+        }
+        await navigateToManageLiquidatorsPage(page, LiquidateType.APPOINT)
+        await page.waitForLoadState('networkidle')
+        const innerPayload: LiquidatorPayload = {
+          relationships: [newLiquidator],
+          type: LiquidateType.APPOINT,
+          changeOfLiquidatorsDate: '2025-12-30'
+        }
+        if (!inLiquidation) {
+          innerPayload.offices = {
+            liquidationRecordsOffice: {
+              mailingAddress: address,
+              deliveryAddress: address
+            }
+          }
+        }
 
-      const addButton = page.getByRole('button', { name: 'Add Liquidator' })
-      expect(addButton).toBeVisible()
-      await addButton.click()
-      await fillOutNewRelationship(page, newLiquidator)
-      const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
-      await staffNoFeeRadio.click()
+        const addButton = page.getByRole('button', { name: 'Add Liquidator' })
+        expect(addButton).toBeVisible()
+        await addButton.click()
+        await fillOutNewRelationship(page, newLiquidator)
+        if (!inLiquidation) {
+          const officeParent = page.getByTestId('records-office-section')
+          await officeParent.getByRole('button', { name: 'Add Liquidation Records Office' }).click()
+          await fillOutAddress(page, address, 'mailing', true, officeParent)
+          await officeParent.getByRole('button', { name: 'Done' }).click()
+        }
+        const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
+        expect(staffNoFeeRadio).toBeVisible()
+        await staffNoFeeRadio.click()
 
-      const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
-      const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
-      await submitBtn.click()
-      const request = await submitRequest
-      const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
-      expect(requestBody.filing.changeOfLiquidators).toEqual(innerPayload)
+        const submitBtn = page.getByRole('button', { name: 'Submit' })
+        expect(submitBtn).toBeVisible()
+        const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
+        await submitBtn.click()
+        const request = await submitRequest
+        const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
+        expect(requestBody.filing.changeOfLiquidators).toEqual(innerPayload)
+      })
     })
 
     test('ceaseLiquidator', async ({ page }) => {
@@ -251,7 +267,7 @@ test.describe('Manage Liquidators - Submission', () => {
       const submitBtn = page.getByRole('button', { name: 'Submit' })
       expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
-      await submitBtn.click()
+      await submitBtn.click({ delay: 500 })
       const request = await submitRequest
       const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
       const col = requestBody.filing.changeOfLiquidators

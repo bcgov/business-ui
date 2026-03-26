@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { FormErrorEvent } from '@nuxt/ui'
 import type { FetchError } from 'ofetch'
+import type { FormTransitionStep1 } from '#components'
+import { omit } from 'es-toolkit'
 
 const { t } = useI18n()
 const store = useTransitionStore()
@@ -11,12 +14,29 @@ const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.transition.h1'))
 const modal = useFilingModals()
 const {
-  handleButtonLoading
-  // setAlertText: setBtnCtrlAlert
+  handleButtonLoading,
+  setAlertText: setBtnCtrlAlert
 } = useConnectButtonControl()
+const step1Ref = useTemplateRef<InstanceType<typeof FormTransitionStep1>>('step-1-ref')
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
+
+const {
+  canSave,
+  canCancel,
+  initBeforeUnload,
+  revokeBeforeUnload
+} = useFilingTaskGuards(
+  [
+    [
+      () => omit(store.initialFormState, ['confirmDirectors', 'confirmOffices']),
+      () => omit(store.formState, ['confirmDirectors', 'confirmOffices'])
+    ],
+    [() => store.initialDirectors, () => store.directors],
+    [() => store.initialShareClasses, () => store.shareClasses]
+  ]
+)
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons-stacked',
@@ -36,20 +56,30 @@ function checkActiveSubForm() {
   return hasActiveSubForm
 }
 
-function reviewAndConfirm() {
-  if (checkActiveSubForm()) {
-    return
+async function reviewAndConfirm() {
+  try {
+    await step1Ref.value?.formRef?.validate()
+    if (checkActiveSubForm()) {
+      return
+    }
+    if (store.shareClasses.length == 0) {
+      setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
+      throw new Error('missing-share-structure')
+    }
+    nextStep()
+  } catch (e) {
+    if (e && typeof e === 'object' && 'errors' in e) {
+      onFormSubmitError(e as FormErrorEvent)
+    }
+    setBtnCtrlAlert(t('validation.pleaseCompleteRequiredInfo'), 'right', 1)
   }
-  if (store.shareClasses.length == 0) {
-    return setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
-  }
-  nextStep()
 }
 
 async function submitFiling() {
   try {
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
+    revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
     const e = error as FetchError<TransitionDraftState>
@@ -59,21 +89,35 @@ async function submitFiling() {
     urlParams.draft = String(filingResp?.filing?.header?.filingId)
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
+    initBeforeUnload()
   }
 }
 
-async function saveFiling(resumeLater = false, _disableActiveFormCheck = false) {
+async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
-    await store.submit(false)
-    if (resumeLater) {
-      await navigateTo(dashboardUrl.value, { external: true })
+    if (enableUnsavedChangesBlock) {
+      if (checkActiveSubForm()) {
+        return
+      }
+      if (!canSave()) {
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
+      }
     }
+    await store.submit(false)
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
   } catch (error) {
-    modal.openSaveFilingErrorModal(error)
+    if (enableUnsavedChangesBlock) {
+      await modal.openSaveFilingErrorModal(error)
+      initBeforeUnload()
+    }
   }
 }
 
 async function cancelFiling() {
+  if (!canCancel()) {
+    return
+  }
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
@@ -84,7 +128,11 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
-  setOnBeforeSessionExpired: () => saveFiling(),
+  setOnBeforeSessionExpired: async () => {
+    if (canSave()) {
+      await saveFiling(false)
+    }
+  },
   backButton: { removeAlertSpacing: true },
   saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
@@ -92,12 +140,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   steps: [
     {
       cancelFiling: { class: 'min-w-[300px] justify-center' },
-      submitFiling: {
-        label: t('label.reviewAndConfirm'),
-        form: 'transition-filing-step-1',
-        type: 'submit',
-        onClick: undefined
-      }
+      submitFiling: { label: t('label.reviewAndConfirm'), onClick: reviewAndConfirm }
     },
     { submitFiling: { form: 'transition-filing-step-2', type: 'submit' } }
   ],
@@ -120,7 +163,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep1
       v-if="currentStep === 1"
       id="transition-filing-step-1"
-      @submit="reviewAndConfirm"
+      ref="step-1-ref"
     />
     <FormTransitionStep2
       v-if="currentStep === 2"

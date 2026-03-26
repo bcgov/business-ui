@@ -19,7 +19,10 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'share-class-form'
-const currencyOptions = getCurrencyList()
+const currencyOptions = getCurrencyList().map(c => ({
+  code: c.code,
+  label: `${c.name}, ${c.code}`
+}))
 const schema = computed(() => getActiveShareClassSchema(props.validationContext))
 const labelId = useId()
 
@@ -64,6 +67,18 @@ const nameInputSlots = computed(() => ({
 provide('UInput-slots-share-class-name-input', nameInputSlots)
 provide('UInput-props-max-number-shares-input', { maxlength: '17' })
 provide('UInput-props-par-value-input', { maxlength: '17' })
+
+onMounted(async () => {
+  if (model.value.currencyAdditional) {
+    model.value.currency = ''
+    // @ts-expect-error - name: 'currency' not being inferred correctly
+    await formRef.value?.validate({ name: 'currency', silent: true })
+  }
+})
+
+defineExpose({
+  formRef
+})
 </script>
 
 <template>
@@ -161,52 +176,70 @@ provide('UInput-props-par-value-input', { maxlength: '17' })
           :label="$t('label.parValue')"
           :error="formErrors.parValue"
           padding-class="xy-default"
+          data-testid="par-value-section"
         >
-          <URadioGroup
-            v-model="model.hasParValue"
-            size="xl"
-            :items="[{ value: true }, { label: $t('label.noParValue'), value: false }]"
-            :ui="{
-              fieldset: 'gap-y-6',
-              item: 'items-center gap-4'
-            }"
-            @update:model-value="resetFields('parValue')"
-          >
-            <template #label="{ item }">
-              <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
-                <ConnectFormInput
-                  v-model.number="model.parValue"
-                  :disabled="!model.hasParValue"
-                  :class="{ 'opacity-75': !model.hasParValue }"
-                  input-id="par-value-input"
-                  :label="$t('label.parValue')"
-                  name="parValue"
-                  :required="model.hasParValue"
-                  :help="$t('text.parValueHelp')"
-                  class="w-full flex-1"
+          <div class="space-y-4">
+            <UAlert
+              v-if="model.hasParValue && !model.currency && model.currencyAdditional"
+              data-testid="currency-update-alert"
+              color="warning"
+              variant="subtle"
+              icon="i-mdi-alert"
+            >
+              <template #title>
+                <ConnectI18nHelper
+                  translation-path="text.currencyOtherNotSupported"
+                  class="font-normal"
                 />
-                <UFormField
-                  name="currency"
-                  data-testid="form-field-currency"
-                  :class="{ 'opacity-75': !model.hasParValue }"
-                  class="w-full flex-1"
-                >
-                  <ConnectInputMenu
-                    id="par-value-currency-input"
-                    v-model="model.currency"
-                    data-testid="par-value-currency-input"
-                    :label="$t('label.currency')"
-                    :items="currencyOptions"
-                    class="w-full"
-                    :required="model.hasParValue"
+              </template>
+            </UAlert>
+            <URadioGroup
+              v-model="model.hasParValue"
+              size="xl"
+              :items="[{ value: true }, { label: $t('label.noParValue'), value: false }]"
+              :ui="{
+                fieldset: 'gap-y-6',
+                item: 'items-center gap-4'
+              }"
+              @update:model-value="resetFields('parValue')"
+            >
+              <template #label="{ item }">
+                <div v-if="item.value" class="flex flex-col gap-2 sm:gap-4 sm:flex-row">
+                  <ConnectFormInput
+                    v-model.number="model.parValue"
                     :disabled="!model.hasParValue"
-                    open-on-focus
+                    :class="{ 'opacity-75': !model.hasParValue }"
+                    input-id="par-value-input"
+                    :label="$t('label.parValue')"
+                    name="parValue"
+                    :required="model.hasParValue"
+                    :help="$t('text.parValueHelp')"
+                    class="w-full flex-1"
                   />
-                </UFormField>
-              </div>
-              <span v-else>{{ item.label }}</span>
-            </template>
-          </URadioGroup>
+                  <UFormField
+                    name="currency"
+                    data-testid="form-field-currency"
+                    :class="{ 'opacity-75': !model.hasParValue }"
+                    class="w-full flex-1"
+                  >
+                    <ConnectInputMenu
+                      id="par-value-currency-input"
+                      v-model="model.currency"
+                      data-testid="par-value-currency-input"
+                      :label="$t('label.currency')"
+                      :items="currencyOptions"
+                      value-key="code"
+                      class="w-full"
+                      :required="model.hasParValue"
+                      :disabled="!model.hasParValue"
+                      open-on-focus
+                    />
+                  </UFormField>
+                </div>
+                <span v-else>{{ item.label }}</span>
+              </template>
+            </URadioGroup>
+          </div>
         </ConnectFormFieldWrapper>
         <USeparator />
         <ConnectFormFieldWrapper :label="$t('label.specialRightsOrRestrictions')" padding-class="xy-default">

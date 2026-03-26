@@ -83,8 +83,17 @@ function addOffice(office: ActiveOfficesSchema) {
 }
 
 function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
-  editLabel = t('label.editingItemName', { name: t(`officeType.${row.original.new.type}`) })
-  activeOffice.value = activeOfficeSchema.parse({ ...row.original.new })
+  const parsedOffice = activeOfficeSchema.safeParse({ ...row.original.new })
+  const office = parsedOffice.success
+    ? parsedOffice.data
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
+
+  activeOffice.value = office
+
+  const officeType = office?.type
+  editLabel = Object.values(OfficeType).includes(officeType as OfficeType)
+    ? t('label.editingItemName', { name: t(`officeType.${officeType}`) })
+    : t('label.editOffice')
 
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
@@ -115,7 +124,7 @@ function clearAllAlerts() {
       v-if="allowAddOffice"
       :label="addLabel"
       variant="outline"
-      icon="i-mdi-account-plus-outline"
+      icon="i-mdi-plus"
       class="w-min"
       @click="initAddOffice"
     />
@@ -138,22 +147,22 @@ function clearAllAlerts() {
         ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
       }"
     >
-      <div class="px-4 sm:px-5">
-        <TableOffices
-          v-model:expanded="expandedState"
-          :data="tableState"
-          :loading
-          :empty-text="emptyText"
-          :allowed-actions="allowedActions"
-          :prevent-actions="!!activeOffice"
-          :label-overrides="labelOverrides"
-          :hide-actions-when="hideRowActionsWhen"
-          @action-prevented="setActiveFormAlert"
-          @init-edit="initEditOffice"
-          @remove="removeOffice"
-          @undo="undoOffice"
-        >
-          <template #expanded="{ row }">
+      <TableOffices
+        v-model:expanded="expandedState"
+        :data="tableState"
+        :loading
+        :empty-text="emptyText"
+        :allowed-actions="allowedActions"
+        :prevent-actions="!!activeOffice"
+        :label-overrides="labelOverrides"
+        :hide-actions-when="hideRowActionsWhen"
+        @action-prevented="setActiveFormAlert"
+        @init-edit="initEditOffice"
+        @remove="removeOffice"
+        @undo="undoOffice"
+      >
+        <template #expanded="{ row }">
+          <div class="px-4 sm:px-6">
             <FormOfficeDetails
               v-if="activeOffice"
               v-model="activeOffice"
@@ -164,9 +173,9 @@ function clearAllAlerts() {
               @done="() => applyEdits(activeOffice, row)"
               @cancel="cleanupOfficeForm"
             />
-          </template>
-        </TableOffices>
-      </div>
+          </div>
+        </template>
+      </TableOffices>
     </ConnectPageSection>
   </div>
 </template>

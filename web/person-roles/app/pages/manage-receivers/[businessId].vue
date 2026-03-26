@@ -35,7 +35,7 @@ const filingHeading = t(`page.${FILING_TYPE}.${filingSubType}.h1`)
 const filingDescription = t(`page.${FILING_TYPE}.${filingSubType}.desc`)
 const { dashboardUrl, breadcrumbs } = useFilingNavigation(t(`page.${FILING_TYPE}.${filingSubType}.h1`))
 
-const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 const allowedPartyActions = computed(() => {
   const actionMap: Record<ReceiverType, ManageAllowedAction[] | undefined> = {
@@ -65,11 +65,11 @@ const {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (!canSubmit()) {
-      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
-    }
     if (receiverStore.formState.activeParty !== undefined) {
       return setSubFormAlert('party-details-form', t('text.finishTaskBeforeSubmit'))
+    }
+    if (!canSubmit()) {
+      return setBtnCtrlAlert(t('text.updateAtleastOneReceiverToSubmit'), 'right')
     }
     handleButtonLoading(true, 'right', 1)
     await receiverStore.submit(true)
@@ -199,28 +199,12 @@ useFilingPageWatcher<ReceiverType>({
         :state="receiverStore.formState.documentId"
       />
 
-      <ConnectFieldset
-        data-testid="staff-payment-section"
-        orientation="vertical"
-        :label="`4. ${$t('label.staffPayment')}`"
-        body-variant="card"
-        :error="staffPayFormRef?.formRef?.getErrors()[0]"
-      >
-        <ConnectFormFieldWrapper
-          :label="$t('label.payment')"
-          orientation="horizontal"
-          padding-class="xy-default"
-        >
-          <StaffPayment
-            ref="staff-pay-ref"
-            v-model="receiverStore.formState.staffPayment"
-            :disabled="initializing"
-            :show-priority="true"
-            name="staffPayment"
-            :enable-auto-reset="!receiverStore.initializing"
-          />
-        </ConnectFormFieldWrapper>
-      </ConnectFieldset>
+      <StaffPaymentFieldset
+        ref="staff-pay-ref"
+        v-model="receiverStore.formState.staffPayment"
+        order="4"
+        :initializing="receiverStore.initializing"
+      />
     </UForm>
   </div>
 </template>

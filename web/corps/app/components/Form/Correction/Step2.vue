@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
-const staffPayFormRef = useTemplateRef<StaffPaymentFormRef>('staff-pay-ref')
+const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = useCorrectionLabelOverrides()
@@ -42,11 +43,6 @@ const hasReceiverChanges = computed(() => {
 /** Whether any liquidators were changed */
 const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
-})
-
-/** Whether the correction comment was changed */
-const hasCommentChanges = computed(() => {
-  return !!store.formState.comment && store.formState.comment.trim().length > 0
 })
 
 /** Whether any correctable section has changes — used to show a warning if nothing changed */
@@ -170,72 +166,54 @@ function onError(event: FormErrorEvent) {
         :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
         :label-overrides="correctionLabelOverrides"
       />
-
-      <!-- Correction Comment (always shown if present) -->
-      <div
-        v-if="hasCommentChanges"
-        class="rounded bg-white p-6 space-y-2"
-        data-testid="review-comment-section"
-      >
-        <h3 class="font-semibold">
-          {{ $t('label.correctionComment') }}
-        </h3>
-        <p class="whitespace-pre-wrap">
-          {{ store.formState.comment }}
-        </p>
-      </div>
     </section>
 
-    <!-- Section 2: Document Delivery -->
+    <!-- Section 2: Correction Detail Comment -->
+    <section class="space-y-4" data-testid="correction-comment-section">
+      <FormDetail
+        v-model="store.correctionComment"
+        name="comment"
+        order="2"
+        :filing-date="store.correctedFilingDateDisplay"
+        :description="$t('text.correctionCommentDescription')"
+        :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
+      />
+    </section>
+
+    <!-- Section 3: Document Delivery -->
     <FormDocumentDelivery
       v-if="store.formState.documentDelivery"
       v-model="store.formState.documentDelivery"
-      order="2"
+      order="3"
       name="documentDelivery"
       :loading="store.initializing"
       :registered-office-email="businessStore.businessContact?.email"
     />
 
-    <!-- Section 3 (client): Folio -->
-    <FormFolio
-      v-if="!store.isStaff && store.formState.folio"
-      v-model="store.formState.folio"
-      data-testid="folio-section"
-      order="3"
-      name="folio"
+    <!-- Section 4 (client): Completing Party -->
+    <FormCompletingParty
+      v-if="!store.isStaffCorrectionType && store.formState.completingParty"
+      v-model="store.formState.completingParty"
+      order="4"
+      name="completingParty"
     />
 
-    <!-- Section 4 (client): Certify -->
+    <!-- Section 5 (client): Certify -->
     <FormCertify
-      v-if="!store.isStaff && store.formState.certify"
+      v-if="!store.isStaffCorrectionType && store.formState.certify"
       v-model="store.formState.certify"
-      order="4"
+      order="5"
       name="certify"
       :description="$t('text.certifyCorrectionDescription')"
     />
 
-    <!-- Section 3 (staff): Staff Payment -->
-    <ConnectFieldset
-      v-if="store.isStaff && store.formState.staffPayment"
-      data-testid="staff-payment-section"
-      :label="`3. ${$t('label.staffPayment')}`"
-      orientation="vertical"
-      body-variant="card"
-    >
-      <ConnectFormFieldWrapper
-        :label="$t('label.payment')"
-        orientation="horizontal"
-        padding-class="xy-default"
-      >
-        <StaffPayment
-          ref="staff-pay-ref"
-          v-model="store.formState.staffPayment"
-          :disabled="store.initializing"
-          :show-priority="true"
-          name="staffPayment"
-          :enable-auto-reset="!store.initializing"
-        />
-      </ConnectFormFieldWrapper>
-    </ConnectFieldset>
+    <!-- Staff Payment (always present, order is dynamic) -->
+    <StaffPaymentFieldset
+      v-if="store.formState.staffPayment"
+      ref="staff-pay-ref"
+      v-model="store.formState.staffPayment"
+      :order="store.isStaffCorrectionType ? 4 : 6"
+      :initializing="store.initializing"
+    />
   </UForm>
 </template>

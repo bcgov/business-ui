@@ -75,11 +75,10 @@ function addParty(party: ActivePartySchema) {
 
 function initEditParty(row: TableBusinessRow<PartySchema>) {
   // FUTURE: handle the incomplete address parsing in connect layer
-  if (activePartySchema.safeParse({ ...row.original.new })?.success) {
-    activeParty.value = activePartySchema.parse({ ...row.original.new })
-  } else {
-    activeParty.value = JSON.parse(JSON.stringify({ ...row.original.new }))
-  }
+  const parsedParty = activePartySchema.safeParse({ ...row.original.new })
+  activeParty.value = parsedParty.success
+    ? parsedParty.data
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
 
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
@@ -118,7 +117,7 @@ function clearAllAlerts() {
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"
       variant="outline"
-      icon="i-mdi-account-plus-outline"
+      icon="i-mdi-plus"
       class="w-min"
       @click="initAddParty"
     />
@@ -142,22 +141,22 @@ function clearAllAlerts() {
         ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
       }"
     >
-      <div class="px-4 sm:px-5">
-        <TableParty
-          v-model:expanded="expandedState"
-          :data="tableState"
-          :loading
-          :empty-text="emptyText"
-          :allowed-actions="allowedActions"
-          :prevent-actions="!!activeParty"
-          :label-overrides="labelOverrides"
-          :columns="columnsToDisplay"
-          @init-edit="initEditParty"
-          @remove="removeParty"
-          @undo="undoParty"
-          @action-prevented="setActiveFormAlert"
-        >
-          <template #expanded="{ row }">
+      <TableParty
+        v-model:expanded="expandedState"
+        :data="tableState"
+        :loading
+        :empty-text="emptyText"
+        :allowed-actions="allowedActions"
+        :prevent-actions="!!activeParty"
+        :label-overrides="labelOverrides"
+        :columns="columnsToDisplay"
+        @init-edit="initEditParty"
+        @remove="removeParty"
+        @undo="undoParty"
+        @action-prevented="setActiveFormAlert"
+      >
+        <template #expanded="{ row }">
+          <div class="px-4 sm:px-6">
             <FormPartyDetails
               v-if="activeParty"
               v-model="activeParty"
@@ -170,9 +169,9 @@ function clearAllAlerts() {
               @cancel="cleanupPartyForm"
               @done="() => applyEdits(activeParty, row)"
             />
-          </template>
-        </TableParty>
-      </div>
+          </div>
+        </template>
+      </TableParty>
     </ConnectPageSection>
   </div>
 </template>

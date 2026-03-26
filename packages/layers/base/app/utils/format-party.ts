@@ -143,3 +143,35 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
     actions: party.actions
   }
 }
+
+/**
+ * Format a BusinessRelationship (from the API / draft) back into a CompletingPartySchema
+ * for populating the completing party form during draft resume.
+ */
+export function formatCompletingPartyRelationshipUi(relationship: BusinessRelationship): CompletingPartySchema {
+  return {
+    firstName: relationship.entity?.givenName ?? '',
+    middleName: relationship.entity?.middleInitial ?? '',
+    lastName: relationship.entity?.familyName ?? '',
+    mailingAddress: formatAddressUi(relationship.mailingAddress) as ConnectAddress
+  }
+}
+
+/**
+ * Format a CompletingPartySchema (from the completing party form) into a BusinessRelationship.
+ * This bridges the form schema to the relationship API format so completing party
+ * is submitted consistently with other party types (directors, receivers, etc.).
+ */
+export function formatCompletingPartyRelationshipApi(cp: CompletingPartySchema): BusinessRelationship {
+  const mailingAddress = formatAddressApi(cp.mailingAddress as ConnectAddress)
+  return {
+    entity: {
+      givenName: cp.firstName ?? '',
+      middleInitial: cp.middleName ?? '',
+      familyName: cp.lastName ?? ''
+    },
+    mailingAddress,
+    roles: [{ roleType: RoleType.COMPLETING_PARTY, appointmentDate: getToday('America/Vancouver') }],
+    actions: [ActionType.ADDED]
+  }
+}

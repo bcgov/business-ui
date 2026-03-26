@@ -144,24 +144,5 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         }"
       />
     </section>
-
-    <!-- Section: Correction Detail Comment -->
-    <section class="space-y-4" data-testid="correction-comment-section">
-      <h2 class="text-base">
-        PLACEHOLDER COMPONENT: {{ $t('label.correctionComment') }}
-      </h2>
-      <p>{{ $t('text.correctionCommentDescription') }}</p>
-      <div class="rounded bg-white p-6">
-        <UFormField name="comment">
-          <UTextarea
-            v-model="store.formState.comment"
-            :placeholder="$t('text.correctionCommentDescription')"
-            :maxlength="4096"
-            :rows="5"
-            class="w-full"
-          />
-        </UFormField>
-      </div>
-    </section>
   </UForm>
 </template>

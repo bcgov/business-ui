@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
 function getElements(page: Page) {
-  const section = page.getByRole('group', { name: 'Person or Business Name' })
+  const section = page.getByRole('group', { name: 'Legal Name' })
   const personRadio = section.getByRole('radio', { name: 'Individual Person' })
   const businessRadio = section.getByRole('radio', { name: 'Business' })
   const firstNameInput = section.getByLabel('First Name')
@@ -102,7 +102,7 @@ test.describe('FormPartyName', () => {
     await doneButton.click()
 
     await expect(lastNameInput).toBeFocused()
-    await expect(lastNameGroup).toContainText('This field is required')
+    await expect(lastNameGroup).toContainText('Enter a last name')
 
     await expect(preferredNameGroup).toContainText('Maximum 50 characters')
 
@@ -113,7 +113,7 @@ test.describe('FormPartyName', () => {
     await expect(businessNameGroup).toContainText('This field is required')
 
     await personRadio.click()
-    await expect(lastNameGroup).not.toContainText('This field is required')
+    await expect(lastNameGroup).not.toContainText('Enter a last name')
     await expect(preferredNameCheckbox).not.toBeChecked()
     await expect(preferredNameGroup).not.toBeVisible()
     await preferredNameCheckbox.check()

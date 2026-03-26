@@ -58,7 +58,7 @@ test.describe('ManageParties', () => {
     // should now have preferred name as well
     await expect(columns[0]!).toContainText('TESTER  TESTING')
     await expect(columns[0]!).toContainText('Preferred Name:')
-    await expect(columns[0]!).toContainText(preferredName.toUpperCase())
+    await expect(columns[0]!).toContainText(preferredName)
   })
 
   test('Should be able to select roles', async ({ page }) => {

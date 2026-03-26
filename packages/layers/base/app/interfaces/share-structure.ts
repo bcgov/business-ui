@@ -15,6 +15,7 @@ export interface ShareClass extends ShareSeries {
   hasParValue: boolean
   parValue: number | null
   currency: string | null | undefined
+  currencyAdditional: string | null | undefined
   series: ShareSeries[]
 }
 
