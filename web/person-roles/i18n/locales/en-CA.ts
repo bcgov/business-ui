@@ -2,7 +2,7 @@
 export default {
   connect: {
     label: {
-      sbcAccountCreation: 'Create a BC Registries Account',
+      sbcAccountCreation: 'Create a BC Registries Account'
     },
     page: {
       login: {
