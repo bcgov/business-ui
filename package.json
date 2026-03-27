@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test:unit": "pnpm -r test:unit",
-    "test:e2e": "pnpm -r test:e2e"
+    "test:e2e": "pnpm -r test:e2e",
+    "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.6.0",
