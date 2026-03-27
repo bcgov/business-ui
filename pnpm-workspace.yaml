@@ -5,15 +5,17 @@ packages:
   - packages/**
 
 catalog:
-  '@axe-core/playwright': 4.11.0
+  '@axe-core/playwright': 4.11.1
   '@iconify-json/mdi': 1.2.3
   '@nuxt/test-utils': 3.21.0
-  dotenv: 17.2.3
+  dotenv: 17.3.1
   typescript: 5.9.3
-  vue-tsc: 3.2.2
+  vue-tsc: 3.2.5
   nuxt: 4.2.2
-  vue: 3.5.26
-  vue-router: 4.6.4
+  vue: 3.5.30
+  vue-router: 5.0.4
+  '@types/node': 25.5.0
+  '@faker-js/faker': 10.4.0
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
