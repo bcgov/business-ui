@@ -9,6 +9,9 @@ catalogs:
     '@axe-core/playwright':
       specifier: 4.11.1
       version: 4.11.1
+    '@faker-js/faker':
+      specifier: 10.4.0
+      version: 10.4.0
     '@iconify-json/mdi':
       specifier: 1.2.3
       version: 1.2.3
@@ -152,8 +155,8 @@ importers:
         specifier: 'catalog:'
         version: 4.11.1(playwright-core@1.57.0)
       '@faker-js/faker':
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: 'catalog:'
+        version: 10.4.0
       '@iconify-json/mdi':
         specifier: 'catalog:'
         version: 1.2.3
@@ -192,8 +195,8 @@ importers:
         specifier: 'catalog:'
         version: 4.11.1(playwright-core@1.57.0)
       '@faker-js/faker':
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: 'catalog:'
+        version: 10.4.0
       '@iconify-json/mdi':
         specifier: 'catalog:'
         version: 1.2.3
@@ -887,8 +890,8 @@ packages:
     resolution: {integrity: sha512-Z5kJ+wU3oA7MMIqVR9tyZRtjYPr4OC004Q4Rw7pgOKUOKkJfZ3O24nz3WYfGRpMDNmcOi3TwQOmgm7B7Tpii0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@faker-js/faker@10.0.0':
-    resolution: {integrity: sha512-UollFEUkVXutsaP+Vndjxar40Gs5JL2HeLcl8xO1QAjJgOdhc3OmBFWyEylS+RddWaaBiAzH+5/17PLQJwDiLw==}
+  '@faker-js/faker@10.4.0':
+    resolution: {integrity: sha512-sDBWI3yLy8EcDzgobvJTWq1MJYzAkQdpjXuPukga9wXonhpMRvd1Izuo2Qgwey2OiEoRIBr35RMU9HJRoOHzpw==}
     engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
 
   '@fastify/busboy@3.2.0':
@@ -7239,7 +7242,7 @@ snapshots:
       '@eslint/core': 0.15.2
       levn: 0.4.1
 
-  '@faker-js/faker@10.0.0': {}
+  '@faker-js/faker@10.4.0': {}
 
   '@fastify/busboy@3.2.0':
     optional: true
