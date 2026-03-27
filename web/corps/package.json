@@ -37,7 +37,7 @@
     "@iconify-json/mdi": "catalog:",
     "@sbc-connect/playwright-config": "workspace:*",
     "@sbc-connect/vitest-config": "workspace:*",
-    "@types/node": "^24.0.10",
+    "@types/node": "catalog:",
     "typescript": "catalog:",
     "vue-tsc": "catalog:"
   }
