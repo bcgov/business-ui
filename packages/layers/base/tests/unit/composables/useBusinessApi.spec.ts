@@ -6,13 +6,14 @@ const mockAuthApi = vi.fn()
 mockNuxtImport('useNuxtApp', () => {
   return () => ({
     $businessApi: mockBusinessApi,
-    $authApi: mockAuthApi
-  })
-})
-
-mockNuxtImport('useConnectAuth', () => {
-  return () => ({
-    authUser: { value: { fullName: 'Test User' } }
+    $authApi: mockAuthApi,
+    $i18n: {
+      t: (key: string) => key,
+      te: (exists: boolean) => exists
+    },
+    payload: {
+      state: {}
+    }
   })
 })
 
@@ -32,55 +33,6 @@ describe('useBusinessApi', () => {
   })
 
   describe('Business Methods', () => {
-    describe('createFilingPayload', () => {
-      const business = {
-        identifier: 'BC123',
-        foundingDate: '2022-01-01T12:00:00Z',
-        legalName: 'Test Inc',
-        legalType: 'BC'
-      } as BusinessData
-
-      test('should construct a valid payload for a single filing type', () => {
-        const filingName = FilingType.CHANGE_OF_OFFICERS
-        const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
-
-        const result = businessApi.createFilingPayload(business, filingName, { [filingName]: payload })
-
-        expect(result).toHaveProperty('filing')
-        const filing = result.filing
-
-        expect(filing.header.name).toBe('changeOfOfficers')
-        expect(filing.header.certifiedBy).toBe('Test User')
-        expect(filing.header.accountId).toBe(123)
-
-        expect(filing.business.identifier).toBe(business.identifier)
-        expect(filing.business.foundingDate).toBe(business.foundingDate)
-        expect(filing.business.legalName).toBe(business.legalName)
-        expect(filing.business.legalType).toBe(business.legalType)
-
-        // filing data
-        expect(filing).toHaveProperty('changeOfOfficers')
-        expect(filing.changeOfOfficers).toEqual(payload)
-      })
-
-      test('should construct a valid payload for multiple filing types', () => {
-        const filings = {
-          changeOfOfficers: { relationships: [{ entity: { givenName: 'Officer' } }] },
-          changeOfAddress: { deliveryAddress: { street: '123 Main' } }
-        }
-
-        const result = businessApi.createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
-        const filing = result.filing
-
-        expect(filing.header.name).toBe('changeOfOfficers')
-
-        // filing data
-        expect(filing).toHaveProperty('changeOfOfficers')
-        expect(filing).toHaveProperty('changeOfAddress')
-        expect(filing.changeOfAddress.deliveryAddress.street).toBe('123 Main')
-      })
-    })
-
     describe('getBusiness', () => {
       test('should fetch full business data by default', async () => {
         const businessId = 'BC123'
@@ -127,7 +79,7 @@ describe('useBusinessApi', () => {
         const business = {
           identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
         } as BusinessData
-        const payload = businessApi.createFilingPayload(
+        const payload = useFiling().createFilingPayload(
           business,
           FilingType.CHANGE_OF_OFFICERS,
           { changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] } }
@@ -158,7 +110,7 @@ describe('useBusinessApi', () => {
         identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
       } as BusinessData
 
-      const payload = businessApi.createFilingPayload(
+      const payload = useFiling().createFilingPayload(
         business,
         FilingType.CHANGE_OF_OFFICERS,
         { changeOfOfficers: 'test' }

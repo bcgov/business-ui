@@ -32,6 +32,8 @@ mockNuxtImport('useModal', () => {
 
 mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 123 } }))
 
+mockNuxtImport('useConnectAuth', () => () => ({ authUser: { value: { fullName: 'Test User' } } }))
+
 describe('useFiling', () => {
   beforeEach(async () => {
     vi.resetAllMocks()
@@ -156,6 +158,56 @@ describe('useFiling', () => {
           buttons: expect.any(Array)
         }))
       })
+    })
+  })
+
+  describe('createFilingPayload', () => {
+    const { createFilingPayload } = useFiling()
+    const business = {
+      identifier: 'BC123',
+      foundingDate: '2022-01-01T12:00:00Z',
+      legalName: 'Test Inc',
+      legalType: 'BC'
+    } as BusinessData
+
+    test('should construct a valid payload for a single filing type', () => {
+      const filingName = FilingType.CHANGE_OF_OFFICERS
+      const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
+
+      const result = createFilingPayload(business, filingName, { [filingName]: payload })
+
+      expect(result).toHaveProperty('filing')
+      const filing = result.filing
+
+      expect(filing.header.name).toBe('changeOfOfficers')
+      expect(filing.header.certifiedBy).toBe('Test User')
+      expect(filing.header.accountId).toBe(123)
+
+      expect(filing.business.identifier).toBe(business.identifier)
+      expect(filing.business.foundingDate).toBe(business.foundingDate)
+      expect(filing.business.legalName).toBe(business.legalName)
+      expect(filing.business.legalType).toBe(business.legalType)
+
+      // filing data
+      expect(filing).toHaveProperty('changeOfOfficers')
+      expect(filing.changeOfOfficers).toEqual(payload)
+    })
+
+    test('should construct a valid payload for multiple filing types', () => {
+      const filings = {
+        changeOfOfficers: { relationships: [{ entity: { givenName: 'Officer' } }] },
+        changeOfAddress: { deliveryAddress: { street: '123 Main' } }
+      }
+
+      const result = createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
+      const filing = result.filing
+
+      expect(filing.header.name).toBe('changeOfOfficers')
+
+      // filing data
+      expect(filing).toHaveProperty('changeOfOfficers')
+      expect(filing).toHaveProperty('changeOfAddress')
+      expect(filing.changeOfAddress.deliveryAddress.street).toBe('123 Main')
     })
   })
 })

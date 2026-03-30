@@ -111,7 +111,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       })
     }
 
-    const filingPayload = businessApi.createFilingPayload(
+    const filingPayload = useFiling().createFilingPayload(
       businessStore.business!,
       FilingType.TRANSITION,
       { transition: transitionPayload },

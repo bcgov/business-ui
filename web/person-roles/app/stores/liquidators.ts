@@ -85,7 +85,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       tableOffices.value
     )
 
-    const payload = businessApi.createFilingPayload<ChangeOfLiquidators>(
+    const payload = useFiling().createFilingPayload<ChangeOfLiquidators>(
       businessStore.business!,
       FilingType.CHANGE_OF_LIQUIDATORS,
       { changeOfLiquidators: liquidatorPayload },

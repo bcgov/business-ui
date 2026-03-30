@@ -8,6 +8,7 @@ export const useFiling = () => {
   const feeStore = useConnectFeeStore()
   const modal = useFilingModals()
   const permissionsStore = useBusinessPermissionsStore()
+  const { authUser } = useConnectAuth()
 
   function getFilingName(
     type: FilingType,
@@ -150,8 +151,35 @@ export const useFiling = () => {
     }
   }
 
+  function createFilingPayload<F extends FilingRecord>(
+    business: BusinessData | BusinessDataPublic,
+    filingName: FilingType,
+    filingData: F,
+    headerData: Partial<FilingHeaderSubmission> = {}
+  ): FilingSubmissionBody<F> {
+    return {
+      filing: {
+        header: {
+          name: filingName,
+          certifiedBy: authUser.value.fullName,
+          accountId: useConnectAccountStore().currentAccount.id,
+          date: getToday(),
+          ...headerData
+        },
+        business: {
+          identifier: business.identifier,
+          foundingDate: business.foundingDate,
+          legalName: business.legalName,
+          legalType: business.legalType
+        },
+        ...filingData
+      }
+    }
+  }
+
   return {
     getCommonFilingPayloadData,
+    createFilingPayload,
     getFilingName,
     initFiling
   }

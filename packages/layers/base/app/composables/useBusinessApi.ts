@@ -3,34 +3,6 @@ import { defineQuery } from '@pinia/colada'
 
 export const useBusinessApi = () => {
   const { $businessApi, $authApi } = useNuxtApp()
-  const { authUser } = useConnectAuth()
-  const accountId = useConnectAccountStore().currentAccount.id
-
-  function createFilingPayload<F extends FilingRecord>(
-    business: BusinessData | BusinessDataPublic,
-    filingName: FilingType,
-    filingData: F,
-    headerData: Partial<FilingHeaderSubmission> = {}
-  ): FilingSubmissionBody<F> {
-    return {
-      filing: {
-        header: {
-          name: filingName,
-          certifiedBy: authUser.value.fullName,
-          accountId,
-          date: getToday(),
-          ...headerData
-        },
-        business: {
-          identifier: business.identifier,
-          foundingDate: business.foundingDate,
-          legalName: business.legalName,
-          legalType: business.legalType
-        },
-        ...filingData
-      }
-    }
-  }
 
   /**
    * Fetches business tasks list.
@@ -377,7 +349,6 @@ export const useBusinessApi = () => {
     getTasks,
     getPendingTask,
     getAndValidateDraftFiling,
-    createFilingPayload,
     getBusinessAddresses,
     // auth/entity queries
     getAuthInfo

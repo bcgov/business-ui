@@ -306,7 +306,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // as correction sections are implemented in the UI
     }
 
-    const filingPayload = businessApi.createFilingPayload(
+    const filingPayload = useFiling().createFilingPayload(
       businessStore.business!,
       FilingType.CORRECTION,
       { correction: correctionPayload },

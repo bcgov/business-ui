@@ -78,7 +78,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       ).filter(relationship => relationship.actions?.length)
     }
 
-    const payload = businessApi.createFilingPayload<ChangeOfOfficers>(
+    const payload = useFiling().createFilingPayload<ChangeOfOfficers>(
       businessStore.business!,
       FilingType.CHANGE_OF_OFFICERS,
       { changeOfOfficers: officersPayload },

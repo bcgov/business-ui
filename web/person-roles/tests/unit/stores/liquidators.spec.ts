@@ -9,7 +9,6 @@ const mockCreateFilingPayload = vi.fn()
 const mockSaveOrUpdateDraftFiling = vi.fn()
 const mockPostFiling = vi.fn()
 const mockBusinessApi = {
-  createFilingPayload: mockCreateFilingPayload,
   saveOrUpdateDraftFiling: mockSaveOrUpdateDraftFiling,
   postFiling: mockPostFiling
 }
@@ -22,7 +21,8 @@ vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
     ...actual,
     useFiling: () => ({
       ...actual.useFiling(),
-      initFiling: mockInitFiling
+      initFiling: mockInitFiling,
+      createFilingPayload: mockCreateFilingPayload
     })
   }
 })

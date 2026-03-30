@@ -90,7 +90,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       )
     }
 
-    const payload = businessApi.createFilingPayload<DissolutionApplication>(
+    const payload = useFiling().createFilingPayload<DissolutionApplication>(
       businessStore.business!,
       FilingType.DISSOLUTION,
       { dissolution: dissolutionPayload },

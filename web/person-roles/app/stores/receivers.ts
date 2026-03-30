@@ -66,7 +66,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
     }
 
-    const payload = businessApi.createFilingPayload<ChangeOfReceivers>(
+    const payload = useFiling().createFilingPayload<ChangeOfReceivers>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },
