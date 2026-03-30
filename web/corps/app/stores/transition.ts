@@ -5,9 +5,9 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling } = useFiling()
+  const { initFiling, createFilingPayload } = useFiling()
 
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -111,7 +111,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       })
     }
 
-    const filingPayload = useFiling().createFilingPayload(
+    const filingPayload = createFilingPayload(
       businessStore.business!,
       FilingType.TRANSITION,
       { transition: transitionPayload },
@@ -129,7 +129,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<PRTApplication>(
+      const filingResp = await service.saveOrUpdateDraftFiling<PRTApplication>(
         businessStore.businessIdentifier!,
         filingPayload,
         isSubmission,
@@ -140,7 +140,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
+      await service.postFiling(businessStore.businessIdentifier!, filingPayload)
     }
   }
 

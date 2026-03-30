@@ -6,9 +6,9 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
-  const { getCommonFilingPayloadData, initFiling } = useFiling()
+  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
 
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -85,7 +85,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       tableOffices.value
     )
 
-    const payload = useFiling().createFilingPayload<ChangeOfLiquidators>(
+    const payload = createFilingPayload<ChangeOfLiquidators>(
       businessStore.business!,
       FilingType.CHANGE_OF_LIQUIDATORS,
       { changeOfLiquidators: liquidatorPayload },
@@ -94,7 +94,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
+      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
@@ -104,7 +104,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, payload)
+      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 

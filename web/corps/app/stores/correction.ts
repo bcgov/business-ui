@@ -9,8 +9,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { getCommonFilingPayloadData, initFiling } = useFiling()
-  const businessApi = useBusinessApi()
+  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -306,7 +305,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // as correction sections are implemented in the UI
     }
 
-    const filingPayload = useFiling().createFilingPayload(
+    const filingPayload = createFilingPayload(
       businessStore.business!,
       FilingType.CORRECTION,
       { correction: correctionPayload },
@@ -319,7 +318,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     // Draft is always pre-created, so we always have a filingId to update
     const filingId = draftFilingState.value?.filing?.header?.filingId
     if (filingId) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<CorrectionFiling>(
+      const filingResp = await service.saveOrUpdateDraftFiling<CorrectionFiling>(
         businessStore.businessIdentifier!,
         filingPayload,
         isSubmission,
@@ -328,7 +327,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       draftFilingState.value = filingResp as unknown as CorrectionDraftState
     } else {
       // Fallback: post new filing (should not happen in normal flow)
-      await businessApi.postFiling(businessStore.businessIdentifier!, filingPayload)
+      await service.postFiling(businessStore.businessIdentifier!, filingPayload)
     }
   }
 

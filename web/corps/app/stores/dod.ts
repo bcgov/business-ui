@@ -3,9 +3,9 @@ import { cloneDeep } from 'es-toolkit'
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const { currentAccount } = storeToRefs(useConnectAccountStore())
   const schema = getDodSchema()
-  const { getCommonFilingPayloadData, initFiling } = useFiling()
+  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
 
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const formState = reactive(schema.parse({}))
@@ -90,7 +90,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       )
     }
 
-    const payload = useFiling().createFilingPayload<DissolutionApplication>(
+    const payload = createFilingPayload<DissolutionApplication>(
       businessStore.business!,
       FilingType.DISSOLUTION,
       { dissolution: dissolutionPayload },
@@ -104,7 +104,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     const headers = { 'hide-in-ledger': String(!formState.addToLedger && isStaff.value) }
     // const headers = {}
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<DissolutionApplication>(
+      const filingResp = await service.saveOrUpdateDraftFiling<DissolutionApplication>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
@@ -115,7 +115,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, payload, headers)
+      await service.postFiling(businessStore.businessIdentifier!, payload, headers)
     }
     return isSubmission
   }

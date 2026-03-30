@@ -2,11 +2,11 @@ import { cloneDeep } from 'es-toolkit'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const ld = useConnectLaunchDarkly()
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
   const { tableState } = useManageParties()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling } = useFiling()
+  const { initFiling, createFilingPayload } = useFiling()
   const modal = useFilingModals()
 
   const officersSchema = getOfficersSchema()
@@ -78,7 +78,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       ).filter(relationship => relationship.actions?.length)
     }
 
-    const payload = useFiling().createFilingPayload<ChangeOfOfficers>(
+    const payload = createFilingPayload<ChangeOfOfficers>(
       businessStore.business!,
       FilingType.CHANGE_OF_OFFICERS,
       { changeOfOfficers: officersPayload },
@@ -87,7 +87,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfOfficers>(
+      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfOfficers>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
@@ -97,7 +97,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, payload)
+      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 

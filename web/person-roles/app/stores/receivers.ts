@@ -4,9 +4,9 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
   const { tableState } = useManageParties()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { getCommonFilingPayloadData, initFiling } = useFiling()
+  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
 
-  const businessApi = useBusinessApi()
+  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -66,7 +66,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
     }
 
-    const payload = useFiling().createFilingPayload<ChangeOfReceivers>(
+    const payload = createFilingPayload<ChangeOfReceivers>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },
@@ -75,7 +75,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
 
     const draftId = draftFilingState.value?.filing?.header?.filingId
     if (draftId || !isSubmission) {
-      const filingResp = await businessApi.saveOrUpdateDraftFiling<ChangeOfReceivers>(
+      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfReceivers>(
         businessStore.businessIdentifier!,
         payload,
         isSubmission,
@@ -85,7 +85,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       const urlParams = useUrlSearchParams()
       urlParams.draft = String(filingResp.filing.header.filingId)
     } else {
-      await businessApi.postFiling(businessStore.businessIdentifier!, payload)
+      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 
