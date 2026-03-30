@@ -162,6 +162,7 @@ const serviceExamples: DropdownMenuItem[] = [
 <template>
   <div class="my-10 space-y-5">
     <h1>Business Base Layer Examples</h1>
+
     <div class="flex gap-3">
       <UDropdownMenu
         :items="layoutExamples"
