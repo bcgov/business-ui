@@ -5,7 +5,7 @@ const lockedDocumentsText = inject<string>('lockedDocumentsText')
 const overrideGetDocumentFn = inject<OverrideGetDocumentDownloadFn>('overrideGetDocumentFn')
 
 const { documents } = useBusinessLedger(filing)
-const { getBusinessDocument } = useBusinessApi()
+const { getDocument } = useBusinessService()
 
 const downloadingIndex = ref(-1)
 const downloadingAll = ref(false)
@@ -17,7 +17,7 @@ const download = async (document: BusinessDocument, index: number) => {
   try {
     const documentBlob = overrideGetDocumentFn
       ? await overrideGetDocumentFn(document, filing.businessIdentifier, filing.filingId)
-      : await getBusinessDocument(document.link)
+      : await getDocument(document.link)
     downloadFile(documentBlob, document.filename)
   } catch {
     useModal().errorModal.open({

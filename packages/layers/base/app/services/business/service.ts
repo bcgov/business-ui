@@ -145,8 +145,8 @@ export const useBusinessService = () => {
    * @param options the options to fetch the documents
    * @returns the fetch documents object
    */
-  async function getDocument(businessId: string, url: string, filename: string, force = false): Promise<Blob> {
-    const options = query.documentOptions(businessId, url, filename)
+  async function getDocument(url: string, force = false): Promise<Blob> {
+    const options = query.documentOptions(url)
     return await getCachedOrFetch(options, force)
   }
 
@@ -171,12 +171,10 @@ export const useBusinessService = () => {
    * @returns a promise to return the comments list for the url
    */
   async function getFilingComments(
-    businessId: string,
-    filingId: string,
     url: string,
     force = false
   ): Promise<BusinessComment[]> {
-    const options = query.filingCommentsOptions(businessId, filingId, url)
+    const options = query.filingCommentsOptions(url)
     const result = await getCachedOrFetch(options, force)
     return result.comments.map(comment => comment.comment).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
   }
@@ -219,8 +217,8 @@ export const useBusinessService = () => {
    * @param nrNumber the Name Request number
    * @returns a promise to return the Name Request information for this temporary business
    */
-  async function getLinkedNameRequest(businessId: string, nrNumber: string, force = false): Promise<NameRequest> {
-    const options = query.linkedNameRequestOptions(businessId, nrNumber)
+  async function getLinkedNameRequest(nrNumber: string, force = false): Promise<NameRequest> {
+    const options = query.linkedNameRequestOptions(nrNumber)
     return await getCachedOrFetch(options, force)
   }
 

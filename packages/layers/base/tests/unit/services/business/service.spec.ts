@@ -113,11 +113,10 @@ describe('useBusinessService', () => {
     mockGetCachedOrFetch.mockResolvedValue(mockData)
 
     const url = 'some-url'
-    const filename = 'file.pdf'
 
-    const result = await service.getDocument(businessId, url, filename, true)
+    const result = await service.getDocument(url, true)
     const opts = mockQuery.documentOptions
-    expect(opts).toHaveBeenCalledWith(businessId, url, filename)
+    expect(opts).toHaveBeenCalledWith(url)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toEqual(mockData)
   })
@@ -154,12 +153,11 @@ describe('useBusinessService', () => {
       ]
     }
     mockGetCachedOrFetch.mockResolvedValue(mockData)
-    const filingId = 'filing-id'
     const url = 'http://url'
 
-    const result = await service.getFilingComments(businessId, filingId, url, true) as any
+    const result = await service.getFilingComments(url, true) as any
     const opts = mockQuery.filingCommentsOptions
-    expect(opts).toHaveBeenCalledWith(businessId, filingId, url)
+    expect(opts).toHaveBeenCalledWith(url)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toHaveLength(2)
 
@@ -198,9 +196,9 @@ describe('useBusinessService', () => {
     mockGetCachedOrFetch.mockResolvedValue(mockData)
     const nrNum = 'nr123'
 
-    const result = await service.getLinkedNameRequest(businessId, nrNum)
+    const result = await service.getLinkedNameRequest(nrNum)
     const opts = mockQuery.linkedNameRequestOptions
-    expect(opts).toHaveBeenCalledWith(businessId, nrNum)
+    expect(opts).toHaveBeenCalledWith(nrNum)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData)
   })
