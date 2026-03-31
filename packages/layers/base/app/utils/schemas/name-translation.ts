@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export function getNameTranslationSchema() {
   const t = useNuxtApp().$i18n.t
-  const nameTranslationPattern = /^[A-Za-zÀ-ÿ_@./#’&+-]+(?: [A-Za-zÀ-ÿ_@./#’&+-]+)*$/
+  const nameTranslationPattern = /^[A-Za-zÀ-ÿ_@./#'’&+-]+(?: [A-Za-zÀ-ÿ_@./#'’&+-]+)*$/
 
   return z.object({
     isEditing: z.boolean().default(false),
