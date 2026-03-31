@@ -65,7 +65,10 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
 
     // 2. Adding magic link success
     if (response.status === AffiliationInvitationStatus.Accepted) {
-      toast.add({ title: t('modal.manageBusiness.success.toast', { identifier }) }) // add success toast
+      toast.add({ title: t('modal.manageBusiness.success.toast', { identifier }) })
+      await affStore.loadAffiliations()
+      const business = affStore.affiliations.results.find(b => b.businessIdentifier === identifier)
+      brdModal.openAddBusinessSuccess(affiliationName(business!) || identifier, identifier)
     }
   } catch (error: any) {
     console.error(error)

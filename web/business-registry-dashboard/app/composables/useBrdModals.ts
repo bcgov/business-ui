@@ -1,5 +1,13 @@
 // https://ui.nuxt.com/components/modal#control-programmatically
-import { ModalManageNameRequest, ModalBase, ModalRemoveBusiness, ModalManageBusiness, ModalAuthEmailSent, ModalCoopContinuationIn } from '#components'
+import {
+  ModalManageNameRequest,
+  ModalBase,
+  ModalRemoveBusiness,
+  ModalManageBusiness,
+  ModalAuthEmailSent,
+  ModalCoopContinuationIn,
+  ModalAddBusinessSuccess
+} from '#components'
 
 export const useBrdModals = () => {
   const modal = useModal()
@@ -194,6 +202,10 @@ export const useBrdModals = () => {
     modal.open(ModalAuthEmailSent, { email })
   }
 
+  function openAddBusinessSuccess (businessName: string, identifier: string) {
+    modal.open(ModalAddBusinessSuccess, { businessName, identifier })
+  }
+
   function close () {
     modal.close()
   }
@@ -210,6 +222,7 @@ export const useBrdModals = () => {
     openManageBusiness,
     openMagicLinkModal,
     openAuthEmailSent,
+    openAddBusinessSuccess,
     openContinuationInCoopModal,
     openAccessRestricted,
     openNoSubscriptionModal,

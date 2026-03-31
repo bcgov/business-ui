@@ -578,6 +578,11 @@ export default {
     }
   },
   modal: {
+    addBusinessSuccess: {
+      title: 'Succès! {name} a été ajoutée à votre compte.',
+      description: 'Vous pouvez maintenant gérer votre entreprise à partir de votre liste en utilisant votre compte BC Registries.',
+      manageBusiness: 'Gérer L\'Entreprise'
+    },
     manageBusiness: {
       success: {
         toast: 'Entreprise Ajoutée. Vous Pouvez Maintenant Gérer {identifier}.'
