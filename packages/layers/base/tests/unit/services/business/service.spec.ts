@@ -29,6 +29,12 @@ vi.mock('~/services/helpers', () => ({
 }))
 mockNuxtImport('isValidDraft', () => mockIsValidDraft)
 
+const mockBusinessApi = vi.fn()
+mockNuxtImport('useNuxtApp', () => () => ({
+  $businessApi: mockBusinessApi,
+  $i18n: { t: (k: string) => k }
+}))
+
 describe('useBusinessService', () => {
   const service = useBusinessService()
   const businessId = 'BC1234567'
@@ -113,11 +119,10 @@ describe('useBusinessService', () => {
     mockGetCachedOrFetch.mockResolvedValue(mockData)
 
     const url = 'some-url'
-    const filename = 'file.pdf'
 
-    const result = await service.getDocument(businessId, url, filename, true)
+    const result = await service.getDocument(url, true)
     const opts = mockQuery.documentOptions
-    expect(opts).toHaveBeenCalledWith(businessId, url, filename)
+    expect(opts).toHaveBeenCalledWith(url)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toEqual(mockData)
   })
@@ -154,12 +159,11 @@ describe('useBusinessService', () => {
       ]
     }
     mockGetCachedOrFetch.mockResolvedValue(mockData)
-    const filingId = 'filing-id'
     const url = 'http://url'
 
-    const result = await service.getFilingComments(businessId, filingId, url, true) as any
+    const result = await service.getFilingComments(url, true) as any
     const opts = mockQuery.filingCommentsOptions
-    expect(opts).toHaveBeenCalledWith(businessId, filingId, url)
+    expect(opts).toHaveBeenCalledWith(url)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toHaveLength(2)
 
@@ -198,9 +202,9 @@ describe('useBusinessService', () => {
     mockGetCachedOrFetch.mockResolvedValue(mockData)
     const nrNum = 'nr123'
 
-    const result = await service.getLinkedNameRequest(businessId, nrNum)
+    const result = await service.getLinkedNameRequest(nrNum)
     const opts = mockQuery.linkedNameRequestOptions
-    expect(opts).toHaveBeenCalledWith(businessId, nrNum)
+    expect(opts).toHaveBeenCalledWith(nrNum)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData)
   })
@@ -237,5 +241,145 @@ describe('useBusinessService', () => {
     expect(opts).toHaveBeenCalledWith(businessId, query)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toEqual(mockData.parties)
+  })
+
+  describe('postFiling', () => {
+    it('should call the correct endpoint with POST and a fully constructed body', async () => {
+      const business = {
+        identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
+      } as BusinessData
+      const payload = {
+        filing: {
+          header: {
+            name: FilingType.CHANGE_OF_OFFICERS,
+            certifiedBy: 'Test User',
+            accountId: useConnectAccountStore().currentAccount.id,
+            date: getToday()
+          },
+          business: {
+            identifier: business.identifier,
+            foundingDate: business.foundingDate,
+            legalName: business.legalName,
+            legalType: business.legalType
+          },
+          changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] }
+        }
+      }
+
+      mockBusinessApi.mockResolvedValue({ filing: { header: { name: 'changeOfOfficers' } } })
+
+      await service.postFiling(business.identifier, payload)
+
+      expect(mockBusinessApi).toHaveBeenCalledOnce()
+      expect(mockBusinessApi).toHaveBeenCalledWith(
+        `businesses/${business.identifier}/filings`,
+        expect.objectContaining({
+          method: 'POST'
+        })
+      )
+
+      // @ts-expect-error - mockBusinessApi.mock.calls may be undefined
+      const sentBody = mockBusinessApi.mock.calls[0][1].body
+      expect(sentBody.filing.header.name).toBe('changeOfOfficers')
+      expect(sentBody.filing.business.identifier).toBe('BC123')
+      expect(sentBody.filing.changeOfOfficers).toEqual({ relationships: [{ entity: { givenName: 'Test' } }] })
+    })
+  })
+
+  describe('saveOrUpdateDraftFiling', () => {
+    const business = {
+      identifier: 'BC123', foundingDate: '2022-01-01', legalName: 'Test Inc', legalType: 'BC'
+    } as BusinessData
+
+    const payload = {
+      filing: {
+        header: {
+          name: FilingType.CHANGE_OF_OFFICERS,
+          certifiedBy: 'Test User',
+          accountId: useConnectAccountStore().currentAccount.id,
+          date: getToday()
+        },
+        business: {
+          identifier: business.identifier,
+          foundingDate: business.foundingDate,
+          legalName: business.legalName,
+          legalType: business.legalType
+        },
+        changeOfOfficers: { relationships: [{ entity: { givenName: 'Test' } }] }
+      }
+    }
+
+    it('should make a POST request to create a new draft', async () => {
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false)
+
+      expect(mockBusinessApi).toHaveBeenCalledWith(
+        `businesses/${business.identifier}/filings`,
+        expect.objectContaining({
+          method: 'POST',
+          query: { draft: true },
+          body: expect.any(Object)
+        })
+      )
+    })
+
+    it('should make a PUT request to update an existing draft', async () => {
+      const filingId = 999
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false, filingId)
+
+      expect(mockBusinessApi).toHaveBeenCalledWith(
+        `businesses/${business.identifier}/filings/${filingId}`,
+        expect.objectContaining({
+          method: 'PUT',
+          query: { draft: true },
+          body: expect.any(Object)
+        })
+      )
+    })
+
+    it('should submit a final filing (not a draft) when isSubmission is true', async () => {
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, true)
+
+      expect(mockBusinessApi).toHaveBeenCalledWith(
+        `businesses/${business.identifier}/filings`,
+        expect.objectContaining({
+          method: 'POST',
+          query: undefined, // The draft query param should be undefined
+          body: expect.any(Object)
+        })
+      )
+    })
+
+    it('should build the filing body correctly', async () => {
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false)
+
+      // @ts-expect-error - mockBusinessApi.mock.calls may be undefined
+      const sentBody = mockBusinessApi.mock.calls[0][1].body
+      expect(sentBody.filing.header.name).toBe('changeOfOfficers')
+      expect(sentBody.filing.business.identifier).toBe('BC123')
+    })
+  })
+
+  describe('deleteFilingById', () => {
+    it('should call the correct endpoint with the DELETE method', async () => {
+      const businessId = 'BC123'
+      const filingId = 999
+      mockBusinessApi.mockResolvedValue({ success: true })
+
+      await service.deleteFiling(businessId, filingId)
+
+      expect(mockBusinessApi).toHaveBeenCalledOnce()
+      expect(mockBusinessApi).toHaveBeenCalledWith(
+        `businesses/${businessId}/filings/${filingId}`,
+        { method: 'DELETE' }
+      )
+    })
   })
 })

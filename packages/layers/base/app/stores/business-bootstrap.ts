@@ -2,7 +2,7 @@
 export const useBusinessBootstrapStore = defineStore('business-bootstrap-store', () => {
   const { t } = useI18n()
   const { businessApiUrl, businessApiVersion } = useRuntimeConfig().public
-  const { getBootstrapFiling, getLinkedNameRequest } = useBusinessApi()
+  const { getLinkedNameRequest, getBootstrapFiling } = useBusinessService()
   const { getFilingName } = useFiling()
 
   const bootstrapFiling = shallowRef<FilingGetByIdResponse<BootstrapFiling> | undefined>(undefined)

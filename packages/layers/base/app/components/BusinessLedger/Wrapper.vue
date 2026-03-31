@@ -10,14 +10,13 @@ const props = defineProps<{
   overrideGetFilingDocumentsFn?: OverrideGetFilingDocumentUrlsFn
 }>()
 
-const { getBusinessLedger } = useBusinessApi()
-const ledgerQuery = await getBusinessLedger(props.businessId, props.date)
+const { isLoading, data } = useBusinessQuery().ledger(props.businessId, props.date)
+
 const ledger = computed(() => {
   return props.includeNonLedgerItems
-    ? ledgerQuery?.data.value?.filings || []
-    : ledgerQuery?.data.value?.filings.filter(filing => filing.displayLedger) || []
+    ? data.value?.filings || []
+    : data.value?.filings.filter(filing => filing.displayLedger) || []
 })
-const loadingLedger = computed(() => !ledgerQuery?.status.value || ledgerQuery?.status.value === 'pending')
 </script>
 
 <template>
@@ -25,11 +24,11 @@ const loadingLedger = computed(() => !ledgerQuery?.status.value || ledgerQuery?.
     <slot name="header">
       <h2>
         {{ $t('label.history') }}
-        <span v-if="!loadingLedger">({{ ledger.length }})</span>
+        <span v-if="!isLoading">({{ ledger.length }})</span>
       </h2>
     </slot>
     <ConnectTransitionCollapse>
-      <div v-if="!loadingLedger">
+      <div v-if="!isLoading">
         <BusinessLedger
           :business-identifier="businessId"
           :filings="ledger"

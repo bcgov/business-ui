@@ -1,5 +1,5 @@
 // IMPORTANT: This service is meant as an abstraction layer to interact with the cache and queries directly
-// IMPORTANT: do not define raw api requests in this file - define the request in either the query or mutate file
+// IMPORTANT: do not define raw GET requests in this file - define the request in the query file
 // and abstract here if necessary
 import { getCachedOrFetch } from '../helpers'
 
@@ -44,6 +44,7 @@ import { getCachedOrFetch } from '../helpers'
 
 export const useBusinessService = () => {
   const query = useBusinessQuery()
+  const { $businessApi } = useNuxtApp()
 
   /**
    * Fetches business addresses by its business identifier.
@@ -145,8 +146,8 @@ export const useBusinessService = () => {
    * @param options the options to fetch the documents
    * @returns the fetch documents object
    */
-  async function getDocument(businessId: string, url: string, filename: string, force = false): Promise<Blob> {
-    const options = query.documentOptions(businessId, url, filename)
+  async function getDocument(url: string, force = false): Promise<Blob> {
+    const options = query.documentOptions(url)
     return await getCachedOrFetch(options, force)
   }
 
@@ -171,12 +172,10 @@ export const useBusinessService = () => {
    * @returns a promise to return the comments list for the url
    */
   async function getFilingComments(
-    businessId: string,
-    filingId: string,
     url: string,
     force = false
   ): Promise<BusinessComment[]> {
-    const options = query.filingCommentsOptions(businessId, filingId, url)
+    const options = query.filingCommentsOptions(url)
     const result = await getCachedOrFetch(options, force)
     return result.comments.map(comment => comment.comment).sort((a, b) => a.timestamp.localeCompare(b.timestamp))
   }
@@ -219,8 +218,8 @@ export const useBusinessService = () => {
    * @param nrNumber the Name Request number
    * @returns a promise to return the Name Request information for this temporary business
    */
-  async function getLinkedNameRequest(businessId: string, nrNumber: string, force = false): Promise<NameRequest> {
-    const options = query.linkedNameRequestOptions(businessId, nrNumber)
+  async function getLinkedNameRequest(nrNumber: string, force = false): Promise<NameRequest> {
+    const options = query.linkedNameRequestOptions(nrNumber)
     return await getCachedOrFetch(options, force)
   }
 
@@ -268,7 +267,89 @@ export const useBusinessService = () => {
     return await getCachedOrFetch(options, force).then(res => res.parties)
   }
 
+  /**
+   * Submits a new filing to the Legal API.
+   * This function is generic and will return a typed response
+   * @param identifier The business identifier object.
+   * @param body The data payload for the filing creation.
+   * @returns A promise that resolves to the full API response, including the filing payload.
+  */
+  async function postFiling<F extends FilingRecord>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
+    headers?: HeadersInit
+  ): Promise<FilingPostResponse<F>> {
+    return $businessApi(`businesses/${identifier}/filings`,
+      {
+        method: 'POST',
+        body,
+        headers: headers ? headers : {}
+      }
+    )
+  }
+
+  /**
+    * Creates a new filing (POST) or updates an existing one (PUT).
+    * This function handles both draft saves and final submissions based on the `isSubmission` flag.
+    *
+    * @param identifier The business identifier object.
+    * @param body The data payload for the filing creation.
+    * @param isSubmission - If false, the filing is saved as draft. If true, it is submitted as final.
+    * @param filingId - The filing Id to submit the PUT request against. Will submit a POST request if undefined.
+    *
+    * @returns A promise that resolves the API response.
+  */
+  // will return Promise<FilingPutResponse<F> if filingId is provided
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
+    isSubmission: boolean,
+    filingId: string | number,
+    headers?: HeadersInit
+  ): Promise<FilingPutResponse<F>>
+  // will return Promise<FilingPostResponse<F> if no filingId is provided
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
+    isSubmission: boolean
+  ): Promise<FilingPostResponse<F>>
+  // main function
+  async function saveOrUpdateDraftFiling<F extends FilingRecord>(
+    identifier: string,
+    body: FilingSubmissionBody<F>,
+    isSubmission = false,
+    filingId?: string | number,
+    headers?: HeadersInit
+  ): Promise<FilingPutResponse<F> | FilingPostResponse<F>> {
+    const url = filingId
+      ? `businesses/${identifier}/filings/${filingId}`
+      : `businesses/${identifier}/filings`
+    const method = filingId ? 'PUT' : 'POST'
+    const query = isSubmission ? undefined : { draft: true }
+    headers = headers ? headers : {}
+
+    return $businessApi(url,
+      {
+        method,
+        body,
+        query,
+        headers
+      }
+    )
+  }
+
+  /**
+   * Delete a business filing by id
+   * @param businessId the identifier of the business
+   * @param filingId the id of the filing
+   * @returns a promise to delete the filing
+   */
+  async function deleteFiling(businessId: string, filingId: number): Promise<unknown> {
+    return $businessApi(`businesses/${businessId}/filings/${filingId}`, { method: 'DELETE' })
+  }
+
   return {
+    // GETs
     getAddresses,
     getAndValidateDraftFiling,
     getAuthInfo,
@@ -283,6 +364,10 @@ export const useBusinessService = () => {
     getLinkedNameRequest,
     getShareClasses,
     getTasks,
-    getParties
+    getParties,
+    // ...rest
+    postFiling,
+    saveOrUpdateDraftFiling,
+    deleteFiling
   }
 }

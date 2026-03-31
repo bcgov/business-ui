@@ -8,12 +8,11 @@ const identifier = 'BC1234567'
 const mockCreateFilingPayload = vi.fn()
 const mockSaveOrUpdateDraftFiling = vi.fn()
 const mockPostFiling = vi.fn()
-const mockBusinessApi = {
-  createFilingPayload: mockCreateFilingPayload,
+const mockBusinessService = {
   saveOrUpdateDraftFiling: mockSaveOrUpdateDraftFiling,
   postFiling: mockPostFiling
 }
-mockNuxtImport('useBusinessApi', () => () => mockBusinessApi)
+mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 const mockInitFiling = vi.fn()
 vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
@@ -22,7 +21,8 @@ vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
     ...actual,
     useFiling: () => ({
       ...actual.useFiling(),
-      initFiling: mockInitFiling
+      initFiling: mockInitFiling,
+      createFilingPayload: mockCreateFilingPayload
     })
   }
 })

@@ -24,7 +24,7 @@ const {
   error: bError,
   refresh: refreshBusiness,
   refetch: refetchBusiness
-} = query.business(businessId, false, { enabled, staleTime: 5000 })
+} = query.business(businessId, false, false, { enabled, staleTime: 5000 })
 
 const {
   data: addresses,
@@ -38,7 +38,7 @@ const {
 } = query.addresses(businessId, { enabled })
 
 function invalidateBCache(id: string) {
-  const key = keys.business(id, false)
+  const key = keys.business(id, false, false)
   console.info('Invalidating key: ', key)
   cache.invalidateQueries({ key })
 }

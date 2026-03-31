@@ -24,16 +24,13 @@ export const useBusinessQueryKeys = () => {
     business: (businessId: string, slim: boolean, publicData: boolean) =>
       [...base.value, businessId, 'information', { slim, publicData }] as const,
     bootstrapFiling: (tempRegId: string) => [...base.value, tempRegId, 'bootstrap-filing'] as const,
-    document: (businessId: string, url: string, filename: string) =>
-      [...base.value, businessId, 'document', { url, filename }] as const,
+    document: (url: string) => [...base.value, 'document', { url }] as const,
     filing: (businessId: string, filingId: number | string) => [...base.value, businessId, 'filing', filingId] as const,
-    filingComments: (businessId: string, filingId: string | number, url: string) =>
-      [...base.value, businessId, 'filing', filingId, 'comments', { url }] as const,
+    filingComments: (url: string) => [...base.value, 'filing', 'comments', { url }] as const,
     filingDocumentUrls: (businessId: string, filingId: string | number) =>
       [...base.value, businessId, 'filing', filingId, 'document-urls'] as const,
     ledger: (businessId: string, date: string) => [...base.value, businessId, 'ledger', { date }] as const,
-    linkedNameRequest: (businessId: string, nrNumber: string) =>
-      [...base.value, businessId, 'linked-name-request', nrNumber] as const,
+    linkedNameRequest: (nrNumber: string) => [...base.value, 'linked-name-request', nrNumber] as const,
     parties: (businessId: string, query?: Record<string, unknown>) =>
       [...base.value, businessId, 'parties', { ...query }] as const,
     shareClasses: (businessId: string, classId?: string | number) =>

@@ -22,7 +22,7 @@ This package contains the core UI components, styling, and utilities for Busines
 
 Such as:
 - `$businessApi` fetch plugin
-- `useBusinessApi` composable with several common fetch methods.
+- `useBusinessService` composable with several common fetch methods.
 - Business Filing page layout
 
 For detailed usage and documentation, please see the [Business Base Layer Docs](https://github.com/bcgov/business-ui/blob/main/docs/packages/layers/base/overview.md)

@@ -15,7 +15,7 @@ const localePath = useLocalePath()
 
 const { init: initBusiness, $reset: resetBusiness } = useBusinessStore()
 const { init: initBootstrap, getBootstrapLedgerItems, $reset: resetBootstrap } = useBusinessBootstrapStore()
-const { getBusinessLedger } = useBusinessApi()
+const { getLedger } = useBusinessService()
 const { business, businessIdentifier } = storeToRefs(useBusinessStore())
 const { bootstrapFiling, bootstrapIdentifier } = storeToRefs(useBusinessBootstrapStore())
 
@@ -48,9 +48,7 @@ const loadLedger = async () => {
     filings.value = getBootstrapLedgerItems()
   } else {
     await initBusiness(identifier.value, true)
-    const ledgerQuery = await getBusinessLedger(identifier.value)
-    await ledgerQuery?.refresh()
-    filings.value = ledgerQuery?.data.value?.filings || []
+    filings.value = await getLedger(identifier.value) || []
   }
   loading.value = false
 }

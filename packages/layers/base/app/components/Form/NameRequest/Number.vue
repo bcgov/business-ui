@@ -2,7 +2,6 @@
 import type { Form, InputProps } from '@nuxt/ui'
 
 const {
-  businessIdentifier = '',
   businessType,
   nrAllowedActionTypes,
   filingName,
@@ -12,7 +11,6 @@ const {
   businessType: CorpTypeCd
   filingName: string
   nrAllowedActionTypes: NrRequestActionCode[]
-  businessIdentifier?: string
   name?: string
   nrAllowedBusinessTypes?: CorpTypeCd[]
 }>()
@@ -102,7 +100,7 @@ const validateNrNumber = async (nrNum: string) => {
     isLoading.value = true
     formRef.value?.clear('nrNumber')
     try {
-      const nameRequest = await service.getLinkedNameRequest(businessIdentifier, nrNum)
+      const nameRequest = await service.getLinkedNameRequest(nrNum)
       validationError.value = getNrErrorMsg(nameRequest) ?? ''
       if (validationError.value) {
         icon.value = { class: 'text-error' }

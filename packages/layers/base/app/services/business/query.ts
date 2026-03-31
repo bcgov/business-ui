@@ -86,9 +86,7 @@ export const useBusinessQuery = () => {
   }
 
   function documentOptions(
-    businessId: MaybeRefOrGetter<string>,
     url: string,
-    filename: string,
     options?: DefineOptions<Blob>
   ) {
     return defineQueryOptions({
@@ -98,17 +96,15 @@ export const useBusinessQuery = () => {
       staleTime: 0,
       gcTime: 0, // clear cached response when component unmounts
       ...options,
-      key: keys.document(toValue(businessId), url, filename)
+      key: keys.document(url)
     })
   }
 
   function document(
-    businessId: MaybeRefOrGetter<string>,
     url: string,
-    filename: string,
     options?: QueryOptions<Blob>
   ) {
-    return useQuery(() => documentOptions(businessId, url, filename, options as DefineOptions<Blob>))
+    return useQuery(() => documentOptions(url, options as DefineOptions<Blob>))
   }
 
   function bootstrapFilingOptions(
@@ -156,8 +152,6 @@ export const useBusinessQuery = () => {
   }
 
   function filingCommentsOptions(
-    businessId: MaybeRefOrGetter<string>,
-    filingId: MaybeRefOrGetter<string | number>,
     url: string,
     options?: DefineOptions<{ comments: { comment: BusinessComment }[] }>
   ) {
@@ -165,18 +159,16 @@ export const useBusinessQuery = () => {
       query: () => $businessApi<{ comments: { comment: BusinessComment }[] }>('', { baseURL: url }),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.filingComments(toValue(businessId), toValue(filingId), url)
+      key: keys.filingComments(url)
     })
   }
 
   function filingComments(
-    businessId: MaybeRefOrGetter<string>,
-    filingId: MaybeRefOrGetter<string | number>,
     url: string,
     options?: QueryOptions<{ comments: { comment: BusinessComment }[] }>
   ) {
     return useQuery(() => filingCommentsOptions(
-      businessId, filingId, url, options as DefineOptions<{ comments: { comment: BusinessComment }[] }>
+      url, options as DefineOptions<{ comments: { comment: BusinessComment }[] }>
     ))
   }
 
@@ -230,7 +222,6 @@ export const useBusinessQuery = () => {
   }
 
   function linkedNameRequestOptions(
-    businessId: MaybeRefOrGetter<string>,
     nrNumber: MaybeRefOrGetter<string>,
     options?: DefineOptions<NameRequest>
   ) {
@@ -238,19 +229,15 @@ export const useBusinessQuery = () => {
       query: () => $businessApi<NameRequest>(`nameRequests/${toValue(nrNumber)}/validate`),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.linkedNameRequest(toValue(businessId), toValue(nrNumber))
+      key: keys.linkedNameRequest(toValue(nrNumber))
     })
   }
 
   function linkedNameRequest(
-    businessId: MaybeRefOrGetter<string>,
     nrNumber: MaybeRefOrGetter<string>,
     options?: QueryOptions<NameRequest>
   ) {
-    // NOTE: "businessId" is only used to keep the caching key consistent with other calls
-    // - this simplifies invalidating the cache across the business calls
-    // - if this call is being made outside of any business context then an empty string can be passed.
-    return useQuery(() => linkedNameRequestOptions(businessId, nrNumber, options as DefineOptions<NameRequest>))
+    return useQuery(() => linkedNameRequestOptions(nrNumber, options as DefineOptions<NameRequest>))
   }
 
   function partiesOptions(

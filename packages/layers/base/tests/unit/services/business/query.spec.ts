@@ -121,9 +121,8 @@ describe('useBusinessQuery', () => {
   it('documentOptions should have correct config', () => {
     const { documentOptions } = useBusinessQuery()
     const url = 'https://api.example.com/download'
-    const filename = 'business_summary.pdf'
 
-    const options = documentOptions(businessId, url, filename)
+    const options = documentOptions(url)
 
     expect(options.staleTime).toBe(0)
     expect(options.gcTime).toBe(0)
@@ -135,9 +134,9 @@ describe('useBusinessQuery', () => {
       headers: { Accept: 'application/pdf' }
     })
 
-    expect(mockKeys.document).toHaveBeenCalledWith(businessId, url, filename)
+    expect(mockKeys.document).toHaveBeenCalledWith(url)
 
-    const custom = documentOptions(businessId, url, 'file.pdf', { staleTime: 5000 })
+    const custom = documentOptions(url, { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
   })
 
@@ -173,18 +172,17 @@ describe('useBusinessQuery', () => {
 
   it('filingCommentsOptions should have correct config', () => {
     const { filingCommentsOptions } = useBusinessQuery()
-    const filingId = 456
     const externalUrl = 'https://api.legal.gov/comments/v1'
 
-    const options = filingCommentsOptions(businessId, filingId, externalUrl)
+    const options = filingCommentsOptions(externalUrl)
     options.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith('', { baseURL: externalUrl })
-    expect(mockKeys.filingComments).toHaveBeenCalledWith(businessId, filingId, externalUrl)
+    expect(mockKeys.filingComments).toHaveBeenCalledWith(externalUrl)
     expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
 
-    const custom = filingCommentsOptions(businessId, '12345', externalUrl, { staleTime: 5000 })
+    const custom = filingCommentsOptions(externalUrl, { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
-    expect(mockKeys.filingComments).toHaveBeenCalledWith(businessId, '12345', externalUrl)
+    expect(mockKeys.filingComments).toHaveBeenCalledWith(externalUrl)
   })
 
   it('filingDocumentUrlsOptions should have correct config', () => {
@@ -231,15 +229,15 @@ describe('useBusinessQuery', () => {
     const { linkedNameRequestOptions } = useBusinessQuery()
     const nrNumber = 'NR1234567'
 
-    const options = linkedNameRequestOptions(businessId, nrNumber)
+    const options = linkedNameRequestOptions(nrNumber)
     options.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(`nameRequests/${nrNumber}/validate`)
-    expect(mockKeys.linkedNameRequest).toHaveBeenCalledWith(businessId, nrNumber)
+    expect(mockKeys.linkedNameRequest).toHaveBeenCalledWith(nrNumber)
     expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
 
-    const custom = linkedNameRequestOptions(businessId, '12345', { staleTime: 5000 })
+    const custom = linkedNameRequestOptions('12345', { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
-    expect(mockKeys.linkedNameRequest).toHaveBeenCalledWith(businessId, '12345')
+    expect(mockKeys.linkedNameRequest).toHaveBeenCalledWith('12345')
   })
 
   it('partiesOptions should have correct config', () => {
