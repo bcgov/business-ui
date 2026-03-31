@@ -19,10 +19,11 @@
 ## Components
 
 ## Composables
-
-- [useBusinessApi](./composables/useBusinessApi.md)
 - [useFilingTombstone](./composables//useFilingTombstone.md)
 - useModal
+
+## Services
+- [useBusinessService](./services/useBusinessService.md)
 
 ## Stores
 
