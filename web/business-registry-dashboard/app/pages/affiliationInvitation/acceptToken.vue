@@ -7,7 +7,6 @@ const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 const route = useRoute()
-const toast = useToast()
 
 // Token parsing
 const parseToken = (encodedToken: string): AffiliationToken => {
