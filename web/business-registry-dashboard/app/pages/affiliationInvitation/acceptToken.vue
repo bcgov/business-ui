@@ -7,7 +7,6 @@ const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
 const route = useRoute()
-const toast = useToast()
 
 // Token parsing
 const parseToken = (encodedToken: string): AffiliationToken => {
@@ -65,7 +64,9 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
 
     // 2. Adding magic link success
     if (response.status === AffiliationInvitationStatus.Accepted) {
-      toast.add({ title: t('modal.manageBusiness.success.toast', { identifier }) }) // add success toast
+      await affStore.loadAffiliations()
+      const business = affStore.affiliations.results.find(b => b.businessIdentifier === identifier)
+      brdModal.openAddBusinessSuccess(affiliationName(business!) || identifier, identifier)
     }
   } catch (error: any) {
     console.error(error)

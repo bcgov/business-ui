@@ -1487,7 +1487,6 @@ describe('useAffiliationsStore', () => {
     let affStore: any
     let consoleWarnSpy: any
     const setAuthorized = async () => {
-
       await affStore.loadAffiliations()
       await flushPromises()
 
@@ -1562,5 +1561,4 @@ describe('useAffiliationsStore', () => {
       expect(mockRegSearch).not.toHaveBeenCalled()
     })
   })
-
 })

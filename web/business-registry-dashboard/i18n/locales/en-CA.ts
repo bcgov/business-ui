@@ -593,10 +593,10 @@ export default {
     }
   },
   modal: {
-    manageBusiness: {
-      success: {
-        toast: 'Business Added. You can now manage {identifier}.'
-      }
+    addBusinessSuccess: {
+      title: 'Success! {name} has been added to your account.',
+      description: 'You can now manage your business from your list using your BC Registries account.',
+      manageBusiness: 'Manage Business'
     },
     removeBusiness: {
       generic: {
