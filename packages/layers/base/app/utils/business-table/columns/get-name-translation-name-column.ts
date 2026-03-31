@@ -19,14 +19,12 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
 
       const name = h(
         'span',
-        { style: { display: 'inline-flex', alignItems: 'center' } },
+        { class: 'inline-flex items-center gap-8' },
         [
-          h('span', { style: { marginRight: '30px', fontWeight: 'bold' } }, t('label.translationName')),
-          row.original.new.name || t('label.noName')
+          h('span', { class: 'font-bold' }, t('label.translationName')),
+          row.original.new.name || t('label.noNameTranslations')
         ]
       )
-
-      const displayText = name || t('label.noName')
 
       return h(
         TableColumnIdentity,
@@ -35,7 +33,7 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
           badges,
           class: cellClass
         },
-        displayText
+        name || t('label.noNameTranslations')
       )
     }
   }

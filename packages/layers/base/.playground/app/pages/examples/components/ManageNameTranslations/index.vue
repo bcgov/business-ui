@@ -69,7 +69,6 @@ const { t } = useI18n()
         :loading="loading"
         :empty-text="loading ? 'Loading...' : t('label.noNameTranslations')"
         add-label="Add Name Translation"
-        section-label="Name Translations"
         :allowed-actions="[ManageAllowedAction.ADD, ManageAllowedAction.NAME_CHANGE, ManageAllowedAction.REMOVE]"
       />
     </ConnectPageSection>
