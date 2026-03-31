@@ -8,7 +8,8 @@ export function getNameRequestSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
-    legalName: z.string().optional(),
+    changeToNumbered: z.boolean().default(false),
+    legalName: z.string().min(1, t('validation.companyNameRequired')),
     nrNumber: z.string()
       .min(1, t('validation.nrNumber.required'))
       .refine(val => NR_NUM_REGEX.test(val), t('validation.nrNumber.invalid'))

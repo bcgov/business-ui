@@ -106,7 +106,7 @@ const validateNrNumber = async (nrNum: string) => {
         icon.value = { class: 'text-error' }
       } else {
         icon.value = { class: 'text-success', name: 'i-mdi-check' }
-        model.value.legalName = getNrApprovedName(nameRequest)
+        model.value.legalName = getNrApprovedName(nameRequest)!
       }
     } catch (err: unknown) {
       icon.value = { class: 'text-error' }

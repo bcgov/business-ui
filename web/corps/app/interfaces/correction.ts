@@ -49,6 +49,7 @@ export interface CorrectionPayload extends FilingPayloadData {
   // Name-related corrections
   nameRequest?: {
     legalName: string
+    // NB: this can be an empty string when staff update the name directly
     nrNumber?: string
   }
   nameTranslations?: Array<{
