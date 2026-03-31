@@ -15,11 +15,11 @@ All responses are strongly typed to provide better DX. Errors are not caught in 
 | **Route Guards / Middleware** | `useBusinessService` | Best for Logic. Good for blocking navigation until you’ve validated data or verified permissions. |
 | **Complex Tasks** | `useBusinessService` | Best for Control. Ideal for running multiple requests in a row (Promise.all) or handling "if-then" logic. |
 
-> [!IMPORTANT]
-> **Memory & Garbage Collection** > Avoid calling `useBusinessQuery` outside of a component's setup context (e.g., in a Pinia Store or a global utility). Doing so creates a subscription tied to the global scope rather than a component lifecycle. This keeps the query "active" indefinitely, preventing Pinia Colada from marking the data as inactive and disabling automatic garbage collection. Always use `useBusinessService` in stores and global contexts to ensure data is fetched and released properly.
+[!IMPORTANT]
+**Memory & Garbage Collection** > Avoid calling `useBusinessQuery` outside of a component's setup context (e.g., in a Pinia Store or a global utility). Doing so creates a subscription tied to the global scope rather than a component lifecycle. This keeps the query "active" indefinitely, preventing Pinia Colada from marking the data as inactive and disabling automatic garbage collection. Always use `useBusinessService` in stores and global contexts to ensure data is fetched and released properly.
 
-> [!TIP]
-> Avoid using this service in a .vue file. If you find yourself manually creating `const loading = ref(true)` before calling this service, you should be using useBusinessQuery instead.
+[!TIP]
+Avoid using this service in a .vue file. If you find yourself manually creating `const loading = ref(true)` before calling this service, you should be using useBusinessQuery instead.
 
 ---
 
