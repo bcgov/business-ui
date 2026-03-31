@@ -105,7 +105,7 @@ export default {
       value: '1-877-370-1033'
     },
     victoriaOffice: {
-      href: 'tel:+1-250-387-7848',
+      href: 'tel:+1-250-370-1033',
       title: 'Victoria Office:',
       value: '1-250-370-1033'
     },
