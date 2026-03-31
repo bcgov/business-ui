@@ -19,7 +19,7 @@
 ## Components
 
 ## Composables
-- [useFilingTombstone](./composables//useFilingTombstone.md)
+- [useBusinessTombstone](./composables/useBusinessTombstone.md)
 - useModal
 
 ## Services

@@ -48,7 +48,7 @@ describe('useBusinessQueryKeys', () => {
       ['bootstrapFiling', ['T12345'], ['business', accountId, 'T12345', 'bootstrap-filing']],
       ['document', ['http://api/pdf'], ['business', accountId, 'document', { url: 'http://api/pdf' }]],
       ['filing', [businessId, 55], ['business', accountId, businessId, 'filing', 55]],
-      ['filingComments', ['http://comments'], ['business', accountId, 'filing-comments', { url: 'http://comments' }]],
+      ['filingComments', ['http://comments'], ['business', accountId, 'filing', 'comments', { url: 'http://comments' }]],
       ['filingDocumentUrls', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'document-urls']],
       ['ledger', [businessId, '2026-01-13'], ['business', accountId, businessId, 'ledger', { date: '2026-01-13' }]],
       ['linkedNameRequest', ['NR 123'], ['business', accountId, 'linked-name-request', 'NR 123']],
