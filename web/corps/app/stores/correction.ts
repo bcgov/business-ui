@@ -7,6 +7,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
+  const { tableState: tableNameTranslations } = useManageNameTranslations()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -22,6 +23,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
+  const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
@@ -87,6 +89,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       [OfficeType.RECORDS, OfficeType.REGISTERED],
       true // fetch share classes
     )
+    const aliasesNameTranslations = await service.getNameTranslations(businessId).catch(() => [] as NameTranslation[])
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
@@ -235,6 +238,76 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         : liquidators
     }
 
+    // Name translations — convert API format to table state, merge with draft if applicable
+    if (aliasesNameTranslations.length) {
+      const originalTableState: TableBusinessState<NameTranslationSchema>[] = aliasesNameTranslations.map((nt) => {
+        const base: NameTranslationSchema = {
+          id: nt.id ?? crypto.randomUUID(),
+          name: nt.name,
+          isEditing: false,
+          actions: []
+        }
+        return { new: { ...base }, old: { ...base } }
+      })
+
+      if (draft?.nameTranslations?.length) {
+        // Merge draft name translations with originals
+        const draftNts = draft.nameTranslations
+        const merged: TableBusinessState<NameTranslationSchema>[] = []
+
+        for (const orig of originalTableState) {
+          const draftEntry = draftNts.find(d => d.id === orig.new.id)
+          if (draftEntry) {
+            const action = draftEntry.action
+              ? (Object.values(ActionType).includes(draftEntry.action as ActionType)
+                ? draftEntry.action as ActionType
+                : ActionType.CORRECTED)
+              : undefined
+            merged.push({
+              old: orig.old,
+              new: {
+                ...orig.new,
+                name: draftEntry.name,
+                actions: action ? [action] : []
+              }
+            })
+          } else {
+            merged.push(orig)
+          }
+        }
+
+        // Add any new name translations from the draft (no matching original)
+        for (const draftEntry of draftNts) {
+          if (!originalTableState.some(o => o.new.id === draftEntry.id)) {
+            merged.push({
+              old: undefined,
+              new: {
+                id: draftEntry.id ?? crypto.randomUUID(),
+                name: draftEntry.name,
+                isEditing: false,
+                actions: [ActionType.ADDED]
+              }
+            })
+          }
+        }
+
+        tableNameTranslations.value = merged
+      } else {
+        tableNameTranslations.value = originalTableState
+      }
+    } else if (draft?.nameTranslations?.length) {
+      // No existing translations, but draft has new ones
+      tableNameTranslations.value = draft.nameTranslations.map(nt => ({
+        old: undefined,
+        new: {
+          id: nt.id ?? crypto.randomUUID(),
+          name: nt.name,
+          isEditing: false,
+          actions: [ActionType.ADDED]
+        }
+      }))
+    }
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
@@ -242,6 +315,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialLiquidators.value = cloneDeep(tableLiquidators.value)
     initialOffices.value = cloneDeep(tableOffices.value)
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
+    initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
     if (isStaffCorrectionType.value) {
@@ -299,9 +373,23 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Document delivery / contact point
       ...(formState.documentDelivery?.completingPartyEmail && {
         contactPoint: { email: formState.documentDelivery.completingPartyEmail }
-      })
+      }),
 
-      // TODO: add nameRequest, nameTranslations, startDate, provisionsRemoved
+      // Name translations — match CorrectionPayload interface:
+      // - id: only for existing entries (real API id); omitted for new entries (avoids sending temp UUIDs)
+      // - name: the corrected/effective name
+      // - oldName: only when the name was actually changed
+      // - action: the correction action
+      nameTranslations: tableNameTranslations.value
+        .filter(nt => nt.new.actions.length > 0)
+        .map(nt => ({
+          ...(nt.old ? { id: nt.new.id } : {}),
+          name: nt.new.name,
+          ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
+          action: nt.new.actions[0]
+        }))
+
+      // TODO: add nameRequest, startDate, provisionsRemoved
       // as correction sections are implemented in the UI
     }
 
@@ -346,6 +434,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeOffice = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
+    formState.activeNameTranslation = undefined
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
@@ -353,6 +442,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialLiquidators.value = []
     initialOffices.value = []
     initialShareClasses.value = []
+    initialNameTranslations.value = []
   }
 
   return {
@@ -371,12 +461,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     liquidators: tableLiquidators,
     offices: tableOffices,
     shareClasses: tableShareClasses,
+    nameTranslations: tableNameTranslations,
     initialFormState,
     initialDirectors,
     initialReceivers,
     initialLiquidators,
     initialOffices,
     initialShareClasses,
+    initialNameTranslations,
     hasCommentChanges,
     isStaff,
     init,

@@ -19,6 +19,7 @@ export const useBusinessQueryKeys = () => {
 
   const keys = {
     addresses: (businessId: string) => [...base.value, businessId, 'addresses'] as const,
+    aliases: (businessId: string) => [...base.value, businessId, 'aliases'] as const,
     authInfo: (businessId: string) => [...base.value, businessId, 'auth-info'] as const,
     authorizedActions: (businessId: string) => [...base.value, businessId, 'authorized-actions'] as const,
     business: (businessId: string, slim: boolean, publicData: boolean) =>

@@ -6,3 +6,10 @@ export interface NameTranslation {
   id?: string
   name: string
 }
+
+/** A business alias entry returned by the /aliases endpoint. */
+export interface Alias {
+  id: string
+  name: string
+  type: string // e.g. 'TRANSLATION', 'DBA'
+}

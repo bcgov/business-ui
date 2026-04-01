@@ -89,15 +89,6 @@ function clearAllAlerts() {
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
-    <div class="space-y-2">
-      <h3 class="font-semibold">
-        {{ t('label.nameTranslations') }}
-      </h3>
-      <p class="text-sm text-gray-800">
-        {{ t('text.nameTranslationsDescription') }}
-      </p>
-    </div>
-
     <UButton
       v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
       :label="addLabel"

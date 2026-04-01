@@ -57,6 +57,20 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Fetches business aliases used as name translations.
+   * @param businessId the business identifier
+   * @returns a promise to return aliases as name translations
+   */
+  async function getNameTranslations(businessId: string, force = false): Promise<NameTranslation[]> {
+    const options = query.aliasesOptions(businessId)
+    return await getCachedOrFetch(options, force).then(res =>
+      res.aliases
+        .filter(alias => alias.type === 'TRANSLATION')
+        .map(({ id, name }) => ({ id, name }))
+    )
+  }
+
+  /**
    * Fetches a filing by ID and validates that it is a usable draft of the expected type.
    *
    * @param businessId The identifier for the business.
@@ -351,6 +365,7 @@ export const useBusinessService = () => {
   return {
     // GETs
     getAddresses,
+    getNameTranslations,
     getAndValidateDraftFiling,
     getAuthInfo,
     getAuthorizedActions,
