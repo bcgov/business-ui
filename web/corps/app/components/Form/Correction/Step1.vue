@@ -109,7 +109,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
     </section>
 
     <!-- Section 5: Receivers -->
-    <!-- ToDO: Do we want recievers conditionally -->
+    <!-- ToDO: Do we want receivers conditionally -->
     <section class="space-y-4" data-testid="receivers-section">
       <div>
         <h2 class="text-base">
