@@ -17,23 +17,25 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
       const defaultClass = 'w-full overflow-clip' // Set the width to 100% of the outer layer
       const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
+      const nameValue = row.original.new.name || t('label.noNameTranslations')
+
       const name = h(
         'span',
         { class: 'inline-flex items-center gap-8' },
         [
           h('span', { class: 'font-bold' }, t('label.translationName')),
-          row.original.new.name || t('label.noNameTranslations')
+          nameValue
         ]
       )
 
       return h(
         TableColumnIdentity,
         {
-          label: row.original.new.name,
+          label: nameValue,
           badges,
           class: cellClass
         },
-        name || t('label.noNameTranslations')
+        name
       )
     }
   }
