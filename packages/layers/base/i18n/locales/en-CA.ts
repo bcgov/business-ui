@@ -682,7 +682,7 @@ export default {
     enterLastName: 'Enter a last name',
     exactDocIDChars: 'Document ID must be 8 characters',
     fieldRequired: 'This field is required',
-    invalidCharacters: 'Invalid character',
+    invalidCharacters: 'Invalid characters',
     invalidDocId: 'The number entered is not recognized in our system',
     invalidEmailAddress: 'Enter a valid email address',
     maxDecimalsLessThanOne: 'Amounts less than 1 can be entered with up to {count} decimal places',

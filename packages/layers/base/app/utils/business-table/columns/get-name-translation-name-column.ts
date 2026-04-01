@@ -11,6 +11,7 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
   const nameColumn: TableBusinessColumn<T> = {
     id: 'translation-name',
     meta,
+    header: () => h('span', { class: 'sr-only' }, t('label.translationName')),
     cell: ({ row }) => {
       const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)

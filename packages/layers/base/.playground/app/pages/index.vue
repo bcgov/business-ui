@@ -138,7 +138,7 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Form/NameRequest/Number')
   },
   {
-    label: 'FormNameTranslations',
+    label: 'FormNameTranslation',
     to: localePath('/examples/components/Form/NameTranslation')
   },
   {

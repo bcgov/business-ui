@@ -1,4 +1,9 @@
 import { cloneDeep } from 'es-toolkit'
+import {
+  mapDraftOnlyNameTranslations,
+  mapOriginalNameTranslations,
+  mergeDraftNameTranslations
+} from '../utils/name-translation-helper'
 
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
@@ -240,72 +245,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     // Name translations — convert API format to table state, merge with draft if applicable
     if (aliasesNameTranslations.length) {
-      const originalTableState: TableBusinessState<NameTranslationSchema>[] = aliasesNameTranslations.map((nt) => {
-        const base: NameTranslationSchema = {
-          id: nt.id ?? crypto.randomUUID(),
-          name: nt.name,
-          isEditing: false,
-          actions: []
-        }
-        return { new: { ...base }, old: { ...base } }
-      })
+      const originalTableState = mapOriginalNameTranslations(aliasesNameTranslations)
 
       if (draft?.nameTranslations?.length) {
-        // Merge draft name translations with originals
-        const draftNts = draft.nameTranslations
-        const merged: TableBusinessState<NameTranslationSchema>[] = []
-
-        for (const orig of originalTableState) {
-          const draftEntry = draftNts.find(d => d.id === orig.new.id)
-          if (draftEntry) {
-            const action = draftEntry.action
-              ? (Object.values(ActionType).includes(draftEntry.action as ActionType)
-                ? draftEntry.action as ActionType
-                : ActionType.CORRECTED)
-              : undefined
-            merged.push({
-              old: orig.old,
-              new: {
-                ...orig.new,
-                name: draftEntry.name,
-                actions: action ? [action] : []
-              }
-            })
-          } else {
-            merged.push(orig)
-          }
-        }
-
-        // Add any new name translations from the draft (no matching original)
-        for (const draftEntry of draftNts) {
-          if (!originalTableState.some(o => o.new.id === draftEntry.id)) {
-            merged.push({
-              old: undefined,
-              new: {
-                id: draftEntry.id ?? crypto.randomUUID(),
-                name: draftEntry.name,
-                isEditing: false,
-                actions: [ActionType.ADDED]
-              }
-            })
-          }
-        }
-
-        tableNameTranslations.value = merged
+        tableNameTranslations.value = mergeDraftNameTranslations(originalTableState, draft.nameTranslations)
       } else {
         tableNameTranslations.value = originalTableState
       }
     } else if (draft?.nameTranslations?.length) {
       // No existing translations, but draft has new ones
-      tableNameTranslations.value = draft.nameTranslations.map(nt => ({
-        old: undefined,
-        new: {
-          id: nt.id ?? crypto.randomUUID(),
-          name: nt.name,
-          isEditing: false,
-          actions: [ActionType.ADDED]
-        }
-      }))
+      tableNameTranslations.value = mapDraftOnlyNameTranslations(draft.nameTranslations)
     }
 
     await nextTick()

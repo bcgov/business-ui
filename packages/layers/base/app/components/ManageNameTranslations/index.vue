@@ -26,13 +26,12 @@ const {
   applyTableEdits
 } = useManageNameTranslations(stateKey)
 
-const { t } = useI18n()
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
 const activeNameTranslationSchema = getActiveNameTranslationSchema()
 
 function setActiveFormAlert() {
-  setAlert('name-translation-form', t('text.finishTaskBeforeOtherChanges'))
+  setAlert('name-translation-form', $t('text.finishTaskBeforeOtherChanges'))
 }
 
 function initAddNameTranslation() {
@@ -67,7 +66,7 @@ function initEditNameTranslation(row: TableBusinessRow<NameTranslationSchema>) {
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
-  editLabel = t('label.editingItemName', { name: row.original.new.name.toUpperCase() })
+  editLabel = $t('label.editingItemName', { name: row.original.new.name.toUpperCase() })
   expandedState.value = { [row.index]: true }
 }
 
@@ -98,7 +97,7 @@ function clearAllAlerts() {
       @click="initAddNameTranslation"
     />
 
-    <FormNameTranslations
+    <FormNameTranslation
       v-if="addingNameTranslation && activeNameTranslation"
       v-model="activeNameTranslation"
       :title="addLabel"
@@ -111,7 +110,7 @@ function clearAllAlerts() {
 
     <ConnectPageSection
       :heading="{
-        label: t('label.nameTranslations'),
+        label: $t('label.nameTranslations'),
         icon: 'i-mdi-domain',
         ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
       }"
@@ -131,7 +130,7 @@ function clearAllAlerts() {
       >
         <template #expanded="{ row }">
           <div class="px-4 sm:px-6">
-            <FormNameTranslations
+            <FormNameTranslation
               v-if="activeNameTranslation"
               v-model="activeNameTranslation"
               :title="editLabel"

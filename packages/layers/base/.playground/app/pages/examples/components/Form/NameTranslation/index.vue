@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-
-const { t } = useI18n()
 
 definePageMeta({
   layout: 'connect-auth',
@@ -28,11 +25,11 @@ function onDone() {
       class="my-10"
     >
       <div class="space-y-6">
-        <FormNameTranslations
+        <FormNameTranslation
           v-if="state"
           v-model="state"
           variant="add"
-          :title="t('label.addNameTranslation')"
+          :title="$t('label.addNameTranslation')"
           name="activeNameTranslation"
           state-key="playground-form-name-translation"
           @done="onDone"

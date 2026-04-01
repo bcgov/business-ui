@@ -13,7 +13,6 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-const { t } = useI18n()
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'name-translation-form'
 const schema = getNameTranslationSchema()
@@ -79,14 +78,14 @@ const labelId = useId()
         }"
       >
         <ConnectFormFieldWrapper
-          :label="t('label.translationName')"
+          :label="$t('label.translationName')"
           padding-class="xy-default"
         >
           <ConnectFormInput
             v-if="model"
             v-model="model.name"
             required
-            :label="t('label.translationName')"
+            :label="$t('label.translationName')"
             input-id="name-translation-input"
             name="name"
           />
@@ -99,7 +98,7 @@ const labelId = useId()
         />
         <UButton
           variant="outline"
-          :label="t('label.cancel')"
+          :label="$t('label.cancel')"
           class="w-full sm:w-min justify-center"
           @mousedown.prevent
           @click="$emit('cancel')"
@@ -107,7 +106,7 @@ const labelId = useId()
         <UButton
           :data-alert-focus-target="targetId"
           :aria-describedby="messageId"
-          :label="t('label.done')"
+          :label="$t('label.done')"
           class="w-full sm:w-min justify-center"
           @click="onDone"
         />
