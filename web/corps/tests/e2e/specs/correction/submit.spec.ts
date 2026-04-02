@@ -122,7 +122,9 @@ test.describe('Correction - Filing Submit', () => {
       await mockNameTranslations(page, identifier)
 
       const aliasesRequest = page.waitForResponse(
-        response => response.url().includes(`/api/v2/businesses/${identifier}/aliases`) && response.request().method() === 'GET',
+        response =>
+          response.url().includes(`/api/v2/businesses/${identifier}/aliases`)
+          && response.request().method() === 'GET',
         { timeout: 10000 }
       )
 

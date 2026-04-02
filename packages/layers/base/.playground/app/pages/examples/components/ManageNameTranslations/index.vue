@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'connect-auth',
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Name Translations' }]
