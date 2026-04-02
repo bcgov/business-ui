@@ -1,9 +1,4 @@
 import { cloneDeep } from 'es-toolkit'
-import {
-  mapDraftOnlyNameTranslations,
-  mapOriginalNameTranslations,
-  mergeDraftNameTranslations
-} from '../utils/name-translation-helper'
 
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
