@@ -76,6 +76,7 @@ export default {
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     liquidatorsMustBeCorrect: 'Liquidator information must be correct before filing your application.',
+    nameTranslationsDescription: 'Name translations must use the Latin Alphabet (English, French, etc.). Names that use other writing systems must spell the name phonetically in English or French.',
     noChangesToSave: 'There are no changes to save.',
     noChangesToSubmit: 'There are no changes to submit.',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',

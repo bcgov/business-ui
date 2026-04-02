@@ -101,6 +101,15 @@ const componentExamples: DropdownMenuItem[] = [
     ]
   },
   {
+    label: 'ManageNameTranslations',
+    children: [
+      {
+        to: localePath('/examples/components/ManageNameTranslations'),
+        label: 'Default'
+      }
+    ]
+  },
+  {
     label: 'ModalStaffPay',
     to: localePath('/examples/components/Modal/StaffPay')
   },
@@ -127,6 +136,10 @@ const componentExamples: DropdownMenuItem[] = [
   {
     label: 'FormNameRequestNumber',
     to: localePath('/examples/components/Form/NameRequest/Number')
+  },
+  {
+    label: 'FormNameTranslation',
+    to: localePath('/examples/components/Form/NameTranslation')
   },
   {
     label: 'FormPreExistingCompanyRevisions',

@@ -36,6 +36,25 @@ export const useBusinessQuery = () => {
     return useQuery(() => addressesOptions(businessId, options as DefineOptions<ApiEntityOfficeAddress>))
   }
 
+  function aliasesOptions(
+    businessId: MaybeRefOrGetter<string>,
+    options?: DefineOptions<{ aliases: Alias[] }>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<{ aliases: Alias[] }>(`businesses/${toValue(businessId)}/aliases`),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.aliases(toValue(businessId))
+    })
+  }
+
+  function aliases(
+    businessId: MaybeRefOrGetter<string>,
+    options?: QueryOptions<{ aliases: Alias[] }>
+  ) {
+    return useQuery(() => aliasesOptions(businessId, options as DefineOptions<{ aliases: Alias[] }>))
+  }
+
   function authorizedActionsOptions(
     businessId: MaybeRefOrGetter<string>,
     options?: Partial<DefineOptions<{ authorizedPermissions: AuthorizedAction[] }>>
@@ -329,6 +348,8 @@ export const useBusinessQuery = () => {
   return {
     addresses,
     addressesOptions,
+    aliases,
+    aliasesOptions,
     authorizedActions,
     authorizedActionsOptions,
     business,

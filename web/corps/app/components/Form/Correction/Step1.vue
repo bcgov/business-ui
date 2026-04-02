@@ -27,7 +27,26 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
-    <!-- Section 1: Office Addresses -->
+    <!-- Section 1: Name Translations -->
+    <section class="space-y-4" data-testid="name-translations-section">
+      <div>
+        <h2 class="text-base">
+          {{ $t('label.nameTranslations') }}
+        </h2>
+        <p>{{ $t('text.nameTranslationsDescription') }}</p>
+      </div>
+
+      <ManageNameTranslations
+        v-model:active-name-translation="store.formState.activeNameTranslation"
+        :loading="store.initializing"
+        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noNameTranslations')"
+        :add-label="$t('label.addNameTranslation')"
+        :allowed-actions="[ManageAllowedAction.ADD, ManageAllowedAction.NAME_CHANGE, ManageAllowedAction.REMOVE]"
+        :label-overrides="correctionLabelOverrides"
+      />
+    </section>
+
+    <!-- Section 2: Office Addresses -->
     <section class="space-y-4" data-testid="office-addresses-section">
       <div>
         <h2 class="text-base">
@@ -47,7 +66,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
       />
     </section>
 
-    <!-- Section 2: Directors -->
+    <!-- Section 3: Directors -->
     <section class="space-y-4" data-testid="current-directors-section">
       <div>
         <h2 class="text-base">
@@ -70,7 +89,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
       />
     </section>
 
-    <!-- Section 3: Share Structure -->
+    <!-- Section 4: Share Structure -->
     <section data-testid="share-structure-section">
       <h2 class="text-base">
         {{ $t('label.shareStructure') }}
@@ -89,8 +108,8 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
       />
     </section>
 
-    <!-- Section 4: Receivers -->
-    <!-- ToDO: Do we want recievers conditionally -->
+    <!-- Section 5: Receivers -->
+    <!-- ToDO: Do we want receivers conditionally -->
     <section class="space-y-4" data-testid="receivers-section">
       <div>
         <h2 class="text-base">
@@ -117,7 +136,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
       />
     </section>
 
-    <!-- Section 5: Liquidators -->
+    <!-- Section 6: Liquidators -->
     <!-- ToDO: Do we want liquidators conditionally -->
     <section class="space-y-4" data-testid="liquidators-section">
       <div>

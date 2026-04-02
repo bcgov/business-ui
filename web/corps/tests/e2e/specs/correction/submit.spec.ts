@@ -6,6 +6,18 @@ import { CRCTN, CRCTN_NO_FEE } from '~~/tests/mocks'
 const identifier = 'BC1234567'
 const filingId = '999001'
 
+const aliasesNameTranslationsMock = {
+  aliases: [
+    { id: '10001', type: 'TRANSLATION', name: 'Nom Entreprise' }
+  ]
+}
+
+async function mockNameTranslations(page: Page, businessIdentifier: string, aliasesJSON = aliasesNameTranslationsMock) {
+  await page.route(`**/api/v2/businesses/${businessIdentifier}/aliases**`, async (route) => {
+    await route.fulfill({ json: aliasesJSON })
+  })
+}
+
 async function makeDirectorChange(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'TESTER TESTING' })
@@ -104,6 +116,48 @@ test.describe('Correction - Filing Submit', () => {
         { timeout: 10000, waitUntil: 'commit' }
       )
       expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
+    })
+
+    test('should display name translations and submit when unchanged', async ({ page }) => {
+      await mockNameTranslations(page, identifier)
+
+      const aliasesRequest = page.waitForResponse(
+        response =>
+          response.url().includes(`/api/v2/businesses/${identifier}/aliases`)
+          && response.request().method() === 'GET',
+        { timeout: 10000 }
+      )
+
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await aliasesRequest
+      await page.waitForLoadState('networkidle')
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      const nameTranslationSection = page.getByTestId('name-translations-section')
+      await expect(nameTranslationSection).toBeVisible()
+      await expect(nameTranslationSection.locator('tbody')).toContainText('Nom Entreprise')
+
+      // Make a different correction so submission can proceed.
+      await makeDirectorChange(page)
+
+      await goToReview(page)
+      await fillCorrectionComment(page, 'Correcting existing name translation')
+      await fillCompletingParty(page)
+      await page.getByRole('radio', { name: 'No Fee' }).click()
+
+      const submitRequest = page.waitForRequest(
+        req => req.url().includes(`/businesses/${identifier}/filings`) && req.method() === 'PUT',
+        { timeout: 10000 }
+      )
+
+      await page.getByRole('button', { name: 'Submit' }).click()
+      const request = await submitRequest
+      const requestBody = request.postDataJSON()
+      const correction = requestBody.filing.correction
+
+      // Name translations are unchanged, so no translation delta should be sent.
+      expect(correction.nameTranslations).toEqual([])
     })
   })
 

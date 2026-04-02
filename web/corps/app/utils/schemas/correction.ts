@@ -51,7 +51,8 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeLiquidator: getActivePartySchema(RoleTypeUi.LIQUIDATOR),
     activeOffice: getActiveOfficesSchema(),
     activeClass: getActiveShareClassSchema(),
-    activeSeries: getActiveShareSeriesSchema()
+    activeSeries: getActiveShareSeriesSchema(),
+    activeNameTranslation: getActiveNameTranslationSchema()
   })
 
   if (isStaff) {

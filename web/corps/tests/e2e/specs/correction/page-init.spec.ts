@@ -5,6 +5,18 @@ import { CRCTN, CRCTN_NO_FEE } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 const filingId = '999001'
+const nameTranslationsMock = {
+  aliases: [
+    { id: '1001', type: 'TRANSLATION', name: 'Nom Entreprise' },
+    { id: '1002', type: 'TRANSLATION', name: 'Raison Sociale' }
+  ]
+}
+
+async function mockNameTranslations(page: Page, businessIdentifier: string, aliasesJSON = nameTranslationsMock) {
+  await page.route(`**/api/v2/businesses/${businessIdentifier}/aliases`, async (route) => {
+    await route.fulfill({ json: aliasesJSON })
+  })
+}
 
 /** Edit a director's address inline and wait for the form to close (CI-resilient). */
 async function makeDirectorEdit(page: Page, fillValue: string) {
@@ -46,6 +58,8 @@ async function assertCommonElements(page: Page) {
 }
 
 async function assertStep1Sections(page: Page) {
+  // has name translations section
+  await expect(page.getByTestId('name-translations-section')).toBeVisible()
   // has office addresses section
   await expect(page.getByTestId('office-addresses-section')).toBeVisible()
   // has directors section
@@ -203,6 +217,25 @@ test.describe('Correction - Page init', () => {
       // Client-only sections not visible
       await expect(page.getByTestId('completing-party-section')).not.toBeVisible()
       await expect(page.getByTestId('certify-section')).not.toBeVisible()
+    })
+  })
+
+  test.describe('Name translations', () => {
+    test('should load and display name translations from aliases API', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+      await mockNameTranslations(page, identifier)
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await page.waitForLoadState('networkidle')
+
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      const section = page.getByTestId('name-translations-section')
+      const tbody = section.locator('tbody')
+
+      await expect(section).toBeVisible()
+      await expect(tbody).toContainText('Nom Entreprise')
+      await expect(tbody).toContainText('Raison Sociale')
+      await expect(tbody.locator('tr')).toHaveCount(2)
     })
   })
 

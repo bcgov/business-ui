@@ -8,6 +8,7 @@ const { setAlert: setOfficesAlert } = useFilingAlerts('manage-offices')
 const { setAlert: setReceiversAlert } = useFilingAlerts('manage-receivers')
 const { setAlert: setLiquidatorsAlert } = useFilingAlerts('manage-liquidators')
 const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
+const { setAlert: setNameTranslationsAlert } = useFilingAlerts('manage-name-translations')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
 const {
@@ -34,7 +35,8 @@ const {
     [() => store.initialReceivers, () => store.receivers],
     [() => store.initialLiquidators, () => store.liquidators],
     [() => store.initialOffices, () => store.offices],
-    [() => store.initialShareClasses, () => store.shareClasses]
+    [() => store.initialShareClasses, () => store.shareClasses],
+    [() => store.initialNameTranslations, () => store.nameTranslations]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -45,6 +47,7 @@ const {
       || store.liquidators.some(l => l.new.actions.length > 0)
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
+      || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || (store.hasCommentChanges && hasValidComment)
   }
 )
@@ -84,6 +87,8 @@ function checkActiveSubForm() {
       || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
       || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
       || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
+      || (store.formState.activeNameTranslation !== undefined
+        && setNameTranslationsAlert('name-translation-form', alertMsg))
 
   return hasActiveSubForm
 }
