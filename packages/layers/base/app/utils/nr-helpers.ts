@@ -8,7 +8,18 @@ export const getNrApprovedName = (nameRequest: NameRequest): string | undefined 
 }
 
 /** Returns error message if the Name Request data is invalid. */
-export const isNrInvalid = (nameRequest: NameRequest): string | undefined => {
+export const isNrInvalid = (
+  nameRequest: NameRequest,
+  nrAllowedActionTypes?: NrRequestActionCode[]
+): string | undefined => {
+  let validRequestActionCodes: NrRequestActionCode[] = [
+    NrRequestActionCode.NEW_BUSINESS,
+    NrRequestActionCode.AMALGAMATE,
+    NrRequestActionCode.MOVE
+  ]
+
+  validRequestActionCodes = nrAllowedActionTypes ? nrAllowedActionTypes : validRequestActionCodes
+
   if (!nameRequest) {
     return 'Invalid NR object'
   }
@@ -27,11 +38,7 @@ export const isNrInvalid = (nameRequest: NameRequest): string | undefined => {
   if (!nameRequest.nrNum) {
     return 'Invalid NR number'
   }
-  if (![
-    NrRequestActionCode.NEW_BUSINESS,
-    NrRequestActionCode.AMALGAMATE,
-    NrRequestActionCode.MOVE].includes(nameRequest.request_action_cd)
-  ) {
+  if (!validRequestActionCodes.includes(nameRequest.request_action_cd)) {
     return 'Invalid NR action code'
   }
   if (!nameRequest.state) {

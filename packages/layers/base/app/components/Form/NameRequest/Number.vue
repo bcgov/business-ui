@@ -22,16 +22,16 @@ const service = useBusinessService()
 
 const formRef = useTemplateRef<Form<NameRequestSchema>>('nr-number-form')
 
-const validationError = ref('')
 // We only care about nrNum for the form field (other fields are still used, but not in this form schema)
 const schema = getNameRequestSchema()
   .pick({ nrNumber: true })
-  .superRefine((_state, ctx) => {
-    if (validationError.value) {
+  .superRefine(async (state, ctx) => {
+    const message = await validateNrNumber(state.nrNumber)
+    if (message) {
       ctx.addIssue({
         code: 'custom',
         path: ['nrNumber'],
-        message: validationError.value
+        message
       })
     }
   })
@@ -92,17 +92,23 @@ const getNrErrorMsg = (nameRequest: NameRequest) => {
           nrBusinessType: getCorpFullDescription(nameRequest.legalType)
         })
   }
+
+  // verify nr validity
+  if (isNrInvalid(nameRequest, nrAllowedActionTypes)) {
+    return t(`validation.nrNumber.errorState.${NameRequestState.INVALID}`)
+  }
 }
 
 const validateNrNumber = async (nrNum: string) => {
+  let msg = ''
   icon.value = { class: 'text-primary' }
   if (nrNum.length && NR_NUM_REGEX.test(nrNum)) {
     isLoading.value = true
     formRef.value?.clear('nrNumber')
     try {
       const nameRequest = await service.getLinkedNameRequest(nrNum)
-      validationError.value = getNrErrorMsg(nameRequest) ?? ''
-      if (validationError.value) {
+      msg = getNrErrorMsg(nameRequest) ?? ''
+      if (msg) {
         icon.value = { class: 'text-error' }
       } else {
         icon.value = { class: 'text-success', name: 'i-mdi-check' }
@@ -111,7 +117,7 @@ const validateNrNumber = async (nrNum: string) => {
     } catch (err: unknown) {
       icon.value = { class: 'text-error' }
       const statusCode = getErrorStatus(err)
-      validationError.value = [400, 403, 404].includes(statusCode!)
+      msg = [400, 403, 404].includes(statusCode!)
         ? t(`validation.nrNumber.errorState.${NameRequestState.NOT_FOUND}`)
         : t('validation.nrNumber.errorState.undefined')
     } finally {
@@ -119,12 +125,11 @@ const validateNrNumber = async (nrNum: string) => {
     }
   } else {
     // invalid format - set error validation
-    validationError.value = t('validation.nrNumber.invalid')
+    msg = t('validation.nrNumber.invalid')
   }
-  formRef.value?.validate({ silent: true })
+  return msg
+  // formRef.value?.validate({ silent: true })
 }
-
-watchDebounced(() => model.value.nrNumber, validateNrNumber, { debounce: 1000 })
 
 const icon = ref<{ class: string, name?: string }>({ class: 'text-primary' })
 
