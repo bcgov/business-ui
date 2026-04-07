@@ -99,7 +99,7 @@ const getNrErrorMsg = (nameRequest: NameRequest) => {
   }
 }
 
-const validateNrNumber = async (nrNum: string) => {
+const validateNrNumber = async (nrNum: string, triggerFormValidation = false) => {
   let msg = ''
   icon.value = { class: 'text-primary' }
   if (nrNum.length && NR_NUM_REGEX.test(nrNum)) {
@@ -127,9 +127,19 @@ const validateNrNumber = async (nrNum: string) => {
     // invalid format - set error validation
     msg = t('validation.nrNumber.invalid')
   }
+
+  if (triggerFormValidation) {
+    formRef.value?.validate({ silent: true })
+  }
+
   return msg
-  // formRef.value?.validate({ silent: true })
 }
+
+watchDebounced(
+  () => model.value.nrNumber, 
+  () => validateNrNumber(model.value.nrNumber, true),
+  { debounce: 1000 }
+)
 
 const icon = ref<{ class: string, name?: string }>({ class: 'text-primary' })
 
