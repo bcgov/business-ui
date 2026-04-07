@@ -42,7 +42,7 @@ const hasErrors = computed(() => {
       <UForm
         ref="form-ref"
         :state="state"
-        :schema="schema"
+        :schema="z.any()"
         novalidate
         class="gap-6 flex flex-col"
         @submit="onSubmit"
@@ -53,6 +53,7 @@ const hasErrors = computed(() => {
             ref="business-name-form"
             v-model="state.nameRequest"
             name="nameRequest"
+            initial-company-name="Test Company Inc"
             business-identifier="BC1234567"
             :business-type="CorpTypeCd.BC_COMPANY"
             company-name="Test Business Name"
