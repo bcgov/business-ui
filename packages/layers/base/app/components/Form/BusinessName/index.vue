@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { h } from 'vue'
 import type { FormErrorEvent } from '@nuxt/ui'
+import { FormBusinessNameEdit, FormNameRequestNumber, UCheckbox } from '#components'
 
 const {
   businessIdentifier,
@@ -59,6 +61,41 @@ const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
       : []
   )
 ])
+
+function renderOption(item: BusinessNameChangeOption) {
+  if (item.changeOption === CorrectNameOption.CORRECT_NAME) {
+    return h(
+      FormBusinessNameEdit,
+      {
+        'modelValue': model.value,
+        'ref': 'edit-name-form',
+        'onUpdate:modelValue': v => model.value = v
+      }
+    )
+  } else if (item.changeOption === CorrectNameOption.CORRECT_NAME_TO_NUMBER) {
+    return h(
+      UCheckbox,
+      {
+        'modelValue': model.value.changeToNumbered,
+        'label': t('label.changeCompanyNameToNumbered', { numberedName }),
+        'onChange': onChangeToNumberedChange,
+        'onUpdate:modelValue': (val: unknown) => model.value.changeToNumbered = val as boolean
+      }
+    )
+  } else { // CorrectNameOption.CORRECT_NEW_NR
+    return h(
+      FormNameRequestNumber,
+      {
+        'modelValue': model.value,
+        'ref': 'nr-num-form',
+        businessType,
+        filingName,
+        nrAllowedActionTypes,
+        'onUpdate:modelValue': v => model.value = v
+      }
+    )
+  }
+}
 
 function onChangeToNumberedChange() {
   const checked = model.value.changeToNumbered
@@ -126,6 +163,17 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
+
+// init active option and conditionally set legalName if only 1 name change option available
+onMounted(() => {
+  if (nameChangeOptions.value.length === 1) {
+    const option = nameChangeOptions.value[0]?.changeOption
+    activeCorrectNameOption.value = option
+    if (option === CorrectNameOption.CORRECT_NAME) {
+      model.value.legalName = initialCompanyName
+    }
+  }
+})
 </script>
 
 <template>
@@ -136,45 +184,33 @@ async function onDone() {
     nested
     @keydown.enter.prevent.stop="onDone"
   >
-    <Divide orientation="vertical">
+    <Divide v-if="nameChangeOptions.length > 1" orientation="vertical">
       <p>
         {{ $t('text.youCanCorrectFollowingWays') }}
       </p>
       <UAccordion
         :items="nameChangeOptions"
-        :ui="{ 
-          trigger: 'text-primary py-6', 
+        :ui="{
+          trigger: 'text-primary py-6',
           root: '-mt-3',
-          label: 'text-base group-data-[state=open]:font-bold group-data-[state=open]:text-neutral-highlighted'
+          label: 'text-base group-data-[state=open]:font-bold group-data-[state=open]:text-neutral-highlighted',
+          content: 'pb-6 pt-2 px-3'
         }"
         @update:model-value="onActiveAccordianChange"
       >
         <template #content="{ item }">
-          <div class="pb-6 px-3">
-            <div v-if="item.changeOption === CorrectNameOption.CORRECT_NAME">
-              <FormBusinessNameEdit ref="edit-name-form" v-model="model" />
-            </div>
-            <div v-else-if="item.changeOption === CorrectNameOption.CORRECT_NAME_TO_NUMBER">
-              <UCheckbox
-                v-model="model.changeToNumbered"
-                :label="$t('label.changeCompanyNameToNumbered', { numberedName })"
-                @change="onChangeToNumberedChange"
-              />
-            </div>
-            <div v-else>
-              <!-- CorrectNameOption.CORRECT_NEW_NR -->
-              <FormNameRequestNumber
-                ref="nr-num-form"
-                v-model="model"
-                :business-type
-                :filing-name
-                :nr-allowed-action-types
-              />
-            </div>
-          </div>
+          <component :is="renderOption(item)" />
         </template>
       </UAccordion>
     </Divide>
+
+    <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
+      <div class="font-bold text-neutral-highlighted">
+        {{ nameChangeOptions[0].label }}
+      </div>
+      <component :is="renderOption(nameChangeOptions[0])" />
+    </div>
+
     <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
       <FormAlertMessage
         :id="messageId"

@@ -136,7 +136,7 @@ const validateNrNumber = async (nrNum: string, triggerFormValidation = false) =>
 }
 
 watchDebounced(
-  () => model.value.nrNumber, 
+  () => model.value.nrNumber,
   () => validateNrNumber(model.value.nrNumber, true),
   { debounce: 1000 }
 )
