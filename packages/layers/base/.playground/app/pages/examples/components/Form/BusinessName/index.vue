@@ -41,8 +41,8 @@ const hasErrors = computed(() => {
     >
       <UForm
         ref="form-ref"
-        :state="state"
-        :schema="z.any()"
+        :state
+        :schema
         novalidate
         class="gap-6 flex flex-col"
         @submit="onSubmit"
