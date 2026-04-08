@@ -35,35 +35,35 @@ const hasErrors = computed(() => {
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Name Request Number Form' }"
+      :heading="{ label: 'Business Name Form' }"
       :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="max-w-3xl"
     >
       <UForm
         ref="form-ref"
-        :state="state"
-        :schema="schema"
+        :state
+        :schema
         novalidate
         class="gap-6 flex flex-col"
         @submit="onSubmit"
         @error="onFormSubmitError"
       >
         <div class="p-10 bg-shade-inverted">
-          <FormNameRequestNumber
-            ref="nr-number-form"
+          <FormBusinessName
+            ref="business-name-form"
             v-model="state.nameRequest"
             name="nameRequest"
+            initial-company-name="Test Company Inc"
+            business-identifier="BC1234567"
             :business-type="CorpTypeCd.BC_COMPANY"
+            company-name="Test Business Name"
+            :correct-name-options="[
+              CorrectNameOption.CORRECT_NAME,
+              CorrectNameOption.CORRECT_NAME_TO_NUMBER,
+              CorrectNameOption.CORRECT_NEW_NR
+            ]"
             :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
             :nr-allowed-action-types="[NrRequestActionCode.CHANGE_NAME]"
-          />
-        </div>
-        <div class="flex gap-6 justify-end">
-          <UButton type="submit" :label="$t('label.done')" />
-          <UButton
-            variant="outline"
-            :label="$t('label.cancel')"
-            @click="state.nameRequest.nrNumber = ''; formRef?.clear()"
           />
         </div>
       </UForm>

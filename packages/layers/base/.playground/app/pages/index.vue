@@ -134,6 +134,10 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Form/DocumentUpload/invalid')
   },
   {
+    label: 'FormBusinessName',
+    to: localePath('/examples/components/Form/BusinessName')
+  },
+  {
     label: 'FormNameRequestNumber',
     to: localePath('/examples/components/Form/NameRequest/Number')
   },
@@ -191,6 +195,7 @@ const serviceExamples: DropdownMenuItem[] = [
       <UDropdownMenu
         :items="componentExamples"
         :content="{ align: 'start' }"
+        :ui="{ content: 'max-h-50' }"
       >
         <UButton
           label="Component Examples"
