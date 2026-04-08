@@ -121,11 +121,9 @@ function onActiveAccordianChange(v: string | string[] | undefined) {
   }
 
   // reset model each time accordian is changed
-  model.value = {
-    legalName: '',
-    nrNumber: '',
-    changeToNumbered: false
-  }
+  model.value.legalName = ''
+  model.value.nrNumber = ''
+  model.value.changeToNumbered = false
 
   // set legal name to original name when opening `Edit the company name option`
   nextTick(() => {
@@ -154,10 +152,6 @@ async function onDone() {
       await nrNumFormRef.value?.formRef?.validate()
     }
 
-    console.log('Submitted')
-    console.log('Legal name: ', model.value.legalName)
-    console.log('NR Number: ', model.value.nrNumber)
-    console.log('Change to numbered: ', model.value.changeToNumbered)
     emit('done')
   } catch (e) {
     onFormSubmitError(e as FormErrorEvent)
@@ -182,6 +176,7 @@ onMounted(() => {
     :schema
     :name
     nested
+    :state="(model as any)"
     @keydown.enter.prevent.stop="onDone"
   >
     <Divide v-if="nameChangeOptions.length > 1" orientation="vertical">
