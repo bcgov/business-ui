@@ -54,8 +54,7 @@ const {
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons-stacked',
-  middleware: ['connect-auth'],
-  path: '/correction/:businessId/:filingId'
+  middleware: ['connect-auth']
 })
 
 useHead({
