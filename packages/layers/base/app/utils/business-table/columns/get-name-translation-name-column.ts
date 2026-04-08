@@ -1,12 +1,15 @@
 import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
+import { merge } from 'es-toolkit'
 
 export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
   metaOption: TableColumnMetaOption = 'first',
-  badgeLabelOverrides?: Partial<Record<ActionType, string>>
+  badgeLabelOverrides?: Partial<Record<ActionType, string>>,
+  metaOverrides: Partial<TableBusinessColumnMeta<T>> = {}
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
-  const meta = getColumnMeta<T>(metaOption)
+  const defaultMeta = getColumnMeta<T>(metaOption)!
+  const meta = merge(defaultMeta, metaOverrides)
 
   const nameColumn: TableBusinessColumn<T> = {
     id: 'translation-name',
@@ -36,7 +39,7 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
           badges,
           class: cellClass
         },
-        name
+        () => name
       )
     }
   }
