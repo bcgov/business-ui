@@ -63,37 +63,38 @@ const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
 ])
 
 function renderOption(item: BusinessNameChangeOption) {
-  if (item.changeOption === CorrectNameOption.CORRECT_NAME) {
-    return h(
-      FormBusinessNameEdit,
-      {
-        'modelValue': model.value,
-        'ref': 'edit-name-form',
-        'onUpdate:modelValue': v => model.value = v
-      }
-    )
-  } else if (item.changeOption === CorrectNameOption.CORRECT_NAME_TO_NUMBER) {
-    return h(
-      UCheckbox,
-      {
-        'modelValue': model.value.changeToNumbered,
-        'label': t('label.changeCompanyNameToNumbered', { numberedName }),
-        'onChange': onChangeToNumberedChange,
-        'onUpdate:modelValue': (val: unknown) => model.value.changeToNumbered = val as boolean
-      }
-    )
-  } else { // CorrectNameOption.CORRECT_NEW_NR
-    return h(
-      FormNameRequestNumber,
-      {
-        'modelValue': model.value,
-        'ref': 'nr-num-form',
-        businessType,
-        filingName,
-        nrAllowedActionTypes,
-        'onUpdate:modelValue': v => model.value = v
-      }
-    )
+  switch (item.changeOption) {
+    case CorrectNameOption.CORRECT_NAME:
+      return h(
+        FormBusinessNameEdit,
+        {
+          'modelValue': model.value,
+          'ref': 'edit-name-form',
+          'onUpdate:modelValue': v => model.value = v
+        }
+      )
+    case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
+      return h(
+        UCheckbox,
+        {
+          'modelValue': model.value.changeToNumbered,
+          'label': t('label.changeCompanyNameToNumbered', { numberedName }),
+          'onChange': onChangeToNumberedChange,
+          'onUpdate:modelValue': (val: unknown) => model.value.changeToNumbered = val as boolean
+        }
+      )
+    default: // CorrectNameOption.CORRECT_NEW_NR
+      return h(
+        FormNameRequestNumber,
+        {
+          'modelValue': model.value,
+          'ref': 'nr-num-form',
+          businessType,
+          filingName,
+          nrAllowedActionTypes,
+          'onUpdate:modelValue': v => model.value = v
+        }
+      )
   }
 }
 
