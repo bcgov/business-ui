@@ -84,7 +84,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="directorAllowedActions"
         :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeDirector"
       />
     </section>
@@ -128,7 +128,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="receiverLiquidatorAllowedActions"
         :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeReceiver"
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: false }
