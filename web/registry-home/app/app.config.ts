@@ -13,6 +13,36 @@ export default defineAppConfig({
         idps: ['bcsc'],
         idpEnforcement: true
       }
+    },
+    bceidUser: {
+      login: {
+        idps: ['bceid'],
+        idpEnforcement: true
+      }
+    },
+    idirUser: {
+      login: {
+        idps: ['idir'],
+        idpEnforcement: true
+      }
+    },
+    bcscBceidUser: {
+      login: {
+        idps: ['bcsc', 'bceid'],
+        idpEnforcement: true
+      }
+    },
+    bcscIdirUser: {
+      login: {
+        idps: ['bcsc', 'idir'],
+        idpEnforcement: true
+      }
+    },
+    bceidIdirUser: {
+      login: {
+        idps: ['bceid', 'idir'],
+        idpEnforcement: true
+      }
     }
   }
 })
