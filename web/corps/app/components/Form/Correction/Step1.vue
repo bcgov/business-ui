@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
+const { business, businessContact } = storeToRefs(useBusinessStore())
 
 const directorAllowedActions = [
   ManageAllowedAction.ADD,
@@ -27,6 +28,19 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
+    <ManageCompanyName
+      v-model:active-name-request="store.formState.activeNameRequest"
+      :loading="store.initializing"
+      :business
+      :contact="businessContact" 
+      :correct-name-options="[
+        CorrectNameOption.CORRECT_NAME,
+        CorrectNameOption.CORRECT_NAME_TO_NUMBER,
+        CorrectNameOption.CORRECT_NEW_NR
+      ]"
+      :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]"
+    />
+
     <!-- Section 1: Name Translations -->
     <section class="space-y-4" data-testid="name-translations-section">
       <div>

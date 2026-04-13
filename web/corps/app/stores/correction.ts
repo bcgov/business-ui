@@ -8,6 +8,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { tableState: tableNameTranslations } = useManageNameTranslations()
+  const { state: companyName } = useManageCompanyName()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -251,6 +252,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // No existing translations, but draft has new ones
       tableNameTranslations.value = mapDraftOnlyNameTranslations(draft.nameTranslations)
     }
+
+    // set `Your Company` data
+    // TODO: set draft state if exists
+    companyName.value.new.legalName = businessStore.business?.legalName ?? ''
+    companyName.value.new.actions = [] // TODO: add corrected action if different from draft state
+    companyName.value.old.legalName = businessStore.business?.legalName ?? ''
+    companyName.value.old.actions = []
+
 
     await nextTick()
     initialFormState.value = cloneDeep(formState)

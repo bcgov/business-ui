@@ -52,7 +52,8 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeOffice: getActiveOfficesSchema(),
     activeClass: getActiveShareClassSchema(),
     activeSeries: getActiveShareSeriesSchema(),
-    activeNameTranslation: getActiveNameTranslationSchema()
+    activeNameTranslation: getActiveNameTranslationSchema(),
+    activeNameRequest: getActiveNameRequestSchema()
   })
 
   if (isStaff) {
