@@ -1,15 +1,6 @@
-type CompanyNameState = {
-  new: {
-    legalName: string,
-    actions: ActionType[]
-  },
-  old: {
-    legalName: string,
-    actions: ActionType[]
-  }
-}
+import { cloneDeep } from 'es-toolkit'
 
-const defaultState: CompanyNameState = {
+const defaultState: ManageCompanyNameState = {
   new: {
     legalName: '',
     actions: []
@@ -19,21 +10,6 @@ const defaultState: CompanyNameState = {
     actions: []
   }
 }
-
-// interface NameRequestIF {
-//   applicants: NrApplicantIF // object not array
-//   consentFlag: string // R, N, Y or null
-//   corpNum?: string // eg, "BC1234567"
-//   expirationDate: ApiDateTimeUtc
-//   furnished: string // eg, "Y"
-//   legalType: CorpTypeCd
-//   names: Array<NrNameIF>
-//   nrNum: string // eg, "NR 1234567"
-//   priorityCd: string // eg, "N"
-//   requestTypeCd: NrRequestTypeCodes
-//   request_action_cd: NrRequestActionCodes // eslint-disable-line camelcase
-//   state: NameRequestStates
-// }
 
 // nameRequest?: NameRequestIF & { legalName: string, nrNumber?: string }
 
@@ -43,37 +19,76 @@ const defaultState: CompanyNameState = {
 // 'nameRequest': {
 //     'legalType': 'BC',
 //     'legalName': 'legal name change - BC1234567'
-// },
-
-// 'nameRequest': {
-//     'nrNumber': 'NR 8798956',
-//     'legalName': 'HAULER MEDIA INC.',
-//     'legalType': 'GP'
-// },
-
-// 'nameRequest': {
-//     'nrNumber': 'NR 8798956',
-//     'legalName': 'HAULER MEDIA INC.',
-//     'legalType': 'GP'
-// },
+// }
 
 export const useManageCompanyName = (stateKey: string = 'manage-company-name') => {
-  const state = useState<CompanyNameState>(`${stateKey}-state`, () => defaultState)
+  const service = useBusinessService()
+  const { t } = useNuxtApp().$i18n
 
-  function updateState(newName: string): void {
-    if (state.value.new.legalName !== newName.trim()) {
-      state.value.new.legalName = newName
-      state.value.new.actions = [ActionType.CORRECTED]
+  const state = useState<ManageCompanyNameState>(`${stateKey}-state`, () => defaultState)
+  const nrData = useState<NameRequest | undefined>(`${stateKey}-nrData`, () => undefined)
+
+  const hasNameChange = computed(() => {
+    return state.value.old.legalName !== state.value.new.legalName
+      && !!state.value.new.legalName.trim()
+  })
+
+  function updateState(data: ActiveNameRequestSchema) {
+    const name = data?.legalName.trim()
+
+    if (!name) {
+      return
     }
+
+    state.value.new.legalName = name
+    state.value.new.nrNumber = data?.nrNumber
+
+    state.value.new.actions = name !== state.value.old.legalName
+      ? [ActionType.CORRECTED]
+      : []
   }
 
-  function undoState(): void {
-    state.value.new.legalName = state.value.old.legalName
-    state.value.new.actions = []
+  function undoState() {
+    state.value.new = cloneDeep(state.value.old)
   }
+
+  // fetch the nr data to display in the UI when the nrNumber is populated
+  watch(
+    () => state.value.new.nrNumber,
+    async (v) => {
+      const nrNum = v?.trim()
+      if (!nrNum) {
+        nrData.value = undefined
+      } else {
+        nrData.value = await service.getLinkedNameRequest(nrNum).catch(() => undefined)
+      }
+    }
+  )
+
+  const nrDetails = computed(() => {
+    const data = nrData.value
+    if (!data) {
+      return undefined
+    }
+    return {
+      meta: {
+        legalName: state.value.new.legalName,
+        nrNumber: state.value.new.nrNumber
+      },
+      info: [
+        { label: 'Business Type', value: getCorpFullDescription(data.legalType) },
+        { label: 'Request Type', value: t(`nameRequestAction.${data.request_action_cd}`) },
+        { label: 'Expiry Date', value: toReadableDate(data.expirationDate) },
+        { label: 'Status', value: t(`nameRequestState.${data.state}`) }
+      ]
+    }
+  })
 
   return {
     state,
+    nrData,
+    nrDetails,
+    hasNameChange,
     updateState,
     undoState
   }

@@ -18,7 +18,7 @@ const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('acti
 
 const { t } = useI18n()
 const schema = getNameRequestSchema()
-const { state, undoState, updateState } = useManageCompanyName(stateKey)
+const { state, nrDetails, undoState, updateState } = useManageCompanyName(stateKey)
 
 const formattedFoundingDate = computed(() => {
   return toReadableDate(business?.foundingDate ?? '', DateTime.DATETIME_FULL)
@@ -34,8 +34,8 @@ const formattedContactInfo = computed(() => {
   const { phone, extension, phoneExtension, email } = contact
 
   const ext = extension ?? phoneExtension
-  const phoneLabel = phone 
-    ? (ext ? `${phone} Ext: ${ext}` : phone) 
+  const phoneLabel = phone
+    ? (ext ? `${phone} Ext: ${ext}` : phone)
     : emptyText
 
   return {
@@ -68,7 +68,7 @@ function cleanupForm() {
 </script>
 
 <template>
-  <ConnectPageSection 
+  <ConnectPageSection
     :heading="{ label: 'Your Company', icon: 'i-mdi-domain', ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md' }"
     ui-body="p-0 sm:p-0"
   >
@@ -84,43 +84,49 @@ function cleanupForm() {
           </div>
         </template>
         <template #default>
-        <div v-if="!activeNameRequest" class="flex justify-between">
-          <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
-          <span v-else class="text-xl font-bold">{{ state.new.legalName  }}</span>
-          <UFieldGroup class="divide-x divide-line-muted">
-            <UButton :label="mainAction.label" :icon="mainAction.icon" variant="ghost" @click="mainAction.click" />
-            <UDropdownMenu
-              v-if="dropdownActions.length"
-              :items="dropdownActions"
-            >
+          <div v-if="!activeNameRequest" class="flex justify-between">
+            <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
+            <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
+            <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
+            <UFieldGroup class="divide-x divide-line-muted h-min">
               <UButton
+                :label="mainAction.label"
+                :icon="mainAction.icon"
                 variant="ghost"
-                icon="i-mdi-caret-down"
-                class="px-4 data-[state=open]:bg-(--ui-primary)/25 group"
-                :aria-label="t('label.moreActions')"
-                :ui="{
-                  leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
-                }"
+                @click="mainAction.click"
               />
-            </UDropdownMenu>
-          </UFieldGroup>
-        </div>
-        <FormBusinessName
-          v-if="business && activeNameRequest"
-          ref="business-name-form"
-          v-model="activeNameRequest"
-          name="activeNameRequest"
-          :state-key="stateKey"
-          :initial-company-name="state.new.legalName"
-          :business-identifier="business.identifier"
-          :business-type="business.legalType"
-          :correct-name-options="correctNameOptions"
-          :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
-          :nr-allowed-action-types="nrAllowedActionsTypes"
-          @cancel="activeNameRequest = undefined"
-          @done="() => { updateState(activeNameRequest!.legalName); cleanupForm() }"
-        />
-         </template>
+              <UDropdownMenu
+                v-if="dropdownActions.length"
+                :items="dropdownActions"
+              >
+                <UButton
+                  variant="ghost"
+                  icon="i-mdi-caret-down"
+                  class="px-4 data-[state=open]:bg-(--ui-primary)/25 group"
+                  :aria-label="t('label.moreActions')"
+                  :ui="{
+                    leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
+                  }"
+                />
+              </UDropdownMenu>
+            </UFieldGroup>
+          </div>
+          <FormBusinessName
+            v-if="business && activeNameRequest"
+            ref="business-name-form"
+            v-model="activeNameRequest"
+            name="activeNameRequest"
+            :state-key="stateKey"
+            :initial-company-name="state.new.legalName"
+            :business-identifier="business.identifier"
+            :business-type="business.legalType"
+            :correct-name-options="correctNameOptions"
+            :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
+            :nr-allowed-action-types="nrAllowedActionsTypes"
+            @cancel="activeNameRequest = undefined"
+            @done="() => { updateState(activeNameRequest); cleanupForm() }"
+          />
+        </template>
       </ConnectFieldset>
       <USeparator class="px-4 sm:px-6" />
       <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">

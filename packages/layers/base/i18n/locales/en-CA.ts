@@ -573,6 +573,23 @@ export default {
     NEW: 'New Business | a New Business',
     REH: 'Restoration | a Restoration'
   },
+  nameRequestState: {
+    APPROVED: 'Approved',
+    CANCELLED: 'Cancelled',
+    COMPLETED: 'Completed',
+    CONDITIONAL: 'Conditional',
+    CONDITION: 'Condition',
+    CONSUMED: 'Consumed',
+    DRAFT: 'Draft',
+    EXPIRED: 'Expired',
+    HISTORICAL: 'Historical',
+    HOLD: 'Hold',
+    INPROGRESS: 'In Progress',
+    PENDING_PAYMENT: 'Pending Payment',
+    REFUND_REQUESTED: 'Refund Requested',
+    REJECTED: 'Rejected',
+    NRO_UPDATING: 'Name Request Updating'
+  },
   officeType: {
     registeredOffice: 'Registered Office',
     recordsOffice: 'Records Office',

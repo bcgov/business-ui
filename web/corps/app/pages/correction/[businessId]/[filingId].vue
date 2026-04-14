@@ -36,7 +36,8 @@ const {
     [() => store.initialLiquidators, () => store.liquidators],
     [() => store.initialOffices, () => store.offices],
     [() => store.initialShareClasses, () => store.shareClasses],
-    [() => store.initialNameTranslations, () => store.nameTranslations]
+    [() => store.initialNameTranslations, () => store.nameTranslations],
+    [() => store.companyName.old.legalName, () => store.companyName.new.legalName]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -140,6 +141,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
       await navigateTo(dashboardUrl.value, { external: true })
     }
   } catch (error) {
+    console.log(error)
     if (enableUnsavedChangesBlock) {
       modal.openSaveFilingErrorModal(error)
       initBeforeUnload()

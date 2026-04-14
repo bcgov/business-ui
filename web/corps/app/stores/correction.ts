@@ -8,7 +8,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { tableState: tableNameTranslations } = useManageNameTranslations()
-  const { state: companyName } = useManageCompanyName()
+  const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -254,11 +254,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     // set `Your Company` data
-    // TODO: set draft state if exists
-    companyName.value.new.legalName = businessStore.business?.legalName ?? ''
-    companyName.value.new.actions = [] // TODO: add corrected action if different from draft state
-    companyName.value.old.legalName = businessStore.business?.legalName ?? ''
+    const originalName = businessStore.business?.legalName ?? ''
+    companyName.value.old.legalName = originalName
     companyName.value.old.actions = []
+    companyName.value.new = cloneDeep(companyName.value.old)
+    if (draft?.nameRequest) {
+      updateCompanyName({
+        legalName: draft.nameRequest.legalName,
+        nrNumber: draft.nameRequest.nrNumber ?? '',
+        changeToNumbered: false
+      })
+    }
 
 
     await nextTick()
@@ -340,9 +346,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           name: nt.new.name,
           ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
           action: nt.new.actions[0]
-        }))
+        })),
+      
+      ...(hasNameChange.value && { 
+        nameRequest: {
+          legalName: companyName.value.new.legalName,
+          nrNumber: companyName.value.new.nrNumber
+        }
+      })
 
-      // TODO: add nameRequest, startDate, provisionsRemoved
+      // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
     }
 
@@ -426,6 +439,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialNameTranslations,
     hasCommentChanges,
     isStaff,
+    companyName,
     init,
     submit,
     $reset

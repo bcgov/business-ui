@@ -52,6 +52,7 @@ export interface CorrectionPayload extends FilingPayloadData {
     // NB: this can be an empty string when staff update the name directly
     nrNumber?: string
   }
+
   nameTranslations?: Array<{
     id?: string
     name: string
