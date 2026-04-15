@@ -11,6 +11,7 @@ const ldStore = useConnectLaunchdarklyStore()
 const props = defineProps<{
   alert?: ModalAlertProps
   business: ManageBusinessEvent
+  isSaf?: boolean // Flag for SAF (simplified account flow) specific UI differences - currently only changes the email auth option text
 }>()
 
 const emailSent = ref(false)
@@ -77,13 +78,15 @@ const authOptions = computed<AccordionItem[]>(() => {
 
   if (showEmailOption.value) {
     options.push({
-      label: businessDetails.value.isCoop
-        ? t('form.manageBusiness.authOption.email.radioLabel.coop')
-        : isCorpOrBenOrCoop.value
-          ? t('form.manageBusiness.authOption.email.radioLabel.corpOrBenOrCoop')
-          : businessDetails.value.isFirm && contactEmail.value !== ''
-            ? t('form.manageBusiness.authOption.email.radioLabel.firm')
-            : t('form.manageBusiness.authOption.email.radioLabel.default'),
+      label: props.isSaf
+        ? t('form.manageBusiness.authOption.email.radioLabel.safAffiliation')
+        : businessDetails.value.isCoop
+          ? t('form.manageBusiness.authOption.email.radioLabel.coop')
+          : isCorpOrBenOrCoop.value
+            ? t('form.manageBusiness.authOption.email.radioLabel.corpOrBenOrCoop')
+            : businessDetails.value.isFirm && contactEmail.value !== ''
+              ? t('form.manageBusiness.authOption.email.radioLabel.firm')
+              : t('form.manageBusiness.authOption.email.radioLabel.default'),
       slot: 'email-option'
     })
   }

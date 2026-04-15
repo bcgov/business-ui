@@ -19,6 +19,36 @@ mockNuxtImport('useRoute', () => {
   })
 })
 
+mockNuxtImport('useConnectAccountStore', () => () => ({
+  currentAccount: { id: 1234 }
+}))
+
+const mockAuthApi = vi.fn()
+const mockBusinessApi = vi.fn()
+mockNuxtImport('useNuxtApp', () => {
+  return () => ({
+    $authApi: mockAuthApi,
+    $businessApi: mockBusinessApi,
+    $i18n: {
+      t: (key: string) => key
+    },
+    payload: {
+      state: {}
+    }
+  })
+})
+
+mockNuxtImport('useModal', () => () => ({ open: vi.fn() }))
+
+const { mockAcceptInvitation } = vi.hoisted(() => ({ mockAcceptInvitation: vi.fn() }))
+vi.mock('~/services/affiliation-invitation-service', () => {
+  return {
+    default: {
+      acceptInvitation: mockAcceptInvitation
+    }
+  }
+})
+
 // Mock toast notifications service
 const mockToast = {
   add: vi.fn()
@@ -27,8 +57,11 @@ const mockToast = {
 // Mock modal service for displaying various modals
 const mockBrdModal = {
   openMagicLinkModal: vi.fn(),
-  openBusinessAddError: vi.fn()
+  openBusinessAddError: vi.fn(),
+  openManageBusiness: vi.fn()
 }
+
+mockNuxtImport('useBrdModals', () => () => mockBrdModal)
 
 // Sample parsed token data structure for testing
 const mockParsedToken = {
@@ -97,5 +130,134 @@ describe('AcceptToken Page', () => {
     const uncompressedToken = component.parseToken(UNCOMPRESSED_TOKEN)
     expect(uncompressedToken.businessIdentifier).toBeDefined()
     expect(uncompressedToken.id).toBeDefined()
+  })
+
+  describe('SAF Affiliation Error Handling', () => {
+    const identifier = 'BC1234567'
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+      mockBusinessApi.mockResolvedValue({
+        business: { legalType: 'BC', legalName: 'Testing Inc', state: 'ACTIVE' }
+      })
+
+      mockAuthApi.mockResolvedValue({ entities: [] })
+    })
+
+    const initMocks = (component: any, invitationError: object) => {
+      vi.spyOn(component, 'parseToken').mockReturnValue({
+        fromOrgId: null,
+        businessIdentifier: identifier,
+        id: '87654'
+      })
+
+      mockAcceptInvitation.mockRejectedValue(invitationError)
+    }
+
+    it('opens Manage Business modal with "expired" alert when link is expired', async () => {
+      const wrapper = mountComponent()
+      const component = wrapper.vm as any
+
+      const expiredError = {
+        response: {
+          status: 400,
+          _data: { code: 'EXPIRED_AFFILIATION_INVITATION' }
+        }
+      }
+
+      initMocks(component, expiredError)
+
+      await component.parseUrlAndAddAffiliation({ businessIdentifier: identifier, id: '1', fromOrgId: null }, 'token')
+
+      expect(mockAcceptInvitation).toHaveBeenCalled()
+
+      expect(mockBrdModal.openManageBusiness).toHaveBeenCalledWith(
+        expect.objectContaining({ identifier }),
+        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.expired' }),
+        true
+      )
+    })
+
+    it('checks affiliations and shows "already added" modal if business is in account', async () => {
+      const wrapper = mountComponent()
+      const component = wrapper.vm as any
+
+      const actionedError = {
+        response: {
+          status: 400,
+          _data: { code: 'ACTIONED_AFFILIATION_INVITATION' }
+        }
+      }
+
+      initMocks(component, actionedError)
+
+      // mock already added to account
+      mockAuthApi.mockResolvedValue({
+        entities: [{ identifier, name: 'Testing Inc' }]
+      })
+
+      await component.parseUrlAndAddAffiliation({ businessIdentifier: identifier, id: '1', fromOrgId: null }, 'token')
+
+      expect(mockAcceptInvitation).toHaveBeenCalled()
+
+      expect(mockBrdModal.openMagicLinkModal).toHaveBeenCalledWith(
+        'error.magicLinkAlreadyAdded.title',
+        'error.magicLinkAlreadyAdded.description'
+      )
+      expect(mockBrdModal.openManageBusiness).not.toHaveBeenCalled()
+    })
+
+    it('opens Manage Business modal with "actioned" alert if business is NOT in account', async () => {
+      const wrapper = mountComponent()
+      const component = wrapper.vm as any
+
+      const actionedError = {
+        response: {
+          status: 400,
+          _data: { code: 'ACTIONED_AFFILIATION_INVITATION' }
+        }
+      }
+
+      initMocks(component, actionedError)
+
+      // invitation ACCEPTED but not in orgs affiliations
+      mockAuthApi.mockResolvedValue({ entities: [] })
+
+      await component.parseUrlAndAddAffiliation({ businessIdentifier: identifier, id: '1', fromOrgId: null }, 'token')
+
+      expect(mockAcceptInvitation).toHaveBeenCalled()
+
+      expect(mockBrdModal.openManageBusiness).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.actioned' }),
+        true
+      )
+    })
+
+    it('opens Manage Business modal with "generic" alert for unknown SAF errors', async () => {
+      const wrapper = mountComponent()
+      const component = wrapper.vm as any
+
+      const unknownError = {
+        response: {
+          status: 400,
+          _data: { code: 'UNKNOWN_ERROR_CODE' }
+        }
+      }
+
+      initMocks(component, unknownError)
+
+      await component.parseUrlAndAddAffiliation({ businessIdentifier: identifier, id: '1', fromOrgId: null }, 'token')
+
+      expect(mockAcceptInvitation).toHaveBeenCalled()
+
+      expect(mockBrdModal.openManageBusiness).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.objectContaining({
+          translationPath: 'form.manageBusiness.safAffiliationAlert.generic'
+        }),
+        true
+      )
+    })
   })
 })

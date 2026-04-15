@@ -2,7 +2,7 @@
   "name": "business-registry-dashboard",
   "private": true,
   "type": "module",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "engines": {
     "node": ">=24"
   },

@@ -389,7 +389,8 @@ export default {
             default: 'Confirm authorization using your email address',
             firm: 'Confirm authorization using your business email address',
             corpOrBenOrCoop: 'Confirm authorization using your registered office email address',
-            coop: 'Confirm authorization using your registered office email address'
+            coop: 'Confirm authorization using your registered office email address',
+            safAffiliation: 'Use your registered office email address to send a new link'
           },
           coopSubtext: '(If you forgot or don\'t have a business passcode)',
           sentTo: {
@@ -486,7 +487,12 @@ export default {
         }
       },
       submitBtn: 'Manage this Business',
-      noOptionAlert: 'Please select an option from the list above'
+      noOptionAlert: 'Please select an option from the list above',
+      safAffiliationAlert: { // only used when the simplified account flow + affiliation fails
+        expired: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an expired link. Please select an option below to send a new request.',
+        actioned: '{boldStart}Important:{boldEnd} This link is no longer active as it has already been processed. Please select an option below to send a new request.',
+        generic: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an internal error. Please select an option below to send a new request.'
+      }
     }
   },
   labels: {
