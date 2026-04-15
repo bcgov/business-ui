@@ -173,7 +173,8 @@ describe('AcceptToken Page', () => {
 
       expect(mockBrdModal.openManageBusiness).toHaveBeenCalledWith(
         expect.objectContaining({ identifier }),
-        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.expired' })
+        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.expired' }),
+        true
       )
     })
 
@@ -228,7 +229,8 @@ describe('AcceptToken Page', () => {
 
       expect(mockBrdModal.openManageBusiness).toHaveBeenCalledWith(
         expect.any(Object),
-        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.actioned' })
+        expect.objectContaining({ translationPath: 'form.manageBusiness.safAffiliationAlert.actioned' }),
+        true
       )
     })
 
@@ -253,7 +255,8 @@ describe('AcceptToken Page', () => {
         expect.any(Object),
         expect.objectContaining({
           translationPath: 'form.manageBusiness.safAffiliationAlert.generic'
-        })
+        }),
+        true
       )
     })
   })

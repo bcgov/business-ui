@@ -194,8 +194,8 @@ export const useBrdModals = () => {
     }
   }
 
-  function openManageBusiness (business: ManageBusinessEvent, alert?: ModalAlertProps) {
-    modal.open(ModalManageBusiness, { business, alert })
+  function openManageBusiness (business: ManageBusinessEvent, alert?: ModalAlertProps, isSaf?: boolean) {
+    modal.open(ModalManageBusiness, { business, alert, isSaf })
   }
 
   function openAuthEmailSent (email: string) {

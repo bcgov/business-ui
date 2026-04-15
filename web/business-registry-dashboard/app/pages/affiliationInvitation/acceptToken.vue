@@ -109,17 +109,21 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
         }
         const safErrorType = safErrorMap[errorCode] || 'generic'
 
-        brdModal.openManageBusiness({
-          identifier,
-          legalType: businessInfo.business.legalType,
-          name: businessInfo.business.legalName,
-          status: businessInfo.business.state
-        }, {
-          color: 'red',
-          translationPath: `form.manageBusiness.safAffiliationAlert.${safErrorType}`,
-          icon: 'i-mdi-warning',
-          variant: 'subtle'
-        })
+        brdModal.openManageBusiness(
+          {
+            identifier,
+            legalType: businessInfo.business.legalType,
+            name: businessInfo.business.legalName,
+            status: businessInfo.business.state
+          },
+          {
+            color: 'red',
+            translationPath: `form.manageBusiness.safAffiliationAlert.${safErrorType}`,
+            icon: 'i-mdi-warning',
+            variant: 'subtle'
+          },
+          true
+        )
       } catch (businessError: any) {
         console.error(businessError)
         brdModal.openBusinessAddError()

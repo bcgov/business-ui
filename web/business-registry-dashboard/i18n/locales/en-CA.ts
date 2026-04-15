@@ -389,7 +389,8 @@ export default {
             default: 'Confirm authorization using your email address',
             firm: 'Confirm authorization using your business email address',
             corpOrBenOrCoop: 'Confirm authorization using your registered office email address',
-            coop: 'Confirm authorization using your registered office email address'
+            coop: 'Confirm authorization using your registered office email address',
+            safAffiliation: 'Use your registered office email address to send a new link'
           },
           coopSubtext: '(If you forgot or don\'t have a business passcode)',
           sentTo: {
