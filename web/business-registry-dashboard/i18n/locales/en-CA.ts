@@ -486,7 +486,12 @@ export default {
         }
       },
       submitBtn: 'Manage this Business',
-      noOptionAlert: 'Please select an option from the list above'
+      noOptionAlert: 'Please select an option from the list above',
+      safAffiliationAlert: { // only used when the simplified account flow + affiliation fails
+        expired: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an expired link. Please send a new request below.',
+        actioned: '{boldStart}Important:{boldEnd} This link is no longer active as it has already been processed. Please send a new request below.',
+        generic: '{boldStart}Important:{boldEnd} The business could not be added to your account due to an internal error. Please send a new request below.'
+      }
     }
   },
   labels: {

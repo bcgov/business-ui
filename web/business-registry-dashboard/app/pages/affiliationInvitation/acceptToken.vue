@@ -2,7 +2,7 @@
 import { inflate } from 'pako'
 import { StatusCodes } from 'http-status-codes'
 
-const { $businessApi } = useNuxtApp()
+const { $businessApi, $authApi } = useNuxtApp()
 const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
 const brdModal = useBrdModals()
@@ -70,15 +70,30 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
     }
   } catch (error: any) {
     console.error(error)
-    // Generic email affiliation error when there is no fromOrgId (special migration flow affiliation)
-    if (
-      !fromOrgId &&
-      !(
-        error.response?.status === StatusCodes.BAD_REQUEST &&
-        error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION
-      )
-    ) {
+    const errorCode = error.response?._data?.code || error.response?._data?.rootCause?.code
+    const errorStatus = error.response?.status
+    const isBadRequest = errorStatus === StatusCodes.BAD_REQUEST
+    const isExpired = errorCode === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION
+    const isActioned = errorCode === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION
+
+    // Email affiliation error when there is no fromOrgId (special migration flow affiliation)
+    if (!fromOrgId && isBadRequest) {
       try {
+        // In SAF + Affiliation flow, this link could have been used by another user or account
+        // causing the invitation to be `ACCEPTED`, need to confirm business has been added to this account specifically
+        if (isActioned) {
+          const accountId = useConnectAccountStore().currentAccount.id
+          const { entities } = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountId}/affiliations?new=true`)
+          const alreadyAdded = entities.find(b => b.identifier === identifier)
+
+          if (alreadyAdded) {
+            brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
+            return
+          }
+        }
+
+        // If link is expired, actioned by a different account or any other error, open manage business modal
+        // prompting the user to send a new affiliation request
         // FUTURE: replace with business layer business store init (handles all mapping, typing, etc.)
         const businessInfo: {
           business: {
@@ -88,6 +103,12 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
           }
         } = await $businessApi(`/businesses/${identifier}/public?slim=true`)
 
+        const safErrorMap: Record<string, string> = {
+          [MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION]: 'expired',
+          [MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION]: 'actioned'
+        }
+        const safErrorType = safErrorMap[errorCode] || 'generic'
+
         brdModal.openManageBusiness({
           identifier,
           legalType: businessInfo.business.legalType,
@@ -95,7 +116,7 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
           status: businessInfo.business.state
         }, {
           color: 'red',
-          translationPath: 'form.manageBusiness.expiredLink',
+          translationPath: `form.manageBusiness.safAffiliationAlert.${safErrorType}`,
           icon: 'i-mdi-warning',
           variant: 'subtle'
         })
@@ -106,19 +127,17 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
       return
     }
     // Unauthorized
-    if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+    if (errorStatus === StatusCodes.UNAUTHORIZED) {
       brdModal.openMagicLinkModal(t('error.magicLinkUnauthorized.title'), t('error.magicLinkUnauthorized.description'))
       return
     }
     // Expired
-    if (error.response?.status === StatusCodes.BAD_REQUEST &&
-      error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.EXPIRED_AFFILIATION_INVITATION) {
+    if (isBadRequest && isExpired) {
       brdModal.openMagicLinkModal(t('error.magicLinkExpired.title'), t('error.magicLinkExpired.description', { identifier }))
       return
     }
     // Already Added
-    if (error.response?.status === StatusCodes.BAD_REQUEST &&
-      error.response?._data?.rootCause?.code === MagicLinkInvitationStatus.ACTIONED_AFFILIATION_INVITATION) {
+    if (isBadRequest && isActioned) {
       brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
       return
     }
