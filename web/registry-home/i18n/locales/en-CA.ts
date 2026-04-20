@@ -5,9 +5,8 @@ export default {
     },
     page: {
       login: {
-        h1: 'Log in to BC Registries',
-        description: 'In order to use this service, you’ll need to log in with your BC Services Card. This login will '
-          + 'be linked to your BC Registries account for identity verification purposes.'
+        h1: 'Log in to the BC Business Registry',
+        description: 'You’ll need a BC Services Card account to use this service. Signing in will securely link your account to BC Registries and prove your identity online.'
       }
     }
   },
