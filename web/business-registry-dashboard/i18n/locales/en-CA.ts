@@ -331,14 +331,14 @@ export default {
       authOption: {
         passcode: {
           radioLabel: {
-            default: 'Use the business password',
-            coopOrBen: 'Use the business passcode'
+            default: 'Use the company password',
+            coopOrBen: 'Use the company password'
           },
           fields: {
             passcode: {
               arialabel: {
-                coop: 'Enter the business passcode',
-                default: 'Enter the business password'
+                coop: 'Enter the company password',
+                default: 'Enter the company password'
               },
               placeholder: {
                 coop: 'Passcode',
@@ -390,9 +390,9 @@ export default {
             firm: 'Confirm authorization using your business email address',
             corpOrBenOrCoop: 'Confirm authorization using your registered office email address',
             coop: 'Confirm authorization using your registered office email address',
-            safAffiliation: 'Use your registered office email address to send a new link'
+            safAffiliation: 'Use your registered office email address to send a link to your inbox'
           },
-          coopSubtext: '(If you forgot or don\'t have a business passcode)',
+          coopSubtext: '(If you forgot or don\'t have a company password)',
           sentTo: {
             default: 'An email will be sent to the contact email of the business:',
             firm: 'An email will be sent to the business contact email of the business:',
