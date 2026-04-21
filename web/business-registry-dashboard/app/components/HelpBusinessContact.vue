@@ -52,7 +52,7 @@ const toggleHelpText = () => {
           </li>
           <li class="pb-1 text-bcGovColor-midGray">
             <span class="text-sm font-semibold text-bcGovColor-midGray"><UIcon name="i-mdi-email" class="mr-2 size-5 text-bcGovColor-activeBlue" />{{ $t('contactInfo.bcRegGeneral.email.title') }}</span>
-            <a class="pl-1 text-sm text-blue-500 underline" href="mailto:BCRegistries@gov.bc.ca?subject=BC Registries and Online Services - Support Request">BCRegistries@gov.bc.ca</a>
+            <a class="pl-1 text-sm text-blue-500 underline" href="mailto:bcrossupport@gov.bc.ca?subject=BC Registries and Online Services - Support Request">bcrossupport@gov.bc.ca</a>
           </li>
         </ul>
       </div>
