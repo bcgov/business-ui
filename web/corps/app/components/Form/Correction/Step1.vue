@@ -17,7 +17,7 @@ const receiverLiquidatorAllowedActions = [
 ]
 
 /** Display-level label overrides for correction context */
-const correctionLabelOverrides = useCorrectionLabelOverrides()
+const correctionLabelOverrides = getCorrectionLabelOverrides()
 </script>
 
 <template>

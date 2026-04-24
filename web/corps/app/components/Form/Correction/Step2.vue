@@ -8,7 +8,7 @@ const businessStore = useBusinessStore()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 /** Display-level label overrides for correction context */
-const correctionLabelOverrides = useCorrectionLabelOverrides()
+const correctionLabelOverrides = getCorrectionLabelOverrides()
 
 /**
  * Change detection for review sections.
