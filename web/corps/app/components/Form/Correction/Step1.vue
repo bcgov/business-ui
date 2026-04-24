@@ -18,6 +18,10 @@ const receiverLiquidatorAllowedActions = [
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = getCorrectionLabelOverrides()
+
+const ref = useTemplateRef('correction-form-step-1')
+const errors = computed(() => ref.value?.getErrors())
+watchEffect(() => console.log(errors.value))
 </script>
 
 <template>

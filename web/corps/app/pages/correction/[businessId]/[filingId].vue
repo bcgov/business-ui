@@ -9,13 +9,10 @@ const { setAlert: setReceiversAlert } = useFilingAlerts('manage-receivers')
 const { setAlert: setLiquidatorsAlert } = useFilingAlerts('manage-liquidators')
 const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 const { setAlert: setNameTranslationsAlert } = useFilingAlerts('manage-name-translations')
+const { setAlert: setCompanyNameAlert } = useFilingAlerts('manage-company-name')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
-const {
-  handleButtonLoading,
-  setAlertText: setBtnCtrlAlert
-} = useConnectButtonControl()
-
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const { getFilingName } = useFiling()
 
 const businessId = route.params.businessId as string
@@ -79,6 +76,7 @@ const originalFilingDate = computed(() => {
 })
 
 function checkActiveSubForm() {
+  console.log('checking active sub form')
   const alertMsg = t('text.finishTaskBeforeOtherChanges')
   const hasActiveSubForm
     = (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
@@ -87,11 +85,13 @@ function checkActiveSubForm() {
       || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
       || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
       || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
-      || (store.formState.activeNameTranslation !== undefined
-        && setNameTranslationsAlert('name-translation-form', alertMsg))
+      || (store.formState.activeNameTranslation && setNameTranslationsAlert('name-translation-form', alertMsg))
+      || (store.formState.activeNameRequest && setCompanyNameAlert('company-name-form', alertMsg))
 
   return hasActiveSubForm
 }
+
+watch(() => store.formState.activeNameRequest, v => console.log(v), { immediate: true })
 
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)

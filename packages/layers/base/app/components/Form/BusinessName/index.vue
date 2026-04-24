@@ -23,6 +23,8 @@ const {
   stateKey?: string
 }>()
 
+onMounted(() => console.log('business name form: ', stateKey))
+
 const emit = defineEmits<{
   done: []
   cancel: []
@@ -36,6 +38,7 @@ const { t } = useI18n()
 const formTarget = 'company-name-form'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(formTarget, model)
+watch(alerts, (v) => console.log('form alerts: ', v))
 
 const numberedName = `${businessIdentifier} B.C. ${getNumberedDesignation(businessType)}`
 
