@@ -24,7 +24,6 @@ const formRef = useTemplateRef<Form<NameRequestSchema>>('nr-number-form')
 
 // We only care about nrNum for the form field (other fields are still used, but not in this form schema)
 const schema = getNameRequestSchema()
-  .pick({ nrNumber: true })
   .superRefine(async (state, ctx) => {
     const message = await validateNrNumber(state.nrNumber)
     if (message) {
@@ -159,6 +158,10 @@ const uInputProps = computed<InputProps>(() => {
 provide('UInput-props-nr-number-input', uInputProps)
 
 defineExpose({ formRef })
+
+// use along with onMounted so this is fired when used inside a <KeepAlive>
+onActivated(() => model.value.changeOption = CorrectNameOption.CORRECT_NEW_NR)
+onMounted(() => model.value.changeOption = CorrectNameOption.CORRECT_NEW_NR)
 </script>
 
 <template>

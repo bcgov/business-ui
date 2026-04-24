@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { h } from 'vue'
 import type { FormErrorEvent } from '@nuxt/ui'
-import { FormBusinessNameEdit, FormNameRequestNumber, UCheckbox } from '#components'
+import { FormBusinessNameEdit, FormNameRequestNumber, ConnectI18nHelper } from '#components'
+import { RESET_CONTENT } from 'http-status-codes';
 
 const {
   businessIdentifier,
@@ -50,23 +51,33 @@ const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
   // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME)
-      ? [{ label: t('label.editTheCompanyName'), changeOption: CorrectNameOption.CORRECT_NAME }]
+      ? [{ 
+        label: t('label.companyName'),
+        description: 'Correct typographical errors in the existing company name.',
+        value: CorrectNameOption.CORRECT_NAME
+      }]
       : []
   ),
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME_TO_NUMBER)
-      ? [{ label: t('label.useTheCorporationNumberAsTheName'), changeOption: CorrectNameOption.CORRECT_NAME_TO_NUMBER }]
+      ? [{
+        label: t('label.incorporationNumber'),
+        value: CorrectNameOption.CORRECT_NAME_TO_NUMBER
+      }]
       : []
   ),
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NEW_NR)
-      ? [{ label: t('label.useANewNameRequestNumber'), changeOption: CorrectNameOption.CORRECT_NEW_NR }]
+      ? [{
+        label: t('label.newNameRequestNumber'),
+        value: CorrectNameOption.CORRECT_NEW_NR
+      }]
       : []
   )
 ])
 
 function renderOption(item: BusinessNameChangeOption) {
-  switch (item.changeOption) {
+  switch (item.value) {
     case CorrectNameOption.CORRECT_NAME:
       return h(
         FormBusinessNameEdit,
@@ -78,12 +89,12 @@ function renderOption(item: BusinessNameChangeOption) {
       )
     case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
       return h(
-        UCheckbox,
+        ConnectI18nHelper,
         {
-          'modelValue': model.value.changeToNumbered,
-          'label': t('label.changeCompanyNameToNumbered', { numberedName }),
-          'onChange': onChangeToNumberedChange,
-          'onUpdate:modelValue': (val: unknown) => model.value.changeToNumbered = val as boolean
+          as: 'p',
+          translationPath: 'label.useTheCorporationNumberAsTheName',
+          corpnum: businessIdentifier,
+          class: 'text-neutral'
         }
       )
     default: // CorrectNameOption.CORRECT_NEW_NR
@@ -172,6 +183,18 @@ onMounted(() => {
     }
   }
 })
+
+const value = ref(CorrectNameOption.CORRECT_NAME)
+
+UPDATE HOW DATA IS SET RESET
+ENSURE THERES A DEFAULT RADIO OPTION
+UPDATE NAME REQUEST MODEL CHANGE OPTION AND ATTACH V MODEL
+UPDATE DRAFT STATE INIT
+FIX TS ERRORS
+ADD I18N TRANSLATIONS
+WRITE TESTS
+ENSURE SET SUB FORM ALERT CHECK WORKS
+ADD DATA TO TASK GUARD WATCHERS
 </script>
 
 <template>
@@ -182,26 +205,32 @@ onMounted(() => {
     nested
     :state="(model as any)"
     @keydown.enter.prevent.stop="onDone"
+    class="space-y-6"
   >
-    <Divide v-if="nameChangeOptions.length > 1" orientation="vertical">
+    <template v-if="nameChangeOptions.length > 1">
       <p>
-        {{ $t('text.youCanCorrectFollowingWays') }}
+        {{ $t('text.selectWayToCorrectName') }}
       </p>
-      <UAccordion
+      <URadioGroup
+        v-model="value"
         :items="nameChangeOptions"
+        variant="card"
         :ui="{
-          trigger: 'text-primary py-6',
-          root: '-mt-3',
-          label: 'text-base group-data-[state=open]:font-bold group-data-[state=open]:text-neutral-highlighted',
-          content: 'pb-6 pt-2 px-3'
+          fieldset: 'gap-y-4',
+          label: 'text-base group-has-[button[data-active]]:font-bold',
+          description: 'text-base group-not-has-[button[data-active]]:hidden mt-2',
+          item: 'group not-has-data-active:bg-shade',
+          container: 'mt-0.5',
+          base: 'ring-neutral ring-2'
         }"
-        @update:model-value="onActiveAccordianChange"
       >
-        <template #content="{ item }">
-          <component :is="renderOption(item)" />
+        <template #description="{ item }">
+          <KeepAlive>
+            <component v-if="value === item.value" :is="renderOption(item)" />
+          </KeepAlive>
         </template>
-      </UAccordion>
-    </Divide>
+      </URadioGroup>
+    </template>
 
     <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
       <div class="font-bold text-neutral-highlighted">
@@ -210,7 +239,7 @@ onMounted(() => {
       <component :is="renderOption(nameChangeOptions[0])" />
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
       <FormAlertMessage
         :id="messageId"
         :message="alerts[formTarget]"

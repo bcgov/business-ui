@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { FormNameRequestNumber } from '#components'
+import { CorrectNameOption } from '#imports'
 
 export const NR_NUM_REGEX = /^(NR)?\s*(\d{7})$/i
 
@@ -8,15 +9,66 @@ export function getNameRequestSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
-    changeToNumbered: z.boolean()
-      .default(false),
-    legalName: z.string()
-      .min(1, t('validation.companyNameRequired'))
-      .default(''),
-    nrNumber: z.string()
-      .min(1, t('validation.nrNumber.required'))
-      .refine(val => NR_NUM_REGEX.test(val), t('validation.nrNumber.invalid'))
-      .default('')
+    changeOption: z.enum(CorrectNameOption).optional(),
+    changeToNumbered: z.boolean().default(false),
+    legalName: z.string().default(''),
+    nrNumber: z.string().default('')
+  }).superRefine((data, ctx) => {
+    const option = data.changeOption
+
+    console.log('before option check: ', data)
+    if (!option) {
+      return
+    }
+    console.log('after option check')
+
+    switch (option) {
+      case CorrectNameOption.CORRECT_NAME:
+        if (!data.legalName.trim()) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['legalName'],
+            message: t('validation.companyNameRequired')
+          })
+        }
+        break
+      case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
+        // safety check, should be updating the model when this option is selected
+        if (!data.legalName.trim()) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['legalName'],
+            message: t('validation.companyNameRequired')
+          })
+        }
+        break
+      case CorrectNameOption.CORRECT_NEW_NR:
+        const nrNum = data.nrNumber.trim()
+        if (!nrNum) {
+          console.log('validating nr num required: ', nrNum)
+          ctx.addIssue({
+            code: 'custom',
+            path: ['nrNumber'],
+            message: t('validation.nrNumber.required')
+          })
+          return
+        }
+        if (!NR_NUM_REGEX.test(nrNum)) {
+          console.log('validating nr num invalid: ', nrNum)
+          ctx.addIssue({
+            code: 'custom',
+            path: ['nrNumber'],
+            message: t('validation.nrNumber.invalid')
+          })
+          return
+        }
+        break
+      // FUTURE: update last 2 enums as necessary
+      // case CorrectNameOption.CORRECT_AML_ADOPT:  
+      // case CorrectNameOption.CORRECT_AML_NUMBERED:  
+      default:
+        break
+    }
   })
 }
 
