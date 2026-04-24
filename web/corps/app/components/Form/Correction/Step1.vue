@@ -33,12 +33,8 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
       :loading="store.initializing"
       :business
       :contact="businessContact" 
-      :correct-name-options="[
-        CorrectNameOption.CORRECT_NAME,
-        CorrectNameOption.CORRECT_NAME_TO_NUMBER,
-        CorrectNameOption.CORRECT_NEW_NR
-      ]"
-      :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]"
+      :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
+      :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
     />
 
     <!-- Section 1: Name Translations -->
