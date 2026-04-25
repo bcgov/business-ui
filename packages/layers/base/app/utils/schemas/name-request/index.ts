@@ -16,11 +16,9 @@ export function getNameRequestSchema() {
   }).superRefine((data, ctx) => {
     const option = data.changeOption
 
-    console.log('before option check: ', data)
     if (!option) {
       return
     }
-    console.log('after option check')
 
     switch (option) {
       case CorrectNameOption.CORRECT_NAME:

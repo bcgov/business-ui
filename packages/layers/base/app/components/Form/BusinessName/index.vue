@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { h } from 'vue'
-import type { FormErrorEvent } from '@nuxt/ui'
+import type { FormErrorEvent, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { FormBusinessNameEdit, FormNameRequestNumber, ConnectI18nHelper } from '#components'
-import { RESET_CONTENT } from 'http-status-codes';
 
 const {
   businessIdentifier,
@@ -24,8 +23,6 @@ const {
   stateKey?: string
 }>()
 
-onMounted(() => console.log('business name form: ', stateKey))
-
 const emit = defineEmits<{
   done: []
   cancel: []
@@ -39,15 +36,13 @@ const { t } = useI18n()
 const formTarget = 'company-name-form'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(formTarget, model)
-watch(alerts, (v) => console.log('form alerts: ', v))
 
 const numberedName = `${businessIdentifier} B.C. ${getNumberedDesignation(businessType)}`
 
-const activeCorrectNameOption = ref<CorrectNameOption | undefined>(undefined)
 const editNameFormRef = useTemplateRef('edit-name-form')
 const nrNumFormRef = useTemplateRef('nr-num-form')
 
-const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
+const nameChangeOptions = computed(() => [
   // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME)
@@ -70,13 +65,14 @@ const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
     correctNameOptions.includes(CorrectNameOption.CORRECT_NEW_NR)
       ? [{
         label: t('label.newNameRequestNumber'),
+        altLabel: t('label.useNewNrNumber'), // used when this is the only option, not an aria label
         value: CorrectNameOption.CORRECT_NEW_NR
       }]
       : []
   )
 ])
 
-function renderOption(item: BusinessNameChangeOption) {
+function renderOption(item: RadioGroupItem & { value?: RadioGroupValue | CorrectNameOption }) {
   switch (item.value) {
     case CorrectNameOption.CORRECT_NAME:
       return h(
@@ -112,60 +108,33 @@ function renderOption(item: BusinessNameChangeOption) {
   }
 }
 
-function onChangeToNumberedChange() {
-  const checked = model.value.changeToNumbered
-  if (checked) {
-    model.value.legalName = numberedName
-  }
-}
-
-function onActiveAccordianChange(v: string | string[] | undefined) {
-  if (v === undefined) {
-    activeCorrectNameOption.value = undefined
-    return
-  }
-
-  // track which name change option to validate on done click
-  if (v) {
-    const index = parseInt(v as string) // we know this is a string, can only be string[] if accordian prop `type` = 'multiple'
-    const selectedOption = nameChangeOptions.value[index]
-
-    if (selectedOption) {
-      activeCorrectNameOption.value = selectedOption.changeOption
-    }
-  }
+function onOptionChange(value: string | undefined) {
+  const option = value as CorrectNameOption | undefined
 
   // reset model each time accordian is changed
   model.value.legalName = ''
   model.value.nrNumber = ''
   model.value.changeToNumbered = false
 
-  // set legal name to original name when opening `Edit the company name option`
   nextTick(() => {
-    if (activeCorrectNameOption.value === CorrectNameOption.CORRECT_NAME) {
-      model.value.legalName = initialCompanyName
+    // add/update cases as necessary
+    switch (option) {
+      case CorrectNameOption.CORRECT_NAME:
+        model.value.legalName = initialCompanyName
+        break
+      case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
+        model.value.legalName = numberedName
+        break
+      default:
+        break
     }
   })
 }
 
-// NB: this functionality is copying what exists currently
-// design audit will need to be done to determine any UX or validation changes
 async function onDone() {
-  try {
-    const option = activeCorrectNameOption.value
-    // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
-    if (
-      option === undefined
-      || (option === CorrectNameOption.CORRECT_NAME_TO_NUMBER && !model.value.changeToNumbered)
-    ) {
-      // do nothing if no option was selected
-      // or last option was changeToNumbered and checkbox is unchecked
-      return
-    } else if (option === CorrectNameOption.CORRECT_NAME) {
-      await editNameFormRef.value?.formRef?.validate()
-    } else { // CorrectNameOption.CORRECT_NEW_NR
-      await nrNumFormRef.value?.formRef?.validate()
-    }
+  try {  
+    await editNameFormRef.value?.formRef?.validate()
+    await nrNumFormRef.value?.formRef?.validate()
 
     emit('done')
   } catch (e) {
@@ -175,26 +144,23 @@ async function onDone() {
 
 // init active option and conditionally set legalName if only 1 name change option available
 onMounted(() => {
-  if (nameChangeOptions.value.length === 1) {
-    const option = nameChangeOptions.value[0]?.changeOption
-    activeCorrectNameOption.value = option
-    if (option === CorrectNameOption.CORRECT_NAME) {
-      model.value.legalName = initialCompanyName
-    }
+  const option = nameChangeOptions.value[0]?.value
+  model.value.changeOption = option
+  if (option === CorrectNameOption.CORRECT_NAME) {
+    model.value.legalName = initialCompanyName
   }
 })
 
-const value = ref(CorrectNameOption.CORRECT_NAME)
-
-UPDATE HOW DATA IS SET RESET
-ENSURE THERES A DEFAULT RADIO OPTION
-UPDATE NAME REQUEST MODEL CHANGE OPTION AND ATTACH V MODEL
-UPDATE DRAFT STATE INIT
-FIX TS ERRORS
-ADD I18N TRANSLATIONS
-WRITE TESTS
-ENSURE SET SUB FORM ALERT CHECK WORKS
-ADD DATA TO TASK GUARD WATCHERS
+// TODO
+// UPDATE HOW DATA IS SET RESET - done
+// ENSURE THERES A DEFAULT RADIO OPTION - done 
+// UPDATE NAME REQUEST MODEL CHANGE OPTION AND ATTACH V MODEL - done
+// UPDATE DRAFT STATE INIT
+// FIX TS ERRORS - done
+// ADD I18N TRANSLATIONS
+// WRITE TESTS
+// ENSURE SET SUB FORM ALERT CHECK WORKS
+// ADD DATA TO TASK GUARD WATCHERS
 </script>
 
 <template>
@@ -212,7 +178,7 @@ ADD DATA TO TASK GUARD WATCHERS
         {{ $t('text.selectWayToCorrectName') }}
       </p>
       <URadioGroup
-        v-model="value"
+        v-model="model.changeOption"
         :items="nameChangeOptions"
         variant="card"
         :ui="{
@@ -223,19 +189,18 @@ ADD DATA TO TASK GUARD WATCHERS
           container: 'mt-0.5',
           base: 'ring-neutral ring-2'
         }"
+        @update:model-value="onOptionChange"
       >
         <template #description="{ item }">
           <KeepAlive>
-            <component v-if="value === item.value" :is="renderOption(item)" />
+            <component v-if="model.changeOption === item.value" :is="renderOption(item)" />
           </KeepAlive>
         </template>
       </URadioGroup>
     </template>
 
     <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
-      <div class="font-bold text-neutral-highlighted">
-        {{ nameChangeOptions[0].label }}
-      </div>
+      <p>{{ nameChangeOptions[0].altLabel }}</p>
       <component :is="renderOption(nameChangeOptions[0])" />
     </div>
 

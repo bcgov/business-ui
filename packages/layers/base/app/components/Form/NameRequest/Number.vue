@@ -159,6 +159,7 @@ provide('UInput-props-nr-number-input', uInputProps)
 
 defineExpose({ formRef })
 
+// need to init changeOption for validation refinements
 // use along with onMounted so this is fired when used inside a <KeepAlive>
 onActivated(() => model.value.changeOption = CorrectNameOption.CORRECT_NEW_NR)
 onMounted(() => model.value.changeOption = CorrectNameOption.CORRECT_NEW_NR)

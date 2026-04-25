@@ -1,6 +1,8 @@
 // definitions pulled from https://github.com/bcgov/business-edit-ui/tree/main/src/resources/Correction
 // add/update and move to base layer as necessary
 
+// NB: Only CORRECT_NEW_NR can ever be the single option available
+// if this changes the component will need to be updated
 const correctNameOptions: Partial<Record<CorpTypeCd, Array<CorrectNameOption>>> = {
   [CorpTypeCd.BC_COMPANY]: [
     CorrectNameOption.CORRECT_NEW_NR,

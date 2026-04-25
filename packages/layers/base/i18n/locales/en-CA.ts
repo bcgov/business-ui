@@ -498,6 +498,7 @@ export default {
     translationName: 'Translation Name',
     undo: 'Undo',
     unknown: 'Unknown',
+    useNewNrNumber: 'Use a new name request number',
     useTheCorporationNumberAsTheName: 'Use the incorporation number {boldStart}{corpnum}{boldEnd} as the name',
     newNameRequestNumber: 'New Name Request Number',
     viewDetails: 'View Details',
