@@ -47,6 +47,7 @@ const {
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || (store.hasCommentChanges && hasValidComment)
+      || store.companyName.new.actions.length > 0
   }
 )
 
