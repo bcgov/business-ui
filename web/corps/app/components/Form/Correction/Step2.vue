@@ -5,6 +5,7 @@ import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/cor
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
+const { business, businessContact } = storeToRefs(businessStore)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 /** Display-level label overrides for correction context */
@@ -73,6 +74,15 @@ function onError(event: FormErrorEvent) {
         </h2>
         <p>{{ $t('text.correctionReviewDescription') }}</p>
       </div>
+
+      <!-- Company Name (readonly, always displayed) -->
+      <ManageCompanyName
+        v-model:active-name-request="store.formState.activeNameRequest"
+        :loading="store.initializing"
+        :business
+        :contact="businessContact"
+        readonly
+      />
 
       <!-- Office Addresses (readonly, only if changed) -->
       <ManageOffices

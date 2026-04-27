@@ -1,18 +1,30 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
 
+// correctNameOptions and nrAllowedActionsTypes only required when readonly = false
+type Props = {
+  stateKey?: string
+  business?: BusinessData | BusinessDataPublic
+  contact?: ContactPoint
+  loading?: boolean
+} & (
+  | {
+      readonly: false
+      correctNameOptions: CorrectNameOption[]
+      nrAllowedActionsTypes: NrRequestActionCode[]
+    }
+  | {
+      readonly?: true
+      correctNameOptions?: CorrectNameOption[]
+      nrAllowedActionsTypes?: NrRequestActionCode[]
+    }
+)
+
 const {
   stateKey = 'manage-company-name',
   business,
   contact
-} = defineProps<{
-  stateKey?: string
-  business?: BusinessData | BusinessDataPublic
-  contact?: ContactPoint
-  correctNameOptions: CorrectNameOption[]
-  nrAllowedActionsTypes: NrRequestActionCode[]
-  loading?: boolean
-}>()
+} = defineProps<Props>()
 
 const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('active-name-request', { required: true })
 
@@ -88,7 +100,7 @@ function cleanupForm() {
             <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
             <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
             <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
-            <UFieldGroup class="divide-x divide-line-muted h-min">
+            <UFieldGroup v-if="!readonly" class="divide-x divide-line-muted h-min">
               <UButton
                 :label="mainAction.label"
                 :icon="mainAction.icon"
@@ -120,9 +132,9 @@ function cleanupForm() {
             :initial-company-name="state.new.legalName"
             :business-identifier="business.identifier"
             :business-type="business.legalType"
-            :correct-name-options="correctNameOptions"
+            :correct-name-options="readonly ? [] : correctNameOptions"
             :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
-            :nr-allowed-action-types="nrAllowedActionsTypes"
+            :nr-allowed-action-types="readonly ? [] : nrAllowedActionsTypes"
             @cancel="activeNameRequest = undefined"
             @done="() => { updateState(activeNameRequest); cleanupForm() }"
           />
