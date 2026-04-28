@@ -77,7 +77,6 @@ const originalFilingDate = computed(() => {
 })
 
 function checkActiveSubForm() {
-  console.log('checking active sub form')
   const alertMsg = t('text.finishTaskBeforeOtherChanges')
   const hasActiveSubForm
     = (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
@@ -91,8 +90,6 @@ function checkActiveSubForm() {
 
   return hasActiveSubForm
 }
-
-watch(() => store.formState.activeNameRequest, v => console.log(v), { immediate: true })
 
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)

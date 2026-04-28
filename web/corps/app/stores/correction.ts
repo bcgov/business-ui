@@ -330,9 +330,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder),
 
       // Document delivery / contact point
-      ...(formState.documentDelivery?.completingPartyEmail && {
-        contactPoint: { email: formState.documentDelivery.completingPartyEmail }
-      }),
+      // contactPoint is always required, use completing party email if submitted else use 
+      // business contact from auth
+      contactPoint: {
+        email: formState.documentDelivery?.completingPartyEmail || businessStore.businessContact?.email || '',
+        phone: businessStore.businessContact?.phone || '',
+        // FUTURE: fix typing
+        ...(businessStore.businessContact?.extension ? { extension: Number(businessStore.businessContact?.extension) as unknown as string } : {})
+      },
 
       // Name translations — match CorrectionPayload interface:
       // - id: only for existing entries (real API id); omitted for new entries (avoids sending temp UUIDs)
@@ -351,7 +356,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ...(hasNameChange.value && { 
         nameRequest: {
           legalName: companyName.value.new.legalName,
-          nrNumber: companyName.value.new.nrNumber
+          nrNumber: companyName.value.new.nrNumber,
+          legalType: businessStore.business?.legalType
         }
       })
 

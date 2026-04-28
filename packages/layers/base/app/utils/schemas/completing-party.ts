@@ -6,14 +6,15 @@ export function getCompletingPartySchema() {
 
   return z.object({
     firstName: z.string()
-      .min(1, t('validation.fieldRequired'))
-      .max(20, t('connect.validation.maxChars', { count: 20 })),
+      .max(20, t('connect.validation.maxChars', { count: 20 }))
+      .default(''),
     middleName: z.string()
       .max(20, t('connect.validation.maxChars', { count: 20 }))
       .default(''),
     lastName: z.string()
       .min(1, t('validation.enterLastName'))
-      .max(30, t('connect.validation.maxChars', { count: 30 })),
+      .max(30, t('connect.validation.maxChars', { count: 30 }))
+      .default(''),
     mailingAddress: getRequiredAddressSchema()
   })
 }
