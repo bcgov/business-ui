@@ -266,7 +266,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       })
     }
 
-
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
@@ -330,13 +329,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder),
 
       // Document delivery / contact point
-      // contactPoint is always required, use completing party email if submitted else use 
+      // contactPoint is always required, use completing party email if submitted else use
       // business contact from auth
       contactPoint: {
         email: formState.documentDelivery?.completingPartyEmail || businessStore.businessContact?.email || '',
         phone: businessStore.businessContact?.phone || '',
         // FUTURE: fix typing
-        ...(businessStore.businessContact?.extension ? { extension: Number(businessStore.businessContact?.extension) as unknown as string } : {})
+        ...(businessStore.businessContact?.extension
+          ? { extension: Number(businessStore.businessContact?.extension) as unknown as string }
+          : {}
+        )
       },
 
       // Name translations — match CorrectionPayload interface:
@@ -352,8 +354,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
           action: nt.new.actions[0]
         })),
-      
-      ...(hasNameChange.value && { 
+
+      ...(hasNameChange.value && {
         nameRequest: {
           legalName: companyName.value.new.legalName,
           nrNumber: companyName.value.new.nrNumber,

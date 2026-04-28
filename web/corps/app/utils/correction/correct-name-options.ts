@@ -57,7 +57,7 @@ const correctNameOptions: Partial<Record<CorpTypeCd, Array<CorrectNameOption>>> 
 
 /**
  * Returns the available name correction options for a specific corporation type.
- * * @note This collection only includes options for specific corporation types 
+ * * @note This collection only includes options for specific corporation types
  * (e.g., BC Companies and Benefit Companies). Not all types of {@link CorpTypeCd}.
  * * @param corpType - The corporation type code to look up.
  * @returns An array of {@link CorrectNameOption} if found, otherwise an empty array.

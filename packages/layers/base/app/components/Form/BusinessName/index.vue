@@ -46,9 +46,9 @@ const nameChangeOptions = computed(() => [
   // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME)
-      ? [{ 
+      ? [{
         label: t('label.companyName'),
-        description: 'Correct typographical errors in the existing company name.',
+        description: t('text.correctTyposCompanyName'),
         value: CorrectNameOption.CORRECT_NAME
       }]
       : []
@@ -132,7 +132,7 @@ function onOptionChange(value: string | undefined) {
 }
 
 async function onDone() {
-  try {  
+  try {
     await editNameFormRef.value?.formRef?.validate()
     await nrNumFormRef.value?.formRef?.validate()
 
@@ -150,21 +150,6 @@ onMounted(() => {
     model.value.legalName = initialCompanyName
   }
 })
-
-// TODO
-// UPDATE HOW DATA IS SET RESET - done
-// ENSURE THERES A DEFAULT RADIO OPTION - done 
-// UPDATE NAME REQUEST MODEL CHANGE OPTION AND ATTACH V MODEL - done
-// UPDATE DRAFT STATE INIT - done
-// ENSURE NR OPTION POPULATES CORRECTLY - done
-// FIX TS ERRORS - done
-// ENSURE SET SUB FORM ALERT CHECK WORKS - done
-// ADD DATA TO TASK GUARD WATCHERS - done
-// READONLY SECTION FOR REVIEW PAGE - done
-// UPDATE CONTACT POIONT IN PAYLOAD
-// UPDATE COMPLETING PARTY IN PAYLOAD
-// ADD I18N TRANSLATIONS
-// WRITE TESTS
 </script>
 
 <template>
@@ -174,8 +159,8 @@ onMounted(() => {
     :name
     nested
     :state="(model as any)"
-    @keydown.enter.prevent.stop="onDone"
     class="space-y-6"
+    @keydown.enter.prevent.stop="onDone"
   >
     <template v-if="nameChangeOptions.length > 1">
       <p>
@@ -197,7 +182,7 @@ onMounted(() => {
       >
         <template #description="{ item }">
           <KeepAlive>
-            <component v-if="model.changeOption === item.value" :is="renderOption(item)" />
+            <component :is="renderOption(item)" v-if="model.changeOption === item.value" />
           </KeepAlive>
         </template>
       </URadioGroup>

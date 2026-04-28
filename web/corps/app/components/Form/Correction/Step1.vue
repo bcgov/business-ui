@@ -32,7 +32,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       v-model:active-name-request="store.formState.activeNameRequest"
       :loading="store.initializing"
       :business
-      :contact="businessContact" 
+      :contact="businessContact"
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
     />

@@ -40,10 +40,9 @@ export function getNameRequestSchema() {
           })
         }
         break
-      case CorrectNameOption.CORRECT_NEW_NR:
+      case CorrectNameOption.CORRECT_NEW_NR: {
         const nrNum = data.nrNumber.trim()
         if (!nrNum) {
-          console.log('validating nr num required: ', nrNum)
           ctx.addIssue({
             code: 'custom',
             path: ['nrNumber'],
@@ -52,7 +51,6 @@ export function getNameRequestSchema() {
           return
         }
         if (!NR_NUM_REGEX.test(nrNum)) {
-          console.log('validating nr num invalid: ', nrNum)
           ctx.addIssue({
             code: 'custom',
             path: ['nrNumber'],
@@ -61,9 +59,10 @@ export function getNameRequestSchema() {
           return
         }
         break
+      }
       // FUTURE: update last 2 enums as necessary
-      // case CorrectNameOption.CORRECT_AML_ADOPT:  
-      // case CorrectNameOption.CORRECT_AML_NUMBERED:  
+      // case CorrectNameOption.CORRECT_AML_ADOPT:
+      // case CorrectNameOption.CORRECT_AML_NUMBERED:
       default:
         break
     }

@@ -139,7 +139,6 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
       await navigateTo(dashboardUrl.value, { external: true })
     }
   } catch (error) {
-    console.log(error)
     if (enableUnsavedChangesBlock) {
       modal.openSaveFilingErrorModal(error)
       initBeforeUnload()

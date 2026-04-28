@@ -10,7 +10,6 @@ export const useFilingAlerts = (group: string = 'default') => {
 
   // sets an alert for a specific target
   async function setAlert(target: string, message: string) {
-    console.log('group: ', group, 'target: ', target, 'message: ', message)
     if (!allAlerts.value[group]) {
       allAlerts.value[group] = {}
     }
@@ -87,8 +86,6 @@ export const useFilingAlerts = (group: string = 'default') => {
 
     return ids
   }
-
-  watch(groupAlerts, (v) => console.log('group alerts: ', v))
 
   return {
     alerts: groupAlerts,

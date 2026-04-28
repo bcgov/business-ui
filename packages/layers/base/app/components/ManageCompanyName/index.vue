@@ -9,15 +9,15 @@ type Props = {
   loading?: boolean
 } & (
   | {
-      readonly: false
-      correctNameOptions: CorrectNameOption[]
-      nrAllowedActionsTypes: NrRequestActionCode[]
-    }
+    readonly: false
+    correctNameOptions: CorrectNameOption[]
+    nrAllowedActionsTypes: NrRequestActionCode[]
+  }
   | {
-      readonly?: true
-      correctNameOptions?: CorrectNameOption[]
-      nrAllowedActionsTypes?: NrRequestActionCode[]
-    }
+    readonly?: true
+    correctNameOptions?: CorrectNameOption[]
+    nrAllowedActionsTypes?: NrRequestActionCode[]
+  }
 )
 
 const {
