@@ -47,16 +47,6 @@ const { setAlertText } = useConnectButtonControl()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
-const allSeriesNames = computed(() => {
-  const currentId = activeSeries.value?.id
-  const allSeries = tableState.value
-    .filter(c => !c.new.actions?.includes(ActionType.REMOVED))
-    .flatMap(c => c.new.series || [])
-    .filter(s => s.id !== currentId && !s.actions?.includes(ActionType.REMOVED))
-
-  return allSeries.map(s => s.name.toLowerCase())
-})
-
 const classValidationContext = computed(() => {
   const currentId = activeClass.value?.id
   const existingNames = tableState.value
@@ -254,7 +244,6 @@ function clearAllAlerts() {
               :variant="addingSeriesToClassId ? 'add' : 'edit'"
               :row
               :state-key="stateKey"
-              :existing-names="allSeriesNames"
               nested
               @done="() => {
                 addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)

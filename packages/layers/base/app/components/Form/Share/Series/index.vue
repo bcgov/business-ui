@@ -8,7 +8,6 @@ const props = defineProps<{
   stateKey: string
   nested?: boolean
   row?: TableBusinessRow<ShareClassSchema>
-  existingNames: string[]
 }>()
 
 const emit = defineEmits<{
@@ -44,7 +43,7 @@ const schema = computed(() => {
 
   if (!classData) {
     return getActiveShareSeriesSchema({
-      existingNames: props.existingNames,
+      existingNames: [],
       maxAllowedShares: 0
     })
   }
@@ -59,8 +58,10 @@ const schema = computed(() => {
     ? classMaxShares - otherSeriesTotalShares
     : Infinity
 
+  const existingNames = otherSeries.map(s => s.name.toLowerCase())
+
   return getActiveShareSeriesSchema({
-    existingNames: props.existingNames,
+    existingNames,
     maxAllowedShares
   })
 })
