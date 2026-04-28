@@ -81,14 +81,14 @@ function cleanupForm() {
 
 <template>
   <ConnectPageSection
-    :heading="{ label: 'Your Company', icon: 'i-mdi-domain', ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md' }"
+    :heading="{ label: $t('label.yourCompany'), icon: 'i-mdi-domain', ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md' }"
     ui-body="p-0 sm:p-0"
   >
     <div class="flex flex-col">
       <ConnectFieldset padding-class="py-4 px-4 sm:py-5 sm:px-6">
         <template #label>
           <div class="space-y-1">
-            <div>Company Name</div>
+            <div>{{ $t('label.companyName') }}</div>
             <UBadge
               v-if="state.new.actions.includes(ActionType.CORRECTED)"
               :label="$t('badge.corrected')"
@@ -143,7 +143,7 @@ function cleanupForm() {
       <USeparator class="px-4 sm:px-6" />
       <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
-          Recognition Date and Time
+          {{ $t('label.recognitionDateAndTime') }}
         </span>
         <USkeleton v-if="loading" class="h-6 w-2/3 sm:w-1/3" />
         <span v-else class="flex-1">{{ formattedFoundingDate }}</span>
@@ -151,18 +151,18 @@ function cleanupForm() {
       <USeparator class="px-4 sm:px-6" />
       <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
-          Registered Office Contact Information
+          {{ $t('label.registeredOfficeContactInformation') }}
         </span>
 
         <div class="grid grid-cols-2 gap-4 sm:gap-6 flex-1">
           <div class="flex flex-col gap-1">
-            <span class="text-sm font-bold text-neutral-highlighted">Email Address</span>
+            <span class="text-sm font-bold text-neutral-highlighted">{{ $t('label.emailAddress') }}</span>
             <USkeleton v-if="loading" class="h-6 w-3/4 sm:w-1/2" />
             <span v-else>{{ formattedContactInfo.email || t('label.notEntered') }}</span>
           </div>
 
           <div class="flex flex-col gap-1">
-            <span class="text-sm font-bold text-neutral-highlighted">Phone Number</span>
+            <span class="text-sm font-bold text-neutral-highlighted">{{ $t('label.phoneNumber') }}</span>
             <USkeleton v-if="loading" class="h-6 w-3/4 sm:w-1/2" />
             <span v-else>{{ formattedContactInfo.phone }}</span>
           </div>

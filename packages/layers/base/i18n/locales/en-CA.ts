@@ -393,6 +393,7 @@ export default {
     editTheCompanyName: 'Edit the company name',
     effectiveDates: 'Effective Dates',
     email: 'Email',
+    emailAddress: 'Email Address',
     emailAddressOpt: 'Email Address (Optional)',
     enterTheNrNumber: 'Enter the NR Number',
     exitWithoutSaving: 'Exit Without Saving',
@@ -463,6 +464,7 @@ export default {
     personOrOrgName: 'Person or Business Name',
     personsName: "Person's Name",
     phone: 'Phone',
+    phoneNumber: 'Phone Number',
     planOfArrangement: 'Plan of Arrangement',
     preExistingCompanyProvisions: 'Pre-existing Company Provisions',
     preExistingCompanyProvisionsApplyToCompany: 'The Pre-existing Company Provisions apply to this company',
@@ -471,6 +473,8 @@ export default {
     priorityStaffPay: 'Priority (Add $100.00)',
     pursuantToPlanOfArrangement: 'Pursuant to a Plan of Arrangement',
     receivers: 'Receivers',
+    recognitionDateAndTime: 'Recognition Date and Time',
+    registeredOfficeContactInformation: 'Registered Office Contact Information',
     REJECTED: 'REJECTED',
     refreshPage: 'Refresh Page',
     removeSeries: 'Remove Series',
@@ -505,7 +509,8 @@ export default {
     viewDocuments: 'View Documents',
     voluntaryDissolutionPending: 'Voluntary Dissolution Pending',
     WITHDRAWN: 'WITHDRAWN',
-    yes: 'Yes'
+    yes: 'Yes',
+    yourCompany: 'Your Company'
   },
   /* Mappings here are based from the FilingType enum */
   filingName: {

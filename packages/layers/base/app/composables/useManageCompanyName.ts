@@ -11,16 +11,6 @@ const defaultState: ManageCompanyNameState = {
   }
 }
 
-// nameRequest?: NameRequestIF & { legalName: string, nrNumber?: string }
-
-// QUESTION: do i need to include legal type in the name request correction????
-// only include if theres a nrNumber submitted as well?
-
-// 'nameRequest': {
-//     'legalType': 'BC',
-//     'legalName': 'legal name change - BC1234567'
-// }
-
 export const useManageCompanyName = (stateKey: string = 'manage-company-name') => {
   const service = useBusinessService()
   const { t } = useNuxtApp().$i18n
