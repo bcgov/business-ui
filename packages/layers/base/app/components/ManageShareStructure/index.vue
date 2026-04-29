@@ -44,6 +44,7 @@ const {
 } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(stateKey, activeClass)
 const { setAlertText } = useConnectButtonControl()
+const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
@@ -74,6 +75,17 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
 
   // init add series
   if (addSeriesToRow) {
+    if (addSeriesToRow.original.new.currency === 'OTHER') {
+      baseModal.open({
+      title: t('modal.unsupportedCurrencyType.title'),
+      description: t('modal.unsupportedCurrencyType.description'),
+      dismissible: true,
+      buttons: [
+    { label: t('label.close'), shouldClose: true }
+  ]
+    })
+    return
+    }
     const newSeries = activeSeriesSchema.parse({})
     if (newSeries) {
       newSeries.hasMaximumShares = true
