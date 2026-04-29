@@ -328,8 +328,8 @@ export default {
       description: 'You have unsaved changes. Are you sure you want to exit your filing?'
     },
     unsupportedCurrencyType: {
-      title: 'Unsupported Currency Type',
-      description: 'Current currency is invalid. Update the share class currency to add a new series.'
+      title: 'Update Your Currency Type',
+      description: "To add a new series, you'll need to update this share class to a supported currency."
     }
   },
   label: {
