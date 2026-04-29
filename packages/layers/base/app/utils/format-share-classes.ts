@@ -45,10 +45,11 @@ export function formatShareClassesApi(
   shareClasses: TableBusinessState<ShareClassSchema>[],
   isSubmission: boolean
 ) {
-  return shareClasses
+  const sc = shareClasses
     .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
     .map(c => ({
       ...c.new,
+      id: !c.new.actions.includes(ActionType.ADDED) ? Number(c.new.id) : null,
       name: c.new.name + ' Shares',
       currency: c.new.currency ?? null,
       currencyAdditional: c.new.currencyAdditional ?? null,
@@ -59,4 +60,6 @@ export function formatShareClassesApi(
           name: s.name + ' Shares'
         }))
     }))
+    console.log(sc)
+  return sc
 }
