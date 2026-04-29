@@ -45,7 +45,7 @@ export function formatShareClassesApi(
   shareClasses: TableBusinessState<ShareClassSchema>[],
   isSubmission: boolean
 ) {
-  const sc = shareClasses
+  return shareClasses
     .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
     .map(c => ({
       ...c.new,
@@ -60,6 +60,4 @@ export function formatShareClassesApi(
           name: s.name + ' Shares'
         }))
     }))
-    console.log(sc)
-  return sc
 }

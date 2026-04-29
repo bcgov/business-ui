@@ -77,14 +77,14 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
   if (addSeriesToRow) {
     if (addSeriesToRow.original.new.currency === 'OTHER') {
       baseModal.open({
-      title: t('modal.unsupportedCurrencyType.title'),
-      description: t('modal.unsupportedCurrencyType.description'),
-      dismissible: true,
-      buttons: [
-    { label: t('label.close'), shouldClose: true }
-  ]
-    })
-    return
+        title: t('modal.unsupportedCurrencyType.title'),
+        description: t('modal.unsupportedCurrencyType.description'),
+        dismissible: true,
+        buttons: [
+          { label: t('label.close'), shouldClose: true }
+        ]
+      })
+      return
     }
     const newSeries = activeSeriesSchema.parse({})
     if (newSeries) {
