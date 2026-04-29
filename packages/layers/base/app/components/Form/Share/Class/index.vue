@@ -51,7 +51,7 @@ function resetFields(fields: 'parValue' | 'maxShares') {
   }
 }
 
-function getisInvalidCurrency(code: string | undefined) {
+function isSupportedCurrency(code: string | undefined) {
   return !!code && code !== 'OTHER'
 }
 
@@ -84,7 +84,9 @@ onMounted(async () => {
 })
 
 watch(() => model.value.currency, (v) => {
-  if (getisInvalidCurrency(v)) {
+  if (isSupportedCurrency(v)) {
+    isInvalidCurrency.value = false 
+  } else if (v === 'OTHER') {
     isInvalidCurrency.value = true
   }
 })
