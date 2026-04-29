@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
+const { business, businessContact } = storeToRefs(useBusinessStore())
 
 const directorAllowedActions = [
   ManageAllowedAction.ADD,
@@ -16,7 +17,7 @@ const receiverLiquidatorAllowedActions = [
 ]
 
 /** Display-level label overrides for correction context */
-const correctionLabelOverrides = useCorrectionLabelOverrides()
+const correctionLabelOverrides = getCorrectionLabelOverrides()
 </script>
 
 <template>
@@ -27,6 +28,15 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
+    <ManageCompanyName
+      v-model:active-name-request="store.formState.activeNameRequest"
+      :loading="store.initializing"
+      :business
+      :contact="businessContact"
+      :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
+      :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
+    />
+
     <!-- Section 1: Name Translations -->
     <section class="space-y-4" data-testid="name-translations-section">
       <div>
@@ -84,7 +94,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="directorAllowedActions"
         :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeDirector"
       />
     </section>
@@ -128,7 +138,7 @@ const correctionLabelOverrides = useCorrectionLabelOverrides()
         :role-type="RoleTypeUi.RECEIVER"
         :allowed-actions="receiverLiquidatorAllowedActions"
         :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         form-party-details-name="activeReceiver"
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: false }

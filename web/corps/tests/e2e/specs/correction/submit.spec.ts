@@ -95,7 +95,7 @@ test.describe('Correction - Filing Submit', () => {
       expect(correction.correctedFilingType).toBe('incorporationApplication')
       expect(correction.type).toBe('STAFF')
       expect(correction.comment).toBe('Correcting director address from original incorporation')
-      expect(correction.contactPoint).toEqual({ email: 'correction-test@example.com' })
+      expect(correction.contactPoint).toHaveProperty('email', 'correction-test@example.com')
 
       // Verify relationships are included (party data formatted as relationships)
       expect(correction.relationships).toBeDefined()

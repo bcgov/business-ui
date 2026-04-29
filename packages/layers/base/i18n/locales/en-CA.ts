@@ -393,6 +393,7 @@ export default {
     editTheCompanyName: 'Edit the company name',
     effectiveDates: 'Effective Dates',
     email: 'Email',
+    emailAddress: 'Email Address',
     emailAddressOpt: 'Email Address (Optional)',
     enterTheNrNumber: 'Enter the NR Number',
     exitWithoutSaving: 'Exit Without Saving',
@@ -463,6 +464,7 @@ export default {
     personOrOrgName: 'Person or Business Name',
     personsName: "Person's Name",
     phone: 'Phone',
+    phoneNumber: 'Phone Number',
     planOfArrangement: 'Plan of Arrangement',
     preExistingCompanyProvisions: 'Pre-existing Company Provisions',
     preExistingCompanyProvisionsApplyToCompany: 'The Pre-existing Company Provisions apply to this company',
@@ -471,6 +473,8 @@ export default {
     priorityStaffPay: 'Priority (Add $100.00)',
     pursuantToPlanOfArrangement: 'Pursuant to a Plan of Arrangement',
     receivers: 'Receivers',
+    recognitionDateAndTime: 'Recognition Date and Time',
+    registeredOfficeContactInformation: 'Registered Office Contact Information',
     REJECTED: 'REJECTED',
     refreshPage: 'Refresh Page',
     removeSeries: 'Remove Series',
@@ -498,13 +502,15 @@ export default {
     translationName: 'Translation Name',
     undo: 'Undo',
     unknown: 'Unknown',
-    useTheCorporationNumberAsTheName: 'Use the incorporation number as the name',
-    useANewNameRequestNumber: 'Use a new name request number',
+    useNewNrNumber: 'Use a new name request number',
+    useTheCorporationNumberAsTheName: 'Use the incorporation number {boldStart}{corpnum}{boldEnd} as the name',
+    newNameRequestNumber: 'New Name Request Number',
     viewDetails: 'View Details',
     viewDocuments: 'View Documents',
     voluntaryDissolutionPending: 'Voluntary Dissolution Pending',
     WITHDRAWN: 'WITHDRAWN',
-    yes: 'Yes'
+    yes: 'Yes',
+    yourCompany: 'Your Company'
   },
   /* Mappings here are based from the FilingType enum */
   filingName: {
@@ -572,6 +578,23 @@ export default {
     MVE: 'Continuation In | a Continuation In',
     NEW: 'New Business | a New Business',
     REH: 'Restoration | a Restoration'
+  },
+  nameRequestState: {
+    APPROVED: 'Approved',
+    CANCELLED: 'Cancelled',
+    COMPLETED: 'Completed',
+    CONDITIONAL: 'Conditional',
+    CONDITION: 'Condition',
+    CONSUMED: 'Consumed',
+    DRAFT: 'Draft',
+    EXPIRED: 'Expired',
+    HISTORICAL: 'Historical',
+    HOLD: 'Hold',
+    INPROGRESS: 'In Progress',
+    PENDING_PAYMENT: 'Pending Payment',
+    REFUND_REQUESTED: 'Refund Requested',
+    REJECTED: 'Rejected',
+    NRO_UPDATING: 'Name Request Updating'
   },
   officeType: {
     registeredOffice: 'Registered Office',
@@ -656,6 +679,7 @@ export default {
     refreshScreenOrContact: 'Refresh this screen in a few minutes or you can come back later to check on the progress. If this issue persists, please contact us.',
     requiredToRetainDissolution: 'You are required to retain a copy of all the dissolution documents in your records book.',
     reviewReasonsYourFilingWasRejected: 'Review the reasons your filing was rejected below',
+    selectWayToCorrectName: 'Select one of the following ways to correct the company name:',
     seriesNameHelp: 'Only enter the series name. The word “Shares” will be added automatically.',
     shareNameHelp: 'Only enter the class name. The word “shares” will be added automatically.',
     shareStructureMustMatchCompanysCurrentState: 'The share structure must match exactly what is set out in the company’s current memorandum and articles.',
@@ -674,7 +698,6 @@ export default {
     undefinedStaffRejectionMessage: 'Staff rejection message unavailable',
     unknown: 'unknown',
     withdrawnOn: 'WITHDRAWN on',
-    youCanCorrectFollowingWays: 'You can correct the company name in one of the following ways:',
     youHaveNoBusinessLedger: 'You have no filing history',
     yourFilingsWillAppearHere: 'Your completed filings and transactions will appear here'
   },

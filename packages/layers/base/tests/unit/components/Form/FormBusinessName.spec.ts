@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
-import { FormBusinessName } from '#components'
+import { FormBusinessName, ConnectI18nHelper } from '#components'
 
 const mountComponent = (props = {}) => {
   return mountSuspended(FormBusinessName, {
@@ -24,7 +23,7 @@ const mountComponent = (props = {}) => {
 }
 
 describe('FormBusinessName', () => {
-  it('should render the correct accordian items based on the correctNameOptions prop', async () => {
+  it('should render the correct radio group items based on the correctNameOptions prop', async () => {
     let wrapper = await mountComponent({
       correctNameOptions: [
         CorrectNameOption.CORRECT_NAME,
@@ -32,12 +31,12 @@ describe('FormBusinessName', () => {
       ]
     })
 
-    let accordion = wrapper.findComponent({ name: 'UAccordion' })
-    let items = accordion.props('items')
+    let radioGroup = wrapper.findComponent({ name: 'URadioGroup' })
+    let items = radioGroup.props('items')
 
     expect(items).toHaveLength(2)
-    expect(items[0].changeOption).toBe(CorrectNameOption.CORRECT_NAME)
-    expect(items[1].changeOption).toBe(CorrectNameOption.CORRECT_NEW_NR)
+    expect(items[0].value).toBe(CorrectNameOption.CORRECT_NAME)
+    expect(items[1].value).toBe(CorrectNameOption.CORRECT_NEW_NR)
 
     wrapper.unmount()
 
@@ -48,23 +47,23 @@ describe('FormBusinessName', () => {
       ]
     })
 
-    accordion = wrapper.findComponent({ name: 'UAccordion' })
-    items = accordion.props('items')
+    radioGroup = wrapper.findComponent({ name: 'URadioGroup' })
+    items = radioGroup.props('items')
 
     expect(items).toHaveLength(2)
-    expect(items[0].changeOption).toBe(CorrectNameOption.CORRECT_NAME)
-    expect(items[1].changeOption).toBe(CorrectNameOption.CORRECT_NAME_TO_NUMBER)
+    expect(items[0].value).toBe(CorrectNameOption.CORRECT_NAME)
+    expect(items[1].value).toBe(CorrectNameOption.CORRECT_NAME_TO_NUMBER)
   })
 
-  it('should not render accordian when only one name change option given', async () => {
+  it('should not render radio group when only one name change option given', async () => {
     const wrapper = await mountComponent({
       correctNameOptions: [CorrectNameOption.CORRECT_NAME],
       initialCompanyName: 'Company Name Ltd.'
     })
 
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
+    const radioGroup = wrapper.findComponent({ name: 'URadioGroup' })
 
-    expect(accordion.exists()).toBeFalsy()
+    expect(radioGroup.exists()).toBeFalsy()
 
     expect(wrapper.findComponent({ name: 'FormBusinessNameEdit' }).exists()).toBeTruthy()
   })
@@ -78,21 +77,24 @@ describe('FormBusinessName', () => {
     expect(wrapper.vm.modelValue.legalName).toBe('Company Name Ltd.')
   })
 
-  it('should update legalName when changeToNumbered checkbox is checked', async () => {
+  it('should update legalName when changeToNumbered is selected', async () => {
     const wrapper = await mountComponent({
-      correctNameOptions: [CorrectNameOption.CORRECT_NAME_TO_NUMBER],
+      correctNameOptions: [
+        CorrectNameOption.CORRECT_NAME,
+        CorrectNameOption.CORRECT_NAME_TO_NUMBER
+      ],
       businessIdentifier: 'BC1234567',
       businessType: CorpTypeCd.BC_COMPANY
     })
 
-    const checkbox = wrapper.findComponent({ name: 'UCheckbox' })
+    const radioBtn = wrapper.find('button[value="correct-name-to-number"]')
+    await radioBtn.trigger('click')
 
-    // set the checkbox to true
-    await checkbox.vm.$emit('update:modelValue', true)
-    await checkbox.vm.$emit('change')
+    await nextTick()
     await flushPromises()
 
     expect(wrapper.vm.modelValue.legalName).toContain('BC1234567 B.C.')
+    expect(wrapper.findComponent(ConnectI18nHelper).exists()).toBeTruthy()
   })
 
   it('emits cancel when the cancel button is clicked', async () => {
@@ -104,18 +106,6 @@ describe('FormBusinessName', () => {
     await flushPromises()
 
     expect(wrapper.emitted('cancel')).toBeTruthy()
-  })
-
-  it('should not emit done if no option is active', async () => {
-    const wrapper = await mountComponent()
-
-    const doneBtn = wrapper.findAllComponents({ name: 'UButton' })
-      .find(b => b.text().includes('Done'))?.find('button')
-
-    await doneBtn?.trigger('click')
-    await flushPromises()
-
-    expect(wrapper.emitted('done')).toBeUndefined()
   })
 
   it('should emit done if option is active and form is valid', async () => {
@@ -150,7 +140,7 @@ describe('FormBusinessName', () => {
     expect(wrapper.emitted('done')).toBeUndefined()
   })
 
-  it('should reset modelValue when switching between accordion items', async () => {
+  it('should reset modelValue when switching between radio group items', async () => {
     const wrapper = await mountComponent({
       correctNameOptions: [
         CorrectNameOption.CORRECT_NAME,
@@ -161,8 +151,8 @@ describe('FormBusinessName', () => {
     wrapper.vm.modelValue.nrNumber = 'NR 1234567'
     expect(wrapper.vm.modelValue.nrNumber).toBe('NR 1234567')
 
-    const accordion = wrapper.findComponent({ name: 'UAccordion' })
-    await accordion.vm.$emit('update:modelValue', '0')
+    const accordion = wrapper.findComponent({ name: 'URadioGroup' })
+    await accordion.vm.$emit('update:modelValue', CorrectNameOption.CORRECT_NEW_NR)
 
     await flushPromises()
 
@@ -179,21 +169,5 @@ describe('FormBusinessName', () => {
     await flushPromises()
 
     expect(wrapper.emitted('done')).toBeDefined()
-  })
-
-  it('should init active option on mount if only one option exists', async () => {
-    const wrapper = await mountComponent({
-      correctNameOptions: [CorrectNameOption.CORRECT_NAME]
-    })
-
-    expect((wrapper.vm as any).activeCorrectNameOption).toBe(CorrectNameOption.CORRECT_NAME)
-  })
-
-  it('should not have an active option on mount if multiple options exist', async () => {
-    const wrapper = await mountComponent({
-      correctNameOptions: [CorrectNameOption.CORRECT_NAME, CorrectNameOption.CORRECT_NEW_NR]
-    })
-
-    expect((wrapper.vm as any).activeCorrectNameOption).toBeUndefined()
   })
 })

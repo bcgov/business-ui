@@ -4,11 +4,13 @@ import type { Form } from '@nuxt/ui'
 defineProps<{ name?: string }>()
 
 const model = defineModel<NameRequestSchema>({ required: true })
-
-// We only care about legalName for this component
-const schema = getNameRequestSchema().pick({ legalName: true })
-
+const schema = getNameRequestSchema()
 const formRef = useTemplateRef<Form<NameRequestSchema>>('company-name-edit-form')
+
+// need to init changeOption for validation refinements
+// use along with onMounted so this is fired when used inside a <KeepAlive>
+onActivated(() => model.value.changeOption = CorrectNameOption.CORRECT_NAME)
+onMounted(() => model.value.changeOption = CorrectNameOption.CORRECT_NAME)
 
 defineExpose({ formRef })
 </script>

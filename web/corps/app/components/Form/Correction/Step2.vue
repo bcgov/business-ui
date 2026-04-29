@@ -5,10 +5,11 @@ import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/cor
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
+const { business, businessContact } = storeToRefs(businessStore)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 /** Display-level label overrides for correction context */
-const correctionLabelOverrides = useCorrectionLabelOverrides()
+const correctionLabelOverrides = getCorrectionLabelOverrides()
 
 /**
  * Change detection for review sections.
@@ -45,15 +46,6 @@ const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
 })
 
-/** Whether any correctable section has changes — used to show a warning if nothing changed */
-const hasAnyChanges = computed(() => {
-  return hasOfficeChanges.value
-    || hasDirectorChanges.value
-    || hasShareStructureChanges.value
-    || hasReceiverChanges.value
-    || hasLiquidatorChanges.value
-})
-
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
 
@@ -83,14 +75,13 @@ function onError(event: FormErrorEvent) {
         <p>{{ $t('text.correctionReviewDescription') }}</p>
       </div>
 
-      <!-- No changes warning -->
-      <UAlert
-        v-if="!hasAnyChanges"
-        icon="i-mdi-information-outline"
-        color="warning"
-        :description="$t('form.manageBusiness.noOptionAlert')"
-        title="No changes have been made to the business data. Please go back and make corrections before submitting."
-        data-testid="no-changes-alert"
+      <!-- Company Name (readonly, always displayed) -->
+      <ManageCompanyName
+        v-model:active-name-request="store.formState.activeNameRequest"
+        :loading="store.initializing"
+        :business
+        :contact="businessContact"
+        readonly
       />
 
       <!-- Office Addresses (readonly, only if changed) -->

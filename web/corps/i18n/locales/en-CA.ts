@@ -39,7 +39,7 @@ export default {
   },
   page: {
     correction: {
-      desc: 'This filing will correct the information in the original {boldStart}{filingType}{boldEnd} filing from {boldStart}{filingDate}{boldEnd}. Changes made in this correction will be applied to the business record.',
+      desc: 'This filing will correct the information in the original {boldStart}{filing-type}{boldEnd} filing from {boldStart}{filing-date}{boldEnd}. Changes made in this correction will be applied to the business record.',
       feeCode: 'CRCTN',
       feeLabel: 'Correction',
       h1: 'Correction',

@@ -56,7 +56,6 @@ const hasErrors = computed(() => {
             initial-company-name="Test Company Inc"
             business-identifier="BC1234567"
             :business-type="CorpTypeCd.BC_COMPANY"
-            company-name="Test Business Name"
             :correct-name-options="[
               CorrectNameOption.CORRECT_NAME,
               CorrectNameOption.CORRECT_NAME_TO_NUMBER,

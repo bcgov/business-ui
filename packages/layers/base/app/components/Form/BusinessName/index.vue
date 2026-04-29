@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from 'vue'
-import type { FormErrorEvent } from '@nuxt/ui'
-import { FormBusinessNameEdit, FormNameRequestNumber, UCheckbox } from '#components'
+import type { FormErrorEvent, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
+import { FormBusinessNameEdit, FormNameRequestNumber, ConnectI18nHelper } from '#components'
 
 const {
   businessIdentifier,
@@ -39,31 +39,41 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
 
 const numberedName = `${businessIdentifier} B.C. ${getNumberedDesignation(businessType)}`
 
-const activeCorrectNameOption = ref<CorrectNameOption | undefined>(undefined)
 const editNameFormRef = useTemplateRef('edit-name-form')
 const nrNumFormRef = useTemplateRef('nr-num-form')
 
-const nameChangeOptions = computed<BusinessNameChangeOption[]>(() => [
+const nameChangeOptions = computed(() => [
   // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME)
-      ? [{ label: t('label.editTheCompanyName'), changeOption: CorrectNameOption.CORRECT_NAME }]
+      ? [{
+        label: t('label.companyName'),
+        description: t('text.correctTyposCompanyName'),
+        value: CorrectNameOption.CORRECT_NAME
+      }]
       : []
   ),
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NAME_TO_NUMBER)
-      ? [{ label: t('label.useTheCorporationNumberAsTheName'), changeOption: CorrectNameOption.CORRECT_NAME_TO_NUMBER }]
+      ? [{
+        label: t('label.incorporationNumber'),
+        value: CorrectNameOption.CORRECT_NAME_TO_NUMBER
+      }]
       : []
   ),
   ...(
     correctNameOptions.includes(CorrectNameOption.CORRECT_NEW_NR)
-      ? [{ label: t('label.useANewNameRequestNumber'), changeOption: CorrectNameOption.CORRECT_NEW_NR }]
+      ? [{
+        label: t('label.newNameRequestNumber'),
+        altLabel: t('label.useNewNrNumber'), // used when this is the only option, not an aria label
+        value: CorrectNameOption.CORRECT_NEW_NR
+      }]
       : []
   )
 ])
 
-function renderOption(item: BusinessNameChangeOption) {
-  switch (item.changeOption) {
+function renderOption(item: RadioGroupItem & { value?: RadioGroupValue | CorrectNameOption }) {
+  switch (item.value) {
     case CorrectNameOption.CORRECT_NAME:
       return h(
         FormBusinessNameEdit,
@@ -75,12 +85,12 @@ function renderOption(item: BusinessNameChangeOption) {
       )
     case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
       return h(
-        UCheckbox,
+        ConnectI18nHelper,
         {
-          'modelValue': model.value.changeToNumbered,
-          'label': t('label.changeCompanyNameToNumbered', { numberedName }),
-          'onChange': onChangeToNumberedChange,
-          'onUpdate:modelValue': (val: unknown) => model.value.changeToNumbered = val as boolean
+          as: 'p',
+          translationPath: 'label.useTheCorporationNumberAsTheName',
+          corpnum: businessIdentifier,
+          class: 'text-neutral'
         }
       )
     default: // CorrectNameOption.CORRECT_NEW_NR
@@ -98,60 +108,33 @@ function renderOption(item: BusinessNameChangeOption) {
   }
 }
 
-function onChangeToNumberedChange() {
-  const checked = model.value.changeToNumbered
-  if (checked) {
-    model.value.legalName = numberedName
-  }
-}
-
-function onActiveAccordianChange(v: string | string[] | undefined) {
-  if (v === undefined) {
-    activeCorrectNameOption.value = undefined
-    return
-  }
-
-  // track which name change option to validate on done click
-  if (v) {
-    const index = parseInt(v as string) // we know this is a string, can only be string[] if accordian prop `type` = 'multiple'
-    const selectedOption = nameChangeOptions.value[index]
-
-    if (selectedOption) {
-      activeCorrectNameOption.value = selectedOption.changeOption
-    }
-  }
+function onOptionChange(value: string | undefined) {
+  const option = value as CorrectNameOption | undefined
 
   // reset model each time accordian is changed
   model.value.legalName = ''
   model.value.nrNumber = ''
   model.value.changeToNumbered = false
 
-  // set legal name to original name when opening `Edit the company name option`
   nextTick(() => {
-    if (activeCorrectNameOption.value === CorrectNameOption.CORRECT_NAME) {
-      model.value.legalName = initialCompanyName
+    // add/update cases as necessary
+    switch (option) {
+      case CorrectNameOption.CORRECT_NAME:
+        model.value.legalName = initialCompanyName
+        break
+      case CorrectNameOption.CORRECT_NAME_TO_NUMBER:
+        model.value.legalName = numberedName
+        break
+      default:
+        break
     }
   })
 }
 
-// NB: this functionality is copying what exists currently
-// design audit will need to be done to determine any UX or validation changes
 async function onDone() {
   try {
-    const option = activeCorrectNameOption.value
-    // FUTURE: add in AML CorrectNameOption values (CORRECT_AML_ADOPT, CORRECT_AML_NUMBERED)
-    if (
-      option === undefined
-      || (option === CorrectNameOption.CORRECT_NAME_TO_NUMBER && !model.value.changeToNumbered)
-    ) {
-      // do nothing if no option was selected
-      // or last option was changeToNumbered and checkbox is unchecked
-      return
-    } else if (option === CorrectNameOption.CORRECT_NAME) {
-      await editNameFormRef.value?.formRef?.validate()
-    } else { // CorrectNameOption.CORRECT_NEW_NR
-      await nrNumFormRef.value?.formRef?.validate()
-    }
+    await editNameFormRef.value?.formRef?.validate()
+    await nrNumFormRef.value?.formRef?.validate()
 
     emit('done')
   } catch (e) {
@@ -161,12 +144,10 @@ async function onDone() {
 
 // init active option and conditionally set legalName if only 1 name change option available
 onMounted(() => {
-  if (nameChangeOptions.value.length === 1) {
-    const option = nameChangeOptions.value[0]?.changeOption
-    activeCorrectNameOption.value = option
-    if (option === CorrectNameOption.CORRECT_NAME) {
-      model.value.legalName = initialCompanyName
-    }
+  const option = nameChangeOptions.value[0]?.value
+  model.value.changeOption = option
+  if (option === CorrectNameOption.CORRECT_NAME) {
+    model.value.legalName = initialCompanyName
   }
 })
 </script>
@@ -178,36 +159,41 @@ onMounted(() => {
     :name
     nested
     :state="(model as any)"
+    class="space-y-6"
     @keydown.enter.prevent.stop="onDone"
   >
-    <Divide v-if="nameChangeOptions.length > 1" orientation="vertical">
+    <template v-if="nameChangeOptions.length > 1">
       <p>
-        {{ $t('text.youCanCorrectFollowingWays') }}
+        {{ $t('text.selectWayToCorrectName') }}
       </p>
-      <UAccordion
+      <URadioGroup
+        v-model="model.changeOption"
         :items="nameChangeOptions"
+        variant="card"
         :ui="{
-          trigger: 'text-primary py-6',
-          root: '-mt-3',
-          label: 'text-base group-data-[state=open]:font-bold group-data-[state=open]:text-neutral-highlighted',
-          content: 'pb-6 pt-2 px-3'
+          fieldset: 'gap-y-4',
+          label: 'text-base group-has-[button[data-active]]:font-bold',
+          description: 'text-base group-not-has-[button[data-active]]:hidden mt-2',
+          item: 'group not-has-data-active:bg-shade',
+          container: 'mt-0.5',
+          base: 'ring-neutral ring-2'
         }"
-        @update:model-value="onActiveAccordianChange"
+        @update:model-value="onOptionChange"
       >
-        <template #content="{ item }">
-          <component :is="renderOption(item)" />
+        <template #description="{ item }">
+          <KeepAlive>
+            <component :is="renderOption(item)" v-if="model.changeOption === item.value" />
+          </KeepAlive>
         </template>
-      </UAccordion>
-    </Divide>
+      </URadioGroup>
+    </template>
 
     <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
-      <div class="font-bold text-neutral-highlighted">
-        {{ nameChangeOptions[0].label }}
-      </div>
+      <p>{{ nameChangeOptions[0].altLabel }}</p>
       <component :is="renderOption(nameChangeOptions[0])" />
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
+    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
       <FormAlertMessage
         :id="messageId"
         :message="alerts[formTarget]"

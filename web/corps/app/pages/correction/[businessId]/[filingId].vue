@@ -9,13 +9,10 @@ const { setAlert: setReceiversAlert } = useFilingAlerts('manage-receivers')
 const { setAlert: setLiquidatorsAlert } = useFilingAlerts('manage-liquidators')
 const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
 const { setAlert: setNameTranslationsAlert } = useFilingAlerts('manage-name-translations')
+const { setAlert: setCompanyNameAlert } = useFilingAlerts('manage-company-name')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
-const {
-  handleButtonLoading,
-  setAlertText: setBtnCtrlAlert
-} = useConnectButtonControl()
-
+const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const { getFilingName } = useFiling()
 
 const businessId = route.params.businessId as string
@@ -36,7 +33,8 @@ const {
     [() => store.initialLiquidators, () => store.liquidators],
     [() => store.initialOffices, () => store.offices],
     [() => store.initialShareClasses, () => store.shareClasses],
-    [() => store.initialNameTranslations, () => store.nameTranslations]
+    [() => store.initialNameTranslations, () => store.nameTranslations],
+    [() => store.companyName.old.legalName, () => store.companyName.new.legalName]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -49,13 +47,13 @@ const {
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || (store.hasCommentChanges && hasValidComment)
+      || store.companyName.new.actions.length > 0
   }
 )
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons-stacked',
-  middleware: ['connect-auth'],
-  path: '/correction/:businessId/:filingId'
+  middleware: ['connect-auth']
 })
 
 useHead({
@@ -87,8 +85,8 @@ function checkActiveSubForm() {
       || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
       || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
       || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
-      || (store.formState.activeNameTranslation !== undefined
-        && setNameTranslationsAlert('name-translation-form', alertMsg))
+      || (store.formState.activeNameTranslation && setNameTranslationsAlert('name-translation-form', alertMsg))
+      || (store.formState.activeNameRequest && setCompanyNameAlert('company-name-form', alertMsg))
 
   return hasActiveSubForm
 }

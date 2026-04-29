@@ -8,6 +8,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
   const { tableState: tableNameTranslations } = useManageNameTranslations()
+  const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -252,6 +253,19 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       tableNameTranslations.value = mapDraftOnlyNameTranslations(draft.nameTranslations)
     }
 
+    // set `Your Company` data
+    const originalName = businessStore.business?.legalName ?? ''
+    companyName.value.old.legalName = originalName
+    companyName.value.old.actions = []
+    companyName.value.new = cloneDeep(companyName.value.old)
+    if (draft?.nameRequest) {
+      updateCompanyName({
+        legalName: draft.nameRequest.legalName,
+        nrNumber: draft.nameRequest.nrNumber ?? '',
+        changeToNumbered: false
+      })
+    }
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
@@ -315,9 +329,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ...getCommonFilingPayloadData(formState.courtOrder),
 
       // Document delivery / contact point
-      ...(formState.documentDelivery?.completingPartyEmail && {
-        contactPoint: { email: formState.documentDelivery.completingPartyEmail }
-      }),
+      // contactPoint is always required, use completing party email if submitted else use
+      // business contact from auth
+      contactPoint: {
+        email: formState.documentDelivery?.completingPartyEmail || businessStore.businessContact?.email || '',
+        phone: businessStore.businessContact?.phone || '',
+        // FUTURE: fix typing
+        ...(businessStore.businessContact?.extension
+          ? { extension: Number(businessStore.businessContact?.extension) as unknown as string }
+          : {}
+        )
+      },
 
       // Name translations — match CorrectionPayload interface:
       // - id: only for existing entries (real API id); omitted for new entries (avoids sending temp UUIDs)
@@ -331,9 +353,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           name: nt.new.name,
           ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
           action: nt.new.actions[0]
-        }))
+        })),
 
-      // TODO: add nameRequest, startDate, provisionsRemoved
+      ...(hasNameChange.value && {
+        nameRequest: {
+          legalName: companyName.value.new.legalName,
+          nrNumber: companyName.value.new.nrNumber,
+          legalType: businessStore.business?.legalType
+        }
+      })
+
+      // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
     }
 
@@ -417,6 +447,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialNameTranslations,
     hasCommentChanges,
     isStaff,
+    companyName,
     init,
     submit,
     $reset
