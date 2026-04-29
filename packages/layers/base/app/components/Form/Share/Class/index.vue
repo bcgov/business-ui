@@ -25,6 +25,7 @@ const currencyOptions = getCurrencyList().map(c => ({
 }))
 const schema = computed(() => getActiveShareClassSchema(props.validationContext))
 const labelId = useId()
+const isInvalidCurrency = ref(false)
 
 const model = defineModel<ShareClassSchema>({ required: true })
 const formRef = useTemplateRef<Form<ShareClassSchema>>('share-class-form')
@@ -50,6 +51,10 @@ function resetFields(fields: 'parValue' | 'maxShares') {
   }
 }
 
+function getisInvalidCurrency(code: string | undefined) {
+  return !!code && code !== 'OTHER'
+}
+
 async function onDone() {
   try {
     await formRef.value?.validate()
@@ -69,10 +74,18 @@ provide('UInput-props-max-number-shares-input', { maxlength: '17' })
 provide('UInput-props-par-value-input', { maxlength: '17' })
 
 onMounted(async () => {
-  if (model.value.currencyAdditional) {
+  if (model.value.currency === 'OTHER') {
+    isInvalidCurrency.value = true
     model.value.currency = ''
+    model.value.currencyAdditional = undefined
     // @ts-expect-error - name: 'currency' not being inferred correctly
     await formRef.value?.validate({ name: 'currency', silent: true })
+  }
+})
+
+watch(() => model.value.currency, (v) => {
+  if (getisInvalidCurrency(v)) {
+    isInvalidCurrency.value = true
   }
 })
 
@@ -180,7 +193,7 @@ defineExpose({
         >
           <div class="space-y-4">
             <UAlert
-              v-if="model.hasParValue && !model.currency && model.currencyAdditional"
+              v-if="isInvalidCurrency"
               data-testid="currency-update-alert"
               color="warning"
               variant="subtle"
