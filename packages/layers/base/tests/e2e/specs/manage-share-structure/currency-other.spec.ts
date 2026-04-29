@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import i18n from '#business/i18n/locales/en-CA'
 
 test.describe('ManageShareStructure (currency other)', () => {
   test('Should render table with expected data', async ({ page }) => {
@@ -125,8 +126,8 @@ test.describe('ManageShareStructure (currency other)', () => {
     await page.getByRole('menuitem', { name: 'Add Series' }).click()
     const dialog = page.getByRole('dialog')
     await expect(dialog).toBeVisible()
-    await expect(dialog).toContainText('Unsupported Currency Type')
-    await expect(dialog).toContainText('Current currency is invalid. Update the share class currency to add a new series.')
+    await expect(dialog).toContainText(i18n.modal.unsupportedCurrencyType.title)
+    await expect(dialog).toContainText(i18n.modal.unsupportedCurrencyType.description)
 
     await expect(ssForm).not.toBeAttached()
   })
