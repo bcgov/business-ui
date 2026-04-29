@@ -44,18 +44,9 @@ const {
 } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(stateKey, activeClass)
 const { setAlertText } = useConnectButtonControl()
+const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
-
-const allSeriesNames = computed(() => {
-  const currentId = activeSeries.value?.id
-  const allSeries = tableState.value
-    .filter(c => !c.new.actions?.includes(ActionType.REMOVED))
-    .flatMap(c => c.new.series || [])
-    .filter(s => s.id !== currentId && !s.actions?.includes(ActionType.REMOVED))
-
-  return allSeries.map(s => s.name.toLowerCase())
-})
 
 const classValidationContext = computed(() => {
   const currentId = activeClass.value?.id
@@ -84,6 +75,17 @@ function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
 
   // init add series
   if (addSeriesToRow) {
+    if (addSeriesToRow.original.new.currency === 'OTHER') {
+      baseModal.open({
+        title: t('modal.unsupportedCurrencyType.title'),
+        description: t('modal.unsupportedCurrencyType.description'),
+        dismissible: true,
+        buttons: [
+          { label: t('label.close'), shouldClose: true }
+        ]
+      })
+      return
+    }
     const newSeries = activeSeriesSchema.parse({})
     if (newSeries) {
       newSeries.hasMaximumShares = true
@@ -254,7 +256,6 @@ function clearAllAlerts() {
               :variant="addingSeriesToClassId ? 'add' : 'edit'"
               :row
               :state-key="stateKey"
-              :existing-names="allSeriesNames"
               nested
               @done="() => {
                 addingSeriesToClassId ? addNewShareSeries(row, activeSeries) : updateShareSeries(row, activeSeries)

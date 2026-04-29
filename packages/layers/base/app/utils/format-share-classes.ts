@@ -49,6 +49,8 @@ export function formatShareClassesApi(
     .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
     .map(c => ({
       ...c.new,
+      // add id for api validation
+      id: !c.new.actions.includes(ActionType.ADDED) ? Number(c.new.id) : null,
       name: c.new.name + ' Shares',
       currency: c.new.currency ?? null,
       currencyAdditional: c.new.currencyAdditional ?? null,

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import i18n from '#business/i18n/locales/en-CA'
 
 test.describe('ManageShareStructure (currency other)', () => {
   test('Should render table with expected data', async ({ page }) => {
@@ -110,7 +111,7 @@ test.describe('ManageShareStructure (currency other)', () => {
     expect(classD[5]!).toHaveText('Edit')
   })
 
-  test('Should be able to add share series to a class with a currencyAdditional value', async ({ page }) => {
+  test('Should not be able to add share series to a class with a currencyAdditional value', async ({ page }) => {
     await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
@@ -123,22 +124,12 @@ test.describe('ManageShareStructure (currency other)', () => {
     // open add share series form and fill
     await classA.getByRole('button', { name: 'More Actions' }).click()
     await page.getByRole('menuitem', { name: 'Add Series' }).click()
-    await expect(ssForm).toBeVisible()
-    await ssForm.getByTestId('share-series-name-input').fill('Class A New Series')
-    await ssForm.getByTestId('max-number-shares-input').fill('10000')
-    await ssForm.getByText('This share class has special rights or restrictions').click()
-    await ssForm.getByRole('button', { name: 'Done' }).click()
-    await expect(ssForm).not.toBeVisible()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog).toContainText(i18n.modal.unsupportedCurrencyType.title)
+    await expect(dialog).toContainText(i18n.modal.unsupportedCurrencyType.description)
 
-    // assert new series in table
-    const newSeriesColumns = await table.getByRole('row').filter({ hasText: 'Class A New Series' }).locator('td').all()
-    expect(newSeriesColumns.length).toBe(6)
-    expect(newSeriesColumns[0]!).toHaveText('Class A New Series SharesADDED')
-    expect(newSeriesColumns[1]!).toHaveText('10000')
-    expect(newSeriesColumns[2]!).toHaveText('No Par Value')
-    expect(newSeriesColumns[3]!).toHaveText('')
-    expect(newSeriesColumns[4]!).toHaveText('Yes')
-    expect(newSeriesColumns[5]!).toHaveText('Edit')
+    await expect(ssForm).not.toBeAttached()
   })
 
   test('Should be able to edit share class with `OTHER` currency type', async ({ page }) => {
@@ -203,32 +194,5 @@ test.describe('ManageShareStructure (currency other)', () => {
     // should be able to undo edits and restore currencyAdditional value
     await classAAfterEdit.getByRole('button', { name: 'Undo' }).click()
     assertClassABeforeEdit()
-  })
-
-  test('Series form readonly currency section should display currencyAdditional value correctly', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
-    await page.waitForLoadState('networkidle')
-
-    const ssForm = page.getByTestId('share-series-form')
-    const table = page.getByRole('table')
-    const classA = table.getByRole('row').filter({ hasText: 'Class A - Common Stock Shares' })
-    const classASeries = table.getByRole('row').filter({ hasText: 'Seed Shares' }).first()
-
-    await expect(table).toBeVisible()
-
-    // open add series form, assert currencyAdditional value displayed correctly, close form
-    await classA.getByRole('button', { name: 'More Actions' }).click()
-    await page.getByRole('menuitem', { name: 'Add Series' }).click()
-    await expect(ssForm).toBeVisible()
-    await expect(ssForm.getByTestId('currency-display-input')).toHaveValue('Percent of the share')
-    await ssForm.getByRole('button', { name: 'Cancel' }).first().click()
-    await expect(ssForm).not.toBeVisible()
-
-    // open edit series form, assert currencyAdditional value displayed correctly, close form
-    await classASeries.getByRole('button', { name: 'Change' }).click()
-    await expect(ssForm).toBeVisible()
-    await expect(ssForm.getByTestId('currency-display-input')).toHaveValue('Percent of the share')
-    await ssForm.getByRole('button', { name: 'Cancel' }).first().click()
-    await expect(ssForm).not.toBeVisible()
   })
 })
