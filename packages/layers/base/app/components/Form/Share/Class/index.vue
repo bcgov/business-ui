@@ -85,7 +85,7 @@ onMounted(async () => {
 
 watch(() => model.value.currency, (v) => {
   if (isSupportedCurrency(v)) {
-    isInvalidCurrency.value = false 
+    isInvalidCurrency.value = false
   } else if (v === 'OTHER') {
     isInvalidCurrency.value = true
   }
