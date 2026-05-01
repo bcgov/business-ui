@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes'
 const { $businessApi, $authApi } = useNuxtApp()
 const { t } = useNuxtApp().$i18n
 const affStore = useAffiliationsStore()
+const accountStore = useConnectAccountStore()
 const brdModal = useBrdModals()
 const route = useRoute()
 
@@ -42,6 +43,11 @@ definePageMeta({
 onMounted(async () => {
   try {
     const token = parseToken(route.query.token as string)
+    // required when the user has more than 1 account
+    // NB: `unaffiliated` token from migration will not have fromOrgId
+    if (token.fromOrgId) {
+      accountStore.switchCurrentAccount(token.fromOrgId)
+    }
     // Parse the URL and try to add the affiliation
     parseUrlAndAddAffiliation(token, route.query.token as string)
     // Load affiliations to update the table

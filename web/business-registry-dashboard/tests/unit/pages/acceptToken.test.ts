@@ -8,10 +8,14 @@ const COMPRESSED_TOKEN = '.eJyrVspMUbKyMDHTUUorys_1L0r3BPLzSnNydJRK8lG4SaXFmXmpx
 const UNCOMPRESSED_TOKEN = 'eyJpZCI6OCwiZnJvbU9yZ0lkIjoyNTIzLCJ0b09yZ0lkIjoyOTk0LCJidXNpbmVzc0lkZW50aWZpZXIiOiJCQzA4NzEzMzAifQ.ZNPNWg.lrG2RAy9EOXQshT9cMzf1xyEE04'
 
 // Mock useRoute to provide test route parameters and metadata
+let mockToken: string | undefined
 mockNuxtImport('useRoute', () => {
   return () => ({
     params: {
       token: 'dummy-token'
+    },
+    query: {
+      token: mockToken
     },
     meta: {
       checkMagicLink: true
@@ -19,8 +23,13 @@ mockNuxtImport('useRoute', () => {
   })
 })
 
+const mockSwitchAccount = vi.fn()
 mockNuxtImport('useConnectAccountStore', () => () => ({
-  currentAccount: { id: 1234 }
+  switchCurrentAccount: mockSwitchAccount,
+  currentAccount: { id: 1234 },
+  userAccounts: [
+    { id: 1234 }, { id: 5678 }, { id: 9012 }
+  ]
 }))
 
 const mockAuthApi = vi.fn()
@@ -74,6 +83,7 @@ describe('AcceptToken Page', () => {
   // Clear all mock function calls before each test
   beforeEach(() => {
     vi.clearAllMocks()
+    mockToken = undefined
   })
 
   // Helper function to mount component with necessary global plugins and mocks
@@ -115,6 +125,21 @@ describe('AcceptToken Page', () => {
 
       expect(() => component.parseToken('invalid-token'))
         .toThrow('Invalid token format')
+    })
+
+    it('should switch account if fromOrgId is in token', () => {
+      const fromOrgId = 9012
+      mockToken = btoa(JSON.stringify({ ...mockParsedToken, fromOrgId }))
+
+      mountComponent()
+      expect(mockSwitchAccount).toHaveBeenCalledWith(fromOrgId)
+    })
+
+    it('should not switch account if fromOrgId is null', () => {
+      mockToken = btoa(JSON.stringify({ ...mockParsedToken, fromOrgId: null }))
+
+      mountComponent()
+      expect(mockSwitchAccount).not.toHaveBeenCalled()
     })
   })
 
