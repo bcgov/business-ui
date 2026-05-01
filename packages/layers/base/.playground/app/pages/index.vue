@@ -165,6 +165,15 @@ const componentExamples: DropdownMenuItem[] = [
         to: localePath('/examples/components/Table/ShareStructure')
       }
     ]
+  },
+  {
+    label: 'Sub Form',
+    children: [
+      {
+        label: 'SubFormWrapper',
+        to: localePath('/examples/components/SubForm/Wrapper')
+      }
+    ]
   }
 ]
 
