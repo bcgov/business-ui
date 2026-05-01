@@ -2,7 +2,6 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect } from 'vitest'
 import { SubFormWrapper } from '#components'
-import { flushPromises } from '@vue/test-utils'
 
 const findButtonByText = (wrapper: any, text: string) => {
   return wrapper.findAllComponents({ name: 'UButton' }).find((b: any) => b.text().includes(text))
