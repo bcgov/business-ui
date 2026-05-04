@@ -289,16 +289,16 @@ describe('AcceptToken Page', () => {
       const wrapper = mountComponent()
       const component = wrapper.vm as any
 
-      const expiredError = {
+      const unknownError = {
         response: {
           status: 400,
           _data: { code: 'unknown-error-code' }
         }
       }
 
-      initMocks(component, expiredError)
+      initMocks(component, unknownError)
 
-      mockAuthApi.mockResolvedValue({ 
+      mockAuthApi.mockResolvedValue({
         entities: [{ identifier }]
       })
 
