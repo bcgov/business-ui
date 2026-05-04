@@ -85,17 +85,14 @@ const parseUrlAndAddAffiliation = async (token: any, base64Token: string) => {
     // Email affiliation error when there is no fromOrgId (special migration flow affiliation)
     if (!fromOrgId && isBadRequest) {
       try {
-        // In SAF + Affiliation flow, this link could have been used by another user or account
-        // causing the invitation to be `ACCEPTED`, need to confirm business has been added to this account specifically
-        if (isActioned) {
-          const accountId = useConnectAccountStore().currentAccount.id
-          const { entities } = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountId}/affiliations?new=true`)
-          const alreadyAdded = entities.find(b => b.identifier === identifier)
+        // Always check existing affiliations, manually adding the business can make the errorCode (e.g., 'Expired') misleading
+        const accountId = useConnectAccountStore().currentAccount.id
+        const { entities } = await $authApi<{ entities: AffiliationResponse[] }>(`/orgs/${accountId}/affiliations?new=true`)
+        const alreadyAdded = entities.find(b => b.identifier === identifier)
 
-          if (alreadyAdded) {
-            brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
-            return
-          }
+        if (alreadyAdded) {
+          brdModal.openMagicLinkModal(t('error.magicLinkAlreadyAdded.title'), t('error.magicLinkAlreadyAdded.description', { identifier }))
+          return
         }
 
         // If link is expired, actioned by a different account or any other error, open manage business modal

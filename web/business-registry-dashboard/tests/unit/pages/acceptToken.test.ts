@@ -284,5 +284,31 @@ describe('AcceptToken Page', () => {
         true
       )
     })
+
+    it('shows "already added" modal if API returns any 400 error but business is already in account', async () => {
+      const wrapper = mountComponent()
+      const component = wrapper.vm as any
+
+      const expiredError = {
+        response: {
+          status: 400,
+          _data: { code: 'unknown-error-code' }
+        }
+      }
+
+      initMocks(component, expiredError)
+
+      mockAuthApi.mockResolvedValue({ 
+        entities: [{ identifier }]
+      })
+
+      await component.parseUrlAndAddAffiliation({ businessIdentifier: identifier, id: '1', fromOrgId: null }, 'token')
+
+      expect(mockBrdModal.openMagicLinkModal).toHaveBeenCalledWith(
+        'error.magicLinkAlreadyAdded.title',
+        'error.magicLinkAlreadyAdded.description'
+      )
+      expect(mockBrdModal.openManageBusiness).not.toHaveBeenCalled()
+    })
   })
 })
