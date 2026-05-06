@@ -32,6 +32,7 @@ async function onDone() {
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 const labelId = useId()
+const hasNameFieldError = computed(() => formRef.value?.errors?.some((e) => e.name === 'name') ?? false)
 </script>
 
 <template>
@@ -82,7 +83,7 @@ const labelId = useId()
           />
         </div>
         <!-- Keep help outside the bordered wrapper so the border stays only on the input area. -->
-        <p class="pl-4.5 mt-1 text-xs text-neutral-toned">
+        <p v-if="!hasNameFieldError" class="pl-4.5 mt-1 text-xs text-neutral-toned">
           {{ $t('text.latinAlphabetOnly') }}
         </p>
       </div>
@@ -101,7 +102,6 @@ const labelId = useId()
         />
         <div
           class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center"
-          :class="variant === 'edit' ? '' : 'w-full'"
         >
           <FormAlertMessage
             :id="messageId"
