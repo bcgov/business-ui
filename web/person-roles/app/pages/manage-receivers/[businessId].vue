@@ -190,19 +190,10 @@ useFilingPageWatcher<ReceiverType>({
         :state="receiverStore.formState.courtOrder"
       />
 
-      <FormDocumentId
-        ref="document-id-ref"
-        v-model="receiverStore.formState.documentId"
-        :disabled="initializing"
-        name="documentId"
-        order="3"
-        :state="receiverStore.formState.documentId"
-      />
-
       <StaffPaymentFieldset
         ref="staff-pay-ref"
         v-model="receiverStore.formState.staffPayment"
-        order="4"
+        order="3"
         :initializing="receiverStore.initializing"
       />
     </UForm>

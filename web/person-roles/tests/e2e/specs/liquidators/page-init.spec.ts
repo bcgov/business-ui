@@ -106,7 +106,6 @@ testCases.forEach(({ testName, type, h1, inLiquidation }) => {
 
       if (type !== LiquidateType.REPORT) {
         expect(page.getByTestId('court-order-section')).toBeVisible()
-        expect(page.getByTestId('document-id-section')).toBeVisible()
       }
 
       expect(page.getByTestId('staff-payment-section')).toBeVisible()

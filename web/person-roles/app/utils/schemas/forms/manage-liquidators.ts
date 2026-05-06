@@ -6,9 +6,6 @@ export function getLiquidatorsSchema() {
       hasPoa: false,
       courtOrderNumber: ''
     }),
-    documentId: getDocumentIdSchema().default({
-      documentIdNumber: ''
-    }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,
       bcolAccountNumber: '',
