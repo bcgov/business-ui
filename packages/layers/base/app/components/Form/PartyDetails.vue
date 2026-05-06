@@ -81,8 +81,9 @@ const labelId = useId()
     :data-testid="formTarget"
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset :aria-labelledby="labelId">
-      <legend
+  <SubFormWrapper :item-label="title" variant="add">
+    <!-- <fieldset :aria-labelledby="labelId"> -->
+      <!-- <legend
         class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full"
         :class="{
           'bg-shade-secondary text-neutral-highlighted': variant === 'add',
@@ -106,15 +107,13 @@ const labelId = useId()
           trailing-icon="i-mdi-close"
           @click="$emit('cancel')"
         />
-      </legend>
-      <div
-        class="divide-y divide-shade bg-white"
-        :class="{
+      </legend> -->
+      <div class="divide-y divide-shade bg-white">
+        <!-- :class="{
           'border border-gray-200': variant === 'edit',
           'rounded shadow': variant === 'add',
           'border-l-3 border-error': alerts[formTarget]
-        }"
-      >
+        }" -->
         <FormPartyName
           v-if="isNameChangeAllowed"
           ref="party-name-form"
@@ -141,7 +140,7 @@ const labelId = useId()
           name="address"
         />
       </div>
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
+      <!-- <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
         <FormAlertMessage
           :id="messageId"
           :message="alerts[formTarget]"
@@ -159,7 +158,8 @@ const labelId = useId()
           class="w-full sm:w-min justify-center"
           @click="onDone"
         />
-      </div>
-    </fieldset>
+      </div> -->
+      </SubFormWrapper>
+    <!-- </fieldset> -->
   </UForm>
 </template>

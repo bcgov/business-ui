@@ -113,16 +113,20 @@ function clearAllAlerts() {
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
-    <UButton
-      v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
-      :label="addLabel"
-      variant="outline"
-      icon="i-mdi-plus"
-      class="w-min"
-      @click="initAddParty"
-    />
-
-    <FormPartyDetails
+    <ConnectPageSection
+      :heading="{
+        label: sectionLabel,
+        icon: 'i-mdi-account-supervisor',
+        ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md'
+      }"
+      :actions="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+        ? [{ label: addLabel, variant: 'outline', icon: 'i-mdi-plus', onClick: initAddParty }]
+        : undefined
+      "
+    >
+    <div>
+      <div class="p-6">
+      <FormPartyDetails
       v-if="addingParty && activeParty"
       v-model="activeParty"
       v-bind="partyFormProps"
@@ -133,14 +137,7 @@ function clearAllAlerts() {
       @done="() => addParty(activeParty)"
       @cancel="cleanupPartyForm"
     />
-
-    <ConnectPageSection
-      :heading="{
-        label: sectionLabel,
-        icon: 'i-mdi-account-supervisor',
-        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
-      }"
-    >
+    </div>
       <TableParty
         v-model:expanded="expandedState"
         :data="tableState"
@@ -172,6 +169,7 @@ function clearAllAlerts() {
           </div>
         </template>
       </TableParty>
+      </div>
     </ConnectPageSection>
   </div>
 </template>
