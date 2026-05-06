@@ -112,7 +112,7 @@ function clearAllAlerts() {
       @cancel="cleanupNameTranslationForm"
     />
 
-    <p v-if="tableState.length" class="font-bold">
+    <p v-if="tableState.length" class="font-bold text-neutral-highlighted">
       {{ $t('label.nameTranslation') }}
     </p>
 

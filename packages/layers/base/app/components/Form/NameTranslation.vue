@@ -32,7 +32,6 @@ async function onDone() {
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 const labelId = useId()
-const hasNameFieldError = computed(() => formRef.value?.errors?.some(e => e.name === 'name') ?? false)
 </script>
 
 <template>
@@ -64,28 +63,16 @@ const hasNameFieldError = computed(() => formRef.value?.errors?.some(e => e.name
       <div
         class="mt-4"
       >
-        <div
-          :class="{
-            'border border-gray-200': variant === 'edit',
-            'rounded shadow': variant === 'add',
-            'border-l-3 border-error': alerts[formTarget]
-          }"
-        >
-          <ConnectFormInput
-            v-if="model"
-            v-model="model.name"
-            required
-            autofocus
-            class="name-translation-input-field"
-            :label="$t('label.nameTranslation')"
-            input-id="name-translation-input"
-            name="name"
-          />
-        </div>
-        <!-- Keep help outside the bordered wrapper so the border stays only on the input area. -->
-        <p v-if="!hasNameFieldError" class="pl-4.5 mt-1 text-xs text-neutral-toned">
-          {{ $t('text.latinAlphabetOnly') }}
-        </p>
+        <ConnectFormInput
+          v-if="model"
+          v-model="model.name"
+          required
+          autofocus
+          :label="$t('label.nameTranslation')"
+          input-id="name-translation-input"
+          name="name"
+          :help="$t('text.latinAlphabetOnly')"
+        />
       </div>
       <div
         class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center mt-6"
@@ -126,10 +113,3 @@ const hasNameFieldError = computed(() => formRef.value?.errors?.some(e => e.name
     </fieldset>
   </UForm>
 </template>
-
-<style scoped>
-/* ConnectFormInput adds a spacer when no help prop is used; remove it for this field. */
-:deep(.name-translation-input-field .h-4.mt-1) {
-  display: none;
-}
-</style>
