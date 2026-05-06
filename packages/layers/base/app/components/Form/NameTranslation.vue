@@ -11,6 +11,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   done: []
   cancel: []
+  remove: []
 }>()
 
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
@@ -45,71 +46,69 @@ const labelId = useId()
   >
     <fieldset :aria-labelledby="labelId">
       <legend
-        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full"
-        :class="{
-          'bg-shade-secondary text-neutral-highlighted': variant === 'add',
-          'bg-primary text-white': variant === 'edit'
-        }"
+        v-if="variant === 'edit'"
+        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full bg-primary text-white"
       >
         <div class="flex items-center gap-2.5">
-          <UIcon
-            :name="variant === 'add' ? 'i-mdi-domain' : 'i-mdi-edit'"
-            class="size-6 shrink-0"
-            :class="variant === 'add' ? 'text-primary' : 'text-white'"
-          />
           <span :id="labelId" class="font-semibold text-base">
             {{ title }}
           </span>
         </div>
+      </legend>
+      <span
+        v-else
+        :id="labelId"
+        class="sr-only"
+      >{{ title }}</span>
+      <div
+        class="mt-4"
+      >
+        <ConnectFormInput
+          v-if="model"
+          v-model="model.name"
+          required
+          autofocus
+          :label="$t('label.nameTranslation')"
+          input-id="name-translation-input"
+          name="name"
+          :help="$t('text.latinAlphabetOnly')"
+        />
+      </div>
+      <div
+        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center mt-6"
+        :class="variant === 'edit' ? 'justify-between' : 'justify-end'"
+      >
         <UButton
           v-if="variant === 'edit'"
-          :label="$t('label.cancel')"
-          class="font-normal p-0"
-          trailing-icon="i-mdi-close"
-          @mousedown.prevent
-          @click="$emit('cancel')"
-        />
-      </legend>
-      <div
-        :class="{
-          'border border-gray-200': variant === 'edit',
-          'rounded shadow': variant === 'add',
-          'border-l-3 border-error': alerts[formTarget]
-        }"
-      >
-        <ConnectFormFieldWrapper
-          :label="$t('label.translationName')"
-          padding-class="xy-default"
-        >
-          <ConnectFormInput
-            v-if="model"
-            v-model="model.name"
-            required
-            :label="$t('label.translationName')"
-            input-id="name-translation-input"
-            name="name"
-          />
-        </ConnectFormFieldWrapper>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center mt-6">
-        <FormAlertMessage
-          :id="messageId"
-          :message="alerts[formTarget]"
-        />
-        <UButton
           variant="outline"
-          :label="$t('label.cancel')"
+          color="error"
+          :label="$t('label.remove')"
           class="w-full sm:w-min justify-center"
           @mousedown.prevent
-          @click="$emit('cancel')"
+          @click="$emit('remove')"
         />
-        <UButton
-          :data-alert-focus-target="targetId"
-          :aria-describedby="messageId"
-          :label="$t('label.done')"
-          class="w-full sm:w-min justify-center"
-          @click="onDone"
-        />
+        <div
+          class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center"
+        >
+          <FormAlertMessage
+            :id="messageId"
+            :message="alerts[formTarget]"
+          />
+          <UButton
+            variant="outline"
+            :label="$t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @mousedown.prevent
+            @click="$emit('cancel')"
+          />
+          <UButton
+            :data-alert-focus-target="targetId"
+            :aria-describedby="messageId"
+            :label="$t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="onDone"
+          />
+        </div>
       </div>
     </fieldset>
   </UForm>

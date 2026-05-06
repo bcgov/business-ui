@@ -8,8 +8,7 @@ mockNuxtImport('useNuxtApp', () => () => ({
   $i18n: {
     t: (key: string) => {
       const labels: Record<string, string> = {
-        'label.translationName': 'Translation Name',
-        'label.noNameTranslations': 'No Name Translations'
+        'label.nameTranslation': 'Name Translation'
       }
       return labels[key] ?? key
     }
@@ -34,7 +33,7 @@ describe('getNameTranslationNameColumn', () => {
 
     expect(header.type).toBe('span')
     expect(header.props.class).toBe('sr-only')
-    expect(header.children).toBe('Translation Name')
+    expect(header.children).toBe('Name Translation')
   })
 
   it('renders translation name and uses it for identity label', () => {
@@ -55,24 +54,6 @@ describe('getNameTranslationNameColumn', () => {
     expect(cell.type).toBe(TableColumnIdentity)
     expect(cell.props.label).toBe('Nom Entreprise')
     expect(cell.props.class).toBe('w-full overflow-clip')
-  })
-
-  it('uses no-name fallback for label when name is empty', () => {
-    const row = {
-      original: {
-        new: {
-          name: ''
-        }
-      }
-    }
-
-    mockGetIsRowRemoved.mockReturnValue(false)
-    mockGetTableBadges.mockReturnValue([])
-
-    const column = getNameTranslationNameColumn() as any
-    const cell = column.cell({ row })
-
-    expect(cell.props.label).toBe('No Name Translations')
   })
 
   it('applies removed style and passes badges', () => {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const {
-  stateKey = 'manage-name-translations'
+  stateKey = 'manage-name-translations',
+  labelOverrides
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -66,7 +67,10 @@ function initEditNameTranslation(row: TableBusinessRow<NameTranslationSchema>) {
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
-  editLabel = $t('label.editingItemName', { name: row.original.new.name.toUpperCase() })
+  const isNew = row.original.new.actions.includes(ActionType.ADDED)
+  editLabel = isNew
+    ? $t('label.editingItemName', { name: row.original.new.name })
+    : $t('label.correctingItemName', { name: row.original.new.name })
   expandedState.value = { [row.index]: true }
 }
 
@@ -108,41 +112,39 @@ function clearAllAlerts() {
       @cancel="cleanupNameTranslationForm"
     />
 
-    <ConnectPageSection
-      :heading="{
-        label: $t('label.nameTranslations'),
-        icon: 'i-mdi-domain',
-        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
-      }"
+    <p v-if="tableState.length" class="font-bold text-neutral-highlighted">
+      {{ $t('label.nameTranslation') }}
+    </p>
+
+    <TableNameTranslation
+      v-if="tableState.length"
+      v-model:expanded="expandedState"
+      :data="tableState"
+      :loading
+      :empty-text="emptyText"
+      :allowed-actions="allowedActions"
+      :prevent-actions="!!activeNameTranslation"
+      :label-overrides="{ editLabel: $t('label.correct'), ...labelOverrides }"
+      @init-edit="initEditNameTranslation"
+      @remove="removeNameTranslation"
+      @undo="undoNameTranslation"
+      @action-prevented="setActiveFormAlert"
     >
-      <TableNameTranslation
-        v-model:expanded="expandedState"
-        :data="tableState"
-        :loading
-        :empty-text="emptyText"
-        :allowed-actions="allowedActions"
-        :prevent-actions="!!activeNameTranslation"
-        :label-overrides="labelOverrides"
-        @init-edit="initEditNameTranslation"
-        @remove="removeNameTranslation"
-        @undo="undoNameTranslation"
-        @action-prevented="setActiveFormAlert"
-      >
-        <template #expanded="{ row }">
-          <div class="px-4 sm:px-6">
-            <FormNameTranslation
-              v-if="activeNameTranslation"
-              v-model="activeNameTranslation"
-              :title="editLabel"
-              name="activeNameTranslation"
-              variant="edit"
-              :state-key="stateKey"
-              @cancel="cleanupNameTranslationForm"
-              @done="() => applyEdits(activeNameTranslation, row)"
-            />
-          </div>
-        </template>
-      </TableNameTranslation>
-    </ConnectPageSection>
+      <template #expanded="{ row }">
+        <div class="px-4 sm:px-6">
+          <FormNameTranslation
+            v-if="activeNameTranslation"
+            v-model="activeNameTranslation"
+            :title="editLabel"
+            name="activeNameTranslation"
+            variant="edit"
+            :state-key="stateKey"
+            @cancel="cleanupNameTranslationForm"
+            @done="() => applyEdits(activeNameTranslation, row)"
+            @remove="() => { cleanupNameTranslationForm(); removeNameTranslation(row) }"
+          />
+        </div>
+      </template>
+    </TableNameTranslation>
   </div>
 </template>
