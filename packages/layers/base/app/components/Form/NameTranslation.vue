@@ -32,7 +32,7 @@ async function onDone() {
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 const labelId = useId()
-const hasNameFieldError = computed(() => formRef.value?.errors?.some((e) => e.name === 'name') ?? false)
+const hasNameFieldError = computed(() => formRef.value?.errors?.some(e => e.name === 'name') ?? false)
 </script>
 
 <template>
@@ -65,11 +65,11 @@ const hasNameFieldError = computed(() => formRef.value?.errors?.some((e) => e.na
         class="mt-4"
       >
         <div
-        :class="{
-          'border border-gray-200': variant === 'edit',
-          'rounded shadow': variant === 'add',
-          'border-l-3 border-error': alerts[formTarget]
-        }"
+          :class="{
+            'border border-gray-200': variant === 'edit',
+            'rounded shadow': variant === 'add',
+            'border-l-3 border-error': alerts[formTarget]
+          }"
         >
           <ConnectFormInput
             v-if="model"
