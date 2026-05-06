@@ -98,7 +98,6 @@ function clearAllAlerts() {
       variant="outline"
       icon="i-mdi-plus"
       class="w-min"
-      :disabled="!!activeNameTranslation || addingNameTranslation"
       @click="initAddNameTranslation"
     />
 

@@ -105,7 +105,11 @@ const componentExamples: DropdownMenuItem[] = [
     children: [
       {
         to: localePath('/examples/components/ManageCompanyName'),
-        label: 'Default'
+        label: 'Readonly'
+      },
+      {
+        to: localePath('/examples/components/ManageCompanyName/editable'),
+        label: 'Editable'
       }
     ]
   },
