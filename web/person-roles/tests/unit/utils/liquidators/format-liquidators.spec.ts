@@ -106,8 +106,7 @@ describe('format-liquidators', () => {
       ]
 
       const mockCommonData = {
-        courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true },
-        documentId: '12345678'
+        courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true }
       }
 
       const type = LiquidateType.INTENT
@@ -121,7 +120,6 @@ describe('format-liquidators', () => {
 
       expect(result.type).toBe(LiquidateType.INTENT)
       expect(result.changeOfLiquidatorsDate).toBe('2023-10-27')
-      expect(result.documentId).toBe('12345678')
       expect(result.courtOrder).toBeDefined()
       expect(result.courtOrder!.fileNumber).toBe('12345')
       expect(result.courtOrder!.hasPlanOfArrangement).toEqual(true)
@@ -220,8 +218,7 @@ describe('format-liquidators', () => {
       ]
 
       const mockCommonData = {
-        courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true },
-        documentId: '12345678'
+        courtOrder: { fileNumber: '12345', hasPlanOfArrangement: true }
       }
 
       // @ts-expect-error - type mismatch between mock helper and address
@@ -238,7 +235,6 @@ describe('format-liquidators', () => {
 
       expect(result.type).toBe(LiquidateType.APPOINT)
       expect(result.changeOfLiquidatorsDate).toBe('2023-10-27')
-      expect(result.documentId).toBe('12345678')
       expect(result.courtOrder).toBeDefined()
       expect(result.courtOrder!.fileNumber).toBe('12345')
       expect(result.courtOrder!.hasPlanOfArrangement).toEqual(true)

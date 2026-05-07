@@ -296,20 +296,10 @@ onMounted(() => {
         :order="showLiqRecordsOffice ? 3 : 2"
       />
 
-      <FormDocumentId
-        v-if="filingSubType !== LiquidateType.REPORT"
-        ref="document-id-ref"
-        v-model="store.formState.documentId"
-        data-testid="document-id-section"
-        :disabled="store.initializing"
-        name="documentId"
-        :order="showLiqRecordsOffice ? 4 : 3"
-      />
-
       <StaffPaymentFieldset
         ref="staff-pay-ref"
         v-model="store.formState.staffPayment"
-        :order="isReport ? 3 : showLiqRecordsOffice ? 5 : 4"
+        :order="isReport ? 3 : showLiqRecordsOffice ? 4 : 3"
         :initializing="store.initializing"
       />
     </UForm>

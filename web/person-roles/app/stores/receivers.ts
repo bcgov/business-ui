@@ -40,7 +40,6 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       draftFilingState.value = draftFiling
       formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
       formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
-      formState.documentId.documentIdNumber = draft.documentId ?? ''
     }
 
     if (parties) {
@@ -63,7 +62,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         tableState.value.map(relationship => formatRelationshipApi(relationship.new))
         // Only add relationships that have changes
       ).filter(relationship => relationship.actions?.length),
-      ...getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber)
+      ...getCommonFilingPayloadData(formState.courtOrder)
     }
 
     const payload = createFilingPayload<ChangeOfReceivers>(

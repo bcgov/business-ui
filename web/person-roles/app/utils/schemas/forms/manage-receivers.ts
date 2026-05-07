@@ -7,7 +7,6 @@ export function getManageReceiversSchema() {
       old: getPartySchema(RoleTypeUi.RECEIVER).optional()
     })),
     courtOrder: getCourtOrderPoaSchema(),
-    documentId: getDocumentIdSchema(),
     staffPayment: getStaffPaymentSchema()
   })
 }
@@ -19,9 +18,6 @@ export function getReceiversSchema() {
     courtOrder: getCourtOrderPoaSchema().default({
       hasPoa: false,
       courtOrderNumber: ''
-    }),
-    documentId: getDocumentIdSchema().default({
-      documentIdNumber: ''
     }),
     staffPayment: getStaffPaymentSchema().default({
       option: StaffPaymentOption.NONE,

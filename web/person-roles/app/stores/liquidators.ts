@@ -53,7 +53,6 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       draftFilingState.value = draftFiling
       formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
       formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
-      formState.documentId.documentIdNumber = draft.documentId ?? ''
     }
 
     if (parties) {
@@ -81,7 +80,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const liquidatorPayload = formatLiquidatorsApi(
       tableState.value,
       liquidateSubType.value,
-      getCommonFilingPayloadData(formState.courtOrder, formState.documentId.documentIdNumber),
+      getCommonFilingPayloadData(formState.courtOrder),
       tableOffices.value
     )
 
