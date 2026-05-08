@@ -43,7 +43,7 @@ describe('getMaxNumberOfSharesColumn', () => {
     expect(cell.children).toBe('No Maximum')
   })
 
-  it('should add opacity-50 if the current row is removed', () => {
+  it('should add opacity-40 if the current row is removed', () => {
     const row = {
       depth: 0,
       original: { new: { maxNumberOfShares: '500' } }
@@ -53,10 +53,10 @@ describe('getMaxNumberOfSharesColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 
-  it('should add opacity-50 if its a series and the parent row is removed', () => {
+  it('should add opacity-40 if its a series and the parent row is removed', () => {
     const parentRow = { id: 'parent-class' }
     const row = {
       depth: 1,
@@ -69,6 +69,6 @@ describe('getMaxNumberOfSharesColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })

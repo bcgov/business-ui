@@ -79,13 +79,13 @@ describe('getDeliveryAddressColumn', () => {
     expect(cell.props.class).toEqual('min-w-48 max-w-48 overflow-clip break-words')
   })
 
-  it('cell should add "opacity-50" when row is removed', () => {
+  it('cell should add "opacity-40" when row is removed', () => {
     const column = getDeliveryAddressColumn() as any
 
     mockGetIsRowRemoved.mockReturnValue(true)
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })

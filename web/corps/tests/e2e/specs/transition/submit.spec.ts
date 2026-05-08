@@ -117,7 +117,7 @@ async function editShares(page: Page) {
 
   const classIRow = shares.getByRole('row').filter({ hasText: 'Class I Non-Voting Preferred Shares' })
   await classIRow.getByLabel('More Actions').click()
-  await page.getByRole('menuitem', { name: 'Remove' }).click()
+  await page.getByRole('menuitem', { name: 'Delete' }).click()
   await page.locator('div')
     .filter({ hasText: 'Remove Share Class with Series' })
     .getByRole('button', { name: 'Remove' })

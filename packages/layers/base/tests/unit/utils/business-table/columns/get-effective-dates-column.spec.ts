@@ -74,7 +74,7 @@ describe('getEffectiveDatesColumn', () => {
     expect(cell.children).toBe('Not Available')
   })
 
-  it('cell should add "opacity-50" when row is removed', () => {
+  it('cell should add "opacity-40" when row is removed', () => {
     const row = getMockRow()
     const column = getEffectiveDatesColumn() as any
 
@@ -82,6 +82,6 @@ describe('getEffectiveDatesColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })

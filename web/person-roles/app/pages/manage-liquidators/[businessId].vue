@@ -214,7 +214,7 @@ onMounted(() => {
         <p>{{ $t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
       </div>
 
-      <div class="space-y-4">
+      <div class="space-y-4" data-testid="liquidator-info-section">
         <ManageParties
           v-model:active-party="store.formState.activeParty"
           :loading="store.initializing"
