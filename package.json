@@ -33,7 +33,6 @@
       "@sbc-connect/nuxt-pay",
       "@tailwindcss/oxide",
       "esbuild",
-      "unrs-resolver",
       "vue-demi"
     ]
   },
