@@ -105,7 +105,6 @@ test.describe('Correction - Filing Submit', () => {
       )
       expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
     })
-
   })
 
   test.describe('Save and resume', () => {
@@ -263,7 +262,6 @@ test.describe('Correction - Filing Submit', () => {
       )
       expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
     })
-
   })
 
   test.describe('Step navigation', () => {
