@@ -25,14 +25,15 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
       "@sbc-connect/nuxt-auth",
       "@sbc-connect/nuxt-base",
       "@sbc-connect/nuxt-business-base",
       "@sbc-connect/nuxt-forms",
       "@sbc-connect/nuxt-pay",
-      "@parcel/watcher",
       "@tailwindcss/oxide",
       "esbuild",
+      "unrs-resolver",
       "vue-demi"
     ]
   },
