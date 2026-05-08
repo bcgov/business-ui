@@ -439,6 +439,7 @@ export default {
     legalName: 'Legal Name',
     legalNameOfAuthorizedPerson: 'Legal name of authorized person',
     limitedRestorationPeriod: 'Limited Restoration Period',
+    liquidator: 'Liquidator',
     liquidators: 'Liquidators',
     loading: 'Loading',
     mailingAddress: 'Mailing Address',

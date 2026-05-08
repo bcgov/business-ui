@@ -214,17 +214,14 @@ onMounted(() => {
         <p>{{ $t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
       </div>
 
-      <section class="space-y-4" data-testid="liquidator-info-section">
-        <h2 class="text-base">
-          1. {{ $t('label.liquidatorInfo') }}
-        </h2>
-
+      <div class="space-y-4">
         <ManageParties
           v-model:active-party="store.formState.activeParty"
           :loading="store.initializing"
           :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
-          :add-label="$t('label.addLiquidator')"
-          :section-label="$t('label.liquidators')"
+          :section-title="`1. ${$t('label.liquidatorInfo')}`"
+          :table-title="$t('label.liquidators')"
+          :subject="$t('label.liquidator')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
@@ -246,7 +243,7 @@ onMounted(() => {
             />
           </UFormField>
         </ConnectFormFieldWrapper>
-      </section>
+      </div>
 
       <section
         v-if="showLiqRecordsOffice"
