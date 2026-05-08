@@ -389,6 +389,7 @@ export default {
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
     detail: 'Detail',
     details: 'Details',
+    director: 'Director',
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',
     documentDelivery: 'Document Delivery',

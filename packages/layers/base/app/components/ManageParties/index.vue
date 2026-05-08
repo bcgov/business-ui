@@ -4,7 +4,8 @@ const {
   stateKey = 'manage-parties',
   allowedActions,
   labelOverrides,
-  variant = 'default'
+  variant = 'default',
+  modelName = 'activeParty'
 } = defineProps<{
   tableTitle: string
   subject: string
@@ -15,10 +16,12 @@ const {
   sectionDescription?: string
   roleType?: RoleTypeUi
   stateKey?: string
+  modelName?: string
   allowedActions?: ManageAllowedAction[]
   labelOverrides?: TableLabelOverrides
   columnsToDisplay?: TablePartyColumnName[]
   partyFormProps?: {
+    hideRemove?: boolean
     partyNameProps?: {
       allowBusinessName?: boolean
       allowPreferredName?: boolean
@@ -156,7 +159,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
       v-model="activeParty"
       v-bind="partyFormProps"
       :subject
-      name="activeParty"
+      :name="modelName"
       variant="add"
       :state-key="stateKey"
       class="p-6"
@@ -184,7 +187,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
               v-model="activeParty"
               v-bind="partyFormProps"
               :allowed-actions="allowedActions"
-              name="activeParty"
+              :name="modelName"
               :variant="getExpandedFormVariant(row)"
               :subject="editSubject"
               :state-key="stateKey"

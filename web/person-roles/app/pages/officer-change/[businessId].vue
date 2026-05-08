@@ -164,6 +164,7 @@ useFilingPageWatcher({
         partyRoleProps: { allowedRoles: officerRoles, roleClass: RoleClass.OFFICER }
       }"
     />
+
     <FormFolio
       v-model="officerStore.formState.folio"
       data-testid="form-section-folio-number"

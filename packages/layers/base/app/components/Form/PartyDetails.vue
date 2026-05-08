@@ -5,6 +5,7 @@ const props = defineProps<{
   subject: string
   allowedActions?: ManageAllowedAction[]
   stateKey: string
+  hideRemove?: boolean
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean
@@ -87,6 +88,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
       messageId,
       targetId
     }"
+    :hide-remove
     @done="onDone"
     @cancel="$emit('cancel')"
     @remove="$emit('remove')"
