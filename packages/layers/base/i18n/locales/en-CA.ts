@@ -485,6 +485,7 @@ export default {
     preferredNameOpt: 'Preferred Name (Optional)',
     priorityStaffPay: 'Priority (Add $100.00)',
     pursuantToPlanOfArrangement: 'Pursuant to a Plan of Arrangement',
+    receiver: 'Receiver',
     receivers: 'Receivers',
     recognitionDateAndTime: 'Recognition Date and Time',
     registeredOfficeContactInformation: 'Registered Office Contact Information',
