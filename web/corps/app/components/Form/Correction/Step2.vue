@@ -99,18 +99,20 @@ function onError(event: FormErrorEvent) {
       />
 
       <!-- Directors (readonly, only if changed) -->
-      <ManageParties
+       <ManageParties
         v-if="hasDirectorChanges"
         v-model:active-party="store.formState.activeDirector"
-        data-testid="review-current-directors-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
-        :section-label="$t('label.currentDirectors')"
-        :add-label="$t('label.addDirector')"
+        :table-title="$t('label.currentDirectors')"
+        :subject="$t('label.director')"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        data-testid="review-current-directors-section"
         :role-type="RoleTypeUi.DIRECTOR"
-        :allowed-actions="[]"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
         :label-overrides="correctionLabelOverrides"
+        model-name="activeDirector"
+        variant="correct"
+        :allowed-actions="[]"
       />
 
       <!-- Share Structure (readonly, only if changed) -->
@@ -130,32 +132,36 @@ function onError(event: FormErrorEvent) {
       <ManageParties
         v-if="hasReceiverChanges"
         v-model:active-party="store.formState.activeReceiver"
-        state-key="manage-receivers"
-        data-testid="review-receivers-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
-        :section-label="$t('label.receivers')"
-        :add-label="$t('label.addReceiver')"
+        :table-title="$t('label.currentReceivers')"
+        :subject="$t('label.director')"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        data-testid="review-receivers-section"
         :role-type="RoleTypeUi.RECEIVER"
-        :allowed-actions="[]"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
         :label-overrides="correctionLabelOverrides"
+        model-name="activeDirector"
+        variant="correct"
+        :allowed-actions="[]"
+        state-key="manage-receivers"
       />
 
       <!-- Liquidators (readonly, only if changed) -->
-      <ManageParties
+       <ManageParties
         v-if="hasLiquidatorChanges"
         v-model:active-party="store.formState.activeLiquidator"
         state-key="manage-liquidators"
-        data-testid="review-liquidators-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
-        :section-label="$t('label.liquidators')"
-        :add-label="$t('label.addLiquidator')"
+        :table-title="$t('label.currentLiquidators')"
+        :subject="$t('label.liquidator')"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        data-testid="review-liquidators-section"
         :role-type="RoleTypeUi.LIQUIDATOR"
-        :allowed-actions="[]"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates']"
         :label-overrides="correctionLabelOverrides"
+        model-name="activeLiquidator"
+        variant="correct"
+        :allowed-actions="[]"
       />
     </section>
 

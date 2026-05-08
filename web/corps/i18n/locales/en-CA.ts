@@ -22,7 +22,6 @@ export default {
     chooseAnEndDate: 'Choose an end date',
     confirm: 'Confirm',
     correctionComment: 'Correction Detail Comment',
-    currentDirectors: 'Current Directors',
     delayDate: 'Delay the Time of Dissolution or Cancellation',
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
