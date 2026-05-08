@@ -99,7 +99,7 @@ function onError(event: FormErrorEvent) {
       />
 
       <!-- Directors (readonly, only if changed) -->
-       <ManageParties
+      <ManageParties
         v-if="hasDirectorChanges"
         v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
@@ -147,7 +147,7 @@ function onError(event: FormErrorEvent) {
       />
 
       <!-- Liquidators (readonly, only if changed) -->
-       <ManageParties
+      <ManageParties
         v-if="hasLiquidatorChanges"
         v-model:active-party="store.formState.activeLiquidator"
         state-key="manage-liquidators"

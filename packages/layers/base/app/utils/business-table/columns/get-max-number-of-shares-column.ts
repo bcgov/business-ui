@@ -16,10 +16,7 @@ export function getMaxNumberOfSharesColumn<T extends ShareClassSchema>(
       // series row styling can change based on parent row removed action
       const isRowRemoved = getIsRowRemoved(row)
       const isParentRowRemoved = isSeries && getIsRowRemoved(row.getParentRow()!)
-
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
-      // apply opacity whether the current or parent row is removed
-      const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 
       const max = row.original.new.maxNumberOfShares
       const displayText = max

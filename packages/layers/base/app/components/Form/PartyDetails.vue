@@ -80,19 +80,19 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     :data-testid="formTarget"
     @keydown.enter.prevent.stop="onDone"
   >
-  <SubFormWrapper
-    :subject
-    :variant
-    :taskGuardConfig="{
-      message: alerts[formTarget],
-      messageId,
-      targetId
-    }"
-    :hide-remove
-    @done="onDone"
-    @cancel="$emit('cancel')"
-    @remove="$emit('remove')"
-  >
+    <SubFormWrapper
+      :subject
+      :variant
+      :task-guard-config="{
+        message: alerts[formTarget],
+        messageId,
+        targetId
+      }"
+      :hide-remove
+      @done="onDone"
+      @cancel="$emit('cancel')"
+      @remove="$emit('remove')"
+    >
       <template #default>
         <FormPartyName
           v-if="isNameChangeAllowed"
@@ -122,6 +122,6 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           name="address"
         />
       </template>
-      </SubFormWrapper>
+    </SubFormWrapper>
   </UForm>
 </template>

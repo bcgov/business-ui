@@ -140,7 +140,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
       <p v-if="sectionDescription">
         {{ sectionDescription }}
       </p>
-      </div>
+    </div>
     <ConnectPageSection
       :heading="{
         label: tableTitle,
@@ -149,39 +149,46 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
         level: sectionTitle ? 'h3' : 'h2'
       }"
       :actions="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
-        ? [{ label: $t('label.addSubject', { subject }), variant: 'outline', icon: 'i-mdi-plus', onClick: initAddParty }]
+        ? [
+          {
+            label: $t('label.addSubject', { subject }),
+            variant: 'outline',
+            icon: 'i-mdi-plus',
+            onClick: initAddParty
+          }
+        ]
         : undefined
       "
     >
-    <div>
-      <FormPartyDetails
-      v-if="addingParty && activeParty"
-      v-model="activeParty"
-      v-bind="partyFormProps"
-      :subject
-      :name="modelName"
-      variant="add"
-      :state-key="stateKey"
-      class="p-6"
-      @done="() => addParty(activeParty)"
-      @cancel="cleanupPartyForm"
-    />
-    <USeparator />
-      <TableParty
-        v-model:expanded="expandedState"
-        :data="tableState"
-        :loading
-        :empty-text="emptyText"
-        :allowed-actions="allowedActions"
-        :prevent-actions="!!activeParty"
-        :label-overrides="labelOverrides"
-        :columns="columnsToDisplay"
-        @init-edit="initEditParty"
-        @remove="removeParty"
-        @undo="undoParty"
-        @action-prevented="setActiveFormAlert"
-      >
-        <template #expanded="{ row }">
+      <div>
+        <FormPartyDetails
+          v-if="addingParty && activeParty"
+          v-model="activeParty"
+          v-bind="partyFormProps"
+          :subject
+          :name="modelName"
+          variant="add"
+          :state-key="stateKey"
+          class="p-6"
+          @done="() => addParty(activeParty)"
+          @cancel="cleanupPartyForm"
+        />
+        <USeparator />
+        <TableParty
+          v-model:expanded="expandedState"
+          :data="tableState"
+          :loading
+          :empty-text="emptyText"
+          :allowed-actions="allowedActions"
+          :prevent-actions="!!activeParty"
+          :label-overrides="labelOverrides"
+          :columns="columnsToDisplay"
+          @init-edit="initEditParty"
+          @remove="removeParty"
+          @undo="undoParty"
+          @action-prevented="setActiveFormAlert"
+        >
+          <template #expanded="{ row }">
             <FormPartyDetails
               v-if="activeParty"
               v-model="activeParty"
@@ -196,8 +203,8 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
               @done="() => applyEdits(activeParty, row)"
               @remove="cleanupPartyForm(); removeParty(row)"
             />
-        </template>
-      </TableParty>
+          </template>
+        </TableParty>
       </div>
     </ConnectPageSection>
   </component>
