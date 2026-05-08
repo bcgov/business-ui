@@ -1,5 +1,6 @@
 import { TableColumnMailingAddress } from '#components'
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getMailingAddressColumn<T extends { address: AddressSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -14,13 +15,12 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-48 max-w-48 overflow-clip break-words'
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       return h(
         TableColumnMailingAddress,
         {
           data: row.original.new.address,
-          class: cellClass
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         () => []
       )

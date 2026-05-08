@@ -10,12 +10,14 @@ defineProps<{
 
 <template>
   <div class="flex flex-col gap-1">
-    <slot>
-      <div v-if="label" :class="labelClass">
-        {{ label }}
-      </div>
-    </slot>
-    <slot name="additional-label" />
+    <div class="flex flex-col gap-1">
+      <slot>
+        <div v-if="label" :class="labelClass">
+          {{ label }}
+        </div>
+      </slot>
+      <slot name="additional-label" />
+    </div>
     <ul
       v-if="badges.length > 0"
       class="flex flex-col gap-2"

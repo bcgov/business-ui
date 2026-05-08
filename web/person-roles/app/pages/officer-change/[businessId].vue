@@ -150,28 +150,20 @@ useFilingPageWatcher({
       <p>{{ filingText.desc }}</p>
     </div>
 
-    <section class="space-y-4">
-      <h2 class="text-lg">
-        1. {{ $t('label.officerInfo') }}
-      </h2>
-      <p class="-mt-2">
-        {{ $t('text.officerInfoDescription') }}
-      </p>
-
-      <ManageParties
-        v-model:active-party="officerStore.formState.activeParty"
-        :loading="officerStore.initializing"
-        :empty-text="officerStore.initializing ? `${$t('label.loading')}...` : $t('text.noOfficers')"
-        :add-label="$t('label.addOfficer')"
-        :edit-label="$t('label.editOfficer')"
-        :section-label="$t('label.officers')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'actions']"
-        :party-form-props="{
-          partyNameProps: { allowBusinessName: false, allowPreferredName: true },
-          partyRoleProps: { allowedRoles: officerRoles, roleClass: RoleClass.OFFICER }
-        }"
-      />
-    </section>
+    <ManageParties
+      v-model:active-party="officerStore.formState.activeParty"
+      :loading="officerStore.initializing"
+      :empty-text="officerStore.initializing ? `${$t('label.loading')}...` : $t('text.noOfficers')"
+      :section-title="`1. ${$t('label.officerInfo')}`"
+      :section-description="$t('text.officerInfoDescription')"
+      :table-title="$t('label.officers')"
+      :subject="$t('label.officer')"
+      :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'actions']"
+      :party-form-props="{
+        partyNameProps: { allowBusinessName: false, allowPreferredName: true },
+        partyRoleProps: { allowedRoles: officerRoles, roleClass: RoleClass.OFFICER }
+      }"
+    />
     <FormFolio
       v-model="officerStore.formState.folio"
       data-testid="form-section-folio-number"

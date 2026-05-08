@@ -3,12 +3,16 @@ const {
   roleType,
   stateKey = 'manage-parties',
   allowedActions,
-  labelOverrides
+  labelOverrides,
+  variant = 'default'
 } = defineProps<{
+  tableTitle: string
+  subject: string
+  variant?: ManageVariant
   loading?: boolean
   emptyText?: string
-  sectionLabel: string
-  addLabel: string
+  sectionTitle?: string
+  sectionDescription?: string
   roleType?: RoleTypeUi
   stateKey?: string
   allowedActions?: ManageAllowedAction[]
@@ -26,7 +30,7 @@ const {
   }
 }>()
 
-let editLabel = ''
+let editSubject = ''
 let currentEditingRow: PartySchema | null = null
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
@@ -83,14 +87,14 @@ function initEditParty(row: TableBusinessRow<PartySchema>) {
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
-  editLabel = ''
+  editSubject = ''
   const nameProps = row.original.new.name
   if (nameProps) {
     const name = nameProps.partyType === PartyType.PERSON
       ? `${nameProps.firstName} ${nameProps.middleName} ${nameProps.lastName}`.toUpperCase()
       : nameProps.businessName?.toUpperCase() || ''
 
-    editLabel = t('label.editingItemName', { name })
+    editSubject = name
   }
   expandedState.value = { [row.index]: true }
 }
@@ -104,40 +108,62 @@ function clearAllAlerts() {
   clearAlert('party-details-form') // clear alert in sub form
   setAlertText(undefined) // clear alert in button control
 }
+
+function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant {
+  // old is always undefined for newly added parties
+  const isAdded = row.original.old === undefined
+  if (isAdded) {
+    return 'edit'
+  }
+  if (variant === 'correct') {
+    return 'correct'
+  }
+  return 'change'
+}
 </script>
 
 <template>
-  <div
-    class="space-y-4"
+  <component
+    :is="sectionTitle ? 'section' : 'div'"
+    class="space-y-4 sm:space-y-6"
     data-testid="manage-parties"
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
+    <div v-if="sectionTitle">
+      <h2 class="text-base">
+        {{ sectionTitle }}
+      </h2>
+      <p v-if="sectionDescription">
+        {{ sectionDescription }}
+      </p>
+      </div>
     <ConnectPageSection
       :heading="{
-        label: sectionLabel,
+        label: tableTitle,
         icon: 'i-mdi-account-supervisor',
-        ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md'
+        ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
+        level: sectionTitle ? 'h3' : 'h2'
       }"
       :actions="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
-        ? [{ label: addLabel, variant: 'outline', icon: 'i-mdi-plus', onClick: initAddParty }]
+        ? [{ label: $t('label.addSubject', { subject }), variant: 'outline', icon: 'i-mdi-plus', onClick: initAddParty }]
         : undefined
       "
     >
     <div>
-      <div class="p-6">
       <FormPartyDetails
       v-if="addingParty && activeParty"
       v-model="activeParty"
       v-bind="partyFormProps"
-      :title="addLabel"
+      :subject
       name="activeParty"
       variant="add"
       :state-key="stateKey"
+      class="p-6"
       @done="() => addParty(activeParty)"
       @cancel="cleanupPartyForm"
     />
-    </div>
+    <USeparator />
       <TableParty
         v-model:expanded="expandedState"
         :data="tableState"
@@ -153,23 +179,23 @@ function clearAllAlerts() {
         @action-prevented="setActiveFormAlert"
       >
         <template #expanded="{ row }">
-          <div class="px-4 sm:px-6">
             <FormPartyDetails
               v-if="activeParty"
               v-model="activeParty"
               v-bind="partyFormProps"
-              :title="editLabel"
               :allowed-actions="allowedActions"
               name="activeParty"
-              variant="edit"
+              :variant="getExpandedFormVariant(row)"
+              :subject="editSubject"
               :state-key="stateKey"
+              class="px-4 sm:px-6"
               @cancel="cleanupPartyForm"
               @done="() => applyEdits(activeParty, row)"
+              @remove="cleanupPartyForm(); removeParty(row)"
             />
-          </div>
         </template>
       </TableParty>
       </div>
     </ConnectPageSection>
-  </div>
+  </component>
 </template>

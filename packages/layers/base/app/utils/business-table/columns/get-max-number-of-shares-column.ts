@@ -1,4 +1,5 @@
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getMaxNumberOfSharesColumn<T extends ShareClassSchema>(
   metaOption: TableColumnMetaOption = 'default'
@@ -28,7 +29,7 @@ export function getMaxNumberOfSharesColumn<T extends ShareClassSchema>(
       return h(
         'span',
         {
-          class: cellClass
+          class: [defaultClass, (isRowRemoved || isParentRowRemoved) ? DELETED_CLASS : '']
         },
         displayText
       )

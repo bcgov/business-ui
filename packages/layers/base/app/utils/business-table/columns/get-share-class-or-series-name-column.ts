@@ -1,5 +1,6 @@
 import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
   metaOption: TableColumnMetaOption = 'first',
@@ -37,7 +38,8 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
           label,
           class: [
             isSeries ? 'ml-6' : '',
-            cellClass
+            defaultClass,
+            (isRowRemoved || isParentRowRemoved) ? DELETED_CLASS : ''
           ],
           labelClass: isSeries // apply list styling to series name
             ? 'flex flex-row items-center -ml-3 gap-2 before:size-1 before:bg-black before:rounded-full'

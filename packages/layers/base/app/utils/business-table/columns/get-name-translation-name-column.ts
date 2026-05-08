@@ -1,6 +1,7 @@
 import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
 import { merge } from 'es-toolkit'
+import { DELETED_CLASS } from './constants'
 
 export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
   metaOption: TableColumnMetaOption = 'first',
@@ -19,7 +20,6 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
       const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'w-full overflow-clip' // Set the width to 100% of the outer layer
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       const nameValue = row.original.new.name
 
@@ -30,7 +30,7 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
         {
           label: nameValue,
           badges,
-          class: cellClass
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         () => name
       )

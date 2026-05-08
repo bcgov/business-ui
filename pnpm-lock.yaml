@@ -90,8 +90,8 @@ importers:
   packages/layers/base:
     dependencies:
       '@sbc-connect/nuxt-pay':
-        specifier: 0.3.7
-        version: 0.3.7(251777b3b67cced616a4c4561d25ab6e)
+        specifier: 0.3.8
+        version: 0.3.8(251777b3b67cced616a4c4561d25ab6e)
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -2189,17 +2189,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sbc-connect/nuxt-auth@0.9.3':
-    resolution: {integrity: sha512-W9EDYKaISqmLmsDKxZVU4Ob+AIQJ5uOCUuHzb0KXVr4K98Lbsl7BUXZJBpnnjeuXkSuEJaJSOzeGC0de/Nt75w==}
+  '@sbc-connect/nuxt-auth@0.9.4':
+    resolution: {integrity: sha512-OjlNYG7+XWHO/FW9Q323MBWjorKhVl+zbKcWn61aSdl/kjOGk3zpY4E8BsRXUtGzmcZqOAhapGJiSYUwuCdDcA==}
 
-  '@sbc-connect/nuxt-base@0.7.2':
-    resolution: {integrity: sha512-nrUhQglVLcU7liyJed0pMt7ged5pJLy3iLaUjAvzaABjLGUqjFfTFlEzqkMh7z+XTWwWcSPi2M4r+A75y/hy+A==}
+  '@sbc-connect/nuxt-base@0.7.3':
+    resolution: {integrity: sha512-9srBwsVwZwKaHOXHsnBzZa5erAAGpKiCgwypxpAFKHENIWpzrZD3Mouh/UbUY4PeunIeVTzV5HqQzwO8GN7wKg==}
 
-  '@sbc-connect/nuxt-forms@0.7.1':
-    resolution: {integrity: sha512-L/YqxBe9pnmn/zkIEPk5eWvqHoSL8Uv820Ycr3v+SYVQZa4pfjaObS9yMypyWi5mAoYJFRWwNJxyx2hrm+qQaw==}
+  '@sbc-connect/nuxt-forms@0.7.2':
+    resolution: {integrity: sha512-2JIRjZJYVNMuE2T5vTaJWGf7Nrt+ae6qT4kavH/0yTGqIAkN1Un0mYxq1asS0wCwCOUQivTtpLxhf9ce8lubcg==}
 
-  '@sbc-connect/nuxt-pay@0.3.7':
-    resolution: {integrity: sha512-8cYTdaCavLXVgWX/LHqzulFfLOe2y5XodA8ylwqOtZPbJr83MmrrJbVID6/e3JkMz6Gqy308JEEHGFEAjLbpuA==}
+  '@sbc-connect/nuxt-pay@0.3.8':
+    resolution: {integrity: sha512-uI06kQU3vxYeuH7Nngs91Lmo6ZRHvsG+24HkH771dNEXO2ta2XXkZLPR+aklvmEsUDjEF00OEPsI3pcliaMbFA==}
 
   '@sindresorhus/base62@1.0.0':
     resolution: {integrity: sha512-TeheYy0ILzBEI/CO55CP6zJCSdSWeRtGnHy8U8dWSUH4I68iqTsy7HkMktR4xakThc9jotkPQUXT4ITdbV7cHA==}
@@ -6195,6 +6195,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   vaul-vue@0.4.1:
@@ -8681,13 +8682,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.5':
     optional: true
 
-  '@sbc-connect/nuxt-auth@0.9.3(251777b3b67cced616a4c4561d25ab6e)':
+  '@sbc-connect/nuxt-auth@0.9.4(251777b3b67cced616a4c4561d25ab6e)':
     dependencies:
       '@pinia/colada': 1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3))
       '@pinia/colada-nuxt': 0.3.2(@pinia/colada@1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(magicast@0.5.1)
       '@pinia/nuxt': 0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))
-      '@sbc-connect/nuxt-base': 0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)
-      '@sbc-connect/nuxt-forms': 0.7.1(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-base': 0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-forms': 0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)
       keycloak-js: 26.2.3
       pinia: 3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
       pinia-plugin-persistedstate: 4.7.1(@nuxt/kit@4.4.2(magicast@0.5.1))(@pinia/nuxt@0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))
@@ -8749,7 +8750,7 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-base@0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
+  '@sbc-connect/nuxt-base@0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
     dependencies:
       '@iconify-json/mdi': 1.2.3
       '@nuxt/ui': 4.6.0(@netlify/blobs@9.1.2)(@tiptap/extensions@3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))(@tiptap/pm@3.20.5))(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(change-case@5.4.4)(db0@0.3.4)(embla-carousel@8.6.0)(ioredis@5.8.2)(jwt-decode@4.0.0)(magicast@0.5.1)(tailwindcss@4.2.2)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue-router@5.0.4(@pinia/colada@1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(@vue/compiler-sfc@3.5.30)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3))(yjs@13.6.29)(zod@4.3.6)
@@ -8821,9 +8822,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-forms@0.7.1(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
+  '@sbc-connect/nuxt-forms@0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
     dependencies:
-      '@sbc-connect/nuxt-base': 0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-base': 0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)
       country-codes-list: 2.0.0
       vue-country-flag-next: 2.3.2(vue@3.5.30(typescript@5.9.3))
     transitivePeerDependencies:
@@ -8885,9 +8886,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-pay@0.3.7(251777b3b67cced616a4c4561d25ab6e)':
+  '@sbc-connect/nuxt-pay@0.3.8(251777b3b67cced616a4c4561d25ab6e)':
     dependencies:
-      '@sbc-connect/nuxt-auth': 0.9.3(251777b3b67cced616a4c4561d25ab6e)
+      '@sbc-connect/nuxt-auth': 0.9.4(251777b3b67cced616a4c4561d25ab6e)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'

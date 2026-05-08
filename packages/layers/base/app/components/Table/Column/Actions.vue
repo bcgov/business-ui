@@ -75,8 +75,10 @@ const availableActions = computed(() => {
   }
 
   if (canRemove.value && !isRemoved.value) {
+    // old is always undefined for newly added rows
+    const isAdded = row.original.old === undefined
     actions.push({
-      label: t('label.remove'),
+      label: isAdded ? t('label.remove') : t('label.delete'),
       icon: 'i-mdi-delete',
       click: () => emitAction('remove')
     })

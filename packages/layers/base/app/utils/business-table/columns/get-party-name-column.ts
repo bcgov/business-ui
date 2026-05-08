@@ -1,5 +1,6 @@
 import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'first',
@@ -16,7 +17,6 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
       const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-36 max-w-36 font-bold flex flex-col gap-2 break-words'
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
       const nameProps = row.original.new.name
 
       const label = nameProps.partyType === PartyType.PERSON
@@ -30,7 +30,8 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, actions: A
         {
           label,
           badges,
-          class: cellClass
+          class: defaultClass,
+          labelClass: isRemoved ? DELETED_CLASS : ''
         },
         {
           'additional-label': () => preferredName
