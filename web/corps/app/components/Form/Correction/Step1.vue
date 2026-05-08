@@ -37,25 +37,6 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
     />
 
-    <!-- Section 1: Name Translations -->
-    <section class="space-y-4" data-testid="name-translations-section">
-      <div>
-        <h2 class="text-base">
-          {{ $t('label.nameTranslations') }}
-        </h2>
-        <p>{{ $t('text.nameTranslationsDescription') }}</p>
-      </div>
-
-      <ManageNameTranslations
-        v-model:active-name-translation="store.formState.activeNameTranslation"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noNameTranslations')"
-        :add-label="$t('label.addNameTranslation')"
-        :allowed-actions="[ManageAllowedAction.ADD, ManageAllowedAction.NAME_CHANGE, ManageAllowedAction.REMOVE]"
-        :label-overrides="correctionLabelOverrides"
-      />
-    </section>
-
     <!-- Section 2: Office Addresses -->
     <section class="space-y-4" data-testid="office-addresses-section">
       <div>
