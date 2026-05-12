@@ -159,7 +159,7 @@ test.describe('Manage Liquidators - Submission', () => {
       await page.waitForLoadState('networkidle')
       const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
       expect(existingLiquidator).toBeVisible()
-      const removeBtn = existingLiquidator.getByRole('button', { name: 'Remove' })
+      const removeBtn = existingLiquidator.getByRole('button', { name: 'Delete' })
       expect(removeBtn).toBeVisible()
       await removeBtn.click()
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })

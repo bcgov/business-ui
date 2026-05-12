@@ -111,7 +111,7 @@ describe('getPartyNameColumn', () => {
     expect(cell.props.label).toBe('')
   })
 
-  it('should add opacity-50 if the party row is removed', () => {
+  it('should add opacity-40 if the party row is removed', () => {
     const row = {
       original: {
         new: {
@@ -125,7 +125,7 @@ describe('getPartyNameColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.labelClass).toContain('opacity-40')
   })
 
   it('passes badges correctly to TableColumnIdentity', () => {

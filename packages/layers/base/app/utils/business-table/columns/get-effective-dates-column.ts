@@ -1,5 +1,6 @@
 import { h } from 'vue'
 import { DateTime } from 'luxon'
+import { DELETED_CLASS } from './constants'
 
 export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -14,7 +15,6 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       // FUTURE: handle multiple roles/dates?
       const foundDate = row.original.new.roles[0]?.appointmentDate
@@ -32,7 +32,7 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
       return h(
         'span',
         {
-          class: cellClass
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         displayText
       )

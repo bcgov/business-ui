@@ -1,0 +1,1 @@
+export type FormVariant = 'edit' | 'add' | 'correct' | 'change'

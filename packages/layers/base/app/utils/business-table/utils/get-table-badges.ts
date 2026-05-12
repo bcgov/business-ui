@@ -8,7 +8,7 @@ export function getTableBadges<T extends { actions: ActionType[] }>(
 
   const badgeMap: Record<ActionType, BadgeProps> = {
     [ActionType.ADDED]: { label: t('badge.added') },
-    [ActionType.REMOVED]: { label: t('badge.removed'), color: 'neutral' as const },
+    [ActionType.REMOVED]: { label: t('badge.deleted'), class: 'bg-shade-secondary text-neutral-highlighted' },
     [ActionType.ADDRESS_CHANGED]: {
       label: badgeLabelOverrides?.[ActionType.ADDRESS_CHANGED] ?? t('badge.addressChanged')
     },

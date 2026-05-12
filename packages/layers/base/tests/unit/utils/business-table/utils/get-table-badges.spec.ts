@@ -29,8 +29,7 @@ describe('getTableBadges', () => {
     const result = getTableBadges(row)
 
     expect(result).toHaveLength(1)
-    expect(result[0]!.label).toBe('REMOVED')
-    expect(result[0]!.color).toBe('neutral')
+    expect(result[0]!.label).toBe('DELETED')
   })
 
   it('should return all badges if ADDED/REMOVED are absent', () => {

@@ -1,5 +1,6 @@
 import { TableColumnRoles } from '#components'
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -14,14 +15,13 @@ export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions:
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       return h(
         TableColumnRoles,
         {
           roles: row.original.new.roles,
           isRemoved,
-          class: cellClass
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         () => []
       )

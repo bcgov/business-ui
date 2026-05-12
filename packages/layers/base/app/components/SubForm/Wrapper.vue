@@ -1,10 +1,8 @@
 <script setup lang="ts">
 // wrapper/container component used in table (or similar) expansion slots when opening a sub-form
-type Variant = 'edit' | 'add' | 'correct' | 'change'
-
 const props = defineProps<{
-  variant: Variant
-  itemLabel: string
+  variant: FormVariant
+  subject: string
   hideHeaderCancel?: boolean
   hideRemove?: boolean
   error?: boolean
@@ -27,14 +25,14 @@ const showRemoveButton = props.hideRemove
   ? false
   : props.variant !== 'add'
 
-const itemLabelPrefixMap: Record<Variant, string> = {
+const itemLabelPrefixMap: Record<FormVariant, string> = {
   edit: t('label.editing'),
   add: t('label.adding'),
   correct: t('label.correcting'),
   change: t('label.changing')
 }
 
-const removeButtonLabelMap: Record<Variant, string> = {
+const removeButtonLabelMap: Record<FormVariant, string> = {
   edit: t('label.remove'),
   add: t('label.remove'),
   correct: t('label.delete'),
@@ -44,9 +42,9 @@ const removeButtonLabelMap: Record<Variant, string> = {
 
 <template>
   <fieldset :aria-labelledby="labelId">
-    <legend class="rounded-t bg-blue-350 py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full">
+    <legend class="rounded-t bg-blue-350 py-4 flex justify-between items-center gap-2.5 w-full padding-x-default">
       <span :id="labelId" class="text-white font-bold">
-        {{ itemLabelPrefixMap[variant] }} {{ itemLabel }}
+        {{ itemLabelPrefixMap[variant] }} {{ subject }}
       </span>
       <UButton
         v-if="!hideHeaderCancel"

@@ -79,7 +79,7 @@ test.describe('Manage Receivers - Submission', () => {
       await page.waitForLoadState('networkidle')
       const existingReceiver = page.getByRole('table').locator('tbody').getByRole('row').first()
       expect(existingReceiver).toBeVisible()
-      const removeBtn = existingReceiver.getByRole('button', { name: 'Remove' })
+      const removeBtn = existingReceiver.getByRole('button', { name: 'Delete' })
       expect(removeBtn).toBeVisible()
       await removeBtn.click()
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
@@ -195,7 +195,7 @@ test.describe('Manage Receivers - Submission', () => {
       const moreActionsBtn = ceaseReceiver.getByRole('button', { name: 'More Actions' })
       expect(moreActionsBtn).toBeVisible()
       await moreActionsBtn.click()
-      await page.getByRole('menuitem', { name: 'Remove' }).click()
+      await page.getByRole('menuitem', { name: 'Delete' }).click()
       // add new
       const addButton = page.getByRole('button', { name: 'Add Receiver' })
       expect(addButton).toBeVisible()

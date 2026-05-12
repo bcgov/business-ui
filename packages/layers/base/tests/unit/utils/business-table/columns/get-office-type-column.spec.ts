@@ -61,7 +61,7 @@ describe('getOfficeTypeColumn', () => {
     expect(cell.props.class).toBe('font-bold min-w-40 max-w-40 flex flex-col gap-2')
   })
 
-  it('cell should add "opacity-50" when row is removed', () => {
+  it('cell should add "opacity-40" when row is removed', () => {
     const row = {
       original: {
         new: {
@@ -77,6 +77,6 @@ describe('getOfficeTypeColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })

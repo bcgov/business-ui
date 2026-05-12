@@ -43,7 +43,7 @@ describe('getParValueColumn', () => {
     expect(cell.children).toBe('No Par Value')
   })
 
-  it('shoudl add opacity-50 if the current row is removed', () => {
+  it('shoudl add opacity-40 if the current row is removed', () => {
     const row = {
       depth: 0,
       original: { new: { parValue: '$0.50' } }
@@ -53,10 +53,10 @@ describe('getParValueColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 
-  it('should add opacity-50 for a series if the parent class is removed', () => {
+  it('should add opacity-40 for a series if the parent class is removed', () => {
     const parentRow = { id: 'class-parent' }
     const row = {
       depth: 1,
@@ -69,6 +69,6 @@ describe('getParValueColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })
