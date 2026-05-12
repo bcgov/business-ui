@@ -22,3 +22,14 @@ minimumReleaseAgeExclude:
 - '@sbc-connect/*'
 autoInstallPeers: true
 shamefullyHoist: true
+
+onlyBuiltDependencies:
+  - "@parcel/watcher"
+  - "@sbc-connect/nuxt-auth"
+  - "@sbc-connect/nuxt-base"
+  - "@sbc-connect/nuxt-business-base"
+  - "@sbc-connect/nuxt-forms"
+  - "@sbc-connect/nuxt-pay"
+  - "@tailwindcss/oxide"
+  - "esbuild"
+  - "vue-demi"
