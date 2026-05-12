@@ -16,6 +16,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
   >
     <ManageCompanyName
       v-model:active-name-request="store.formState.activeNameRequest"
+      v-model:active-name-translation="store.formState.activeNameTranslation"
       :loading="store.initializing"
       :business
       :contact="businessContact"
