@@ -95,10 +95,10 @@ test.describe('Editing Officers', () => {
 
     // remove row
     await row.getByRole('button', { name: 'More Actions' }).click()
-    await page.getByRole('menuitem', { name: 'Remove' }).click()
+    await page.getByRole('menuitem', { name: 'Delete' }).click()
 
-    // removing an existing officer shouldnt remove it from the table but add a REMOVED badge instead
-    await expect(row).toContainText('REMOVED')
+    // deleting an existing officer shouldnt remove it from the table but add a DELETED badge instead
+    await expect(row).toContainText('DELETED')
     // removed badge overwrites all other badges
     await expect(row).not.toContainText('NAME CHANGED')
 

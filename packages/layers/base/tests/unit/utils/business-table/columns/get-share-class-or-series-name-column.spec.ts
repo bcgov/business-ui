@@ -49,7 +49,7 @@ describe('getShareClassOrSeriesNameColumn', () => {
     expect(cell.props.labelClass).toContain('before:bg-black')
   })
 
-  it('should add opacity-50 if the current row is removed', () => {
+  it('should add opacity-40 if the current row is removed', () => {
     const row = {
       depth: 0,
       original: { new: { name: 'Common' } }
@@ -59,10 +59,10 @@ describe('getShareClassOrSeriesNameColumn', () => {
     mockGetIsRowRemoved.mockReturnValue(true)
 
     const cell = column.cell({ row })
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 
-  it('should add opacity-50 and hide badges if the parent row is removed', () => {
+  it('should add opacity-40 and hide badges if the parent row is removed', () => {
     const parentRow = { id: 'parent' }
     const row = {
       depth: 1,
@@ -75,7 +75,7 @@ describe('getShareClassOrSeriesNameColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
     expect(cell.props.badges).toEqual([])
     expect(mockGetTableBadges).not.toHaveBeenCalledWith(row)
   })

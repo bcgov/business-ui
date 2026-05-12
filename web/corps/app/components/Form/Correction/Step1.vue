@@ -2,20 +2,6 @@
 const store = useCorrectionStore()
 const { business, businessContact } = storeToRefs(useBusinessStore())
 
-const directorAllowedActions = [
-  ManageAllowedAction.ADD,
-  ManageAllowedAction.ADDRESS_CHANGE,
-  ManageAllowedAction.NAME_CHANGE,
-  ManageAllowedAction.REMOVE
-]
-
-const receiverLiquidatorAllowedActions = [
-  ManageAllowedAction.ADD,
-  ManageAllowedAction.ADDRESS_CHANGE,
-  ManageAllowedAction.NAME_CHANGE,
-  ManageAllowedAction.REMOVE
-]
-
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = getCorrectionLabelOverrides()
 </script>
@@ -58,27 +44,19 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
     </section>
 
     <!-- Section 3: Directors -->
-    <section class="space-y-4" data-testid="current-directors-section">
-      <div>
-        <h2 class="text-base">
-          {{ $t('label.currentDirectors') }}
-        </h2>
-        <p>{{ $t('text.currentDirectorsMustBeCorrect') }}</p>
-      </div>
-
-      <ManageParties
-        v-model:active-party="store.formState.activeDirector"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
-        :section-label="$t('label.currentDirectors')"
-        :add-label="$t('label.addDirector')"
-        :role-type="RoleTypeUi.DIRECTOR"
-        :allowed-actions="directorAllowedActions"
-        :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
-        form-party-details-name="activeDirector"
-      />
-    </section>
+    <ManageParties
+      v-model:active-party="store.formState.activeDirector"
+      :loading="store.initializing"
+      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+      :table-title="$t('label.currentDirectors')"
+      :subject="$t('label.director')"
+      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      data-testid="current-directors-section"
+      :role-type="RoleTypeUi.DIRECTOR"
+      :label-overrides="correctionLabelOverrides"
+      model-name="activeDirector"
+      variant="correct"
+    />
 
     <!-- Section 4: Share Structure -->
     <section data-testid="share-structure-section">
@@ -101,58 +79,42 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
 
     <!-- Section 5: Receivers -->
     <!-- ToDO: Do we want receivers conditionally -->
-    <section class="space-y-4" data-testid="receivers-section">
-      <div>
-        <h2 class="text-base">
-          {{ $t('label.receivers') }}
-        </h2>
-        <p>{{ $t('text.receiversMustBeCorrect') }}</p>
-      </div>
-
-      <ManageParties
-        v-model:active-party="store.formState.activeReceiver"
-        state-key="manage-receivers"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
-        :section-label="$t('label.receivers')"
-        :add-label="$t('label.addReceiver')"
-        :role-type="RoleTypeUi.RECEIVER"
-        :allowed-actions="receiverLiquidatorAllowedActions"
-        :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
-        form-party-details-name="activeReceiver"
-        :party-form-props="{
-          partyNameProps: { allowBusinessName: true, allowPreferredName: false }
-        }"
-      />
-    </section>
+    <ManageParties
+      v-model:active-party="store.formState.activeReceiver"
+      state-key="manage-receivers"
+      :loading="store.initializing"
+      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+      :table-title="$t('label.currentReceivers')"
+      :subject="$t('label.receiver')"
+      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      data-testid="receivers-section"
+      :role-type="RoleTypeUi.RECEIVER"
+      :label-overrides="correctionLabelOverrides"
+      model-name="activeReceiver"
+      variant="correct"
+      :party-form-props="{
+        partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+      }"
+    />
 
     <!-- Section 6: Liquidators -->
     <!-- ToDO: Do we want liquidators conditionally -->
-    <section class="space-y-4" data-testid="liquidators-section">
-      <div>
-        <h2 class="text-base">
-          {{ $t('label.liquidators') }}
-        </h2>
-        <p>{{ $t('text.liquidatorsMustBeCorrect') }}</p>
-      </div>
-
-      <ManageParties
-        v-model:active-party="store.formState.activeLiquidator"
-        state-key="manage-liquidators"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
-        :section-label="$t('label.liquidators')"
-        :add-label="$t('label.addLiquidator')"
-        :role-type="RoleTypeUi.LIQUIDATOR"
-        :allowed-actions="receiverLiquidatorAllowedActions"
-        :label-overrides="correctionLabelOverrides"
-        :columns-to-display="['name', 'delivery', 'mailing', 'effectiveDates', 'actions']"
-        form-party-details-name="activeLiquidator"
-        :party-form-props="{
-          partyNameProps: { allowBusinessName: true, allowPreferredName: false }
-        }"
-      />
-    </section>
+    <ManageParties
+      v-model:active-party="store.formState.activeLiquidator"
+      state-key="manage-liquidators"
+      :loading="store.initializing"
+      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+      :table-title="$t('label.currentLiquidators')"
+      :subject="$t('label.liquidator')"
+      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      data-testid="liquidators-section"
+      :role-type="RoleTypeUi.LIQUIDATOR"
+      :label-overrides="correctionLabelOverrides"
+      model-name="activeLiquidator"
+      variant="correct"
+      :party-form-props="{
+        partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+      }"
+    />
   </UForm>
 </template>

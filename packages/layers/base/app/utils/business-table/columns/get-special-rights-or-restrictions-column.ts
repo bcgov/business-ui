@@ -1,4 +1,5 @@
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getSpecialRightsOrRestrictionsColumn<T extends ShareClassSchema>(
   metaOption: TableColumnMetaOption = 'default'
@@ -15,10 +16,7 @@ export function getSpecialRightsOrRestrictionsColumn<T extends ShareClassSchema>
       // series row styling can change based on parent row removed action
       const isRowRemoved = getIsRowRemoved(row)
       const isParentRowRemoved = isSeries && getIsRowRemoved(row.getParentRow()!)
-
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
-      // apply opacity whether the current or parent row is removed
-      const cellClass = (isRowRemoved || isParentRowRemoved) ? defaultClass + ' opacity-50' : defaultClass
 
       const hasRor = row.original.new.hasRightsOrRestrictions
       const displayText = hasRor
@@ -28,7 +26,7 @@ export function getSpecialRightsOrRestrictionsColumn<T extends ShareClassSchema>
       return h(
         'span',
         {
-          class: cellClass
+          class: [defaultClass, (isRowRemoved || isParentRowRemoved) ? DELETED_CLASS : '']
         },
         displayText
       )

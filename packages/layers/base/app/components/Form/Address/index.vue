@@ -72,7 +72,7 @@ defineExpose({
     :nested
     :name
     novalidate
-    class="flex flex-col divide-y divide-shade"
+    class="flex flex-col"
   >
     <ConnectFieldset
       :label="$t('label.mailingAddress')"
@@ -92,6 +92,7 @@ defineExpose({
         />
       </div>
     </ConnectFieldset>
+    <USeparator v-if="!model.sameAs" class="padding-x-default" />
     <ConnectFieldset
       v-if="!model.sameAs"
       :label="$t('label.deliveryAddress')"
@@ -108,7 +109,7 @@ defineExpose({
       />
     </ConnectFieldset>
     <slot v-if="!nested" name="actions">
-      <div class="flex gap-6 justify-end py-6 px-4 sm:py-10 sm:px-8">
+      <div class="flex gap-6 justify-end padding-xy-default">
         <UButton type="submit" :label="$t('label.done')" />
         <UButton
           variant="outline"

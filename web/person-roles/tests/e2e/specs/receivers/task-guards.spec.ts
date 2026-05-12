@@ -46,7 +46,7 @@ test.describe('Task Guards', () => {
     const partySection = page.getByTestId('manage-parties')
     const submitBtn = page.getByRole('button', { name: 'Submit' })
     const saveBtn = page.getByRole('button', { name: 'Save and Resume Later' })
-    const partySubForm = page.getByRole('group', { name: 'Editing TESTER TESTING' })
+    const partySubForm = page.getByRole('group', { name: 'Changing TESTER TESTING' })
 
     // open party sub form
     await partySection.getByRole('button', { name: 'Change' }).first().click()

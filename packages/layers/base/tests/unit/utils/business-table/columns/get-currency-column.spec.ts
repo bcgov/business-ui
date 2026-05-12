@@ -69,7 +69,7 @@ describe('getCurrencyColumn', () => {
     expect(cell.children).toBe('')
   })
 
-  it('should add opacity-50 if the row is removed', () => {
+  it('should add opacity-40 if the row is removed', () => {
     const row = {
       original: { new: { currency: 'USD' } }
     }
@@ -78,10 +78,10 @@ describe('getCurrencyColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 
-  it('should add opacity-50 if its a series and the parent row is removed', () => {
+  it('should add opacity-40 if its a series and the parent row is removed', () => {
     const parentRow = { id: 'parent-class' }
     const row = {
       depth: 1,
@@ -94,6 +94,6 @@ describe('getCurrencyColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-50')
+    expect(cell.props.class).toContain('opacity-40')
   })
 })

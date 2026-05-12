@@ -10,7 +10,7 @@ const findButtonByText = (wrapper: any, text: string) => {
 describe('SubFormWrapper', () => {
   const defaultProps = {
     variant: 'edit' as const,
-    itemLabel: 'Officer'
+    subject: 'Officer'
   }
 
   it('should render the correct label prefix for each variant', async () => {
@@ -23,7 +23,7 @@ describe('SubFormWrapper', () => {
 
     for (const { type, expected } of variants) {
       const wrapper = await mountSuspended(SubFormWrapper, {
-        props: { variant: type as any, itemLabel: 'Officer' }
+        props: { variant: type as any, subject: 'Officer' }
       })
       expect(wrapper.find('legend').text()).toContain(`${expected} Officer`)
     }

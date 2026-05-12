@@ -32,8 +32,8 @@ const loading = ref(false)
         v-model:active-party="activeParty"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
-        add-label="Add Party"
-        edit-label="Edit Party"
+        table-title="Parties"
+        subject="Party"
         :allowed-actions="[ManageAllowedAction.ADD]"
       />
     </ConnectPageSection>

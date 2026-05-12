@@ -70,25 +70,21 @@ defineExpose({
       </ConnectFormFieldWrapper>
     </section>
 
-    <section class="space-y-4" data-testid="current-directors-section">
-      <div>
-        <h2 class="text-base">
-          2. {{ $t('label.currentDirectors') }}
-        </h2>
-        <p>{{ $t('text.currentDirectorsMustBeCorrect') }}</p>
-      </div>
-
+    <div class="space-y-4" data-testid="current-directors-section">
       <ManageParties
         v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
-        :add-label="$t('label.addDirector')"
-        :section-label="$t('label.directors')"
+        :section-title="`2. ${$t('label.currentDirectors')}`"
+        :section-description="$t('text.currentDirectorsMustBeCorrect')"
+        :table-title="$t('label.directors')"
+        :subject="$t('label.director')"
+        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
-        form-party-details-name="activeDirector"
+        model-name="activeDirector"
         :label-overrides="{ editLabel: $t('label.changeAddress') }"
+        :party-form-props="{ hideRemove: true }"
       />
 
       <ConnectFormFieldWrapper
@@ -104,7 +100,7 @@ defineExpose({
           />
         </UFormField>
       </ConnectFormFieldWrapper>
-    </section>
+    </div>
 
     <section data-testid="share-structure-section">
       <h2 class="text-base">

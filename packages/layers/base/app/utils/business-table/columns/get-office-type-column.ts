@@ -1,5 +1,6 @@
 import { TableColumnIdentity } from '#components'
 import { h } from 'vue'
+import { DELETED_CLASS } from './constants'
 
 export function getOfficeTypeColumn<T extends { type: OfficeType, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'first',
@@ -16,7 +17,6 @@ export function getOfficeTypeColumn<T extends { type: OfficeType, actions: Actio
       const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'font-bold min-w-40 max-w-40 flex flex-col gap-2'
-      const cellClass = isRemoved ? defaultClass + ' opacity-50' : defaultClass
 
       const label = t(`officeType.${row.original.new.type}`)
 
@@ -25,7 +25,7 @@ export function getOfficeTypeColumn<T extends { type: OfficeType, actions: Actio
         {
           label,
           badges,
-          class: cellClass
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         () => []
       )

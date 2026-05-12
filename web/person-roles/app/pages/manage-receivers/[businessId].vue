@@ -162,24 +162,19 @@ useFilingPageWatcher<ReceiverType>({
         <p>{{ filingDescription }}</p>
       </div>
 
-      <section class="space-y-4">
-        <h2 class="text-base">
-          1. {{ $t('label.receiverInfo') }}
-        </h2>
-
-        <ManageParties
-          v-model:active-party="receiverStore.formState.activeParty"
-          :loading="receiverStore.initializing"
-          :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
-          :add-label="$t('label.addReceiver')"
-          :section-label="$t('label.receivers')"
-          :allowed-actions="allowedPartyActions"
-          :role-type="RoleTypeUi.RECEIVER"
-          :party-form-props="{
-            partyNameProps: { allowBusinessName: true, allowPreferredName: false }
-          }"
-        />
-      </section>
+      <ManageParties
+        v-model:active-party="receiverStore.formState.activeParty"
+        :loading="receiverStore.initializing"
+        :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
+        :section-title="`1. ${$t('label.receiverInfo')}`"
+        :table-title="$t('label.receivers')"
+        :subject="$t('label.receiver')"
+        :allowed-actions="allowedPartyActions"
+        :role-type="RoleTypeUi.RECEIVER"
+        :party-form-props="{
+          partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+        }"
+      />
 
       <FormCourtOrderPoa
         ref="court-order-poa-ref"

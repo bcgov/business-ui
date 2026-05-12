@@ -1,22 +1,27 @@
-* @pwei1018 @thorwolpert
+* @pwei1018 @thorwolpert @kialj876
 
-## Corps 
-/web/corps @deetz99 @kialj876 @cameron-eyds
+# UIs
 
-## Registry Dashboard
-/web/business-registry-dashboard @JazzarKarim @severinbeauvais
+## Corps
+/web/corps @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
 
 ## People-Roles (Officers, Liquidators, Receivers, etc)
-/web/person-roles @deetz99 @kialj876 @thorwolpert @cameron-eyds
+/web/person-roles @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
 
-## Post Restoration Transition Application (aka standalone transition)
-/web/post-restoration-transition-application @BrandonSharratt @deetz99 @hfekete @kialj876 @thorwolpert
+## Registry Dashboard
+/web/business-registry-dashboard @meawong @Rajandeep98
+
+## Registry Home
+/web/registry-home @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
+
+
+# Packages
 
 ## Packages - Business Base Layer
-/packages/layers/base @deetz99 @kialj876 @cameron-eyds
+/packages/layers/base @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
 
 ## Packages - Playwright Config
-/packages/configs/playwright-config @deetz99 @kialj876 @cameron-eyds
+/packages/configs/playwright-config @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
 
 ## Packages - Vitest Config
-/packages/configs/vitest-config @deetz99 @kialj876 @cameron-eyds
+/packages/configs/vitest-config @deetz99 @doug-lovett @eve-git @vysakh-menon-aot
