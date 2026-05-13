@@ -8,4 +8,4 @@ ManageParties: Add alert config.
 
 ManageOffices: Add alert config, implement new prop structure for FormOfficeDetails.
 
-FormOfficeDetails: Implemented SubFormWrapper and updated dividers.
+FormOfficeDetails: Implemented SubFormWrapper.
