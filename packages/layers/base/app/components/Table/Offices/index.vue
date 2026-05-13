@@ -7,7 +7,6 @@ const {
   data?: TableBusinessState<T>[]
   loading?: boolean
   emptyText?: string
-  errorMessage?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
@@ -29,7 +28,6 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :data
     :loading
     :empty-text="emptyText"
-    :error-message="errorMessage"
     :columns="officesColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"

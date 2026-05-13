@@ -117,6 +117,8 @@ function checkLiquidatorsRequired() {
   return liquidatorRequired
 }
 
+// offices always required for intentToLiquidate
+// offices required when appointLiquidator and business not yet in liquidation
 function checkOfficesRequired() {
   const isIntent = filingSubType === LiquidateType.INTENT
   const isAppoint = filingSubType === LiquidateType.APPOINT
