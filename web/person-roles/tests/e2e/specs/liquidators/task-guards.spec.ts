@@ -48,7 +48,7 @@ test.describe('Task Guards', () => {
     const submitBtn = page.getByRole('button', { name: 'Submit' })
     const saveBtn = page.getByRole('button', { name: 'Save and Resume Later' })
     const liqSubForm = page.getByRole('group', { name: 'Changing TESTER TESTING' })
-    const officeSubForm = page.getByRole('group', { name: 'Editing Liquidation Records Office' })
+    const officeSubForm = page.getByRole('group', { name: 'Changing Liquidation Records Office' })
     const taskMessage = 'Finish this task before making other changes.'
 
     // open liquidator sub form
