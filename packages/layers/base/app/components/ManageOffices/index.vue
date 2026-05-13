@@ -40,6 +40,7 @@ const { messageId, targetId } = attachAlerts(tableTarget, activeOffice)
 const { setAlertText } = useConnectButtonControl()
 const activeOfficeSchema = getActiveOfficesSchema()
 
+let editSubject = ''
 let currentEditingRow: OfficesSchema | null = null
 
 const tableHasAddType = computed(() => {
@@ -93,6 +94,8 @@ function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
 
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
+
+  editSubject = t(`officeType.${row.original.new.type}`)
 
   expandedState.value = { [row.index]: true }
 }
@@ -198,8 +201,9 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
                 v-model="activeOffice"
                 :variant="getExpandedFormVariant(row)"
                 :name="modelName"
-                :subject
+                :subject="editSubject"
                 :state-key="stateKey"
+                :hide-remove="variant === 'correct'"
                 @done="() => applyEdits(activeOffice, row)"
                 @cancel="cleanupOfficeForm"
                 @remove="cleanupOfficeForm(); removeOffice(row)"
