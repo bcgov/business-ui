@@ -40,8 +40,8 @@ function onError(event: FormErrorEvent) {
         data-testid="office-addresses-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-        :add-label="$t('label.addOffice')"
-        :section-label="$t('label.offices')"
+        subject=""
+        :table-title="$t('label.offices')"
         :allowed-actions="[]"
       />
 
