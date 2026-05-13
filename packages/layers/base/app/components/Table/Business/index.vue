@@ -10,6 +10,11 @@ defineProps<{
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
+  taskGuardConfig?: {
+    message?: string
+    messageId: string
+    targetId: string
+  }
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
@@ -35,8 +40,9 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     sticky
     :ui="{
       root: 'bg-white rounded-sm',
-      tbody: 'divide-y-0',
+      tbody: `divide-y-0 ${taskGuardConfig?.message ? 'shadow-section-error' : ''}`,
       th: 'text-neutral-highlighted px-2 bg-white',
+      thead: `${taskGuardConfig?.message ? 'shadow-section-error' : ''}`,
       td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
       /* eslint-disable-next-line max-len */
       tr: `${trClass} relative after:absolute after:content-[''] after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200 last:after:hidden in-[thead]:after:hidden`
@@ -67,8 +73,13 @@ const trClass = '[&:has([data-is-editing="true"])]:hidden'
     </template>
 
     <template #empty>
-      <div class="text-neutral text-left text-base px-6">
-        {{ emptyText ?? $t('text.noDataToDisplay') }}
+      <div class="text-left text-base px-6">
+        <FormAlertMessage
+          v-if="taskGuardConfig && taskGuardConfig.message"
+          :id="taskGuardConfig.messageId"
+          :message="taskGuardConfig.message"
+        />
+        <span v-else class="text-neutral">{{ emptyText ?? $t('text.noDataToDisplay') }}</span>
       </div>
     </template>
   </UTable>

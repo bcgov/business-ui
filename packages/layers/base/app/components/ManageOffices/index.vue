@@ -3,18 +3,22 @@ const {
   stateKey = 'manage-offices',
   allowedActions,
   allowAddOfficeType,
-  readonly,
-  labelOverrides
+  labelOverrides,
+  modelName = 'activeOffice',
+  variant = 'default'
 } = defineProps<{
+  tableTitle: string
+  subject: string
+  variant?: ManageVariant
   loading?: boolean
   emptyText?: string
-  addLabel: string
-  sectionLabel: string
+  sectionTitle?: string
+  sectionDescription?: string
   stateKey?: string
+  modelName?: string
   allowedActions?: ManageAllowedAction[]
   labelOverrides?: TableLabelOverrides
   allowAddOfficeType?: OfficeType
-  readonly?: boolean
 }>()
 
 const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office', { required: true })
@@ -30,18 +34,19 @@ const {
 } = useManageOffices(stateKey)
 
 const { t } = useI18n()
-const { setAlert, clearAlert } = useFilingAlerts(stateKey)
+const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
+const tableTarget = 'offices-table'
+const { messageId, targetId } = attachAlerts(tableTarget, activeOffice)
 const { setAlertText } = useConnectButtonControl()
 const activeOfficeSchema = getActiveOfficesSchema()
 
-let editLabel = ''
 let currentEditingRow: OfficesSchema | null = null
 
 const tableHasAddType = computed(() => {
   return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
 })
 const allowAddOffice = computed(() => {
-  if (readonly) {
+  if (variant === 'readonly') {
     return false
   }
   const hasAllowedActions = !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
@@ -50,10 +55,6 @@ const allowAddOffice = computed(() => {
   }
   return !tableHasAddType.value && hasAllowedActions
 })
-
-function hideRowActionsWhen() {
-  return !!readonly
-}
 
 function setActiveFormAlert() {
   setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
@@ -90,11 +91,6 @@ function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
 
   activeOffice.value = office
 
-  const officeType = office?.type
-  editLabel = Object.values(OfficeType).includes(officeType as OfficeType)
-    ? t('label.editingItemName', { name: t(`officeType.${officeType}`) })
-    : t('label.editOffice')
-
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
@@ -106,76 +102,112 @@ function applyEdits(office: ActiveOfficesSchema, row: TableBusinessRow<OfficesSc
   cleanupOfficeForm()
 }
 
-// OFFICE FORM HEADING AND TEXT COLOUR -- HIDE ROW BEING EDITED - THEN DO THE SAME TO SHARE STRUCTURE
-
 function clearAllAlerts() {
   clearAlert('office-address-form') // clear alert in sub form
   setAlertText(undefined) // clear alert in button control
 }
+
+function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVariant {
+  // old is always undefined for newly added offices
+  const isAdded = row.original.old === undefined
+  if (isAdded) {
+    return 'edit'
+  }
+  if (variant === 'correct') {
+    return 'correct'
+  }
+  return 'change'
+}
 </script>
 
 <template>
-  <div
-    class="space-y-4"
+  <component
+    :is="sectionTitle ? 'section' : 'div'"
+    class="space-y-4 sm:space-y-6"
+    data-testid="manage-offices"
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
-    <UButton
-      v-if="allowAddOffice"
-      :label="addLabel"
-      variant="outline"
-      icon="i-mdi-plus"
-      class="w-min"
-      @click="initAddOffice"
-    />
-
-    <FormOfficeDetails
-      v-if="addingOffice && activeOffice"
-      v-model="activeOffice"
-      variant="add"
-      name="activeOffice"
-      :title="addLabel"
-      :state-key="stateKey"
-      @done="() => addOffice(activeOffice)"
-      @cancel="cleanupOfficeForm"
-    />
+    <div v-if="sectionTitle">
+      <h2 class="text-base">
+        {{ sectionTitle }}
+      </h2>
+      <p v-if="sectionDescription">
+        {{ sectionDescription }}
+      </p>
+    </div>
 
     <ConnectPageSection
       :heading="{
-        label: sectionLabel,
+        label: tableTitle,
         icon: 'i-mdi-domain',
-        ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
+        ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
+        level: sectionTitle ? 'h3' : 'h2'
       }"
+      :actions="allowAddOffice
+        ? [
+          {
+            'label': $t('label.addSubject', { subject }),
+            'variant': 'outline',
+            'icon': 'i-mdi-plus',
+            // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
+            'data-alert-focus-target': targetId,
+            'aria-describedby': messageId,
+            'onClick': initAddOffice
+          }
+        ]
+        : undefined
+      "
     >
-      <TableOffices
-        v-model:expanded="expandedState"
-        :data="tableState"
-        :loading
-        :empty-text="emptyText"
-        :allowed-actions="allowedActions"
-        :prevent-actions="!!activeOffice"
-        :label-overrides="labelOverrides"
-        :hide-actions-when="hideRowActionsWhen"
-        @action-prevented="setActiveFormAlert"
-        @init-edit="initEditOffice"
-        @remove="removeOffice"
-        @undo="undoOffice"
-      >
-        <template #expanded="{ row }">
-          <div class="px-4 sm:px-6">
-            <FormOfficeDetails
-              v-if="activeOffice"
-              v-model="activeOffice"
-              variant="edit"
-              name="activeOffice"
-              :title="editLabel"
-              :state-key="stateKey"
-              @done="() => applyEdits(activeOffice, row)"
-              @cancel="cleanupOfficeForm"
-            />
-          </div>
-        </template>
-      </TableOffices>
+      <div>
+        <FormOfficeDetails
+          v-if="addingOffice && activeOffice"
+          v-model="activeOffice"
+          variant="add"
+          :name="modelName"
+          :subject
+          :state-key="stateKey"
+          class="p-6"
+          @done="() => addOffice(activeOffice)"
+          @cancel="cleanupOfficeForm"
+        />
+        <USeparator />
+        <TableOffices
+          v-model:expanded="expandedState"
+          :data="tableState"
+          :loading
+          :empty-text="emptyText"
+          :allowed-actions="allowedActions"
+          :prevent-actions="!!activeOffice"
+          :label-overrides="labelOverrides"
+          :hide-actions-when="() => variant === 'readonly'"
+          :task-guard-config="{
+            messageId,
+            targetId,
+            message: alerts[tableTarget]
+          }"
+          @action-prevented="setActiveFormAlert"
+          @init-edit="initEditOffice"
+          @remove="removeOffice"
+          @undo="undoOffice"
+        >
+          <template #expanded="{ row }">
+            <div class="px-4 sm:px-6">
+              <FormOfficeDetails
+                v-if="activeOffice"
+                v-model="activeOffice"
+                :variant="getExpandedFormVariant(row)"
+                :name="modelName"
+                :subject
+                :state-key="stateKey"
+                @done="() => applyEdits(activeOffice, row)"
+                @cancel="cleanupOfficeForm"
+                @remove="cleanupOfficeForm(); removeOffice(row)"
+              />
+            </div>
+          </template>
+        </TableOffices>
+      </div>
     </ConnectPageSection>
-  </div>
+  </component>
 </template>
