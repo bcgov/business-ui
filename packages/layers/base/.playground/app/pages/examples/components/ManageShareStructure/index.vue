@@ -64,8 +64,7 @@ const formState = reactive<{
         v-model:active-series="formState.activeSeries"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No classes'"
-        add-label="Add Share Class"
-        edit-label="Edit Class or series?"
+        subject="Share Class"
       />
     </ConnectPageSection>
   </UContainer>
