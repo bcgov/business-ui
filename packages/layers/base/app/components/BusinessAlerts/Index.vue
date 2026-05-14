@@ -27,6 +27,7 @@ defineProps<{ alerts: BusinessAlertItem[] }>()
             as="p"
             :translation-path="`businessAlert.${item.alertType}.${item.contentPath || 'content'}`"
             :date="item.date"
+            :entityType="item.entityType"
             data-testid="business-alerts-content-text"
           />
           <i18n-t

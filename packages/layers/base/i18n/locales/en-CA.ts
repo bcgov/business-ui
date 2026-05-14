@@ -50,10 +50,18 @@ export default {
     },
     goodstanding: {
       content: 'The most common reason a business is not in good standing is an overdue annual report. Any outstanding annual reports must filed to bring the business back into good standing.',
+      standingDueToLiquidation: 'Any outstanding Liquidation Reports must be filed to bring the business back into good standing.',
       contentExtra: {
         default: 'If further action is required, please contact BC Registries staff:'
       },
       label: 'This business is not in good standing'
+    },
+    liquidation: {
+      content: 'This {entityType} is undergoing liquidation. The next liquidation report is due on {date}.',
+      contentExtra: {
+        default: 'For assistance, please contact BC Registries staff:'
+      },
+      label: 'This {entityType} is in the process of liquidation'
     },
     missinginfo: {
       content: 'BC Registries is missing information about your business (e.g., business start date, nature of business, business address, etc.). Please contact BC Registries to input any missing business information. Missing information must be entered before you can file changes or dissolve this business.',
