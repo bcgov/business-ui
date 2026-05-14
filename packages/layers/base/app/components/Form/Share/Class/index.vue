@@ -2,9 +2,10 @@
 import type { Form, FormErrorEvent } from '@nuxt/ui'
 
 const props = defineProps<{
-  variant: 'add' | 'edit'
+  variant: FormVariant
+  subject: string
+  hideRemove?: boolean
   name?: string
-  title: string
   stateKey: string
   nested?: boolean
   validationContext?: { existingNames: string[] }
@@ -24,7 +25,6 @@ const currencyOptions = getCurrencyList().map(c => ({
   label: `${c.name}, ${c.code}`
 }))
 const schema = computed(() => getActiveShareClassSchema(props.validationContext))
-const labelId = useId()
 const isInvalidCurrency = ref(false)
 
 const model = defineModel<ShareClassSchema>({ required: true })
@@ -106,40 +106,20 @@ defineExpose({
     :state="model"
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset :aria-labelledby="labelId" :data-testid="formTarget">
-      <legend
-        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full"
-        :class="{
-          'bg-shade-secondary text-neutral-highlighted': variant === 'add',
-          'bg-primary text-white': variant === 'edit'
-        }"
-      >
-        <div class="flex items-center gap-2.5">
-          <UIcon
-            :name="variant === 'add' ? 'i-mdi-sitemap' : 'i-mdi-edit'"
-            class="size-6 shrink-0"
-            :class="variant === 'add' ? 'text-primary' : 'text-white'"
-          />
-          <span :id="labelId" class="font-semibold text-base">
-            {{ title }}
-          </span>
-        </div>
-        <UButton
-          v-if="variant === 'edit'"
-          :label="$t('label.cancel')"
-          class="font-normal p-0"
-          trailing-icon="i-mdi-close"
-          @click="$emit('cancel')"
-        />
-      </legend>
-      <div
-        class="bg-white"
-        :class="{
-          'border border-gray-200': variant === 'edit',
-          'rounded shadow': variant === 'add',
-          'border-l-3 border-error': alerts[formTarget]
-        }"
-      >
+    <SubFormWrapper
+      :subject
+      :variant
+      :task-guard-config="{
+        message: alerts[formTarget],
+        messageId,
+        targetId
+      }"
+      :hide-remove
+      @done="onDone"
+      @cancel="$emit('cancel')"
+      @remove="$emit('remove')"
+    >
+      <template #default>
         <ConnectFormFieldWrapper
           :label="$t('label.className')"
           :error="formErrors.name"
@@ -266,38 +246,7 @@ defineExpose({
             />
           </UFormField>
         </ConnectFormFieldWrapper>
-      </div>
-      <div
-        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center mt-6"
-        :class="variant === 'edit' ? 'justify-between' : 'justify-end'"
-      >
-        <UButton
-          v-if="variant === 'edit'"
-          :label="$t('label.remove')"
-          variant="outline"
-          color="error"
-          @click="$emit('remove')"
-        />
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-          <FormAlertMessage
-            :id="messageId"
-            :message="alerts[formTarget]"
-          />
-          <UButton
-            variant="outline"
-            :label="$t('label.cancel')"
-            class="w-full sm:w-min justify-center"
-            @click="$emit('cancel')"
-          />
-          <UButton
-            :data-alert-focus-target="targetId"
-            :aria-describedby="messageId"
-            :label="$t('label.done')"
-            class="w-full sm:w-min justify-center"
-            @click="onDone"
-          />
-        </div>
-      </div>
-    </fieldset>
+      </template>
+    </SubFormWrapper>
   </UForm>
 </template>

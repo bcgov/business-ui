@@ -35,12 +35,11 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
           label,
           class: [
             isSeries ? 'ml-6' : '',
-            defaultClass,
-            (isRowRemoved || isParentRowRemoved) ? DELETED_CLASS : ''
+            defaultClass
           ],
-          labelClass: isSeries // apply list styling to series name
-            ? 'flex flex-row items-center -ml-3 gap-2 before:size-1 before:bg-black before:rounded-full'
-            : ''
+          labelClass: (isSeries // apply list styling to series name
+            ? 'flex flex-row items-center -ml-3 gap-2 before:size-1 before:bg-black before:rounded-full '
+            : '') + ((isRowRemoved || isParentRowRemoved) ? DELETED_CLASS : '')
         }
       )
     }

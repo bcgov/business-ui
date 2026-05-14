@@ -63,7 +63,7 @@ async function reviewAndConfirm() {
       return
     }
     if (store.shareClasses.filter(sc => !sc.new.actions.includes(ActionType.REMOVED)).length === 0) {
-      setSharesAlert('manage-share-structure', t('text.shareStructureMustContainAtleastOneClass'))
+      setSharesAlert('share-structure-table', t('text.shareStructureMustContainAtleastOneClass'))
       throw new Error('missing-share-structure')
     }
     nextStep()

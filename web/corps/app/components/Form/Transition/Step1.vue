@@ -97,21 +97,17 @@ defineExpose({
       </ConnectFormFieldWrapper>
     </div>
 
-    <section data-testid="share-structure-section">
-      <h2 class="text-base">
-        3. {{ $t('label.shareStructure') }}
-      </h2>
-
-      <ManageShareStructure
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
-        :loading="store.initializing"
-        :empty-text="store.initializing
-          ? `${$t('label.loading')}...`
-          : $t('label.noShareClasses')
-        "
-        :add-label="$t('label.addShareClass')"
-      />
-    </section>
+    <ManageShareStructure
+      v-model:active-class="store.formState.activeClass"
+      v-model:active-series="store.formState.activeSeries"
+      data-testid="share-structure-section"
+      :loading="store.initializing"
+      :empty-text="store.initializing
+        ? `${$t('label.loading')}...`
+        : $t('label.noShareClasses')
+      "
+      :section-title="`3. ${$t('label.shareStructure')}`"
+      :section-description="$t('text.shareStructureMustMatchCompanysCurrentState')"
+    />
   </UForm>
 </template>
