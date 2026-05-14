@@ -12,6 +12,11 @@ const {
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   columns?: TablePartyColumnName[]
+  taskGuardConfig?: {
+    message?: string
+    messageId: string
+    targetId: string
+  }
 }>()
 
 const partyColumns = getPartyTableColumns<T>(columns, labelOverrides?.badges)
@@ -28,6 +33,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
+    :task-guard-config
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

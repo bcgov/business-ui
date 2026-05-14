@@ -25,24 +25,19 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
     />
 
     <!-- Section 2: Office Addresses -->
-    <section class="space-y-4" data-testid="office-addresses-section">
-      <div>
-        <h2 class="text-base">
-          {{ $t('label.officeAddresses') }}
-        </h2>
-        <p>{{ $t('text.officeAddressesMustBeCorrect') }}</p>
-      </div>
-
-      <ManageOffices
-        v-model:active-office="store.formState.activeOffice"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-        :section-label="$t('label.officeAddresses')"
-        :add-label="$t('label.addOffice')"
-        :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        :label-overrides="correctionLabelOverrides"
-      />
-    </section>
+    <ManageOffices
+      v-model:active-office="store.formState.activeOffice"
+      data-testid="office-addresses-section"
+      :loading="store.initializing"
+      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+      :section-title="`1. ${$t('label.officeAddresses')}`"
+      :section-description="$t('text.officeAddressesMustBeCorrect')"
+      :table-title="$t('label.offices')"
+      subject=""
+      variant="correct"
+      :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
+      :label-overrides="correctionLabelOverrides"
+    />
 
     <!-- Section 3: Directors -->
     <ManageParties

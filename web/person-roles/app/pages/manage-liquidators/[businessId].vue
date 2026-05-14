@@ -26,6 +26,7 @@ const { setAlert: setOfficesAlert } = useFilingAlerts('manage-offices')
 const FILING_TYPE = FilingType.CHANGE_OF_LIQUIDATORS
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as LiquidateType
+const officeSubject = t(`officeType.${OfficeType.LIQUIDATION}`)
 const showLiqRecordsOffice = computed(() => (
   [LiquidateType.INTENT, LiquidateType.ADDRESS, LiquidateType.REPORT].includes(filingSubType)
   || (LiquidateType.APPOINT && !business.value?.inLiquidation)
@@ -105,10 +106,37 @@ function checkActiveSubForm() {
   return hasActiveSubForm
 }
 
+// liquidators always required except for liquidationReport
+// filing task guards will catch most cases but extra check required for intentToLiquidate
+function checkLiquidatorsRequired() {
+  const liquidatorRequired = filingSubType === LiquidateType.INTENT
+    && !store.liquidators.some(l => l.new.actions.length > 0)
+  if (liquidatorRequired) {
+    setPartiesAlert('parties-table', t('validation.noSubjectAddedYet', { subject: t('label.liquidators') }))
+  }
+  return liquidatorRequired
+}
+
+// offices always required for intentToLiquidate
+// offices required when appointLiquidator and business not yet in liquidation
+function checkOfficesRequired() {
+  const isIntent = filingSubType === LiquidateType.INTENT
+  const isAppoint = filingSubType === LiquidateType.APPOINT
+  const officeRequired = (isIntent || (isAppoint && !business.value?.inLiquidation))
+    && !store.offices.some(o => o.new.actions.length > 0)
+  if (officeRequired) {
+    setOfficesAlert('offices-table', t('validation.noSubjectAddedYet', { subject: officeSubject }))
+  }
+  return officeRequired
+}
+
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
     if (checkActiveSubForm()) {
+      return
+    }
+    if (checkLiquidatorsRequired() || checkOfficesRequired()) {
       return
     }
     if (!canSubmit()) {
@@ -245,24 +273,19 @@ onMounted(() => {
         </ConnectFormFieldWrapper>
       </div>
 
-      <section
+      <div
         v-if="showLiqRecordsOffice"
         class="space-y-4"
         data-testid="records-office-section"
       >
-        <div>
-          <h2 class="text-base">
-            2. {{ $t('label.liquidationRecordsOfficeAddress') }}
-          </h2>
-          <p>{{ $t('text.liquidationRecordsOfficeAddressDesc') }}</p>
-        </div>
-
         <ManageOffices
           v-model:active-office="store.formState.activeOffice"
           :loading="store.initializing"
           :empty-text="store.initializing ? `${t('label.loading')}...` : t('label.noOffice')"
-          :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.LIQUIDATION}`) })"
-          :section-label="$t('label.offices')"
+          :subject="officeSubject"
+          :section-title="`2. ${$t('label.liquidationRecordsOfficeAddress')}`"
+          :section-description="$t('text.liquidationRecordsOfficeAddressDesc')"
+          :table-title="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
         />
@@ -281,7 +304,7 @@ onMounted(() => {
             />
           </UFormField>
         </ConnectFormFieldWrapper>
-      </section>
+      </div>
 
       <FormCourtOrderPoa
         v-if="filingSubType !== LiquidateType.REPORT"

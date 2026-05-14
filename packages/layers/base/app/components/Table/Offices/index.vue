@@ -10,6 +10,11 @@ const {
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
+  taskGuardConfig?: {
+    message?: string
+    messageId: string
+    targetId: string
+  }
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
@@ -28,6 +33,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
     :hide-actions-when="hideActionsWhen"
+    :task-guard-config
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

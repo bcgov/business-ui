@@ -40,8 +40,8 @@ const loading = ref(false)
         v-model:active-office="activeOffice"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
-        :add-label="$t('label.addOfficeType', { type: $t(`officeType.${OfficeType.CUSTODIAL}`) })"
-        section-label="Offices"
+        :subject="$t(`officeType.${OfficeType.CUSTODIAL}`)"
+        table-title="Offices"
         :allowed-actions="[ManageAllowedAction.ADD]"
         :allow-add-office-type="OfficeType.CUSTODIAL"
       />

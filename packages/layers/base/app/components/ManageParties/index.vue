@@ -49,7 +49,9 @@ const {
 } = useManageParties(stateKey)
 
 const { t } = useI18n()
-const { setAlert, clearAlert } = useFilingAlerts(stateKey)
+const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
+const tableTarget = 'parties-table'
+const { messageId, targetId } = attachAlerts(tableTarget, activeParty)
 const { setAlertText } = useConnectButtonControl()
 const activePartySchema = getActivePartySchema(roleType)
 
@@ -151,10 +153,13 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
       :actions="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
         ? [
           {
-            label: $t('label.addSubject', { subject }),
-            variant: 'outline',
-            icon: 'i-mdi-plus',
-            onClick: initAddParty
+            'label': $t('label.addSubject', { subject }),
+            'variant': 'outline',
+            'icon': 'i-mdi-plus',
+            // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
+            'data-alert-focus-target': targetId,
+            'aria-describedby': messageId,
+            'onClick': initAddParty
           }
         ]
         : undefined
@@ -183,6 +188,11 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
           :prevent-actions="!!activeParty"
           :label-overrides="labelOverrides"
           :columns="columnsToDisplay"
+          :task-guard-config="{
+            messageId,
+            targetId,
+            message: alerts[tableTarget]
+          }"
           @init-edit="initEditParty"
           @remove="removeParty"
           @undo="undoParty"

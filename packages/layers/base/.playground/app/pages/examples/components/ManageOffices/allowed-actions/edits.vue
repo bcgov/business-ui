@@ -40,8 +40,8 @@ const loading = ref(false)
         v-model:active-office="activeOffice"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
-        add-label="Add Office"
-        section-label="Offices"
+        subject="Office"
+        table-title="Offices"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       />
     </ConnectPageSection>

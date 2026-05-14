@@ -38,20 +38,15 @@ defineExpose({
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
-    <section class="space-y-4" data-testid="office-addresses-section">
-      <div>
-        <h2 class="text-base">
-          1. {{ $t('label.officeAddresses') }}
-        </h2>
-        <p>{{ $t('text.officeAddressesMustBeCorrect') }}</p>
-      </div>
-
+    <div class="space-y-4" data-testid="office-addresses-section">
       <ManageOffices
         v-model:active-office="activeOffice"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-        :add-label="$t('label.addOffice')"
-        :section-label="$t('label.offices')"
+        subject=""
+        :section-title="`1. ${$t('label.officeAddresses')}`"
+        :section-description="$t('text.officeAddressesMustBeCorrect')"
+        :table-title="$t('label.offices')"
         :allowed-actions="[]"
       />
 
@@ -68,7 +63,7 @@ defineExpose({
           />
         </UFormField>
       </ConnectFormFieldWrapper>
-    </section>
+    </div>
 
     <div class="space-y-4" data-testid="current-directors-section">
       <ManageParties

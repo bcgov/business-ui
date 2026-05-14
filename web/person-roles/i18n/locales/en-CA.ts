@@ -81,7 +81,8 @@ export default {
     },
     role: {
       min: 'Choose at least one role'
-    }
+    },
+    noSubjectAddedYet: 'No {subject} added yet.'
   },
   page: {
     // Below sections are named based on filing type and filing sub type
