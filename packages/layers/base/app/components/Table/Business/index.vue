@@ -31,7 +31,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
 const trClass = '[&:has([data-is-editing="true"])]:hidden'
 
 const showBodyTopSlot = computed(() => {
-  if(!props.data || props.data.length === 0 || props.loading) {
+  if (!props.data || props.data.length === 0 || props.loading) {
     return false
   }
   return props.data.filter(i => !i.new.actions.includes(ActionType.REMOVED)).length === 0
@@ -90,8 +90,13 @@ const showBodyTopSlot = computed(() => {
       </div>
     </template>
 
-    <template #body-top v-if="showBodyTopSlot">
-      <tr class="relative after:absolute after:content-[''] after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200">
+    <template v-if="showBodyTopSlot" #body-top>
+      <tr
+        :class="[
+          `relative after:absolute after:content-['']`,
+          'after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200'
+        ]"
+      >
         <td :colspan="columns.length">
           <div class="text-left text-base p-6">
             <FormAlertMessage
