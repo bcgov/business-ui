@@ -4,6 +4,7 @@ export enum BusinessAlert {
   DISSOLUTION = 'dissolution',
   FROZEN = 'frozen',
   GOODSTANDING = 'goodstanding',
+  LIQUIDATION = 'liquidation',
   MISSINGINFO = 'missinginfo',
   TRANSITIONREQUIRED = 'transitionrequired'
 }

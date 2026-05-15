@@ -5,6 +5,7 @@ export interface BusinessWarning {
   filing?: string
   data?: {
     amalgamationDate?: FormattedDateTimeGmt
+    nextLiquidationReportMinDate?: FormattedDateTimeGmt
     overdueARs?: boolean
     overdueTransition?: boolean
     stage_1_date?: ApiDateTimeUtc // the date the business entered stage 1

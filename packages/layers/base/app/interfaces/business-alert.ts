@@ -5,5 +5,6 @@ export interface BusinessAlertItem extends AccordionItem {
   contentExtra?: { path: string, link?: { path: string, to: string } }[]
   contentPath?: string
   date?: string
+  entityType?: string
   showContact?: boolean
 }

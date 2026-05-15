@@ -71,9 +71,37 @@ export const useBusinessStore = defineStore('business-store', () => {
       })
     }
 
+    const liquidationWarning = allWarnings.find(item => item.warningType === ApiWarningType.LIQUIDATION)
+    const liquidationNextReportDate = liquidationWarning?.data?.nextLiquidationReportMinDate
+      ? new Date(liquidationWarning.data.nextLiquidationReportMinDate)
+      : undefined
+    const isLiquidationOverdue = !!liquidationNextReportDate
+      && !Number.isNaN(liquidationNextReportDate.getTime())
+      && new Date() > liquidationNextReportDate
+
+    if (liquidationWarning || business.value?.inLiquidation) {
+      const nextReportDate = liquidationNextReportDate
+      const date = nextReportDate ? toFormattedDateStr(nextReportDate, DateTime.DATE_FULL) : undefined
+      const entityType = isBaseCompany()
+        ? t('businessConfig.corp.entityTitle')
+        : t(`businessConfig.${business.value?.legalType}.entityTitle`, unknownText)
+      alertList.push({
+        alertType: BusinessAlert.LIQUIDATION,
+        contentExtra: [{ path: 'default' }],
+        date: date || unknownText,
+        entityType,
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.LIQUIDATION}.label`, { entityType }),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
+      })
+    }
+
+    const canShowGoodStanding = !liquidationWarning || isLiquidationOverdue
+
     // NOTES: The API will only return 1 good standing warning even if there are multiple reasons for it
     const goodStandingWarning = allWarnings.find(item => item.warningType === ApiWarningType.NOT_IN_GOOD_STANDING)
-    if (business.value?.goodStanding === false || goodStandingWarning) {
+    if ((business.value?.goodStanding === false || goodStandingWarning) && canShowGoodStanding) {
       // The business goodStanding flag is false and/OR it has a good standing warning
       const alertType = [
         ApiWarningCode.TRANSITION_NOT_FILED,
@@ -82,9 +110,13 @@ export const useBusinessStore = defineStore('business-store', () => {
         // Set alert type to TRANSITIONREQUIRED if it has one of the transition warning codes
         ? BusinessAlert.TRANSITIONREQUIRED
         : BusinessAlert.GOODSTANDING
+      const contentPath = alertType === BusinessAlert.GOODSTANDING && isLiquidationOverdue
+        ? 'standingDueToLiquidation'
+        : undefined
       alertList.push({
         alertType,
         contentExtra: [{ path: 'default' }],
+        contentPath,
         icon: 'i-mdi-alert',
         label: t(`businessAlert.${alertType}.label`),
         showContact: true,
