@@ -98,6 +98,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
         : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
       "
       variant="correct"
+      :label-overrides="correctionLabelOverrides"
     />
   </UForm>
 </template>
