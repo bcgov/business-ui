@@ -61,41 +61,39 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
       :class="error ? 'border-l-error border-l-3' : ''"
     >
       <slot />
-      <div class="space-y-2 sm:space-y-6 px-4 sm:px-8 pb-4 sm:pb-8">
-        <div
-          class="flex flex-wrap gap-2 sm:gap-6 items-center"
-          :class="showRemoveButton ? 'justify-between' : 'justify-end'"
-        >
-          <UButton
-            v-if="showRemoveButton"
-            :label="removeButtonLabelMap[variant]"
-            variant="outline"
-            color="error"
-            class="w-full sm:w-min justify-center"
-            @click="$emit('remove')"
-          />
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center w-full sm:w-min flex-1">
-            <UButton
-              variant="outline"
-              :label="$t('label.cancel')"
-              class="w-full sm:w-min justify-center"
-              @click="$emit('cancel')"
-            />
-            <UButton
-              :data-alert-focus-target="taskGuardConfig?.targetId"
-              :aria-describedby="taskGuardConfig?.messageId"
-              :label="$t('label.done')"
-              class="w-full sm:w-min justify-center"
-              @click="$emit('done')"
-            />
-          </div>
-        </div>
-        <FormAlertMessage
-          v-if="taskGuardConfig"
-          :id="taskGuardConfig.messageId"
-          :message="taskGuardConfig.message"
-          class="text-center"
+      <div
+        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center px-4 sm:px-8 pb-4 sm:pb-8"
+        :class="showRemoveButton ? 'justify-between' : 'justify-end'"
+      >
+        <UButton
+          v-if="showRemoveButton"
+          :label="removeButtonLabelMap[variant]"
+          variant="outline"
+          color="error"
+          class="w-full sm:w-min justify-center"
+          @click="$emit('remove')"
         />
+        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center w-full sm:w-min">
+          <FormAlertMessage
+            v-if="taskGuardConfig"
+            :id="taskGuardConfig.messageId"
+            :message="taskGuardConfig.message"
+            class="min-w-fit order-last sm:order-none"
+          />
+          <UButton
+            variant="outline"
+            :label="$t('label.cancel')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('cancel')"
+          />
+          <UButton
+            :data-alert-focus-target="taskGuardConfig?.targetId"
+            :aria-describedby="taskGuardConfig?.messageId"
+            :label="$t('label.done')"
+            class="w-full sm:w-min justify-center"
+            @click="$emit('done')"
+          />
+        </div>
       </div>
     </div>
   </fieldset>
