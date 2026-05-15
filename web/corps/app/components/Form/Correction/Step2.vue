@@ -116,19 +116,6 @@ function onError(event: FormErrorEvent) {
         :allowed-actions="[]"
       />
 
-      <!-- Share Structure (readonly, only if changed) -->
-      <ManageShareStructure
-        v-if="hasShareStructureChanges"
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
-        data-testid="review-share-structure-section"
-        :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
-        :add-label="$t('label.addShareClass')"
-        readonly
-        :label-overrides="correctionLabelOverrides"
-      />
-
       <!-- Receivers (readonly, only if changed) -->
       <ManageParties
         v-if="hasReceiverChanges"
@@ -164,19 +151,31 @@ function onError(event: FormErrorEvent) {
         variant="correct"
         :allowed-actions="[]"
       />
+
+      <!-- Share Structure (readonly, only if changed) -->
+      <ManageShareStructure
+        v-if="hasShareStructureChanges"
+        v-model:active-class="store.formState.activeClass"
+        v-model:active-series="store.formState.activeSeries"
+        data-testid="review-share-structure-section"
+        :loading="store.initializing"
+        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
+        :add-label="$t('label.addShareClass')"
+        variant="readonly"
+        :label-overrides="correctionLabelOverrides"
+      />
     </section>
 
     <!-- Section 2: Correction Detail Comment -->
-    <section class="space-y-4" data-testid="correction-comment-section">
-      <FormDetail
-        v-model="store.correctionComment"
-        name="comment"
-        order="2"
-        :filing-date="store.correctedFilingDateDisplay"
-        :description="$t('text.correctionCommentDescription')"
-        :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
-      />
-    </section>
+    <FormDetail
+      v-model="store.correctionComment"
+      name="comment"
+      order="2"
+      :filing-date="store.correctedFilingDateDisplay"
+      :description="$t('text.correctionCommentDescription')"
+      :max-length="CORRECTION_DETAIL_COMMENT_MAX_LENGTH"
+      data-testid="correction-comment-section"
+    />
 
     <!-- Section 3: Document Delivery -->
     <FormDocumentDelivery
