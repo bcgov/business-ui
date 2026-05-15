@@ -21,18 +21,14 @@ export function getNameTranslationNameColumn<T extends NameTranslationSchema>(
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'w-full overflow-clip' // Set the width to 100% of the outer layer
 
-      const nameValue = row.original.new.name
-
-      const name = h('span', nameValue)
-
       return h(
         TableColumnIdentity,
         {
-          label: nameValue,
+          label: row.original.new.name,
           badges,
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
-        },
-        () => name
+          class: defaultClass,
+          labelClass: isRemoved ? DELETED_CLASS : ''
+        }
       )
     }
   }

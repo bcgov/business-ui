@@ -7,6 +7,7 @@ type Props = {
   business?: BusinessData | BusinessDataPublic
   contact?: ContactPoint
   loading?: boolean
+  variant?: ManageVariant
   // name translation section (shown when addNameTranslationLabel is provided)
   nameTranslationAllowedActions?: ManageAllowedAction[]
   nameTranslationLabelOverrides?: TableLabelOverrides
@@ -26,7 +27,8 @@ type Props = {
 const {
   stateKey = 'manage-company-name',
   business,
-  contact
+  contact,
+  variant = 'default'
 } = defineProps<Props>()
 
 const nameTranslationsStateKey = computed(() => `${stateKey}-name-translations`)
@@ -110,7 +112,7 @@ function cleanupForm() {
             <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
             <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
             <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
-            <UFieldGroup v-if="!readonly" class="divide-x divide-line-muted h-min">
+            <UFieldGroup v-if="variant !== 'readonly'" class="divide-x divide-line-muted h-min">
               <UButton
                 :label="mainAction.label"
                 :icon="mainAction.icon"
@@ -151,7 +153,7 @@ function cleanupForm() {
         </template>
       </ConnectFieldset>
       <USeparator class="px-4 sm:px-6" />
-      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">
+      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
           {{ $t('label.recognitionDateAndTime') }}
         </span>
@@ -159,24 +161,24 @@ function cleanupForm() {
         <span v-else class="flex-1">{{ formattedFoundingDate }}</span>
       </div>
       <USeparator class="px-4 sm:px-6" />
-      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">
+      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
           {{ $t('label.nameTranslations') }}
         </span>
         <div class="flex flex-col flex-1 gap-4">
-          <span>{{ $t('text.addNameTranslation') }}</span>
+          <span v-if="variant !== 'readonly'">{{ $t('text.addNameTranslation') }}</span>
           <ManageNameTranslations
             v-model:active-name-translation="activeNameTranslation"
             :state-key="nameTranslationsStateKey"
             :loading="loading"
-            :add-label="$t('label.addNameTranslation')"
+            :variant
             :allowed-actions="readonly ? [] : nameTranslationAllowedActions"
             :label-overrides="nameTranslationLabelOverrides"
           />
         </div>
       </div>
       <USeparator class="px-4 sm:px-6" />
-      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row border-l-3 border-transparent py-4 sm:py-5">
+      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
           {{ $t('label.registeredOfficeContactInformation') }}
         </span>
