@@ -169,15 +169,19 @@ function clearAllAlerts() {
 }
 
 function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVariant {
-  // old is always undefined for newly added parties
-  const isAdded = row.original.old === undefined
-  if (isAdded) {
-    return 'edit'
+  if (addingSeriesToClassId.value === row.original.new.id) {
+    return 'add'
   }
+
   if (variant === 'correct') {
     return 'correct'
   }
-  return addingSeriesToClassId.value ? 'add' : 'change'
+
+  if (row.original.old === undefined) {
+    return 'edit'
+  }
+
+  return 'change'
 }
 </script>
 
