@@ -126,7 +126,7 @@ async function editShares(page: Page) {
   const classFRow = shares.getByRole('row').filter({ hasText: 'Class F Non-Voting Preferred Shares' })
   await classFRow.getByRole('button', { name: 'Change' }).click()
 
-  const editForm = page.getByTestId('edit-share-class-form')
+  const editForm = page.getByTestId('change-share-class-form')
   await expect(editForm).toBeVisible()
 
   await editForm.getByRole('radio', { name: 'Maximum Number of Shares' }).click()
@@ -298,7 +298,7 @@ test.describe('Transition - Filing Submit', () => {
     // edit only 1 share class with an invalid currency - do not edit the other 2 invalid share class currencies
     const classA = page.getByRole('row').filter({ hasText: 'Class A - Common Stock Shares' })
     await classA.getByRole('button', { name: 'Change' }).click()
-    const scForm = page.getByTestId('edit-share-class-form')
+    const scForm = page.getByTestId('change-share-class-form')
     await expect(scForm).toBeVisible()
     await scForm.getByTestId('par-value-currency-input').click()
     await page.getByRole('option', { name: 'CAD' }).click()

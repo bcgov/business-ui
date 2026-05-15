@@ -59,7 +59,7 @@ describe('getShareClassOrSeriesNameColumn', () => {
     mockGetIsRowRemoved.mockReturnValue(true)
 
     const cell = column.cell({ row })
-    expect(cell.props.class).toContain('opacity-40')
+    expect(cell.props.labelClass).toContain('opacity-40')
   })
 
   it('should add opacity-40 and hide badges if the parent row is removed', () => {
@@ -75,7 +75,7 @@ describe('getShareClassOrSeriesNameColumn', () => {
 
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-40')
+    expect(cell.props.labelClass).toContain('opacity-40')
     expect(cell.props.badges).toEqual([])
     expect(mockGetTableBadges).not.toHaveBeenCalledWith(row)
   })

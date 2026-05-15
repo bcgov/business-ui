@@ -55,7 +55,7 @@ test.describe('Task Guards', () => {
     await expect(subForm).toBeVisible()
     await saveBtn.click()
     await expect(subForm).toContainText(taskMessage)
-    await subForm.getByRole('button', { name: 'Cancel' }).click()
+    await subForm.getByRole('button', { name: 'Cancel' }).first().click()
     await expect(subForm).not.toBeVisible()
 
     // try to go to review page with sub form open
@@ -63,7 +63,7 @@ test.describe('Task Guards', () => {
     await expect(subForm).toBeVisible()
     await reviewButton.click()
     await expect(subForm).toContainText(taskMessage)
-    await subForm.getByRole('button', { name: 'Cancel' }).click()
+    await subForm.getByRole('button', { name: 'Cancel' }).first().click()
     await expect(subForm).not.toBeVisible()
   })
 

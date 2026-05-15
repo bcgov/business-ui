@@ -63,8 +63,8 @@ function onError(event: FormErrorEvent) {
         data-testid="share-structure-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
-        :add-label="$t('label.addShareClass')"
-        readonly
+        subject=""
+        variant="readonly"
       />
     </section>
 

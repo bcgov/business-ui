@@ -24,22 +24,18 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
     />
 
-    <!-- Section 2: Office Addresses -->
     <ManageOffices
       v-model:active-office="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
       :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-      :section-title="`1. ${$t('label.officeAddresses')}`"
-      :section-description="$t('text.officeAddressesMustBeCorrect')"
-      :table-title="$t('label.offices')"
+      :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :label-overrides="correctionLabelOverrides"
     />
 
-    <!-- Section 3: Directors -->
     <ManageParties
       v-model:active-party="store.formState.activeDirector"
       :loading="store.initializing"
@@ -54,27 +50,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       variant="correct"
     />
 
-    <!-- Section 4: Share Structure -->
-    <section data-testid="share-structure-section">
-      <h2 class="text-base">
-        {{ $t('label.shareStructure') }}
-      </h2>
-
-      <ManageShareStructure
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
-        :loading="store.initializing"
-        :empty-text="store.initializing
-          ? `${$t('label.loading')}...`
-          : $t('label.noShareClasses')
-        "
-        :add-label="$t('label.addShareClass')"
-        :label-overrides="correctionLabelOverrides"
-      />
-    </section>
-
-    <!-- Section 5: Receivers -->
-    <!-- ToDO: Do we want receivers conditionally -->
+    <!-- FUTURE: conditionally show receivers? -->
     <ManageParties
       v-model:active-party="store.formState.activeReceiver"
       state-key="manage-receivers"
@@ -93,8 +69,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       }"
     />
 
-    <!-- Section 6: Liquidators -->
-    <!-- ToDO: Do we want liquidators conditionally -->
+    <!-- FUTURE: conditionally show liquidators? -->
     <ManageParties
       v-model:active-party="store.formState.activeLiquidator"
       state-key="manage-liquidators"
@@ -111,6 +86,19 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
       }"
+    />
+
+    <ManageShareStructure
+      v-model:active-class="store.formState.activeClass"
+      v-model:active-series="store.formState.activeSeries"
+      data-testid="share-structure-section"
+      :loading="store.initializing"
+      :empty-text="store.initializing
+        ? `${$t('label.loading')}...`
+        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
+      "
+      variant="correct"
+      :label-overrides="correctionLabelOverrides"
     />
   </UForm>
 </template>

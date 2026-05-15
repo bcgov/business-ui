@@ -81,7 +81,7 @@ test.describe('ManageShareStructure (currency other)', () => {
     await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
-    const scForm = page.getByTestId('share-class-form')
+    const scForm = page.getByTestId('add-share-class-form')
 
     const table = page.getByRole('table')
     await expect(table).toBeVisible()
@@ -136,7 +136,7 @@ test.describe('ManageShareStructure (currency other)', () => {
     await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
-    const scForm = page.getByTestId('share-class-form')
+    const scForm = page.getByTestId('change-share-class-form')
     const table = page.getByRole('table')
     const classABeforeEdit = table.getByRole('row').filter({ hasText: 'Class A - Common Stock Shares' })
 

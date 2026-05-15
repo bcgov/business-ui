@@ -9,6 +9,11 @@ const props = defineProps<{
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
+  taskGuardConfig?: {
+    message?: string
+    messageId: string
+    targetId: string
+  }
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
@@ -92,6 +97,7 @@ function getCustomDropdownItems(row: TableBusinessRow<T>) {
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
+    :task-guard-config
     :get-custom-dropdown-items="getCustomDropdownItems"
     :hide-actions-when="hideActionsWhen"
     :sorting="[{ id: 'priority', desc: false }]"
