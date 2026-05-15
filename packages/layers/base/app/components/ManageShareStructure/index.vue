@@ -5,6 +5,7 @@ const {
   labelOverrides,
   variant = 'default'
 } = defineProps<{
+  tableTitle?: string
   sectionTitle?: string
   sectionDescription?: string
   loading?: boolean
@@ -199,7 +200,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 
     <ConnectPageSection
       :heading="{
-        label: $t('label.shareStructure'),
+        label: tableTitle || $t('label.shareStructure'),
         icon: 'i-mdi-sitemap',
         ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
       }"

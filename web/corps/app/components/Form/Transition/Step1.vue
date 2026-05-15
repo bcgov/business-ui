@@ -104,7 +104,7 @@ defineExpose({
       :loading="store.initializing"
       :empty-text="store.initializing
         ? `${$t('label.loading')}...`
-        : $t('label.noShareClasses')
+        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
       "
       :section-title="`3. ${$t('label.shareStructure')}`"
       :section-description="$t('text.shareStructureMustMatchCompanysCurrentState')"
