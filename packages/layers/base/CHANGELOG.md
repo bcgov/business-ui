@@ -1,5 +1,70 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.19.0
+
+### Minor Changes
+
+- [#442](https://github.com/bcgov/business-ui/pull/442) [`bd7772c`](https://github.com/bcgov/business-ui/commit/bd7772cad577b1797639b0063b34177704104ab4) Thanks [@deetz99](https://github.com/deetz99)! - BREAKING CHANGES: Remove useBusinessApi composable, createFilingPayload now comes from useFiling while all api requests are now inside useBusinessService. Replaced all implementations of useBusinessApi with useBusinessService.
+
+- [#459](https://github.com/bcgov/business-ui/pull/459) [`07fa292`](https://github.com/bcgov/business-ui/commit/07fa292083f9703ed6de3acb241aedf4bbbd6c33) Thanks [@eve-git](https://github.com/eve-git)! - Add name translations section to ManageCompanyName component; introduces ManageNameTranslations embedded manager with add/edit/remove support, accessible form fieldset labelling, readonly propagation via allowed-actions, and related i18n keys
+
+- [#455](https://github.com/bcgov/business-ui/pull/455) [`323a7e2`](https://github.com/bcgov/business-ui/commit/323a7e2685439a6f7dcb658a01ffe3ebe7139c01) Thanks [@deetz99](https://github.com/deetz99)! - Share structure/class/series forms:
+
+  - fix invalid currency alert display
+  - remove series name global unique validation
+  - add modal preventing creating a new series under a class with an invalid currency
+  - add id into payload formatter for api validations
+
+- [#437](https://github.com/bcgov/business-ui/pull/437) [`b2c6d1a`](https://github.com/bcgov/business-ui/commit/b2c6d1ad8f7854caec823991b177972eecf1ab41) Thanks [@eve-git](https://github.com/eve-git)! - Allow forms to open in tables when starting with invalid schema data
+
+- [#447](https://github.com/bcgov/business-ui/pull/447) [`3588092`](https://github.com/bcgov/business-ui/commit/3588092de90108c419405b4652ff9200b80b1cc5) Thanks [@deetz99](https://github.com/deetz99)! - Name Translation components (manage/table): Fix incorrect component name, hide empty table header
+
+- [#467](https://github.com/bcgov/business-ui/pull/467) [`489e535`](https://github.com/bcgov/business-ui/commit/489e535e337a40cb3935714c11e7f4362ba39d10) Thanks [@eve-git](https://github.com/eve-git)! - Add Liquidation Alert
+
+- [#454](https://github.com/bcgov/business-ui/pull/454) [`92e4237`](https://github.com/bcgov/business-ui/commit/92e4237b5736bfc5c5b2fc6d248cc385f367738c) Thanks [@deetz99](https://github.com/deetz99)! - ManageCompanyName component
+
+- [#445](https://github.com/bcgov/business-ui/pull/445) [`5f679fd`](https://github.com/bcgov/business-ui/commit/5f679fde5826fd8fbdf462f903f3812a888a9a2b) Thanks [@kialj876](https://github.com/kialj876)! - FormBusinessName: Component for editing/correcting a Businesses name. FormNameRequestNumber component: Update validation to be triggered as part of the zod refine logic to prevent premature submissions.
+
+- [#429](https://github.com/bcgov/business-ui/pull/429) [`a34acaa`](https://github.com/bcgov/business-ui/commit/a34acaaea09a088cea98806d17fa242d2905807f) Thanks [@cameron-eyds](https://github.com/cameron-eyds)! - Styling and validation updates to Detail and Certify; Creates Completing Party component
+
+- [#466](https://github.com/bcgov/business-ui/pull/466) [`8700a1f`](https://github.com/bcgov/business-ui/commit/8700a1fd162901c9f52aaf893a9cf2df0524a7ac) Thanks [@deetz99](https://github.com/deetz99)! - TableBusiness/TableParties/TableOffices: Add alert config.
+
+  ManageParties: Add alert config.
+
+  ManageOffices: Add alert config, implement new prop structure for FormOfficeDetails.
+
+  FormOfficeDetails: Implemented SubFormWrapper.
+
+- [#468](https://github.com/bcgov/business-ui/pull/468) [`39a8df2`](https://github.com/bcgov/business-ui/commit/39a8df260708618ac5e3c839234352a3acb68418) Thanks [@deetz99](https://github.com/deetz99)! - ManageShareStructure, FormShareClass and FormShareSeries update props/layout.
+
+  Add body-top slot to base BusinessTable component to show "No items" text when all items have been removed.
+
+- [#462](https://github.com/bcgov/business-ui/pull/462) [`f1d665f`](https://github.com/bcgov/business-ui/commit/f1d665ff1390762409b357f44c4fa641ecc5225d) Thanks [@deetz99](https://github.com/deetz99)! - ManageParties: Moved the "Add Party" button and "Adding Party" form location; Restructured container html and added props to support section titles, descriptions, and extended props for PartyDetails.
+
+  PartyDetails: Implemented SubFormWrapper and updated dividers.
+
+  FormAddress: Updated dividers.
+
+  Types: FormVariant and ManageVariant.
+
+  TableColumnActions: Changed removed action label to "Delete" for existing rows and "Remove" for newly added rows.
+
+  Table column utils: Changed "Deleted" opacity from 50% to 40%.
+
+- [#435](https://github.com/bcgov/business-ui/pull/435) [`5c210a7`](https://github.com/bcgov/business-ui/commit/5c210a7d0e2dcf2acd6ff0b5586b1727998ac7d6) Thanks [@deetz99](https://github.com/deetz99)! - ManageShareStructure sub components, composable and utilities: Handle currency `OTHER` and currencyAdditional properties. getCurrencyList: return hard coded currency list of { code: string, name: string } objects.
+
+- [#456](https://github.com/bcgov/business-ui/pull/456) [`ecab0dd`](https://github.com/bcgov/business-ui/commit/ecab0dd6042bbed3dd8beaf96dc6ce0608dfef70) Thanks [@deetz99](https://github.com/deetz99)! - Create SubFormWrapper component
+
+- [#446](https://github.com/bcgov/business-ui/pull/446) [`3e3e689`](https://github.com/bcgov/business-ui/commit/3e3e68922e0afc6e64500c084953c0945717d981) Thanks [@eve-git](https://github.com/eve-git)! - Create Name Translation component
+
+### Patch Changes
+
+- [#440](https://github.com/bcgov/business-ui/pull/440) [`e7e9cbd`](https://github.com/bcgov/business-ui/commit/e7e9cbd4f3ffa19082822d3e45acf9513c24713e) Thanks [@deetz99](https://github.com/deetz99)! - Fix incorrect validation message when setting max shares in share class form to less than total of all series combined
+
+- [#452](https://github.com/bcgov/business-ui/pull/452) [`f8b791e`](https://github.com/bcgov/business-ui/commit/f8b791eb41abdb83b4b715d6811c30f6231ee5fe) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dep
+
+- [#438](https://github.com/bcgov/business-ui/pull/438) [`d67bc42`](https://github.com/bcgov/business-ui/commit/d67bc421d5d91417b403b870dd4d64ab24df8127) Thanks [@kialj876](https://github.com/kialj876)! - Added Name Request Number component
+
 ## 0.18.0
 
 ### Minor Changes
