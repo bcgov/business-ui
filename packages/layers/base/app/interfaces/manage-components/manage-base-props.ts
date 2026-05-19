@@ -79,6 +79,26 @@ export type ManageShareStructureProps = Omit<ManageTableProps, 'tableTitle'> & {
   }
 )
 
+export type ManageCompanyNameProps = Omit<ManageTableProps, 'tableTitle'> & {
+  tableTitle?: string
+  business?: BusinessData | BusinessDataPublic
+  contact?: ContactPoint
+  nameTranslationLabelOverrides?: TableLabelOverrides
+} & (
+  | {
+    variant?: 'default' | 'correct'
+    correctNameOptions: CorrectNameOption[]
+    nrAllowedActionsTypes: NrRequestActionCode[]
+    nameTranslationAllowedActions?: ManageAllowedAction[]
+  }
+  | {
+    variant: 'readonly' | 'correct-readonly'
+    correctNameOptions?: never
+    nrAllowedActionsTypes?: never
+    nameTranslationAllowedActions?: never
+  }
+)
+
 // export interface ManageOfficesProps extends ManageBaseProps {
 //   tableTitle: string
 //   subject?: string

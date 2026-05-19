@@ -75,11 +75,10 @@ function onError(event: FormErrorEvent) {
 
       <!-- Company Name (readonly, always displayed) -->
       <ManageCompanyName
-        v-model:active-name-request="store.formState.activeNameRequest"
         :loading="store.initializing"
         :business
         :contact="businessContact"
-        variant="readonly"
+        variant="correct-readonly"
       />
 
       <!-- Office Addresses (readonly, only if changed) -->
