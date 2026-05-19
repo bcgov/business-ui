@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
-import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '~/utils/schemas/correction'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
 const { business, businessContact } = storeToRefs(businessStore)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
-
-/** Display-level label overrides for correction context */
-const correctionLabelOverrides = getCorrectionLabelOverrides()
-
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates']
 
 /**
@@ -135,14 +131,10 @@ function onError(event: FormErrorEvent) {
       <!-- Share Structure (readonly, only if changed) -->
       <ManageShareStructure
         v-if="hasShareStructureChanges"
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
         data-testid="review-share-structure-section"
         :loading="store.initializing"
         :empty-text="$t('label.noShareClasses')"
-        :add-label="$t('label.addShareClass')"
-        variant="readonly"
-        :label-overrides="correctionLabelOverrides"
+        variant="correct-readonly"
       />
     </section>
 

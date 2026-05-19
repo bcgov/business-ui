@@ -1,10 +1,6 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
 const { business, businessContact } = storeToRefs(useBusinessStore())
-
-/** Display-level label overrides for correction context */
-const correctionLabelOverrides = getCorrectionLabelOverrides()
-
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 </script>
 
@@ -94,7 +90,6 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       variant="correct"
-      :label-overrides="correctionLabelOverrides"
     />
   </UForm>
 </template>

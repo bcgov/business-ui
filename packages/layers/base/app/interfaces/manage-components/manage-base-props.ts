@@ -65,6 +65,20 @@ export type ManageOfficesProps = ManageTableProps & {
   }
 )
 
+export type ManageShareStructureProps = Omit<ManageTableProps, 'tableTitle'> & {
+  labelOverrides?: TableLabelOverrides
+  tableTitle?: string
+} & (
+  | {
+    variant?: 'default' | 'correct'
+    allowedActions?: ManageAllowedAction[]
+  }
+  | {
+    variant: 'readonly' | 'correct-readonly'
+    allowedActions?: never
+  }
+)
+
 // export interface ManageOfficesProps extends ManageBaseProps {
 //   tableTitle: string
 //   subject?: string

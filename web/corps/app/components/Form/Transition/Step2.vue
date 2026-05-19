@@ -52,12 +52,9 @@ function onError(event: FormErrorEvent) {
       />
 
       <ManageShareStructure
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
         data-testid="share-structure-section"
         :loading="store.initializing"
         :empty-text="$t('label.noShareClasses')"
-        subject=""
         variant="readonly"
       />
     </section>

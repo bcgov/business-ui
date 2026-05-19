@@ -1,23 +1,15 @@
 <script setup lang="ts">
+import type { ManageShareStructureProps } from '#business/app/interfaces'
+
 const {
   stateKey = 'manage-share-structure',
   allowedActions,
   labelOverrides,
   variant = 'default'
-} = defineProps<{
-  tableTitle?: string
-  sectionTitle?: string
-  sectionDescription?: string
-  loading?: boolean
-  emptyText?: string
-  stateKey?: string
-  variant?: ManageVariant
-  allowedActions?: ManageAllowedAction[]
-  labelOverrides?: TableLabelOverrides
-}>()
+} = defineProps<ManageShareStructureProps>()
 
-const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class', { required: true })
-const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series', { required: true })
+const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class')
+const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series')
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
 let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
@@ -52,7 +44,30 @@ const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
 const showAddButton = computed(() => {
-  return (!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)) && variant !== 'readonly'
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return false
+  }
+  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+})
+
+const tableLabels = computed(() => {
+  if (labelOverrides) {
+    return labelOverrides
+  }
+  if (variant === 'correct' || variant === 'correct-readonly') {
+    return getCorrectionLabelOverrides()
+  }
+  return undefined
+})
+
+const tableAllowedActions = computed(() => {
+  if (allowedActions) {
+    return allowedActions
+  }
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return undefined
 })
 
 const classValidationContext = computed(() => {
@@ -143,7 +158,7 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
-  if (variant === 'readonly') {
+  if (variant === 'readonly' || variant === 'correct-readonly') {
     return true
   }
 
@@ -242,9 +257,9 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
           :data="tableState"
           :loading
           :empty-text="emptyText"
-          :allowed-actions="allowedActions"
+          :allowed-actions="tableAllowedActions"
           :prevent-actions="!!activeClass || !!activeSeries"
-          :label-overrides="labelOverrides"
+          :label-overrides="tableLabels"
           :hide-actions-when="hideRowActionsWhen"
           :task-guard-config="{
             messageId,
