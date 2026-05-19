@@ -10,21 +10,6 @@ const {
   variant = 'default'
 } = defineProps<ManageOfficesProps>()
 
-// {
-//   tableTitle: string
-//   subject: string
-//   variant?: ManageVariant
-//   loading?: boolean
-//   emptyText?: string
-//   sectionTitle?: string
-//   sectionDescription?: string
-//   stateKey?: string
-//   modelName?: string
-//   allowedActions?: ManageAllowedAction[]
-//   labelOverrides?: TableLabelOverrides
-//   allowAddOfficeType?: OfficeType
-// }
-
 const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office')
 
 const {
