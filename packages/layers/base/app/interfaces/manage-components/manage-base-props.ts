@@ -46,6 +46,25 @@ export type ManagePartiesProps = ManageTableProps & {
   }
 )
 
+export type ManageOfficesProps = ManageTableProps & {
+  labelOverrides?: TableLabelOverrides
+} & (
+  | {
+    variant?: 'default' | 'correct'
+    subject: string
+    modelName?: string
+    allowedActions?: ManageAllowedAction[]
+    allowAddOfficeType?: OfficeType
+  }
+  | {
+    variant: 'readonly' | 'correct-readonly'
+    subject?: never
+    modelName?: never
+    allowedActions?: never
+    allowAddOfficeType?: never
+  }
+)
+
 // export interface ManageOfficesProps extends ManageBaseProps {
 //   tableTitle: string
 //   subject?: string

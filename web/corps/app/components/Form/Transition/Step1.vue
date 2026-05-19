@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 const { t } = useI18n()
 const store = useTransitionStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 
 const schema = z.object({
   confirmOffices: z.boolean().refine(val => val === true, t('connect.validation.required')),
@@ -40,14 +39,12 @@ defineExpose({
   >
     <div class="space-y-4" data-testid="office-addresses-section">
       <ManageOffices
-        v-model:active-office="activeOffice"
+        variant="readonly"
         :loading="store.initializing"
         :empty-text="$t('label.noOffices')"
-        subject=""
         :section-title="`1. ${$t('label.officeAddresses')}`"
         :section-description="$t('text.officeAddressesMustBeCorrect')"
         :table-title="$t('label.offices')"
-        :allowed-actions="[]"
       />
 
       <ConnectFormFieldWrapper

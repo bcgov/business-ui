@@ -36,7 +36,6 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       subject=""
       variant="correct"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-      :label-overrides="correctionLabelOverrides"
     />
 
     <ManageParties

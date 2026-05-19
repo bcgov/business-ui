@@ -1,1 +1,1 @@
-export * from './base-manage-props'
+export * from './manage-base-props'

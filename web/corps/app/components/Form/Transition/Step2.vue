@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 const store = useTransitionStore()
 const businessStore = useBusinessStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 function onError(event: FormErrorEvent) {
@@ -36,13 +35,11 @@ function onError(event: FormErrorEvent) {
       </div>
 
       <ManageOffices
-        v-model:active-office="activeOffice"
+        variant="readonly"
         data-testid="office-addresses-section"
         :loading="store.initializing"
         :empty-text="$t('label.noOffices')"
-        subject=""
         :table-title="$t('label.offices')"
-        :allowed-actions="[]"
       />
 
       <ManageParties

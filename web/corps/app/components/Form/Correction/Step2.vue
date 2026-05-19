@@ -90,15 +90,11 @@ function onError(event: FormErrorEvent) {
       <!-- Section 2: Office Addresses -->
       <ManageOffices
         v-if="hasOfficeChanges"
-        v-model:active-office="store.formState.activeOffice"
         data-testid="review-office-addresses-section"
         :loading="store.initializing"
         :empty-text="$t('label.noOffices')"
         :table-title="$t('label.offices')"
-        subject=""
-        variant="readonly"
-        :allowed-actions="[]"
-        :label-overrides="correctionLabelOverrides"
+        variant="correct-readonly"
       />
 
       <!-- Directors (readonly, only if changed) -->

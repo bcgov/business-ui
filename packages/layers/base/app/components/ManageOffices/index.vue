@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ManageOfficesProps } from '#business/app/interfaces'
+
 const {
   stateKey = 'manage-offices',
   allowedActions,
@@ -6,22 +8,24 @@ const {
   labelOverrides,
   modelName = 'activeOffice',
   variant = 'default'
-} = defineProps<{
-  tableTitle: string
-  subject: string
-  variant?: ManageVariant
-  loading?: boolean
-  emptyText?: string
-  sectionTitle?: string
-  sectionDescription?: string
-  stateKey?: string
-  modelName?: string
-  allowedActions?: ManageAllowedAction[]
-  labelOverrides?: TableLabelOverrides
-  allowAddOfficeType?: OfficeType
-}>()
+} = defineProps<ManageOfficesProps>()
 
-const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office', { required: true })
+// {
+//   tableTitle: string
+//   subject: string
+//   variant?: ManageVariant
+//   loading?: boolean
+//   emptyText?: string
+//   sectionTitle?: string
+//   sectionDescription?: string
+//   stateKey?: string
+//   modelName?: string
+//   allowedActions?: ManageAllowedAction[]
+//   labelOverrides?: TableLabelOverrides
+//   allowAddOfficeType?: OfficeType
+// }
+
+const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office')
 
 const {
   addingOffice,
@@ -43,11 +47,31 @@ const activeOfficeSchema = getActiveOfficesSchema()
 let editSubject = ''
 let currentEditingRow: OfficesSchema | null = null
 
+const tableLabels = computed(() => {
+  if (labelOverrides) {
+    return labelOverrides
+  }
+  if (variant === 'correct' || variant === 'correct-readonly') {
+    return getCorrectionLabelOverrides()
+  }
+  return undefined
+})
+
+const officeAllowedActions = computed(() => {
+  if (allowedActions) {
+    return allowedActions
+  }
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return undefined
+})
+
 const tableHasAddType = computed(() => {
   return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
 })
 const allowAddOffice = computed(() => {
-  if (variant === 'readonly') {
+  if (variant === 'readonly' || variant === 'correct-readonly') {
     return false
   }
   const hasAllowedActions = !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
@@ -162,13 +186,13 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
         : undefined
       "
     >
-      <div>
+      <template #default>
         <FormOfficeDetails
           v-if="addingOffice && activeOffice"
           v-model="activeOffice"
           variant="add"
           :name="modelName"
-          :subject
+          :subject="subject!"
           :state-key="stateKey"
           class="p-6"
           @done="() => addOffice(activeOffice)"
@@ -180,9 +204,9 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
           :data="tableState"
           :loading
           :empty-text="emptyText"
-          :allowed-actions="allowedActions"
+          :allowed-actions="officeAllowedActions"
           :prevent-actions="!!activeOffice"
-          :label-overrides="labelOverrides"
+          :label-overrides="tableLabels"
           :hide-actions-when="() => variant === 'readonly'"
           :task-guard-config="{
             messageId,
@@ -211,7 +235,7 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
             </div>
           </template>
         </TableOffices>
-      </div>
+      </template>
     </ConnectPageSection>
   </component>
 </template>
