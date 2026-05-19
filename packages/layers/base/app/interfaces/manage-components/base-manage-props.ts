@@ -29,7 +29,7 @@ export type ManagePartiesProps = ManageTableProps & {
   labelOverrides?: TableLabelOverrides
 } & (
   | {
-    variant: 'default' | 'correct'
+    variant?: 'default' | 'correct'
     subject: string
     modelName?: string
     roleType?: RoleTypeUi

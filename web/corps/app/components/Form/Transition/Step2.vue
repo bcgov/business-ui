@@ -46,14 +46,11 @@ function onError(event: FormErrorEvent) {
       />
 
       <ManageParties
-        v-model:active-party="store.formState.activeDirector"
         data-testid="current-directors-section"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :table-title="$t('label.directors')"
-        :subject="$t('label.director')"
-        :role-type="RoleTypeUi.DIRECTOR"
-        :allowed-actions="[]"
+        variant="readonly"
         :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
       />
 

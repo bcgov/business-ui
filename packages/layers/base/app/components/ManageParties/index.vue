@@ -10,33 +10,6 @@ const {
   modelName = 'activeParty'
 } = defineProps<ManagePartiesProps>()
 
-// {
-//   tableTitle: string
-//   subject: string
-//   variant?: ManageVariant
-//   loading?: boolean
-//   emptyText?: string
-//   sectionTitle?: string
-//   sectionDescription?: string
-//   roleType?: RoleTypeUi
-//   stateKey?: string
-//   modelName?: string
-//   allowedActions?: ManageAllowedAction[]
-//   labelOverrides?: TableLabelOverrides
-//   columnsToDisplay?: TablePartyColumnName[]
-//   partyFormProps?: {
-//     hideRemove?: boolean
-//     partyNameProps?: {
-//       allowBusinessName?: boolean
-//       allowPreferredName?: boolean
-//     }
-//     partyRoleProps?: {
-//       allowedRoles: RoleTypeUi[]
-//       roleClass?: RoleClass
-//     }
-//   }
-// }
-
 let editSubject = ''
 let currentEditingRow: PartySchema | null = null
 
