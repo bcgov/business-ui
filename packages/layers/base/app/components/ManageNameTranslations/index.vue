@@ -1,17 +1,19 @@
 <script setup lang="ts">
 const {
   stateKey = 'manage-name-translations',
-  labelOverrides
+  labelOverrides,
+  variant = 'default',
+  allowedActions
 } = defineProps<{
   loading?: boolean
   emptyText?: string
-  addLabel: string
   stateKey?: string
+  variant?: ManageVariant
   allowedActions?: ManageAllowedAction[]
   labelOverrides?: TableLabelOverrides
 }>()
 
-let editLabel = ''
+let editSubject = ''
 let currentEditingRow: NameTranslationSchema | null = null
 
 const activeNameTranslation = defineModel<ActiveNameTranslationSchema | undefined>
@@ -30,6 +32,13 @@ const {
 const { setAlert, clearAlert } = useFilingAlerts(stateKey)
 const { setAlertText } = useConnectButtonControl()
 const activeNameTranslationSchema = getActiveNameTranslationSchema()
+
+const showAddButton = computed(() => {
+  if (variant === 'readonly') {
+    return false
+  }
+  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+})
 
 function setActiveFormAlert() {
   setAlert('name-translation-form', $t('text.finishTaskBeforeOtherChanges'))
@@ -67,10 +76,7 @@ function initEditNameTranslation(row: TableBusinessRow<NameTranslationSchema>) {
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
-  const isNew = row.original.new.actions.includes(ActionType.ADDED)
-  editLabel = isNew
-    ? $t('label.editingItemName', { name: row.original.new.name })
-    : $t('label.correctingItemName', { name: row.original.new.name })
+  editSubject = row.original.new.name
   expandedState.value = { [row.index]: true }
 }
 
@@ -83,6 +89,18 @@ function clearAllAlerts() {
   clearAlert('name-translation-form')
   setAlertText(undefined)
 }
+
+function getExpandedFormVariant(row: TableBusinessRow<NameTranslationSchema>): FormVariant {
+  // old is always undefined for newly added parties
+  const isAdded = row.original.old === undefined
+  if (isAdded) {
+    return 'edit'
+  }
+  if (variant === 'correct') {
+    return 'correct'
+  }
+  return 'change'
+}
 </script>
 
 <template>
@@ -93,8 +111,8 @@ function clearAllAlerts() {
     @keydown="clearAllAlerts"
   >
     <UButton
-      v-if="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)"
-      :label="addLabel"
+      v-if="showAddButton"
+      :label="$t('label.addNameTranslation')"
       variant="outline"
       icon="i-mdi-plus"
       class="w-min"
@@ -104,7 +122,7 @@ function clearAllAlerts() {
     <FormNameTranslation
       v-if="addingNameTranslation && activeNameTranslation"
       v-model="activeNameTranslation"
-      :title="addLabel"
+      :subject="$t('label.nameTranslation')"
       name="activeNameTranslation"
       variant="add"
       :state-key="stateKey"
@@ -123,6 +141,7 @@ function clearAllAlerts() {
       :loading
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
+      :hide-actions-when="() => variant === 'readonly'"
       :prevent-actions="!!activeNameTranslation"
       :label-overrides="{ editLabel: $t('label.correct'), ...labelOverrides }"
       @init-edit="initEditNameTranslation"
@@ -135,9 +154,9 @@ function clearAllAlerts() {
           <FormNameTranslation
             v-if="activeNameTranslation"
             v-model="activeNameTranslation"
-            :title="editLabel"
+            :subject="editSubject"
             name="activeNameTranslation"
-            variant="edit"
+            :variant="getExpandedFormVariant(row)"
             :state-key="stateKey"
             @cancel="cleanupNameTranslationForm"
             @done="() => applyEdits(activeNameTranslation, row)"

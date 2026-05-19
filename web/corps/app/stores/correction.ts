@@ -7,7 +7,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
   const { tableState: tableOffices } = useManageOffices()
   const { tableState: tableShareClasses } = useManageShareStructure()
-  const { tableState: tableNameTranslations } = useManageNameTranslations()
+  const { tableState: tableNameTranslations } = useManageNameTranslations('manage-company-name-name-translations')
   const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()

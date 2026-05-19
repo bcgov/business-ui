@@ -72,7 +72,7 @@ describe('getNameTranslationNameColumn', () => {
     const column = getNameTranslationNameColumn() as any
     const cell = column.cell({ row })
 
-    expect(cell.props.class).toContain('opacity-40')
+    expect(cell.props.labelClass).toContain('opacity-40')
     expect(cell.props.badges).toEqual(badges)
     expect(mockGetTableBadges).toHaveBeenCalledWith(row, undefined)
   })

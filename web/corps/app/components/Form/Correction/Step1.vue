@@ -22,6 +22,7 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :contact="businessContact"
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
+      variant="correct"
     />
 
     <ManageOffices

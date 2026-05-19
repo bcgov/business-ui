@@ -2,10 +2,11 @@
 import type { Form, FormErrorEvent } from '@nuxt/ui'
 
 const props = defineProps<{
-  variant: 'add' | 'edit'
+  variant: FormVariant
+  subject: string
   name?: string
-  title: string
   stateKey: string
+  hideRemove?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -31,7 +32,6 @@ async function onDone() {
 }
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
-const labelId = useId()
 </script>
 
 <template>
@@ -44,25 +44,20 @@ const labelId = useId()
     :state="model as any"
     @keydown.enter.prevent.stop="onDone"
   >
-    <fieldset :aria-labelledby="labelId">
-      <legend
-        v-if="variant === 'edit'"
-        class="py-4 px-4 sm:px-8 flex justify-between items-center gap-2.5 w-full bg-primary text-white"
-      >
-        <div class="flex items-center gap-2.5">
-          <span :id="labelId" class="font-semibold text-base">
-            {{ title }}
-          </span>
-        </div>
-      </legend>
-      <span
-        v-else
-        :id="labelId"
-        class="sr-only"
-      >{{ title }}</span>
-      <div
-        class="mt-4"
-      >
+    <SubFormWrapper
+      :subject
+      :variant
+      :task-guard-config="{
+        message: alerts[formTarget],
+        messageId,
+        targetId
+      }"
+      :hide-remove
+      @done="onDone"
+      @cancel="$emit('cancel')"
+      @remove="$emit('remove')"
+    >
+      <div class="padding-xy-default">
         <ConnectFormInput
           v-if="model"
           v-model="model.name"
@@ -74,42 +69,6 @@ const labelId = useId()
           :help="$t('text.latinAlphabetOnly')"
         />
       </div>
-      <div
-        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center mt-6"
-        :class="variant === 'edit' ? 'justify-between' : 'justify-end'"
-      >
-        <UButton
-          v-if="variant === 'edit'"
-          variant="outline"
-          color="error"
-          :label="$t('label.remove')"
-          class="w-full sm:w-min justify-center"
-          @mousedown.prevent
-          @click="$emit('remove')"
-        />
-        <div
-          class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center"
-        >
-          <FormAlertMessage
-            :id="messageId"
-            :message="alerts[formTarget]"
-          />
-          <UButton
-            variant="outline"
-            :label="$t('label.cancel')"
-            class="w-full sm:w-min justify-center"
-            @mousedown.prevent
-            @click="$emit('cancel')"
-          />
-          <UButton
-            :data-alert-focus-target="targetId"
-            :aria-describedby="messageId"
-            :label="$t('label.done')"
-            class="w-full sm:w-min justify-center"
-            @click="onDone"
-          />
-        </div>
-      </div>
-    </fieldset>
+    </SubFormWrapper>
   </UForm>
 </template>

@@ -81,7 +81,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :business
         :contact="businessContact"
-        readonly
+        variant="readonly"
       />
 
       <!-- Office Addresses (readonly, only if changed) -->
