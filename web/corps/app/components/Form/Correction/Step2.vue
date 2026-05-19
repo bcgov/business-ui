@@ -11,6 +11,8 @@ const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = getCorrectionLabelOverrides()
 
+const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates']
+
 /**
  * Change detection for review sections.
  *
@@ -102,54 +104,36 @@ function onError(event: FormErrorEvent) {
       <!-- Directors (readonly, only if changed) -->
       <ManageParties
         v-if="hasDirectorChanges"
-        v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
         :table-title="$t('label.currentDirectors')"
-        :subject="$t('label.director')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-current-directors-section"
-        :role-type="RoleTypeUi.DIRECTOR"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeDirector"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
       />
 
       <!-- Receivers (readonly, only if changed) -->
       <ManageParties
         v-if="hasReceiverChanges"
-        v-model:active-party="store.formState.activeReceiver"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
         :table-title="$t('label.currentReceivers')"
-        :subject="$t('label.director')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-receivers-section"
-        :role-type="RoleTypeUi.RECEIVER"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeDirector"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
         state-key="manage-receivers"
       />
 
       <!-- Liquidators (readonly, only if changed) -->
       <ManageParties
         v-if="hasLiquidatorChanges"
-        v-model:active-party="store.formState.activeLiquidator"
         state-key="manage-liquidators"
         :loading="store.initializing"
         :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
         :table-title="$t('label.currentLiquidators')"
-        :subject="$t('label.liquidator')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-liquidators-section"
-        :role-type="RoleTypeUi.LIQUIDATOR"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeLiquidator"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
       />
 
       <!-- Share Structure (readonly, only if changed) -->

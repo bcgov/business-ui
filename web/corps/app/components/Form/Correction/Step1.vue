@@ -4,6 +4,8 @@ const { business, businessContact } = storeToRefs(useBusinessStore())
 
 /** Display-level label overrides for correction context */
 const correctionLabelOverrides = getCorrectionLabelOverrides()
+
+const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 </script>
 
 <template>
@@ -43,10 +45,9 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
       :table-title="$t('label.currentDirectors')"
       :subject="$t('label.director')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="current-directors-section"
       :role-type="RoleTypeUi.DIRECTOR"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeDirector"
       variant="correct"
     />
@@ -59,10 +60,9 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
       :table-title="$t('label.currentReceivers')"
       :subject="$t('label.receiver')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="receivers-section"
       :role-type="RoleTypeUi.RECEIVER"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeReceiver"
       variant="correct"
       :party-form-props="{
@@ -78,10 +78,9 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
       :table-title="$t('label.currentLiquidators')"
       :subject="$t('label.liquidator')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="liquidators-section"
       :role-type="RoleTypeUi.LIQUIDATOR"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeLiquidator"
       variant="correct"
       :party-form-props="{

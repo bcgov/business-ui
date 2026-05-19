@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ManagePartiesProps } from '#business/app/interfaces'
+
 const {
   roleType,
   stateKey = 'manage-parties',
@@ -6,37 +8,39 @@ const {
   labelOverrides,
   variant = 'default',
   modelName = 'activeParty'
-} = defineProps<{
-  tableTitle: string
-  subject: string
-  variant?: ManageVariant
-  loading?: boolean
-  emptyText?: string
-  sectionTitle?: string
-  sectionDescription?: string
-  roleType?: RoleTypeUi
-  stateKey?: string
-  modelName?: string
-  allowedActions?: ManageAllowedAction[]
-  labelOverrides?: TableLabelOverrides
-  columnsToDisplay?: TablePartyColumnName[]
-  partyFormProps?: {
-    hideRemove?: boolean
-    partyNameProps?: {
-      allowBusinessName?: boolean
-      allowPreferredName?: boolean
-    }
-    partyRoleProps?: {
-      allowedRoles: RoleTypeUi[]
-      roleClass?: RoleClass
-    }
-  }
-}>()
+} = defineProps<ManagePartiesProps>()
+
+// {
+//   tableTitle: string
+//   subject: string
+//   variant?: ManageVariant
+//   loading?: boolean
+//   emptyText?: string
+//   sectionTitle?: string
+//   sectionDescription?: string
+//   roleType?: RoleTypeUi
+//   stateKey?: string
+//   modelName?: string
+//   allowedActions?: ManageAllowedAction[]
+//   labelOverrides?: TableLabelOverrides
+//   columnsToDisplay?: TablePartyColumnName[]
+//   partyFormProps?: {
+//     hideRemove?: boolean
+//     partyNameProps?: {
+//       allowBusinessName?: boolean
+//       allowPreferredName?: boolean
+//     }
+//     partyRoleProps?: {
+//       allowedRoles: RoleTypeUi[]
+//       roleClass?: RoleClass
+//     }
+//   }
+// }
 
 let editSubject = ''
 let currentEditingRow: PartySchema | null = null
 
-const activeParty = defineModel<ActivePartySchema | undefined>('active-party', { required: true })
+const activeParty = defineModel<ActivePartySchema | undefined>('active-party')
 
 const {
   addingParty,
@@ -54,6 +58,30 @@ const tableTarget = 'parties-table'
 const { messageId, targetId } = attachAlerts(tableTarget, activeParty)
 const { setAlertText } = useConnectButtonControl()
 const activePartySchema = getActivePartySchema(roleType)
+
+const tableLabels = computed(() => {
+  if (labelOverrides) {
+    return labelOverrides
+  }
+  if (variant === 'correct' || variant === 'correct-readonly') {
+    return getCorrectionLabelOverrides()
+  }
+  return undefined
+})
+
+const partyAllowedActions = computed(() => {
+  if (allowedActions) {
+    return allowedActions
+  }
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return undefined
+})
+
+const showAddButton = computed(() => {
+  return !partyAllowedActions.value || partyAllowedActions.value.includes(ManageAllowedAction.ADD)
+})
 
 function setActiveFormAlert() {
   setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
@@ -150,7 +178,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
         ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
         level: sectionTitle ? 'h3' : 'h2'
       }"
-      :actions="!allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+      :actions="showAddButton
         ? [
           {
             'label': $t('label.addSubject', { subject }),
@@ -165,12 +193,12 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
         : undefined
       "
     >
-      <div>
+      <template #default>
         <FormPartyDetails
           v-if="addingParty && activeParty"
           v-model="activeParty"
           v-bind="partyFormProps"
-          :subject
+          :subject="subject!"
           :name="modelName"
           variant="add"
           :state-key="stateKey"
@@ -183,10 +211,10 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
           v-model:expanded="expandedState"
           :data="tableState"
           :loading
-          :empty-text="emptyText"
-          :allowed-actions="allowedActions"
+          :empty-text
+          :allowed-actions="partyAllowedActions"
           :prevent-actions="!!activeParty"
-          :label-overrides="labelOverrides"
+          :label-overrides="tableLabels"
           :columns="columnsToDisplay"
           :task-guard-config="{
             messageId,
@@ -215,7 +243,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
             />
           </template>
         </TableParty>
-      </div>
+      </template>
     </ConnectPageSection>
   </component>
 </template>

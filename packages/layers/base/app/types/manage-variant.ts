@@ -1,1 +1,1 @@
-export type ManageVariant = 'default' | 'correct' | 'readonly'
+export type ManageVariant = 'default' | 'correct' | 'readonly' | 'correct-readonly'
