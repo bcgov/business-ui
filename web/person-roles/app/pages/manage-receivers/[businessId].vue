@@ -165,7 +165,7 @@ useFilingPageWatcher<ReceiverType>({
       <ManageParties
         v-model:active-party="receiverStore.formState.activeParty"
         :loading="receiverStore.initializing"
-        :empty-text="receiverStore.initializing ? `${$t('label.loading')}...` : $t('text.noReceivers')"
+        :empty-text="$t('text.noReceivers')"
         :section-title="`1. ${$t('label.receiverInfo')}`"
         :table-title="$t('label.receivers')"
         :subject="$t('label.receiver')"

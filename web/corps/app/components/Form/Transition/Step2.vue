@@ -39,7 +39,7 @@ function onError(event: FormErrorEvent) {
         v-model:active-office="activeOffice"
         data-testid="office-addresses-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :empty-text="$t('label.noOffices')"
         subject=""
         :table-title="$t('label.offices')"
         :allowed-actions="[]"
@@ -48,7 +48,7 @@ function onError(event: FormErrorEvent) {
       <ManageParties
         data-testid="current-directors-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :empty-text="$t('label.noDirectors')"
         :table-title="$t('label.directors')"
         variant="readonly"
         :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
@@ -59,7 +59,7 @@ function onError(event: FormErrorEvent) {
         v-model:active-series="store.formState.activeSeries"
         data-testid="share-structure-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
+        :empty-text="$t('label.noShareClasses')"
         subject=""
         variant="readonly"
       />

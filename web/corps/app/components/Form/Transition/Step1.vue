@@ -42,7 +42,7 @@ defineExpose({
       <ManageOffices
         v-model:active-office="activeOffice"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :empty-text="$t('label.noOffices')"
         subject=""
         :section-title="`1. ${$t('label.officeAddresses')}`"
         :section-description="$t('text.officeAddressesMustBeCorrect')"
@@ -69,7 +69,7 @@ defineExpose({
       <ManageParties
         v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :empty-text="$t('label.noDirectors')"
         :section-title="`2. ${$t('label.currentDirectors')}`"
         :section-description="$t('text.currentDirectorsMustBeCorrect')"
         :table-title="$t('label.directors')"
@@ -102,10 +102,7 @@ defineExpose({
       v-model:active-series="store.formState.activeSeries"
       data-testid="share-structure-section"
       :loading="store.initializing"
-      :empty-text="store.initializing
-        ? `${$t('label.loading')}...`
-        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
-      "
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       :section-title="`3. ${$t('label.shareStructure')}`"
       :section-description="$t('text.shareStructureMustMatchCompanysCurrentState')"
     />

@@ -31,7 +31,7 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       v-model:active-office="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+      :empty-text="$t('label.noOffices')"
       :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
@@ -42,7 +42,7 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
     <ManageParties
       v-model:active-party="store.formState.activeDirector"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+      :empty-text="$t('label.noDirectors')"
       :table-title="$t('label.currentDirectors')"
       :subject="$t('label.director')"
       :columns-to-display="partyColumns"
@@ -57,7 +57,7 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       v-model:active-party="store.formState.activeReceiver"
       state-key="manage-receivers"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+      :empty-text="$t('label.noReceivers')"
       :table-title="$t('label.currentReceivers')"
       :subject="$t('label.receiver')"
       :columns-to-display="partyColumns"
@@ -75,7 +75,7 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       v-model:active-party="store.formState.activeLiquidator"
       state-key="manage-liquidators"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+      :empty-text="$t('label.noLiquidators')"
       :table-title="$t('label.currentLiquidators')"
       :subject="$t('label.liquidator')"
       :columns-to-display="partyColumns"
@@ -93,10 +93,7 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       v-model:active-series="store.formState.activeSeries"
       data-testid="share-structure-section"
       :loading="store.initializing"
-      :empty-text="store.initializing
-        ? `${$t('label.loading')}...`
-        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
-      "
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       variant="correct"
       :label-overrides="correctionLabelOverrides"
     />

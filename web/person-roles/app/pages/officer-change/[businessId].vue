@@ -153,7 +153,7 @@ useFilingPageWatcher({
     <ManageParties
       v-model:active-party="officerStore.formState.activeParty"
       :loading="officerStore.initializing"
-      :empty-text="officerStore.initializing ? `${$t('label.loading')}...` : $t('text.noOfficers')"
+      :empty-text="$t('text.noOfficers')"
       :section-title="`1. ${$t('label.officerInfo')}`"
       :section-description="$t('text.officerInfoDescription')"
       :table-title="$t('label.officers')"
