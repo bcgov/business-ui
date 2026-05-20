@@ -246,7 +246,7 @@ onMounted(() => {
         <ManageParties
           v-model:active-party="store.formState.activeParty"
           :loading="store.initializing"
-          :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('text.noLiquidators')"
+          :empty-text="$t('text.noLiquidators')"
           :section-title="`1. ${$t('label.liquidatorInfo')}`"
           :table-title="$t('label.liquidators')"
           :subject="$t('label.liquidator')"
@@ -281,7 +281,7 @@ onMounted(() => {
         <ManageOffices
           v-model:active-office="store.formState.activeOffice"
           :loading="store.initializing"
-          :empty-text="store.initializing ? `${t('label.loading')}...` : t('label.noOffice')"
+          :empty-text="$t('label.noOffice')"
           :subject="officeSubject"
           :section-title="`2. ${$t('label.liquidationRecordsOfficeAddress')}`"
           :section-description="$t('text.liquidationRecordsOfficeAddressDesc')"

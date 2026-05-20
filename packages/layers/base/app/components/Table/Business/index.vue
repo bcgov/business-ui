@@ -86,6 +86,7 @@ const showBodyTopSlot = computed(() => {
           :id="taskGuardConfig.messageId"
           :message="taskGuardConfig.message"
         />
+        <span v-else-if="loading" class="text-neutral">{{ `${$t('label.loading')}...` }}</span>
         <span v-else class="text-neutral">{{ emptyText ?? $t('text.noDataToDisplay') }}</span>
       </div>
     </template>

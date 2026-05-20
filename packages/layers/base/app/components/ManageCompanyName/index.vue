@@ -1,39 +1,20 @@
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-
-// correctNameOptions and nrAllowedActionsTypes only required when readonly = false
-type Props = {
-  stateKey?: string
-  business?: BusinessData | BusinessDataPublic
-  contact?: ContactPoint
-  loading?: boolean
-  variant?: ManageVariant
-  // name translation section (shown when addNameTranslationLabel is provided)
-  nameTranslationAllowedActions?: ManageAllowedAction[]
-  nameTranslationLabelOverrides?: TableLabelOverrides
-} & (
-  | {
-    readonly: false
-    correctNameOptions: CorrectNameOption[]
-    nrAllowedActionsTypes: NrRequestActionCode[]
-  }
-  | {
-    readonly?: true
-    correctNameOptions?: CorrectNameOption[]
-    nrAllowedActionsTypes?: NrRequestActionCode[]
-  }
-)
+import type { ManageCompanyNameProps } from '#business/app/interfaces'
 
 const {
   stateKey = 'manage-company-name',
   business,
   contact,
-  variant = 'default'
-} = defineProps<Props>()
+  variant = 'default',
+  correctNameOptions,
+  nrAllowedActionsTypes,
+  nameTranslationAllowedActions
+} = defineProps<ManageCompanyNameProps>()
 
 const nameTranslationsStateKey = computed(() => `${stateKey}-name-translations`)
 
-const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('active-name-request', { required: true })
+const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('active-name-request')
 const activeNameTranslation = defineModel<ActiveNameTranslationSchema | undefined>('active-name-translation')
 
 const { t } = useI18n()
@@ -76,6 +57,27 @@ const dropdownActions = computed(() => {
     return [{ label: t('label.change'), icon: 'i-mdi-pencil', onSelect: initEdit }]
   }
   return []
+})
+
+const nameOptions = computed(() => {
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return correctNameOptions
+})
+
+const nrTypes = computed(() => {
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return nrAllowedActionsTypes
+})
+
+const ntActions = computed(() => {
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return []
+  }
+  return nameTranslationAllowedActions
 })
 
 function initEdit() {
@@ -144,9 +146,9 @@ function cleanupForm() {
             :initial-company-name="state.new.legalName"
             :business-identifier="business.identifier"
             :business-type="business.legalType"
-            :correct-name-options="readonly ? [] : correctNameOptions"
+            :correct-name-options="nameOptions!"
             :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
-            :nr-allowed-action-types="readonly ? [] : nrAllowedActionsTypes"
+            :nr-allowed-action-types="nrTypes!"
             @cancel="activeNameRequest = undefined"
             @done="() => { updateState(activeNameRequest); cleanupForm() }"
           />
@@ -166,13 +168,13 @@ function cleanupForm() {
           {{ $t('label.nameTranslations') }}
         </span>
         <div class="flex flex-col flex-1 gap-4">
-          <span v-if="variant !== 'readonly'">{{ $t('text.addNameTranslation') }}</span>
+          <span v-if="!['readonly', 'correct-readonly'].includes(variant)">{{ $t('text.addNameTranslation') }}</span>
           <ManageNameTranslations
             v-model:active-name-translation="activeNameTranslation"
             :state-key="nameTranslationsStateKey"
             :loading="loading"
             :variant
-            :allowed-actions="readonly ? [] : nameTranslationAllowedActions"
+            :allowed-actions="ntActions"
             :label-overrides="nameTranslationLabelOverrides"
           />
         </div>

@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 const store = useTransitionStore()
 const businessStore = useBusinessStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 function onError(event: FormErrorEvent) {
@@ -36,34 +35,26 @@ function onError(event: FormErrorEvent) {
       </div>
 
       <ManageOffices
-        v-model:active-office="activeOffice"
+        variant="readonly"
         data-testid="office-addresses-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-        subject=""
+        :empty-text="$t('label.noOffices')"
         :table-title="$t('label.offices')"
-        :allowed-actions="[]"
       />
 
       <ManageParties
-        v-model:active-party="store.formState.activeDirector"
         data-testid="current-directors-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :empty-text="$t('label.noDirectors')"
         :table-title="$t('label.directors')"
-        :subject="$t('label.director')"
-        :role-type="RoleTypeUi.DIRECTOR"
-        :allowed-actions="[]"
+        variant="readonly"
         :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
       />
 
       <ManageShareStructure
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
         data-testid="share-structure-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
-        subject=""
+        :empty-text="$t('label.noShareClasses')"
         variant="readonly"
       />
     </section>

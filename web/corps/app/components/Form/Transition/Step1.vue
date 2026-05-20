@@ -4,7 +4,6 @@ import { z } from 'zod'
 
 const { t } = useI18n()
 const store = useTransitionStore()
-const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 
 const schema = z.object({
   confirmOffices: z.boolean().refine(val => val === true, t('connect.validation.required')),
@@ -40,14 +39,12 @@ defineExpose({
   >
     <div class="space-y-4" data-testid="office-addresses-section">
       <ManageOffices
-        v-model:active-office="activeOffice"
+        variant="readonly"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
-        subject=""
+        :empty-text="$t('label.noOffices')"
         :section-title="`1. ${$t('label.officeAddresses')}`"
         :section-description="$t('text.officeAddressesMustBeCorrect')"
         :table-title="$t('label.offices')"
-        :allowed-actions="[]"
       />
 
       <ConnectFormFieldWrapper
@@ -69,7 +66,7 @@ defineExpose({
       <ManageParties
         v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :empty-text="$t('label.noDirectors')"
         :section-title="`2. ${$t('label.currentDirectors')}`"
         :section-description="$t('text.currentDirectorsMustBeCorrect')"
         :table-title="$t('label.directors')"
@@ -102,10 +99,7 @@ defineExpose({
       v-model:active-series="store.formState.activeSeries"
       data-testid="share-structure-section"
       :loading="store.initializing"
-      :empty-text="store.initializing
-        ? `${$t('label.loading')}...`
-        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
-      "
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       :section-title="`3. ${$t('label.shareStructure')}`"
       :section-description="$t('text.shareStructureMustMatchCompanysCurrentState')"
     />

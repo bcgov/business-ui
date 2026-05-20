@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
-import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../utils/schemas/correction'
+import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '~/utils/schemas/correction'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
 const { business, businessContact } = storeToRefs(businessStore)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
-
-/** Display-level label overrides for correction context */
-const correctionLabelOverrides = getCorrectionLabelOverrides()
+const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates']
 
 /**
  * Change detection for review sections.
@@ -77,92 +75,65 @@ function onError(event: FormErrorEvent) {
 
       <!-- Company Name (readonly, always displayed) -->
       <ManageCompanyName
-        v-model:active-name-request="store.formState.activeNameRequest"
         :loading="store.initializing"
         :business
         :contact="businessContact"
-        variant="readonly"
+        variant="correct-readonly"
       />
 
       <!-- Office Addresses (readonly, only if changed) -->
       <!-- Section 2: Office Addresses -->
       <ManageOffices
         v-if="hasOfficeChanges"
-        v-model:active-office="store.formState.activeOffice"
         data-testid="review-office-addresses-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+        :empty-text="$t('label.noOffices')"
         :table-title="$t('label.offices')"
-        subject=""
-        variant="readonly"
-        :allowed-actions="[]"
-        :label-overrides="correctionLabelOverrides"
+        variant="correct-readonly"
       />
 
       <!-- Directors (readonly, only if changed) -->
       <ManageParties
         v-if="hasDirectorChanges"
-        v-model:active-party="store.formState.activeDirector"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+        :empty-text="$t('label.noDirectors')"
         :table-title="$t('label.currentDirectors')"
-        :subject="$t('label.director')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-current-directors-section"
-        :role-type="RoleTypeUi.DIRECTOR"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeDirector"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
       />
 
       <!-- Receivers (readonly, only if changed) -->
       <ManageParties
         v-if="hasReceiverChanges"
-        v-model:active-party="store.formState.activeReceiver"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+        :empty-text="$t('label.noReceivers')"
         :table-title="$t('label.currentReceivers')"
-        :subject="$t('label.director')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-receivers-section"
-        :role-type="RoleTypeUi.RECEIVER"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeDirector"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
         state-key="manage-receivers"
       />
 
       <!-- Liquidators (readonly, only if changed) -->
       <ManageParties
         v-if="hasLiquidatorChanges"
-        v-model:active-party="store.formState.activeLiquidator"
         state-key="manage-liquidators"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+        :empty-text="$t('label.noLiquidators')"
         :table-title="$t('label.currentLiquidators')"
-        :subject="$t('label.liquidator')"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        :columns-to-display="partyColumns"
         data-testid="review-liquidators-section"
-        :role-type="RoleTypeUi.LIQUIDATOR"
-        :label-overrides="correctionLabelOverrides"
-        model-name="activeLiquidator"
-        variant="correct"
-        :allowed-actions="[]"
+        variant="correct-readonly"
       />
 
       <!-- Share Structure (readonly, only if changed) -->
       <ManageShareStructure
         v-if="hasShareStructureChanges"
-        v-model:active-class="store.formState.activeClass"
-        v-model:active-series="store.formState.activeSeries"
         data-testid="review-share-structure-section"
         :loading="store.initializing"
-        :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noShareClasses')"
-        :add-label="$t('label.addShareClass')"
-        variant="readonly"
-        :label-overrides="correctionLabelOverrides"
+        :empty-text="$t('label.noShareClasses')"
+        variant="correct-readonly"
       />
     </section>
 

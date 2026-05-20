@@ -1,9 +1,7 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
 const { business, businessContact } = storeToRefs(useBusinessStore())
-
-/** Display-level label overrides for correction context */
-const correctionLabelOverrides = getCorrectionLabelOverrides()
+const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 </script>
 
 <template>
@@ -29,24 +27,22 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       v-model:active-office="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noOffices')"
+      :empty-text="$t('label.noOffices')"
       :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-      :label-overrides="correctionLabelOverrides"
     />
 
     <ManageParties
       v-model:active-party="store.formState.activeDirector"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noDirectors')"
+      :empty-text="$t('label.noDirectors')"
       :table-title="$t('label.currentDirectors')"
       :subject="$t('label.director')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="current-directors-section"
       :role-type="RoleTypeUi.DIRECTOR"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeDirector"
       variant="correct"
     />
@@ -56,13 +52,12 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       v-model:active-party="store.formState.activeReceiver"
       state-key="manage-receivers"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noReceivers')"
+      :empty-text="$t('label.noReceivers')"
       :table-title="$t('label.currentReceivers')"
       :subject="$t('label.receiver')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="receivers-section"
       :role-type="RoleTypeUi.RECEIVER"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeReceiver"
       variant="correct"
       :party-form-props="{
@@ -75,13 +70,12 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       v-model:active-party="store.formState.activeLiquidator"
       state-key="manage-liquidators"
       :loading="store.initializing"
-      :empty-text="store.initializing ? `${$t('label.loading')}...` : $t('label.noLiquidators')"
+      :empty-text="$t('label.noLiquidators')"
       :table-title="$t('label.currentLiquidators')"
       :subject="$t('label.liquidator')"
-      :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
+      :columns-to-display="partyColumns"
       data-testid="liquidators-section"
       :role-type="RoleTypeUi.LIQUIDATOR"
-      :label-overrides="correctionLabelOverrides"
       model-name="activeLiquidator"
       variant="correct"
       :party-form-props="{
@@ -94,12 +88,8 @@ const correctionLabelOverrides = getCorrectionLabelOverrides()
       v-model:active-series="store.formState.activeSeries"
       data-testid="share-structure-section"
       :loading="store.initializing"
-      :empty-text="store.initializing
-        ? `${$t('label.loading')}...`
-        : $t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })
-      "
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       variant="correct"
-      :label-overrides="correctionLabelOverrides"
     />
   </UForm>
 </template>
