@@ -90,8 +90,8 @@ importers:
   packages/layers/base:
     dependencies:
       '@sbc-connect/nuxt-pay':
-        specifier: 0.3.8
-        version: 0.3.8(251777b3b67cced616a4c4561d25ab6e)
+        specifier: 0.3.9
+        version: 0.3.9(251777b3b67cced616a4c4561d25ab6e)
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -1071,6 +1071,15 @@ packages:
 
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
+
+  '@launchdarkly/js-client-sdk-common@1.26.3':
+    resolution: {integrity: sha512-hFAGW9Xpfc/fE/Xwpj+D07QIRHkhxNdCzmfQzJH/sltvYHPQtu7NJOFzvAGGNrz1ZjGS57l6eiEZy7xBqDa0ag==}
+
+  '@launchdarkly/js-client-sdk@4.6.5':
+    resolution: {integrity: sha512-pV3/MRRIaKeTaWFQLpFQ1N1X/U1pDKEuZtu2kgDkfS+bu8VK8OsqkkauoBk2AflEKB0plcbe9ph1P1RV3Eg+ZA==}
+
+  '@launchdarkly/js-sdk-common@2.24.4':
+    resolution: {integrity: sha512-ikD6MElNa3WPUxXdUIDSBvbig21gfjemEus1Vh0HGcgLThxGglq+EGb0coyc8199+3aqu8c9kpuXEdMBZhOowA==}
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -2185,17 +2194,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sbc-connect/nuxt-auth@0.9.4':
-    resolution: {integrity: sha512-OjlNYG7+XWHO/FW9Q323MBWjorKhVl+zbKcWn61aSdl/kjOGk3zpY4E8BsRXUtGzmcZqOAhapGJiSYUwuCdDcA==}
+  '@sbc-connect/nuxt-auth@0.10.0':
+    resolution: {integrity: sha512-HnAqyJA7PxFtiuTSHoXEu9Oumf1hDRiVCJQgkLEPGG+sycReb/+BaWHQnjkvvOaWmoZ9CvvErX7R8MAed7G3QQ==}
 
-  '@sbc-connect/nuxt-base@0.7.3':
-    resolution: {integrity: sha512-9srBwsVwZwKaHOXHsnBzZa5erAAGpKiCgwypxpAFKHENIWpzrZD3Mouh/UbUY4PeunIeVTzV5HqQzwO8GN7wKg==}
+  '@sbc-connect/nuxt-base@0.8.0':
+    resolution: {integrity: sha512-UKpZtw80L97+4as6aVbpr3KvbnQUjE0gKGlO82nTLqHc6Ut3SCC4fY7J0X6ZQB/uyoo+4jcOYGVnFv+QnF8zFw==}
 
-  '@sbc-connect/nuxt-forms@0.7.2':
-    resolution: {integrity: sha512-2JIRjZJYVNMuE2T5vTaJWGf7Nrt+ae6qT4kavH/0yTGqIAkN1Un0mYxq1asS0wCwCOUQivTtpLxhf9ce8lubcg==}
+  '@sbc-connect/nuxt-forms@0.7.3':
+    resolution: {integrity: sha512-AdYj/ZMLafhoD+fs/bEdPipjR4xHjMfOqb2OV7Dq6Ah70emhReBF4Ore/wErBLOoeVsqaBAhwUH69fKsaR2Dhw==}
 
-  '@sbc-connect/nuxt-pay@0.3.8':
-    resolution: {integrity: sha512-uI06kQU3vxYeuH7Nngs91Lmo6ZRHvsG+24HkH771dNEXO2ta2XXkZLPR+aklvmEsUDjEF00OEPsI3pcliaMbFA==}
+  '@sbc-connect/nuxt-pay@0.3.9':
+    resolution: {integrity: sha512-qp4hP6t9brL9MLa2paSTjy4i1Mwl+N2jTlOslFkFCYJhAluV5gIjpv87/80qPmW3qlFfFbUyNlokb45z5a1/6Q==}
 
   '@sindresorhus/base62@1.0.0':
     resolution: {integrity: sha512-TeheYy0ILzBEI/CO55CP6zJCSdSWeRtGnHy8U8dWSUH4I68iqTsy7HkMktR4xakThc9jotkPQUXT4ITdbV7cHA==}
@@ -2906,17 +2915,11 @@ packages:
   '@vue/devtools-kit@7.7.9':
     resolution: {integrity: sha512-PyQ6odHSgiDVd4hnTP+aDk2X4gl2HmLDfiyEnn3/oV+ckFDuswRs4IbBT7vacMuGdwY/XemxBoh302ctbsptuA==}
 
-  '@vue/devtools-kit@8.0.5':
-    resolution: {integrity: sha512-q2VV6x1U3KJMTQPUlRMyWEKVbcHuxhqJdSr6Jtjz5uAThAIrfJ6WVZdGZm5cuO63ZnSUz0RCsVwiUUb0mDV0Yg==}
-
   '@vue/devtools-kit@8.1.1':
     resolution: {integrity: sha512-gVBaBv++i+adg4JpH71k9ppl4soyR7Y2McEqO5YNgv0BI1kMZ7BDX5gnwkZ5COYgiCyhejZG+yGNrBAjj6Coqg==}
 
   '@vue/devtools-shared@7.7.9':
     resolution: {integrity: sha512-iWAb0v2WYf0QWmxCGy0seZNDPdO3Sp5+u78ORnyeonS6MT4PC7VPrryX2BpMJrwlDeaZ6BD4vP4XKjK0SZqaeA==}
-
-  '@vue/devtools-shared@8.0.5':
-    resolution: {integrity: sha512-bRLn6/spxpmgLk+iwOrR29KrYnJjG9DGpHGkDFG82UM21ZpJ39ztUT9OXX3g+usW7/b2z+h46I9ZiYyB07XMXg==}
 
   '@vue/devtools-shared@8.1.1':
     resolution: {integrity: sha512-+h4ttmJYl/txpxHKaoZcaKpC+pvckgLzIDiSQlaQ7kKthKh8KuwoLW2D8hPJEnqKzXOvu15UHEoGyngAXCz0EQ==}
@@ -3949,9 +3952,6 @@ packages:
     resolution: {integrity: sha512-CGnyrvbhPlWYMngksqrSSUT1BAVP49dZocrHuK0SvtR0D5TMs5wP0o3j7jexDJW01KSadjBp1M/71o/KR3nD1w==}
     engines: {node: '>=18'}
 
-  fast-deep-equal@2.0.1:
-    resolution: {integrity: sha512-bCK/2Z4zLidyB4ReuIsvALH6w31YfAQDmXMqMx6FyfHqvBxtjC0eRumeSu4Bs3XtXwpyIywtSTrVT99BxY1f9w==}
-
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -4200,9 +4200,6 @@ packages:
 
   hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
-
-  hookable@6.0.1:
-    resolution: {integrity: sha512-uKGyY8BuzN/a5gvzvA+3FVWo0+wUjgtfSdnmjtrOVwQCZPHpHDH2WRO3VZSOeluYrHoDCiXFffZXs8Dj1ULWtw==}
 
   hookable@6.1.0:
     resolution: {integrity: sha512-ZoKZSJgu8voGK2geJS+6YtYjvIzu9AOM/KZXsBxr83uhLL++e9pEv/dlgwgy3dvHg06kTz6JOh1hk3C8Ceiymw==}
@@ -4500,18 +4497,6 @@ packages:
 
   launch-editor@2.12.0:
     resolution: {integrity: sha512-giOHXoOtifjdHqUamwKq6c49GzBdLjvxrd2D+Q4V6uOHopJv7p9VJxikDsQ/CBXZbEITgUqSVHXLTG3VhPP1Dg==}
-
-  launchdarkly-js-client-sdk@3.9.0:
-    resolution: {integrity: sha512-uPL9il6dOZrVQqEcpjDYc2c7HtBTlKpLJb1Q0187i4UokBVZwBXWKjTnNk9hkwaDD5PGD4puoe7POikrR8ACwQ==}
-
-  launchdarkly-js-sdk-common@5.8.0:
-    resolution: {integrity: sha512-9X70K3kN1fuR6ZnRudkH7etMgFhi3sEU0mnJ+y2nhID+DpfkNDVnYUGnUs8/s4tsSDs7Q7Gpm4qnr3oqOqT9+A==}
-
-  launchdarkly-vue-client-sdk@2.5.0:
-    resolution: {integrity: sha512-KIKrNxhiHrVgXELaBrviket13qzShxbyjvuvWFWfi4DVgbN+w6wjj2/nkUZQ+1qtvKomOL0aDfImYdRWnn6Cww==}
-    engines: {node: '>=16.15.1', npm: '>=8.11.0'}
-    peerDependencies:
-      vue: ^3.2.36
 
   lazystream@1.0.1:
     resolution: {integrity: sha512-b94GiNHQNy6JNTrt5w6zNyffMrNkXZb3KTkCZJb2V1xaEGCk093vkZ2jk3tpaeP33/OiXC+WvK9AxUebnf5nbw==}
@@ -6189,11 +6174,6 @@ packages:
     resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
     hasBin: true
 
-  uuid@8.3.2:
-    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   vaul-vue@0.4.1:
     resolution: {integrity: sha512-A6jOWOZX5yvyo1qMn7IveoWN91mJI5L3BUKsIwkg6qrTGgHs1Sb1JF/vyLJgnbN1rH4OOOxFbtqL9A46bOyGUQ==}
     peerDependencies:
@@ -7389,6 +7369,16 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
+  '@launchdarkly/js-client-sdk-common@1.26.3':
+    dependencies:
+      '@launchdarkly/js-sdk-common': 2.24.4
+
+  '@launchdarkly/js-client-sdk@4.6.5':
+    dependencies:
+      '@launchdarkly/js-client-sdk-common': 1.26.3
+
+  '@launchdarkly/js-sdk-common@2.24.4': {}
+
   '@manypkg/find-root@1.1.0':
     dependencies:
       '@babel/runtime': 7.28.3
@@ -7500,7 +7490,7 @@ snapshots:
       perfect-debounce: 2.0.0
       pkg-types: 2.3.0
       scule: 1.3.0
-      semver: 7.7.3
+      semver: 7.7.4
       srvx: 0.10.0
       std-env: 3.10.0
       tinyexec: 1.0.2
@@ -7539,7 +7529,7 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 2.3.0
       prompts: 2.4.2
-      semver: 7.7.3
+      semver: 7.7.4
 
   '@nuxt/devtools@3.1.1(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
     dependencies:
@@ -7547,7 +7537,7 @@ snapshots:
       '@nuxt/devtools-wizard': 3.1.1
       '@nuxt/kit': 4.4.2(magicast@0.5.1)
       '@vue/devtools-core': 8.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
-      '@vue/devtools-kit': 8.0.5
+      '@vue/devtools-kit': 8.1.1
       birpc: 2.9.0
       consola: 3.4.2
       destr: 2.0.5
@@ -7566,7 +7556,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.0.0
       pkg-types: 2.3.0
-      semver: 7.7.3
+      semver: 7.7.4
       simple-git: 3.30.0
       sirv: 3.0.2
       structured-clone-es: 1.0.0
@@ -7695,13 +7685,13 @@ snapshots:
       jiti: 2.6.1
       klona: 2.0.6
       knitwork: 1.3.0
-      mlly: 1.8.0
+      mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
       pkg-types: 2.3.0
       rc9: 2.1.2
       scule: 1.3.0
-      semver: 7.7.3
+      semver: 7.7.4
       tinyglobby: 0.2.15
       ufo: 1.6.3
       unctx: 2.5.0
@@ -7720,13 +7710,13 @@ snapshots:
       ignore: 7.0.5
       jiti: 2.6.1
       klona: 2.0.6
-      mlly: 1.8.0
+      mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
       pkg-types: 2.3.0
       rc9: 2.1.2
       scule: 1.3.0
-      semver: 7.7.3
+      semver: 7.7.4
       tinyglobby: 0.2.15
       ufo: 1.6.3
       unctx: 2.5.0
@@ -7763,7 +7753,7 @@ snapshots:
     dependencies:
       '@nuxt/devalue': 2.0.2
       '@nuxt/kit': 4.2.2(magicast@0.5.1)
-      '@unhead/vue': 2.1.2(vue@3.5.30(typescript@5.9.3))
+      '@unhead/vue': 2.1.12(vue@3.5.30(typescript@5.9.3))
       '@vue/shared': 3.5.30
       consola: 3.4.2
       defu: 6.1.4
@@ -8022,7 +8012,7 @@ snapshots:
       jiti: 2.6.1
       knitwork: 1.3.0
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       mocked-exports: 0.1.1
       nuxt: 4.2.2(@netlify/blobs@9.1.2)(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@9.31.0(jiti@2.6.1))(ioredis@5.8.2)(lightningcss@1.32.0)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.52.5)(terser@5.43.1)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2)
       pathe: 2.0.3
@@ -8653,13 +8643,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.52.5':
     optional: true
 
-  '@sbc-connect/nuxt-auth@0.9.4(251777b3b67cced616a4c4561d25ab6e)':
+  '@sbc-connect/nuxt-auth@0.10.0(251777b3b67cced616a4c4561d25ab6e)':
     dependencies:
       '@pinia/colada': 1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3))
       '@pinia/colada-nuxt': 0.3.2(@pinia/colada@1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(magicast@0.5.1)
       '@pinia/nuxt': 0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))
-      '@sbc-connect/nuxt-base': 0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)
-      '@sbc-connect/nuxt-forms': 0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-base': 0.8.0(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-forms': 0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)
       keycloak-js: 26.2.3
       pinia: 3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
       pinia-plugin-persistedstate: 4.7.1(@nuxt/kit@4.4.2(magicast@0.5.1))(@pinia/nuxt@0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))))(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))
@@ -8721,16 +8711,16 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-base@0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
+  '@sbc-connect/nuxt-base@0.8.0(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
     dependencies:
       '@iconify-json/mdi': 1.2.3
+      '@launchdarkly/js-client-sdk': 4.6.5
       '@nuxt/ui': 4.6.0(@netlify/blobs@9.1.2)(@tiptap/extensions@3.20.5(@tiptap/core@3.20.5(@tiptap/pm@3.20.5))(@tiptap/pm@3.20.5))(@tiptap/y-tiptap@3.0.1(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.5)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(change-case@5.4.4)(db0@0.3.4)(embla-carousel@8.6.0)(ioredis@5.8.2)(jwt-decode@4.0.0)(magicast@0.5.1)(tailwindcss@4.2.2)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue-router@5.0.4(@pinia/colada@1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(@vue/compiler-sfc@3.5.30)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3))(yjs@13.6.29)(zod@4.3.6)
       '@nuxtjs/i18n': 10.2.4(@netlify/blobs@9.1.2)(@pinia/colada@1.0.0(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)))(@vue/compiler-dom@3.5.30)(db0@0.3.4)(eslint@9.31.0(jiti@2.6.1))(ioredis@5.8.2)(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3)))(rollup@4.52.5)(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
       '@vueuse/core': 14.2.1(vue@3.5.30(typescript@5.9.3))
       '@vueuse/nuxt': 14.2.1(magicast@0.5.1)(nuxt@4.2.2(@netlify/blobs@9.1.2)(@parcel/watcher@2.5.1)(@types/node@25.5.0)(@vue/compiler-sfc@3.5.30)(cac@6.7.14)(db0@0.3.4)(eslint@9.31.0(jiti@2.6.1))(ioredis@5.8.2)(lightningcss@1.32.0)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.52.5)(terser@5.43.1)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue-tsc@3.2.5(typescript@5.9.3))(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       dompurify: 3.3.3
       es-toolkit: 1.45.1
-      launchdarkly-vue-client-sdk: 2.5.0(vue@3.5.30(typescript@5.9.3))
       luxon: 3.7.2
       maska: 3.2.0
       zod: 4.3.6
@@ -8793,9 +8783,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-forms@0.7.2(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
+  '@sbc-connect/nuxt-forms@0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)':
     dependencies:
-      '@sbc-connect/nuxt-base': 0.7.3(f0acd81b3f4ba3ee9e7fda27ca7402dc)
+      '@sbc-connect/nuxt-base': 0.8.0(f0acd81b3f4ba3ee9e7fda27ca7402dc)
       country-codes-list: 2.0.0
       vue-country-flag-next: 2.3.2(vue@3.5.30(typescript@5.9.3))
     transitivePeerDependencies:
@@ -8857,9 +8847,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-pay@0.3.8(251777b3b67cced616a4c4561d25ab6e)':
+  '@sbc-connect/nuxt-pay@0.3.9(251777b3b67cced616a4c4561d25ab6e)':
     dependencies:
-      '@sbc-connect/nuxt-auth': 0.9.4(251777b3b67cced616a4c4561d25ab6e)
+      '@sbc-connect/nuxt-auth': 0.10.0(251777b3b67cced616a4c4561d25ab6e)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -9383,7 +9373,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.57.2
       debug: 4.4.3
       minimatch: 10.2.4
-      semver: 7.7.3
+      semver: 7.7.4
       tinyglobby: 0.2.15
       ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -9414,7 +9404,7 @@ snapshots:
 
   '@unhead/vue@2.1.2(vue@3.5.30(typescript@5.9.3))':
     dependencies:
-      hookable: 6.0.1
+      hookable: 6.1.0
       unhead: 2.1.2
       vue: 3.5.30(typescript@5.9.3)
 
@@ -9669,7 +9659,7 @@ snapshots:
   '@vue/devtools-core@8.0.5(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
     dependencies:
       '@vue/devtools-kit': 8.1.1
-      '@vue/devtools-shared': 8.0.5
+      '@vue/devtools-shared': 8.1.1
       mitt: 3.0.1
       nanoid: 5.1.5
       pathe: 2.0.3
@@ -9688,16 +9678,6 @@ snapshots:
       speakingurl: 14.0.1
       superjson: 2.2.6
 
-  '@vue/devtools-kit@8.0.5':
-    dependencies:
-      '@vue/devtools-shared': 8.0.5
-      birpc: 2.9.0
-      hookable: 5.5.3
-      mitt: 3.0.1
-      perfect-debounce: 2.0.0
-      speakingurl: 14.0.1
-      superjson: 2.2.6
-
   '@vue/devtools-kit@8.1.1':
     dependencies:
       '@vue/devtools-shared': 8.1.1
@@ -9706,10 +9686,6 @@ snapshots:
       perfect-debounce: 2.0.0
 
   '@vue/devtools-shared@7.7.9':
-    dependencies:
-      rfdc: 1.4.1
-
-  '@vue/devtools-shared@8.0.5':
     dependencies:
       rfdc: 1.4.1
 
@@ -10396,7 +10372,7 @@ snapshots:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.7.3
+      semver: 7.7.4
 
   ee-first@1.1.1: {}
 
@@ -10791,8 +10767,6 @@ snapshots:
 
   fake-indexeddb@6.2.5: {}
 
-  fast-deep-equal@2.0.1: {}
-
   fast-deep-equal@3.1.3: {}
 
   fast-fifo@1.3.2: {}
@@ -11096,8 +11070,6 @@ snapshots:
 
   hookable@5.5.3: {}
 
-  hookable@6.0.1: {}
-
   hookable@6.1.0: {}
 
   html-entities@2.6.0: {}
@@ -11358,22 +11330,6 @@ snapshots:
       picocolors: 1.1.1
       shell-quote: 1.8.3
 
-  launchdarkly-js-client-sdk@3.9.0:
-    dependencies:
-      escape-string-regexp: 4.0.0
-      launchdarkly-js-sdk-common: 5.8.0
-
-  launchdarkly-js-sdk-common@5.8.0:
-    dependencies:
-      base64-js: 1.5.1
-      fast-deep-equal: 2.0.1
-      uuid: 8.3.2
-
-  launchdarkly-vue-client-sdk@2.5.0(vue@3.5.30(typescript@5.9.3)):
-    dependencies:
-      launchdarkly-js-client-sdk: 3.9.0
-      vue: 3.5.30(typescript@5.9.3)
-
   lazystream@1.0.1:
     dependencies:
       readable-stream: 2.3.8
@@ -11457,7 +11413,7 @@ snapshots:
       h3: 1.15.5
       http-shutdown: 1.2.2
       jiti: 2.6.1
-      mlly: 1.8.0
+      mlly: 1.8.2
       node-forge: 1.3.1
       pathe: 1.1.2
       std-env: 3.10.0
@@ -11520,7 +11476,7 @@ snapshots:
     dependencies:
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       regexp-tree: 0.1.27
       type-level-regexp: 0.1.17
       ufo: 1.6.3
@@ -11548,7 +11504,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   markdown-it@14.1.0:
     dependencies:
@@ -11731,7 +11687,7 @@ snapshots:
       magic-string: 0.30.21
       magicast: 0.5.1
       mime: 4.1.0
-      mlly: 1.8.0
+      mlly: 1.8.2
       node-fetch-native: 1.6.7
       node-mock-http: 1.0.4
       ofetch: 1.5.1
@@ -11744,7 +11700,7 @@ snapshots:
       rollup: 4.52.5
       rollup-plugin-visualizer: 6.0.5(rollup@4.52.5)
       scule: 1.3.0
-      semver: 7.7.3
+      semver: 7.7.4
       serve-placeholder: 2.0.2
       serve-static: 2.2.0
       source-map: 0.7.6
@@ -12266,7 +12222,7 @@ snapshots:
   pkg-types@1.3.1:
     dependencies:
       confbox: 0.1.8
-      mlly: 1.8.0
+      mlly: 1.8.2
       pathe: 2.0.3
 
   pkg-types@2.3.0:
@@ -13118,7 +13074,7 @@ snapshots:
 
   unhead@2.1.2:
     dependencies:
-      hookable: 6.0.1
+      hookable: 6.1.0
 
   unicorn-magic@0.1.0:
     optional: true
@@ -13138,7 +13094,7 @@ snapshots:
       estree-walker: 3.0.3
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       pathe: 2.0.3
       picomatch: 4.0.3
       pkg-types: 2.3.0
@@ -13198,7 +13154,7 @@ snapshots:
       json5: 2.2.3
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      mlly: 1.8.0
+      mlly: 1.8.2
       muggle-string: 0.4.1
       pathe: 2.0.3
       picomatch: 4.0.3
@@ -13215,7 +13171,7 @@ snapshots:
   unplugin@2.3.11:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      acorn: 8.15.0
+      acorn: 8.16.0
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
@@ -13311,8 +13267,6 @@ snapshots:
 
   uuid@11.1.0:
     optional: true
-
-  uuid@8.3.2: {}
 
   vaul-vue@0.4.1(reka-ui@2.9.2(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)):
     dependencies:
