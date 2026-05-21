@@ -8,7 +8,7 @@ catalog:
   '@axe-core/playwright': 4.11.1
   '@iconify-json/mdi': 1.2.3
   '@nuxt/test-utils': 3.21.0
-  dotenv: 17.3.1
+  dotenv: 17.4.2
   typescript: 5.9.3
   vue-tsc: 3.2.5
   nuxt: 4.2.2

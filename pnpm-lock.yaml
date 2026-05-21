@@ -22,8 +22,8 @@ catalogs:
       specifier: 25.5.0
       version: 25.5.0
     dotenv:
-      specifier: 17.3.1
-      version: 17.3.1
+      specifier: 17.4.2
+      version: 17.4.2
     nuxt:
       specifier: 4.2.2
       version: 4.2.2
@@ -45,17 +45,17 @@ importers:
   .:
     devDependencies:
       '@changesets/changelog-github':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@changesets/cli':
-        specifier: 2.30.0
-        version: 2.30.0(@types/node@25.5.0)
+        specifier: 2.31.0
+        version: 2.31.0(@types/node@25.5.0)
       '@nuxt/eslint-config':
         specifier: 1.15.2
         version: 1.15.2(@typescript-eslint/utils@8.57.2(eslint@9.31.0(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.30)(eslint@9.31.0(jiti@2.6.1))(typescript@5.9.3)
       dotenv:
         specifier: 'catalog:'
-        version: 17.3.1
+        version: 17.4.2
       eslint:
         specifier: 9.31.0
         version: 9.31.0(jiti@2.6.1)
@@ -376,8 +376,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/runtime@7.28.3':
-    resolution: {integrity: sha512-9uIQ10o0WGdpP6GDhXcdOJPJuDgFtIDtN/9+ArJQ2NAfAmiuhTQdzkaTGR33v43GYS2UrSA0eX2pPPHoFVvpxA==}
+  '@babel/runtime@7.29.2':
+    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.27.2':
@@ -415,36 +415,36 @@ packages:
     resolution: {integrity: sha512-VERIM64vtTP1C4mxQ5thVT9fK0apjPFobqybMtA1UdUujWka24ERHbRHFGmpbbhp73MhV+KSsHQH9C6uOTdEQA==}
     engines: {node: '>=18'}
 
-  '@changesets/apply-release-plan@7.1.0':
-    resolution: {integrity: sha512-yq8ML3YS7koKQ/9bk1PqO0HMzApIFNwjlwCnwFEXMzNe8NpzeeYYKCmnhWJGkN8g7E51MnWaSbqRcTcdIxUgnQ==}
+  '@changesets/apply-release-plan@7.1.1':
+    resolution: {integrity: sha512-9qPCm/rLx/xoOFXIHGB229+4GOL76S4MC+7tyOuTsR6+1jYlfFDQORdvwR5hDA6y4FL2BPt3qpbcQIS+dW85LA==}
 
-  '@changesets/assemble-release-plan@6.0.9':
-    resolution: {integrity: sha512-tPgeeqCHIwNo8sypKlS3gOPmsS3wP0zHt67JDuL20P4QcXiw/O4Hl7oXiuLnP9yg+rXLQ2sScdV1Kkzde61iSQ==}
+  '@changesets/assemble-release-plan@6.0.10':
+    resolution: {integrity: sha512-rSDcqdJ9KbVyjpBIuCidhvZNIiVt1XaIYp73ycVQRIA5n/j6wQaEk0ChRLMUQ1vkxZe51PTQ9OIhbg6HQMW45A==}
 
   '@changesets/changelog-git@0.2.1':
     resolution: {integrity: sha512-x/xEleCFLH28c3bQeQIyeZf8lFXyDFVn1SgcBiR2Tw/r4IAWlk1fzxCEZ6NxQAjF2Nwtczoen3OA2qR+UawQ8Q==}
 
-  '@changesets/changelog-github@0.6.0':
-    resolution: {integrity: sha512-wA2/y4hR/A1K411cCT75rz0d46Iezxp1WYRFoFJDIUpkQ6oDBAIUiU7BZkDCmYgz0NBl94X1lgcZO+mHoiHnFg==}
+  '@changesets/changelog-github@0.7.0':
+    resolution: {integrity: sha512-rBsbRvc4TVn+FvFnOVM3LxlFJfTXXCp8gfVJ+0BubxWNSVnLuAzowi5j+IEraLLP52w8AAs9QfKbPS3MMiXQJA==}
 
-  '@changesets/cli@2.30.0':
-    resolution: {integrity: sha512-5D3Nk2JPqMI1wK25pEymeWRSlSMdo5QOGlyfrKg0AOufrUcjEE3RQgaCpHoBiM31CSNrtSgdJ0U6zL1rLDDfBA==}
+  '@changesets/cli@2.31.0':
+    resolution: {integrity: sha512-AhI4enNTgHu2IZr6K4WZyf0EPch4XVMn1yOMFmCD9gsfBGqMYaHXls5HyDv6/CL5axVQABz68eG30eCtbr2wFg==}
     hasBin: true
 
-  '@changesets/config@3.1.3':
-    resolution: {integrity: sha512-vnXjcey8YgBn2L1OPWd3ORs0bGC4LoYcK/ubpgvzNVr53JXV5GiTVj7fWdMRsoKUH7hhhMAQnsJUqLr21EncNw==}
+  '@changesets/config@3.1.4':
+    resolution: {integrity: sha512-pf0bvD/v6WI2cRlZ6hzpjtZdSlXDXMAJ+Iz7xfFzV4ZxJ8OGGAON+1qYc99ZPrijnt4xp3VGG7eNvAOGS24V1Q==}
 
   '@changesets/errors@0.2.0':
     resolution: {integrity: sha512-6BLOQUscTpZeGljvyQXlWOItQyU71kCdGz7Pi8H8zdw6BI0g3m43iL4xKUVPWtG+qrrL9DTjpdn8eYuCQSRpow==}
 
-  '@changesets/get-dependents-graph@2.1.3':
-    resolution: {integrity: sha512-gphr+v0mv2I3Oxt19VdWRRUxq3sseyUpX9DaHpTUmLj92Y10AGy+XOtV+kbM6L/fDcpx7/ISDFK6T8A/P3lOdQ==}
+  '@changesets/get-dependents-graph@2.1.4':
+    resolution: {integrity: sha512-ZsS00x6WvmHq3sQv8oCMwL0f/z3wbXCVuSVTJwCnnmbC/iBdNJGFx1EcbMG4PC6sXRyH69liM4A2WKXzn/kRPg==}
 
   '@changesets/get-github-info@0.8.0':
     resolution: {integrity: sha512-cRnC+xdF0JIik7coko3iUP9qbnfi1iJQ3sAa6dE+Tx3+ET8bjFEm63PA4WEohgjYcmsOikPHWzPsMWWiZmntOQ==}
 
-  '@changesets/get-release-plan@4.0.15':
-    resolution: {integrity: sha512-Q04ZaRPuEVZtA+auOYgFaVQQSA98dXiVe/yFaZfY7hoSmQICHGvP0TF4u3EDNHWmmCS4ekA/XSpKlSM2PyTS2g==}
+  '@changesets/get-release-plan@4.0.16':
+    resolution: {integrity: sha512-2K5Om6CrMPm45rtvckfzWo7e9jOVCKLCnXia5eUPaURH7/LWzri7pK1TycdzAuAtehLkW7VPbWLCSExTHmiI6g==}
 
   '@changesets/get-version-range-type@0.4.0':
     resolution: {integrity: sha512-hwawtob9DryoGTpixy1D3ZXbGgJu1Rhr+ySH2PvTLHvkZuQ7sRT4oQwMh0hbqZH1weAooedEjRsbrWcGLCeyVQ==}
@@ -1111,8 +1111,8 @@ packages:
     resolution: {integrity: sha512-5XUvZuffe3KetyhbWwd4n2ktd7wraocCYw10tlM+/u/95iAz29GjNiuNxbCD1T6Bn1MyGc4QLVNKOWhzJkVFAw==}
     engines: {node: ^14.16.0 || >=16.0.0}
 
-  '@netlify/open-api@2.50.0':
-    resolution: {integrity: sha512-nvtP3GQqAg2fDCzZIz/PNIjgdQcbKRqJlRRQquRfBTP3DJi4254fMApWvBoj6+v07eowy2/t9xXHu+KRPw6iKw==}
+  '@netlify/open-api@2.54.0':
+    resolution: {integrity: sha512-9U/BOkUXoSz55CEO20feh6Ra4RVFzmZD6Dm3OKVhYNqZ8EDmPXlkxCnFeiPmlmRuZekyC/tfHVPl94y0BR9eig==}
     engines: {node: '>=14.8.0'}
 
   '@netlify/runtime-utils@1.3.1':
@@ -3087,8 +3087,8 @@ packages:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
 
-  ansi-regex@6.2.0:
-    resolution: {integrity: sha512-TKY5pyBkHyADOPYlRT9Lx6F544mPl0vS5Ew7BJ45hA08Q+t3GjbueLliBWN3sMICk6+y7HdyxSzC4bWS8baBdg==}
+  ansi-regex@6.2.2:
+    resolution: {integrity: sha512-Bq3SmSpyFHaWjPk8If9yc6svM8c56dB5BAtW4Qbw5jHTwwXXcTLoRMkpDJp6VL0XzlWaCHTXrkFURMYmD0sLqg==}
     engines: {node: '>=12'}
 
   ansi-styles@4.3.0:
@@ -3613,8 +3613,8 @@ packages:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
 
-  dotenv@17.3.1:
-    resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
 
   dotenv@8.6.0:
@@ -3971,8 +3971,8 @@ packages:
   fast-npm-meta@0.4.7:
     resolution: {integrity: sha512-aZU3i3eRcSb2NCq8i6N6IlyiTyF6vqAqzBGl2NBF6ngNx/GIqfYbkLDIKZ4z4P0o/RmtsFnVqHwdrSm13o4tnQ==}
 
-  fastq@1.19.1:
-    resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
+  fastq@1.20.1:
+    resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
 
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
@@ -4195,6 +4195,10 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  hasown@2.0.3:
+    resolution: {integrity: sha512-ej4AhfhfL2Q2zpMmLo7U1Uv9+PyhIZpgQLGT1F9miIGmiCJIoCgSmczFdrc97mWT4kVY72KA+WnnhJ5pghSvSg==}
+    engines: {node: '>= 0.4'}
+
   hey-listen@1.0.8:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
 
@@ -4228,8 +4232,8 @@ packages:
   httpxy@0.1.7:
     resolution: {integrity: sha512-pXNx8gnANKAndgga5ahefxc++tJvNL87CXoRwxn1cJE2ZkWEojF3tNfQIEhZX/vfpt+wzeAzpUI4qkediX1MLQ==}
 
-  human-id@4.1.1:
-    resolution: {integrity: sha512-3gKm/gCSUipeLsRYZbbdA1BD83lBoWUkZ7G9VFrhWPAU76KwYo5KR8V28bpoPm/ygy0x5/GCbpRQdY7VLYCoIg==}
+  human-id@4.1.3:
+    resolution: {integrity: sha512-tsYlhAYpjCKa//8rXZ9DqKEawhPoSytweBC2eNvcaDK+57RZLHGqNs3PZTQO6yekLFSuvA6AlnAfrw1uBvtb+Q==}
     hasBin: true
 
   human-signals@5.0.0:
@@ -4432,8 +4436,8 @@ packages:
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
 
-  js-yaml@3.14.1:
-    resolution: {integrity: sha512-okMH7OXXJ7YrN9Ok3/SXrnu4iX9yOk+25nqX4imS2npuvTYDmo/QEZoqwZkYaIDk3jVvBOTOIEgEhaLOynBS9g==}
+  js-yaml@3.14.2:
+    resolution: {integrity: sha512-PMSmkqxr106Xa156c2M265Z+FTrPl+oxd/rgOQy2tijQeK5TxQ43psO1ZCwhVOSdnn+RzkzlRz/eY4BgJBYVpg==}
     hasBin: true
 
   js-yaml@4.1.1:
@@ -4615,8 +4619,8 @@ packages:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  lodash-es@4.17.23:
-    resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
+  lodash-es@4.18.1:
+    resolution: {integrity: sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==}
 
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
@@ -5055,8 +5059,8 @@ packages:
   package-manager-detector@0.2.11:
     resolution: {integrity: sha512-BEnLolu+yuz22S56CU1SUKq3XC3PkwD5wv4ikR4MfGvnRVcmzXR9DwSlW2fEamyTPyXHomBJRzgapeuBvRNzJQ==}
 
-  package-manager-detector@1.3.0:
-    resolution: {integrity: sha512-ZsEbbZORsyHuO00lY1kV3/t72yp6Ysay6Pd17ZAlNGuGwmWDLCJxFpRs0IzfXfj1o4icJOkUEioexFHzyPurSQ==}
+  package-manager-detector@1.6.0:
+    resolution: {integrity: sha512-61A5ThoTiDG/C8s8UMZwSorAGwMJ0ERVGj2OjoW5pAalsNOg15+iQiPzrLJ4jhZ1HJzmC2PIHT2oEiH3R5fzNA==}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -5136,12 +5140,16 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  picomatch@2.3.1:
-    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
+  picomatch@2.3.2:
+    resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
 
   picomatch@4.0.3:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
+    engines: {node: '>=12'}
+
+  picomatch@4.0.4:
+    resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
 
   pify@4.0.1:
@@ -5460,8 +5468,8 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.15.0:
-    resolution: {integrity: sha512-mAZTtNCeetKMH+pSjrb76NAM8V9a05I9aBZOHztWy/UqcJdQYNsf59vrRKWnojAT9Y+GbIvoTBC++CPHqpDBhQ==}
+  qs@6.15.2:
+    resolution: {integrity: sha512-Rzq0KEyX/w/tEybncDgdkZrJgVUsUMk3xjh3t5bv3S1HTAtg+uOYt72+ZfwiQwKdysThkTBdL/rTi6HDmX9Ddw==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -5624,8 +5632,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.7.4:
-    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+  semver@7.8.0:
+    resolution: {integrity: sha512-AcM7dV/5ul4EekoQ29Agm5vri8JNqRyj39o0qpX6vDF2GZrtutZl5RwgD1XnZjiTAfncsJhMI48QQH3sN87YNA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -5662,8 +5670,8 @@ packages:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
 
-  side-channel-list@1.0.0:
-    resolution: {integrity: sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==}
+  side-channel-list@1.0.1:
+    resolution: {integrity: sha512-mjn/0bi/oUURjc5Xl7IaWi/OJJJumuoJFQJfDDyO46+hBWsfaVM65TBHq2eoZBhzl9EchxOijpkbRC8SVBQU0w==}
     engines: {node: '>= 0.4'}
 
   side-channel-map@1.0.1:
@@ -5790,8 +5798,8 @@ packages:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
     engines: {node: '>=8'}
 
-  strip-ansi@7.1.0:
-    resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
+  strip-ansi@7.2.0:
+    resolution: {integrity: sha512-yDPMNjp4WyfYBkHnjIRLfca1i6KMyGCtsVgoKe/z1+6vukgaENdgGBZt+ZmKPc4gavvEZ5OgHfHdrazhgNyG7w==}
     engines: {node: '>=12'}
 
   strip-bom@3.0.0:
@@ -6170,8 +6178,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuid@11.1.0:
-    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+  uuid@11.1.1:
+    resolution: {integrity: sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==}
     hasBin: true
 
   vaul-vue@0.4.1:
@@ -6547,7 +6555,7 @@ snapshots:
 
   '@antfu/install-pkg@1.1.0':
     dependencies:
-      package-manager-detector: 1.3.0
+      package-manager-detector: 1.6.0
       tinyexec: 1.0.2
 
   '@axe-core/playwright@4.11.1(playwright-core@1.58.2)':
@@ -6699,7 +6707,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/runtime@7.28.3': {}
+  '@babel/runtime@7.29.2': {}
 
   '@babel/template@7.27.2':
     dependencies:
@@ -6735,9 +6743,9 @@ snapshots:
     dependencies:
       fontkitten: 1.0.3
 
-  '@changesets/apply-release-plan@7.1.0':
+  '@changesets/apply-release-plan@7.1.1':
     dependencies:
-      '@changesets/config': 3.1.3
+      '@changesets/config': 3.1.4
       '@changesets/get-version-range-type': 0.4.0
       '@changesets/git': 3.0.4
       '@changesets/should-skip-package': 0.1.2
@@ -6749,22 +6757,22 @@ snapshots:
       outdent: 0.5.0
       prettier: 2.8.8
       resolve-from: 5.0.0
-      semver: 7.7.3
+      semver: 7.8.0
 
-  '@changesets/assemble-release-plan@6.0.9':
+  '@changesets/assemble-release-plan@6.0.10':
     dependencies:
       '@changesets/errors': 0.2.0
-      '@changesets/get-dependents-graph': 2.1.3
+      '@changesets/get-dependents-graph': 2.1.4
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
-      semver: 7.7.3
+      semver: 7.8.0
 
   '@changesets/changelog-git@0.2.1':
     dependencies:
       '@changesets/types': 6.1.0
 
-  '@changesets/changelog-github@0.6.0':
+  '@changesets/changelog-github@0.7.0':
     dependencies:
       '@changesets/get-github-info': 0.8.0
       '@changesets/types': 6.1.0
@@ -6772,15 +6780,15 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/cli@2.30.0(@types/node@25.5.0)':
+  '@changesets/cli@2.31.0(@types/node@25.5.0)':
     dependencies:
-      '@changesets/apply-release-plan': 7.1.0
-      '@changesets/assemble-release-plan': 6.0.9
+      '@changesets/apply-release-plan': 7.1.1
+      '@changesets/assemble-release-plan': 6.0.10
       '@changesets/changelog-git': 0.2.1
-      '@changesets/config': 3.1.3
+      '@changesets/config': 3.1.4
       '@changesets/errors': 0.2.0
-      '@changesets/get-dependents-graph': 2.1.3
-      '@changesets/get-release-plan': 4.0.15
+      '@changesets/get-dependents-graph': 2.1.4
+      '@changesets/get-release-plan': 4.0.16
       '@changesets/git': 3.0.4
       '@changesets/logger': 0.1.1
       '@changesets/pre': 2.0.2
@@ -6797,16 +6805,16 @@ snapshots:
       package-manager-detector: 0.2.11
       picocolors: 1.1.1
       resolve-from: 5.0.0
-      semver: 7.7.3
+      semver: 7.8.0
       spawndamnit: 3.0.1
       term-size: 2.2.1
     transitivePeerDependencies:
       - '@types/node'
 
-  '@changesets/config@3.1.3':
+  '@changesets/config@3.1.4':
     dependencies:
       '@changesets/errors': 0.2.0
-      '@changesets/get-dependents-graph': 2.1.3
+      '@changesets/get-dependents-graph': 2.1.4
       '@changesets/logger': 0.1.1
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
@@ -6818,12 +6826,12 @@ snapshots:
     dependencies:
       extendable-error: 0.1.7
 
-  '@changesets/get-dependents-graph@2.1.3':
+  '@changesets/get-dependents-graph@2.1.4':
     dependencies:
       '@changesets/types': 6.1.0
       '@manypkg/get-packages': 1.1.3
       picocolors: 1.1.1
-      semver: 7.7.3
+      semver: 7.8.0
 
   '@changesets/get-github-info@0.8.0':
     dependencies:
@@ -6832,10 +6840,10 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/get-release-plan@4.0.15':
+  '@changesets/get-release-plan@4.0.16':
     dependencies:
-      '@changesets/assemble-release-plan': 6.0.9
-      '@changesets/config': 3.1.3
+      '@changesets/assemble-release-plan': 6.0.10
+      '@changesets/config': 3.1.4
       '@changesets/pre': 2.0.2
       '@changesets/read': 0.6.7
       '@changesets/types': 6.1.0
@@ -6890,7 +6898,7 @@ snapshots:
     dependencies:
       '@changesets/types': 6.1.0
       fs-extra: 7.0.1
-      human-id: 4.1.1
+      human-id: 4.1.3
       prettier: 2.8.8
 
   '@clack/core@1.0.0-alpha.7':
@@ -7326,7 +7334,7 @@ snapshots:
     dependencies:
       string-width: 5.1.2
       string-width-cjs: string-width@4.2.3
-      strip-ansi: 7.1.0
+      strip-ansi: 7.2.0
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
@@ -7381,14 +7389,14 @@ snapshots:
 
   '@manypkg/find-root@1.1.0':
     dependencies:
-      '@babel/runtime': 7.28.3
+      '@babel/runtime': 7.29.2
       '@types/node': 12.20.55
       find-up: 4.1.0
       fs-extra: 8.1.0
 
   '@manypkg/get-packages@1.1.3':
     dependencies:
-      '@babel/runtime': 7.28.3
+      '@babel/runtime': 7.29.2
       '@changesets/types': 4.1.0
       '@manypkg/find-root': 1.1.0
       fs-extra: 8.1.0
@@ -7402,7 +7410,7 @@ snapshots:
       https-proxy-agent: 7.0.6
       node-fetch: 2.7.0
       nopt: 8.1.0
-      semver: 7.7.4
+      semver: 7.7.3
       tar: 7.4.3
     transitivePeerDependencies:
       - encoding
@@ -7445,11 +7453,11 @@ snapshots:
       lodash.debounce: 4.0.8
       netlify: 13.3.5
       parse-gitignore: 2.0.0
-      uuid: 11.1.0
+      uuid: 11.1.1
       write-file-atomic: 6.0.0
     optional: true
 
-  '@netlify/open-api@2.50.0':
+  '@netlify/open-api@2.54.0':
     optional: true
 
   '@netlify/runtime-utils@1.3.1':
@@ -7465,7 +7473,7 @@ snapshots:
   '@nodelib/fs.walk@1.2.8':
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
-      fastq: 1.19.1
+      fastq: 1.20.1
 
   '@nuxt/cli@3.32.0(cac@6.7.14)(magicast@0.5.1)':
     dependencies:
@@ -7490,7 +7498,7 @@ snapshots:
       perfect-debounce: 2.0.0
       pkg-types: 2.3.0
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.7.3
       srvx: 0.10.0
       std-env: 3.10.0
       tinyexec: 1.0.2
@@ -7529,7 +7537,7 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 2.3.0
       prompts: 2.4.2
-      semver: 7.7.4
+      semver: 7.7.3
 
   '@nuxt/devtools@3.1.1(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))':
     dependencies:
@@ -7556,7 +7564,7 @@ snapshots:
       pathe: 2.0.3
       perfect-debounce: 2.0.0
       pkg-types: 2.3.0
-      semver: 7.7.4
+      semver: 7.7.3
       simple-git: 3.30.0
       sirv: 3.0.2
       structured-clone-es: 1.0.0
@@ -7665,7 +7673,7 @@ snapshots:
       mlly: 1.8.2
       ohash: 2.0.11
       pathe: 2.0.3
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       std-env: 3.10.0
       tinyglobby: 0.2.15
     transitivePeerDependencies:
@@ -7691,7 +7699,7 @@ snapshots:
       pkg-types: 2.3.0
       rc9: 2.1.2
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.8.0
       tinyglobby: 0.2.15
       ufo: 1.6.3
       unctx: 2.5.0
@@ -7716,7 +7724,7 @@ snapshots:
       pkg-types: 2.3.0
       rc9: 2.1.2
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.7.3
       tinyglobby: 0.2.15
       ufo: 1.6.3
       unctx: 2.5.0
@@ -7741,7 +7749,7 @@ snapshots:
       pkg-types: 2.3.0
       rc9: 3.0.0
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.8.0
       tinyglobby: 0.2.15
       ufo: 1.6.3
       unctx: 2.5.0
@@ -7837,7 +7845,7 @@ snapshots:
       git-url-parse: 16.1.0
       is-docker: 3.0.0
       ofetch: 1.5.1
-      package-manager-detector: 1.3.0
+      package-manager-detector: 1.6.0
       pathe: 2.0.3
       rc9: 2.1.2
       std-env: 3.10.0
@@ -8058,7 +8066,7 @@ snapshots:
       '@nuxt/kit': 3.21.0(magicast@0.5.1)
       pathe: 1.1.2
       pkg-types: 1.3.1
-      semver: 7.7.4
+      semver: 7.8.0
     transitivePeerDependencies:
       - magicast
 
@@ -8515,10 +8523,10 @@ snapshots:
       '@rollup/pluginutils': 5.3.0(rollup@4.52.5)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.5.0(picomatch@4.0.3)
+      fdir: 6.5.0(picomatch@4.0.4)
       is-reference: 1.2.1
       magic-string: 0.30.21
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optionalDependencies:
       rollup: 4.52.5
 
@@ -8573,7 +8581,7 @@ snapshots:
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optionalDependencies:
       rollup: 4.52.5
 
@@ -9373,7 +9381,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.57.2
       debug: 4.4.3
       minimatch: 10.2.4
-      semver: 7.7.4
+      semver: 7.8.0
       tinyglobby: 0.2.15
       ts-api-utils: 2.4.0(typescript@5.9.3)
       typescript: 5.9.3
@@ -9479,7 +9487,7 @@ snapshots:
       glob: 10.4.5
       graceful-fs: 4.2.11
       node-gyp-build: 4.8.4
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       resolve-from: 5.0.0
     transitivePeerDependencies:
       - encoding
@@ -9855,7 +9863,7 @@ snapshots:
 
   ansi-regex@5.0.1: {}
 
-  ansi-regex@6.2.0: {}
+  ansi-regex@6.2.2: {}
 
   ansi-styles@4.3.0:
     dependencies:
@@ -9868,7 +9876,7 @@ snapshots:
   anymatch@3.1.3:
     dependencies:
       normalize-path: 3.0.0
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   archiver-utils@5.0.2:
     dependencies:
@@ -10007,7 +10015,7 @@ snapshots:
       chokidar: 5.0.0
       confbox: 0.2.2
       defu: 6.1.4
-      dotenv: 17.3.1
+      dotenv: 17.4.2
       exsolve: 1.0.8
       giget: 2.0.0
       jiti: 2.6.1
@@ -10352,7 +10360,7 @@ snapshots:
 
   dotenv@16.6.1: {}
 
-  dotenv@17.3.1: {}
+  dotenv@17.4.2: {}
 
   dotenv@8.6.0: {}
 
@@ -10372,7 +10380,7 @@ snapshots:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.7.4
+      semver: 7.8.0
 
   ee-first@1.1.1: {}
 
@@ -10568,7 +10576,7 @@ snapshots:
       eslint-import-context: 0.1.9(unrs-resolver@1.11.1)
       is-glob: 4.0.3
       minimatch: 9.0.5
-      semver: 7.7.3
+      semver: 7.8.0
       stable-hash-x: 0.2.0
       unrs-resolver: 1.11.1
     optionalDependencies:
@@ -10590,7 +10598,7 @@ snapshots:
       html-entities: 2.6.0
       object-deep-merge: 2.0.0
       parse-imports-exports: 0.2.4
-      semver: 7.7.4
+      semver: 7.8.0
       spdx-expression-parse: 4.0.0
       to-valid-identifier: 1.0.0
     transitivePeerDependencies:
@@ -10624,7 +10632,7 @@ snapshots:
       pluralize: 8.0.0
       regexp-tree: 0.1.27
       regjsparser: 0.13.0
-      semver: 7.7.3
+      semver: 7.8.0
       strip-indent: 4.1.1
 
   eslint-plugin-vue@10.8.0(@stylistic/eslint-plugin@5.10.0(eslint@9.31.0(jiti@2.6.1)))(@typescript-eslint/parser@8.57.2(eslint@9.31.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.31.0(jiti@2.6.1))(vue-eslint-parser@10.4.0(eslint@9.31.0(jiti@2.6.1))):
@@ -10634,7 +10642,7 @@ snapshots:
       natural-compare: 1.4.0
       nth-check: 2.1.1
       postcss-selector-parser: 7.1.0
-      semver: 7.7.3
+      semver: 7.8.0
       vue-eslint-parser: 10.4.0(eslint@9.31.0(jiti@2.6.1))
       xml-name-validator: 4.0.0
     optionalDependencies:
@@ -10785,13 +10793,17 @@ snapshots:
 
   fast-npm-meta@0.4.7: {}
 
-  fastq@1.19.1:
+  fastq@1.20.1:
     dependencies:
       reusify: 1.1.0
 
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
+
+  fdir@6.5.0(picomatch@4.0.4):
+    optionalDependencies:
+      picomatch: 4.0.4
 
   fetch-blob@3.2.0:
     dependencies:
@@ -10943,7 +10955,7 @@ snapshots:
       get-proto: 1.0.1
       gopd: 1.2.0
       has-symbols: 1.1.0
-      hasown: 2.0.2
+      hasown: 2.0.3
       math-intrinsics: 1.1.0
     optional: true
 
@@ -11066,6 +11078,11 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hasown@2.0.3:
+    dependencies:
+      function-bind: 1.1.2
+    optional: true
+
   hey-listen@1.0.8: {}
 
   hookable@5.5.3: {}
@@ -11097,7 +11114,7 @@ snapshots:
 
   httpxy@0.1.7: {}
 
-  human-id@4.1.1: {}
+  human-id@4.1.3: {}
 
   human-signals@5.0.0: {}
 
@@ -11276,7 +11293,7 @@ snapshots:
 
   js-tokens@9.0.1: {}
 
-  js-yaml@3.14.1:
+  js-yaml@3.14.2:
     dependencies:
       argparse: 1.0.10
       esprima: 4.0.1
@@ -11302,7 +11319,7 @@ snapshots:
       acorn: 8.16.0
       eslint-visitor-keys: 3.4.3
       espree: 9.6.1
-      semver: 7.7.4
+      semver: 7.8.0
 
   jsonfile@4.0.0:
     optionalDependencies:
@@ -11440,7 +11457,7 @@ snapshots:
       p-locate: 6.0.0
     optional: true
 
-  lodash-es@4.17.23:
+  lodash-es@4.18.1:
     optional: true
 
   lodash.debounce@4.0.8:
@@ -11504,7 +11521,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.0
 
   markdown-it@14.1.0:
     dependencies:
@@ -11538,7 +11555,7 @@ snapshots:
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   mime-db@1.54.0: {}
 
@@ -11637,12 +11654,12 @@ snapshots:
 
   netlify@13.3.5:
     dependencies:
-      '@netlify/open-api': 2.50.0
-      lodash-es: 4.17.23
+      '@netlify/open-api': 2.54.0
+      lodash-es: 4.18.1
       micro-api-client: 3.3.0
       node-fetch: 3.3.2
       p-wait-for: 5.0.2
-      qs: 6.15.0
+      qs: 6.15.2
     optional: true
 
   nitropack@2.12.9(@netlify/blobs@9.1.2):
@@ -11700,7 +11717,7 @@ snapshots:
       rollup: 4.52.5
       rollup-plugin-visualizer: 6.0.5(rollup@4.52.5)
       scule: 1.3.0
-      semver: 7.7.4
+      semver: 7.7.3
       serve-placeholder: 2.0.2
       serve-static: 2.2.0
       source-map: 0.7.6
@@ -12138,7 +12155,7 @@ snapshots:
     dependencies:
       quansync: 0.2.11
 
-  package-manager-detector@1.3.0: {}
+  package-manager-detector@1.6.0: {}
 
   parent-module@1.0.1:
     dependencies:
@@ -12198,9 +12215,11 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@2.3.1: {}
+  picomatch@2.3.2: {}
 
   picomatch@4.0.3: {}
+
+  picomatch@4.0.4: {}
 
   pify@4.0.1: {}
 
@@ -12529,7 +12548,7 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.15.0:
+  qs@6.15.2:
     dependencies:
       side-channel: 1.1.0
     optional: true
@@ -12559,7 +12578,7 @@ snapshots:
   read-yaml-file@1.1.0:
     dependencies:
       graceful-fs: 4.2.11
-      js-yaml: 3.14.1
+      js-yaml: 3.14.2
       pify: 4.0.1
       strip-bom: 3.0.0
 
@@ -12711,7 +12730,7 @@ snapshots:
 
   semver@7.7.3: {}
 
-  semver@7.7.4: {}
+  semver@7.8.0: {}
 
   send@1.2.0:
     dependencies:
@@ -12758,7 +12777,7 @@ snapshots:
 
   shell-quote@1.8.3: {}
 
-  side-channel-list@1.0.0:
+  side-channel-list@1.0.1:
     dependencies:
       es-errors: 1.3.0
       object-inspect: 1.13.4
@@ -12785,7 +12804,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
       object-inspect: 1.13.4
-      side-channel-list: 1.0.0
+      side-channel-list: 1.0.1
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
     optional: true
@@ -12878,7 +12897,7 @@ snapshots:
     dependencies:
       eastasianwidth: 0.2.0
       emoji-regex: 9.2.2
-      strip-ansi: 7.1.0
+      strip-ansi: 7.2.0
 
   string_decoder@1.1.1:
     dependencies:
@@ -12892,9 +12911,9 @@ snapshots:
     dependencies:
       ansi-regex: 5.0.1
 
-  strip-ansi@7.1.0:
+  strip-ansi@7.2.0:
     dependencies:
-      ansi-regex: 6.2.0
+      ansi-regex: 6.2.2
 
   strip-bom@3.0.0: {}
 
@@ -13110,7 +13129,7 @@ snapshots:
     dependencies:
       local-pkg: 1.1.2
       magic-string: 0.30.21
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       unimport: 5.6.0
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
@@ -13135,7 +13154,7 @@ snapshots:
       magic-string: 0.30.21
       mlly: 1.8.2
       obug: 2.1.1
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       tinyglobby: 0.2.15
       unplugin: 2.3.11
       unplugin-utils: 0.3.1
@@ -13265,7 +13284,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  uuid@11.1.0:
+  uuid@11.1.1:
     optional: true
 
   vaul-vue@0.4.1(reka-ui@2.9.2(vue@3.5.30(typescript@5.9.3)))(vue@3.5.30(typescript@5.9.3)):
@@ -13474,7 +13493,7 @@ snapshots:
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
       esquery: 1.6.0
-      semver: 7.7.3
+      semver: 7.8.0
     transitivePeerDependencies:
       - supports-color
 
@@ -13574,7 +13593,7 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       string-width: 5.1.2
-      strip-ansi: 7.1.0
+      strip-ansi: 7.2.0
 
   write-file-atomic@6.0.0:
     dependencies:
