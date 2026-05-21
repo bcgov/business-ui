@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.20.0
+
+### Minor Changes
+
+- [#473](https://github.com/bcgov/business-ui/pull/473) [`a85a867`](https://github.com/bcgov/business-ui/commit/a85a867cd8e83b7e2c5371ba4629a1c014efda15) Thanks [@deetz99](https://github.com/deetz99)! - Organize types for all 'Manage' components and simplify readonly props
+
+- [#469](https://github.com/bcgov/business-ui/pull/469) [`27413b6`](https://github.com/bcgov/business-ui/commit/27413b6e7bd176e388999204cc94e62db58cc6c5) Thanks [@deetz99](https://github.com/deetz99)! - Update ManageCompanyName and ManageNameTranslations to latest design.
+
+- [#474](https://github.com/bcgov/business-ui/pull/474) [`00ffd21`](https://github.com/bcgov/business-ui/commit/00ffd219d263d3d6a737a550733e53223a4c8c42) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - Switch LD dependency to js-client-sdk
+
 ## 0.19.0
 
 ### Minor Changes
