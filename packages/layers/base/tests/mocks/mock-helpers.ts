@@ -67,7 +67,7 @@ export const mockApiCallsForLedger = async (
       await route.fulfill({ json: getBusinessLedgerMock(ledgerItems) })
     })
   }
-  page.route('https://app.launchdarkly.com/sdk/evalx/**/context', async (route) => {
+  page.route(/.*clientsdk\.launchdarkly\.com\/sdk\/evalx\/.*\/contexts\/.*/, async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
   })
   page.route(`**/api/v2/businesses/${identifier}?slim=true`, async (route) => {
@@ -109,8 +109,8 @@ export const mockCommonApiCallsForFiling = async (
   shareClassesJSON?: object | undefined,
   businessOverrides?: BusinessOverride[]
 ) => {
-  mockLdarkly(page)
-  mockApiCallsForSetAccount(page, accountType)
+  await mockLdarkly(page)
+  await mockApiCallsForSetAccount(page, accountType)
   page.route(`**/api/v2/businesses/${identifier}`, async (route) => {
     await route.fulfill({
       json: getBusinessMock([{ key: 'identifier', value: identifier }, ...(businessOverrides || [])])
@@ -164,7 +164,7 @@ export const mockLdarkly = async (page: Page) => {
   page.route('https://app.launchdarkly.com/sdk/goals/*', async (route) => {
     await route.fulfill({ json: [], status: 304 })
   })
-  page.route('https://app.launchdarkly.com/sdk/evalx/**/*', async (route) => {
+  page.route(/.*clientsdk\.launchdarkly\.com\/sdk\/evalx\/.*\/contexts\/.*/, async (route) => {
     await route.fulfill({ json: getLdarklyFlagsMock() })
   })
   page.route('https://events.launchdarkly.com/events/bulk/*', async (route) => {
