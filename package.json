@@ -21,7 +21,7 @@
     "@changesets/cli": "2.31.0",
     "@nuxt/eslint-config": "1.15.2",
     "dotenv": "catalog:",
-    "eslint": "9.31.0"
+    "eslint": "10.4.0"
   },
   "engines": {
     "node": ">=24"
