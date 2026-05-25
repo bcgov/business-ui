@@ -1,3 +1,4 @@
+// small change to test base layer ci build
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { createResolver } from 'nuxt/kit'
 
