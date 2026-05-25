@@ -1,3 +1,4 @@
+// small change to test base layer ci build
 export default defineNuxtConfig({
   extends: ['..'],
   modules: [],
