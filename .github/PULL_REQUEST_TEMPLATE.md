@@ -3,4 +3,4 @@
 *Description of changes:*
 
 
-By submitting this pull request, I confirm that you can use, modify, copy, and redistribute this contribution, under the terms of the lear license (Apache 2.0).
+By submitting this pull request, I confirm that you can use, modify, copy, and redistribute this contribution, under the terms of the business-ui license (BSD 3-Clause).
