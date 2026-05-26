@@ -128,7 +128,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(bodyText.getByTestId('business-help-contact')).toBeVisible()
     await expect(bodyText).toHaveText(
       // eslint-disable-next-line max-len
-      'This filing is available on paper only. To request copies of paper documents, contact BC Registries staff.BC Registries Contact InformationMonday to Friday, 8:30am - 4:30pm Pacific Time Toll Free: 1-877-370-1033 Victoria Office: 1-250-370-1033 Email: BCRegistries@gov.bc.ca')
+      'This filing is available on paper only. To request copies of paper documents, contact BC Registry Services.BC Registries Contact InformationMonday to Friday, 8:30am - 4:30pm Pacific Time Toll Free: 1-877-370-1033 Victoria Office: 1-250-370-1033 Email: BCRegistries@gov.bc.ca')
     // Document list
     await expect(ledgerItemBody.getByTestId('document-list')).not.toBeVisible()
     // Comments list
@@ -263,7 +263,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(commentSection.getByText('Details (1)')).toBeVisible()
     const comments = await commentSection.getByTestId('ledger-comment').all()
     expect(comments.length).toBe(1)
-    await expect(comments[0]!).toContainText('BC Registries Staff')
+    await expect(comments[0]!).toContainText('BC Registry Services')
     await expect(comments[0]!).toContainText('(October 14, 2025 at 7:11 am Pacific time)')
     await expect(comments[0]!).toContainText('Testing')
   })

@@ -51,7 +51,7 @@ const showCommentDialog = (show: boolean) => {
       >
         <div class="flex flex-col gap-0.5">
           <div>
-            <strong v-if="!isAuthorizedDetailComments">{{ $t('label.bcRegistriesStaff') }}</strong>
+            <strong v-if="!isAuthorizedDetailComments">{{ $t('label.bcRegistryServices') }}</strong>
             <strong v-else>{{ comment.submitterDisplayName || 'N/A' }}</strong>
             ({{ toPacificDateTime(new Date(comment.timestamp)) || $t('label.unknown') }})
           </div>
