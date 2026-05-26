@@ -9,11 +9,11 @@ catalog:
   '@iconify-json/mdi': 1.2.3
   '@nuxt/test-utils': 3.21.0
   dotenv: 17.4.2
-  typescript: 5.9.3
-  vue-tsc: 3.2.5
+  typescript: 6.0.3
+  vue-tsc: 3.3.1
   nuxt: 4.4.6
-  vue: 3.5.30
-  vue-router: 5.0.4
+  vue: 3.5.34
+  vue-router: 5.0.7
   '@types/node': 25.5.0
   '@faker-js/faker': 10.4.0
 
@@ -33,3 +33,4 @@ onlyBuiltDependencies:
   - "@tailwindcss/oxide"
   - "esbuild"
   - "vue-demi"
+  - "unrs-resolver"
