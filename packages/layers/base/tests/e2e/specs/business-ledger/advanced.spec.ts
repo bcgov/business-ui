@@ -263,7 +263,7 @@ test.describe('Business Ledger Tests (advanced)', () => {
     await expect(commentSection.getByText('Details (1)')).toBeVisible()
     const comments = await commentSection.getByTestId('ledger-comment').all()
     expect(comments.length).toBe(1)
-    await expect(comments[0]!).toContainText('BC Registry Services')
+    await expect(comments[0]!).toContainText('BC Registries Staff')
     await expect(comments[0]!).toContainText('(October 14, 2025 at 7:11 am Pacific time)')
     await expect(comments[0]!).toContainText('Testing')
   })

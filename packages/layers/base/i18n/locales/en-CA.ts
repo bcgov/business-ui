@@ -360,7 +360,7 @@ export default {
     back: 'Back',
     bcRegistriesContactInformation: 'BC Registries Contact Information',
     bcRegistriesDashboard: 'BC Registries Dashboard',
-    bcRegistryServices: 'BC Registry Services',
+    bcRegistriesStaff: 'BC Registries Staff',
     bcOnLine: 'BC OnLine',
     bcOnLineAccountNumber: 'BC OnLine Account Number',
     bootstrapComplete: '{name} Complete',
