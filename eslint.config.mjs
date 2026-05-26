@@ -51,7 +51,6 @@ export default createConfigForNuxt({
     '**/playwright-report',
     '**/coverage',
     '**/business-registry-dashboard/',
-    '**/post-restoration-transition-application/',
     'eslint.config.mjs'
   ]
 })
