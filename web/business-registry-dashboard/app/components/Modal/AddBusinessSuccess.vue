@@ -30,8 +30,8 @@ async function handleClose () {
     @modal-closed="handleClose"
   >
     <div class="-my-6 space-y-2">
-      <p v-for="t in $tm('modal.addBusinessSuccess.description')" :key="t" class="text-bcGovColor-darkGray">
-        {{ $rt(t) }}
+      <p v-for="text in $tm('modal.addBusinessSuccess.description')" :key="text" class="text-bcGovColor-darkGray">
+        {{ $rt(text) }}
       </p>
     </div>
   </ModalBase>
