@@ -24,7 +24,7 @@ export default {
     disabled: {
       content: 'This business is disabled.',
       contentExtra: {
-        default: 'For assistance, please contact BC Registry Services'
+        default: 'For assistance, please contact BC Registry Services:'
       },
       label: 'This business is disabled'
     },
