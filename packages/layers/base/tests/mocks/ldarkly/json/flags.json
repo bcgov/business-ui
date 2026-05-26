@@ -69,13 +69,6 @@
         "variation": 0,
         "version": 222
     },
-    "enable-standalone-transition": {
-        "flagVersion": 3,
-        "trackEvents": false,
-        "value": false,
-        "variation": 1,
-        "version": 222
-    },
     "enable-web-chat-boolean": {
         "flagVersion": 2,
         "trackEvents": false,
