@@ -168,7 +168,7 @@ function getExpandedFormVariant(row: TableBusinessRow<NameTranslationSchema>): F
       @init-edit="initEditNameTranslation"
       @remove="removeNameTranslation"
       @undo="undoNameTranslation"
-      @action-prevented="setActiveFormAlert"
+      @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
     >
       <template #expanded="{ row }">
         <div class="px-4 sm:px-6">
