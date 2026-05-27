@@ -601,7 +601,10 @@ export default {
   modal: {
     addBusinessSuccess: {
       title: 'Success! {name} has been added to your account.',
-      description: 'You can now manage your business from your list using your BC Registries account.',
+      description: [
+        'Manage this business right away, or find it in your business list any time.',
+        'Bookmark this page to access your business in the future.'
+      ],
       manageBusiness: 'Manage Business'
     },
     removeBusiness: {
