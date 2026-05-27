@@ -18,13 +18,13 @@ export default {
   businessAlert: {
     /* Alert text based on BusinessAlert enum */
     amalgamation: {
-      content: 'If you have any questions, please contact BC Registries staff:',
+      content: 'If you have any questions, please contact BC Registry Services:',
       label: 'This corporation is part of an amalgamation and is scheduled to become historical on {date}'
     },
     disabled: {
       content: 'This business is disabled.',
       contentExtra: {
-        default: 'For assistance, please contact BC Registries staff:'
+        default: 'For assistance, please contact BC Registry Services:'
       },
       label: 'This business is disabled'
     },
@@ -44,7 +44,7 @@ export default {
     frozen: {
       content: 'This business is frozen and therefore no filings can be completed at this time.',
       contentExtra: {
-        default: 'For assistance, please contact BC Registries staff:'
+        default: 'For assistance, please contact BC Registry Services:'
       },
       label: 'This business is frozen'
     },
@@ -52,21 +52,21 @@ export default {
       content: 'The most common reason a business is not in good standing is an overdue annual report. Any outstanding annual reports must filed to bring the business back into good standing.',
       standingDueToLiquidation: 'Any outstanding Liquidation Reports must be filed to bring the business back into good standing.',
       contentExtra: {
-        default: 'If further action is required, please contact BC Registries staff:'
+        default: 'If further action is required, please contact BC Registry Services:'
       },
       label: 'This business is not in good standing'
     },
     liquidation: {
       content: 'This {entityType} is undergoing liquidation. The next liquidation report is due on {date}.',
       contentExtra: {
-        default: 'For assistance, please contact BC Registries staff:'
+        default: 'For assistance, please contact BC Registry Services:'
       },
       label: 'This {entityType} is in the process of liquidation'
     },
     missinginfo: {
       content: 'BC Registries is missing information about your business (e.g., business start date, nature of business, business address, etc.). Please contact BC Registries to input any missing business information. Missing information must be entered before you can file changes or dissolve this business.',
       contentExtra: {
-        default: 'If further action is required, please contact BC Registries staff:'
+        default: 'If further action is required, please contact BC Registry Services:'
       },
       label: 'Missing Information'
     },
@@ -685,7 +685,7 @@ export default {
     FiledBySubmitterOn: 'Filed by {submitter} on',
     filedBySubmitterOn: 'filed by {submitter} on',
     filing: 'filing',
-    filingAvailableOnPaperOnly: 'This filing is available on paper only. To request copies of paper documents, contact BC Registries staff.',
+    filingAvailableOnPaperOnly: 'This filing is available on paper only. To request copies of paper documents, contact BC Registry Services.',
     filingDateWillBeDate: 'The {filing} date and time for {name} will be {boldStart}{date}{boldEnd}.',
     filingWillTakeEffectOnDate: 'The {filing} will take effect on {boldStart}{date}{boldEnd}.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
@@ -694,8 +694,8 @@ export default {
     incorporation: 'incorporation',
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',
     latinAlphabetOnly: 'Latin alphabet only. If the name uses another script, spell it phonetically in English or French.',
-    limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
-    limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registries staff.',
+    limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
+    limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
     noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
     noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
@@ -761,7 +761,7 @@ export default {
         INVALID: 'The specified name request is not valid.',
         INVALID_ACTION_TYPE: 'This Name Request is for {nrActionType}. For this {filingName} you can only use the following Name Request types: {expectedNrActionTypes}',
         INVALID_LEGAL_TYPE: 'This Name Request is for a {nrBusinessType}. You need to use a name request for a {expectedNrBusinessType}.',
-        INVALID_LEGAL_TYPE_FOR_ACTION_TYPE: 'You cannot change a {businessType} to a {nrBusinessType}. If you need assistance, contact BC Registry staff.',
+        INVALID_LEGAL_TYPE_FOR_ACTION_TYPE: 'You cannot change a {businessType} to a {nrBusinessType}. If you need assistance, contact BC Registry Services.',
         NEED_CONSENT: 'The specified name request is awaiting consent.',
         NOT_APPROVED: 'The specified name request has not been approved.',
         NOT_FOUND: 'We could not find a match for the information you have entered. Please verify the NR Number and try again.',
