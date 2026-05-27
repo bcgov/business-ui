@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.21.0
+
+### Minor Changes
+
+- [#478](https://github.com/bcgov/business-ui/pull/478) [`3790a14`](https://github.com/bcgov/business-ui/commit/3790a14a3b89bc8cb082c048829d135a34a932fc) Thanks [@eve-git](https://github.com/eve-git)! - Update contact text from "contact BC Registries staff" to "contact BC Registry Services"
+
 ## 0.20.0
 
 ### Minor Changes
