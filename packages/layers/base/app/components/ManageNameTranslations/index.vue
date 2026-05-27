@@ -3,7 +3,9 @@ const {
   stateKey = 'manage-name-translations',
   labelOverrides,
   variant = 'default',
-  allowedActions
+  allowedActions,
+  preventActions = false,
+  actionPreventedSignal = 0
 } = defineProps<{
   loading?: boolean
   emptyText?: string
@@ -11,10 +13,26 @@ const {
   variant?: ManageVariant
   allowedActions?: ManageAllowedAction[]
   labelOverrides?: TableLabelOverrides
+  preventActions?: boolean
+  actionPreventedSignal?: number
+}>()
+
+const emit = defineEmits<{
+  'action-prevented': []
 }>()
 
 let editSubject = ''
 let currentEditingRow: NameTranslationSchema | null = null
+
+const shouldPreventActions = computed(() => {
+  return !!activeNameTranslation.value || preventActions
+})
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
 
 const activeNameTranslation = defineModel<ActiveNameTranslationSchema | undefined>
 ('active-name-translation', { required: true })
@@ -41,12 +59,15 @@ const showAddButton = computed(() => {
 })
 
 function setActiveFormAlert() {
-  setAlert('name-translation-form', $t('text.finishTaskBeforeOtherChanges'))
+  if (activeNameTranslation.value !== undefined) {
+    setAlert('name-translation-form', $t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddNameTranslation() {
-  if (activeNameTranslation.value !== undefined) {
+  if (shouldPreventActions.value) {
     setActiveFormAlert()
+    emit('action-prevented')
     return
   }
   activeNameTranslation.value = activeNameTranslationSchema.parse({})
@@ -142,7 +163,7 @@ function getExpandedFormVariant(row: TableBusinessRow<NameTranslationSchema>): F
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
       :hide-actions-when="() => variant === 'readonly'"
-      :prevent-actions="!!activeNameTranslation"
+      :prevent-actions="shouldPreventActions"
       :label-overrides="{ editLabel: $t('label.correct'), ...labelOverrides }"
       @init-edit="initEditNameTranslation"
       @remove="removeNameTranslation"

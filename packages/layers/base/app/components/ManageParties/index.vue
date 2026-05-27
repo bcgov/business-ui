@@ -7,13 +7,22 @@ const {
   allowedActions,
   labelOverrides,
   variant = 'default',
-  modelName = 'activeParty'
-} = defineProps<ManagePartiesProps>()
+  modelName = 'activeParty',
+  preventActions = false,
+  actionPreventedSignal = 0
+} = defineProps<ManagePartiesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+
+const emit = defineEmits<{
+  'action-prevented': []
+}>()
 
 let editSubject = ''
 let currentEditingRow: PartySchema | null = null
 
 const activeParty = defineModel<ActivePartySchema | undefined>('active-party')
+const shouldPreventActions = computed(() => {
+  return !!activeParty.value || preventActions
+})
 
 const {
   addingParty,
@@ -31,6 +40,12 @@ const tableTarget = 'parties-table'
 const { messageId, targetId } = attachAlerts(tableTarget, activeParty)
 const { setAlertText } = useConnectButtonControl()
 const activePartySchema = getActivePartySchema(roleType)
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
 
 const tableLabels = computed(() => {
   if (labelOverrides) {
@@ -57,12 +72,15 @@ const showAddButton = computed(() => {
 })
 
 function setActiveFormAlert() {
-  setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+  if (activeParty.value !== undefined) {
+    setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddParty() {
-  if (activeParty.value !== undefined) {
+  if (shouldPreventActions.value) {
     setActiveFormAlert()
+    emit('action-prevented')
     return
   }
   activeParty.value = activePartySchema.parse({})
@@ -186,7 +204,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
           :loading
           :empty-text
           :allowed-actions="partyAllowedActions"
-          :prevent-actions="!!activeParty"
+          :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :columns="columnsToDisplay"
           :task-guard-config="{
@@ -197,7 +215,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
           @init-edit="initEditParty"
           @remove="removeParty"
           @undo="undoParty"
-          @action-prevented="setActiveFormAlert"
+          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
         >
           <template #expanded="{ row }">
             <FormPartyDetails

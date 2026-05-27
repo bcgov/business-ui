@@ -52,7 +52,7 @@ const showBodyTopSlot = computed(() => {
       thead: `${taskGuardConfig?.message ? 'shadow-section-error' : ''}`,
       td: 'text-neutral-highlighted align-top text-sm whitespace-normal p-0',
       /* eslint-disable-next-line max-len */
-      tr: `${trClass} relative after:absolute after:content-[''] after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200 last:after:hidden in-[thead]:after:hidden`
+      tr: `${trClass} relative after:absolute after:content-[''] after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200 last:after:hidden data-[expanded=true]:after:hidden in-[thead]:after:hidden`
     }"
   >
     <template #actions-cell="{ row }">
