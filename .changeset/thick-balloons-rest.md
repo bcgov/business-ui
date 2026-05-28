@@ -13,4 +13,4 @@ UX feedback updates for the correction filing flow
 - Increased sub-form header font size to `text-lg` and reduced the task-guard alert text to `text-sm` in `SubFormWrapper` for better visual hierarchy
 - Fixed the table row separator in `TableBusiness` to hide on expanded rows (`data-[expanded=true]:after:hidden`), removing the double-border when a sub-form is open
 - Adjusted name translation table column padding (`pl-0 pr-2` for name, `pl-2 pr-0` for actions) to tighten the layout
-- Bumped `@sbc-connect/nuxt-pay` to `0.3.11` (pulls in `nuxt-auth@0.11.1`, `nuxt-base@0.10.0`, `nuxt-forms@0.7.5`)
+- Bumped `@sbc-connect/nuxt-pay` to `0.4.0` (pulls in `nuxt-auth@0.11.1`, `nuxt-base@0.10.0`, `nuxt-forms@0.7.5`)
