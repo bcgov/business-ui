@@ -23,18 +23,18 @@ test.describe('Business Alerts Tests - Basic', () => {
     }
     const createLiquidationWarning = (nextLiquidationReportMinDate: string): BusinessWarning => ({
       code: 'LIQUIDATION_IN_PROGRESS',
-      data: { 
-              nextLiquidationReportMinDate: nextLiquidationReportMinDate
-          },
+      data: {
+        nextLiquidationReportMinDate: nextLiquidationReportMinDate
+      },
       message: 'This business is in the process of Liquidation.',
       warningType: ApiWarningType.LIQUIDATION
     })
 
     const liquidationWarnings = noDissolutionAlertWhenLiquidation
-        ? [dissolutionInProgressWarning, createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
-        : isFutureLiquidationDueDateTest
-          ? [createLiquidationWarning('2099-01-01T00:00:00.000+00:00')]
-          : [createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
+      ? [dissolutionInProgressWarning, createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
+      : isFutureLiquidationDueDateTest
+        ? [createLiquidationWarning('2099-01-01T00:00:00.000+00:00')]
+        : [createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
 
     await mockApiCallsForAlerts(
       page,
