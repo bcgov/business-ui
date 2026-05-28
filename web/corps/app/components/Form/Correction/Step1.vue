@@ -1,20 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-
 const store = useCorrectionStore()
+const { hasActiveSubForm } = storeToRefs(store)
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
-
-const globalPreventActions = computed(() => {
-  return !!store.formState.activeNameRequest
-    || !!store.formState.activeNameTranslation
-    || !!store.formState.activeOffice
-    || !!store.formState.activeDirector
-    || !!store.formState.activeReceiver
-    || !!store.formState.activeLiquidator
-    || !!store.formState.activeClass
-    || !!store.formState.activeSeries
-})
 
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
@@ -39,7 +27,7 @@ function onActionPrevented() {
       :contact="businessContact"
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
@@ -54,7 +42,7 @@ function onActionPrevented() {
       subject=""
       variant="correct"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
     />
@@ -69,7 +57,7 @@ function onActionPrevented() {
       data-testid="current-directors-section"
       :role-type="RoleTypeUi.DIRECTOR"
       model-name="activeDirector"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
@@ -87,7 +75,7 @@ function onActionPrevented() {
       data-testid="receivers-section"
       :role-type="RoleTypeUi.RECEIVER"
       model-name="activeReceiver"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
@@ -108,7 +96,7 @@ function onActionPrevented() {
       data-testid="liquidators-section"
       :role-type="RoleTypeUi.LIQUIDATOR"
       model-name="activeLiquidator"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
@@ -123,7 +111,7 @@ function onActionPrevented() {
       data-testid="share-structure-section"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
-      :prevent-actions="globalPreventActions"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"

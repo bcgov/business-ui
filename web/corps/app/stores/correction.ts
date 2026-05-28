@@ -33,6 +33,18 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
   })
 
+  /** True when any sub-form inside the correction form is currently open/active */
+  const hasActiveSubForm = computed(() =>
+    !!formState.activeNameRequest
+    || !!formState.activeNameTranslation
+    || !!formState.activeOffice
+    || !!formState.activeDirector
+    || !!formState.activeReceiver
+    || !!formState.activeLiquidator
+    || !!formState.activeClass
+    || !!formState.activeSeries
+  )
+
   const hasCommentChanges = computed(() => {
     const initialComment = initialFormState.value.comment?.detail?.trim() ?? ''
     const currentComment = formState.comment?.detail?.trim() ?? ''
@@ -445,6 +457,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialOffices,
     initialShareClasses,
     initialNameTranslations,
+    hasActiveSubForm,
     hasCommentChanges,
     isStaff,
     companyName,

@@ -71,7 +71,7 @@ const mainAction = computed(() => {
 
 const dropdownActions = computed(() => {
   if (state.value.new.actions.length) {
-    return [{ label: t('label.change'), icon: 'i-mdi-pencil', onSelect: initEdit }]
+    return [{ label: t('label.correct'), icon: 'i-mdi-pencil', onSelect: initEdit }]
   }
   return []
 })
