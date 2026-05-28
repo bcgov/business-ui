@@ -52,7 +52,7 @@ export const useBusinessStore = defineStore('business-store', () => {
       && !Number.isNaN(liquidationNextReportDate.getTime())
       && new Date() > liquidationNextReportDate
 
-      const hasLiquidationWarning = liquidationWarning || business.value?.inLiquidation
+    const hasLiquidationWarning = liquidationWarning || business.value?.inLiquidation
     if (hasLiquidationWarning) {
       const nextReportDate = liquidationNextReportDate
       const date = nextReportDate ? toFormattedDateStr(nextReportDate, DateTime.DATE_FULL) : undefined
