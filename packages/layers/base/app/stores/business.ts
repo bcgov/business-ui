@@ -74,7 +74,7 @@ export const useBusinessStore = defineStore('business-store', () => {
     if (
       !hasLiquidationWarning
       && (allWarnings.some(item => item.warningType === ApiWarningType.INVOLUNTARY_DISSOLUTION)
-          || business.value?.inDissolution)
+        || business.value?.inDissolution)
     ) {
       const warning = allWarnings.find(item =>
         item.warningType?.includes(ApiWarningType.INVOLUNTARY_DISSOLUTION)
