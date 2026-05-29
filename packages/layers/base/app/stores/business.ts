@@ -44,9 +44,37 @@ export const useBusinessStore = defineStore('business-store', () => {
       })
     }
 
+    const liquidationWarning = allWarnings.find(item => item.warningType === ApiWarningType.LIQUIDATION)
+    const liquidationNextReportDate = liquidationWarning?.data?.nextLiquidationReportMinDate
+      ? new Date(liquidationWarning.data.nextLiquidationReportMinDate)
+      : undefined
+    const isLiquidationOverdue = !!liquidationNextReportDate
+      && !Number.isNaN(liquidationNextReportDate.getTime())
+      && new Date() > liquidationNextReportDate
+
+    const hasLiquidationWarning = liquidationWarning || business.value?.inLiquidation
+    if (hasLiquidationWarning) {
+      const nextReportDate = liquidationNextReportDate
+      const date = nextReportDate ? toFormattedDateStr(nextReportDate, DateTime.DATE_FULL) : undefined
+      const entityType = isBaseCompany()
+        ? t('businessConfig.corp.entityTitle')
+        : t(`businessConfig.${business.value?.legalType}.entityTitle`, unknownText)
+      alertList.push({
+        alertType: BusinessAlert.LIQUIDATION,
+        contentExtra: [{ path: 'default' }],
+        date: date || unknownText,
+        entityType,
+        icon: 'i-mdi-alert',
+        label: t(`businessAlert.${BusinessAlert.LIQUIDATION}.label`, { entityType }),
+        showContact: true,
+        ui: { leadingIcon: 'text-warning' }
+      })
+    }
+
     if (
-      allWarnings.some(item => item.warningType === ApiWarningType.INVOLUNTARY_DISSOLUTION)
-      || business.value?.inDissolution
+      !hasLiquidationWarning
+      && (allWarnings.some(item => item.warningType === ApiWarningType.INVOLUNTARY_DISSOLUTION)
+        || business.value?.inDissolution)
     ) {
       const warning = allWarnings.find(item =>
         item.warningType?.includes(ApiWarningType.INVOLUNTARY_DISSOLUTION)
@@ -71,46 +99,19 @@ export const useBusinessStore = defineStore('business-store', () => {
       })
     }
 
-    const liquidationWarning = allWarnings.find(item => item.warningType === ApiWarningType.LIQUIDATION)
-    const liquidationNextReportDate = liquidationWarning?.data?.nextLiquidationReportMinDate
-      ? new Date(liquidationWarning.data.nextLiquidationReportMinDate)
-      : undefined
-    const isLiquidationOverdue = !!liquidationNextReportDate
-      && !Number.isNaN(liquidationNextReportDate.getTime())
-      && new Date() > liquidationNextReportDate
-
-    if (liquidationWarning || business.value?.inLiquidation) {
-      const nextReportDate = liquidationNextReportDate
-      const date = nextReportDate ? toFormattedDateStr(nextReportDate, DateTime.DATE_FULL) : undefined
-      const entityType = isBaseCompany()
-        ? t('businessConfig.corp.entityTitle')
-        : t(`businessConfig.${business.value?.legalType}.entityTitle`, unknownText)
-      alertList.push({
-        alertType: BusinessAlert.LIQUIDATION,
-        contentExtra: [{ path: 'default' }],
-        date: date || unknownText,
-        entityType,
-        icon: 'i-mdi-alert',
-        label: t(`businessAlert.${BusinessAlert.LIQUIDATION}.label`, { entityType }),
-        showContact: true,
-        ui: { leadingIcon: 'text-warning' }
-      })
-    }
-
-    const canShowGoodStanding = !liquidationWarning || isLiquidationOverdue
-
     // NOTES: The API will only return 1 good standing warning even if there are multiple reasons for it
+    const canShowGoodStanding = !hasLiquidationWarning || isLiquidationOverdue
     const goodStandingWarning = allWarnings.find(item => item.warningType === ApiWarningType.NOT_IN_GOOD_STANDING)
-    if ((business.value?.goodStanding === false || goodStandingWarning) && canShowGoodStanding) {
-      // The business goodStanding flag is false and/OR it has a good standing warning
-      const alertType = [
+    const hasGoodStandingWarning = business.value?.goodStanding === false || !!goodStandingWarning
+    if (canShowGoodStanding && hasGoodStandingWarning) {
+      const hasTransitionCode = [
         ApiWarningCode.TRANSITION_NOT_FILED,
         ApiWarningCode.TRANSITION_NOT_FILED_AFTER_12_MONTH_RESTORATION
       ].includes(goodStandingWarning?.code as ApiWarningCode)
-        // Set alert type to TRANSITIONREQUIRED if it has one of the transition warning codes
+      const alertType = hasTransitionCode && !hasLiquidationWarning
         ? BusinessAlert.TRANSITIONREQUIRED
         : BusinessAlert.GOODSTANDING
-      const contentPath = alertType === BusinessAlert.GOODSTANDING && isLiquidationOverdue
+      const contentPath = hasLiquidationWarning
         ? 'standingDueToLiquidation'
         : undefined
       alertList.push({

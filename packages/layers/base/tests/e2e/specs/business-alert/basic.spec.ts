@@ -8,16 +8,38 @@ test.describe('Business Alerts Tests - Basic', () => {
     const identifier = 'BC1234567'
     const isFutureLiquidationDueDateTest
       = test.info().title === 'Good standing alert is hidden when next liquidation due date is in the future'
-    await mockApiCallsForAlerts(page, identifier, [{
+    const noDissolutionAlertWhenLiquidation
+      = test.info().title === 'Dissolution alert is not shown when business is in liquidation'
+    const liquidationAlertTest = isFutureLiquidationDueDateTest || noDissolutionAlertWhenLiquidation
+    const dissolutionInProgressWarning: BusinessWarning = {
+      code: 'DISSOLUTION_IN_PROGRESS',
+      data: {
+        overdueTransition: true,
+        targetDissolutionDate: '2028-06-16',
+        userDelays: 0
+      },
+      message: 'Business is in the process of involuntary dissolution.',
+      warningType: ApiWarningType.INVOLUNTARY_DISSOLUTION
+    }
+    const createLiquidationWarning = (nextLiquidationReportMinDate: string): BusinessWarning => ({
       code: 'LIQUIDATION_IN_PROGRESS',
       data: {
-        nextLiquidationReportMinDate: isFutureLiquidationDueDateTest
-          ? '2999-01-01T00:00:00.000+00:00'
-          : '2020-01-01T00:00:00.000+00:00'
+        nextLiquidationReportMinDate: nextLiquidationReportMinDate
       },
-      message: 'Business is in the process of liquidation.',
+      message: 'This business is in the process of Liquidation.',
       warningType: ApiWarningType.LIQUIDATION
-    }])
+    })
+
+    const liquidationWarnings = noDissolutionAlertWhenLiquidation
+      ? [dissolutionInProgressWarning, createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
+      : isFutureLiquidationDueDateTest
+        ? [createLiquidationWarning('2099-01-01T00:00:00.000+00:00')]
+        : [createLiquidationWarning('2020-01-01T00:00:00.000+00:00')]
+
+    await mockApiCallsForAlerts(
+      page,
+      identifier,
+      liquidationAlertTest ? liquidationWarnings : [])
     await page.goto('./examples/components/BusinessAlerts')
     await page.waitForLoadState('networkidle')
     // skip input for first test
@@ -41,21 +63,30 @@ test.describe('Business Alerts Tests - Basic', () => {
   test('Loading the business alerts works as expected', async ({ page }) => {
     const alerts = page.getByTestId('business-alerts')
     await expect(alerts).toBeVisible()
-    await expect(alerts.getByRole('heading')).toHaveText('Alerts (4)')
+    await expect(alerts.getByRole('heading')).toHaveText('Alerts (3)')
     await expect(alerts.getByRole('button', { name: 'This business is frozen' })).toBeVisible()
     await expect(alerts.getByRole('button', { name: 'This business is not in good standing' })).toBeVisible()
     await expect(alerts.getByRole(
       'button', { name: 'Urgent - this business is in the process of being dissolved' })).toBeVisible()
-    await expect(alerts.getByRole(
-      'button', { name: 'This Company is in the process of liquidation' })).toBeVisible()
   })
 
   test('Good standing alert is hidden when next liquidation due date is in the future', async ({ page }) => {
     const alerts = page.getByTestId('business-alerts')
     await expect(alerts).toBeVisible()
-    await expect(alerts.getByRole('heading')).toHaveText('Alerts (3)')
+    await expect(alerts.getByRole('heading')).toHaveText('Alerts (2)')
+    await expect(alerts.getByRole('button', { name: 'This business is frozen' })).toBeVisible()
     await expect(alerts.getByRole(
       'button', { name: 'This Company is in the process of liquidation' })).toBeVisible()
     await expect(alerts.getByRole('button', { name: 'This business is not in good standing' })).toHaveCount(0)
+  })
+
+  test('Dissolution alert is not shown when business is in liquidation', async ({ page }) => {
+    const alerts = page.getByTestId('business-alerts')
+    await expect(alerts).toBeVisible()
+    await expect(alerts.getByRole(
+      'button', { name: 'This Company is in the process of liquidation' })).toBeVisible()
+    await expect(alerts.getByRole('button', { name: 'This business is not in good standing' })).toBeVisible()
+    await expect(alerts.getByRole(
+      'button', { name: 'Urgent - this business is in the process of being dissolved' })).toHaveCount(0)
   })
 })
