@@ -5,11 +5,20 @@ const {
   stateKey = 'manage-share-structure',
   allowedActions,
   labelOverrides,
-  variant = 'default'
-} = defineProps<ManageShareStructureProps>()
+  variant = 'default',
+  preventActions = false,
+  actionPreventedSignal = 0
+} = defineProps<ManageShareStructureProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+
+const emit = defineEmits<{
+  'action-prevented': []
+}>()
 
 const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class')
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series')
+const shouldPreventActions = computed(() => {
+  return !!activeClass.value || !!activeSeries.value || preventActions
+})
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
 let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
@@ -42,6 +51,12 @@ const { setAlertText } = useConnectButtonControl()
 const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
 
 const showAddButton = computed(() => {
   if (variant === 'readonly' || variant === 'correct-readonly') {
@@ -80,18 +95,19 @@ const classValidationContext = computed(() => {
 })
 
 function setActiveFormAlert() {
-  if (activeClass.value) {
+  if (activeClass.value !== undefined) {
     setAlert('share-class-form', t('text.finishTaskBeforeOtherChanges'))
   }
-  if (activeSeries.value) {
+  if (activeSeries.value !== undefined) {
     setAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
   }
 }
 
 function initAddItem(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
   // prevent actions if a sub form is open
-  if (activeClass.value || activeSeries.value) {
+  if (shouldPreventActions.value) {
     setActiveFormAlert()
+    emit('action-prevented')
     return
   }
 
@@ -258,7 +274,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
           :loading
           :empty-text="emptyText"
           :allowed-actions="tableAllowedActions"
-          :prevent-actions="!!activeClass || !!activeSeries"
+          :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :hide-actions-when="hideRowActionsWhen"
           :task-guard-config="{
@@ -274,7 +290,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
           @undo="(row: TableBusinessRow<ShareClassSchema>) =>
             row.depth === 0 ? undoShareClass(row) : undoShareSeries(row)
           "
-          @action-prevented="setActiveFormAlert"
+          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
         >
           <template #expanded="{ row }">
             <div v-if="row.depth === 0 && activeClass?.id === row.original.new.id" class="p-4 sm:p-6">

@@ -77,18 +77,18 @@ const originalFilingDate = computed(() => {
 })
 
 function checkActiveSubForm() {
+  if (!store.hasActiveSubForm) {
+    return false
+  }
   const alertMsg = t('text.finishTaskBeforeOtherChanges')
-  const hasActiveSubForm
-    = (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
-      || (store.formState.activeDirector && setPartiesAlert('party-details-form', alertMsg))
-      || (store.formState.activeReceiver && setReceiversAlert('party-details-form', alertMsg))
-      || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
-      || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
-      || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
-      || (store.formState.activeNameTranslation && setNameTranslationsAlert('name-translation-form', alertMsg))
-      || (store.formState.activeNameRequest && setCompanyNameAlert('company-name-form', alertMsg))
-
-  return hasActiveSubForm
+  return (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
+    || (store.formState.activeDirector && setPartiesAlert('party-details-form', alertMsg))
+    || (store.formState.activeReceiver && setReceiversAlert('party-details-form', alertMsg))
+    || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
+    || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
+    || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
+    || (store.formState.activeNameTranslation && setNameTranslationsAlert('name-translation-form', alertMsg))
+    || (store.formState.activeNameRequest && setCompanyNameAlert('company-name-form', alertMsg))
 }
 
 function reviewAndConfirm() {

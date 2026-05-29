@@ -7,10 +7,19 @@ const {
   allowAddOfficeType,
   labelOverrides,
   modelName = 'activeOffice',
-  variant = 'default'
-} = defineProps<ManageOfficesProps>()
+  variant = 'default',
+  preventActions = false,
+  actionPreventedSignal = 0
+} = defineProps<ManageOfficesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+
+const emit = defineEmits<{
+  'action-prevented': []
+}>()
 
 const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office')
+const shouldPreventActions = computed(() => {
+  return !!activeOffice.value || preventActions
+})
 
 const {
   addingOffice,
@@ -28,6 +37,12 @@ const tableTarget = 'offices-table'
 const { messageId, targetId } = attachAlerts(tableTarget, activeOffice)
 const { setAlertText } = useConnectButtonControl()
 const activeOfficeSchema = getActiveOfficesSchema()
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
 
 let editSubject = ''
 let currentEditingRow: OfficesSchema | null = null
@@ -67,12 +82,15 @@ const allowAddOffice = computed(() => {
 })
 
 function setActiveFormAlert() {
-  setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
+  if (activeOffice.value !== undefined) {
+    setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddOffice() {
-  if (activeOffice.value !== undefined) {
+  if (shouldPreventActions.value) {
     setActiveFormAlert()
+    emit('action-prevented')
     return
   }
   activeOffice.value = activeOfficeSchema.parse({ type: allowAddOfficeType })
@@ -190,7 +208,7 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
           :loading
           :empty-text="emptyText"
           :allowed-actions="officeAllowedActions"
-          :prevent-actions="!!activeOffice"
+          :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :hide-actions-when="() => variant === 'readonly'"
           :task-guard-config="{
@@ -198,7 +216,7 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
             targetId,
             message: alerts[tableTarget]
           }"
-          @action-prevented="setActiveFormAlert"
+          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
           @init-edit="initEditOffice"
           @remove="removeOffice"
           @undo="undoOffice"

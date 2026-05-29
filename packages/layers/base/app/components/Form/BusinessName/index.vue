@@ -4,6 +4,8 @@ import type { FormErrorEvent, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { FormBusinessNameEdit, FormNameRequestNumber, ConnectI18nHelper } from '#components'
 
 const {
+  variant,
+  subject,
   businessIdentifier,
   businessType,
   initialCompanyName,
@@ -13,6 +15,8 @@ const {
   name,
   stateKey = 'business-name'
 } = defineProps<{
+  variant: FormVariant
+  subject: string
   businessIdentifier: string
   businessType: CorpTypeCd
   initialCompanyName: string
@@ -162,55 +166,50 @@ onMounted(() => {
     class="space-y-6"
     @keydown.enter.prevent.stop="onDone"
   >
-    <template v-if="nameChangeOptions.length > 1">
-      <p>
-        {{ $t('text.selectWayToCorrectName') }}
-      </p>
-      <URadioGroup
-        v-model="model.changeOption"
-        :items="nameChangeOptions"
-        variant="card"
-        :ui="{
-          fieldset: 'gap-y-4',
-          label: 'text-base group-has-[button[data-active]]:font-bold',
-          description: 'text-base group-not-has-[button[data-active]]:hidden mt-2',
-          item: 'group not-has-data-active:bg-shade',
-          container: 'mt-0.5',
-          base: 'ring-neutral ring-2'
-        }"
-        @update:model-value="onOptionChange"
-      >
-        <template #description="{ item }">
-          <KeepAlive>
-            <component :is="renderOption(item)" v-if="model.changeOption === item.value" />
-          </KeepAlive>
+    <SubFormWrapper
+      :subject
+      :variant
+      :hide-remove="true"
+      :task-guard-config="{
+        message: alerts[formTarget],
+        messageId,
+        targetId
+      }"
+      @done="onDone"
+      @cancel="$emit('cancel')"
+    >
+      <div class="padding-xy-default">
+        <template v-if="nameChangeOptions.length > 1">
+          <p>
+            {{ $t('text.selectWayToCorrectName') }}
+          </p>
+          <URadioGroup
+            v-model="model.changeOption"
+            :items="nameChangeOptions"
+            variant="card"
+            :ui="{
+              fieldset: 'gap-y-4',
+              label: 'text-base group-has-[button[data-active]]:font-bold',
+              description: 'text-base group-not-has-[button[data-active]]:hidden mt-2',
+              item: 'group not-has-data-active:bg-shade',
+              container: 'mt-0.5',
+              base: 'ring-neutral ring-2'
+            }"
+            @update:model-value="onOptionChange"
+          >
+            <template #description="{ item }">
+              <KeepAlive>
+                <component :is="renderOption(item)" v-if="model.changeOption === item.value" />
+              </KeepAlive>
+            </template>
+          </URadioGroup>
         </template>
-      </URadioGroup>
-    </template>
 
-    <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
-      <p>{{ nameChangeOptions[0].altLabel }}</p>
-      <component :is="renderOption(nameChangeOptions[0])" />
-    </div>
-
-    <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center">
-      <FormAlertMessage
-        :id="messageId"
-        :message="alerts[formTarget]"
-      />
-      <UButton
-        variant="outline"
-        :label="t('label.cancel')"
-        class="w-full sm:w-min justify-center"
-        @click="$emit('cancel')"
-      />
-      <UButton
-        :data-alert-focus-target="targetId"
-        :aria-describedby="messageId"
-        :label="t('label.done')"
-        class="w-full sm:w-min justify-center"
-        @click="onDone"
-      />
-    </div>
+        <div v-else-if="nameChangeOptions[0]" class="pb-6 pt-2 px-3 space-y-4">
+          <p>{{ nameChangeOptions[0].altLabel }}</p>
+          <component :is="renderOption(nameChangeOptions[0])" />
+        </div>
+      </div>
+    </SubFormWrapper>
   </UForm>
 </template>

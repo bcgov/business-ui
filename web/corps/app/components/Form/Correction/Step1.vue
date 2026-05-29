@@ -1,7 +1,14 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
+const { hasActiveSubForm } = storeToRefs(store)
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
+
+// transient signal for child-initiated prevented actions
+const actionPreventedSignal = ref(0)
+function onActionPrevented() {
+  actionPreventedSignal.value++
+}
 </script>
 
 <template>
@@ -20,7 +27,10 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       :contact="businessContact"
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
 
     <ManageOffices
@@ -32,6 +42,9 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       subject=""
       variant="correct"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
+      :prevent-actions="hasActiveSubForm"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
 
     <ManageParties
@@ -44,7 +57,10 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       data-testid="current-directors-section"
       :role-type="RoleTypeUi.DIRECTOR"
       model-name="activeDirector"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
 
     <!-- FUTURE: conditionally show receivers? -->
@@ -59,10 +75,13 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       data-testid="receivers-section"
       :role-type="RoleTypeUi.RECEIVER"
       model-name="activeReceiver"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
       }"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
 
     <!-- FUTURE: conditionally show liquidators? -->
@@ -77,10 +96,13 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       data-testid="liquidators-section"
       :role-type="RoleTypeUi.LIQUIDATOR"
       model-name="activeLiquidator"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
       }"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
 
     <ManageShareStructure
@@ -89,7 +111,10 @@ const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'ef
       data-testid="share-structure-section"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
+      :prevent-actions="hasActiveSubForm"
       variant="correct"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
     />
   </UForm>
 </template>

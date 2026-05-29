@@ -9,8 +9,14 @@ const {
   variant = 'default',
   correctNameOptions,
   nrAllowedActionsTypes,
-  nameTranslationAllowedActions
-} = defineProps<ManageCompanyNameProps>()
+  nameTranslationAllowedActions,
+  preventActions = false,
+  actionPreventedSignal = 0
+} = defineProps<ManageCompanyNameProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+
+const emit = defineEmits<{
+  'action-prevented': []
+}>()
 
 const nameTranslationsStateKey = computed(() => `${stateKey}-name-translations`)
 
@@ -20,6 +26,17 @@ const activeNameTranslation = defineModel<ActiveNameTranslationSchema | undefine
 const { t } = useI18n()
 const schema = getNameRequestSchema()
 const { state, nrDetails, undoState, updateState } = useManageCompanyName(stateKey)
+const { setAlert, clearAlert } = useFilingAlerts(stateKey)
+const { setAlertText } = useConnectButtonControl()
+const shouldPreventActions = computed(() => {
+  return !!activeNameRequest.value || !!activeNameTranslation.value || preventActions
+})
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
 
 const formattedFoundingDate = computed(() => {
   return toReadableDate(business?.foundingDate ?? '', DateTime.DATETIME_FULL)
@@ -54,7 +71,7 @@ const mainAction = computed(() => {
 
 const dropdownActions = computed(() => {
   if (state.value.new.actions.length) {
-    return [{ label: t('label.change'), icon: 'i-mdi-pencil', onSelect: initEdit }]
+    return [{ label: t('label.correct'), icon: 'i-mdi-pencil', onSelect: initEdit }]
   }
   return []
 })
@@ -81,7 +98,23 @@ const ntActions = computed(() => {
 })
 
 function initEdit() {
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
+    return
+  }
   activeNameRequest.value = schema.parse({})
+}
+
+function setActiveFormAlert() {
+  if (activeNameRequest.value !== undefined) {
+    setAlert('company-name-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+}
+
+function clearAllAlerts() {
+  clearAlert('company-name-form')
+  setAlertText(undefined)
 }
 
 function cleanupForm() {
@@ -110,48 +143,55 @@ function cleanupForm() {
           </div>
         </template>
         <template #default>
-          <div v-if="!activeNameRequest" class="flex justify-between">
-            <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
-            <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
-            <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
-            <UFieldGroup v-if="variant !== 'readonly'" class="divide-x divide-line-muted h-min">
-              <UButton
-                :label="mainAction.label"
-                :icon="mainAction.icon"
-                variant="ghost"
-                @click="mainAction.click"
-              />
-              <UDropdownMenu
-                v-if="dropdownActions.length"
-                :items="dropdownActions"
-              >
+          <div @pointerdown="clearAllAlerts" @keydown="clearAllAlerts">
+            <div v-if="!activeNameRequest" class="flex justify-between">
+              <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
+              <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
+              <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
+              <UFieldGroup v-if="variant !== 'readonly'" class="divide-x divide-line-muted h-min">
                 <UButton
+                  :label="mainAction.label"
+                  :icon="mainAction.icon"
                   variant="ghost"
-                  icon="i-mdi-caret-down"
-                  class="px-4 data-[state=open]:bg-(--ui-primary)/25 group"
-                  :aria-label="t('label.moreActions')"
-                  :ui="{
-                    leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
-                  }"
+                  @click="mainAction.click"
                 />
-              </UDropdownMenu>
-            </UFieldGroup>
+                <UDropdownMenu
+                  v-if="dropdownActions.length"
+                  :items="dropdownActions"
+                  :content="{
+                    align: 'end'
+                  }"
+                >
+                  <UButton
+                    variant="ghost"
+                    icon="i-mdi-caret-down"
+                    class="px-4 data-[state=open]:bg-(--ui-primary)/25 group"
+                    :aria-label="t('label.moreActions')"
+                    :ui="{
+                      leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
+                    }"
+                  />
+                </UDropdownMenu>
+              </UFieldGroup>
+            </div>
+            <FormBusinessName
+              v-if="business && activeNameRequest"
+              ref="business-name-form"
+              v-model="activeNameRequest"
+              variant="correct"
+              :subject="$t('label.companyName')"
+              name="activeNameRequest"
+              :state-key="stateKey"
+              :initial-company-name="state.new.legalName"
+              :business-identifier="business.identifier"
+              :business-type="business.legalType"
+              :correct-name-options="nameOptions!"
+              :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
+              :nr-allowed-action-types="nrTypes!"
+              @cancel="activeNameRequest = undefined"
+              @done="() => { updateState(activeNameRequest); cleanupForm() }"
+            />
           </div>
-          <FormBusinessName
-            v-if="business && activeNameRequest"
-            ref="business-name-form"
-            v-model="activeNameRequest"
-            name="activeNameRequest"
-            :state-key="stateKey"
-            :initial-company-name="state.new.legalName"
-            :business-identifier="business.identifier"
-            :business-type="business.legalType"
-            :correct-name-options="nameOptions!"
-            :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
-            :nr-allowed-action-types="nrTypes!"
-            @cancel="activeNameRequest = undefined"
-            @done="() => { updateState(activeNameRequest); cleanupForm() }"
-          />
         </template>
       </ConnectFieldset>
       <USeparator class="px-4 sm:px-6" />
@@ -176,6 +216,9 @@ function cleanupForm() {
             :variant
             :allowed-actions="ntActions"
             :label-overrides="nameTranslationLabelOverrides"
+            :prevent-actions="shouldPreventActions"
+            :action-prevented-signal="actionPreventedSignal"
+            @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
           />
         </div>
       </div>

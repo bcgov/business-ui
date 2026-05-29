@@ -43,7 +43,7 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
 <template>
   <fieldset :aria-labelledby="labelId">
     <legend class="rounded-t bg-blue-350 py-4 flex justify-between items-center gap-2.5 w-full padding-x-default">
-      <span :id="labelId" class="text-white font-bold">
+      <span :id="labelId" class="text-white font-bold text-lg">
         {{ itemLabelPrefixMap[variant] }} {{ subject }}
       </span>
       <UButton
@@ -78,7 +78,7 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
             v-if="taskGuardConfig"
             :id="taskGuardConfig.messageId"
             :message="taskGuardConfig.message"
-            class="min-w-fit order-last sm:order-none"
+            class="min-w-fit order-last sm:order-none text-sm"
           />
           <UButton
             variant="outline"
