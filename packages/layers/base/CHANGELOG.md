@@ -1,5 +1,11 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.21.1
+
+### Patch Changes
+
+- [#483](https://github.com/bcgov/business-ui/pull/483) [`06d2bbe`](https://github.com/bcgov/business-ui/commit/06d2bbe481a20e662c8c957eacdab7dfd6ca183b) Thanks [@eve-git](https://github.com/eve-git)! - Prevent dissolution alerts from displaying for businesses in liquidation
+
 ## 0.21.0
 
 ### Minor Changes
