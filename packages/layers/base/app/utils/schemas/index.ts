@@ -1,5 +1,6 @@
 export * from './address'
 export * from './certify'
+export * from './confirm-authorization'
 export * from './completing-party'
 export * from './court-order-poa'
 export * from './detail'

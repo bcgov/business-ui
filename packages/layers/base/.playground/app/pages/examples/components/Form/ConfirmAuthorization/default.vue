@@ -12,26 +12,27 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-type FullSchema = { certify: CertifySchema, entityType: string } & Schema
+type FullSchema = { confirmAuthorization: ConfirmAuthorizationSchema } & Schema
 
 const state = reactive<FullSchema>({
   entityType: 'Corporation',
-  certify: {
-    isCertified: false
+  confirmAuthorization: {
+    isAuthorized: false
   }
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const certifyRef = useTemplateRef<CertifyFormRef>('certify-ref')
+const confirmAuthorizationRef = useTemplateRef<ConfirmAuthorizationFormRef>('confirm-authorization-ref')
 
 const hasErrors = computed<boolean | undefined>(() => {
   const errors = formRef.value?.getErrors()
   // nested doesnt propagate errors reactively
   // but will propagate on submit
   // workaround - check nested ref as well
-  const certifyErrors = certifyRef.value?.formRef?.getErrors()
-  return (errors && errors.length > 0) || (certifyErrors && certifyErrors.length > 0)
+  const confirmAuthorizationErrors = confirmAuthorizationRef.value?.formRef?.getErrors()
+  return (errors && errors.length > 0) || (confirmAuthorizationErrors && confirmAuthorizationErrors.length > 0)
 })
+
 const entityTypeError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
   return errors?.find(e => e.name?.startsWith('entityType'))
@@ -49,7 +50,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Certify (default/nested)' }"
+      :heading="{ label: 'Confirm Authorization' }"
       :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="w-full max-w-5xl"
     >
@@ -71,13 +72,12 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             required
           />
         </ConnectFieldset>
-
-        <FormCertify
-          ref="certify-ref"
-          v-model="state.certify"
+        <FormConfirmAuthorization
+          ref="confirm-authorization-ref"
+          v-model="state.confirmAuthorization"
           :entity-type="state.entityType"
           order="X"
-          name="certify"
+          name="confirmAuthorization"
         />
         <div class="flex gap-6 justify-end">
           <UButton type="submit" :label="$t('label.done')" />
