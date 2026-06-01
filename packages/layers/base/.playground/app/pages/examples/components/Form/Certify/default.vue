@@ -22,7 +22,6 @@ const state = reactive<FullSchema>({
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const certifyRef = useTemplateRef<CertifyFormRef>('certify-ref')
 
 const entityTypeError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
