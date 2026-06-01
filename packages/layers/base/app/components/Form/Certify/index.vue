@@ -8,6 +8,7 @@ const props = defineProps<{
 }>()
 
 const certifySchema = getCertifySchema()
+const appConfig = useAppConfig()
 
 const model = defineModel<CertifySchema>({ required: true })
 
@@ -58,10 +59,7 @@ defineExpose({
                 <UCheckbox
                   v-model="model.isCertified"
                   aria-describedby="certify-description"
-                  :ui="{
-                    root: 'items-start',
-                    label: 'text-base'
-                  }"
+                  :ui="appConfig.formUi.checkbox.confirmCertify"
                 >
                   <template #label>
                     <ConnectI18nHelper

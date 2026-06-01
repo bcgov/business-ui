@@ -8,6 +8,7 @@ const props = defineProps<{
 }>()
 
 const confirmAuthorizationSchema = getConfirmAuthorizationSchema()
+const appConfig = useAppConfig()
 
 const model = defineModel<ConfirmAuthorizationSchema>({ required: true })
 
@@ -60,10 +61,7 @@ defineExpose({
                 <UCheckbox
                   v-model="model.isAuthorized"
                   aria-describedby="confirm-authorization-description"
-                  :ui="{
-                    root: 'items-start',
-                    label: 'text-base'
-                  }"
+                  :ui="appConfig.formUi.checkbox.confirmCertify"
                 >
                   <template #label>
                     <ConnectI18nHelper
