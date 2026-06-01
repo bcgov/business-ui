@@ -55,8 +55,8 @@ defineExpose({
           >
             <template #default="{ error }">
               <div
-                class="bg-shade rounded shadow-xs border-l-3 p-4"
-                :class="error ? 'border-error' : 'border-transparent'"
+                class="bg-shade rounded p-4"
+                :class="error ? 'shadow-section-error' : ''"
               >
                 <UCheckbox
                   v-model="model.isCertified"
