@@ -36,7 +36,7 @@ defineExpose({
         {{ $t('text.confirmAuthorizationDescription', { entityType: props.entityType || '[entity type]' }) }}
       </p>
     </div>
-    <div class="p-2 bg-white rounded">
+    <div class="bg-white rounded">
       <UForm
         ref="confirm-authorization-form"
         :schema="confirmAuthorizationSchema"

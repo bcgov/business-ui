@@ -51,7 +51,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
       :heading="{ label: 'Confirm Authorization' }"
-      :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
+      :ui-body="'p-10'"
       class="w-full max-w-5xl"
     >
       <UForm
