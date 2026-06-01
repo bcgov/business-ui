@@ -24,14 +24,6 @@ const state = reactive<FullSchema>({
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
 const certifyRef = useTemplateRef<CertifyFormRef>('certify-ref')
 
-const hasErrors = computed<boolean | undefined>(() => {
-  const errors = formRef.value?.getErrors()
-  // nested doesnt propagate errors reactively
-  // but will propagate on submit
-  // workaround - check nested ref as well
-  const certifyErrors = certifyRef.value?.formRef?.getErrors()
-  return (errors && errors.length > 0) || (certifyErrors && certifyErrors.length > 0)
-})
 const entityTypeError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
   return errors?.find(e => e.name?.startsWith('entityType'))
