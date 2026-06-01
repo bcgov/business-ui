@@ -53,11 +53,8 @@ defineExpose({
               error: 'sr-only'
             }"
           >
-            <template #default="{ error }">
-              <div
-                class="bg-shade rounded p-4"
-                :class="error ? 'shadow-section-error' : ''"
-              >
+            <template #default>
+              <div class="bg-shade rounded p-4">
                 <UCheckbox
                   v-model="model.isCertified"
                   aria-describedby="certify-description"
