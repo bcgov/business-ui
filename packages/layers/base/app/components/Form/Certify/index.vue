@@ -60,7 +60,6 @@ defineExpose({
                 v-model="model.isCertified"
                 aria-describedby="certify-description"
                 :label="$t('text.certifyIsAuthorized', { entitytype: props.entityType || '[entity type]' })"
-                :ui="appConfig.ui.checkbox.slots"
               />
             </div>
             <div class="flex flex-col text-base gap-2 mt-4">
