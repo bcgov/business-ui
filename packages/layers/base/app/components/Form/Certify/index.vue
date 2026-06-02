@@ -8,7 +8,6 @@ const props = defineProps<{
 }>()
 
 const certifySchema = getCertifySchema()
-const appConfig = useAppConfig()
 
 const model = defineModel<CertifySchema>({ required: true })
 

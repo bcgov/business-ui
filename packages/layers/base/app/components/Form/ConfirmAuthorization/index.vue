@@ -8,7 +8,6 @@ const props = defineProps<{
 }>()
 
 const confirmAuthorizationSchema = getConfirmAuthorizationSchema()
-const appConfig = useAppConfig()
 
 const model = defineModel<ConfirmAuthorizationSchema>({ required: true })
 
