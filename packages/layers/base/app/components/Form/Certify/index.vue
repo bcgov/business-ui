@@ -27,66 +27,57 @@ defineExpose({
 </script>
 
 <template>
-  <div class="space-y-6 bg-shade rounded p-6 border border-shade-secondary">
+  <div class="space-y-6 bg-shade rounded p-6">
     <div class="space-y-2">
       <h2>{{ props.order ? `${props.order}. ${$t('label.certify')}` : $t('label.certify') }}</h2>
       <p>
         {{ $t('text.certifyDescription', { entityType: props.entityType || '[entity type]' }) }}
       </p>
     </div>
-    <div class="bg-white rounded">
-      <UForm
-        ref="certify-form"
-        :schema="certifySchema"
-        nested
-        :name
+    <UForm
+      ref="certify-form"
+      class="bg-white rounded"
+      :schema="certifySchema"
+      nested
+      :name
+    >
+      <ConnectFieldset
+        :label="$t('label.certify')"
+        :error="formError"
+        :show-error-msg="true"
+        padding-class="p-6"
+        data-testid="certify-section"
       >
-        <ConnectFieldset
-          :label="$t('label.certify')"
-          :error="formError"
-          :show-error-msg="true"
-          padding-class="p-6"
-          data-testid="certify-section"
+        <UFormField
+          name="isCertified"
+          :ui="{
+            error: 'sr-only'
+          }"
         >
-          <UFormField
-            name="isCertified"
-            :ui="{
-              error: 'sr-only'
-            }"
-          >
-            <template #default>
-              <div class="bg-shade rounded p-4">
-                <UCheckbox
-                  v-model="model.isCertified"
-                  aria-describedby="certify-description"
-                  :ui="appConfig.formUi.checkbox.confirmCertify"
-                >
-                  <template #label>
-                    <ConnectI18nHelper
-                      as="p"
-                      translation-path="text.certifyIsAuthorized"
-                      :entitytype="props.entityType || '[entity type]'"
-                      class="text-neutral"
-                    />
-                  </template>
-                </UCheckbox>
+          <template #default>
+            <div class="bg-shade rounded p-4">
+              <UCheckbox
+                v-model="model.isCertified"
+                aria-describedby="certify-description"
+                :label="$t('text.certifyIsAuthorized', { entitytype: props.entityType || '[entity type]' })"
+                :ui="appConfig.ui.checkbox.slots"
+              />
+            </div>
+            <div class="flex flex-col text-base gap-2 mt-4">
+              <div>
+                <span class="font-bold">{{ $t('label.date') }}:</span>
+                {{ today }}
               </div>
-              <div class="flex flex-col text-base gap-2 mt-4">
-                <div>
-                  <span class="font-bold">{{ $t('label.date') }}:</span>
-                  {{ today }}
-                </div>
-                <ConnectI18nHelper
-                  id="certify-description"
-                  as="p"
-                  translation-path="text.offenceToMakeMisleadingStatement"
-                  :entitytype="props.entityType || '[entity type]'"
-                />
-              </div>
-            </template>
-          </UFormField>
-        </ConnectFieldset>
-      </UForm>
-    </div>
+              <ConnectI18nHelper
+                id="certify-description"
+                as="p"
+                translation-path="text.offenceToMakeMisleadingStatement"
+                :entitytype="props.entityType || '[entity type]'"
+              />
+            </div>
+          </template>
+        </UFormField>
+      </ConnectFieldset>
+    </UForm>
   </div>
 </template>

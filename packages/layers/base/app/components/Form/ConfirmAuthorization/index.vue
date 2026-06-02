@@ -27,7 +27,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="space-y-6 bg-shade rounded p-6 border border-shade-secondary">
+  <div class="space-y-6 bg-shade rounded p-6">
     <div class="space-y-2">
       <h2>
         {{ props.order ? `${props.order}. ${$t('label.confirmAuthorization')}` : $t('label.confirmAuthorization') }}
@@ -36,59 +36,50 @@ defineExpose({
         {{ $t('text.confirmAuthorizationDescription', { entityType: props.entityType || '[entity type]' }) }}
       </p>
     </div>
-    <div class="bg-white rounded">
-      <UForm
-        ref="confirm-authorization-form"
-        :schema="confirmAuthorizationSchema"
-        nested
-        :name
+    <UForm
+      ref="confirm-authorization-form"
+      class="bg-white rounded"
+      :schema="confirmAuthorizationSchema"
+      nested
+      :name
+    >
+      <ConnectFieldset
+        :label="$t('label.confirmAuthorization')"
+        :error="formError"
+        :show-error-msg="true"
+        padding-class="p-6"
+        data-testid="confirm-authorization-section"
       >
-        <ConnectFieldset
-          :label="$t('label.confirmAuthorization')"
-          :error="formError"
-          :show-error-msg="true"
-          padding-class="p-6"
-          data-testid="confirm-authorization-section"
+        <UFormField
+          name="isAuthorized"
+          :ui="{
+            error: 'sr-only'
+          }"
         >
-          <UFormField
-            name="isAuthorized"
-            :ui="{
-              error: 'sr-only'
-            }"
-          >
-            <template #default>
-              <div class="bg-shade rounded p-4">
-                <UCheckbox
-                  v-model="model.isAuthorized"
-                  aria-describedby="confirm-authorization-description"
-                  :ui="appConfig.formUi.checkbox.confirmCertify"
-                >
-                  <template #label>
-                    <ConnectI18nHelper
-                      as="p"
-                      translation-path="text.confirmAuthorizationIsAuthorized"
-                      :entitytype="props.entityType || '[entity type]'"
-                      class="text-neutral"
-                    />
-                  </template>
-                </UCheckbox>
+          <template #default>
+            <div class="bg-shade rounded p-4">
+              <UCheckbox
+                v-model="model.isAuthorized"
+                aria-describedby="confirm-authorization-description"
+                :label="$t('text.confirmAuthorizationIsAuthorized', { entitytype: props.entityType || '[entity type]' })"
+                :ui="appConfig.ui.checkbox.slots"
+              />
+            </div>
+            <div class="flex flex-col text-base gap-2 mt-4">
+              <div>
+                <span class="font-bold">{{ $t('label.date') }}:</span>
+                {{ today }}
               </div>
-              <div class="flex flex-col text-base gap-2 mt-4">
-                <div>
-                  <span class="font-bold">{{ $t('label.date') }}:</span>
-                  {{ today }}
-                </div>
-                <ConnectI18nHelper
-                  id="confirm-authorization-description"
-                  as="p"
-                  translation-path="text.offenceToMakeMisleadingStatement"
-                  :entitytype="props.entityType || '[entity type]'"
-                />
-              </div>
-            </template>
-          </UFormField>
-        </ConnectFieldset>
-      </UForm>
-    </div>
+              <ConnectI18nHelper
+                id="confirm-authorization-description"
+                as="p"
+                translation-path="text.offenceToMakeMisleadingStatement"
+                :entitytype="props.entityType || '[entity type]'"
+              />
+            </div>
+          </template>
+        </UFormField>
+      </ConnectFieldset>
+    </UForm>
   </div>
 </template>

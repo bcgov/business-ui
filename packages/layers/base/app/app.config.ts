@@ -11,16 +11,10 @@ export default defineAppConfig({
     },
     checkbox: {
       slots: {
-        label: 'text-base group-has-[button[aria-invalid=true]]:text-error'
-      }
-    }
-  },
-  formUi: {
-    checkbox: {
-      confirmCertify: {
         root: 'items-start',
+        base: '!size-[18px] !ring-2 ring-neutral aria-invalid:!ring-error',
         container: 'items-start h-auto pt-1',
-        base: '!size-5 aria-invalid:ring-error'
+        label: 'text-base group-has-[button[aria-invalid=true]]:text-error'
       }
     }
   }
