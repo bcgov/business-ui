@@ -7,15 +7,15 @@ const props = defineProps<{
   order?: string | number
 }>()
 
-const certifySchema = getCertifySchema()
+const confirmAuthorizationSchema = getConfirmAuthorizationSchema()
 
-const model = defineModel<CertifySchema>({ required: true })
+const model = defineModel<ConfirmAuthorizationSchema>({ required: true })
 
-const formRef = useTemplateRef<Form<CertifySchema>>('certify-form')
+const formRef = useTemplateRef<Form<ConfirmAuthorizationSchema>>('confirm-authorization-form')
 
 const formError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
-  return errors?.find(e => e.name === 'isCertified')
+  return errors?.find(e => e.name === 'isAuthorized')
 })
 
 const today = getToday('America/Vancouver')
@@ -28,27 +28,29 @@ defineExpose({
 <template>
   <div class="space-y-6 bg-shade rounded p-6">
     <div class="space-y-2">
-      <h2>{{ props.order ? `${props.order}. ${$t('label.certify')}` : $t('label.certify') }}</h2>
+      <h2>
+        {{ props.order ? `${props.order}. ${$t('label.confirmAuthorization')}` : $t('label.confirmAuthorization') }}
+      </h2>
       <p>
-        {{ $t('text.certifyDescription', { entityType: props.entityType || '[entity type]' }) }}
+        {{ $t('text.confirmAuthorizationDescription', { entityType: props.entityType || '[entity type]' }) }}
       </p>
     </div>
     <UForm
-      ref="certify-form"
+      ref="confirm-authorization-form"
       class="bg-white rounded"
-      :schema="certifySchema"
+      :schema="confirmAuthorizationSchema"
       nested
       :name
     >
       <ConnectFieldset
-        :label="$t('label.certify')"
+        :label="$t('label.confirmAuthorization')"
         :error="formError"
         :show-error-msg="true"
         padding-class="p-6"
-        data-testid="certify-section"
+        data-testid="confirm-authorization-section"
       >
         <UFormField
-          name="isCertified"
+          name="isAuthorized"
           :ui="{
             error: 'sr-only'
           }"
@@ -56,9 +58,13 @@ defineExpose({
           <template #default>
             <div class="bg-shade rounded p-4">
               <UCheckbox
-                v-model="model.isCertified"
-                aria-describedby="certify-description"
-                :label="$t('text.certifyIsAuthorized', { entitytype: props.entityType || '[entity type]' })"
+                v-model="model.isAuthorized"
+                aria-describedby="confirm-authorization-description"
+                :label="
+                  $t('text.confirmAuthorizationIsAuthorized', {
+                    entitytype: props.entityType || '[entity type]'
+                  })
+                "
               />
             </div>
             <div class="flex flex-col text-base gap-2 mt-4">
@@ -67,7 +73,7 @@ defineExpose({
                 {{ today }}
               </div>
               <ConnectI18nHelper
-                id="certify-description"
+                id="confirm-authorization-description"
                 as="p"
                 translation-path="text.offenceToMakeMisleadingStatement"
                 :entitytype="props.entityType || '[entity type]'"

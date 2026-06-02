@@ -12,12 +12,12 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
-type FullSchema = { certify: CertifySchema, entityType: string } & Schema
+type FullSchema = { confirmAuthorization: ConfirmAuthorizationSchema } & Schema
 
 const state = reactive<FullSchema>({
   entityType: 'Corporation',
-  certify: {
-    isCertified: false
+  confirmAuthorization: {
+    isAuthorized: false
   }
 })
 
@@ -40,8 +40,8 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Certify (default/nested)' }"
-      ui-body="p-10"
+      :heading="{ label: 'Confirm Authorization' }"
+      :ui-body="'p-10'"
       class="w-full max-w-5xl"
     >
       <UForm
@@ -62,13 +62,12 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             required
           />
         </ConnectFieldset>
-
-        <FormCertify
-          ref="certify-ref"
-          v-model="state.certify"
+        <FormConfirmAuthorization
+          ref="confirm-authorization-ref"
+          v-model="state.confirmAuthorization"
           :entity-type="state.entityType"
           order="X"
-          name="certify"
+          name="confirmAuthorization"
         />
         <div class="flex gap-6 justify-end">
           <UButton type="submit" :label="$t('label.done')" />

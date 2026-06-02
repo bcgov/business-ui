@@ -142,6 +142,14 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Form/BusinessName')
   },
   {
+    label: 'FormCertify',
+    to: localePath('/examples/components/Form/Certify/default')
+  },
+  {
+    label: 'FormConfirmAuthorization',
+    to: localePath('/examples/components/Form/ConfirmAuthorization/default')
+  },
+  {
     label: 'FormNameRequestNumber',
     to: localePath('/examples/components/Form/NameRequest/Number')
   },
@@ -208,7 +216,7 @@ const serviceExamples: DropdownMenuItem[] = [
       <UDropdownMenu
         :items="componentExamples"
         :content="{ align: 'start' }"
-        :ui="{ content: 'max-h-50' }"
+        :ui="{ content: 'max-h-[60vh] overflow-y-auto' }"
       >
         <UButton
           label="Component Examples"
