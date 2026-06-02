@@ -61,7 +61,11 @@ defineExpose({
               <UCheckbox
                 v-model="model.isAuthorized"
                 aria-describedby="confirm-authorization-description"
-                :label="$t('text.confirmAuthorizationIsAuthorized', { entitytype: props.entityType || '[entity type]' })"
+                :label="
+                  $t('text.confirmAuthorizationIsAuthorized', {
+                    entitytype: props.entityType || '[entity type]'
+                  })
+                "
                 :ui="appConfig.ui.checkbox.slots"
               />
             </div>
