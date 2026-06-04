@@ -23,6 +23,11 @@ minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
   - '@sbc-connect/*'
 
+# Allow exotic (URL/tarball) sources in transitive deps. Required because the
+# @sbc-connect/* preview packages from pkg.pr.new reference each other via URL
+# (e.g. nuxt-pay -> nuxt-auth). Default is true since pnpm v10.26.0.
+blockExoticSubdeps: false
+
 # pnpm v11 replaced onlyBuiltDependencies / neverBuiltDependencies / ignoredBuiltDependencies
 # with a single allowBuilds map. true = run install scripts, false = skip them.
 allowBuilds:
