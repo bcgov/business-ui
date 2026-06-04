@@ -52,7 +52,7 @@ jobs:
         node-version: 24
         cache: 'pnpm'
     - name: Install dependencies
-      run: pnpm install --update-checksums
+      run: pnpm install
     - name: Generate Types
       run: pnpm postinstall
     - name: Install Playwright browsers
