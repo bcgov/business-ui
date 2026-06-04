@@ -7,11 +7,11 @@ packages:
 autoInstallPeers: true
 
 catalog:
-  '@axe-core/playwright': 4.11.3
-  '@faker-js/faker': 10.4.0
-  '@iconify-json/mdi': 1.2.3
-  '@nuxt/test-utils': 3.21.0
-  '@types/node': 25.5.0
+  "@axe-core/playwright": 4.11.3
+  "@faker-js/faker": 10.4.0
+  "@iconify-json/mdi": 1.2.3
+  "@nuxt/test-utils": 3.21.0
+  "@types/node": 25.5.0
   dotenv: 17.4.2
   nuxt: 4.4.6
   typescript: 6.0.3
@@ -21,7 +21,7 @@ catalog:
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
-  - '@sbc-connect/*'
+  - "@sbc-connect/*"
 
 # Allow exotic (URL/tarball) sources in transitive deps. Required because the
 # @sbc-connect/* preview packages from pkg.pr.new reference each other via URL
@@ -31,13 +31,13 @@ blockExoticSubdeps: false
 # pnpm v11 replaced onlyBuiltDependencies / neverBuiltDependencies / ignoredBuiltDependencies
 # with a single allowBuilds map. true = run install scripts, false = skip them.
 allowBuilds:
-  '@parcel/watcher': true
-  '@sbc-connect/nuxt-auth': true
-  '@sbc-connect/nuxt-base': true
-  '@sbc-connect/nuxt-business-base': true
-  '@sbc-connect/nuxt-forms': true
-  '@sbc-connect/nuxt-pay': true
-  '@tailwindcss/oxide': true
+  "@parcel/watcher": true
+  "@sbc-connect/nuxt-auth": true
+  "@sbc-connect/nuxt-base": true
+  "@sbc-connect/nuxt-business-base": true
+  "@sbc-connect/nuxt-forms": true
+  "@sbc-connect/nuxt-pay": true
+  "@tailwindcss/oxide": true
   esbuild: true
   unrs-resolver: true
   vue-demi: true
