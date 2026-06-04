@@ -210,7 +210,7 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
           :allowed-actions="officeAllowedActions"
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
-          :hide-actions-when="() => variant === 'readonly'"
+          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
           :task-guard-config="{
             messageId,
             targetId,

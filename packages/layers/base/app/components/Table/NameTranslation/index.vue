@@ -23,6 +23,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :data
     :loading
     :empty-text="emptyText"
+    :hide-empty-text="true"
     :columns="nameTranslationColumns"
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"

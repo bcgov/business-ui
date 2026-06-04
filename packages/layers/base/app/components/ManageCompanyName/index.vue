@@ -76,6 +76,8 @@ const dropdownActions = computed(() => {
   return []
 })
 
+const isReadonly = computed(() => variant === 'readonly' || variant === 'correct-readonly')
+
 const nameOptions = computed(() => {
   if (variant === 'readonly' || variant === 'correct-readonly') {
     return []
@@ -132,7 +134,7 @@ function cleanupForm() {
     ui-body="p-0 sm:p-0"
   >
     <div class="flex flex-col">
-      <ConnectFieldset padding-class="py-4 px-4 sm:py-5 sm:px-6">
+      <ConnectFieldset v-if="!activeNameRequest" padding-class="py-4 px-4 sm:py-5 sm:px-6">
         <template #label>
           <div class="space-y-1">
             <div>{{ $t('label.companyName') }}</div>
@@ -144,11 +146,11 @@ function cleanupForm() {
         </template>
         <template #default>
           <div @pointerdown="clearAllAlerts" @keydown="clearAllAlerts">
-            <div v-if="!activeNameRequest" class="flex justify-between">
+            <div class="flex justify-between">
               <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
               <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
               <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
-              <UFieldGroup v-if="variant !== 'readonly'" class="divide-x divide-line-muted h-min">
+              <UFieldGroup v-if="!isReadonly" class="divide-x divide-line-muted h-min">
                 <UButton
                   :label="mainAction.label"
                   :icon="mainAction.icon"
@@ -174,26 +176,27 @@ function cleanupForm() {
                 </UDropdownMenu>
               </UFieldGroup>
             </div>
-            <FormBusinessName
-              v-if="business && activeNameRequest"
-              ref="business-name-form"
-              v-model="activeNameRequest"
-              variant="correct"
-              :subject="$t('label.companyName')"
-              name="activeNameRequest"
-              :state-key="stateKey"
-              :initial-company-name="state.new.legalName"
-              :business-identifier="business.identifier"
-              :business-type="business.legalType"
-              :correct-name-options="nameOptions!"
-              :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
-              :nr-allowed-action-types="nrTypes!"
-              @cancel="activeNameRequest = undefined"
-              @done="() => { updateState(activeNameRequest); cleanupForm() }"
-            />
           </div>
         </template>
       </ConnectFieldset>
+      <div v-if="business && activeNameRequest" class="py-4 px-4 sm:py-5 sm:px-6">
+        <FormBusinessName
+          ref="business-name-form"
+          v-model="activeNameRequest"
+          variant="correct"
+          :subject="$t('label.companyName')"
+          name="activeNameRequest"
+          :state-key="stateKey"
+          :initial-company-name="state.new.legalName"
+          :business-identifier="business.identifier"
+          :business-type="business.legalType"
+          :correct-name-options="nameOptions!"
+          :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
+          :nr-allowed-action-types="nrTypes!"
+          @cancel="activeNameRequest = undefined"
+          @done="() => { updateState(activeNameRequest); cleanupForm() }"
+        />
+      </div>
       <USeparator class="px-4 sm:px-6" />
       <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
         <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
@@ -203,8 +206,8 @@ function cleanupForm() {
         <span v-else class="flex-1">{{ formattedFoundingDate }}</span>
       </div>
       <USeparator class="px-4 sm:px-6" />
-      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
-        <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
+      <div class="flex gap-2 lg:gap-6 px-4 lg:px-6 flex-col lg:flex-row py-4 lg:py-5">
+        <span class="text-neutral-highlighted font-bold w-full lg:basis-1/4">
           {{ $t('label.nameTranslations') }}
         </span>
         <div class="flex flex-col flex-1 gap-4">

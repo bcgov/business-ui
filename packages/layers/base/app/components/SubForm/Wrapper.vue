@@ -62,7 +62,7 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
     >
       <slot />
       <div
-        class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center px-4 sm:px-8 pb-4 sm:pb-8"
+        class="flex flex-col xl:flex-row gap-2 xl:gap-6 items-center px-4 xl:px-8 pb-4 xl:pb-8"
         :class="showRemoveButton ? 'justify-between' : 'justify-end'"
       >
         <UButton
@@ -70,27 +70,27 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
           :label="removeButtonLabelMap[variant]"
           variant="outline"
           color="error"
-          class="w-full sm:w-min justify-center"
+          class="w-full xl:w-min justify-center"
           @click="$emit('remove')"
         />
-        <div class="flex flex-col sm:flex-row gap-2 sm:gap-6 justify-end items-center w-full sm:w-min">
+        <div class="flex flex-col xl:flex-row gap-2 xl:gap-6 justify-end items-center w-full xl:w-auto">
           <FormAlertMessage
             v-if="taskGuardConfig"
             :id="taskGuardConfig.messageId"
             :message="taskGuardConfig.message"
-            class="min-w-fit order-last sm:order-none text-sm"
+            class="w-full xl:max-w-md order-last xl:order-none text-sm text-center xl:text-right"
           />
           <UButton
             variant="outline"
             :label="$t('label.cancel')"
-            class="w-full sm:w-min justify-center"
+            class="w-full xl:w-min justify-center"
             @click="$emit('cancel')"
           />
           <UButton
             :data-alert-focus-target="taskGuardConfig?.targetId"
             :aria-describedby="taskGuardConfig?.messageId"
             :label="$t('label.done')"
-            class="w-full sm:w-min justify-center"
+            class="w-full xl:w-min justify-center"
             @click="$emit('done')"
           />
         </div>
