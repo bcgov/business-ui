@@ -281,7 +281,7 @@ onMounted(() => {
         <ManageOffices
           v-model:active-office="store.formState.activeOffice"
           :loading="store.initializing"
-          :empty-text="$t('label.noOffice')"
+          :empty-text="$t('text.noOffices')"
           :subject="officeSubject"
           :section-title="`2. ${$t('label.liquidationRecordsOfficeAddress')}`"
           :section-description="$t('text.liquidationRecordsOfficeAddressDesc')"
