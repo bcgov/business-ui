@@ -2474,7 +2474,7 @@ packages:
     os: [win32]
 
   '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@d9fd4b6':
-    resolution: {tarball: https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@d9fd4b6}
+    resolution: {integrity: sha512-189DVO0fWJmG2veWdlgH/9nv0OKobD9OuZD+pSyRBUmVrcvW+Heifals6yb0ua1rFKvwo1ANrmq4ivRf/7BfkA==, tarball: https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@d9fd4b6}
     version: 0.11.1
 
   '@sbc-connect/nuxt-base@0.10.0':
@@ -2484,7 +2484,7 @@ packages:
     resolution: {integrity: sha512-EkQvALRryLpRkyn9aX1TS1H1D69wAlnBgv+31nfCJmltASrbtu+yD/j3aqJRm8Q92yCJ3aaAtoDbW7u2TfWBFw==}
 
   '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@d9fd4b6':
-    resolution: {tarball: https://pkg.pr.new/@sbc-connect/nuxt-pay@d9fd4b6}
+    resolution: {integrity: sha512-KZqruhS70Jja+dzt+plPt/9SxGiSwmVpN2kse2cKa9N+pqu/SsNBIhOpp42RVW+cQmknNFlCcJ/CDeJ+JhyDRQ==, tarball: https://pkg.pr.new/@sbc-connect/nuxt-pay@d9fd4b6}
     version: 0.4.0
 
   '@simple-git/args-pathspec@1.0.3':
