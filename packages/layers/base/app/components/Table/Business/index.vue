@@ -7,6 +7,7 @@ const props = defineProps<{
   columns: TableBusinessColumn<T>[]
   loading?: boolean
   emptyText?: string
+  hideEmptyText?: boolean
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
@@ -99,13 +100,16 @@ const showBodyTopSlot = computed(() => {
         ]"
       >
         <td :colspan="columns.length">
-          <div class="text-left text-base p-6">
+          <div
+            v-if="(taskGuardConfig && taskGuardConfig.message) || !hideEmptyText"
+            class="text-left text-base p-6"
+          >
             <FormAlertMessage
               v-if="taskGuardConfig && taskGuardConfig.message"
               :id="taskGuardConfig.messageId"
               :message="taskGuardConfig.message"
             />
-            <span v-else class="text-neutral">{{ emptyText ?? $t('text.noDataToDisplay') }}</span>
+            <span v-else-if="!hideEmptyText" class="text-neutral">{{ emptyText ?? $t('text.noDataToDisplay') }}</span>
           </div>
         </td>
       </tr>

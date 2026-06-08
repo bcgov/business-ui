@@ -162,7 +162,7 @@ function getExpandedFormVariant(row: TableBusinessRow<NameTranslationSchema>): F
       :loading
       :empty-text="emptyText"
       :allowed-actions="allowedActions"
-      :hide-actions-when="() => variant === 'readonly'"
+      :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
       :prevent-actions="shouldPreventActions"
       :label-overrides="{ editLabel: $t('label.correct'), ...labelOverrides }"
       @init-edit="initEditNameTranslation"
@@ -171,19 +171,17 @@ function getExpandedFormVariant(row: TableBusinessRow<NameTranslationSchema>): F
       @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
     >
       <template #expanded="{ row }">
-        <div class="px-4 sm:px-6">
-          <FormNameTranslation
-            v-if="activeNameTranslation"
-            v-model="activeNameTranslation"
-            :subject="editSubject"
-            name="activeNameTranslation"
-            :variant="getExpandedFormVariant(row)"
-            :state-key="stateKey"
-            @cancel="cleanupNameTranslationForm"
-            @done="() => applyEdits(activeNameTranslation, row)"
-            @remove="() => { cleanupNameTranslationForm(); removeNameTranslation(row) }"
-          />
-        </div>
+        <FormNameTranslation
+          v-if="activeNameTranslation"
+          v-model="activeNameTranslation"
+          :subject="editSubject"
+          name="activeNameTranslation"
+          :variant="getExpandedFormVariant(row)"
+          :state-key="stateKey"
+          @cancel="cleanupNameTranslationForm"
+          @done="() => applyEdits(activeNameTranslation, row)"
+          @remove="() => { cleanupNameTranslationForm(); removeNameTranslation(row) }"
+        />
       </template>
     </TableNameTranslation>
   </div>
