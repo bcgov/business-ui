@@ -180,7 +180,7 @@ onMounted(() => {
     >
       <div class="padding-xy-default">
         <template v-if="nameChangeOptions.length > 1">
-          <p>
+          <p class="mb-4 -mt-4">
             {{ $t('text.selectWayToCorrectName') }}
           </p>
           <URadioGroup
