@@ -81,6 +81,7 @@ function onError(event: FormErrorEvent) {
     <FormCertify
       v-if="!store.isStaff && store.formState.certify"
       v-model="store.formState.certify"
+      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
       order="5"
       name="certify"
     />

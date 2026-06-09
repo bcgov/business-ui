@@ -8,6 +8,7 @@ const store = useDodStore()
 const { initializing } = storeToRefs(store)
 const urlParams = useUrlSearchParams()
 const route = useRoute()
+const businessStore = useBusinessStore()
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const rtc = useRuntimeConfig().public
@@ -196,6 +197,7 @@ useFilingPageWatcher<DissolutionType>({
         v-else
         v-model="store.formState.certify"
         data-testid="form-section-certify"
+        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
         :disabled="initializing"
         name="certify"
         order="3"
