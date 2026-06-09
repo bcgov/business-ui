@@ -83,7 +83,6 @@ function onError(event: FormErrorEvent) {
       v-model="store.formState.certify"
       order="5"
       name="certify"
-      :description="$t('text.certifyTransitionDescription')"
     />
 
     <StaffPaymentFieldset

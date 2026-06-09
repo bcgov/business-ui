@@ -196,7 +196,6 @@ useFilingPageWatcher<DissolutionType>({
         v-else
         v-model="store.formState.certify"
         data-testid="form-section-certify"
-        :description="t('text.certifyDelayDescription')"
         :disabled="initializing"
         name="certify"
         order="3"
