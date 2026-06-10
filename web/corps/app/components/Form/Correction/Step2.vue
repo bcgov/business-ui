@@ -170,9 +170,9 @@ function onError(event: FormErrorEvent) {
     <FormCertify
       v-if="!store.isStaffCorrectionType && store.formState.certify"
       v-model="store.formState.certify"
+      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
       order="5"
       name="certify"
-      :description="$t('text.certifyCorrectionDescription')"
     />
 
     <!-- Staff Payment (always present, order is dynamic) -->
