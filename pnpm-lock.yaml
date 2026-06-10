@@ -90,8 +90,8 @@ importers:
   packages/layers/base:
     dependencies:
       '@sbc-connect/nuxt-pay':
-        specifier: 0.4.1
-        version: 0.4.1(4b595dd112636e0a921daf131d1bf36b)
+        specifier: 0.5.0
+        version: 0.5.0(4b595dd112636e0a921daf131d1bf36b)
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -2482,8 +2482,8 @@ packages:
   '@sbc-connect/nuxt-forms@0.7.5':
     resolution: {integrity: sha512-EkQvALRryLpRkyn9aX1TS1H1D69wAlnBgv+31nfCJmltASrbtu+yD/j3aqJRm8Q92yCJ3aaAtoDbW7u2TfWBFw==}
 
-  '@sbc-connect/nuxt-pay@0.4.1':
-    resolution: {integrity: sha512-3oQeWezKk3nU67mbsU5A2Z+4l0gJbF7iZv3jXntpHXR8dBnx0xY7aQsXA0MWYZX+8YG7dvjfk6rPow2dPAedYA==}
+  '@sbc-connect/nuxt-pay@0.5.0':
+    resolution: {integrity: sha512-19T9ZOvDlM0lDb2URBOL/gWgtLG9VCTg/xv1CIb3aQR08KONToQZwwArO15mDbqlCht1fuB4ldRd0Ruw4kPKNw==}
 
   '@simple-git/args-pathspec@1.0.3':
     resolution: {integrity: sha512-ngJMaHlsWDTfjyq9F3VIQ8b7NXbBLq5j9i5bJ6XLYtD6qlDXT7fdKY2KscWWUF8t18xx052Y/PUO1K1TRc9yKA==}
@@ -9158,7 +9158,7 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-pay@0.4.1(4b595dd112636e0a921daf131d1bf36b)':
+  '@sbc-connect/nuxt-pay@0.5.0(4b595dd112636e0a921daf131d1bf36b)':
     dependencies:
       '@sbc-connect/nuxt-auth': 0.12.0(4b595dd112636e0a921daf131d1bf36b)
     transitivePeerDependencies:
