@@ -27,7 +27,6 @@ const staffHeaderPayload = {
 
 const clientHeaderPayload = {
   name: 'transition',
-  certifiedBy: 'John Smith',
   accountId: 1222,
   date: new Date().toISOString().split('T')[0],
   folioNumber: 'client-folio-123'
@@ -263,7 +262,7 @@ const testCases = [
     header: clientHeaderPayload,
     accountSpecificStep2Actions: async (page: Page) => {
       await fillOutFolio(page, clientHeaderPayload.folioNumber)
-      await fillOutCertify(page, clientHeaderPayload.certifiedBy)
+      await fillOutCertify(page)
     }
   }
 ]

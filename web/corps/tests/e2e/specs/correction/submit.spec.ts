@@ -239,9 +239,8 @@ test.describe('Correction - Filing Submit', () => {
         await cpSection.getByTestId('completing-party-mailing-address-input-postalCode').fill('V8V 1A1')
       }).toPass({ timeout: 15000 })
 
-      // Fill certify: legal name + checkbox (both required by certify schema)
+      // Fill certify: checkbox is required by the updated certify component
       const certifySection = page.getByTestId('certify-section')
-      await certifySection.getByTestId('legal-name-input').fill('Test User')
       await certifySection.getByRole('checkbox', { name: /certify/i }).check({ force: true })
 
       // Select staff payment option

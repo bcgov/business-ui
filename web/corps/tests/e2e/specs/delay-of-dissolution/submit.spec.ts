@@ -22,7 +22,6 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
           delayType: DelayOption.DEFAULT
         },
         headerPayload: {
-          certifiedBy: 'Fred Jones',
           folioNumber: 'folio123'
         }
       },
@@ -68,7 +67,7 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
             await addLedgerCheckbox.check()
           }
         } else {
-          await fillOutCertify(page, headerPayload.certifiedBy!)
+          await fillOutCertify(page)
         }
         const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
         await page.getByRole('button', { name: 'Submit' }).click({ force: true })
@@ -81,7 +80,7 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
           expect(requestHeaders['hide-in-ledger']).toBe(String(!addToLedger))
         } else {
           expect(requestHeaders['hide-in-ledger']).toBe('false')
-          expect(requestBody.filing.header.certifiedBy).toEqual(headerPayload.certifiedBy)
+          expect(requestBody.filing.header.certifiedBy).toBeUndefined()
         }
         // should be redirected to business dashboard on success
         await page.waitForURL(
