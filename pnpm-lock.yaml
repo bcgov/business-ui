@@ -90,8 +90,8 @@ importers:
   packages/layers/base:
     dependencies:
       '@sbc-connect/nuxt-pay':
-        specifier: 0.4.0
-        version: 0.4.0(4b595dd112636e0a921daf131d1bf36b)
+        specifier: 0.4.1
+        version: 0.4.1(4b595dd112636e0a921daf131d1bf36b)
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -2473,8 +2473,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sbc-connect/nuxt-auth@0.11.1':
-    resolution: {integrity: sha512-/Q+r8eQvogEa7TdircmJEfZfZgFCR4JltW28b8GUgz1VRzVZeDhUSzJ3yWRKYP6RXNfBvdmfE8qnuEkpdkg8Og==}
+  '@sbc-connect/nuxt-auth@0.12.0':
+    resolution: {integrity: sha512-YZqbeoYcoVjdfS01UqkOXT6B5eOWLjIzXaO+iZx2EGppP8NFdUMXw4IVhvZebGT56fnoiUrak40LxjVDJmOWJw==}
 
   '@sbc-connect/nuxt-base@0.10.0':
     resolution: {integrity: sha512-9CyoP9+GRFfF6sUtVosLM2rEApDpvVy21kEVAByQIO8xNIfsN4Rx1FKzrx2h1sHweYQC8qBdXMPxjAMulZKwEg==}
@@ -2482,8 +2482,8 @@ packages:
   '@sbc-connect/nuxt-forms@0.7.5':
     resolution: {integrity: sha512-EkQvALRryLpRkyn9aX1TS1H1D69wAlnBgv+31nfCJmltASrbtu+yD/j3aqJRm8Q92yCJ3aaAtoDbW7u2TfWBFw==}
 
-  '@sbc-connect/nuxt-pay@0.4.0':
-    resolution: {integrity: sha512-btMK2/YTWnWQCYaKfByboZmrQXFtOioYA3E594GEfZYijORUsgkq8T3WYpyouQPcqvw7iM84gXGOkDq7UoUEqA==}
+  '@sbc-connect/nuxt-pay@0.4.1':
+    resolution: {integrity: sha512-3oQeWezKk3nU67mbsU5A2Z+4l0gJbF7iZv3jXntpHXR8dBnx0xY7aQsXA0MWYZX+8YG7dvjfk6rPow2dPAedYA==}
 
   '@simple-git/args-pathspec@1.0.3':
     resolution: {integrity: sha512-ngJMaHlsWDTfjyq9F3VIQ8b7NXbBLq5j9i5bJ6XLYtD6qlDXT7fdKY2KscWWUF8t18xx052Y/PUO1K1TRc9yKA==}
@@ -8942,7 +8942,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.4':
     optional: true
 
-  '@sbc-connect/nuxt-auth@0.11.1(4b595dd112636e0a921daf131d1bf36b)':
+  '@sbc-connect/nuxt-auth@0.12.0(4b595dd112636e0a921daf131d1bf36b)':
     dependencies:
       '@pinia/colada': 1.3.0(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
       '@pinia/colada-nuxt': 1.0.1(@pinia/colada@1.3.0(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.3)
@@ -9158,9 +9158,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-pay@0.4.0(4b595dd112636e0a921daf131d1bf36b)':
+  '@sbc-connect/nuxt-pay@0.4.1(4b595dd112636e0a921daf131d1bf36b)':
     dependencies:
-      '@sbc-connect/nuxt-auth': 0.11.1(4b595dd112636e0a921daf131d1bf36b)
+      '@sbc-connect/nuxt-auth': 0.12.0(4b595dd112636e0a921daf131d1bf36b)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
