@@ -4,6 +4,5 @@ export function getLegalTypeDescription(legalType?: string | null): string {
   }
 
   const fullDescription = getCorpFullDescription(legalType as CorpTypeCd)
-  if (fullDescription) return fullDescription
-  return legalType
+  return fullDescription ? fullDescription : legalType
 }
