@@ -18,10 +18,15 @@ function getClientCorrectionSchema() {
         locationDescription: ''
       }
     })),
-    certify: getCertifySchema().default({
+    certify: getCertifySchema().extend({
+      legalName: z.string()
+    }).default({
       isCertified: false,
       legalName: ''
-    })
+    }),
+    authorization: getConfirmAuthorizationSchema().default(() => ({
+      isAuthorized: false
+    }))
   })
 }
 

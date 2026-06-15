@@ -26,7 +26,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="space-y-6 bg-shade rounded p-6">
+  <div class="space-y-6 bg-shade rounded pt-6">
     <div class="space-y-2">
       <h2>
         {{ props.order ? `${props.order}. ${$t('label.confirmAuthorization')}` : $t('label.confirmAuthorization') }}
@@ -37,7 +37,7 @@ defineExpose({
     </div>
     <UForm
       ref="confirm-authorization-form"
-      class="bg-white rounded"
+      class="bg-white rounded w-full"
       :schema="confirmAuthorizationSchema"
       nested
       :name

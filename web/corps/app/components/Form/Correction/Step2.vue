@@ -2,6 +2,7 @@
 import type { FormErrorEvent } from '@nuxt/ui'
 import { z } from 'zod'
 import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '~/utils/schemas/correction'
+import { CORPS } from '~/utils'
 
 const store = useCorrectionStore()
 const businessStore = useBusinessStore()
@@ -42,6 +43,11 @@ const hasReceiverChanges = computed(() => {
 /** Whether any liquidators were changed */
 const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
+})
+
+const requiresAuthorization = computed(() => {
+  const legalType = businessStore.business?.legalType as CorpTypeCd | undefined
+  return legalType ? CORPS.includes(legalType) : false
 })
 
 function onError(event: FormErrorEvent) {
@@ -175,12 +181,20 @@ function onError(event: FormErrorEvent) {
       name="certify"
     />
 
+    <FormConfirmAuthorization
+      v-if="requiresAuthorization && store.formState.authorization"
+      v-model="store.formState.authorization"
+      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :order="store.isStaffCorrectionType ? 4 : 6"
+      name="authorization"
+    />
+
     <!-- Staff Payment (always present, order is dynamic) -->
     <StaffPaymentFieldset
       v-if="store.formState.staffPayment"
       ref="staff-pay-ref"
       v-model="store.formState.staffPayment"
-      :order="store.isStaffCorrectionType ? 4 : 6"
+      :order="store.isStaffCorrectionType ? 5 : 7"
       :initializing="store.initializing"
     />
   </UForm>
