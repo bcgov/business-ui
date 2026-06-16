@@ -144,6 +144,10 @@ test.describe('Correction - Filing Submit', () => {
       expect(requestBody.filing.correction).toBeDefined()
       expect(requestBody.filing.correction.correctedFilingId).toBe(111554)
 
+      // Draft saves should not persist certify or authorization form values in the header
+      expect(requestBody.filing.header).not.toHaveProperty('authorizationReceived')
+      expect(requestBody.filing.header).not.toHaveProperty('certifiedBy')
+
       // Verify it was sent as a draft (not a submission)
       expect(request.url()).toContain('draft=true')
     })
