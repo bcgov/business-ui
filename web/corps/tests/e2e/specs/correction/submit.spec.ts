@@ -38,6 +38,14 @@ async function fillCompletingParty(page: Page) {
   await page.getByTestId('completing-party-email-input').fill('correction-test@example.com')
 }
 
+async function fillConfirmAuthorization(page: Page) {
+  const confirmAuthorizationSection = page.getByTestId('confirm-authorization-section')
+  await expect(confirmAuthorizationSection).toBeVisible()
+  await confirmAuthorizationSection.getByRole('checkbox', {
+    name: /i confirm that the information provided is correct/i
+  }).click()
+}
+
 test.describe('Correction - Filing Submit', () => {
   test.describe('Staff correction', () => {
     test('should submit a staff correction with director changes', async ({ page }) => {
@@ -63,6 +71,9 @@ test.describe('Correction - Filing Submit', () => {
 
       // Fill completing party email
       await fillCompletingParty(page)
+
+      // Confirm authorization is required for corp legal types
+      await fillConfirmAuthorization(page)
 
       // Select staff payment option (required for form validation)
       await page.getByRole('radio', { name: 'No Fee' }).click()
@@ -133,6 +144,10 @@ test.describe('Correction - Filing Submit', () => {
       expect(requestBody.filing.correction).toBeDefined()
       expect(requestBody.filing.correction.correctedFilingId).toBe(111554)
 
+      // Draft saves should not persist certify or authorization form values in the header
+      expect(requestBody.filing.header).not.toHaveProperty('authorizationReceived')
+      expect(requestBody.filing.header).not.toHaveProperty('certifiedBy')
+
       // Verify it was sent as a draft (not a submission)
       expect(request.url()).toContain('draft=true')
     })
@@ -197,6 +212,9 @@ test.describe('Correction - Filing Submit', () => {
       // Certify section should be visible for client corrections
       await expect(page.getByTestId('certify-section')).toBeVisible()
 
+      // Confirm authorization should be visible for corp legal types
+      await expect(page.getByTestId('confirm-authorization-section')).toBeVisible()
+
       // Staff payment should be visible
       await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
@@ -242,6 +260,9 @@ test.describe('Correction - Filing Submit', () => {
       // Fill certify: checkbox is required by the updated certify component
       const certifySection = page.getByTestId('certify-section')
       await certifySection.getByRole('checkbox', { name: /certify/i }).check({ force: true })
+
+      // Fill confirm authorization
+      await fillConfirmAuthorization(page)
 
       // Select staff payment option
       await page.getByRole('radio', { name: 'No Fee' }).click()

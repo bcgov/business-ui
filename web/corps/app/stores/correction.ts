@@ -134,9 +134,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       if (draft.courtOrder) {
         formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
       }
-      if (formState.certify) {
-        formState.certify.legalName = header.certifiedBy ?? ''
-      }
 
       // Completing party (client corrections only) — read from relationships (new format)
       // The draft may contain multiple relationships with a "Completing Party" role:
@@ -379,15 +376,25 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // as correction sections are implemented in the UI
     }
 
+    const headerPayload = {
+      ...formatStaffPaymentApi(formState.staffPayment!),
+      ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {}),
+      authorizationReceived: Boolean(formState.authorization?.isAuthorized)
+    }
+
     const filingPayload = createFilingPayload(
       businessStore.business!,
       FilingType.CORRECTION,
       { correction: correctionPayload },
-      {
-        ...formatStaffPaymentApi(formState.staffPayment!),
-        ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {})
-      }
+      headerPayload
     )
+
+    const header = filingPayload.filing.header as Record<string, unknown>
+    // remove certifiedBy and authorizationReceived from header if not a submission (i.e. if saving as draft)
+    if (!isSubmission) {
+      delete header.certifiedBy
+      delete header.authorizationReceived
+    }
 
     // Draft is always pre-created, so we always have a filingId to update
     const filingId = draftFilingState.value?.filing?.header?.filingId

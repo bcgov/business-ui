@@ -182,8 +182,33 @@ test.describe('Correction - Page init', () => {
       // Completing party and certify should be visible for client corrections
       await expect(page.getByTestId('completing-party-section')).toBeVisible({ timeout: 10000 })
       await expect(page.getByTestId('certify-section')).toBeVisible()
+      // Confirm authorization should be visible for corp legal types
+      await expect(page.getByTestId('confirm-authorization-section')).toBeVisible()
       // Staff payment is always present
       await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+    })
+
+    test('should show confirm authorization section on step 2 for corp corrections', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+      await navigateToCorrectionPage(page, identifier, filingId)
+      await page.waitForLoadState('networkidle')
+
+      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+      // Section should not be visible before moving to step 2
+      await expect(page.getByTestId('confirm-authorization-section')).not.toBeVisible()
+
+      // Make a change to navigate to step 2
+      await makeDirectorEdit(page, 'Corrected Unit')
+      await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+      // Confirm authorization should be shown on step 2 for corp legal types
+      await expect(page.getByTestId('confirm-authorization-section')).toBeVisible({ timeout: 10000 })
+      await expect(
+        page.getByTestId('confirm-authorization-section').getByRole('checkbox', {
+          name: /i confirm that the information provided is correct/i
+        })
+      ).toBeVisible()
     })
 
     test('should show staff payment on step 2 for staff users', async ({ page }) => {
