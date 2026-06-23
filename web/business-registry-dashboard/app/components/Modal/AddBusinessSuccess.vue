@@ -1,18 +1,12 @@
 <script setup lang="ts">
 const brdModal = useBrdModals()
-const affNav = useAffiliationNavigation()
 const affStore = useAffiliationsStore()
 const { t } = useNuxtApp().$i18n
 
-const props = defineProps<{
+defineProps<{
   businessName: string
   identifier: string
 }>()
-
-async function handleManageBusiness () {
-  brdModal.close()
-  await affNav.goToDashboard(props.identifier)
-}
 
 async function handleClose () {
   await affStore.loadAffiliations()
@@ -24,8 +18,7 @@ async function handleClose () {
   <ModalBase
     :title="t('modal.addBusinessSuccess.title', { name: businessName })"
     :actions="[
-      { label: t('btn.close'), variant: 'outline', handler: handleClose },
-      { label: t('modal.addBusinessSuccess.manageBusiness'), handler: handleManageBusiness }
+      { label: t('btn.ok'), handler: handleClose }
     ]"
     @modal-closed="handleClose"
   >
