@@ -728,7 +728,7 @@ export default {
     systemCompletedProcessingFiling: 'The system has completed processing your filing. You can now retrieve the business information.',
     ThisCompany: 'This company',
     theCompanyWasSuccessfullyAmalgamatedOut: 'The Company {name} was successfully {boldStart}Amalgamated Out on {date}, to {foreignjurisdiction} under the name "{newname}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Amalgamation Out documents in your records books.',
-    theCompanyWasSuccessfullyContinuedOut: 'The Company {name} was successfully {boldStart}Continued Out on {date}, to {foreignjurisdiction} under the name "{newname}"{boldEnd}. The Company has been struck from the register and ceased to be an incorporated company under the Business Corporations Act. You are required to retain a copy of all the Continuation Out documents in your records books.',
+    theCompanyWasSuccessfullyContinuedOut: 'The Company {name} was successfully {boldStart}Continued Out on {date}, to {foreignjurisdiction} under the name "{newname}"{boldEnd}. This corporation is no longer a company in British Columbia under the {italicStart}Business Corporations Act{italicEnd}. You are required to retain a copy of all the Continuation Out documents in your records books.',
     thisCompany: 'this company',
     thisConsentToIsValidUntilDate: 'This consent to {name} to {foreignjurisdiction} is valid {boldStart}until {date}{boldEnd}.',
     undefinedStaffRejectionMessage: 'Staff rejection message unavailable',
