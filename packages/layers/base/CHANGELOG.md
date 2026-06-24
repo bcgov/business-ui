@@ -1,5 +1,43 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.22.0
+
+### Minor Changes
+
+- [#489](https://github.com/bcgov/business-ui/pull/489) [`b8efd28`](https://github.com/bcgov/business-ui/commit/b8efd28bcd143bb3c990f5e9697d6ff0f0c1b47c) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - - Update responsive breakpoints for SubForm Wrapper
+
+  - Add support for hiding actions in `correct-readonly` variant in ManageNameTranslations and ManageOffices
+  - Add prop to optionally hide empty text in business tables
+
+- [#495](https://github.com/bcgov/business-ui/pull/495) [`eb37022`](https://github.com/bcgov/business-ui/commit/eb3702223e84436eee6ada31fd68f6d06716c137) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dependency.
+
+- [#492](https://github.com/bcgov/business-ui/pull/492) [`f846072`](https://github.com/bcgov/business-ui/commit/f846072b8beb442742e5ccf1418d31cb5f4b35f2) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dependency.
+
+- [#493](https://github.com/bcgov/business-ui/pull/493) [`7502da0`](https://github.com/bcgov/business-ui/commit/7502da07a1cd436da50f114431a1edf21e4cf9a7) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dependency.
+
+- [#490](https://github.com/bcgov/business-ui/pull/490) [`b490fd5`](https://github.com/bcgov/business-ui/commit/b490fd564813d8d6858bf60569f975ef76c239db) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - update spacing in manage company name component
+
+- [#482](https://github.com/bcgov/business-ui/pull/482) [`4ea6d87`](https://github.com/bcgov/business-ui/commit/4ea6d87f0a116be6f2131ccadbabcddf56be40e4) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - UX feedback updates for the correction filing flow
+
+  - Added cross-section `preventActions` + `actionPreventedSignal` props to `ManageParties`, `ManageOffices`, `ManageShareStructure`, `ManageNameTranslations`, and `ManageCompanyName` so that opening a sub-form in any one section blocks edits in all other sections
+  - Each manage component now emits `action-prevented` and propagates it up to the correction step, which increments a shared signal to trigger the correct inline alert in the active section
+  - Fixed `setActiveFormAlert` in all manage components to only fire when the component's own sub-form is open, preventing false alerts on sibling sections
+  - Wrapped the company name display and edit area in a `pointerdown`/`keydown` listener that clears stale button-control and filing alerts before a new interaction
+  - Passed `variant` and `subject` props through to `FormBusinessName` inside `ManageCompanyName`, and aligned the dropdown menu to `end` to fix overflow clipping
+  - Refactored `FormBusinessName` template to use `SubFormWrapper` (replacing the manual Cancel/Done button row), making the form header and action buttons consistent with other sub-forms
+  - Increased sub-form header font size to `text-lg` and reduced the task-guard alert text to `text-sm` in `SubFormWrapper` for better visual hierarchy
+  - Fixed the table row separator in `TableBusiness` to hide on expanded rows (`data-[expanded=true]:after:hidden`), removing the double-border when a sub-form is open
+  - Adjusted name translation table column padding (`pl-0 pr-2` for name, `pl-2 pr-0` for actions) to tighten the layout
+  - Bumped `@sbc-connect/nuxt-pay` to `0.4.0` (pulls in `nuxt-auth@0.11.1`, `nuxt-base@0.10.0`, `nuxt-forms@0.7.5`)
+
+- [#486](https://github.com/bcgov/business-ui/pull/486) [`b89a2c3`](https://github.com/bcgov/business-ui/commit/b89a2c3d4f2f08e1fe48527f764e622b9a91ac7f) Thanks [@eve-git](https://github.com/eve-git)! - Update Certify and Authentication components
+
+### Patch Changes
+
+- [#500](https://github.com/bcgov/business-ui/pull/500) [`c45d70a`](https://github.com/bcgov/business-ui/commit/c45d70abda27c7d80a467bb15efb2c76b2087ea2) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Update completed Continuation Out text to state the corporation is no longer a company in British Columbia under the Business Corporations Act.
+
+- [#502](https://github.com/bcgov/business-ui/pull/502) [`ffa3656`](https://github.com/bcgov/business-ui/commit/ffa36560f63e8158ae79a366443b581d89ee4acd) Thanks [@deetz99](https://github.com/deetz99)! - Update connect-pay dependency
+
 ## 0.21.1
 
 ### Patch Changes
