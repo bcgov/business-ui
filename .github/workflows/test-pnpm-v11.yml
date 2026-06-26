@@ -1,0 +1,37 @@
+name: "[TEST] pnpm v11 upgrade - business-ui apps"
+on:
+  push:
+    branches: ["test/pnpm-v11-upgrade"]
+  workflow_dispatch:
+
+jobs:
+  test-pnpm-v11:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - web/corps
+          - web/registry-home
+          - web/person-roles
+          - web/business-registry-dashboard
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup pnpm v11
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest-11
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: ${{ matrix.app }}/pnpm-lock.yaml
+      - name: Install
+        run: pnpm install
+      - name: Build
+        run: pnpm build
+      - name: Verify pnpm version
+        run: pnpm --version
