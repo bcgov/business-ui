@@ -25,7 +25,7 @@ function mountComp (props = testProps) {
   })
 }
 
-function getT(key: string) {
+function getT (key: string) {
   return enI18n.global.t(key, { subject: 'Company' })
 }
 
