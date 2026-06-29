@@ -1,5 +1,13 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.23.0
+
+### Minor Changes
+
+- [#508](https://github.com/bcgov/business-ui/pull/508) [`381f03b`](https://github.com/bcgov/business-ui/commit/381f03b7be813427a30bad5f4974bbc14e0c5e4e) Thanks [@deetz99](https://github.com/deetz99)! - Create useIsStaff composable, add staff breadcrumbs to useFilingNavigation composable.
+
+- [#506](https://github.com/bcgov/business-ui/pull/506) [`820e46e`](https://github.com/bcgov/business-ui/commit/820e46e7e0284db4237c8552fc437b16daaca668) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - Generate a new UUID for any share class with a null id as part of the draft filings formatter.
+
 ## 0.22.0
 
 ### Minor Changes
