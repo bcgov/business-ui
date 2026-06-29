@@ -4,7 +4,7 @@ export function formatShareClassesUi(
 ): TableBusinessState<ShareClassSchema>[] {
   const baseFormatter = <T extends { id: number | string | null, name: string, actions?: ActionType[] }>(item: T) => ({
     ...item,
-    id: item.id != null ? item.id.toString() : '',
+    id: item.id != null ? item.id.toString() : crypto.randomUUID(),
     actions: item.actions ?? [],
     name: item.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
     isEditing: false
