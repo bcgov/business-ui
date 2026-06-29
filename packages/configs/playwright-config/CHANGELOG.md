@@ -1,5 +1,11 @@
 # @sbc-connect/playwright-config
 
+## 0.1.0
+
+### Minor Changes
+
+- [#481](https://github.com/bcgov/business-ui/pull/481) [`3088eeb`](https://github.com/bcgov/business-ui/commit/3088eeb3c0564bfa44c7793bd09c3a23997c2066) Thanks [@deetz99](https://github.com/deetz99)! - Update playwright test to latest
+
 ## 0.0.11
 
 ### Patch Changes
