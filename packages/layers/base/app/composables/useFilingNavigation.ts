@@ -8,20 +8,28 @@ export const useFilingNavigation = (filingLabel?: string) => {
   const businessId = route.params.businessId as string
 
   const isDraft = computed(() => route.query.draft !== undefined)
+  const isStaff = useIsStaff()
 
   const dashboardUrl = computed(() =>
     `${rtc.businessDashboardUrl}${businessId}?accountid=${accountStore.currentAccount.id}`
   )
 
+  const registryHome = computed(() => {
+    const url = isStaff.value ? `${rtc.authWebUrl}staff/dashboard/active` : `${rtc.registryHomeUrl}dashboard`
+    const label = isStaff.value ? t('label.staffDashboard') : t('label.bcRegistriesDashboard')
+
+    return { url, label }
+  })
+
   const breadcrumbs = computed(() => [
     {
-      label: t('label.bcRegistriesDashboard'),
-      to: `${rtc.registryHomeUrl}dashboard`,
+      label: registryHome.value.label,
+      to: registryHome.value.url,
       external: true,
       appendAccountId: true
     },
     {
-      label: t('label.myBusinessRegistry'),
+      label: isStaff.value ? t('label.myStaffBusinessRegistry') : t('label.myBusinessRegistry'),
       to: `${rtc.brdUrl}account/${accountStore.currentAccount.id}`,
       external: true
     },

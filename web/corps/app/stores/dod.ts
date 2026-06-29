@@ -1,7 +1,6 @@
 import { cloneDeep } from 'es-toolkit'
 // TODO - FUTURE - maybe consolidate 'delay' store with other dissolution filings if possible
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
-  const { currentAccount } = storeToRefs(useConnectAccountStore())
   const schema = getDodSchema()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
 
@@ -20,7 +19,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     userDelays: 0
   })
 
-  const isStaff = computed(() => currentAccount.value.accountType === AccountType.STAFF)
+  const isStaff = useIsStaff()
 
   watch(() => formState.delay.option, (val) => {
     if (val === DelayOption.DEFAULT) {
