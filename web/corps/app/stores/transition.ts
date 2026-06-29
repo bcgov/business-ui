@@ -18,7 +18,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
 
-  const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
+  const isStaff = useIsStaff()
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
