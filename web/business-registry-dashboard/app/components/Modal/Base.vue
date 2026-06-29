@@ -64,7 +64,7 @@ defineShortcuts({
             <UAlert v-if="alert" class="mb-3" v-bind="alert">
               <template #description>
                 <p class="text-bcGovColor-darkGray">
-                  <ConnectI18nHelper :translation-path="alert.translationPath" />
+                  <ConnectI18nHelper :translation-path="alert.translationPath" v-bind="alert.extraTextCtx" />
                 </p>
               </template>
             </UAlert>

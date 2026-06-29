@@ -15,6 +15,7 @@ defineProps<{
     isCoop: boolean
   }
   isCorpOrBenOrCoop: boolean
+  subject: string
 }>()
 
 const emit = defineEmits<{
@@ -70,6 +71,7 @@ defineExpose({
       :accounts
       :business-details="businessDetails"
       :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
+      :subject
       @retry="handleRetry"
       @business-error="handleError"
       @email-success="handleEmailSuccess"

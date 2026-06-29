@@ -12,7 +12,8 @@ const testProps: any = {
     isCoop: false,
     name: 'Business Name',
     identifier: '1234567890'
-  }
+  },
+  subject: 'Company'
 }
 
 function mountComp (props = testProps) {
@@ -22,6 +23,10 @@ function mountComp (props = testProps) {
       plugins: [enI18n]
     }
   })
+}
+
+function getT(key: string) {
+  return enI18n.global.t(key, { subject: 'Company' })
 }
 
 describe('<FormAddBusinessError />', () => {
@@ -54,8 +59,8 @@ describe('<FormAddBusinessError />', () => {
     }
     wrapper = await mountComp(props)
 
-    expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.title'))
-    expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.description'))
+    expect(wrapper.text()).toContain(getT('form.manageBusiness.error.email.title'))
+    expect(wrapper.text()).toContain(getT('form.manageBusiness.error.email.description'))
   })
 
   it('renders the correct error message for "delegation" error type', async () => {
@@ -68,8 +73,8 @@ describe('<FormAddBusinessError />', () => {
     }
     wrapper = await mountComp(props)
 
-    expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.delegation.title'))
-    expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.delegation.description'))
+    expect(wrapper.text()).toContain(getT('form.manageBusiness.error.delegation.title'))
+    expect(wrapper.text()).toContain(getT('form.manageBusiness.error.delegation.description'))
   })
 
   describe("renders correct message for 'passcode' error type", () => {
@@ -79,6 +84,7 @@ describe('<FormAddBusinessError />', () => {
           ...testProps.businessDetails,
           isCoop: true
         },
+        subject: 'Company',
         errorObj: {
           type: 'passcode',
           error: {
@@ -90,8 +96,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.coop.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.coop.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.401.coop.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.401.coop.description'))
     })
 
     it('should render error text for 401 as not coop', async () => {
@@ -108,8 +114,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.default.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.401.default.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.401.default.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.401.default.description'))
     })
 
     it('should render error text for 404', async () => {
@@ -126,8 +132,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.404.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.404.description'))
     })
 
     it('should render error text for 406', async () => {
@@ -144,8 +150,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.406.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.406.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.406.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.406.description'))
     })
 
     it('should render error text for 404', async () => {
@@ -162,8 +168,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.404.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.404.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.404.description'))
     })
 
     it('should render error text for unknown statuses', async () => {
@@ -180,8 +186,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.default.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.passcode.default.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.default.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.passcode.default.description'))
     })
   })
 
@@ -200,8 +206,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.401.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.401.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.401.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.401.description'))
     })
 
     it('should render error text for 404', async () => {
@@ -218,8 +224,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.404.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.404.description'))
     })
 
     it('should render error text for 404', async () => {
@@ -236,8 +242,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.404.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.404.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.404.description'))
     })
 
     it('should render error text for unknown statuses', async () => {
@@ -254,8 +260,8 @@ describe('<FormAddBusinessError />', () => {
       }
       wrapper = await mountComp(props)
 
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.default.title'))
-      expect(wrapper.text()).toContain(enI18n.global.t('form.manageBusiness.error.firm.default.description'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.default.title'))
+      expect(wrapper.text()).toContain(getT('form.manageBusiness.error.firm.default.description'))
     })
   })
 
@@ -286,8 +292,8 @@ describe('<FormAddBusinessError />', () => {
     await new Promise<void>((resolve) => {
       setTimeout(() => {
         const status = wrapper.find('[role="status"]')
-        expect(status.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.title'))
-        expect(status.text()).toContain(enI18n.global.t('form.manageBusiness.error.email.description'))
+        expect(status.text()).toContain(getT('form.manageBusiness.error.email.title'))
+        expect(status.text()).toContain(getT('form.manageBusiness.error.email.description'))
         resolve() // resolve after assertion
       }, 1000) // wait for timeout to complete
     })
