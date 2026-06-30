@@ -14,6 +14,7 @@ const props = defineProps<{
     name: string
     identifier: string
   }
+  subject: string
 }>()
 
 defineEmits<{
@@ -42,20 +43,20 @@ const errorText = computed(() => {
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       if (props.businessDetails.isCoop) {
         title = t('form.manageBusiness.error.passcode.401.coop.title')
-        description = t('form.manageBusiness.error.passcode.401.coop.description')
+        description = t('form.manageBusiness.error.passcode.401.coop.description', { subject: props.subject })
       } else {
         title = t('form.manageBusiness.error.passcode.401.default.title')
-        description = t('form.manageBusiness.error.passcode.401.default.description')
+        description = t('form.manageBusiness.error.passcode.401.default.description', { subject: props.subject })
       }
     } else if (error.response?.status === StatusCodes.NOT_FOUND) {
-      title = t('form.manageBusiness.error.passcode.404.title')
-      description = t('form.manageBusiness.error.passcode.404.description')
+      title = t('form.manageBusiness.error.passcode.404.title', { subject: props.subject })
+      description = t('form.manageBusiness.error.passcode.404.description', { subject: props.subject })
     } else if (error.response?.status === StatusCodes.NOT_ACCEPTABLE) {
       title = t('form.manageBusiness.error.passcode.406.title')
       description = t('form.manageBusiness.error.passcode.406.description')
     } else if (error.response?.status === StatusCodes.BAD_REQUEST) {
-      title = t('form.manageBusiness.error.passcode.400.title')
-      description = t('form.manageBusiness.error.passcode.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
+      title = t('form.manageBusiness.error.passcode.400.title', { subject: props.subject })
+      description = t('form.manageBusiness.error.passcode.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier, subject: props.subject })
     } else {
       title = t('form.manageBusiness.error.passcode.default.title')
       description = t('form.manageBusiness.error.passcode.default.description')
@@ -65,13 +66,13 @@ const errorText = computed(() => {
   if (props.errorObj.type === 'firm') {
     if (error.response?.status === StatusCodes.UNAUTHORIZED) {
       title = t('form.manageBusiness.error.firm.401.title')
-      description = t('form.manageBusiness.error.firm.401.description')
+      description = t('form.manageBusiness.error.firm.401.description', { subject: props.subject })
     } else if (error.response?.status === StatusCodes.NOT_FOUND) {
-      title = t('form.manageBusiness.error.firm.404.title')
-      description = t('form.manageBusiness.error.firm.404.description')
+      title = t('form.manageBusiness.error.firm.404.title', { subject: props.subject })
+      description = t('form.manageBusiness.error.firm.404.description', { subject: props.subject })
     } else if (error.response?.status === StatusCodes.BAD_REQUEST) {
-      title = t('form.manageBusiness.error.firm.400.title')
-      description = t('form.manageBusiness.error.firm.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier })
+      title = t('form.manageBusiness.error.firm.400.title', { subject: props.subject })
+      description = t('form.manageBusiness.error.firm.400.description', { name: props.businessDetails.name, identifier: props.businessDetails.identifier, subject: props.subject })
     } else {
       title = t('form.manageBusiness.error.firm.default.title')
       description = t('form.manageBusiness.error.firm.default.description')
@@ -99,7 +100,7 @@ onMounted(() => {
   <div class="flex flex-col gap-4 pt-2 text-left">
     <div class="flex">
       <UIcon name="i-mdi-alert" class="mr-2 size-6 text-red-500" />
-      <h2 class="font-bold text-bcGovColor-midGray">
+      <h2 class="font-bold text-bcGovColor-midGray first-letter:uppercase">
         {{ errorText.title }}
       </h2>
     </div>

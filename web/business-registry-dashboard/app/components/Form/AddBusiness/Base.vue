@@ -29,6 +29,7 @@ const props = defineProps<{
     identifier: string
   }
   isCorpOrBenOrCoop: boolean
+  subject: string
 }>()
 
 const emit = defineEmits<{
@@ -269,7 +270,7 @@ watch(() => props.authOptions, (newOptions) => {
   >
     <fieldset class="space-y-4">
       <legend class="text-bcGovColor-darkGray">
-        <div>{{ $t('form.manageBusiness.legend') }}</div>
+        <div>{{ $t('form.manageBusiness.legend', { subject }) }}</div>
         <div v-if="formState.options >= 2" class="mt-1">
           {{ $t('form.manageBusiness.chooseOption') }}
         </div>
@@ -310,7 +311,7 @@ watch(() => props.authOptions, (newOptions) => {
                 v-if="option.slot === 'email-option' && hasPasscodeOption && (businessDetails.isCoop || businessDetails.isCorporation)"
                 class="mt-1 text-sm text-bcGovColor-midGray"
               >
-                {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}
+                {{ $t('form.manageBusiness.authOption.email.coopSubtext', { subject }) }}
               </span>
             </div>
           </label>
@@ -322,7 +323,7 @@ watch(() => props.authOptions, (newOptions) => {
               v-if="option.slot === 'email-option' && businessDetails.isCoop"
               class="mt-1 text-sm font-normal text-bcGovColor-midGray"
             >
-              {{ $t('form.manageBusiness.authOption.email.coopSubtext') }}
+              {{ $t('form.manageBusiness.authOption.email.coopSubtext', { subject }) }}
             </div>
           </div>
 
@@ -338,7 +339,7 @@ watch(() => props.authOptions, (newOptions) => {
                 <UInput
                   v-model="formState.passcode"
                   :placeholder="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default')"
-                  :aria-label="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop') : t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default')"
+                  :aria-label="businessDetails.isCoop ? t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop', { subject }) : t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default', { subject })"
                   :variant="handleFormInputVariant('passcode', formRef?.errors)"
                   :maxlength="businessDetails.isCoop ? 9 : 15"
                 />
@@ -370,7 +371,7 @@ watch(() => props.authOptions, (newOptions) => {
                       class="text-sm"
                       :class="handleFormInputVariant('partner.certify', formRef?.errors) === 'error' ? 'text-red-500' : 'text-bcGovColor-midGray'"
                     >
-                      <ConnectI18nHelper translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" />
+                      <ConnectI18nHelper translation-path="form.manageBusiness.authOption.firm.fields.certify.label" :name="`${keycloak.kcUser.lastName}, ${keycloak.kcUser.firstName}`" :subject />
                     </span>
                   </template>
                 </UCheckbox>
@@ -381,14 +382,14 @@ watch(() => props.authOptions, (newOptions) => {
             <div v-if="option.slot === 'email-option'" data-testid="formgroup-email" class="space-y-4 text-base text-bcGovColor-midGray">
               <div>
                 {{ props.isCorpOrBenOrCoop
-                  ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop')
+                  ? $t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop', { subject })
                   : businessDetails.isFirm
-                    ? $t('form.manageBusiness.authOption.email.sentTo.firm')
-                    : $t('form.manageBusiness.authOption.email.sentTo.default') }}
+                    ? $t('form.manageBusiness.authOption.email.sentTo.firm', { subject })
+                    : $t('form.manageBusiness.authOption.email.sentTo.default', { subject }) }}
               </div>
               <div><b>{{ contactEmail }}</b></div>
               <div class="mb-4 mr-1 mt-1">
-                {{ $t('form.manageBusiness.authOption.email.instructions') }}
+                {{ $t('form.manageBusiness.authOption.email.instructions', { subject }) }}
               </div>
               <!-- On hold for form.
               <div class="mt-3">
@@ -493,7 +494,7 @@ watch(() => props.authOptions, (newOptions) => {
           @click="brdModal.close()"
         />
         <UButton
-          :label="$t('form.manageBusiness.submitBtn')"
+          :label="$t('form.manageBusiness.submitBtn', { subject })"
           type="submit"
           class="ml-5 flex flex-none"
           :loading

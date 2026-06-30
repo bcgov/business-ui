@@ -44,3 +44,29 @@ export enum CorpTypes {
   NAME_REQUEST = 'NR',
   REGISTRATION = 'RTMP'
 }
+
+// Corporations as defined by policy -> legally defined as a 'Company' NOT 'Business'
+// Corps, ULCs, CCCs, Benefit Companies, Extra-provincial [not modernized]
+// Corporations use the term "Company"
+export enum CorporationType {
+  // Corps / BC Companies
+  BC_COMPANY = 'BC',
+  BC_CORPORATION = 'CR',
+
+  // ULCs (Unlimited Liability Companies)
+  BC_ULC_COMPANY = 'ULC',
+  ULC_CONTINUE_IN = 'CUL',
+  BC_UNLIMITED = 'UL',
+
+  // CCCs (Community Contribution Companies)
+  BC_CCC = 'CC',
+  CCC_CONTINUE_IN = 'CCC',
+
+  // Benefit Companies
+  BENEFIT_COMPANY = 'BEN',
+  BEN_CONTINUE_IN = 'CBEN',
+
+  // Extra-provincial [not modernized / COLIN]
+  EXTRA_PRO_REG = 'EPR',
+  LIMITED_CO = 'LLC'
+}

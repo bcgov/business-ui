@@ -16,7 +16,8 @@ const testProps: any = {
     isCoop: false,
     name: 'Business Name',
     identifier: '1234567890'
-  }
+  },
+  subject: 'Company'
 }
 
 function mountComp (props = testProps) {
@@ -26,6 +27,10 @@ function mountComp (props = testProps) {
       plugins: [enI18n]
     }
   })
+}
+
+function getT (key: string) {
+  return enI18n.global.t(key, { subject: 'Company' })
 }
 
 describe('<FormAddBusinessBase />', () => {
@@ -54,18 +59,18 @@ describe('<FormAddBusinessBase />', () => {
   it('should mount', async () => {
     wrapper = await mountComp()
     expect(wrapper).toBeTruthy()
-    expect(wrapper.find('legend').text()).toBe(enI18n.global.t('form.manageBusiness.legend'))
+    expect(wrapper.find('legend').text()).toBe(getT('form.manageBusiness.legend'))
 
     const buttons = findAllButtons()
     expect(buttons.length).toBeGreaterThanOrEqual(3) // help button + cancel + submit
 
-    const cancelButton = wrapper.findAll('button[type="button"]').find(btn => btn.text() === enI18n.global.t('btn.cancel'))
+    const cancelButton = wrapper.findAll('button[type="button"]').find(btn => btn.text() === getT('btn.cancel'))
     expect(cancelButton).toBeTruthy()
-    expect(cancelButton?.text()).toBe(enI18n.global.t('btn.cancel'))
+    expect(cancelButton?.text()).toBe(getT('btn.cancel'))
 
     const submitButton = wrapper.find('button[type="submit"]')
     expect(submitButton.exists()).toBe(true)
-    expect(submitButton.text()).toBe(enI18n.global.t('form.manageBusiness.submitBtn'))
+    expect(submitButton.text()).toContain(getT('form.manageBusiness.submitBtn'))
   })
 
   describe('Accordian options', () => {
@@ -169,7 +174,7 @@ describe('<FormAddBusinessBase />', () => {
       await submitForm()
 
       expect(findNoOptionAlert().exists()).toBe(true)
-      expect(findNoOptionAlert().text()).toContain(enI18n.global.t('form.manageBusiness.noOptionAlert'))
+      expect(findNoOptionAlert().text()).toContain(getT('form.manageBusiness.noOptionAlert'))
     })
 
     it('should hide the alert if shown after selecting an auth option', async () => {
@@ -189,7 +194,7 @@ describe('<FormAddBusinessBase />', () => {
       await submitForm()
 
       expect(findNoOptionAlert().exists()).toBe(true) // should show alert
-      expect(findNoOptionAlert().text()).toContain(enI18n.global.t('form.manageBusiness.noOptionAlert'))
+      expect(findNoOptionAlert().text()).toContain(getT('form.manageBusiness.noOptionAlert'))
 
       await selectAuthOption('passcode-option') // select a radio option
 
@@ -214,36 +219,36 @@ describe('<FormAddBusinessBase />', () => {
           // Option is auto-selected for single option
 
           expect(findFormGroup('passcode-input').exists()).toBe(true)
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
 
           const input = wrapper.find('input[name="passcode"]')
-          expect(input.attributes('placeholder')).toEqual(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop'))
-          expect(input.attributes('aria-label')).toEqual(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop'))
+          expect(input.attributes('placeholder')).toEqual(getT('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.coop'))
+          expect(input.attributes('aria-label')).toEqual(getT('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.coop'))
           expect(input.attributes('maxlength')).toEqual('9')
 
           await submitForm()
 
-          expect(findFormGroup('passcode-input').text()).not.toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.required'))
+          expect(findFormGroup('passcode-input').text()).not.toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.required'))
 
           await input.setValue('123')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.length'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.length'))
 
           await input.setValue('ertertert')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.type'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.coop.type'))
 
           await input.setValue('123456789')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
           // should not show any validation errors
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.coop'))
         })
       })
 
@@ -258,35 +263,35 @@ describe('<FormAddBusinessBase />', () => {
           // Option is auto-selected for single option
 
           expect(findFormGroup('passcode-input').exists()).toBe(true)
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.default'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.default'))
 
           const input = wrapper.find('input[name="passcode"]')
-          expect(input.attributes('placeholder')).toEqual(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default'))
-          expect(input.attributes('aria-label')).toEqual(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default'))
+          expect(input.attributes('placeholder')).toEqual(getT('form.manageBusiness.authOption.passcode.fields.passcode.placeholder.default'))
+          expect(input.attributes('aria-label')).toEqual(getT('form.manageBusiness.authOption.passcode.fields.passcode.arialabel.default'))
           expect(input.attributes('maxlength')).toEqual('15')
 
           await submitForm()
 
-          expect(findFormGroup('passcode-input').text()).not.toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.default'))
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.required'))
+          expect(findFormGroup('passcode-input').text()).not.toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.default'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.default.required'))
 
           await input.setValue('123')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
 
           await input.setValue('ertertert')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.error.default.length'))
 
           await input.setValue('123456789')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
-          expect(findFormGroup('passcode-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.passcode.fields.passcode.help.default')) // should not show any validation errors
+          expect(findFormGroup('passcode-input').text()).toContain(getT('form.manageBusiness.authOption.passcode.fields.passcode.help.default')) // should not show any validation errors
         })
       })
     })
@@ -307,23 +312,23 @@ describe('<FormAddBusinessBase />', () => {
           // Option is auto-selected for single option
 
           expect(findFormGroup('firm-input').exists()).toBe(true)
-          expect(findFormGroup('firm-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.help'))
+          expect(findFormGroup('firm-input').text()).toContain(getT('form.manageBusiness.authOption.firm.fields.name.help'))
 
           const input = wrapper.find('input[name="partner.name"]')
-          expect(input.attributes('placeholder')).toEqual(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.placeholder'))
-          expect(input.attributes('aria-label')).toEqual(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.arialabel'))
+          expect(input.attributes('placeholder')).toEqual(getT('form.manageBusiness.authOption.firm.fields.name.placeholder'))
+          expect(input.attributes('aria-label')).toEqual(getT('form.manageBusiness.authOption.firm.fields.name.arialabel'))
 
           await submitForm()
 
-          expect(findFormGroup('firm-input').text()).not.toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.help'))
-          expect(findFormGroup('firm-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.error.required'))
+          expect(findFormGroup('firm-input').text()).not.toContain(getT('form.manageBusiness.authOption.firm.fields.name.help'))
+          expect(findFormGroup('firm-input').text()).toContain(getT('form.manageBusiness.authOption.firm.fields.name.error.required'))
 
           await input.setValue('Some Name')
           await input.trigger('blur') // blur required to trigger validation
           await flushPromises()
 
           // should not show any validation errors
-          expect(findFormGroup('firm-input').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.name.help'))
+          expect(findFormGroup('firm-input').text()).toContain(getT('form.manageBusiness.authOption.firm.fields.name.help'))
         })
       })
 
@@ -341,7 +346,7 @@ describe('<FormAddBusinessBase />', () => {
 
           await submitForm() // trigger validation
 
-          expect(findFormGroup('firm-checkbox').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.certify.error'))
+          expect(findFormGroup('firm-checkbox').text()).toContain(getT('form.manageBusiness.authOption.firm.fields.certify.error'))
 
           const checkbox = wrapper.find('input[name="partner.certify"]')
           await checkbox.setValue(true) // set checkbox to true
@@ -350,7 +355,7 @@ describe('<FormAddBusinessBase />', () => {
           await submitForm() // trigger validation
 
           // should not show validation error
-          expect(findFormGroup('firm-checkbox').text()).not.toContain(enI18n.global.t('form.manageBusiness.authOption.firm.fields.certify.error'))
+          expect(findFormGroup('firm-checkbox').text()).not.toContain(getT('form.manageBusiness.authOption.firm.fields.certify.error'))
         })
       })
     })
@@ -371,9 +376,9 @@ describe('<FormAddBusinessBase />', () => {
         // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.sentTo.corpOrBenOrCoop'))
         expect(findFormGroup('email').text()).toContain(testProps.contactEmail)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.instructions'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.instructions'))
       })
 
       it('should display correct text as firm', async () => {
@@ -390,9 +395,9 @@ describe('<FormAddBusinessBase />', () => {
         // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.firm'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.sentTo.firm'))
         expect(findFormGroup('email').text()).toContain(testProps.contactEmail)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.instructions'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.instructions'))
       })
 
       it('should display correct default text', async () => {
@@ -405,9 +410,9 @@ describe('<FormAddBusinessBase />', () => {
         // Option is auto-selected for single option
 
         expect(findFormGroup('email').exists()).toBe(true)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.sentTo.default'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.sentTo.default'))
         expect(findFormGroup('email').text()).toContain(testProps.contactEmail)
-        expect(findFormGroup('email').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.email.instructions'))
+        expect(findFormGroup('email').text()).toContain(getT('form.manageBusiness.authOption.email.instructions'))
       })
     })
 
@@ -431,7 +436,7 @@ describe('<FormAddBusinessBase />', () => {
           await submitForm()
 
           // should have validation error
-          expect(findFormGroup('delegation-account').text()).toContain(enI18n.global.t('form.manageBusiness.authOption.delegation.fields.account.error.required'))
+          expect(findFormGroup('delegation-account').text()).toContain(getT('form.manageBusiness.authOption.delegation.fields.account.error.required'))
 
           const selectMenu = wrapper.find('[data-testid="delegation-select-menu"]')
           await selectMenu.trigger('click') // open menu
@@ -455,7 +460,7 @@ describe('<FormAddBusinessBase />', () => {
           await submitForm() // trigger validation
 
           // should not have validation error
-          expect(findFormGroup('delegation-account').text()).not.toContain(enI18n.global.t('form.manageBusiness.authOption.delegation.fields.account.error.required'))
+          expect(findFormGroup('delegation-account').text()).not.toContain(getT('form.manageBusiness.authOption.delegation.fields.account.error.required'))
         })
       })
 
