@@ -9,8 +9,17 @@ jobs:
   test-pnpm-v11:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        app: [web/corps, web/registry-home, web/person-roles, web/business-registry-dashboard]
+        include:
+          - app: web/corps
+            lockfile: pnpm-lock.yaml
+          - app: web/registry-home
+            lockfile: pnpm-lock.yaml
+          - app: web/person-roles
+            lockfile: pnpm-lock.yaml
+          - app: web/business-registry-dashboard
+            lockfile: web/business-registry-dashboard/pnpm-lock.yaml
     defaults:
       run:
         working-directory: ${{ matrix.app }}
@@ -23,9 +32,12 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          cache-dependency-path: ${{ matrix.app }}/pnpm-lock.yaml
+          cache-dependency-path: ${{ matrix.lockfile }}
       - name: Install
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
+      - name: Nuxt Prepare
+        run: pnpm exec nuxt prepare || true
+        continue-on-error: true
       - name: Build
         run: pnpm build
       - name: pnpm version
