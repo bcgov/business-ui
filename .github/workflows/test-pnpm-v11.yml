@@ -35,6 +35,16 @@ jobs:
           cache-dependency-path: ${{ matrix.lockfile }}
       - name: Install
         run: pnpm install --no-frozen-lockfile --ignore-scripts
+      - name: Stub base layer playground .nuxt
+        run: |
+          # packages/layers/base/tsconfig.json references .playground/.nuxt/tsconfig.*.json
+          # which must exist for esbuild to parse TypeScript from the layer
+          PLAYGROUND="$GITHUB_WORKSPACE/packages/layers/base/.playground"
+          mkdir -p "$PLAYGROUND/.nuxt"
+          for f in tsconfig.app.json tsconfig.server.json tsconfig.shared.json tsconfig.node.json; do
+            [ -f "$PLAYGROUND/.nuxt/$f" ] || echo '{}' > "$PLAYGROUND/.nuxt/$f"
+          done
+        continue-on-error: true
       - name: Nuxt Prepare
         run: pnpm exec nuxt prepare || true
         continue-on-error: true
