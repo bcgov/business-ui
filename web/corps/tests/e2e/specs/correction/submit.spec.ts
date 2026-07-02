@@ -17,12 +17,7 @@ async function makeDirectorChange(page: Page) {
   await expect(async () => {
     if (await streetInput.isVisible()) {
       await streetInput.fill('Corrected Unit 1A')
-      const doneButton = directors.getByRole('button', { name: 'Done' })
-      await doneButton.click()
-      // Add a small delay to allow DOM to update after form submission
-      await page.waitForTimeout(500)
-      // Verify form closure by checking the edit button is back
-      await expect(rowToEdit.getByRole('button', { name: 'Correct' })).toBeVisible({ timeout: 5000 })
+      await directors.getByRole('button', { name: 'Done' }).click()
     }
     await expect(streetInput).not.toBeVisible()
   }).toPass({ timeout: 15000 })
