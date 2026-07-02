@@ -12,12 +12,15 @@ async function makeDirectorChange(page: Page) {
   const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
   await expect(streetInput).toBeVisible()
-  // Use toPass for CI resilience — retries the fill+Done+verify cycle if the form
-  // is slow to validate/close on resource-constrained environments
   await expect(async () => {
     if (await streetInput.isVisible()) {
       await streetInput.fill('Corrected Unit 1A')
-      await directors.getByRole('button', { name: 'Done' }).click()
+      const doneButton = directors.getByRole('button', { name: 'Done' })
+      await doneButton.click()
+      // Add a small delay to allow DOM to update after form submission
+      await page.waitForTimeout(500)
+      // Verify form closure by checking the edit button is back
+      await expect(rowToEdit.getByRole('button', { name: 'Correct' })).toBeVisible({ timeout: 5000 })
     }
     await expect(streetInput).not.toBeVisible()
   }).toPass({ timeout: 15000 })

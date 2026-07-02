@@ -17,6 +17,8 @@ async function makeDirectorEdit(page: Page, fillValue: string) {
     if (await streetInput.isVisible()) {
       await streetInput.fill(fillValue)
       await directors.getByRole('button', { name: 'Done' }).click()
+      // Wait for the form to close by checking for the "Correct" button to reappear
+      await expect(rowToEdit.getByRole('button', { name: 'Correct' })).toBeVisible({ timeout: 5000 })
     }
     await expect(streetInput).not.toBeVisible()
   }).toPass({ timeout: 15000 })
