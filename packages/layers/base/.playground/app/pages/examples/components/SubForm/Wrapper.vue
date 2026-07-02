@@ -39,7 +39,7 @@ function triggerTaskGuard() {
     </ConnectPageSection>
 
     <ConnectPageSection :heading="{ label: '`edit` variant' }" ui-body="p-4 space-y-4">
-      <SubFormWrapper variant="edit" item-label="Officer">
+      <SubFormWrapper variant="edit" subject="Officer">
         <div class="p-10 flex items-center justify-center border border-black mt-8">
           Content Here
         </div>
@@ -47,7 +47,7 @@ function triggerTaskGuard() {
     </ConnectPageSection>
 
     <ConnectPageSection :heading="{ label: '`add` variant' }" ui-body="p-4 space-y-4">
-      <SubFormWrapper variant="add" item-label="Officer">
+      <SubFormWrapper variant="add" subject="Officer">
         <div class="p-10 flex items-center justify-center border border-black mt-8">
           Content Here
         </div>
@@ -55,7 +55,7 @@ function triggerTaskGuard() {
     </ConnectPageSection>
 
     <ConnectPageSection :heading="{ label: '`correct` variant' }" ui-body="p-4 space-y-4">
-      <SubFormWrapper variant="correct" item-label="Officer">
+      <SubFormWrapper variant="correct" subject="Officer">
         <div class="p-10 flex items-center justify-center border border-black mt-8">
           Content Here
         </div>
@@ -63,7 +63,7 @@ function triggerTaskGuard() {
     </ConnectPageSection>
 
     <ConnectPageSection :heading="{ label: '`change` variant' }" ui-body="p-4 space-y-4">
-      <SubFormWrapper variant="change" item-label="Officer">
+      <SubFormWrapper variant="change" subject="Officer">
         <div class="p-10 flex items-center justify-center border border-black mt-8">
           Content Here
         </div>
@@ -73,7 +73,7 @@ function triggerTaskGuard() {
     <ConnectPageSection :heading="{ label: 'hideHeaderCancel - `add` variant' }" ui-body="p-4 space-y-4">
       <SubFormWrapper
         variant="add"
-        item-label="Officer"
+        subject="Officer"
         hide-header-cancel
       >
         <div class="p-10 flex items-center justify-center border border-black mt-8">
@@ -85,7 +85,7 @@ function triggerTaskGuard() {
     <ConnectPageSection :heading="{ label: 'hideRemove - `edit` variant' }" ui-body="p-4 space-y-4">
       <SubFormWrapper
         variant="edit"
-        item-label="Officer"
+        subject="Officer"
         hide-remove
       >
         <div class="p-10 flex items-center justify-center border border-black mt-8">
@@ -97,7 +97,7 @@ function triggerTaskGuard() {
     <ConnectPageSection :heading="{ label: 'error - `add` variant' }" ui-body="p-4 space-y-4">
       <SubFormWrapper
         variant="add"
-        item-label="Officer"
+        subject="Officer"
         error
       >
         <div class="p-10 flex items-center justify-center border border-black mt-8">
@@ -113,7 +113,7 @@ function triggerTaskGuard() {
     >
       <SubFormWrapper
         variant="edit"
-        item-label="Officer"
+        subject="Officer"
         :task-guard-config="{
           message: alerts[formTarget],
           messageId,

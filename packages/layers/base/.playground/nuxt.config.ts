@@ -21,5 +21,23 @@ export default defineNuxtConfig({
         file: 'fr-CA.ts'
       }
     ]
+  },
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        skipLibCheck: true
+      },
+      exclude: [
+        '../../../../../web/**',
+        '../../../node_modules/**',
+        'node_modules',
+        '**/node_modules/**',
+        '**/.pnpm/**',
+        '../../../../../node_modules/**',
+        '../../../../node_modules/**',
+        '../../node_modules/**',
+        '../../../../../node_modules/**'
+      ]
+    }
   }
 })

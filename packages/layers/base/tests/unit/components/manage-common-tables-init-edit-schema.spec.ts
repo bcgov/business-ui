@@ -83,7 +83,6 @@ async function emitInitEdit(
   tableStub: ReturnType<typeof defineComponent>,
   row: Record<string, unknown>
 ) {
-  // @ts-expect-error - test helper accepts loosely typed props for different component types
   const wrapper = await mountSuspended(component, { props, global: { stubs } })
   wrapper.findComponent(tableStub).vm.$emit('init-edit', row)
   await wrapper.vm.$nextTick()

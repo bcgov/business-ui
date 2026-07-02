@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /** save data blob to computer */
 export const saveBlob = (blob: Blob, fileName: string) => {
-  if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-    window.navigator.msSaveOrOpenBlob(blob, fileName)
+  if (window.navigator && (window.navigator as any).msSaveOrOpenBlob) {
+    (window.navigator as any).msSaveOrOpenBlob(blob, fileName)
   } else {
     // for other browsers, create a link pointing to the ObjectURL containing the blob
     const url = window.URL.createObjectURL(blob)
@@ -17,7 +18,7 @@ export const saveBlob = (blob: Blob, fileName: string) => {
 }
 
 /** Download the file as the given filename. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export const downloadFile = (data: any, fileName: string) => {
   const blob = new Blob([data])
   saveBlob(blob, fileName)
