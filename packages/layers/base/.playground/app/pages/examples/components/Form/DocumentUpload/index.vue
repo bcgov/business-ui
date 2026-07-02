@@ -21,7 +21,7 @@ const state = reactive<Schema>({
       <!-- Documents Summary Section: PLAYGROUND ONLY -->
       <div class="mt-8 space-y-4">
         <div class="flex items-center px-4">
-          <UBadge color="blue" variant="soft">
+          <UBadge color="primary" variant="soft">
             {{ state.documents.length }} file{{ state.documents.length !== 1 ? 's' : '' }}
           </UBadge>
         </div>

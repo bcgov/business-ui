@@ -20,8 +20,8 @@ describe('useDocumentHandler Composable', () => {
   })
 
   describe('Initial State', () => {
-    it('should initialize with undefined files array', () => {
-      expect(composable.state.files).toBeUndefined()
+    it('should initialize with empty files array', () => {
+      expect(composable.state.files).toEqual([])
     })
 
     it('should initialize isProcessing as false', () => {
@@ -120,7 +120,7 @@ describe('useDocumentHandler Composable', () => {
     })
 
     it('should not remove file if files array is not initialized', () => {
-      composable.state.files = undefined
+      composable.state.files = []
 
       expect(() => composable.removeFile(0)).not.toThrow()
     })
@@ -161,7 +161,7 @@ describe('useDocumentHandler Composable', () => {
       expect(composable.isProcessing.value).toBe(false)
 
       // Create a promise that we can control
-      let resolveConversion
+      let resolveConversion: (v: Blob) => void = () => {}
       const conversionPromise = new Promise((resolve) => {
         resolveConversion = resolve
       })
@@ -174,8 +174,8 @@ describe('useDocumentHandler Composable', () => {
         onConverted: mockOnConvertedTest
       })
 
-      // Mock useDocumentRecordServiceApi
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      // Mock useDrsService
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn(() => conversionPromise)
       })))
 
@@ -228,10 +228,10 @@ describe('useDocumentHandler Composable', () => {
         onConverted: mockOnConvertedTest
       })
 
-      expect(testComposable.state.files).toBeUndefined()
+      expect(testComposable.state.files).toEqual([])
 
       // Mock the API call
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted pdf content'], { type: 'application/pdf' })
         )
@@ -264,7 +264,7 @@ describe('useDocumentHandler Composable', () => {
       })
 
       // Mock the API
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted'], { type: 'application/pdf' })
         )
@@ -298,7 +298,7 @@ describe('useDocumentHandler Composable', () => {
       })
 
       // Mock the API
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted'], { type: 'application/pdf' })
         )

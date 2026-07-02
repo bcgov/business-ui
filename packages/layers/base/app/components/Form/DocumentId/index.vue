@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FormError, Form } from '@nuxt/ui'
+import type { FormError, Form, InputProps } from '@nuxt/ui'
 
-const { getDocumentId } = useDocumentRecordServiceApi()
+const { getDocumentId } = useDrsService()
 
 defineProps<{
   name?: string
@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const isLoading = ref(false)
-const statusCode = ref<number | null>(null)
+const statusCode = ref<number | undefined>(undefined)
 
 // Build schema dynamically based on statusCode
 const docIdSchema = computed(() => getDocumentIdSchema(statusCode.value))
@@ -32,13 +32,13 @@ const documentIdError = computed<FormError | undefined>(() => {
 watch(
   () => model.value.documentIdNumber,
   async (newVal) => {
-    if ((newVal?.length ?? 0) === 8) {
+    if (newVal && (newVal?.length ?? 0) === 8) {
       isLoading.value = true
       try {
         const response = await getDocumentId(newVal)
         statusCode.value = response.status
-      } catch (err: Error) {
-        statusCode.value = err?.response?.status || 500
+      } catch (e) {
+        statusCode.value = getErrorStatus(e) || 500
       } finally {
         isLoading.value = false
         // Trigger validation after statusCode changes
@@ -47,7 +47,7 @@ watch(
         })
       }
     } else {
-      statusCode.value = null
+      statusCode.value = undefined
     }
   }
 )

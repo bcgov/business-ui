@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { FormDocumentId } from '#components'
 
 export function getDocumentIdSchema(statusCode?: number) {
   const t = useNuxtApp().$i18n.t
@@ -29,3 +30,7 @@ export function getDocumentIdSchema(statusCode?: number) {
     }
   })
 }
+
+export type DocumentIdSchema = z.output<ReturnType<typeof getDocumentIdSchema>>
+
+export type FormDocumentIdRef = InstanceType<typeof FormDocumentId>
