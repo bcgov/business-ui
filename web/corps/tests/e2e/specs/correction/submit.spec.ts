@@ -12,6 +12,8 @@ async function makeDirectorChange(page: Page) {
   const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
   await expect(streetInput).toBeVisible()
+  // Use toPass for CI resilience — retries the fill+Done+verify cycle if the form
+  // is slow to validate/close on resource-constrained environments
   await expect(async () => {
     if (await streetInput.isVisible()) {
       await streetInput.fill('Corrected Unit 1A')
