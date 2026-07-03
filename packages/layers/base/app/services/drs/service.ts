@@ -28,7 +28,7 @@ export const useDrsService = () => {
    * @returns A promise that resolves to a PDF blob on success, or an error object with message, and status on failure.
    */
   function convertDocumentToPdf(file: File) {
-    return $documentRecordServiceApi('/pdf-conversions', {
+    return $documentRecordServiceApi<Blob>('/pdf-conversions', {
       method: 'POST',
       body: file
     })

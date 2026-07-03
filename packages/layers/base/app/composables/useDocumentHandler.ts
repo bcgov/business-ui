@@ -95,7 +95,7 @@ export function useDocumentHandler(options: DocumentHandlerOptions = {}) {
   const convertPdf = async (file: File) => {
     const { convertDocumentToPdf } = useDrsService()
     const blobResponse = await convertDocumentToPdf(file)
-    if (!blobResponse || blobResponse.status === 'error') {
+    if (!blobResponse) {
       throw new Error('Failed to convert file to PDF. No Blob returned.')
     }
     return new File(
