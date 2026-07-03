@@ -83,6 +83,7 @@ async function emitInitEdit(
   tableStub: ReturnType<typeof defineComponent>,
   row: Record<string, unknown>
 ) {
+  // @ts-expect-error - ts overloads
   const wrapper = await mountSuspended(component, { props, global: { stubs } })
   wrapper.findComponent(tableStub).vm.$emit('init-edit', row)
   await wrapper.vm.$nextTick()

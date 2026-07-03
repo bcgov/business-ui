@@ -24,19 +24,8 @@ export default defineNuxtConfig({
   },
   typescript: {
     tsConfig: {
-      compilerOptions: {
-        skipLibCheck: true
-      },
       exclude: [
-        '../../../../../web/**',
-        '../../../node_modules/**',
-        'node_modules',
-        '**/node_modules/**',
-        '**/.pnpm/**',
-        '../../../../../node_modules/**',
-        '../../../../node_modules/**',
-        '../../node_modules/**',
-        '../../../../../node_modules/**'
+        '../../../../../web/**'
       ]
     }
   }
