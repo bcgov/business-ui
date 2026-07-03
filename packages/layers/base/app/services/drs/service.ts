@@ -24,7 +24,7 @@ export const useDrsService = () => {
    * Converts a document to PDF by sending a POST request to the PDF conversion API.
    *
    * ToDo: URL will need to be configurable to support client uploads - clients cannot directly call the drs api.
-   * @param document - The document data to be converted, conforming to { [key: string]: unknown }.
+   * @param file - The file to be converted
    * @returns A promise that resolves to a PDF blob on success, or an error object with message, and status on failure.
    */
   function convertDocumentToPdf(file: File) {
