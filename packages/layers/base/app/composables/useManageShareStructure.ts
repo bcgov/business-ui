@@ -95,7 +95,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     if (rowToUpdate) {
       // only apply edits if changes have been made, exclude series from the equality check
       const applyEdits = () => {
-        if (!isEqual(omit(rowToUpdate.new, ['series']), omit(shareClass, ['series']))) {
+        if (!isEqual(omit(rowToUpdate.new, ['series', 'isEditing']), omit(shareClass, ['series', 'isEditing']))) {
           rowToUpdate.new = {
             ...shareClass,
             currencyAdditional: undefined,
@@ -179,7 +179,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
 
       // only apply edits if changes were made
       if (seriesIndex !== -1) {
-        if (!isEqual(parentRow.new.series[seriesIndex], shareSeries)) {
+        if (!isEqual(omit(parentRow.new.series[seriesIndex]!, ['isEditing']), omit(shareSeries, ['isEditing']))) {
           parentRow.new.series[seriesIndex] = {
             ...shareSeries,
             actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
