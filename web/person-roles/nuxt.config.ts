@@ -71,5 +71,16 @@ export default defineNuxtConfig({
       version: `Person Roles UI v${process.env.npm_package_version || ''}`,
       playwright: process.env.playwright === 'true'
     }
+  },
+
+  typescript: {
+    tsConfig: {
+      exclude: [
+        '../../business-registry-dashboard/**',
+        '../../corps/**',
+        '../../registry-home/**',
+        '../../../packages/layers/base/tests/**'
+      ]
+    }
   }
 })
