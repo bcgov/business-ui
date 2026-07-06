@@ -43,12 +43,14 @@ const data: TableBusinessState<TableDataState>[] = [
         item3: ''
       },
       actions: [ActionType.ADDRESS_CHANGED, ActionType.NAME_CHANGED],
+      isEditing: false,
       name: {
         partyType: PartyType.PERSON,
         firstName: 'First New',
         middleName: 'Middle',
         lastName: 'Last',
-        businessName: ''
+        businessName: '',
+        hasPreferredName: false
       },
       address: {
         deliveryAddress: {
@@ -88,12 +90,14 @@ const data: TableBusinessState<TableDataState>[] = [
         item3: ''
       },
       actions: [ActionType.ADDED],
+      isEditing: false,
       name: {
         partyType: PartyType.PERSON,
         firstName: 'First',
         middleName: 'Middle',
         lastName: 'Last',
-        businessName: ''
+        businessName: '',
+        hasPreferredName: false
       },
       address: {
         deliveryAddress: {

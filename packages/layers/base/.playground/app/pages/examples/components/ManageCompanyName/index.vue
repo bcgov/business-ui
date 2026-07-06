@@ -47,6 +47,8 @@ const loading = ref(false)
       :contact="contact"
       :loading="loading"
       :readonly="true"
+      :correct-name-options="[CorrectNameOption.CORRECT_NAME]"
+      :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]"
       :name-translation-allowed-actions="[
         ManageAllowedAction.ADD,
         ManageAllowedAction.NAME_CHANGE,

@@ -31,6 +31,7 @@ function onDone() {
           :title="$t('label.addNameTranslation')"
           name="activeNameTranslation"
           state-key="playground-form-name-translation"
+          subject=""
           @done="onDone"
           @cancel="resetForm"
         />

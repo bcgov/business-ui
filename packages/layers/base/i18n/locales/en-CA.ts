@@ -135,7 +135,7 @@ export default {
     noDocumentsDescription: 'No documents have been uploaded. Please upload the required document.',
     dragAndDropLabel: 'or drag and drop files here',
     uploadOf: 'Upload of',
-    uploadFailed: 'failed.',
+    uploadFailed: 'Upload of {name} failed: {error}',
     uploading: 'Uploading...'
   },
   modal: {

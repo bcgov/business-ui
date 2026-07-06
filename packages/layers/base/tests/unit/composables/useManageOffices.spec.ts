@@ -16,7 +16,8 @@ describe('useManageOffices', () => {
       deliveryAddress: { street: '123 Main St', city: 'Victoria', country: 'CA', region: 'BC', postalCode: 'V1X 1X1' },
       mailingAddress: { street: '123 Main St', city: 'Victoria', country: 'CA', region: 'BC', postalCode: 'V1X 1X1' },
       sameAs: true
-    }
+    },
+    isEditing: false
   }
 
   beforeEach(() => {

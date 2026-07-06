@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { useDocumentHandler } from '@/composables/useDocumentHandler'
+import { useDocumentHandler } from '#imports'
 
 describe('useDocumentHandler Composable', () => {
-  let composable
-  let mockOnConverted
+  let composable: ReturnType<typeof useDocumentHandler>
+  let mockOnConverted = vi.fn()
 
   beforeEach(() => {
     mockOnConverted = vi.fn()
@@ -19,8 +20,8 @@ describe('useDocumentHandler Composable', () => {
   })
 
   describe('Initial State', () => {
-    it('should initialize with undefined files array', () => {
-      expect(composable.state.files).toBeUndefined()
+    it('should initialize with empty files array', () => {
+      expect(composable.state.files).toEqual([])
     })
 
     it('should initialize isProcessing as false', () => {
@@ -63,7 +64,7 @@ describe('useDocumentHandler Composable', () => {
 
     it('should return undefined if URL API is not available', () => {
       const originalURL = window.URL
-      delete (window).URL
+      delete (window as any).URL
 
       const mockFile = new File(['test'], 'test.pdf', { type: 'application/pdf' })
       const objectUrl = composable.getObjectURL(mockFile)
@@ -88,8 +89,8 @@ describe('useDocumentHandler Composable', () => {
       composable.removeFile(0)
 
       expect(composable.state.files).toHaveLength(1)
-      expect(composable.state.files[0].document.name).toBe(mockFile2.name)
-      expect(composable.state.files[0].document.type).toBe(mockFile2.type)
+      expect(composable.state.files![0]!.document.name).toBe(mockFile2.name)
+      expect(composable.state.files![0]!.document.type).toBe(mockFile2.type)
     })
 
     it('should call onConverted with remaining files', () => {
@@ -104,8 +105,8 @@ describe('useDocumentHandler Composable', () => {
       composable.removeFile(0)
 
       expect(mockOnConverted).toHaveBeenCalled()
-      expect(mockOnConverted.mock.calls[0][0]).toHaveLength(1)
-      expect(mockOnConverted.mock.calls[0][0][0].name).toBe(mockFile2.name)
+      expect(mockOnConverted.mock.calls[0]![0]).toHaveLength(1)
+      expect(mockOnConverted.mock.calls[0]![0][0].name).toBe(mockFile2.name)
     })
 
     it('should handle removing the last file', () => {
@@ -119,7 +120,7 @@ describe('useDocumentHandler Composable', () => {
     })
 
     it('should not remove file if files array is not initialized', () => {
-      composable.state.files = undefined
+      composable.state.files = []
 
       expect(() => composable.removeFile(0)).not.toThrow()
     })
@@ -160,7 +161,7 @@ describe('useDocumentHandler Composable', () => {
       expect(composable.isProcessing.value).toBe(false)
 
       // Create a promise that we can control
-      let resolveConversion
+      let resolveConversion: (v: Blob) => void = () => {}
       const conversionPromise = new Promise((resolve) => {
         resolveConversion = resolve
       })
@@ -173,8 +174,8 @@ describe('useDocumentHandler Composable', () => {
         onConverted: mockOnConvertedTest
       })
 
-      // Mock useDocumentRecordServiceApi
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      // Mock useDrsService
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn(() => conversionPromise)
       })))
 
@@ -227,10 +228,10 @@ describe('useDocumentHandler Composable', () => {
         onConverted: mockOnConvertedTest
       })
 
-      expect(testComposable.state.files).toBeUndefined()
+      expect(testComposable.state.files).toEqual([])
 
       // Mock the API call
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted pdf content'], { type: 'application/pdf' })
         )
@@ -245,7 +246,7 @@ describe('useDocumentHandler Composable', () => {
 
       // After processing, files should be initialized as an array
       expect(Array.isArray(testComposable.state.files)).toBe(true)
-      expect(testComposable.state.files.length).toBeGreaterThan(0)
+      expect(testComposable.state.files!.length).toBeGreaterThan(0)
 
       // Clean up
       vi.unstubAllGlobals()
@@ -263,7 +264,7 @@ describe('useDocumentHandler Composable', () => {
       })
 
       // Mock the API
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted'], { type: 'application/pdf' })
         )
@@ -278,7 +279,7 @@ describe('useDocumentHandler Composable', () => {
 
       // Check that files were processed
       expect(Array.isArray(testComposable.state.files)).toBe(true)
-      expect(testComposable.state.files.length).toBeGreaterThan(0)
+      expect(testComposable.state.files!.length).toBeGreaterThan(0)
 
       // Clean up
       vi.unstubAllGlobals()
@@ -297,7 +298,7 @@ describe('useDocumentHandler Composable', () => {
       })
 
       // Mock the API
-      vi.stubGlobal('useDocumentRecordServiceApi', vi.fn(() => ({
+      vi.stubGlobal('useDrsService', vi.fn(() => ({
         convertDocumentToPdf: vi.fn().mockResolvedValue(
           new Blob(['converted'], { type: 'application/pdf' })
         )
@@ -391,9 +392,9 @@ describe('useDocumentHandler Composable', () => {
       ]
 
       expect(composable.state.files).toHaveLength(1)
-      expect(composable.state.files[0].document.name).toBe(mockFile.name)
-      expect(composable.state.files[0].document.type).toBe(mockFile.type)
-      expect(composable.state.files[0].uploaded).toBe(true)
+      expect(composable.state.files![0]!.document.name).toBe(mockFile.name)
+      expect(composable.state.files![0]!.document.type).toBe(mockFile.type)
+      expect(composable.state.files![0]!.uploaded).toBe(true)
     })
   })
 

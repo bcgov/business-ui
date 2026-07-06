@@ -63,6 +63,8 @@ const hasErrors = computed(() => {
             ]"
             :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
             :nr-allowed-action-types="[NrRequestActionCode.CHANGE_NAME]"
+            subject=""
+            variant="correct"
           />
         </div>
       </UForm>

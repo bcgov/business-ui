@@ -21,5 +21,12 @@ export default defineNuxtConfig({
         file: 'fr-CA.ts'
       }
     ]
+  },
+  typescript: {
+    tsConfig: {
+      exclude: [
+        '../../../../../web/**'
+      ]
+    }
   }
 })
