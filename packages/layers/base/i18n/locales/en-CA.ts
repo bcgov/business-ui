@@ -401,6 +401,7 @@ export default {
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
     detail: 'Detail',
     details: 'Details',
+    filingDetail: 'Filing Detail',
     director: 'Director',
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',

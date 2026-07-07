@@ -3,6 +3,7 @@ defineProps<{ loading: boolean }>()
 const showDocumentRecords = inject<Ref<boolean>>('showDocumentRecords')
 
 const filing = inject<BusinessLedgerItem>('filing')!
+const { detailComments, filingDetailComments } = useBusinessLedger(filing)
 const drsStore = useDocumentRecordServiceStore()
 const documentId = ref<string | undefined>(undefined)
 
@@ -23,6 +24,7 @@ onMounted(async () => {
     data-testid="business-ledger-item-body"
   >
     <BusinessLedgerItemBodyText />
+    <BusinessLedgerItemBodyFilingDetails v-if="filingDetailComments.length" />
     <div v-if="loading" class="space-y-3">
       <USkeleton class="h-5 w-50 rounded" />
       <USkeleton class="h-5 w-50 rounded" />
@@ -32,7 +34,7 @@ onMounted(async () => {
       <BusinessLedgerItemBodyDocuments v-if="!filing.availableOnPaperOnly" />
       <BusinessLedgerItemBodyDocumentsRecordButton v-if="documentId" :document-id="documentId" />
       <BusinessLedgerItemBodyDetails
-        v-if="filing.commentsCount"
+        v-if="detailComments.length"
         :class="{ 'border-t border-line-muted mt-6 pt-6': !filing.availableOnPaperOnly || documentId }"
       />
     </div>
