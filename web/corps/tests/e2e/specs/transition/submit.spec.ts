@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { navigateToTransitionPage } from '../../test-utils'
@@ -27,6 +29,7 @@ const staffHeaderPayload = {
 
 const clientHeaderPayload = {
   name: 'transition',
+  certifiedBy: 'TestFirst TestLast',
   accountId: 1222,
   date: new Date().toISOString().split('T')[0],
   folioNumber: 'client-folio-123'
@@ -168,7 +171,7 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
   const classes = filing.transition.shareStructure.shareClasses
   expect(classes).toHaveLength(9)
 
-  const getByName = (name: string) => classes.find(c => c.name === name)
+  const getByName = (name: string) => classes.find(c => c.name === name) as any
   expect(getByName('New Class Shares')!.actions).toContain('ADDED')
   expect(getByName('Class F Non-Voting Preferred Shares')!.actions).toContain('CHANGED')
   expect(getByName('Class A Voting Common Shares')!.actions).toEqual([])
@@ -332,7 +335,7 @@ test.describe('Transition - Filing Submit', () => {
     const classes = filing.transition.shareStructure.shareClasses
     expect(classes).toHaveLength(3)
 
-    const getByName = (name: string) => classes.find(c => c.name === name)
+    const getByName = (name: string) => classes.find(c => c.name === name) as any
 
     const classAPayload = getByName('Class A - Common Stock Shares')
 

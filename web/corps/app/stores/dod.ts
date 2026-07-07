@@ -94,8 +94,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
       FilingType.DISSOLUTION,
       { dissolution: dissolutionPayload },
       {
-        folioNumber: formState.folio.folioNumber,
-        ...(!isStaff.value ? { certifiedBy: formState.certify.legalName } : {})
+        folioNumber: formState.folio.folioNumber
       }
     )
 

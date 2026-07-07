@@ -4,7 +4,7 @@ export interface TransitionPayload extends FilingPayloadData {
   relationships: BusinessRelationship[]
   offices: IncorporationAddress
   shareStructure: {
-    shareClasses: ShareClassSchema[]
+    shareClasses: ShareClass[]
   }
   contactPoint?: {
     email: string

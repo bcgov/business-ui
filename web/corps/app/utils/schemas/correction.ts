@@ -18,12 +18,9 @@ function getClientCorrectionSchema() {
         locationDescription: ''
       }
     })),
-    certify: getCertifySchema().extend({
-      legalName: z.string()
-    }).default({
-      isCertified: false,
-      legalName: ''
-    }),
+    certify: getCertifySchema().default(() => ({
+      isCertified: false
+    })),
     authorization: getConfirmAuthorizationSchema().default(() => ({
       isAuthorized: false
     }))
