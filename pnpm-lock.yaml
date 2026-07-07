@@ -90,8 +90,8 @@ importers:
   packages/layers/base:
     dependencies:
       '@sbc-connect/nuxt-pay':
-        specifier: https://pkg.pr.new/@sbc-connect/nuxt-pay@ca7cc90
-        version: https://pkg.pr.new/@sbc-connect/nuxt-pay@ca7cc90(81984a938071435acebddcc78dd7ec18)
+        specifier: 0.6.0
+        version: 0.6.0(81984a938071435acebddcc78dd7ec18)
       http-status-codes:
         specifier: 2.3.0
         version: 2.3.0
@@ -2477,21 +2477,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@ca7cc90':
-    resolution: {integrity: sha512-Gu6JRibiwzyXZLmdejriJst/46bKwy21FVizqwd+1KLd4wt/mn0eVuEzBl8FPdI+tNRpuhVAbiGtkVABtQdv7g==, tarball: https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@ca7cc90}
-    version: 0.14.0
+  '@sbc-connect/nuxt-auth@0.15.0':
+    resolution: {integrity: sha512-nxsgscTXXRh7xC0EDfZuOLHCpCr5UMaKXBfx+q2bIzr9KNxYe44jFj5/uALZt1+e40ZB+SlLNM/HG5EW8yjKXQ==}
 
-  '@sbc-connect/nuxt-base@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@ca7cc90':
-    resolution: {integrity: sha512-srL99goY7Fm0/92GINTuxWTKQnztyLNpX41R5iscyy06b00HL6ZCbsdLEFOy0mDdpk6V5kEGF8WwfpK/2Pwpyw==, tarball: https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@ca7cc90}
-    version: 0.11.0
+  '@sbc-connect/nuxt-base@0.12.0':
+    resolution: {integrity: sha512-S1uoIMa/DUO2UfZllCjTu3Rj1dPZnAjkcZ6Cx/nIfeSmJH7fVPGVo+VojLipzsLhwKj82rjJxvS5a0xTfJh1Fg==}
 
-  '@sbc-connect/nuxt-forms@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@ca7cc90':
-    resolution: {integrity: sha512-O4SuUA94V/UVX81qeuBYdSNMysSkdAISp+H118zWtxkAYEyGBMv5g+1horejykIS3QxICJIoysI1zUKBFO63dg==, tarball: https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@ca7cc90}
-    version: 0.7.6
+  '@sbc-connect/nuxt-forms@0.7.7':
+    resolution: {integrity: sha512-w/JEWurK6tqsm0T+lKEnRhjDt6atPb0g2l3KxLF9+QvrxfW04dlSol834bKvmypSBKfGON04TaYpgpC/pZ6n8A==}
 
-  '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@ca7cc90':
-    resolution: {integrity: sha512-P3SjqeBiPf1tASRhKl7TP5bCC2r6LzGHiOKpwY5+DEtgBiKjPp75XzUtGWsiKqBGL1xDRJXfzkWf5gI/Fnv1dg==, tarball: https://pkg.pr.new/@sbc-connect/nuxt-pay@ca7cc90}
-    version: 0.5.3
+  '@sbc-connect/nuxt-pay@0.6.0':
+    resolution: {integrity: sha512-xwkG9Np87IG5Bn7AAe7sz5aFiY1inbHn4wfbupVetZ0EK68N3j2JIcEYV9vB0Dn1EaZ31dPLjwbsphGABiNs4A==}
 
   '@simple-git/args-pathspec@1.0.3':
     resolution: {integrity: sha512-ngJMaHlsWDTfjyq9F3VIQ8b7NXbBLq5j9i5bJ6XLYtD6qlDXT7fdKY2KscWWUF8t18xx052Y/PUO1K1TRc9yKA==}
@@ -8997,13 +8993,13 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.60.4':
     optional: true
 
-  '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@ca7cc90(81984a938071435acebddcc78dd7ec18)':
+  '@sbc-connect/nuxt-auth@0.15.0(81984a938071435acebddcc78dd7ec18)':
     dependencies:
       '@pinia/colada': 1.3.0(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
       '@pinia/colada-nuxt': 1.0.1(@pinia/colada@1.3.0(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3)))(magicast@0.5.3)
       '@pinia/nuxt': 0.11.3(magicast@0.5.3)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))
-      '@sbc-connect/nuxt-base': https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@ca7cc90(cedcff4561e6c8a9f0f41776cb703cb2)
-      '@sbc-connect/nuxt-forms': https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@ca7cc90(cedcff4561e6c8a9f0f41776cb703cb2)
+      '@sbc-connect/nuxt-base': 0.12.0(cedcff4561e6c8a9f0f41776cb703cb2)
+      '@sbc-connect/nuxt-forms': 0.7.7(cedcff4561e6c8a9f0f41776cb703cb2)
       keycloak-js: 26.2.4
       pinia: 3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3))
       pinia-plugin-persistedstate: 4.7.1(@nuxt/kit@4.4.8(magicast@0.5.3))(@pinia/nuxt@0.11.3(magicast@0.5.3)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3))))(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))
@@ -9069,7 +9065,7 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-base@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@ca7cc90(cedcff4561e6c8a9f0f41776cb703cb2)':
+  '@sbc-connect/nuxt-base@0.12.0(cedcff4561e6c8a9f0f41776cb703cb2)':
     dependencies:
       '@iconify-json/mdi': 1.2.3
       '@launchdarkly/js-client-sdk': 4.6.5
@@ -9145,9 +9141,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-forms@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@ca7cc90(cedcff4561e6c8a9f0f41776cb703cb2)':
+  '@sbc-connect/nuxt-forms@0.7.7(cedcff4561e6c8a9f0f41776cb703cb2)':
     dependencies:
-      '@sbc-connect/nuxt-base': https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@ca7cc90(cedcff4561e6c8a9f0f41776cb703cb2)
+      '@sbc-connect/nuxt-base': 0.12.0(cedcff4561e6c8a9f0f41776cb703cb2)
       country-codes-list: 2.0.0
       vue-country-flag-next: 2.3.2(vue@3.5.34(typescript@6.0.3))
     transitivePeerDependencies:
@@ -9213,9 +9209,9 @@ snapshots:
       - yjs
       - yup
 
-  '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@ca7cc90(81984a938071435acebddcc78dd7ec18)':
+  '@sbc-connect/nuxt-pay@0.6.0(81984a938071435acebddcc78dd7ec18)':
     dependencies:
-      '@sbc-connect/nuxt-auth': https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@ca7cc90(81984a938071435acebddcc78dd7ec18)
+      '@sbc-connect/nuxt-auth': 0.15.0(81984a938071435acebddcc78dd7ec18)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
