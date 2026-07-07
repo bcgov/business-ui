@@ -12,6 +12,7 @@ provide<BusinessLedgerItem>('filing', props.filing)
 const overrideGetFilingDocumentsFn = inject<OverrideGetFilingDocumentUrlsFn>('overrideGetFilingDocumentsFn')
 
 const {
+  filingDetailComments,
   isFilingStatus,
   isFilingType,
   isCourtOrder,
@@ -25,6 +26,9 @@ const { getFilingName } = useFiling()
 
 const showBody = ref(false)
 const loadingDetails = ref(false)
+
+// the Details count shows staff comments only; the filing's own comments are shown separately
+const detailCommentsCount = computed(() => props.filing.commentsCount - filingDetailComments.value.length)
 
 const toggleDetails = async () => {
   loadingDetails.value = true
@@ -54,6 +58,9 @@ const actionBtnLabel = computed(() => (
 onMounted(() => {
   if (props.setExpanded) {
     toggleDetails()
+  } else {
+    // load the comments so the Details count is correct before the item is opened
+    loadComments()
   }
 })
 </script>
@@ -82,9 +89,9 @@ onMounted(() => {
         </div>
         <div>
           <UButton
-            v-if="filing.commentsCount > 0"
+            v-if="detailCommentsCount > 0"
             class="px-0 shrink"
-            :label="`${$t('label.details')} (${filing.commentsCount})`"
+            :label="`${$t('label.details')} (${detailCommentsCount})`"
             leading-icon="i-mdi-message-text-outline"
             :loading="loadingDetails"
             variant="link"
