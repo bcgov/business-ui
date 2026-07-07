@@ -19,18 +19,18 @@ catalog:
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
-- '@sbc-connect/*'
+  - '@sbc-connect/*'
 autoInstallPeers: true
 shamefullyHoist: true
 
-onlyBuiltDependencies:
-  - "@parcel/watcher"
-  - "@sbc-connect/nuxt-auth"
-  - "@sbc-connect/nuxt-base"
-  - "@sbc-connect/nuxt-business-base"
-  - "@sbc-connect/nuxt-forms"
-  - "@sbc-connect/nuxt-pay"
-  - "@tailwindcss/oxide"
-  - "esbuild"
-  - "vue-demi"
-  - "unrs-resolver"
+allowBuilds:
+  '@parcel/watcher': true
+  '@sbc-connect/nuxt-auth': true
+  '@sbc-connect/nuxt-base': true
+  '@sbc-connect/nuxt-business-base': true
+  '@sbc-connect/nuxt-forms': true
+  '@sbc-connect/nuxt-pay': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  unrs-resolver: true
+  vue-demi: true
