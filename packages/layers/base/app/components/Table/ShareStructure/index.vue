@@ -25,7 +25,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const shareStructureColumns = getShareStructureTableColumns<T>(props.labelOverrides?.badges)
-const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true, default: {} })
+const expanded = defineModel<ExpandedState | undefined>('expanded', { default: () => ({}) })
 
 // ensure all items are always expanded
 watch(() => props.data, (newData) => {
