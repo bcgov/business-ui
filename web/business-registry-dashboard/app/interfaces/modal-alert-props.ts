@@ -5,5 +5,6 @@ export interface ModalAlertProps {
   icon: string,
   translationPath: string,
   variant: AlertVariant,
-  class?: string
+  class?: string,
+  extraTextCtx?: object
 }

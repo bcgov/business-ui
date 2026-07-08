@@ -66,7 +66,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   })
 
   /** Whether the current user is staff (all correction filers are staff) */
-  const isStaff = computed(() => useConnectAccountStore().currentAccount.accountType === AccountType.STAFF)
+  const isStaff = useIsStaff()
 
   /**
    * Whether this is a "staff" type correction (no fee).

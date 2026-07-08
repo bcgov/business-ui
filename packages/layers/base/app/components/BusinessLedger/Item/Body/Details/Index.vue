@@ -5,7 +5,7 @@ const isCommentOpen = ref(false)
 
 const filing = inject<BusinessLedgerItem>('filing')!
 
-const { comments } = useBusinessLedger(filing)
+const { detailComments } = useBusinessLedger(filing)
 
 // FUTURE: add in staff add comment ability
 const isDisableNonBenCorps = () => false
@@ -27,7 +27,7 @@ const showCommentDialog = (show: boolean) => {
             size="large"
           />
           <span class="ml-1">
-            {{ $t('label.details') }} ({{ comments.length || 0 }})
+            {{ $t('label.details') }} ({{ detailComments.length || 0 }})
           </span>
         </strong>
       </div>
@@ -45,7 +45,7 @@ const showCommentDialog = (show: boolean) => {
     <!-- the detail comments list -->
     <div class="mt-3 space-y-5 text-sm">
       <div
-        v-for="(comment, index) in comments"
+        v-for="(comment, index) in detailComments"
         :key="index"
         data-testid="ledger-comment"
       >

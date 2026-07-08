@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { SelectMenuItem } from '@nuxt/ui'
-
 interface DocumentUploadProps {
   validate?: boolean
   uploadLabel?: string
@@ -8,6 +6,8 @@ interface DocumentUploadProps {
   maxFileSize?: number
   acceptedFileTypes?: string[]
 }
+
+type TriggerInputType = 'cameraInput' | 'albumInput' | 'fileInput'
 
 /**
  * Props:
@@ -105,14 +105,23 @@ const mobilePictureHandler = (event: Event) => {
   if (input.files && input.files.length > 0) {
     // Ensure state.files is always an array before spreading new files into it
     const files = Array.from(input.files)
-    state.files = Array.isArray(state.files) ? [...state.files, ...files] : [...files]
+    const currentLength = state.files?.length || 0
+    const processedFiles = files.map((file, i) => ({
+      document: file,
+      uploaded: false,
+      index: currentLength + i
+    }))
 
-    fileHandler(state.files)
+    state.files = Array.isArray(state.files)
+      ? [...state.files, ...processedFiles]
+      : [...processedFiles]
+
+    fileHandler(files)
   }
 }
 
 /** Dropdown menu items for mobile actions */
-const mobileMenuItems = ref([
+const mobileMenuItems: Array<{ label: string, value: TriggerInputType, icon: string }> = [
   {
     label: 'Photos',
     value: 'albumInput',
@@ -128,7 +137,7 @@ const mobileMenuItems = ref([
     value: 'fileInput',
     icon: 'i-mdi-file'
   }
-] satisfies SelectMenuItem[])
+]
 
 /** Refs for mobile file inputs */
 const albumInput = useTemplateRef<HTMLInputElement>('albumInput')
@@ -136,7 +145,7 @@ const cameraInput = useTemplateRef<HTMLInputElement>('cameraInput')
 const fileInput = useTemplateRef<HTMLInputElement>('fileInput')
 
 /** Trigger input click by type */
-function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
+function triggerInput(type: TriggerInputType) {
   const inputRefs = { albumInput, cameraInput, fileInput }
   inputRefs[type].value?.click()
 }
@@ -146,10 +155,10 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
   <UForm :state="state" class="w-full">
     <UFormField name="documentUpload">
       <UFileUpload
-        v-model="state.files"
+        v-model="state.files as any"
         :label="uploadLabel"
         layout="list"
-        :multiple="props.multipleFiles"
+        :multiple="multipleFiles"
         :interactive="false"
         class="w-full"
         :ui="fileUploadFileConfig"
@@ -164,7 +173,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             <span v-if="showValidationError" class="text-error">
               {{ $t('documentUpload.noDocumentsDescription') }}
             </span>
-            {{ uploadDescription }}
+            <span class="text-neutral">{{ uploadDescription }}</span>
           </div>
         </template>
 
@@ -179,7 +188,6 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
                 icon="i-mdi-file-upload-outline"
                 color="primary"
                 variant="solid"
-                class=""
               />
               <template #item="{ item }">
                 <UButton
@@ -241,10 +249,10 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             </div>
           </div>
 
-          <div v-else-if="file?.uploaded" class="pdf-frame">
+          <div v-else-if="(file as any)?.uploaded && (file as any)?.document" class="pdf-frame">
             <iframe
-              :key="file?.document?.name"
-              :src="getObjectURL(file?.document) + '#page=1&view=FitH&zoom=page-width'"
+              :key="(file as any)!.document.name"
+              :src="getObjectURL((file as any)!.document) + '#page=1&view=FitH&zoom=page-width'"
               type="application/pdf"
               class="pdf-frame__iframe"
             />
@@ -256,29 +264,31 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
 
           <!-- File status and metadata -->
           <div class="ml-4 w-full max-sm:col-span-12">
-            <template v-if="file?.errorMsg">
+            <template v-if="(file as any)?.errorMsg">
               <div class="flex items-center">
                 <UIcon name="i-mdi-close-circle" class="text-error size-[20px]" />
-                <span class="ml-2 text-error text-[14px] italic">
-                  {{ $t('documentUpload.uploadOf') }} {{ file.document?.name }} {{ $t('documentUpload.uploadFailed') }}
-                  {{ file.errorMsg }}
+                <span class="ml-2 text-error text-sm italic">
+                  {{ $t('documentUpload.uploadFailed', {
+                    name: (file as any)?.document?.name,
+                    error: (file as any)!.errorMsg
+                  }) }}
                 </span>
               </div>
             </template>
-            <template v-else-if="file?.uploaded">
+            <template v-else-if="(file as any)?.uploaded && (file as any)?.document">
               <div class="flex items-center">
                 <UIcon name="i-mdi-check-circle" class="text-success size-[20px]" />
                 <a
-                  class="ml-2 text-[16px] italic"
-                  :href="getObjectURL(file?.document)"
+                  class="ml-2 text-base italic"
+                  :href="getObjectURL((file as any)!.document)"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <span class="text-primary">{{ file?.document.name }}</span>
+                  <span class="text-primary">{{ (file as any)?.document.name }}</span>
                 </a>
               </div>
               <div class="ml-6">
-                {{ formatBytes(file?.document.size, 0) }}
+                {{ formatBytes((file as any)!.document.size, 0) }}
               </div>
             </template>
             <template v-else>
@@ -294,7 +304,7 @@ function triggerInput(type: 'cameraInput' | 'albumInput' | 'fileInput') {
             class="max-sm:col-span-12"
             @click="removeFile(index)"
           >
-            <span>{{ file?.uploaded ? $t('label.remove') : $t('label.cancel') }}</span>
+            <span>{{ (file as any)?.uploaded ? $t('label.remove') : $t('label.cancel') }}</span>
             <UIcon name="i-mdi-close" />
           </UButton>
         </template>

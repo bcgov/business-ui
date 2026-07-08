@@ -1,28 +1,41 @@
-import { ref, reactive } from 'vue'
 import * as z from 'zod'
-import type { FileHandlerOptionsIF } from '~/interfaces/file-interfaces'
+
+interface DocumentHandlerOptions {
+  maxFileSize?: number
+  minDimensions?: { width: number, height: number }
+  maxDimensions?: { width: number, height: number }
+  acceptedFileTypes?: string[]
+  onConverted?: (files: File[]) => void
+}
+
+interface ProcessedFile {
+  document: File
+  uploaded?: boolean
+  errorMsg?: string
+  index: number
+}
 
 /**
  * Composable for handling file uploads, validation, and PDF conversion.
- * @param {FileHandlerOptionsIF} options - Configuration options for file handling.
- * @returns {object} File handler state, schema, and utility methods.
+ * @param options - Configuration options for file handling.
+ * @returns File handler state, schema, and utility methods.
  */
-export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
+export function useDocumentHandler(options: DocumentHandlerOptions = {}) {
   const {
     maxFileSize,
     acceptedFileTypes
   } = options
 
   /** Reactive state for file handling. */
-  const state = reactive<{ files?: File[] }>({ files: undefined })
+  const state = reactive<{ files: ProcessedFile[] }>({ files: [] })
   /** Indicates if a file operation is in progress. */
   const isProcessing = ref(false)
 
   /**
    * Formats bytes as a human-readable string.
-   * @param {number} bytes - The number of bytes.
-   * @param {number} decimals - Number of decimal places.
-   * @returns {string} Formatted string.
+   * @param bytes - The number of bytes.
+   * @param decimals - Number of decimal places.
+   * @returns Formatted string.
    */
   const formatBytes = (bytes: number, decimals = 2) => {
     if (bytes === 0) {
@@ -63,26 +76,26 @@ export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
 
   /**
    * Removes a file from the state by index.
-   * @param {number} index - Index of the file to remove.
+   * @param index - Index of the file to remove.
    */
   const removeFile = (index: number) => {
     if (Array.isArray(state.files)) {
       state.files.splice(index, 1)
 
       // Call emit event with the updated files
-      options.onConverted(state.files.map(f => f.document))
+      options.onConverted?.(state.files.map(f => f.document))
     }
   }
 
   /**
    * Converts a file to PDF using the pdfConversion utility.
-   * @param {File} file - The file to convert.
-   * @returns {Promise<File>} The converted PDF file.
+   * @param file - The file to convert.
+   * @returns The converted PDF file.
    */
   const convertPdf = async (file: File) => {
-    const { convertDocumentToPdf } = useDocumentRecordServiceApi()
+    const { convertDocumentToPdf } = useDrsService()
     const blobResponse = await convertDocumentToPdf(file)
-    if (!blobResponse || blobResponse.status === 'error') {
+    if (!blobResponse) {
       throw new Error('Failed to convert file to PDF. No Blob returned.')
     }
     return new File(
@@ -94,18 +107,18 @@ export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
 
   /**
    * Returns an object URL for a given file.
-   * @param {File} file - The file to create an object URL for.
-   * @returns {string | undefined} The object URL.
+   * @param file - The file to create an object URL for.
+   * @returns The object URL.
    */
   const getObjectURL = (file: File) => window.URL?.createObjectURL(file)
 
   /**
    * Handles file uploads, validation, and conversion.
-   * @param {File[]} files - Array of files to handle.
+   * @param files - Array of files to handle.
    */
-  const fileHandler = async (files: File[]) => {
+  const fileHandler = async (files: File | File[] | null | undefined) => {
     // Check if already processing to prevent multiple uploads at once
-    if (isProcessing.value) {
+    if (isProcessing.value || !files) {
       return
     }
     isProcessing.value = true
@@ -159,11 +172,11 @@ export function useDocumentHandler(options: FileHandlerOptionsIF = {}) {
           if (state.files[index]?.uploaded) {
             options.onConverted?.(state.files.filter(f => f.uploaded).map(f => f.document))
           }
-        } catch (error: Error) {
+        } catch {
           state.files[index] = {
             document: file,
             uploaded: false,
-            errorMsg: `Failed to convert file to PDF: ${error.message}`,
+            errorMsg: 'No PDF returned.', // getErrorMessage(error), FUTURE: proper error message?
             index
           }
         }

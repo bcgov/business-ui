@@ -135,7 +135,7 @@ export default {
     noDocumentsDescription: 'No documents have been uploaded. Please upload the required document.',
     dragAndDropLabel: 'or drag and drop files here',
     uploadOf: 'Upload of',
-    uploadFailed: 'failed.',
+    uploadFailed: 'Upload of {name} failed: {error}',
     uploading: 'Uploading...'
   },
   modal: {
@@ -401,6 +401,7 @@ export default {
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
     detail: 'Detail',
     details: 'Details',
+    filingDetail: 'Filing Detail',
     director: 'Director',
     directors: 'Directors',
     dissolutionCompleted: 'Dissolution Completed',
@@ -465,6 +466,7 @@ export default {
     moveDown: 'Move Down',
     moveUp: 'Move Up',
     myBusinessRegistry: 'My Business Registry',
+    myStaffBusinessRegistry: 'My Staff Business Registry',
     name: 'Name',
     nameTranslation: 'Name Translation',
     nameTranslations: 'Name Translation(s)',
@@ -528,6 +530,7 @@ export default {
     shareSeries: 'Share Series',
     shareStructure: 'Share Structure',
     seriesName: 'Series Name',
+    staffDashboard: 'Staff Dashboard',
     staffPayment: 'Staff Payment',
     specialRightsOrRestrictions: 'Special Rights or Restrictions',
     submit: 'Submit',

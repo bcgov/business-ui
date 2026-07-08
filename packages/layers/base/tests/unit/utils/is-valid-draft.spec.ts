@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest'
 
 describe('isValidDraft util', () => {
-  const filingName = 'changeOfOfficers'
+  const filingName = FilingType.CHANGE_OF_OFFICERS
 
   test('should return true for a valid draft filing with the correct data', () => {
     const validDraft = {

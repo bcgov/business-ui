@@ -31,7 +31,7 @@ const permissionsStore = useBusinessPermissionsStore()
 const drsStore = useDocumentRecordServiceStore()
 onMounted(async () => {
   await Promise.all([
-    permissionsStore.init(),
+    permissionsStore.init(props.businessIdentifier),
     drsStore.init({ consumerIdentifier: props.businessIdentifier })
   ])
 })

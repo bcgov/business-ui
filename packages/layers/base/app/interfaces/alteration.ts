@@ -8,7 +8,10 @@ export interface Alteration {
   business: BusinessData
   nameRequest?: NameRequest
   nameTranslations: NameTranslation[]
-  shareStructure: ShareStructure
+  shareStructure: {
+    shareClasses: ShareClass
+    resolutionDates: string[]
+  }
   contactPoint: ContactPoint
   courtOrder: CourtOrder
   cooperativeAssociationType?: AssociationType

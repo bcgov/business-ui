@@ -38,6 +38,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasParValue: true,
       hasRightsOrRestrictions: true,
       id: shareClass1Id,
+      isEditing: false,
       series: [
         {
           actions: [ActionType.REMOVED],
@@ -47,7 +48,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
           id: class1Series1Id,
-          isInvalid: false
+          isInvalid: false,
+          isEditing: false
         },
         {
           actions: [],
@@ -57,7 +59,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
           id: class1Series2Id,
-          isInvalid: false
+          isInvalid: false,
+          isEditing: false
         }
       ]
     },
@@ -72,6 +75,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasParValue: true,
       hasRightsOrRestrictions: true,
       id: shareClass1Id,
+      isEditing: false,
       series: [
         {
           actions: [],
@@ -81,7 +85,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
           id: class1Series1Id,
-          isInvalid: false
+          isInvalid: false,
+          isEditing: false
         },
         {
           actions: [],
@@ -91,7 +96,8 @@ const data: TableBusinessState<ShareClassSchema>[] = [
           hasMaximumShares: true,
           hasRightsOrRestrictions: true,
           id: class1Series2Id,
-          isInvalid: false
+          isInvalid: false,
+          isEditing: false
         }
       ]
     }
@@ -108,6 +114,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasParValue: true,
       hasRightsOrRestrictions: true,
       id: crypto.randomUUID(),
+      isEditing: false,
       series: []
     },
     old: {
@@ -121,6 +128,7 @@ const data: TableBusinessState<ShareClassSchema>[] = [
       hasParValue: true,
       hasRightsOrRestrictions: true,
       id: crypto.randomUUID(),
+      isEditing: false,
       series: []
     }
   }

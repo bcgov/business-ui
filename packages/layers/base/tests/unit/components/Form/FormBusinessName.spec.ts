@@ -17,6 +17,8 @@ const mountComponent = (props = {}) => {
       filingName: 'Correction',
       nrAllowedActionTypes: [],
       modelValue: { legalName: '', nrNumber: '', changeToNumbered: false },
+      variant: 'edit',
+      subject: 'Subject',
       ...props
     }
   })
