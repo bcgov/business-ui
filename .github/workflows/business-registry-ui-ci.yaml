@@ -19,3 +19,4 @@ jobs:
       working_directory: "./web/business-registry-dashboard"
       codecov_flag: "businessregistryui"
       node_version: 24
+      pnpm_version: 11.9.0
