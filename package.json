@@ -25,5 +25,13 @@
   },
   "engines": {
     "node": ">=24"
+  },
+  "pnpm": {
+    "overrides": {
+      "vue": "3.5.39",
+      "@vue/runtime-core": "3.5.39",
+      "@vue/runtime-dom": "3.5.39",
+      "@vue/reactivity": "3.5.39"
+    }
   }
 }
