@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.24.0
+
+### Minor Changes
+
+- [#514](https://github.com/bcgov/business-ui/pull/514) [`6e117b3`](https://github.com/bcgov/business-ui/commit/6e117b3f111d190e0712943e781d6f9d075932c2) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Show comments that are part of a filing in their own Filing Detail section in the business ledger, separate from staff detail comments and excluded from the Details count.
+
+- [#511](https://github.com/bcgov/business-ui/pull/511) [`d0b514f`](https://github.com/bcgov/business-ui/commit/d0b514f384d45782852892f66b749745bbb6f693) Thanks [@deetz99](https://github.com/deetz99)! - BREAKING CHANGE: remove useDocumentRecordServiceApi and replace with useDrsService. Fix: Several type errors and missing interfaces.
+
+- [#510](https://github.com/bcgov/business-ui/pull/510) [`03c57c2`](https://github.com/bcgov/business-ui/commit/03c57c224bdc71a054bc7352bf33709de12244c2) Thanks [@vysakh-menon-aot](https://github.com/vysakh-menon-aot)! - exclude isEditing from comparison in share structure
+
 ## 0.23.0
 
 ### Minor Changes
