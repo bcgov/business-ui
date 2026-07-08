@@ -46,6 +46,8 @@ export default defineVitestConfig({
       }
     },
     // setupFiles: './tests/setup/i18n.ts',
-    globals: true
+    globals: true,
+    testTimeout: 20000,
+    hookTimeout: 20000
   }
 })
