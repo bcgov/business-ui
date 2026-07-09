@@ -22,7 +22,7 @@ describe('diagnostic', () => {
 
     const mountPromise = mountSuspended(AsyncComboBox, {
       props: {
-        searchFn: async () => [],
+        searchFn: () => Promise.resolve([]),
         idAttr: 'id',
         valueAttr: 'name',
         text: { placeholder: 'x', arialabel: 'x' }
