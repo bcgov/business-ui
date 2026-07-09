@@ -20,6 +20,9 @@ importers:
       '@daxiom/nuxt-core-layer-test':
         specifier: ^0.0.28
         version: 0.0.28(@nuxt/kit@4.4.8(magicast@0.5.1))(@vue/compiler-dom@3.5.25)(db0@0.3.4)(eslint@8.57.1)(ioredis@5.8.2)(magicast@0.5.1)(nuxt@3.20.1(@parcel/watcher@2.5.1)(@types/node@24.10.1)(@vue/compiler-sfc@3.5.25)(cac@6.7.14)(db0@0.3.4)(eslint@8.57.1)(ioredis@5.8.2)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.53.3)(sass@1.94.2)(terser@5.44.1)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@1.21.7)(sass@1.94.2)(terser@5.44.1)(yaml@2.8.2))(yaml@2.8.2))(rollup@4.53.3)(typescript@5.9.3)(vite@7.2.6(@types/node@24.10.1)(jiti@1.21.7)(sass@1.94.2)(terser@5.44.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))(yaml@2.8.2)
+      '@iconify-json/mdi':
+        specifier: 1.2.3
+        version: 1.2.3
       '@nuxt/ui':
         specifier: 2.22.3
         version: 2.22.3(magicast@0.5.1)(vite@7.2.6(@types/node@24.10.1)(jiti@1.21.7)(sass@1.94.2)(terser@5.44.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))(yaml@2.8.2)(zod@3.25.76)
