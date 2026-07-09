@@ -55,6 +55,7 @@
     "@bcrs-shared-components/enums": "1.1.30",
     "@bcrs-shared-components/interfaces": "1.1.36",
     "@daxiom/nuxt-core-layer-test": "^0.0.28",
+    "@iconify-json/heroicons": "1.2.3",
     "@iconify-json/mdi": "1.2.3",
     "@nuxt/ui": "2.22.3",
     "@vuepic/vue-datepicker": "^8.8.1",
