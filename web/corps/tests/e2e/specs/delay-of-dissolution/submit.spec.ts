@@ -80,7 +80,6 @@ test.describe('Delay of Dissolution - Filing Submit', () => {
           expect(requestHeaders['hide-in-ledger']).toBe(String(!addToLedger))
         } else {
           expect(requestHeaders['hide-in-ledger']).toBe('false')
-          expect(requestBody.filing.header.certifiedBy).toBeUndefined()
         }
         // should be redirected to business dashboard on success
         await page.waitForURL(

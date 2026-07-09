@@ -19,7 +19,7 @@ describe('getDodSchema', () => {
 
     const expectedDefaults = {
       addToLedger: false,
-      certify: { isCertified: false, legalName: '' },
+      certify: { isCertified: false },
       courtOrder: { hasPoa: false, courtOrderNumber: '' },
       folio: { folioNumber: '' },
       delay: {

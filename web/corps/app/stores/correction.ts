@@ -199,14 +199,15 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       if (draft?.shareStructure?.shareClasses?.length) {
         // Draft share classes may use singular `action` (e.g. "EDITED") from the API —
         // normalize to plural `actions` array with valid ActionType values before formatting.
-        const normalizedClasses = draft.shareStructure.shareClasses.map((sc: Record<string, unknown>) => {
+        const normalizedClasses = draft.shareStructure.shareClasses.map((sc) => {
           const rawActions: string[] = (sc.actions as string[]) ?? (sc.action ? [sc.action as string] : [])
           const actions = rawActions.map(a =>
             Object.values(ActionType).includes(a as ActionType) ? a as ActionType : ActionType.CHANGED
           )
           return { ...sc, actions }
         })
-        const draftClasses = formatShareClassesUi(normalizedClasses as unknown as ShareClass[])
+
+        const draftClasses = formatShareClassesUi(normalizedClasses)
 
         // Merge draft share classes with originals to preserve old/new state for diffing
         for (const shareClass of draftClasses) {
@@ -367,8 +368,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ...(hasNameChange.value && {
         nameRequest: {
           legalName: companyName.value.new.legalName,
-          nrNumber: companyName.value.new.nrNumber,
-          legalType: businessStore.business?.legalType
+          nrNumber: companyName.value.new.nrNumber
         }
       })
 
@@ -378,7 +378,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     const headerPayload = {
       ...formatStaffPaymentApi(formState.staffPayment!),
-      ...(formState.certify?.legalName ? { certifiedBy: formState.certify.legalName } : {}),
       authorizationReceived: Boolean(formState.authorization?.isAuthorized)
     }
 
