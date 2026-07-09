@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.9.0",
   "license": "BSD-3-Clause",
   "scripts": {
     "build-check": "nuxt build",

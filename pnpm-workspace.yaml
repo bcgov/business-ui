@@ -33,10 +33,12 @@ blockExoticSubdeps: false
 allowBuilds:
   "@parcel/watcher": true
   "@sbc-connect/nuxt-auth": true
+  '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@d9fd4b6': true
   "@sbc-connect/nuxt-base": true
   "@sbc-connect/nuxt-business-base": true
   "@sbc-connect/nuxt-forms": true
   "@sbc-connect/nuxt-pay": true
+  '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@d9fd4b6': true
   "@tailwindcss/oxide": true
   esbuild: true
   unrs-resolver: true
