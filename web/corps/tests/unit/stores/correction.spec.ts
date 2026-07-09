@@ -83,7 +83,7 @@ describe('Correction Schema', () => {
       expect(result.data).toMatchObject({
         comment: { detail: '' },
         documentDelivery: { completingPartyEmail: '' },
-        certify: { isCertified: false, legalName: '' },
+        certify: { isCertified: false },
         staffPayment: {
           option: StaffPaymentOption.NONE
         },
@@ -143,7 +143,7 @@ describe('Correction Schema', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
-      expect(result.data!.courtOrder).toEqual({
+      expect((result.data! as CorrectionFormSchema).courtOrder).toEqual({
         hasPoa: false,
         courtOrderNumber: ''
       })
@@ -157,7 +157,7 @@ describe('Correction Schema', () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data!.courtOrder!.courtOrderNumber).toBe('CO-12345')
+      expect((result.data! as CorrectionFormSchema).courtOrder!.courtOrderNumber).toBe('CO-12345')
     })
 
     it('should accept hasPoa set to true', () => {
@@ -168,7 +168,7 @@ describe('Correction Schema', () => {
       })
 
       expect(result.success).toBe(true)
-      expect(result.data!.courtOrder!.hasPoa).toBe(true)
+      expect((result.data! as CorrectionFormSchema).courtOrder!.hasPoa).toBe(true)
     })
   })
 
@@ -178,7 +178,7 @@ describe('Correction Schema', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
-      expect(result.data!.completingParty).toMatchObject({
+      expect((result.data! as CorrectionFormSchema).completingParty).toMatchObject({
         firstName: '',
         middleName: '',
         lastName: ''
@@ -190,7 +190,7 @@ describe('Correction Schema', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
-      expect(result.data!.completingParty!.mailingAddress).toMatchObject({
+      expect((result.data! as CorrectionFormSchema).completingParty!.mailingAddress).toMatchObject({
         street: '',
         city: '',
         region: '',
@@ -225,7 +225,7 @@ describe('Correction Schema', () => {
     })
 
     it('should include staffPayment for both staff and client schemas', () => {
-      for (const isStaff of [true, false]) {
+      for (const isStaff of [true, false] as const) {
         const schema = getCorrectionSchema(isStaff)
         const result = schema.safeParse({})
 

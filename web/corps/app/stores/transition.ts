@@ -46,9 +46,6 @@ export const useTransitionStore = defineStore('transition-store', () => {
         if (formState.folio) {
           formState.folio.folioNumber = draftFiling.filing.header.folioNumber
         }
-        if (formState.certify) {
-          formState.certify.legalName = draftFiling.filing.header.certifiedBy
-        }
       }
     }
 
@@ -119,7 +116,6 @@ export const useTransitionStore = defineStore('transition-store', () => {
         ...(isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : {}),
         ...(!isStaff.value
           ? {
-            certifiedBy: formState.certify?.legalName,
             folioNumber: formState.folio?.folioNumber
           }
           : {}

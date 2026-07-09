@@ -2,10 +2,9 @@ import { z } from 'zod'
 
 function getClientTransitionSchema() {
   return z.object({
-    certify: getCertifySchema().default({
-      isCertified: false,
-      legalName: ''
-    }),
+    certify: getCertifySchema().default(() => ({
+      isCertified: false
+    })),
     folio: getFolioSchema().default({ folioNumber: '' })
   })
 }

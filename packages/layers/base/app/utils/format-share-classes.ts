@@ -4,7 +4,7 @@ export function formatShareClassesUi(
 ): TableBusinessState<ShareClassSchema>[] {
   const baseFormatter = <T extends { id: number | string | null, name: string, actions?: ActionType[] }>(item: T) => ({
     ...item,
-    id: item.id != null ? item.id.toString() : crypto.randomUUID(),
+    id: (item.id !== null && item.id !== -1) ? item.id.toString() : crypto.randomUUID(),
     actions: item.actions ?? [],
     name: item.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim(),
     isEditing: false
@@ -44,13 +44,13 @@ export function formatShareClassesUi(
 export function formatShareClassesApi(
   shareClasses: TableBusinessState<ShareClassSchema>[],
   isSubmission: boolean
-) {
+): ShareClass[] {
   return shareClasses
     .filter(c => isSubmission ? !c.new.actions.includes(ActionType.REMOVED) : true)
     .map(c => ({
       ...c.new,
       // add id for api validation
-      id: !c.new.actions.includes(ActionType.ADDED) ? Number(c.new.id) : null,
+      id: !c.new.actions.includes(ActionType.ADDED) ? Number(c.new.id) : -1,
       name: c.new.name + ' Shares',
       currency: c.new.currency ?? null,
       currencyAdditional: c.new.currencyAdditional ?? null,
@@ -58,6 +58,7 @@ export function formatShareClassesApi(
         .filter(s => isSubmission ? !s.actions.includes(ActionType.REMOVED) : true)
         .map(s => ({
           ...s,
+          id: !s.actions.includes(ActionType.ADDED) ? Number(s.id) : -1,
           name: s.name + ' Shares'
         }))
     }))
