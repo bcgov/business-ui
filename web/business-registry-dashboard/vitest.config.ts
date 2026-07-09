@@ -46,8 +46,9 @@ export default defineVitestConfig({
       }
     },
     // setupFiles: './tests/setup/i18n.ts',
+    setupFiles: ['./tests/setup/keycloak.ts'],
     globals: true,
-    testTimeout: 20000,
-    hookTimeout: 20000
+    testTimeout: 10000,
+    hookTimeout: 10000
   }
 })
