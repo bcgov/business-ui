@@ -4,39 +4,48 @@ packages:
   - web/registry-home
   - packages/**
 
+autoInstallPeers: true
+
 catalog:
-  '@axe-core/playwright': 4.11.3
-  '@iconify-json/mdi': 1.2.3
-  '@nuxt/test-utils': 3.21.0
+  "@axe-core/playwright": 4.11.3
+  "@faker-js/faker": 10.4.0
+  "@iconify-json/mdi": 1.2.3
+  "@nuxt/test-utils": 3.21.0
+  "@types/node": 25.5.0
   dotenv: 17.4.2
   typescript: 6.0.3
   vue-tsc: 3.3.1
   nuxt: 4.4.8
   vue: 3.5.39
   vue-router: 5.0.7
-  '@types/node': 25.5.0
-  '@faker-js/faker': 10.4.0
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
-- '@sbc-connect/*'
-autoInstallPeers: true
-shamefullyHoist: true
+  - "@sbc-connect/*"
 
-onlyBuiltDependencies:
-  - "@parcel/watcher"
-  - "@sbc-connect/nuxt-auth"
-  - "@sbc-connect/nuxt-base"
-  - "@sbc-connect/nuxt-business-base"
-  - "@sbc-connect/nuxt-forms"
-  - "@sbc-connect/nuxt-pay"
-  - "@tailwindcss/oxide"
-  - "esbuild"
-  - "vue-demi"
-  - "unrs-resolver"
+# Allow exotic (URL/tarball) sources in transitive deps. Required because the
+# @sbc-connect/* preview packages from pkg.pr.new reference each other via URL
+# (e.g. nuxt-pay -> nuxt-auth). Default is true since pnpm v10.26.0.
+blockExoticSubdeps: false
+
+# pnpm v11 replaced onlyBuiltDependencies / neverBuiltDependencies / ignoredBuiltDependencies
+# with a single allowBuilds map. true = run install scripts, false = skip them.
+allowBuilds:
+  "@parcel/watcher": true
+  "@sbc-connect/nuxt-auth": true
+  "@sbc-connect/nuxt-base": true
+  "@sbc-connect/nuxt-business-base": true
+  "@sbc-connect/nuxt-forms": true
+  "@sbc-connect/nuxt-pay": true
+  "@tailwindcss/oxide": true
+  esbuild: true
+  unrs-resolver: true
+  vue-demi: true
 
 overrides:
   vue: 3.5.39
   '@vue/runtime-core': 3.5.39
   '@vue/runtime-dom': 3.5.39
   '@vue/reactivity': 3.5.39
+
+shamefullyHoist: true
