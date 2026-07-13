@@ -216,6 +216,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 }
 
 const date = ref('')
+const expanded = ref({})
 </script>
 
 <template>
@@ -352,8 +353,16 @@ const date = ref('')
       <USeparator class="padding-x-default" />
       <ConnectFieldset label="Previous Dates" padding-class="xy-default">
         <TableShareStructureResolutionDates
-          :data="[]"
+          v-model:expanded="expanded"
         />
+
+        FIGURE OUT HOW TO HAVE RESOLUTIONS DATE STATE AS PART OF USEMANAGESHARESTRUCTURE COMPOSABLE
+
+        WILL NEED TO SEPARATE TABLE STATE INTO A DIFFERENT NAME PROBABLY OR HAVE A SEPARATE COMPOSABLE SIMILAR
+        TO NAME TRANSLATIONS
+
+        ALSO SINCE DATE FIELD IS ALWAYS VISIBLE WILL NEED A DIFFERENT DATE REF THAN JUST ACTIVE DATE
+        IE CANT USE EXISTING PATTERN
       </ConnectFieldset>
     </div>
   </component>
