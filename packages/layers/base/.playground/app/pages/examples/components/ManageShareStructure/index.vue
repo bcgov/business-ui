@@ -6,8 +6,8 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Share Structure' }]
 })
 
-const { tableState } = useManageShareStructure()
-tableState.value = mockClasses.shareClasses.map((c) => {
+const { shareClasses } = useManageShareStructure()
+shareClasses.value = mockClasses.shareClasses.map((c) => {
   return {
     new: {
       ...c,

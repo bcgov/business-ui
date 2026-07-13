@@ -26,7 +26,7 @@ let editSubject = ''
 
 const {
   expandedState,
-  tableState,
+  shareClasses,
   addNewShareClass,
   removeShareClass,
   undoShareClass,
@@ -87,7 +87,7 @@ const tableAllowedActions = computed(() => {
 
 const classValidationContext = computed(() => {
   const currentId = activeClass.value?.id
-  const existingNames = tableState.value
+  const existingNames = shareClasses.value
     .filter(item => item.new.id !== currentId)
     .map(item => item.new.name.toLowerCase())
 
@@ -273,7 +273,7 @@ const expanded = ref({})
         />
         <TableShareStructure
           v-model:expanded="expandedState"
-          :data="tableState"
+          :data="shareClasses"
           :loading
           :empty-text="emptyText"
           :allowed-actions="tableAllowedActions"

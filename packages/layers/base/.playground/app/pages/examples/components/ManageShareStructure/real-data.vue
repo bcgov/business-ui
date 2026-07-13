@@ -7,14 +7,14 @@ definePageMeta({
 const service = useBusinessService()
 const identifier = ref('')
 const loading = ref(false)
-const { tableState } = useManageShareStructure()
+const { shareClasses } = useManageShareStructure()
 
 async function initData() {
   try {
     loading.value = true
     const sc = await service.getShareClasses(identifier.value)
     const r = await service.getResolutions(identifier.value)
-    tableState.value = formatShareClassesUi(sc)
+    shareClasses.value = formatShareClassesUi(sc)
 
     console.log('RESOLUTIONS: ', r)
   } catch (e) {
@@ -25,7 +25,7 @@ async function initData() {
 }
 
 function reset() {
-  tableState.value = []
+  shareClasses.value = []
 }
 
 const formState = reactive<{

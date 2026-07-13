@@ -3,7 +3,7 @@ import { cloneDeep } from 'es-toolkit'
 export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
-  const { tableState: tableShareClasses } = useManageShareStructure()
+  const { shareClasses: tableShareClasses } = useManageShareStructure()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { initFiling, createFilingPayload } = useFiling()
 

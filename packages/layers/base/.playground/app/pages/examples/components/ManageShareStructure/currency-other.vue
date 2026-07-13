@@ -6,8 +6,8 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Share Structure (currency other)' }]
 })
 
-const { tableState } = useManageShareStructure()
-tableState.value = formatShareClassesUi(mockClasses.shareClasses)
+const { shareClasses } = useManageShareStructure()
+shareClasses.value = formatShareClassesUi(mockClasses.shareClasses)
 
 const loading = ref(false)
 

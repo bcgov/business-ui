@@ -22,9 +22,9 @@ describe('useManageShareStructure', () => {
   describe('Share Class Methods', () => {
     describe('addNewShareClass', () => {
       it('should add a new class to start of array and increment existing priorities', () => {
-        const { tableState, addNewShareClass } = useManageShareStructure('test1')
+        const { shareClasses, addNewShareClass } = useManageShareStructure('test1')
 
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'old-1', priority: 1, series: [] },
           old: undefined
         }] as any
@@ -32,53 +32,53 @@ describe('useManageShareStructure', () => {
         const newClass = { id: 'new-2', priority: 1, series: [] }
         addNewShareClass(newClass as any)
 
-        expect(tableState.value).toHaveLength(2)
-        expect(tableState.value[0]!.new.id).toBe('new-2')
-        expect(tableState.value[0]!.new.actions).toContain(ActionType.ADDED)
-        expect(tableState.value[1]!.new.priority).toBe(2)
+        expect(shareClasses.value).toHaveLength(2)
+        expect(shareClasses.value[0]!.new.id).toBe('new-2')
+        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.ADDED)
+        expect(shareClasses.value[1]!.new.priority).toBe(2)
       })
     })
 
     describe('removeShareClass', () => {
       it('should delete from state and update other priorities if newly added (no old state)', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test2')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test2')
 
-        tableState.value = [
+        shareClasses.value = [
           { new: { id: '1', priority: 1, series: [] }, old: undefined },
           { new: { id: '2', priority: 2, series: [] }, old: undefined }
         ] as any
 
-        const mockRow = createMockRow(tableState.value[0]) as any
+        const mockRow = createMockRow(shareClasses.value[0]) as any
         removeShareClass(mockRow)
 
-        expect(tableState.value).toHaveLength(1)
-        expect(tableState.value[0]!.new.id).toBe('2')
-        expect(tableState.value[0]!.new.priority).toBe(1)
+        expect(shareClasses.value).toHaveLength(1)
+        expect(shareClasses.value[0]!.new.id).toBe('2')
+        expect(shareClasses.value[0]!.new.priority).toBe(1)
       })
 
       it('should add removed action if class has an old state and no series', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test3')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test3')
 
         const rowData = {
           new: { id: '1', priority: 1, series: [], actions: [] },
           old: { id: '1', name: 'Original' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const mockRow = createMockRow(rowData) as any
         removeShareClass(mockRow)
 
-        expect(tableState.value).toHaveLength(1)
-        expect(tableState.value[0]!.new.actions).toContain(ActionType.REMOVED)
+        expect(shareClasses.value).toHaveLength(1)
+        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.REMOVED)
       })
 
       it('should trigger modal if class has series', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test4')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test4')
         const rowData = {
           new: { id: '1', priority: 1, series: [{ id: 's1' }] },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         removeShareClass(createMockRow(rowData) as any)
 
@@ -88,31 +88,31 @@ describe('useManageShareStructure', () => {
       })
 
       it('should only apply removal after modal confirmation when series exist', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test5')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test5')
 
         const rowData = {
           new: { id: '1', priority: 1, series: [{ id: 's1' }] },
           old: undefined
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         removeShareClass(createMockRow(rowData) as any)
 
         expect(openModalMock).toHaveBeenCalled()
 
-        expect(tableState.value).toHaveLength(1)
+        expect(shareClasses.value).toHaveLength(1)
 
         const modalConfig = openModalMock.mock.calls[0]![0]
         const removeButton = modalConfig.buttons.find((b: any) => b.label === 'Remove')
 
         removeButton.onClick()
-        expect(tableState.value).toHaveLength(0)
+        expect(shareClasses.value).toHaveLength(0)
       })
 
       it('should not remove the class if the modal is opened but Cancel is clicked', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test6')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test6')
         const rowData = { new: { id: '1', priority: 1, series: [{ id: 's1' }] }, old: undefined }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         removeShareClass(createMockRow(rowData) as any)
 
@@ -123,37 +123,37 @@ describe('useManageShareStructure', () => {
           cancelButton.onClick()
         }
 
-        expect(tableState.value).toHaveLength(1)
-        expect(tableState.value[0]!.new.id).toBe('1')
+        expect(shareClasses.value).toHaveLength(1)
+        expect(shareClasses.value[0]!.new.id).toBe('1')
       })
 
       it('should only update priorities for rows with a priority greater than the removed row', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test7')
-        tableState.value = [
+        const { shareClasses, removeShareClass } = useManageShareStructure('test7')
+        shareClasses.value = [
           { new: { id: '1', priority: 1, series: [] }, old: undefined },
           { new: { id: '2', priority: 2, series: [] }, old: undefined },
           { new: { id: '3', priority: 3, series: [] }, old: undefined }
         ] as any
 
-        const mockRow = createMockRow(tableState.value[1]) as any
+        const mockRow = createMockRow(shareClasses.value[1]) as any
         removeShareClass(mockRow)
 
-        expect(tableState.value).toHaveLength(2)
-        expect(tableState.value.find(r => r.new.id === '1')?.new.priority).toBe(1)
-        expect(tableState.value.find(r => r.new.id === '3')?.new.priority).toBe(2)
+        expect(shareClasses.value).toHaveLength(2)
+        expect(shareClasses.value.find(r => r.new.id === '1')?.new.priority).toBe(1)
+        expect(shareClasses.value.find(r => r.new.id === '3')?.new.priority).toBe(2)
       })
 
       it('should call cleanupForm callback after removal', () => {
-        const { tableState, removeShareClass } = useManageShareStructure('test8')
+        const { shareClasses, removeShareClass } = useManageShareStructure('test8')
         const cleanup = vi.fn()
 
         const rowA = { new: { id: '1', priority: 1, series: [] }, old: undefined }
-        tableState.value = [rowA] as any
+        shareClasses.value = [rowA] as any
         removeShareClass(createMockRow(rowA) as any, cleanup)
         expect(cleanup).toHaveBeenCalledTimes(1)
 
         const rowB = { new: { id: '2', priority: 1, series: [{ id: 's1' }] }, old: undefined }
-        tableState.value = [rowB] as any
+        shareClasses.value = [rowB] as any
         removeShareClass(createMockRow(rowB) as any, cleanup)
 
         const modalConfig = openModalMock.mock.calls[openModalMock.mock.calls.length - 1]![0]
@@ -165,82 +165,82 @@ describe('useManageShareStructure', () => {
 
     describe('undoShareClass', () => {
       it('should revert the new state to the old state', () => {
-        const { tableState, undoShareClass } = useManageShareStructure('test9')
+        const { shareClasses, undoShareClass } = useManageShareStructure('test9')
 
         const rowData = {
           new: { id: '1', name: 'Changed Name', priority: 1, series: [], actions: [ActionType.CHANGED] },
           old: { id: '1', name: 'Original Name', priority: 1, series: [], actions: [] }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         undoShareClass(createMockRow(rowData) as any)
 
-        expect(tableState.value[0]!.new.name).toBe('Original Name')
-        expect(tableState.value[0]!.new.actions).toEqual([])
+        expect(shareClasses.value[0]!.new.name).toBe('Original Name')
+        expect(shareClasses.value[0]!.new.actions).toEqual([])
       })
 
       it('should preserve the current priority when undoing other data', () => {
-        const { tableState, undoShareClass } = useManageShareStructure('test10')
+        const { shareClasses, undoShareClass } = useManageShareStructure('test10')
 
         const rowData = {
           new: { id: '1', name: 'New Name', priority: 5 },
           old: { id: '1', name: 'Old Name', priority: 1 }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         undoShareClass(createMockRow(rowData) as any)
 
-        expect(tableState.value[0]!.new.name).toBe('Old Name')
-        expect(tableState.value[0]!.new.priority).toBe(5)
+        expect(shareClasses.value[0]!.new.name).toBe('Old Name')
+        expect(shareClasses.value[0]!.new.priority).toBe(5)
       })
     })
 
     describe('updateShareClass', () => {
       it('should not update the action or state if no data was changed', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test11')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test11')
         const cleanup = vi.fn()
         const rowData = {
           new: { id: '1', name: 'Class A', series: [], actions: [] },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         updateShareClass(createMockRow(rowData) as any, rowData.new as any, cleanup)
 
-        expect(tableState.value[0]!.new.actions).toEqual([])
+        expect(shareClasses.value[0]!.new.actions).toEqual([])
         expect(cleanup).toHaveBeenCalled()
       })
 
       it('should add changed action for existing rows and added for new rows', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test12')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test12')
 
         const existingRow = { new: { id: '1', name: 'Old' }, old: { id: '1' } }
-        tableState.value = [existingRow] as any
+        shareClasses.value = [existingRow] as any
         updateShareClass(createMockRow(existingRow) as any, { id: '1', name: 'New' } as any, vi.fn())
-        expect(tableState.value[0]!.new.actions).toContain(ActionType.CHANGED)
+        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.CHANGED)
 
         const newRow = { new: { id: '2', name: 'New' }, old: undefined }
-        tableState.value = [newRow] as any
+        shareClasses.value = [newRow] as any
         updateShareClass(createMockRow(newRow) as any, { id: '2', name: 'Newer' } as any, vi.fn())
-        expect(tableState.value[0]!.new.actions).toContain(ActionType.ADDED)
+        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.ADDED)
       })
 
       it('should ignore the series when checking for changes', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test13')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test13')
         const rowData = {
           new: { id: '1', name: 'Class A', series: [], actions: [] },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const dataWithNewSeries = { ...rowData.new, series: [{ id: 'new-s' }] }
         updateShareClass(createMockRow(rowData) as any, dataWithNewSeries as any, vi.fn())
 
-        expect(tableState.value[0]!.new.actions).toEqual([])
+        expect(shareClasses.value[0]!.new.actions).toEqual([])
       })
 
       it('should trigger modal and invalidate series when maxShares changes', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test14')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test14')
         const cleanup = vi.fn()
         const rowData = {
           new: {
@@ -251,7 +251,7 @@ describe('useManageShareStructure', () => {
           },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
         updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
@@ -263,14 +263,14 @@ describe('useManageShareStructure', () => {
         const modalConfig = openModalMock.mock.calls[0]![0]
         modalConfig.buttons.find((b: any) => b.label === 'Remove Series').onClick()
 
-        const series = tableState.value[0]!.new.series[0]
+        const series = shareClasses.value[0]!.new.series[0]
         expect(series!.actions).toContain(ActionType.REMOVED)
         expect(series!.isInvalid).toBe(true)
         expect(cleanup).toHaveBeenCalled()
       })
 
       it('should not trigger modal if maxShares changes but no series exist', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test15')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test15')
         const cleanup = vi.fn()
 
         const rowData = {
@@ -281,7 +281,7 @@ describe('useManageShareStructure', () => {
           },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
         updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
@@ -291,7 +291,7 @@ describe('useManageShareStructure', () => {
       })
 
       it('should always set currencyAdditional to undefined when making any changes', () => {
-        const { tableState, updateShareClass } = useManageShareStructure('test-currency-additonal-change')
+        const { shareClasses, updateShareClass } = useManageShareStructure('test-currency-additonal-change')
         const cleanup = vi.fn()
 
         const rowData = {
@@ -303,12 +303,12 @@ describe('useManageShareStructure', () => {
           },
           old: { id: '1' }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
         updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
 
-        expect(tableState.value[0]!.new.currencyAdditional).toBeUndefined()
+        expect(shareClasses.value[0]!.new.currencyAdditional).toBeUndefined()
         expect(cleanup).toHaveBeenCalled()
       })
     })
@@ -317,7 +317,7 @@ describe('useManageShareStructure', () => {
   describe('Share Series Methods', () => {
     describe('addNewShareSeries', () => {
       it('should add a new series and increment priority of existing ones', () => {
-        const { tableState, addNewShareSeries } = useManageShareStructure('test16')
+        const { shareClasses, addNewShareSeries } = useManageShareStructure('test16')
 
         const existingSeries = { id: 's1', priority: 1, actions: [] }
         const rowData = {
@@ -327,13 +327,13 @@ describe('useManageShareStructure', () => {
             series: [existingSeries]
           }
         }
-        tableState.value = [rowData] as any
+        shareClasses.value = [rowData] as any
 
         const newSeries = { id: 's2', priority: 1 }
 
         addNewShareSeries(rowData as any, newSeries as any)
 
-        const seriesArray = tableState.value[0]!.new.series
+        const seriesArray = shareClasses.value[0]!.new.series
 
         expect(seriesArray[0]!.id).toBe('s2')
         expect(seriesArray[0]!.actions).toContain(ActionType.ADDED)
@@ -345,10 +345,10 @@ describe('useManageShareStructure', () => {
 
     describe('updateShareSeries', () => {
       it('should not update if no changes', () => {
-        const { tableState, updateShareSeries } = useManageShareStructure('test17')
+        const { shareClasses, updateShareSeries } = useManageShareStructure('test17')
 
         const existingSeries = { id: 's1', name: 'Series A', actions: [] }
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'parent-1', series: [existingSeries] }
         }] as any
 
@@ -358,14 +358,14 @@ describe('useManageShareStructure', () => {
         }
 
         updateShareSeries(rowMock as any, { ...existingSeries } as any)
-        expect(tableState.value[0]!.new.series[0]!.actions).toEqual([])
+        expect(shareClasses.value[0]!.new.series[0]!.actions).toEqual([])
       })
 
       it('should add the changed action if edits were made to an existing series', () => {
-        const { tableState, updateShareSeries } = useManageShareStructure('test18')
+        const { shareClasses, updateShareSeries } = useManageShareStructure('test18')
 
         const existingSeries = { id: 's1', name: 'Original Name', actions: [] }
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'parent-1', series: [existingSeries] }
         }] as any
 
@@ -383,14 +383,14 @@ describe('useManageShareStructure', () => {
 
         updateShareSeries(rowMock as any, updatedSeries as any)
 
-        const resultSeries = tableState.value[0]!.new.series[0]
+        const resultSeries = shareClasses.value[0]!.new.series[0]
         expect(resultSeries!.name).toBe('Updated Name')
         expect(resultSeries!.actions).toContain(ActionType.CHANGED)
         expect(resultSeries!.actions).not.toContain(ActionType.ADDED)
       })
 
       it('should maintain the ADDED action if edits are made to a series with no old state', () => {
-        const { tableState, updateShareSeries } = useManageShareStructure('test19')
+        const { shareClasses, updateShareSeries } = useManageShareStructure('test19')
 
         const draftSeries = {
           id: 's-new-123',
@@ -398,7 +398,7 @@ describe('useManageShareStructure', () => {
           actions: [ActionType.ADDED]
         }
 
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'parent-1', series: [draftSeries] }
         }] as any
 
@@ -416,7 +416,7 @@ describe('useManageShareStructure', () => {
 
         updateShareSeries(rowMock as any, updatedSeriesData as any)
 
-        const resultSeries = tableState.value[0]!.new.series[0]
+        const resultSeries = shareClasses.value[0]!.new.series[0]
         expect(resultSeries!.name).toBe('Renamed Draft Series')
 
         expect(resultSeries!.actions).toEqual([ActionType.ADDED])
@@ -426,12 +426,12 @@ describe('useManageShareStructure', () => {
 
     describe('undoShareSeries', () => {
       it('should revert series data to old state but keep current priority', () => {
-        const { tableState, undoShareSeries } = useManageShareStructure('test20')
+        const { shareClasses, undoShareSeries } = useManageShareStructure('test20')
 
         const oldState = { id: 's1', name: 'Original Name', priority: 1 }
         const currentState = { id: 's1', name: 'Edited Name', priority: 5 }
 
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'p1', series: [currentState] }
         }] as any
 
@@ -445,7 +445,7 @@ describe('useManageShareStructure', () => {
 
         undoShareSeries(rowMock as any)
 
-        const result = tableState.value[0]!.new.series[0]!
+        const result = shareClasses.value[0]!.new.series[0]!
         expect(result.name).toBe('Original Name')
         expect(result.priority).toBe(5)
       })
@@ -453,13 +453,13 @@ describe('useManageShareStructure', () => {
 
     describe('removeShareSeries', () => {
       it('should fully remove a new series and update other priorities', () => {
-        const { tableState, removeShareSeries } = useManageShareStructure('test21')
+        const { shareClasses, removeShareSeries } = useManageShareStructure('test21')
 
         const s1 = { id: 's1', priority: 1 }
         const s2 = { id: 's2', priority: 2 }
         const s3 = { id: 's3', priority: 3 }
 
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'p1', series: [s1, s2, s3] }
         }] as any
 
@@ -470,7 +470,7 @@ describe('useManageShareStructure', () => {
 
         removeShareSeries(rowMock as any)
 
-        const finalSeries = tableState.value[0]!.new.series
+        const finalSeries = shareClasses.value[0]!.new.series
 
         expect(finalSeries.length).toBe(2)
         expect(finalSeries.find(s => s.id === 's2')).toBeUndefined()
@@ -480,10 +480,10 @@ describe('useManageShareStructure', () => {
       })
 
       it('should add removed action when removing an existing series', () => {
-        const { tableState, removeShareSeries } = useManageShareStructure('test22')
+        const { shareClasses, removeShareSeries } = useManageShareStructure('test22')
 
         const existingSeries = { id: 's1', priority: 1, actions: [] }
-        tableState.value = [{
+        shareClasses.value = [{
           new: { id: 'p1', series: [existingSeries] }
         }] as any
 
@@ -497,7 +497,7 @@ describe('useManageShareStructure', () => {
 
         removeShareSeries(rowMock as any)
 
-        const result = tableState.value[0]!.new.series[0]!
+        const result = shareClasses.value[0]!.new.series[0]!
         expect(result.id).toBe('s1')
         expect(result.actions).toContain(ActionType.REMOVED)
       })
@@ -506,11 +506,11 @@ describe('useManageShareStructure', () => {
 
   describe('changePriority', () => {
     it('class - should swap priority with the nearest item below when moving down', () => {
-      const { tableState, changePriority } = useManageShareStructure('test23')
+      const { shareClasses, changePriority } = useManageShareStructure('test23')
 
       const class1 = { new: { id: 'c1', priority: 1 } }
       const class2 = { new: { id: 'c2', priority: 2 } }
-      tableState.value = [class1, class2] as any
+      shareClasses.value = [class1, class2] as any
 
       const rowMock = {
         depth: 0,
@@ -525,11 +525,11 @@ describe('useManageShareStructure', () => {
     })
 
     it('class - should swap priority with the nearest item above when moving up', () => {
-      const { tableState, changePriority } = useManageShareStructure('test24')
+      const { shareClasses, changePriority } = useManageShareStructure('test24')
 
       const class1 = { new: { id: 'c1', priority: 1 } }
       const class2 = { new: { id: 'c2', priority: 2 } }
-      tableState.value = [class1, class2] as any
+      shareClasses.value = [class1, class2] as any
 
       const rowMock = {
         depth: 0,
@@ -544,13 +544,13 @@ describe('useManageShareStructure', () => {
     })
 
     it('series - should swap priority with the nearest item above when moving up', () => {
-      const { tableState, changePriority } = useManageShareStructure('test24')
+      const { shareClasses, changePriority } = useManageShareStructure('test24')
 
       const s1 = { id: 's1', priority: 1 }
       const s2 = { id: 's2', priority: 2 }
       const s3 = { id: 's3', priority: 3 }
 
-      tableState.value = [{
+      shareClasses.value = [{
         new: { id: 'p1', series: [s1, s2, s3] }
       }] as any
 
@@ -568,13 +568,13 @@ describe('useManageShareStructure', () => {
     })
 
     it('series - should swap priority with the nearest item below when moving down', () => {
-      const { tableState, changePriority } = useManageShareStructure('test25')
+      const { shareClasses, changePriority } = useManageShareStructure('test25')
 
       const s1 = { id: 's1', priority: 1 }
       const s2 = { id: 's2', priority: 2 }
       const s3 = { id: 's3', priority: 3 }
 
-      tableState.value = [{
+      shareClasses.value = [{
         new: { id: 'p1', series: [s1, s2, s3] }
       }] as any
 
