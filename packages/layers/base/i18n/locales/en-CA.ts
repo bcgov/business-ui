@@ -514,6 +514,8 @@ export default {
     registrationNumber: 'Registration Number',
     remove: 'Remove',
     requestACopy: 'Request a Copy',
+    resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
+    resolutionOrCourtOrderDateOpt: 'Resolution or Court Order Date (Optional)',
     retrieveBusinessInformation: 'Retrieve Business Information',
     roles: 'Roles',
     routingSlipNumber: 'Routing Slip Number',
@@ -747,6 +749,7 @@ export default {
     checkToContinue: 'Check this box to continue',
     classNameInvalidWords: 'Class name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     companyNameRequired: 'A company name is required',
+    dateFormat: 'Date must be a valid date in YYYY-MM-DD format',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
     duplicateDocId: 'A document record already exists with this document ID',
@@ -781,6 +784,10 @@ export default {
     onlyNumbers: 'Only enter numbers',
     onlyWholeNumbers: 'Only enter whole numbers',
     pleaseCompleteRequiredInfo: '< Please complete required information',
+    resolutionDate: {
+      requiredWithSpecialRightsOrRestrictions: 'Required when changing a share structure with a class or series of shares with special rights or restrictions.',
+      alreadyAdded: 'This date has already been added. You cannot enter it again.'
+    },
     role: {
       min: 'Choose at least one role'
     },

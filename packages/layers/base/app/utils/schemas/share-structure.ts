@@ -200,3 +200,74 @@ export function getActiveShareClassSchema(context?: { existingNames: string[] })
 }
 
 export type ActiveShareClassSchema = z.output<ReturnType<typeof getActiveShareClassSchema>>
+
+export function getResolutionDateSchema(context?: {
+  hasRightsOrRestrictions?: boolean
+  isEditingExisting?: boolean
+  existingResolutions?: { id: string, date: string, type?: string }[]
+}) {
+  const t = useNuxtApp().$i18n.t
+  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
+
+  return z.object({
+    id: z.preprocess( // convert DB `id` int to string for UI diff'ing
+      val => (typeof val === 'number' ? String(val) : val),
+      z.string().default(() => crypto.randomUUID())
+    ),
+    type: z.string().optional(),
+    date: z.string().default(''),
+    isEditing: z.boolean().default(false),
+    actions: z.array(z.enum(ActionType)).default(() => [])
+  }).superRefine((data, ctx) => {
+    const date = data.date.trim()
+    const isDateEmpty = date === ''
+
+    // Date required when adding or editing a share class or series with special rights or restrictions
+    if (context?.hasRightsOrRestrictions && isDateEmpty) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['date'],
+        message: t('validation.resolutionDate.requiredWithSpecialRightsOrRestrictions')
+      })
+      return
+    }
+
+    // Date required when editing an existing date
+    if (context?.isEditingExisting && isDateEmpty) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['date'],
+        message: t('connect.validation.fieldRequired')
+      })
+      return
+    }
+
+    // Date must pass YYYY-MM-DD regex (datepicker outputs correct format - fallback check when entered manually)
+    if (!dateRegex.test(date) && !isDateEmpty) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['date'],
+        message: t('validation.dateFormat')
+      })
+      return
+    }
+
+    // Prevent duplicate dates being entered unless the IDs match (editing existing date)
+    if (context?.existingResolutions && !isDateEmpty) {
+      const isDuplicate = context.existingResolutions.some(res =>
+        res.date.trim() === date && res.id !== data.id
+      )
+
+      if (isDuplicate) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['date'],
+          message: t('validation.resolutionDate.alreadyAdded')
+        })
+        return
+      }
+    }
+  })
+}
+
+export type ResolutionDateSchema = z.output<ReturnType<typeof getResolutionDateSchema>>
