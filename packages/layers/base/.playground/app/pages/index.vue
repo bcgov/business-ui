@@ -97,6 +97,14 @@ const componentExamples: DropdownMenuItem[] = [
       {
         to: localePath('/examples/components/ManageShareStructure'),
         label: 'Default'
+      },
+      {
+        to: localePath('/examples/components/ManageShareStructure/currency-other'),
+        label: 'Currency Other'
+      },
+      {
+        to: localePath('/examples/components/ManageShareStructure/real-data'),
+        label: 'Real Data'
       }
     ]
   },
