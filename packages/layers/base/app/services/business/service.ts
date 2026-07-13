@@ -237,6 +237,15 @@ export const useBusinessService = () => {
     return await getCachedOrFetch(options, force)
   }
 
+  async function getResolutions(
+    businessId: string,
+    isSpecial = false,
+    force = false
+  ): Promise<Resolution[]> {
+    const options = query.resolutionsOptions(businessId, isSpecial)
+    return await getCachedOrFetch<Resolution[]>(options, force)
+  }
+
   /**
    * Fetches business share classes.
    * @param businessId the business identifier (aka entity inc no)
@@ -377,6 +386,7 @@ export const useBusinessService = () => {
     getFilingDocumentUrls,
     getLedger,
     getLinkedNameRequest,
+    getResolutions,
     getShareClasses,
     getTasks,
     getParties,
