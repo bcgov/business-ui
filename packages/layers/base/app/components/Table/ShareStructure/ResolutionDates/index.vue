@@ -27,7 +27,10 @@ const expanded = defineModel<ExpandedState | undefined>('expanded')
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
+    :get-row-id="(row: TableBusinessState<T>) => row.new.id"
     :hide-actions-when
+    hide-table-header
+    tr-divider-full-width
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">
