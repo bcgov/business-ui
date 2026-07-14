@@ -285,10 +285,10 @@ export const useBusinessQuery = () => {
   function resolutionsOptions(
     businessId: MaybeRefOrGetter<string>,
     isSpecial = false,
-    options?: DefineOptions<Resolution[]>
+    options?: DefineOptions<{ resolutions: Resolution[] }>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<Resolution[]>(`businesses/${toValue(businessId)}/resolutions`, {
+      query: () => $businessApi<{ resolutions: Resolution[] }>(`businesses/${toValue(businessId)}/resolutions`, {
         query: isSpecial ? { type: 'SPECIAL' } : undefined
       }),
       staleTime: DEFAULT_STALE_TIME,
@@ -300,9 +300,13 @@ export const useBusinessQuery = () => {
   function resolutions(
     businessId: MaybeRefOrGetter<string>,
     isSpecial = false,
-    options?: QueryOptions<Resolution[]>
+    options?: QueryOptions<{ resolutions: Resolution[] }>
   ) {
-    return useQuery(() => resolutionsOptions(businessId, isSpecial, options as DefineOptions<Resolution[]>))
+    return useQuery(() => resolutionsOptions(
+      businessId,
+      isSpecial,
+      options as DefineOptions<{ resolutions: Resolution[] }>)
+    )
   }
 
   function shareClassOptions(

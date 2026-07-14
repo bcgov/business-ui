@@ -243,7 +243,8 @@ export const useBusinessService = () => {
     force = false
   ): Promise<Resolution[]> {
     const options = query.resolutionsOptions(businessId, isSpecial)
-    return await getCachedOrFetch<Resolution[]>(options, force)
+    return await getCachedOrFetch<{ resolutions: Resolution[] }>(options, force)
+      .then(res => res.resolutions)
   }
 
   /**
