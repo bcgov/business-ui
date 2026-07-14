@@ -6,6 +6,9 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   const { t } = useNuxtApp().$i18n
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const shareClasses = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-share-classes-state`, () => [])
+  const resolutionDates = useState<TableBusinessState<ResolutionDateSchema>[]>(`${stateKey}-resolution-dates-state`,
+    () => []
+  )
 
   function addNewShareClass(shareClass: ActiveShareClassSchema) {
     if (!shareClass) {
@@ -272,6 +275,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   return {
     expandedState,
     shareClasses,
+    resolutionDates,
     addNewShareClass,
     removeShareClass,
     undoShareClass,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ManageShareStructureProps } from '#business/app/interfaces'
+import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
   stateKey = 'manage-share-structure',
@@ -24,9 +25,14 @@ const addingSeriesToClassId = ref<string | undefined>(undefined)
 let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
 let editSubject = ''
 
+const expandedResolutionDate = ref<ExpandedState | undefined>(undefined)
+const resolutionDateSchema = getResolutionDateSchema()
+const activeResolutionDate = defineModel<ResolutionDateSchema | undefined>('active-rd')
+
 const {
   expandedState,
   shareClasses,
+  resolutionDates,
   addNewShareClass,
   removeShareClass,
   undoShareClass,
@@ -216,6 +222,24 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 }
 
 const date = ref('')
+
+function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
+  console.log('INIT EDIT: ', row.original.new)
+
+  const parsedData = resolutionDateSchema.safeParse({ ...row.original.new })
+  activeResolutionDate.value = parsedData.success
+    ? parsedData.data
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
+
+  activeResolutionDate.value!.isEditing = true
+  expandedResolutionDate.value = { [row.id]: true, ...expandedResolutionDate.value as object }
+}
+function removeResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
+  console.log('REMOVE: ', row.original.new)
+}
+function undoResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
+  console.log('UNDO: ', row.original.new)
+}
 </script>
 
 <template>
@@ -352,8 +376,24 @@ const date = ref('')
       <USeparator class="padding-x-default" />
       <ConnectFieldset label="Previous Dates" padding-class="xy-default">
         <TableShareStructureResolutionDates
-          :data="[]"
-        />
+          v-model:expanded="expandedResolutionDate"
+          :data="resolutionDates"
+          @init-edit="initEditResolutionDate"
+          @remove="removeResolutionDate"
+          @undo="undoResolutionDate"
+          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
+        >
+          <template #expanded="{ row }">
+            <SubFormFieldWrapper>
+              <ConnectInputDate
+                v-if="activeResolutionDate"
+                id="resolution-date"
+                v-model="activeResolutionDate.date"
+                label="Resolution or Court Order Date"
+              />
+            </SubFormFieldWrapper>
+          </template>
+        </TableShareStructureResolutionDates>
       </ConnectFieldset>
     </div>
   </component>
