@@ -19,7 +19,7 @@ export function getResolutionDateColumn<T extends ResolutionDateSchema>(
     cell: ({ row }) => {
       const badges = getTableBadges(row, badgeLabelOverrides)
       const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'w-full overflow-clip' // Set the width to 100% of the outer layer
+      const defaultClass = 'w-full overflow-clip text-base' // Set the width to 100% of the outer layer
 
       return h(
         TableColumnIdentity,
