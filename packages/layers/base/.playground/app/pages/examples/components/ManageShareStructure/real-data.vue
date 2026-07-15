@@ -46,6 +46,11 @@ const formState = reactive<{
   activeSeries: undefined,
   activeResolutionDate: undefined
 })
+
+onMounted(() => {
+  identifier.value = 'BC1230023'
+  initData()
+})
 </script>
 
 <template>

@@ -257,6 +257,12 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
   currentEditingRow.isEditing = true
   expandedResolutionDate.value = { [row.id]: true }
 }
+
+// TODO: FIGURE OUT HOW TO INCLUDE THE DATE FROM THE OPEN INPUT IN HERE AS WELL
+const changeResolutionDateValidationContext = computed(() => ({
+  isEditingExisting: true,
+  existingResolutions: resolutionDates.value.map(rd => rd.new)
+}))
 </script>
 
 <template>
@@ -392,11 +398,12 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
       </ConnectFieldset>
       <USeparator class="padding-x-default" />
       <ConnectFieldset label="Previous Dates" padding-class="xy-default">
-        <!-- TODO: FIX TYPING FOR HIDE ACTIONS WHEN AND GET EXAPNDED FORM VARIANT -->
+        <!-- TODO: FIX TYPING FOR HIDE ACTIONS WHEN AND GET EXPANDED FORM VARIANT -->
         <TableShareStructureResolutionDates
           v-model:expanded="expandedResolutionDate"
           :data="resolutionDates"
           :label-overrides="tableLabels"
+          :allowed-actions="tableAllowedActions"
           :prevent-actions="shouldPreventActions"
           :hide-actions-when="hideRowActionsWhen"
           :task-guard-config="{
@@ -414,6 +421,7 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
               v-if="activeResolutionDate"
               v-model="activeResolutionDate"
               :state-key
+              :validation-context="changeResolutionDateValidationContext"
               :variant="getExpandedFormVariant(row)"
               @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
               @cancel="cleanupForm"
