@@ -272,6 +272,45 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
   }
 
+  function updateResolutionDate(
+    row: TableBusinessRow<ResolutionDateSchema>,
+    resolution: ActiveResolutionDateSchema,
+    cleanupForm: () => void
+  ) {
+    if (!resolution) {
+      return
+    }
+
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+
+    if (rowToUpdate) {
+      // only apply edits if changes have been made, exclude isEditing from the equality check
+      if (!isEqual(omit(rowToUpdate.new, ['isEditing']), omit(resolution, ['isEditing']))) {
+        rowToUpdate.new = {
+          ...resolution,
+          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+        }
+      }
+    }
+    cleanupForm()
+  }
+
+  function removeResolutionDate(row: TableBusinessRow<ResolutionDateSchema>): void {
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+    if (!rowToUpdate) {
+      return
+    }
+    rowToUpdate.new.actions = [ActionType.REMOVED]
+  }
+
+  function undoResolutionDate(row: TableBusinessRow<ResolutionDateSchema>): void {
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+    if (!rowToUpdate || !rowToUpdate.old) {
+      return
+    }
+    rowToUpdate.new = structuredClone(rowToUpdate.old)
+  }
+
   return {
     expandedState,
     shareClasses,
@@ -284,6 +323,9 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     updateShareSeries,
     undoShareSeries,
     removeShareSeries,
-    changePriority
+    changePriority,
+    updateResolutionDate,
+    removeResolutionDate,
+    undoResolutionDate
   }
 }

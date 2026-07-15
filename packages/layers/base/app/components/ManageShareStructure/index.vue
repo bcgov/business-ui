@@ -22,12 +22,12 @@ const shouldPreventActions = computed(() => {
 })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
-let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
+let currentEditingRow: ShareClassSchema | ShareSeriesSchema | ResolutionDateSchema | null = null
 let editSubject = ''
 
 const expandedResolutionDate = ref<ExpandedState | undefined>(undefined)
 const resolutionDateSchema = getResolutionDateSchema()
-const activeResolutionDate = defineModel<ResolutionDateSchema | undefined>('active-rd')
+const activeResolutionDate = defineModel<ActiveResolutionDateSchema | undefined>('active-rd')
 
 const {
   expandedState,
@@ -41,7 +41,10 @@ const {
   undoShareSeries,
   removeShareSeries,
   addNewShareSeries,
-  changePriority
+  changePriority,
+  updateResolutionDate,
+  removeResolutionDate,
+  undoResolutionDate
 } = useManageShareStructure(stateKey)
 
 const { t } = useI18n()
@@ -159,6 +162,8 @@ function cleanupForm() {
   addingSeriesToClassId.value = undefined
   activeClass.value = undefined
   activeSeries.value = undefined
+  activeResolutionDate.value = undefined
+  expandedResolutionDate.value = undefined
 }
 
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
@@ -224,21 +229,15 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 const date = ref('')
 
 function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
-  console.log('INIT EDIT: ', row.original.new)
-
   const parsedData = resolutionDateSchema.safeParse({ ...row.original.new })
-  activeResolutionDate.value = parsedData.success
+  const data = parsedData.success
     ? parsedData.data
     : JSON.parse(JSON.stringify({ ...row.original.new }))
 
-  activeResolutionDate.value!.isEditing = true
-  expandedResolutionDate.value = { [row.id]: true, ...expandedResolutionDate.value as object }
-}
-function removeResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
-  console.log('REMOVE: ', row.original.new)
-}
-function undoResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
-  console.log('UNDO: ', row.original.new)
+  activeResolutionDate.value = data
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+  expandedResolutionDate.value = { [row.id]: true }
 }
 </script>
 
@@ -378,20 +377,19 @@ function undoResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
         <TableShareStructureResolutionDates
           v-model:expanded="expandedResolutionDate"
           :data="resolutionDates"
+          :label-overrides="tableLabels"
           @init-edit="initEditResolutionDate"
           @remove="removeResolutionDate"
           @undo="undoResolutionDate"
           @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
         >
           <template #expanded="{ row }">
-            <SubFormFieldWrapper>
-              <ConnectInputDate
-                v-if="activeResolutionDate"
-                id="resolution-date"
-                v-model="activeResolutionDate.date"
-                label="Resolution or Court Order Date"
-              />
-            </SubFormFieldWrapper>
+            <FormShareResolutionDates
+              v-if="activeResolutionDate"
+              v-model="activeResolutionDate"
+              @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
+              @cancel="cleanupForm"
+            />
           </template>
         </TableShareStructureResolutionDates>
       </ConnectFieldset>

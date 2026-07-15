@@ -7,16 +7,24 @@ definePageMeta({
 const service = useBusinessService()
 const identifier = ref('')
 const loading = ref(false)
-const { shareClasses } = useManageShareStructure()
+const { shareClasses, resolutionDates } = useManageShareStructure()
+const rdSchema = getResolutionDateSchema()
 
 async function initData() {
   try {
     loading.value = true
     const sc = await service.getShareClasses(identifier.value)
-    const r = await service.getResolutions(identifier.value)
+    const rd = await service.getResolutions(identifier.value)
     shareClasses.value = formatShareClassesUi(sc)
 
-    console.log('RESOLUTIONS: ', r)
+    const rdMapped = rd.map((d) => {
+      const data = rdSchema.safeParse(d).data!
+      return { old: structuredClone(data), new: structuredClone(data) }
+    })
+    resolutionDates.value = rdMapped
+
+    console.log('RESOLUTIONS: ', rd)
+    console.log('RESOLUTIONS MAPPED: ', rdMapped)
   } catch (e) {
     console.error(e)
   } finally {
@@ -26,14 +34,17 @@ async function initData() {
 
 function reset() {
   shareClasses.value = []
+  resolutionDates.value = []
 }
 
 const formState = reactive<{
   activeClass: ActiveShareClassSchema | undefined
   activeSeries: ActiveShareSeriesSchema | undefined
+  activeResolutionDate: ActiveResolutionDateSchema | undefined
 }>({
   activeClass: undefined,
-  activeSeries: undefined
+  activeSeries: undefined,
+  activeResolutionDate: undefined
 })
 </script>
 
@@ -55,6 +66,7 @@ const formState = reactive<{
             id="b-id"
             v-model="identifier"
             label="Business Identifier"
+            @keydown.enter.prevent="initData"
           />
           <UButton
             label="Go"
@@ -70,6 +82,7 @@ const formState = reactive<{
         <ManageShareStructure
           v-model:active-class="formState.activeClass"
           v-model:active-series="formState.activeSeries"
+          v-model:active-rd="formState.activeResolutionDate"
           :loading
           subject="Share Class"
         />

@@ -271,3 +271,13 @@ export function getResolutionDateSchema(context?: {
 }
 
 export type ResolutionDateSchema = z.output<ReturnType<typeof getResolutionDateSchema>>
+
+export function getActiveResolutionDateSchema(context?: {
+  hasRightsOrRestrictions?: boolean
+  isEditingExisting?: boolean
+  existingResolutions?: { id: string, date: string, type?: string }[]
+}) {
+  return getResolutionDateSchema(context).nullable().optional()
+}
+
+export type ActiveResolutionDateSchema = z.output<ReturnType<typeof getActiveResolutionDateSchema>>
