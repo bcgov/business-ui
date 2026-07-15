@@ -699,6 +699,7 @@ export default {
     filingWillTakeEffectOnDate: 'The {filing} will take effect on {boldStart}{date}{boldEnd}.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
     folioDescription: 'This is meant for your own tracking purposes and will appear on your receipt.',
+    formatYYYYMMDD: 'Format: YYYY-MM-DD',
     haspreferredName: 'This person also has another name they prefer to use',
     incorporation: 'incorporation',
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',

@@ -308,7 +308,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     if (!rowToUpdate || !rowToUpdate.old) {
       return
     }
-    rowToUpdate.new = structuredClone(rowToUpdate.old)
+    rowToUpdate.new = structuredClone(toRaw(rowToUpdate.old))
   }
 
   return {

@@ -18,7 +18,7 @@ const emit = defineEmits<{
 const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class')
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series')
 const shouldPreventActions = computed(() => {
-  return !!activeClass.value || !!activeSeries.value || preventActions
+  return !!activeClass.value || !!activeSeries.value || !!activeResolutionDate.value || preventActions
 })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
@@ -54,8 +54,16 @@ const {
   clearAlert,
   attachAlerts
 } = useFilingAlerts(stateKey)
-const tableTarget = 'share-structure-table'
-const { messageId, targetId } = attachAlerts(tableTarget, activeClass)
+const shareStructureAlertGroup = 'share-structure-table'
+const {
+  messageId: shareStructureAlertMessageId,
+  targetId: shareStructureAlertTargetId
+} = attachAlerts(shareStructureAlertGroup, activeClass)
+const resolutionDateAlertGroup = 'resolution-date-table'
+const {
+  messageId: resolutionDateAlertMessageId,
+  targetId: resolutionDateAlertTargetId
+} = attachAlerts(resolutionDateAlertGroup, activeResolutionDate)
 const { setAlertText } = useConnectButtonControl()
 const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
@@ -109,6 +117,9 @@ function setActiveFormAlert() {
   }
   if (activeSeries.value !== undefined) {
     setAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+  if (activeResolutionDate.value !== undefined) {
+    setAlert('resolution-date-form', t('text.finishTaskBeforeOtherChanges'))
   }
 }
 
@@ -229,6 +240,13 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 const date = ref('')
 
 function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
+  // prevent actions if a sub form is open
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
+    return
+  }
+
   const parsedData = resolutionDateSchema.safeParse({ ...row.original.new })
   const data = parsedData.success
     ? parsedData.data
@@ -271,8 +289,8 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
             'variant': 'outline',
             'icon': 'i-mdi-plus',
             // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
-            'data-alert-focus-target': targetId,
-            'aria-describedby': messageId,
+            'data-alert-focus-target': shareStructureAlertTargetId,
+            'aria-describedby': shareStructureAlertMessageId,
             'onClick': () => initAddItem()
           }
         ]
@@ -303,9 +321,9 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
           :label-overrides="tableLabels"
           :hide-actions-when="hideRowActionsWhen"
           :task-guard-config="{
-            messageId,
-            targetId,
-            message: alerts[tableTarget]
+            messageId: shareStructureAlertMessageId,
+            targetId: shareStructureAlertTargetId,
+            message: alerts[shareStructureAlertGroup]
           }"
           @init-edit="onInitEdit"
           @move-row="changePriority"
@@ -374,10 +392,18 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
       </ConnectFieldset>
       <USeparator class="padding-x-default" />
       <ConnectFieldset label="Previous Dates" padding-class="xy-default">
+        <!-- TODO: FIX TYPING FOR HIDE ACTIONS WHEN AND GET EXAPNDED FORM VARIANT -->
         <TableShareStructureResolutionDates
           v-model:expanded="expandedResolutionDate"
           :data="resolutionDates"
           :label-overrides="tableLabels"
+          :prevent-actions="shouldPreventActions"
+          :hide-actions-when="hideRowActionsWhen"
+          :task-guard-config="{
+            messageId: resolutionDateAlertMessageId,
+            targetId: resolutionDateAlertTargetId,
+            message: alerts[resolutionDateAlertGroup]
+          }"
           @init-edit="initEditResolutionDate"
           @remove="removeResolutionDate"
           @undo="undoResolutionDate"
@@ -387,6 +413,8 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
             <FormShareResolutionDates
               v-if="activeResolutionDate"
               v-model="activeResolutionDate"
+              :state-key
+              :variant="getExpandedFormVariant(row)"
               @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
               @cancel="cleanupForm"
             />
