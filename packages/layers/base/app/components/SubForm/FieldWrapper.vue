@@ -2,6 +2,8 @@
 // wrapper/container component used in table (or similar) expansion slots when opening a sub-form
 // to be used for single fields only
 defineProps<{
+  name?: string
+  help?: string
   taskGuardConfig?: {
     message?: string
     messageId: string
@@ -16,32 +18,57 @@ defineEmits<{
 </script>
 
 <template>
-  <div>
-    <div
-      class="flex flex-col xl:flex-row gap-2 xl:gap-6 items-center px-4 xl:px-8 pb-4 xl:pb-8"
-    >
-      <slot />
-      <div class="flex flex-col xl:flex-row gap-2 xl:gap-6 justify-end items-center w-full xl:w-auto">
-        <UButton
-          variant="outline"
-          :label="$t('label.cancel')"
-          class="w-full xl:w-min justify-center"
-          @click="$emit('cancel')"
-        />
-        <UButton
-          :data-alert-focus-target="taskGuardConfig?.targetId"
-          :aria-describedby="taskGuardConfig?.messageId"
-          :label="$t('label.done')"
-          class="w-full xl:w-min justify-center"
-          @click="$emit('done')"
-        />
-      </div>
-      <FormAlertMessage
-        v-if="taskGuardConfig"
-        :id="taskGuardConfig.messageId"
-        :message="taskGuardConfig.message"
-        class="w-full xl:max-w-md order-last xl:order-none text-sm text-center xl:text-right"
+  <div class="flex flex-col gap-4">
+    <div class="w-full">
+      <UFormField
+        :name
+        :help
+        class="grow flex-1"
+      >
+        <template #default="{ error }">
+          <div class="w-full flex gap-4 items-center">
+            <slot />
+            <UButton
+              variant="outline"
+              :label="$t('label.cancel')"
+              class="justify-center hidden lg:block"
+              @click="$emit('cancel')"
+            />
+            <UButton
+              :data-alert-focus-target="taskGuardConfig?.targetId"
+              :aria-describedby="taskGuardConfig?.messageId"
+              :label="$t('label.done')"
+              class="justify-center hidden lg:block"
+              @click="$emit('done')"
+            />
+          </div>
+          <div
+            v-if="!help && !error"
+            class="h-4 mt-1"
+          />
+        </template>
+      </UFormField>
+    </div>
+    <div class="flex gap-2 lg:hidden">
+      <UButton
+        variant="outline"
+        :label="$t('label.cancel')"
+        class="w-full lg:w-min justify-center"
+        @click="$emit('cancel')"
+      />
+      <UButton
+        :data-alert-focus-target="taskGuardConfig?.targetId"
+        :aria-describedby="taskGuardConfig?.messageId"
+        :label="$t('label.done')"
+        class="w-full lg:w-min justify-center"
+        @click="$emit('done')"
       />
     </div>
+    <FormAlertMessage
+      v-if="taskGuardConfig"
+      :id="taskGuardConfig.messageId"
+      :message="taskGuardConfig.message"
+      class="w-full text-sm text-center lg:text-left"
+    />
   </div>
 </template>
