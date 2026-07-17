@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>()
 
 const schema = computed(() => getResolutionDateSchema(props.validationContext))
-const model = defineModel<ResolutionDateSchema>({ required: true })
+const model = defineModel<ResolutionDateSchema>()
 const formRef = useTemplateRef<Form<ResolutionDateSchema>>('resolution-date-form')
 
 const formTarget = 'resolution-date-form'
@@ -34,10 +34,15 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
+
+onBeforeUnmount(() => {
+  model.value = undefined
+})
 </script>
 
 <template>
   <UForm
+    v-if="model"
     ref="resolution-date-form"
     :data-testid="`${variant}-resolution-date-form`"
     :schema

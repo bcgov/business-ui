@@ -502,6 +502,7 @@ export default {
     preferredName: 'Preferred Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     previousDates: 'Previous Dates',
+    previousResolutionOrCourtOrderDatesRegardingShares: 'Previous Resolution or Court Order Dates Regarding Shares',
     priorityStaffPay: 'Priority (Add $100.00)',
     pursuantToPlanOfArrangement: 'Pursuant to a Plan of Arrangement',
     receiver: 'Receiver',

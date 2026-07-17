@@ -262,14 +262,17 @@ const hasChangedShares = computed(() => shareClasses.value.some((c) => {
   const seriesHasChanges = c.new.series.some(s => s.actions.length > 0)
   return classHasChanges || seriesHasChanges
 }))
+
 const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
   const classHasRor = c.new.hasRightsOrRestrictions || c.old?.hasRightsOrRestrictions
   const seriesHasRor = c.new.series.some(s => s.hasRightsOrRestrictions)
     || c.old?.series.some(s => s.hasRightsOrRestrictions)
   return classHasRor || seriesHasRor
 }))
+
 const requiresResolutionDate = computed(() => hasChangedShares.value && hasRightsOrRestrictions.value)
 const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
+
 const changeResolutionDateValidationContext = computed(() => {
   const dates = [...existingResolutionDates.value]
   if (resolutionDate.value) {
@@ -280,10 +283,19 @@ const changeResolutionDateValidationContext = computed(() => {
     existingResolutions: dates
   }
 })
+
 const addResolutionDateValidationContext = computed(() => ({
   hasRightsOrRestrictions: requiresResolutionDate.value,
   existingResolutions: existingResolutionDates.value
 }))
+
+watch(requiresResolutionDate, (v) => {
+  if (v) {
+    resolutionDate.value = resolutionDateSchema.parse({})
+  } else {
+    resolutionDate.value = undefined
+  }
+})
 </script>
 
 <template>
@@ -406,37 +418,39 @@ const addResolutionDateValidationContext = computed(() => ({
     </ConnectPageSection>
 
     <div v-if="requiresResolutionDate || resolutionDates.length > 0" class="w-full rounded-md ring ring-default">
-      <ConnectFieldset
-        v-if="requiresResolutionDate"
-        :label="$t('label.resolutionsOrCourtOrdersRegardingShares')"
-        padding-class="xy-default"
-      >
-        <div class="space-y-4">
-          <p>{{ $t('text.enterDateResolutionChangedShares') }}</p>
-          <p>{{ $t('label.helpWithResolutionsOrCourtOrders') }}</p>
-          <FormShareResolutionDate
-            v-if="resolutionDate"
-            v-model="resolutionDate"
-            variant="add"
-            standalone
-            :validation-context="addResolutionDateValidationContext"
-          />
-        </div>
-      </ConnectFieldset>
-      <USeparator v-if="requiresResolutionDate && resolutionDates.length > 0" class="padding-x-default" />
+      <template v-if="requiresResolutionDate && resolutionDate">
+        <ConnectFieldset
+          :label="$t('label.resolutionsOrCourtOrdersRegardingShares')"
+          padding-class="xy-default"
+        >
+          <div class="space-y-4">
+            <p>{{ $t('text.enterDateResolutionChangedShares') }}</p>
+            <p>{{ $t('label.helpWithResolutionsOrCourtOrders') }}</p>
+            <FormShareResolutionDate
+              v-model="resolutionDate"
+              variant="add"
+              standalone
+              :validation-context="addResolutionDateValidationContext"
+            />
+          </div>
+        </ConnectFieldset>
+        <USeparator v-if="resolutionDates.length > 0" class="padding-x-default" />
+      </template>
       <ConnectFieldset
         v-if="resolutionDates.length > 0"
-        :label="$t('label.previousDates')"
+        :label="requiresResolutionDate
+          ? $t('label.previousDates')
+          : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
+        "
         padding-class="xy-default"
       >
-        <!-- TODO: FIX TYPING FOR HIDE ACTIONS WHEN AND GET EXPANDED FORM VARIANT -->
         <TableShareStructureResolutionDates
           v-model:expanded="expandedResolutionDate"
           :data="resolutionDates"
           :label-overrides="tableLabels"
           :allowed-actions="tableAllowedActions"
           :prevent-actions="shouldPreventActions"
-          :hide-actions-when="hideRowActionsWhen"
+          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
           :task-guard-config="{
             messageId: resolutionDateAlertMessageId,
             targetId: resolutionDateAlertTargetId,
@@ -453,7 +467,7 @@ const addResolutionDateValidationContext = computed(() => ({
               v-model="activeResolutionDate"
               :state-key
               :validation-context="changeResolutionDateValidationContext"
-              :variant="getExpandedFormVariant(row)"
+              :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
               @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
               @cancel="cleanupForm"
             />

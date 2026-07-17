@@ -18,13 +18,10 @@ async function initData() {
     shareClasses.value = formatShareClassesUi(sc)
 
     const rdMapped = rd.map((d) => {
-      const data = rdSchema.safeParse(d).data!
+      const data = rdSchema.parse(d)
       return { old: structuredClone(data), new: structuredClone(data) }
     })
-    // resolutionDates.value = rdMapped
-
-    console.log('RESOLUTIONS: ', rd)
-    console.log('RESOLUTIONS MAPPED: ', rdMapped)
+    resolutionDates.value = rdMapped
   } catch (e) {
     console.error(e)
   } finally {
