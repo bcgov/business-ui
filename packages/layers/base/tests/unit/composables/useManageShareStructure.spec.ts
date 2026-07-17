@@ -591,4 +591,134 @@ describe('useManageShareStructure', () => {
       expect(s1.priority).toBe(1)
     })
   })
+
+  describe('Resolution Date Methods', () => {
+    describe('updateResolutionDate', () => {
+      it('should do nothing if no resolution object is passed', () => {
+        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-1')
+        const cleanup = vi.fn()
+
+        const rowData = { new: { id: 'r1', date: '2026-01-01' }, old: undefined }
+        resolutionDates.value = [rowData] as any
+
+        updateResolutionDate(createMockRow(rowData) as any, null as any, cleanup)
+
+        expect(cleanup).not.toHaveBeenCalled()
+      })
+
+      it('should not update actions or state if no data was changed', () => {
+        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-2')
+        const cleanup = vi.fn()
+
+        const rowData = {
+          new: { id: 'r1', date: '2026-01-01', isEditing: false, actions: [] },
+          old: { id: 'r1', date: '2026-01-01', isEditing: false, actions: [] }
+        }
+        resolutionDates.value = [rowData] as any
+
+        const updatedData = { id: 'r1', date: '2026-01-01', isEditing: true, actions: [] }
+        updateResolutionDate(createMockRow(rowData) as any, updatedData as any, cleanup)
+
+        expect(resolutionDates.value[0]!.new.actions).toEqual([])
+        expect(cleanup).toHaveBeenCalledTimes(1)
+      })
+
+      it('should add CHANGED action for existing rows when data is updated', () => {
+        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-3')
+        const cleanup = vi.fn()
+
+        const existingRow = {
+          new: { id: 'r1', date: '2026-01-01', actions: [] },
+          old: { id: 'r1', date: '2026-01-01' }
+        }
+        resolutionDates.value = [existingRow] as any
+
+        const updatedData = { id: 'r1', date: '2026-02-02' }
+        updateResolutionDate(createMockRow(existingRow) as any, updatedData as any, cleanup)
+
+        expect(resolutionDates.value[0]!.new.date).toBe('2026-02-02')
+        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.CHANGED)
+        expect(cleanup).toHaveBeenCalledTimes(1)
+      })
+
+      it('should add ADDED action for new rows with no old state when data is updated', () => {
+        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-4')
+        const cleanup = vi.fn()
+
+        const newRow = {
+          new: { id: 'r2', date: '2026-05-05', actions: [] },
+          old: undefined
+        }
+        resolutionDates.value = [newRow] as any
+
+        const updatedData = { id: 'r2', date: '2026-06-06' }
+        updateResolutionDate(createMockRow(newRow) as any, updatedData as any, cleanup)
+
+        expect(resolutionDates.value[0]!.new.date).toBe('2026-06-06')
+        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.ADDED)
+        expect(cleanup).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('removeResolutionDate', () => {
+      it('should add REMOVED action', () => {
+        const { resolutionDates, removeResolutionDate } = useManageShareStructure('res-test-5')
+
+        const rowData = {
+          new: { id: 'r1', date: '2026-01-01', actions: [] },
+          old: { id: 'r1' }
+        }
+        resolutionDates.value = [rowData] as any
+
+        removeResolutionDate(createMockRow(rowData) as any)
+
+        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.REMOVED)
+      })
+
+      it('should do nothing if the row to remove cannot be found', () => {
+        const { resolutionDates, removeResolutionDate } = useManageShareStructure('res-test-6')
+
+        resolutionDates.value = [
+          { new: { id: 'r1', actions: [] }, old: undefined }
+        ] as any
+
+        const nonExistentRow = createMockRow({ new: { id: 'r-missing' } }) as any
+        removeResolutionDate(nonExistentRow)
+
+        expect(resolutionDates.value[0]!.new.actions).toEqual([])
+      })
+    })
+
+    describe('undoResolutionDate', () => {
+      it('should revert the new state back to the old state', () => {
+        const { resolutionDates, undoResolutionDate } = useManageShareStructure('res-test-7')
+
+        const rowData = {
+          new: { id: 'r1', date: '2026-12-25', actions: [ActionType.CHANGED] },
+          old: { id: 'r1', date: '2026-01-01', actions: [] }
+        }
+        resolutionDates.value = [rowData] as any
+
+        undoResolutionDate(createMockRow(rowData) as any)
+
+        expect(resolutionDates.value[0]!.new.date).toBe('2026-01-01')
+        expect(resolutionDates.value[0]!.new.actions).toEqual([])
+      })
+
+      it('should do nothing if no old state found', () => {
+        const { resolutionDates, undoResolutionDate } = useManageShareStructure('res-test-8')
+
+        const rowData = {
+          new: { id: 'r2', date: '2026-05-05', actions: [ActionType.ADDED] },
+          old: undefined
+        }
+        resolutionDates.value = [rowData] as any
+
+        undoResolutionDate(createMockRow(rowData) as any)
+
+        expect(resolutionDates.value[0]!.new.date).toBe('2026-05-05')
+        expect(resolutionDates.value[0]!.new.actions).toEqual([ActionType.ADDED])
+      })
+    })
+  })
 })

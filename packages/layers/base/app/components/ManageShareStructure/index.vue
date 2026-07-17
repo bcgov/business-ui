@@ -296,7 +296,7 @@ const addResolutionDateValidationContext = computed(() => ({
 
 watch(requiresResolutionDate, (v) => {
   if (v) {
-    resolutionDate.value = resolutionDateSchema.parse({})
+    resolutionDate.value = getResolutionDateSchema().parse({})
   } else {
     resolutionDate.value = undefined
   }
@@ -422,7 +422,10 @@ watch(requiresResolutionDate, (v) => {
       </template>
     </ConnectPageSection>
 
-    <div v-if="requiresResolutionDate || resolutionDates.length > 0" class="w-full rounded-md ring ring-default">
+    <div
+      v-if="requiresResolutionDate || existingResolutionDates.length > 0"
+      class="w-full rounded-md ring ring-default"
+    >
       <template v-if="requiresResolutionDate && resolutionDate">
         <ConnectFieldset
           :label="$t('label.resolutionsOrCourtOrdersRegardingShares')"
@@ -443,10 +446,10 @@ watch(requiresResolutionDate, (v) => {
             />
           </div>
         </ConnectFieldset>
-        <USeparator v-if="resolutionDates.length > 0" class="padding-x-default" />
+        <USeparator v-if="existingResolutionDates.length > 0" class="padding-x-default" />
       </template>
       <ConnectFieldset
-        v-if="resolutionDates.length > 0"
+        v-if="existingResolutionDates.length > 0"
         :label="requiresResolutionDate
           ? $t('label.previousDates')
           : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
