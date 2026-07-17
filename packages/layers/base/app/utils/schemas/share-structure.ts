@@ -272,8 +272,8 @@ export function getResolutionDateSchema(context?: {
       if (!isDateEmpty) {
         const zone = 'America/Vancouver'
         const today = DateTime.now().setZone(zone).startOf('day')
-        const inputDate = DateTime.fromISO(date, { zone }).startOf('day')
-        if (inputDate.isValid && inputDate > today) {
+        const inputDatetime = DateTime.fromISO(date, { zone }).startOf('day')
+        if (inputDatetime.isValid && inputDatetime > today) {
           ctx.addIssue({
             code: 'custom',
             path: ['date'],

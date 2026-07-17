@@ -430,7 +430,11 @@ watch(requiresResolutionDate, (v) => {
         >
           <div class="space-y-4">
             <p>{{ $t('text.enterDateResolutionChangedShares') }}</p>
-            <p>{{ $t('label.helpWithResolutionsOrCourtOrders') }}</p>
+            <HelpExpansion
+              :label="$t('label.helpWithResolutionsOrCourtOrders')"
+              :close-label="$t('label.hideHelpWithResolutionsOrCourtOrders')"
+              t-key="text.resolutionDateHelp"
+            />
             <FormShareResolutionDate
               v-model="resolutionDate"
               variant="add"

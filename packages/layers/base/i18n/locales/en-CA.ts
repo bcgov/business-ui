@@ -443,6 +443,8 @@ export default {
     goToMyBusinessRegistry: 'Go to My Business Registry',
     helpWithResolutionsOrCourtOrders: 'Help with Resolutions or Court Orders',
     hideDocuments: 'Hide Documents',
+    hideHelp: 'Hide Help',
+    hideHelpWithResolutionsOrCourtOrders: 'Hide Help with Resolutions or Court Orders',
     history: 'History',
     incorporation: 'Incorporation',
     incorporationDate: 'Incorporation Date',
@@ -724,6 +726,10 @@ export default {
     preExistingCompanyProvisionsDescription: 'A pre-existing company is a company that was incorporated in British Columbia before March 29, 2004. The regulations within legislation contain provisions that apply to a pre-existing company. These provisions can be removed by filing a Notice of Alteration.',
     refreshScreenOrContact: 'Refresh this screen in a few minutes or you can come back later to check on the progress. If this issue persists, please contact us.',
     requiredToRetainDissolution: 'You are required to retain a copy of all the dissolution documents in your records book.',
+    resolutionDateHelp: [
+      'Since your share structure contains a class or series of shares with special rights or restrictions, you must have passed a resolution or have a court order to change your share structure.',
+      '{boldStart}Note:{boldEnd} All changes must have the same Resolution or Court Order Date. To enter changes that occurred on multiple dates you must file and pay for each change separately.'
+    ],
     reviewReasonsYourFilingWasRejected: 'Review the reasons your filing was rejected below',
     selectWayToCorrectName: 'Select one of the following ways to correct the company name:',
     seriesNameHelp: 'Only enter the series name. The word “Shares” will be added automatically.',
