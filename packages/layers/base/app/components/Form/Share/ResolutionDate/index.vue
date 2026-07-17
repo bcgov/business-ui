@@ -34,10 +34,6 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
-
-onBeforeUnmount(() => {
-  model.value = undefined
-})
 </script>
 
 <template>

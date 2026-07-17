@@ -2,14 +2,21 @@
 import type { ManageShareStructureProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
 
-const {
-  stateKey = 'manage-share-structure',
-  allowedActions,
-  labelOverrides,
-  variant = 'default',
-  preventActions = false,
-  actionPreventedSignal = 0
-} = defineProps<ManageShareStructureProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+const props = withDefaults(
+  defineProps<
+    ManageShareStructureProps & {
+      preventActions?: boolean
+      actionPreventedSignal?: number
+    }
+  >(),
+  {
+    stateKey: 'manage-share-structure',
+    variant: 'default',
+    preventActions: false,
+    actionPreventedSignal: 0,
+    collectResolutionDate: true
+  }
+)
 
 const emit = defineEmits<{
   'action-prevented': []
@@ -18,7 +25,7 @@ const emit = defineEmits<{
 const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class')
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series')
 const shouldPreventActions = computed(() => {
-  return !!activeClass.value || !!activeSeries.value || !!activeResolutionDate.value || preventActions
+  return !!activeClass.value || !!activeSeries.value || !!activeResolutionDate.value || props.preventActions
 })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
@@ -46,7 +53,7 @@ const {
   updateResolutionDate,
   removeResolutionDate,
   undoResolutionDate
-} = useManageShareStructure(stateKey)
+} = useManageShareStructure(props.stateKey)
 
 const { t } = useI18n()
 const {
@@ -54,7 +61,7 @@ const {
   setAlert,
   clearAlert,
   attachAlerts
-} = useFilingAlerts(stateKey)
+} = useFilingAlerts(props.stateKey)
 const shareStructureAlertGroup = 'share-structure-table'
 const {
   messageId: shareStructureAlertMessageId,
@@ -70,34 +77,34 @@ const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
-watch(() => actionPreventedSignal, (value) => {
+watch(() => props.actionPreventedSignal, (value) => {
   if (value) {
     setActiveFormAlert()
   }
 })
 
 const showAddButton = computed(() => {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return false
   }
-  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+  return !props.allowedActions || props.allowedActions.includes(ManageAllowedAction.ADD)
 })
 
 const tableLabels = computed(() => {
-  if (labelOverrides) {
-    return labelOverrides
+  if (props.labelOverrides) {
+    return props.labelOverrides
   }
-  if (variant === 'correct' || variant === 'correct-readonly') {
+  if (props.variant === 'correct' || props.variant === 'correct-readonly') {
     return getCorrectionLabelOverrides()
   }
   return undefined
 })
 
 const tableAllowedActions = computed(() => {
-  if (allowedActions) {
-    return allowedActions
+  if (props.allowedActions) {
+    return props.allowedActions
   }
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return []
   }
   return undefined
@@ -197,7 +204,7 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return true
   }
 
@@ -227,7 +234,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
     return 'add'
   }
 
-  if (variant === 'correct') {
+  if (props.variant === 'correct') {
     return 'correct'
   }
 

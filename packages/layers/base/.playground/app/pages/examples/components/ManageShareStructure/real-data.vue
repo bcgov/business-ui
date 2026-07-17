@@ -91,6 +91,7 @@ onMounted(() => {
           v-model:rd="formState.resolutionDate"
           :loading
           subject="Share Class"
+          variant="correct"
         />
       </template>
     </ConnectPageSection>
