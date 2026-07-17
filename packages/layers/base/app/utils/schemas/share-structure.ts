@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DateTime } from 'luxon'
 
 export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
   const t = useNuxtApp().$i18n.t
@@ -265,6 +266,21 @@ export function getResolutionDateSchema(context?: {
           message: t('validation.resolutionDate.alreadyAdded')
         })
         return
+      }
+
+      // Date must not be a future date
+      if (!isDateEmpty) {
+        const zone = 'America/Vancouver'
+        const today = DateTime.now().setZone(zone).startOf('day')
+        const inputDate = DateTime.fromISO(date, { zone }).startOf('day')
+        if (inputDate.isValid && inputDate > today) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['date'],
+            message: t('validation.resolutionDate.cantBeInFuture')
+          })
+          return
+        }
       }
     }
   })

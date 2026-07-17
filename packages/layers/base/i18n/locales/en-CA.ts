@@ -790,8 +790,9 @@ export default {
     onlyWholeNumbers: 'Only enter whole numbers',
     pleaseCompleteRequiredInfo: '< Please complete required information',
     resolutionDate: {
-      requiredWithSpecialRightsOrRestrictions: 'Required when changing a share structure with a class or series of shares with special rights or restrictions.',
-      alreadyAdded: 'This date has already been added. You cannot enter it again.'
+      alreadyAdded: 'This date has already been added. You cannot enter it again.',
+      cantBeInFuture: 'Date cannot be a future date.',
+      requiredWithSpecialRightsOrRestrictions: 'Required when changing a share structure with a class or series of shares with special rights or restrictions.'
     },
     role: {
       min: 'Choose at least one role'
