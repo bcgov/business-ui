@@ -3,12 +3,7 @@ import type { ManageShareStructureProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
 
 const props = withDefaults(
-  defineProps<
-    ManageShareStructureProps & {
-      preventActions?: boolean
-      actionPreventedSignal?: number
-    }
-  >(),
+  defineProps<ManageShareStructureProps>(),
   {
     stateKey: 'manage-share-structure',
     variant: 'default',
@@ -277,7 +272,10 @@ const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
   return classHasRor || seriesHasRor
 }))
 
-const requiresResolutionDate = computed(() => hasChangedShares.value && hasRightsOrRestrictions.value)
+const requiresResolutionDate = computed(() => hasChangedShares.value
+  && hasRightsOrRestrictions.value
+  && props.collectResolutionDate
+)
 const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
 
 const changeResolutionDateValidationContext = computed(() => {

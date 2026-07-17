@@ -6,6 +6,7 @@ definePageMeta({
 
 const service = useBusinessService()
 const identifier = ref('')
+const collectResolutionDate = ref(true)
 const loading = ref(false)
 const { shareClasses, resolutionDates } = useManageShareStructure()
 const rdSchema = getResolutionDateSchema()
@@ -83,6 +84,7 @@ onMounted(() => {
             :loading
             @click="reset"
           />
+          <USwitch v-model="collectResolutionDate" label="Collect Date on Change" />
         </div>
         <ManageShareStructure
           v-model:active-class="formState.activeClass"
@@ -92,6 +94,7 @@ onMounted(() => {
           :loading
           subject="Share Class"
           variant="correct"
+          :collect-resolution-date="collectResolutionDate"
         />
       </template>
     </ConnectPageSection>
