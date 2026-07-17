@@ -146,6 +146,10 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Form/DocumentUpload/invalid')
   },
   {
+    label: 'FormEffectiveDate',
+    to: localePath('/examples/components/Form/EffectiveDate')
+  },
+  {
     label: 'FormBusinessName',
     to: localePath('/examples/components/Form/BusinessName')
   },
