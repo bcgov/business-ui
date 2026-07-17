@@ -536,6 +536,8 @@ export default {
     shares: 'Shares',
     shareSeries: 'Share Series',
     shareStructure: 'Share Structure',
+    showAll: 'Show All',
+    showLess: 'Show Less',
     seriesName: 'Series Name',
     staffDashboard: 'Staff Dashboard',
     staffPayment: 'Staff Payment',
