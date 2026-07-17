@@ -28,6 +28,7 @@ let editSubject = ''
 const expandedResolutionDate = ref<ExpandedState | undefined>(undefined)
 const resolutionDateSchema = getResolutionDateSchema()
 const activeResolutionDate = defineModel<ActiveResolutionDateSchema | undefined>('active-rd')
+const resolutionDate = defineModel<ResolutionDateSchema | undefined>('rd')
 
 const {
   expandedState,
@@ -237,8 +238,6 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
   return 'change'
 }
 
-const date = ref('')
-
 function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
   // prevent actions if a sub form is open
   if (shouldPreventActions.value) {
@@ -258,10 +257,32 @@ function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
   expandedResolutionDate.value = { [row.id]: true }
 }
 
-// TODO: FIGURE OUT HOW TO INCLUDE THE DATE FROM THE OPEN INPUT IN HERE AS WELL
-const changeResolutionDateValidationContext = computed(() => ({
-  isEditingExisting: true,
-  existingResolutions: resolutionDates.value.map(rd => rd.new)
+const hasChangedShares = computed(() => shareClasses.value.some((c) => {
+  const classHasChanges = c.new.actions.length > 0
+  const seriesHasChanges = c.new.series.some(s => s.actions.length > 0)
+  return classHasChanges || seriesHasChanges
+}))
+const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
+  const classHasRor = c.new.hasRightsOrRestrictions || c.old?.hasRightsOrRestrictions
+  const seriesHasRor = c.new.series.some(s => s.hasRightsOrRestrictions)
+    || c.old?.series.some(s => s.hasRightsOrRestrictions)
+  return classHasRor || seriesHasRor
+}))
+const requiresResolutionDate = computed(() => hasChangedShares.value && hasRightsOrRestrictions.value)
+const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
+const changeResolutionDateValidationContext = computed(() => {
+  const dates = [...existingResolutionDates.value]
+  if (resolutionDate.value) {
+    dates.push(resolutionDate.value)
+  }
+  return {
+    isEditingExisting: true,
+    existingResolutions: dates
+  }
+})
+const addResolutionDateValidationContext = computed(() => ({
+  hasRightsOrRestrictions: requiresResolutionDate.value,
+  existingResolutions: existingResolutionDates.value
 }))
 </script>
 
@@ -384,20 +405,30 @@ const changeResolutionDateValidationContext = computed(() => ({
       </template>
     </ConnectPageSection>
 
-    <div class="w-full rounded-md ring ring-default">
-      <ConnectFieldset label="Resolutions or Court Orders Regarding Shares" padding-class="xy-default">
+    <div v-if="requiresResolutionDate || resolutionDates.length > 0" class="w-full rounded-md ring ring-default">
+      <ConnectFieldset
+        v-if="requiresResolutionDate"
+        :label="$t('label.resolutionsOrCourtOrdersRegardingShares')"
+        padding-class="xy-default"
+      >
         <div class="space-y-4">
-          <p>Enter the date of the resolution or court order that altered the company’s share structure.</p>
-          <p>Help with Resolutions or Court Orders</p>
-          <ConnectInputDate
-            id="resolution-date"
-            v-model="date"
-            label="Resolution or Court Order Date"
+          <p>{{ $t('text.enterDateResolutionChangedShares') }}</p>
+          <p>{{ $t('label.helpWithResolutionsOrCourtOrders') }}</p>
+          <FormShareResolutionDate
+            v-if="resolutionDate"
+            v-model="resolutionDate"
+            variant="add"
+            standalone
+            :validation-context="addResolutionDateValidationContext"
           />
         </div>
       </ConnectFieldset>
-      <USeparator class="padding-x-default" />
-      <ConnectFieldset label="Previous Dates" padding-class="xy-default">
+      <USeparator v-if="requiresResolutionDate && resolutionDates.length > 0" class="padding-x-default" />
+      <ConnectFieldset
+        v-if="resolutionDates.length > 0"
+        :label="$t('label.previousDates')"
+        padding-class="xy-default"
+      >
         <!-- TODO: FIX TYPING FOR HIDE ACTIONS WHEN AND GET EXPANDED FORM VARIANT -->
         <TableShareStructureResolutionDates
           v-model:expanded="expandedResolutionDate"
@@ -417,7 +448,7 @@ const changeResolutionDateValidationContext = computed(() => ({
           @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
         >
           <template #expanded="{ row }">
-            <FormShareResolutionDates
+            <FormShareResolutionDate
               v-if="activeResolutionDate"
               v-model="activeResolutionDate"
               :state-key

@@ -21,7 +21,7 @@ async function initData() {
       const data = rdSchema.safeParse(d).data!
       return { old: structuredClone(data), new: structuredClone(data) }
     })
-    resolutionDates.value = rdMapped
+    // resolutionDates.value = rdMapped
 
     console.log('RESOLUTIONS: ', rd)
     console.log('RESOLUTIONS MAPPED: ', rdMapped)
@@ -41,15 +41,18 @@ const formState = reactive<{
   activeClass: ActiveShareClassSchema | undefined
   activeSeries: ActiveShareSeriesSchema | undefined
   activeResolutionDate: ActiveResolutionDateSchema | undefined
+  resolutionDate: ResolutionDateSchema | undefined
 }>({
   activeClass: undefined,
   activeSeries: undefined,
-  activeResolutionDate: undefined
+  activeResolutionDate: undefined,
+  resolutionDate: undefined
 })
 
 onMounted(() => {
   identifier.value = 'BC1230023'
   initData()
+  formState.resolutionDate = rdSchema.parse({})
 })
 </script>
 
@@ -88,6 +91,7 @@ onMounted(() => {
           v-model:active-class="formState.activeClass"
           v-model:active-series="formState.activeSeries"
           v-model:active-rd="formState.activeResolutionDate"
+          v-model:rd="formState.resolutionDate"
           :loading
           subject="Share Class"
         />

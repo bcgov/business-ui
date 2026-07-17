@@ -4,7 +4,8 @@ import type { Form, FormErrorEvent } from '@nuxt/ui'
 const props = defineProps<{
   variant: FormVariant
   name?: string
-  stateKey: string
+  stateKey?: string
+  standalone?: boolean
   validationContext?: {
     hasRightsOrRestrictions?: boolean
     isEditingExisting?: boolean
@@ -17,12 +18,13 @@ const emit = defineEmits<{
   cancel: []
 }>()
 
-const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
-const formTarget = 'resolution-date-form'
 const schema = computed(() => getResolutionDateSchema(props.validationContext))
-
 const model = defineModel<ResolutionDateSchema>({ required: true })
 const formRef = useTemplateRef<Form<ResolutionDateSchema>>('resolution-date-form')
+
+const formTarget = 'resolution-date-form'
+const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
+const { targetId, messageId } = props.standalone ? { targetId: '', messageId: '' } : attachAlerts(formTarget, model)
 
 async function onDone() {
   try {
@@ -32,8 +34,6 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
-
-const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
 
 <template>
@@ -47,6 +47,9 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
     @keydown.enter.prevent.stop="onDone"
   >
     <SubFormFieldWrapper
+      v-if="!standalone"
+      :help="$t('text.formatYYYYMMDD')"
+      name="date"
       :task-guard-config="{
         message: alerts[formTarget],
         messageId,
@@ -55,14 +58,23 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
       @done="onDone"
       @cancel="$emit('cancel')"
     >
-      <UFormField :help="$t('text.formatYYYYMMDD')" name="date">
-        <ConnectInputDate
-          id="resolution-date"
-          v-model="model.date"
-          :label="$t('label.resolutionOrCourtOrderDate')"
-          autofocus
-        />
-      </UFormField>
+      <ConnectInputDate
+        :id="`${variant}-resolution-date`"
+        v-model="model.date"
+        :label="$t('label.resolutionOrCourtOrderDate')"
+      />
     </SubFormFieldWrapper>
+    <UFormField
+      v-else
+      name="date"
+      :help="$t('text.formatYYYYMMDD')"
+      class="grow flex-1"
+    >
+      <ConnectInputDate
+        id="resolution-date"
+        v-model="model.date"
+        :label="$t('label.resolutionOrCourtOrderDate')"
+      />
+    </UFormField>
   </UForm>
 </template>
