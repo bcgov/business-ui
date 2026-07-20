@@ -5,7 +5,10 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   const { baseModal } = useModal()
   const { t } = useNuxtApp().$i18n
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
-  const tableState = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-table-state`, () => [])
+  const shareClasses = useState<TableBusinessState<ShareClassSchema>[]>(`${stateKey}-share-classes-state`, () => [])
+  const resolutionDates = useState<TableBusinessState<ResolutionDateSchema>[]>(`${stateKey}-resolution-dates-state`,
+    () => []
+  )
 
   function addNewShareClass(shareClass: ActiveShareClassSchema) {
     if (!shareClass) {
@@ -20,24 +23,24 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
 
     // place new row at the beginning of the list
-    tableState.value = [
+    shareClasses.value = [
       JSON.parse(JSON.stringify(newState)),
-      ...tableState.value
+      ...shareClasses.value
     ]
 
     // increase every row priority that was not the row just added by 1
-    tableState.value.filter(item => item.new.id !== shareClass.id).forEach(item => item.new.priority++)
+    shareClasses.value.filter(item => item.new.id !== shareClass.id).forEach(item => item.new.priority++)
   }
 
   function removeShareClass(row: TableBusinessRow<ShareClassSchema>, cleanupForm?: () => void): void {
     const removedPriority = row.original.new.priority
-    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+    const rowToUpdate = shareClasses.value.find(item => item.new.id === row.original.new.id)
 
     const applyEdits = () => {
       // if it was a newly added row, fully remove and update other row priorities
       if (row.original.old === undefined) {
-        tableState.value = tableState.value.filter(item => item.new.id !== row.original.new.id)
-        tableState.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
+        shareClasses.value = shareClasses.value.filter(item => item.new.id !== row.original.new.id)
+        shareClasses.value.forEach(item => item.new.priority > removedPriority && item.new.priority--)
       } else {
         // if it was an existing row, add the removed action
         if (rowToUpdate) {
@@ -71,7 +74,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
   }
 
   function undoShareClass(row: TableBusinessRow<ShareClassSchema>): void {
-    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+    const rowToUpdate = shareClasses.value.find(item => item.new.id === row.original.new.id)
     const currentPriority = rowToUpdate?.new.priority
     if (rowToUpdate && row.original.old && currentPriority) {
       rowToUpdate.new = {
@@ -90,7 +93,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       return
     }
 
-    const rowToUpdate = tableState.value.find(item => item.new.id === row.original.new.id)
+    const rowToUpdate = shareClasses.value.find(item => item.new.id === row.original.new.id)
 
     if (rowToUpdate) {
       // only apply edits if changes have been made, exclude series from the equality check
@@ -145,7 +148,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       return
     }
 
-    const parentRow = tableState.value.find(item => item.new.id === row.original.new.id)
+    const parentRow = shareClasses.value.find(item => item.new.id === row.original.new.id)
     const seriesArray = parentRow?.new.series
 
     if (seriesArray) {
@@ -172,7 +175,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       return
     }
 
-    const parentRow = tableState.value.find(item => item.new.id === parentId)
+    const parentRow = shareClasses.value.find(item => item.new.id === parentId)
 
     if (parentRow) {
       const seriesIndex = parentRow.new.series.findIndex(s => s.id === row.original.new.id)
@@ -197,7 +200,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       return
     }
 
-    const parentRow = tableState.value.find(item => item.new.id === parentId)
+    const parentRow = shareClasses.value.find(item => item.new.id === parentId)
 
     if (parentRow) {
       const seriesIndex = parentRow.new.series.findIndex(s => s.id === row.original.new.id)
@@ -221,7 +224,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
       return
     }
 
-    const parentRow = tableState.value.find(item => item.new.id === parentId)
+    const parentRow = shareClasses.value.find(item => item.new.id === parentId)
     if (!parentRow) {
       return
     }
@@ -248,8 +251,8 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     const parentRowId = row.getParentRow()?.original.new.id
 
     const classOrSeriesList = isClass
-      ? tableState.value
-      : tableState.value.find(item => item.new.id === parentRowId)?.new.series
+      ? shareClasses.value
+      : shareClasses.value.find(item => item.new.id === parentRowId)?.new.series
 
     if (!classOrSeriesList || classOrSeriesList.length < 2) {
       return
@@ -269,9 +272,49 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     }
   }
 
+  function updateResolutionDate(
+    row: TableBusinessRow<ResolutionDateSchema>,
+    resolution: ActiveResolutionDateSchema,
+    cleanupForm: () => void
+  ) {
+    if (!resolution) {
+      return
+    }
+
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+
+    if (rowToUpdate) {
+      // only apply edits if changes have been made, exclude isEditing from the equality check
+      if (!isEqual(omit(rowToUpdate.new, ['isEditing']), omit(resolution, ['isEditing']))) {
+        rowToUpdate.new = {
+          ...resolution,
+          actions: row.original.old ? [ActionType.CHANGED] : [ActionType.ADDED]
+        }
+      }
+    }
+    cleanupForm()
+  }
+
+  function removeResolutionDate(row: TableBusinessRow<ResolutionDateSchema>): void {
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+    if (!rowToUpdate) {
+      return
+    }
+    rowToUpdate.new.actions = [ActionType.REMOVED]
+  }
+
+  function undoResolutionDate(row: TableBusinessRow<ResolutionDateSchema>): void {
+    const rowToUpdate = resolutionDates.value.find(item => item.new.id === row.original.new.id)
+    if (!rowToUpdate || !rowToUpdate.old) {
+      return
+    }
+    rowToUpdate.new = structuredClone(toRaw(rowToUpdate.old))
+  }
+
   return {
     expandedState,
-    tableState,
+    shareClasses,
+    resolutionDates,
     addNewShareClass,
     removeShareClass,
     undoShareClass,
@@ -280,6 +323,9 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     updateShareSeries,
     undoShareSeries,
     removeShareSeries,
-    changePriority
+    changePriority,
+    updateResolutionDate,
+    removeResolutionDate,
+    undoResolutionDate
   }
 }

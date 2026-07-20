@@ -282,6 +282,33 @@ export const useBusinessQuery = () => {
     return useQuery(() => partiesOptions(businessId, query, options as DefineOptions<{ parties: OrgPerson[] }>))
   }
 
+  function resolutionsOptions(
+    businessId: MaybeRefOrGetter<string>,
+    isSpecial = false,
+    options?: DefineOptions<{ resolutions: Resolution[] }>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<{ resolutions: Resolution[] }>(`businesses/${toValue(businessId)}/resolutions`, {
+        query: isSpecial ? { type: 'SPECIAL' } : undefined
+      }),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.resolutions(toValue(businessId), isSpecial)
+    })
+  }
+
+  function resolutions(
+    businessId: MaybeRefOrGetter<string>,
+    isSpecial = false,
+    options?: QueryOptions<{ resolutions: Resolution[] }>
+  ) {
+    return useQuery(() => resolutionsOptions(
+      businessId,
+      isSpecial,
+      options as DefineOptions<{ resolutions: Resolution[] }>)
+    )
+  }
+
   function shareClassOptions(
     businessId: MaybeRefOrGetter<string>,
     classId?: string | number,
@@ -370,8 +397,10 @@ export const useBusinessQuery = () => {
     linkedNameRequestOptions,
     parties,
     partiesOptions,
-    shareClassOptions,
+    resolutions,
+    resolutionsOptions,
     shareClasses,
+    shareClassOptions,
     tasks,
     tasksOptions,
     // auth api queries

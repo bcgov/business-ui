@@ -27,7 +27,8 @@ mockNuxtImport('useManageOffices', () => () => ({
 
 mockNuxtImport('useManageShareStructure', () => () => ({
   expandedState: ref<undefined>(undefined),
-  tableState: ref([]),
+  shareClasses: ref([]),
+  resolutionDates: ref([]),
   addNewShareClass: vi.fn(),
   removeShareClass: vi.fn(),
   undoShareClass: vi.fn(),

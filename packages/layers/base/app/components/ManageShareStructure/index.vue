@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import type { ManageShareStructureProps } from '#business/app/interfaces'
+import type { ExpandedState } from '@tanstack/vue-table'
 
-const {
-  stateKey = 'manage-share-structure',
-  allowedActions,
-  labelOverrides,
-  variant = 'default',
-  preventActions = false,
-  actionPreventedSignal = 0
-} = defineProps<ManageShareStructureProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+const props = withDefaults(
+  defineProps<ManageShareStructureProps>(),
+  {
+    stateKey: 'manage-share-structure',
+    variant: 'default',
+    preventActions: false,
+    actionPreventedSignal: 0,
+    collectResolutionDate: true
+  }
+)
 
 const emit = defineEmits<{
   'action-prevented': []
@@ -17,16 +20,22 @@ const emit = defineEmits<{
 const activeClass = defineModel<ActiveShareClassSchema | undefined>('active-class')
 const activeSeries = defineModel<ActiveShareSeriesSchema | undefined>('active-series')
 const shouldPreventActions = computed(() => {
-  return !!activeClass.value || !!activeSeries.value || preventActions
+  return !!activeClass.value || !!activeSeries.value || !!activeResolutionDate.value || props.preventActions
 })
 const addingShareClass = ref(false)
 const addingSeriesToClassId = ref<string | undefined>(undefined)
-let currentEditingRow: ShareClassSchema | ShareSeriesSchema | null = null
+let currentEditingRow: ShareClassSchema | ShareSeriesSchema | ResolutionDateSchema | null = null
 let editSubject = ''
+
+const expandedResolutionDate = ref<ExpandedState | undefined>(undefined)
+const resolutionDateSchema = getResolutionDateSchema()
+const activeResolutionDate = defineModel<ActiveResolutionDateSchema | undefined>('active-rd')
+const resolutionDate = defineModel<ResolutionDateSchema | undefined>('rd')
 
 const {
   expandedState,
-  tableState,
+  shareClasses,
+  resolutionDates,
   addNewShareClass,
   removeShareClass,
   undoShareClass,
@@ -35,8 +44,11 @@ const {
   undoShareSeries,
   removeShareSeries,
   addNewShareSeries,
-  changePriority
-} = useManageShareStructure(stateKey)
+  changePriority,
+  updateResolutionDate,
+  removeResolutionDate,
+  undoResolutionDate
+} = useManageShareStructure(props.stateKey)
 
 const { t } = useI18n()
 const {
@@ -44,42 +56,50 @@ const {
   setAlert,
   clearAlert,
   attachAlerts
-} = useFilingAlerts(stateKey)
-const tableTarget = 'share-structure-table'
-const { messageId, targetId } = attachAlerts(tableTarget, activeClass)
+} = useFilingAlerts(props.stateKey)
+const shareStructureAlertGroup = 'share-structure-table'
+const {
+  messageId: shareStructureAlertMessageId,
+  targetId: shareStructureAlertTargetId
+} = attachAlerts(shareStructureAlertGroup, activeClass)
+const resolutionDateAlertGroup = 'resolution-date-table'
+const {
+  messageId: resolutionDateAlertMessageId,
+  targetId: resolutionDateAlertTargetId
+} = attachAlerts(resolutionDateAlertGroup, activeResolutionDate)
 const { setAlertText } = useConnectButtonControl()
 const { baseModal } = useModal()
 const activeClassSchema = getActiveShareClassSchema()
 const activeSeriesSchema = getActiveShareSeriesSchema()
 
-watch(() => actionPreventedSignal, (value) => {
+watch(() => props.actionPreventedSignal, (value) => {
   if (value) {
     setActiveFormAlert()
   }
 })
 
 const showAddButton = computed(() => {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return false
   }
-  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+  return !props.allowedActions || props.allowedActions.includes(ManageAllowedAction.ADD)
 })
 
 const tableLabels = computed(() => {
-  if (labelOverrides) {
-    return labelOverrides
+  if (props.labelOverrides) {
+    return props.labelOverrides
   }
-  if (variant === 'correct' || variant === 'correct-readonly') {
+  if (props.variant === 'correct' || props.variant === 'correct-readonly') {
     return getCorrectionLabelOverrides()
   }
   return undefined
 })
 
 const tableAllowedActions = computed(() => {
-  if (allowedActions) {
-    return allowedActions
+  if (props.allowedActions) {
+    return props.allowedActions
   }
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return []
   }
   return undefined
@@ -87,7 +107,7 @@ const tableAllowedActions = computed(() => {
 
 const classValidationContext = computed(() => {
   const currentId = activeClass.value?.id
-  const existingNames = tableState.value
+  const existingNames = shareClasses.value
     .filter(item => item.new.id !== currentId)
     .map(item => item.new.name.toLowerCase())
 
@@ -100,6 +120,9 @@ function setActiveFormAlert() {
   }
   if (activeSeries.value !== undefined) {
     setAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+  if (activeResolutionDate.value !== undefined) {
+    setAlert('resolution-date-form', t('text.finishTaskBeforeOtherChanges'))
   }
 }
 
@@ -153,6 +176,8 @@ function cleanupForm() {
   addingSeriesToClassId.value = undefined
   activeClass.value = undefined
   activeSeries.value = undefined
+  activeResolutionDate.value = undefined
+  expandedResolutionDate.value = undefined
 }
 
 function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>) {
@@ -174,7 +199,7 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
     return true
   }
 
@@ -204,7 +229,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
     return 'add'
   }
 
-  if (variant === 'correct') {
+  if (props.variant === 'correct') {
     return 'correct'
   }
 
@@ -214,13 +239,75 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
 
   return 'change'
 }
+
+function initEditResolutionDate(row: TableBusinessRow<ResolutionDateSchema>) {
+  // prevent actions if a sub form is open
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
+    return
+  }
+
+  const parsedData = resolutionDateSchema.safeParse({ ...row.original.new })
+  const data = parsedData.success
+    ? parsedData.data
+    : JSON.parse(JSON.stringify({ ...row.original.new }))
+
+  activeResolutionDate.value = data
+  currentEditingRow = row.original.new
+  currentEditingRow.isEditing = true
+  expandedResolutionDate.value = { [row.id]: true }
+}
+
+const hasChangedShares = computed(() => shareClasses.value.some((c) => {
+  const classHasChanges = c.new.actions.length > 0
+  const seriesHasChanges = c.new.series.some(s => s.actions.length > 0)
+  return classHasChanges || seriesHasChanges
+}))
+
+const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
+  const classHasRor = c.new.hasRightsOrRestrictions || c.old?.hasRightsOrRestrictions
+  const seriesHasRor = c.new.series.some(s => s.hasRightsOrRestrictions)
+    || c.old?.series.some(s => s.hasRightsOrRestrictions)
+  return classHasRor || seriesHasRor
+}))
+
+const requiresResolutionDate = computed(() => hasChangedShares.value
+  && hasRightsOrRestrictions.value
+  && props.collectResolutionDate
+)
+const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
+
+const changeResolutionDateValidationContext = computed(() => {
+  const dates = [...existingResolutionDates.value]
+  if (resolutionDate.value) {
+    dates.push(resolutionDate.value)
+  }
+  return {
+    isEditingExisting: true,
+    existingResolutions: dates
+  }
+})
+
+const addResolutionDateValidationContext = computed(() => ({
+  hasRightsOrRestrictions: requiresResolutionDate.value,
+  existingResolutions: existingResolutionDates.value
+}))
+
+watch(requiresResolutionDate, (v) => {
+  if (v) {
+    resolutionDate.value = getResolutionDateSchema().parse({})
+  } else {
+    resolutionDate.value = undefined
+  }
+})
 </script>
 
 <template>
   <component
     :is="sectionTitle ? 'section' : 'div'"
     class="space-y-4 sm:space-y-6"
-    data-testid="manage-parties"
+    data-testid="manage-share-structure"
     @pointerdown="clearAllAlerts"
     @keydown="clearAllAlerts"
   >
@@ -246,8 +333,8 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
             'variant': 'outline',
             'icon': 'i-mdi-plus',
             // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
-            'data-alert-focus-target': targetId,
-            'aria-describedby': messageId,
+            'data-alert-focus-target': shareStructureAlertTargetId,
+            'aria-describedby': shareStructureAlertMessageId,
             'onClick': () => initAddItem()
           }
         ]
@@ -270,7 +357,7 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
         />
         <TableShareStructure
           v-model:expanded="expandedState"
-          :data="tableState"
+          :data="shareClasses"
           :loading
           :empty-text="emptyText"
           :allowed-actions="tableAllowedActions"
@@ -278,9 +365,9 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
           :label-overrides="tableLabels"
           :hide-actions-when="hideRowActionsWhen"
           :task-guard-config="{
-            messageId,
-            targetId,
-            message: alerts[tableTarget]
+            messageId: shareStructureAlertMessageId,
+            targetId: shareStructureAlertTargetId,
+            message: alerts[shareStructureAlertGroup]
           }"
           @init-edit="onInitEdit"
           @move-row="changePriority"
@@ -334,5 +421,71 @@ function getExpandedFormVariant(row: TableBusinessRow<ShareClassSchema>): FormVa
         </TableShareStructure>
       </template>
     </ConnectPageSection>
+
+    <div
+      v-if="requiresResolutionDate || existingResolutionDates.length > 0"
+      class="w-full rounded-md ring ring-default"
+    >
+      <template v-if="requiresResolutionDate && resolutionDate">
+        <ConnectFieldset
+          :label="$t('label.resolutionsOrCourtOrdersRegardingShares')"
+          padding-class="xy-default"
+        >
+          <div class="space-y-4">
+            <p>{{ $t('text.enterDateResolutionChangedShares') }}</p>
+            <HelpExpansion
+              :label="$t('label.helpWithResolutionsOrCourtOrders')"
+              :close-label="$t('label.hideHelpWithResolutionsOrCourtOrders')"
+              t-key="text.resolutionDateHelp"
+            />
+            <FormShareResolutionDate
+              v-model="resolutionDate"
+              variant="add"
+              standalone
+              :validation-context="addResolutionDateValidationContext"
+            />
+          </div>
+        </ConnectFieldset>
+        <USeparator v-if="existingResolutionDates.length > 0" class="padding-x-default" />
+      </template>
+      <ConnectFieldset
+        v-if="existingResolutionDates.length > 0"
+        :label="requiresResolutionDate
+          ? $t('label.previousDates')
+          : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
+        "
+        padding-class="xy-default"
+      >
+        <TableShareStructureResolutionDates
+          v-model:expanded="expandedResolutionDate"
+          :data="resolutionDates"
+          :label-overrides="tableLabels"
+          :allowed-actions="tableAllowedActions"
+          :prevent-actions="shouldPreventActions"
+          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
+          :task-guard-config="{
+            messageId: resolutionDateAlertMessageId,
+            targetId: resolutionDateAlertTargetId,
+            message: alerts[resolutionDateAlertGroup]
+          }"
+          @init-edit="initEditResolutionDate"
+          @remove="removeResolutionDate"
+          @undo="undoResolutionDate"
+          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
+        >
+          <template #expanded="{ row }">
+            <FormShareResolutionDate
+              v-if="activeResolutionDate"
+              v-model="activeResolutionDate"
+              :state-key
+              :validation-context="changeResolutionDateValidationContext"
+              :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
+              @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
+              @cancel="cleanupForm"
+            />
+          </template>
+        </TableShareStructureResolutionDates>
+      </ConnectFieldset>
+    </div>
   </component>
 </template>
