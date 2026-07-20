@@ -1,5 +1,35 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.25.0
+
+### Minor Changes
+
+- [#517](https://github.com/bcgov/business-ui/pull/517) [`d061d55`](https://github.com/bcgov/business-ui/commit/d061d55c75a28c38d4a1abc0c10726e52e07fa54) Thanks [@deetz99](https://github.com/deetz99)! - ### Components
+
+  - **New** - Resolution date sub form
+  - **New** - HelpExpansion
+  - **New** - SubFormFieldWrapper
+  - `ManageShareStructure` - Add resolution date components and methods
+  - `BusinessTable` - Add `hideTableHeader` and `trDividerFullWidth` props
+
+  ### Composables
+
+  - `useManageShareStructure`
+    - Rename `tableState` ref -> `shareClasses`
+    - Add `resolutionDates` ref
+    - Add resolution date methods
+
+  ### Utils
+
+  - Add resolution table columns configurations
+  - Add resolution date Zod validation schema
+
+  ### Services
+
+  - Add resolutions query hook, query options, and API service methods
+
+- [#513](https://github.com/bcgov/business-ui/pull/513) [`5124bf6`](https://github.com/bcgov/business-ui/commit/5124bf6045d1de97c809ea6a60173134995ed588) Thanks [@deetz99](https://github.com/deetz99)! - Fix type errors around share class formatters. Update Nuxt to latest. Update connect-pay to pull in ts fixes.
+
 ## 0.24.0
 
 ### Minor Changes
