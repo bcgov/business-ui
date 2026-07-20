@@ -303,7 +303,7 @@ watch(requiresResolutionDate, (v) => {
   } else {
     resolutionDate.value = undefined
   }
-})
+}, { immediate: true })
 </script>
 
 <template>
@@ -427,7 +427,7 @@ watch(requiresResolutionDate, (v) => {
 
     <div
       v-if="requiresResolutionDate || existingResolutionDates.length > 0"
-      class="w-full rounded-md ring ring-default"
+      class="w-full rounded-md ring ring-default bg-white"
     >
       <template v-if="requiresResolutionDate && resolutionDate">
         <ConnectFieldset
@@ -445,6 +445,7 @@ watch(requiresResolutionDate, (v) => {
               v-model="resolutionDate"
               variant="add"
               standalone
+              name="resolutionDate"
               :validation-context="addResolutionDateValidationContext"
             />
           </div>
@@ -465,7 +466,7 @@ watch(requiresResolutionDate, (v) => {
           :label-overrides="tableLabels"
           :allowed-actions="tableAllowedActions"
           :prevent-actions="shouldPreventActions"
-          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
+          :hide-actions-when="() => isReadOnly"
           :task-guard-config="{
             messageId: resolutionDateAlertMessageId,
             targetId: resolutionDateAlertTargetId,
@@ -481,6 +482,7 @@ watch(requiresResolutionDate, (v) => {
               v-if="activeResolutionDate"
               v-model="activeResolutionDate"
               :state-key
+              name="activeResolutionDate"
               :validation-context="changeResolutionDateValidationContext"
               :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
               @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"

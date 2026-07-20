@@ -43,6 +43,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeLiquidator
     || !!formState.activeClass
     || !!formState.activeSeries
+    || !!formState.activeResolutionDate
   )
 
   const hasCommentChanges = computed(() => {
@@ -427,6 +428,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeClass = undefined
     formState.activeSeries = undefined
     formState.activeNameTranslation = undefined
+    formState.activeResolutionDate = undefined
 
     tableNameTranslations.value = []
 
