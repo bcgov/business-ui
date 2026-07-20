@@ -78,8 +78,10 @@ watch(() => props.actionPreventedSignal, (value) => {
   }
 })
 
+const isReadOnly = computed(() => props.variant === 'readonly' || props.variant === 'correct-readonly')
+
 const showAddButton = computed(() => {
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return false
   }
   return !props.allowedActions || props.allowedActions.includes(ManageAllowedAction.ADD)
@@ -99,7 +101,7 @@ const tableAllowedActions = computed(() => {
   if (props.allowedActions) {
     return props.allowedActions
   }
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return []
   }
   return undefined
@@ -199,7 +201,7 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return true
   }
 
@@ -274,6 +276,7 @@ const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
 
 const requiresResolutionDate = computed(() => hasChangedShares.value
   && hasRightsOrRestrictions.value
+  && !isReadOnly.value
   && props.collectResolutionDate
 )
 const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
