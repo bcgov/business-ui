@@ -123,7 +123,6 @@ defineExpose({ formRef, validateNormalizedDate })
     :schema="effectiveDateSchema"
     :state="localState"
     :validate-on="[]"
-    :name
   >
     <ConnectFormFieldWrapper
       :label="$t('label.effectiveDate')"
@@ -132,7 +131,7 @@ defineExpose({ formRef, validateNormalizedDate })
       padding-class="xy-default"
     >
       <UFormField
-        name="effectiveDate"
+        :name="name ?? 'effectiveDate'"
         :ui="{ error: 'sr-only' }"
       >
         <template #default="{ error }">
