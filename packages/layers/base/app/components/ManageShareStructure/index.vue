@@ -299,7 +299,7 @@ const addResolutionDateValidationContext = computed(() => ({
 
 watch(requiresResolutionDate, (v) => {
   if (v) {
-    resolutionDate.value = getResolutionDateSchema().parse({})
+    resolutionDate.value = getResolutionDateSchema().parse(toRaw(resolutionDate.value) ?? {})
   } else {
     resolutionDate.value = undefined
   }
@@ -454,9 +454,11 @@ watch(requiresResolutionDate, (v) => {
       </template>
       <ConnectFieldset
         v-if="existingResolutionDates.length > 0"
-        :label="requiresResolutionDate
-          ? $t('label.previousDates')
-          : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
+        :label="isReadOnly
+          ? $t('label.resolutionsOrCourtOrdersRegardingShares')
+          : requiresResolutionDate
+            ? $t('label.previousDates')
+            : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
         "
         padding-class="xy-default"
       >
