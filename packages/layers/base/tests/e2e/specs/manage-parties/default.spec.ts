@@ -130,5 +130,4 @@ test.describe('ManageParties', () => {
 
     await selectCancel(page)
   })
-
 })
