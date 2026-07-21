@@ -4,7 +4,7 @@ import type { DateRange } from 'reka-ui'
 import type { Form, FormError } from '@nuxt/ui'
 import { DateTime } from 'luxon'
 
-const props = defineProps<{
+defineProps<{
   name?: string
 }>()
 
@@ -22,14 +22,20 @@ const localState = reactive<EffectiveDateSchema>({ effectiveDate: model.value.ef
 const isCalendarOpen = ref(false)
 
 const calendarValue = computed(() => {
-  if (!localState.effectiveDate) return undefined
+  if (!localState.effectiveDate) {
+    return undefined
+  }
   const dt = DateTime.fromFormat(localState.effectiveDate, DATE_DISPLAY_FORMAT)
-  if (!dt.isValid) return undefined
+  if (!dt.isValid) {
+    return undefined
+  }
   return new CalendarDate(dt.year, dt.month, dt.day)
 })
 
 function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefined) {
-  if (!date || Array.isArray(date) || !('year' in date)) return
+  if (!date || Array.isArray(date) || !('year' in date)) {
+    return
+  }
   const dt = DateTime.fromObject({ year: date.year, month: date.month, day: date.day })
   localState.effectiveDate = dt.toFormat(DATE_DISPLAY_FORMAT)
   syncModelFromLocal()
@@ -37,11 +43,15 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
 }
 
 function normalizeDate(input: string): string {
-  if (!input.trim()) return input
+  if (!input.trim()) {
+    return input
+  }
 
   const trimmed = input.trim()
 
-  if (DateTime.fromFormat(trimmed, DATE_DISPLAY_FORMAT).isValid) return trimmed
+  if (DateTime.fromFormat(trimmed, DATE_DISPLAY_FORMAT).isValid) {
+    return trimmed
+  }
 
   // Ensure space between letters and digits, and after commas
   const preprocessed = trimmed
@@ -49,9 +59,11 @@ function normalizeDate(input: string): string {
     .replace(/,(\S)/g, ', $1')
     .replace(/\b([a-z])/g, (_, c) => c.toUpperCase())
 
- for (const fmt of DATE_INPUT_FORMATS) {
+  for (const fmt of DATE_INPUT_FORMATS) {
     const dt = DateTime.fromFormat(preprocessed, fmt)
-    if (dt.isValid) return dt.toFormat(DATE_DISPLAY_FORMAT)
+    if (dt.isValid) {
+      return dt.toFormat(DATE_DISPLAY_FORMAT)
+    }
   }
 
   return trimmed
@@ -66,7 +78,9 @@ function syncModelFromLocal() {
   }
 
   const parsed = DateTime.fromFormat(trimmed, DATE_DISPLAY_FORMAT)
-  if (!parsed.isValid) return
+  if (!parsed.isValid) {
+    return
+  }
 
   const formattedDate = parsed.toFormat(DATE_API_INPUT_FORMAT)
   model.value = { effectiveDate: formattedDate }
@@ -109,6 +123,7 @@ defineExpose({ formRef, validateNormalizedDate })
     :schema="effectiveDateSchema"
     :state="localState"
     :validate-on="[]"
+    :name
   >
     <ConnectFormFieldWrapper
       :label="$t('label.effectiveDate')"

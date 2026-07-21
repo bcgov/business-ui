@@ -5,16 +5,16 @@ import type { FormEffectiveDate } from '#components'
 export const DATE_API_INPUT_FORMAT = 'yyyy-MM-dd'
 export const DATE_DISPLAY_FORMAT = 'MMMM d, yyyy'
 export const DATE_INPUT_FORMATS = [
-    'MMMM d, yyyy',
-    'MMMM d yyyy',
-    'MMM d, yyyy',
-    'MMM d yyyy',
-    'M/d/yyyy',
-    'MM/dd/yyyy',
-    'yyyy-MM-dd',
-    'd MMMM yyyy',
-    'd MMM yyyy',
-  ]
+  'MMMM d, yyyy',
+  'MMMM d yyyy',
+  'MMM d, yyyy',
+  'MMM d yyyy',
+  'M/d/yyyy',
+  'MM/dd/yyyy',
+  'yyyy-MM-dd',
+  'd MMMM yyyy',
+  'd MMM yyyy'
+]
 
 export function getEffectiveDateSchema() {
   const t = useNuxtApp().$i18n.t
@@ -23,7 +23,7 @@ export function getEffectiveDateSchema() {
     effectiveDate: z.string()
       .min(1, t('validation.fieldRequired'))
       .refine(
-        (val) => DateTime.fromFormat(val, DATE_DISPLAY_FORMAT).isValid,
+        val => DateTime.fromFormat(val, DATE_DISPLAY_FORMAT).isValid,
         t('validation.invalidDate')
       )
   })
