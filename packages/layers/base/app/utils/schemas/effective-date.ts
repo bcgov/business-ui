@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { DateTime } from 'luxon'
 import type { FormEffectiveDate } from '#components'
 
+export const DATE_API_INPUT_FORMAT = 'yyyy-MM-dd'
 export const DATE_DISPLAY_FORMAT = 'MMMM d, yyyy'
 export const DATE_INPUT_FORMATS = [
     'MMMM d, yyyy',
@@ -14,7 +15,6 @@ export const DATE_INPUT_FORMATS = [
     'd MMMM yyyy',
     'd MMM yyyy',
   ]
-
 
 export function getEffectiveDateSchema() {
   const t = useNuxtApp().$i18n.t

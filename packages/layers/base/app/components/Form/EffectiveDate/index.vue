@@ -3,7 +3,6 @@ import { CalendarDate, type DateValue } from '@internationalized/date'
 import type { DateRange } from 'reka-ui'
 import type { Form, FormError } from '@nuxt/ui'
 import { DateTime } from 'luxon'
-import { DATE_DISPLAY_FORMAT, DATE_INPUT_FORMATS } from '~/utils/schemas/effective-date'
 
 const props = defineProps<{
   name?: string
@@ -18,11 +17,13 @@ const model = defineModel<EffectiveDateSchema>({ required: true })
 const formRef = useTemplateRef<Form<EffectiveDateSchema>>('effective-date-form')
 const formError = computed<FormError | undefined>(() => formRef.value?.getErrors()?.[0])
 
+const localState = reactive<EffectiveDateSchema>({ effectiveDate: model.value.effectiveDate })
+
 const isCalendarOpen = ref(false)
 
 const calendarValue = computed(() => {
-  if (!model.value.effectiveDate) return undefined
-  const dt = DateTime.fromFormat(model.value.effectiveDate, DATE_DISPLAY_FORMAT)
+  if (!localState.effectiveDate) return undefined
+  const dt = DateTime.fromFormat(localState.effectiveDate, DATE_DISPLAY_FORMAT)
   if (!dt.isValid) return undefined
   return new CalendarDate(dt.year, dt.month, dt.day)
 })
@@ -30,9 +31,9 @@ const calendarValue = computed(() => {
 function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefined) {
   if (!date || Array.isArray(date) || !('year' in date)) return
   const dt = DateTime.fromObject({ year: date.year, month: date.month, day: date.day })
-  model.value.effectiveDate = dt.toFormat(DATE_DISPLAY_FORMAT)
+  localState.effectiveDate = dt.toFormat(DATE_DISPLAY_FORMAT)
+  syncModelFromLocal()
   isCalendarOpen.value = false
-  formRef.value?.validate({ silent: true })
 }
 
 function normalizeDate(input: string): string {
@@ -56,34 +57,58 @@ function normalizeDate(input: string): string {
   return trimmed
 }
 
+function syncModelFromLocal() {
+  const trimmed = localState.effectiveDate.trim()
+
+  if (!trimmed) {
+    model.value = { effectiveDate: '' }
+    return
+  }
+
+  const parsed = DateTime.fromFormat(trimmed, DATE_DISPLAY_FORMAT)
+  if (!parsed.isValid) return
+
+  const formattedDate = parsed.toFormat(DATE_API_INPUT_FORMAT)
+  model.value = { effectiveDate: formattedDate }
+}
+
+async function validateNormalizedDate() {
+  localState.effectiveDate = normalizeDate(localState.effectiveDate)
+
+  await nextTick()
+  await formRef.value?.validate()
+  syncModelFromLocal()
+}
+
+onMounted(() => {
+  const normalized = normalizeDate(localState.effectiveDate)
+  if (normalized !== localState.effectiveDate) {
+    localState.effectiveDate = normalized
+  }
+})
+
 function clearDate() {
-  model.value.effectiveDate = ''
-  formRef.value?.clear('effectiveDate')
+  localState.effectiveDate = ''
+  syncModelFromLocal()
 }
 
 async function onInputBlur() {
-  const normalized = normalizeDate(model.value.effectiveDate)
-  if (normalized !== model.value.effectiveDate) {
-    model.value.effectiveDate = normalized
+  try {
+    await validateNormalizedDate()
+  } catch {
+    // Error state is managed by UForm; swallow rejected validation promise.
   }
-  await nextTick()
-  formRef.value?.validate({ silent: true })
 }
 
-watch(() => model.value.effectiveDate, () => {
-  formRef.value?.clear('effectiveDate')
-})
-
-defineExpose({ formRef })
+defineExpose({ formRef, validateNormalizedDate })
 </script>
 
 <template>
   <UForm
     ref="effective-date-form"
     :schema="effectiveDateSchema"
-    :validate-on="['blur', 'submit']"
-    nested
-    :name
+    :state="localState"
+    :validate-on="[]"
   >
     <ConnectFormFieldWrapper
       :label="$t('label.effectiveDate')"
@@ -98,7 +123,7 @@ defineExpose({ formRef })
         <template #default="{ error }">
           <UInput
             id="effective-date-input"
-            v-model="model.effectiveDate"
+            v-model="localState.effectiveDate"
             class="w-full"
             placeholder="&nbsp;"
             :color="error ? 'error' : 'neutral'"
@@ -113,7 +138,7 @@ defineExpose({ formRef })
             </label>
             <template #trailing>
               <UButton
-                v-if="model.effectiveDate"
+                v-if="localState.effectiveDate"
                 icon="i-mdi-close"
                 color="neutral"
                 variant="ghost"

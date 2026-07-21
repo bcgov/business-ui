@@ -32,13 +32,22 @@ const model = defineModel<PartyDetails>({ required: true })
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
+const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
+
+const effectiveDateModel = computed({
+  get: (): EffectiveDateSchema => ({ effectiveDate: model.value.roles[0]?.appointmentDate ?? '' }),
+  set: (val: EffectiveDateSchema) => {
+    model.value.roles = model.value.roles.map(role => ({ ...role, appointmentDate: val.effectiveDate }))
+  }
+})
 
 async function onDone() {
   // need to validate child refs to get input IDs
   const result = await Promise.allSettled([
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
-    addressFormRef.value?.formRef?.validate()
+    addressFormRef.value?.formRef?.validate(),
+    isDirectorRole.value ? effectiveDateFormRef.value?.validateNormalizedDate?.() : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')
@@ -69,6 +78,7 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+const isDirectorRole = computed(() => model.value.roles.some(role => role.roleType === RoleTypeUi.DIRECTOR))
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
@@ -121,6 +131,14 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
+        <USeparator v-if="isDirectorRole" class="padding-x-default" />
+        <FormEffectiveDate
+          v-if="isDirectorRole"
+          ref="effective-date-form"
+          v-model="effectiveDateModel"
+          name="effectiveDate"
+        />
+        <USeparator class="padding-x-default mb-8"/>
       </template>
     </SubFormWrapper>
   </UForm>
