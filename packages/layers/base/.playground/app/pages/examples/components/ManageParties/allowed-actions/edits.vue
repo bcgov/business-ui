@@ -53,6 +53,7 @@ const selectedItems = ref([
         v-model:active-party="activeParty"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         table-title="Parties"
         subject="Party"
         :allowed-actions="selectedItems"

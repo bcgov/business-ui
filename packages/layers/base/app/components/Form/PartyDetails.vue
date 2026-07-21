@@ -34,10 +34,14 @@ const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
+const directorRole = computed(() => model.value.roles.find(role => role.roleType === RoleTypeUi.DIRECTOR))
+
 const effectiveDateModel = computed({
-  get: (): EffectiveDateSchema => ({ effectiveDate: model.value.roles[0]?.appointmentDate ?? '' }),
+  get: (): EffectiveDateSchema => ({ effectiveDate: directorRole.value?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
-    model.value.roles = model.value.roles.map(role => ({ ...role, appointmentDate: val.effectiveDate }))
+    if (directorRole.value) {
+      directorRole.value.appointmentDate = val.effectiveDate
+    }
   }
 })
 
@@ -78,7 +82,7 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
-const isDirectorRole = computed(() => model.value.roles.some(role => role.roleType === RoleTypeUi.DIRECTOR))
+const isDirectorRole = computed(() => !!directorRole.value)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
