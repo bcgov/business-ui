@@ -25,6 +25,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
   const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
+  const initialResolutionDates = shallowRef<TableBusinessState<ResolutionDateSchema>[]>([])
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
@@ -45,13 +46,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeSeries
     || !!formState.activeResolutionDate
   )
-
-  const hasCommentChanges = computed(() => {
-    const initialComment = initialFormState.value.comment?.detail?.trim() ?? ''
-    const currentComment = formState.comment?.detail?.trim() ?? ''
-
-    return currentComment !== initialComment
-  })
 
   /** The original filing being corrected (fetched by correctedFilingId) */
   const correctedFiling = shallowRef<FilingGetByIdResponse<FilingRecord> | undefined>(undefined)
@@ -118,7 +112,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     if (isResolutionFiling(correctedFilingType.value)) {
       const resolutions = await service.getResolutions(businessId).catch(() => [])
       resolutionDates.value = formatResolutionDatesUi(resolutions)
-      console.log('RESOLUTIONS: ', resolutionDates.value)
     }
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
@@ -289,6 +282,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialOffices.value = cloneDeep(tableOffices.value)
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
+    initialResolutionDates.value = cloneDeep(resolutionDates.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
     if (isStaffCorrectionType.value) {
@@ -416,6 +410,27 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
   }
 
+  function syncResolutionTableState(isReview: boolean) {
+    const addedDate = formState.resolutionDate
+
+    if (!isReview) {
+      resolutionDates.value = cloneDeep(initialResolutionDates.value)
+      return
+    }
+
+    if (!addedDate) {
+      return
+    }
+
+    const existingIndex = resolutionDates.value.findIndex(rd => rd.new.id === addedDate.id)
+
+    if (existingIndex > -1) {
+      resolutionDates.value[existingIndex] = { old: undefined, new: cloneDeep(addedDate) }
+    } else {
+      resolutionDates.value.unshift({ old: undefined, new: cloneDeep(addedDate) })
+    }
+  }
+
   function $reset() {
     correctedFilingId.value = undefined
     correctedFilingType.value = FilingType.UNKNOWN
@@ -443,6 +458,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialOffices.value = []
     initialShareClasses.value = []
     initialNameTranslations.value = []
+    initialResolutionDates.value = []
   }
 
   return {
@@ -461,6 +477,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     liquidators: tableLiquidators,
     offices: tableOffices,
     shareClasses: tableShareClasses,
+    resolutionDates,
     nameTranslations: tableNameTranslations,
     initialFormState,
     initialDirectors,
@@ -468,13 +485,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialLiquidators,
     initialOffices,
     initialShareClasses,
+    initialResolutionDates,
     initialNameTranslations,
     hasActiveSubForm,
-    hasCommentChanges,
     isStaff,
     companyName,
     init,
     submit,
+    syncResolutionTableState,
     $reset
   }
 })

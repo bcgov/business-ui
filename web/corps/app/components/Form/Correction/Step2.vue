@@ -33,6 +33,7 @@ const hasDirectorChanges = computed(() => {
 /** Whether any share classes were changed */
 const hasShareStructureChanges = computed(() => {
   return store.shareClasses.some(sc => sc.new.actions.length > 0)
+    || store.resolutionDates.some(rd => rd.new.actions.length > 0)
 })
 
 /** Whether any receivers were changed */
