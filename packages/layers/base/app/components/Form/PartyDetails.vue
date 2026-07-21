@@ -131,14 +131,15 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <USeparator v-if="isDirectorRole" class="padding-x-default" />
-        <FormEffectiveDate
-          v-if="isDirectorRole"
-          ref="effective-date-form"
-          v-model="effectiveDateModel"
-          name="effectiveDate"
-        />
-        <USeparator class="padding-x-default mb-8"/>
+        <template v-if="isDirectorRole">
+          <USeparator class="padding-x-default" />
+          <FormEffectiveDate
+            ref="effective-date-form"
+            v-model="effectiveDateModel"
+            name="effectiveDate"
+          />
+          <USeparator class="padding-x-default mb-8"/>
+        </template>
       </template>
     </SubFormWrapper>
   </UForm>
