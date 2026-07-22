@@ -109,11 +109,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDate.value = draft.correctedFilingDate ?? ''
     correctionType.value = draft.type
 
-    if (isResolutionFiling(correctedFilingType.value)) {
-      const resolutions = await service.getResolutions(businessId).catch(() => [])
-      resolutionDates.value = formatResolutionDatesUi(resolutions)
-    }
-
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
     const receivers = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.RECEIVER))
@@ -227,6 +222,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
+    if (isResolutionFiling(correctedFilingType.value)) {
+      const originalResolutions = await service.getResolutions(businessId).catch(() => [])
+      const draftResolutions = draft.shareStructure?.resolutionDates
+
+      const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
+
+      formState.resolutionDate = cloneDeep(newState)
+      resolutionDates.value = cloneDeep(tableState)
+    }
+
     // Receivers — merge with draft relationships if applicable
     if (receivers) {
       const draftReceiverEntries = draftRelationships?.filter(
@@ -331,7 +336,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
       // Share structure
       shareStructure: {
-        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission)
+        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission),
+        resolutionDates: formatResolutionDatesApi(resolutionDates.value)
       },
 
       // Court order (common filing data)
@@ -414,7 +420,11 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const addedDate = formState.resolutionDate
 
     if (!isReview) {
-      resolutionDates.value = cloneDeep(initialResolutionDates.value)
+      if (addedDate?.id) {
+        resolutionDates.value = resolutionDates.value.filter(
+          rd => rd.new.id !== addedDate.id
+        )
+      }
       return
     }
 
