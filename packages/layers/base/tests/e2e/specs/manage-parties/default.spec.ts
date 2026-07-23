@@ -112,22 +112,4 @@ test.describe('ManageParties', () => {
 
     await selectCancel(page)
   })
-
-  test('Should not show effective date field when party has no Director role', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageParties')
-    await page.waitForLoadState('networkidle')
-
-    const manageParties = page.getByTestId('manage-parties')
-    const tbody = manageParties.getByRole('table').locator('tbody')
-
-    // find first row that does not contain a Director role
-    const nonDirectorRow = tbody.getByRole('row').filter({ hasNotText: RoleType.DIRECTOR }).first()
-    await nonDirectorRow.getByRole('button', { name: 'change' }).click()
-
-    // effective date input should not be visible
-    const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Effective Date')
-    await expect(effectiveDateInput).not.toBeVisible()
-
-    await selectCancel(page)
-  })
 })

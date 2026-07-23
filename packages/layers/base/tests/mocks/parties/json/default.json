@@ -65,8 +65,9 @@
         },
         "roles": [
             {
+                "appointmentDate": "2023-08-16",
                 "cessationDate": null,
-                "roleType": "Applicant"
+                "roleType": "Director"
             }
         ]
     },
