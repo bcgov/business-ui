@@ -51,7 +51,7 @@ async function onDone() {
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate(),
-    isDirectorRole.value ? effectiveDateFormRef.value?.validateNormalizedDate?.() : undefined
+    isDirectorRole.value ? effectiveDateFormRef.value?.formRef?.validate() : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')

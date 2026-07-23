@@ -376,6 +376,7 @@ export default {
     changeCompanyNameToNumbered: 'Change the company name to {numberedName}',
     className: 'Class Name',
     classNameShares: 'Class Name [Shares]',
+    clear: 'Clear',
     close: 'Close',
     correct: 'Correct',
     closeDetails: 'Close Details',
@@ -529,6 +530,7 @@ export default {
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
     saveResumeLater: 'Save and Resume Later',
+    selectDate: 'Select Date',
     seriesNameShares: 'Series Name [Shares]',
     shareClass: 'Share Class',
     shareClasses: 'Share Classes',
@@ -797,7 +799,6 @@ export default {
       required: 'Name Request Number is required'
     },
     futureDateRequired: 'Effective date must be in the future',
-    invalidDate: 'Invalid date format',
     onlyNumbers: 'Only enter numbers',
     onlyWholeNumbers: 'Only enter whole numbers',
     pleaseCompleteRequiredInfo: '< Please complete required information',

@@ -23,8 +23,7 @@ export function getEffectiveDateSchema() {
     effectiveDate: z.string()
       .min(1, t('validation.fieldRequired'))
       .refine(
-        val => DateTime.fromFormat(val, DATE_DISPLAY_FORMAT).isValid,
-        t('validation.invalidDate')
+        val => DateTime.fromFormat(val, DATE_DISPLAY_FORMAT).isValid
       )
   })
 }

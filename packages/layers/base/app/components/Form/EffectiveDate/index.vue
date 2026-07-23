@@ -86,14 +86,6 @@ function syncModelFromLocal() {
   model.value = { effectiveDate: formattedDate }
 }
 
-async function validateNormalizedDate() {
-  localState.effectiveDate = normalizeDate(localState.effectiveDate)
-
-  await nextTick()
-  await formRef.value?.validate()
-  syncModelFromLocal()
-}
-
 onMounted(() => {
   const normalized = normalizeDate(localState.effectiveDate)
   if (normalized !== localState.effectiveDate) {
@@ -101,20 +93,30 @@ onMounted(() => {
   }
 })
 
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
+watch(() => localState.effectiveDate, (val: string) => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(async () => {
+    if (!val) {
+      syncModelFromLocal()
+      return
+    }
+    const normalized = normalizeDate(val)
+    if (normalized !== val) {
+      localState.effectiveDate = normalized
+      await nextTick()
+    }
+    formRef.value?.validate({ silent: true })
+    syncModelFromLocal()
+  }, 500)
+})
+
 function clearDate() {
   localState.effectiveDate = ''
   syncModelFromLocal()
 }
 
-async function onInputBlur() {
-  try {
-    await validateNormalizedDate()
-  } catch {
-    // Error state is managed by UForm; swallow rejected validation promise.
-  }
-}
-
-defineExpose({ formRef, validateNormalizedDate })
+defineExpose({ formRef })
 </script>
 
 <template>
@@ -142,7 +144,6 @@ defineExpose({ formRef, validateNormalizedDate })
             placeholder="&nbsp;"
             :color="error ? 'error' : 'neutral'"
             :highlight="!!error"
-            @blur="onInputBlur"
           >
             <label
               for="effective-date-input"
@@ -154,9 +155,11 @@ defineExpose({ formRef, validateNormalizedDate })
               <UButton
                 v-if="localState.effectiveDate"
                 icon="i-mdi-close"
-                color="neutral"
+                :color="error ? 'error' : 'neutral'"
                 variant="ghost"
-                :ui="{ base: 'text-primary size-7' }"
+                tabindex="0"
+                :ui="{ base: 'size-7 p-0 flex items-center justify-center icon-btn-focus' }"
+                :aria-label="t('label.clear')"
                 @click="clearDate"
               />
               <UPopover v-model:open="isCalendarOpen" :content="{ side: 'top' }">
@@ -164,7 +167,9 @@ defineExpose({ formRef, validateNormalizedDate })
                   icon="i-mdi-calendar"
                   color="neutral"
                   variant="ghost"
-                  :ui="{ base: 'text-primary size-7' }"
+                  tabindex="0"
+                  class="icon-btn"
+                  :aria-label="t('label.selectDate')"
                 />
                 <template #content>
                   <UCalendar
@@ -176,10 +181,7 @@ defineExpose({ formRef, validateNormalizedDate })
             </template>
           </UInput>
           <p :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']">
-            <template v-if="error">
-              <UIcon name="i-mdi-alert" class="size-4 shrink-0" />
-              {{ error }}.
-            </template>
+            <UIcon v-if="error" name="i-mdi-alert" class="size-4 shrink-0" />
             {{ t('text.effectiveDateFormat') }}
           </p>
         </template>
@@ -187,3 +189,20 @@ defineExpose({ formRef, validateNormalizedDate })
     </ConnectFormFieldWrapper>
   </UForm>
 </template>
+
+<style scoped>
+:deep(.icon-btn) {
+  color: var(--ui-primary);
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.icon-btn:focus-visible) {
+  box-shadow: 0 0 0 2px var(--ui-primary);
+  border-radius: 1px;
+}
+</style>
