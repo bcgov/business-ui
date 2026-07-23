@@ -108,12 +108,15 @@ function onActionPrevented() {
     <ManageShareStructure
       v-model:active-class="store.formState.activeClass"
       v-model:active-series="store.formState.activeSeries"
+      v-model:active-rd="store.formState.activeResolutionDate"
+      v-model:rd="store.formState.resolutionDate"
       data-testid="share-structure-section"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
+      :collect-resolution-date="store.requireResolutionDate"
       @action-prevented="onActionPrevented"
     />
   </UForm>

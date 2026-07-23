@@ -6,7 +6,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableReceivers } = useManageParties('manage-receivers')
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
   const { tableState: tableOffices } = useManageOffices()
-  const { shareClasses: tableShareClasses } = useManageShareStructure()
+  const { shareClasses: tableShareClasses, resolutionDates } = useManageShareStructure()
   const { tableState: tableNameTranslations } = useManageNameTranslations('manage-company-name-name-translations')
   const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
@@ -16,6 +16,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<CorrectionDraftState>({} as CorrectionDraftState)
+  const requireResolutionDate = ref(false)
 
   const formState = reactive<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialFormState = shallowRef<CorrectionFormSchema>({} as CorrectionFormSchema)
@@ -25,6 +26,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
   const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
+  const initialResolutionDates = shallowRef<TableBusinessState<ResolutionDateSchema>[]>([])
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
@@ -43,14 +45,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeLiquidator
     || !!formState.activeClass
     || !!formState.activeSeries
+    || !!formState.activeResolutionDate
   )
-
-  const hasCommentChanges = computed(() => {
-    const initialComment = initialFormState.value.comment?.detail?.trim() ?? ''
-    const currentComment = formState.comment?.detail?.trim() ?? ''
-
-    return currentComment !== initialComment
-  })
 
   /** The original filing being corrected (fetched by correctedFilingId) */
   const correctedFiling = shallowRef<FilingGetByIdResponse<FilingRecord> | undefined>(undefined)
@@ -90,8 +86,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
    * @param draftId - The pre-created correction draft filing ID (from route param `filingId`)
    */
   async function init(businessId: string, draftId?: string) {
-    initializing.value = true
     $reset()
+    initializing.value = true
 
     const { draftFiling, parties: allParties, addresses, shareClasses } = await initFiling<CorrectionFiling>(
       businessId,
@@ -102,52 +98,56 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       [OfficeType.RECORDS, OfficeType.REGISTERED],
       true // fetch share classes
     )
+
+    if (!draftFiling) {
+      initializing.value = false
+      return
+    }
+
     const aliasesNameTranslations = await service.getNameTranslations(businessId).catch(() => [] as NameTranslation[])
+
+    // The draft is always expected to exist (pre-created before page load)
+    const draft = draftFiling.filing.correction
+    draftFilingState.value = draftFiling
+
+    // Correction metadata from the pre-created draft
+    correctedFilingId.value = draft.correctedFilingId
+    correctedFilingType.value = draft.correctedFilingType
+    correctedFilingDate.value = draft.correctedFilingDate ?? ''
+    correctionType.value = draft.type
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
     const receivers = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.RECEIVER))
     const liquidators = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.LIQUIDATOR))
 
-    // The draft is always expected to exist (pre-created before page load)
-    const draft = draftFiling?.filing?.correction
-    if (draft) {
-      draftFilingState.value = draftFiling
+    // Comment (may be empty on initial draft)
+    formState.comment = { detail: draft.comment ?? '' }
 
-      // Correction metadata from the pre-created draft
-      correctedFilingId.value = draft.correctedFilingId
-      correctedFilingType.value = draft.correctedFilingType
-      correctedFilingDate.value = draft.correctedFilingDate ?? ''
-      correctionType.value = draft.type
+    // Document delivery
+    if (formState.documentDelivery) {
+      formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
+    }
 
-      // Comment (may be empty on initial draft)
-      formState.comment = { detail: draft.comment ?? '' }
+    // Header fields
+    const header = draftFiling!.filing.header
+    formState.staffPayment = formatStaffPaymentUi(header)
+    if (draft.courtOrder) {
+      formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
+    }
 
-      // Document delivery
-      if (formState.documentDelivery) {
-        formState.documentDelivery.completingPartyEmail = draft.contactPoint?.email ?? ''
-      }
-
-      // Header fields
-      const header = draftFiling.filing.header
-      formState.staffPayment = formatStaffPaymentUi(header)
-      if (draft.courtOrder) {
-        formState.courtOrder = formatCourtOrderUi(draft.courtOrder)
-      }
-
-      // Completing party (client corrections only) — read from relationships (new format)
-      // The draft may contain multiple relationships with a "Completing Party" role:
-      // one from the original filing (e.g. an incorporator who was also the completing party)
-      // and one ADDED during this correction. We want the ADDED one.
-      const draftAllRelationships = draft?.relationships as BusinessRelationship[] | undefined
-      if (draftAllRelationships && formState.completingParty) {
-        const cpRelationship = draftAllRelationships.find(
-          r => r.roles?.some(role => role.roleType === RoleType.COMPLETING_PARTY)
-            && r.actions?.includes(ActionType.ADDED)
-        )
-        if (cpRelationship) {
-          Object.assign(formState.completingParty, formatCompletingPartyRelationshipUi(cpRelationship))
-        }
+    // Completing party (client corrections only) — read from relationships (new format)
+    // The draft may contain multiple relationships with a "Completing Party" role:
+    // one from the original filing (e.g. an incorporator who was also the completing party)
+    // and one ADDED during this correction. We want the ADDED one.
+    const draftAllRelationships = draft?.relationships as BusinessRelationship[] | undefined
+    if (draftAllRelationships && formState.completingParty) {
+      const cpRelationship = draftAllRelationships.find(
+        r => r.roles?.some(role => role.roleType === RoleType.COMPLETING_PARTY)
+          && r.actions?.includes(ActionType.ADDED)
+      )
+      if (cpRelationship) {
+        Object.assign(formState.completingParty, formatCompletingPartyRelationshipUi(cpRelationship))
       }
     }
 
@@ -229,6 +229,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
+    requireResolutionDate.value = isResolutionFiling(correctedFilingType.value)
+    if (requireResolutionDate.value) {
+      const originalResolutions = await service.getResolutions(businessId).catch(() => [])
+      const draftResolutions = draft.shareStructure?.resolutionDates
+
+      const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
+
+      formState.resolutionDate = cloneDeep(newState)
+      resolutionDates.value = cloneDeep(tableState)
+    }
+
     // Receivers — merge with draft relationships if applicable
     if (receivers) {
       const draftReceiverEntries = draftRelationships?.filter(
@@ -284,6 +295,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialOffices.value = cloneDeep(tableOffices.value)
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
+    initialResolutionDates.value = cloneDeep(resolutionDates.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
     if (isStaffCorrectionType.value) {
@@ -332,7 +344,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
       // Share structure
       shareStructure: {
-        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission)
+        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission),
+        resolutionDates: formatResolutionDatesApi(resolutionDates.value)
       },
 
       // Court order (common filing data)
@@ -411,6 +424,31 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
   }
 
+  function syncResolutionTableState(isReview: boolean) {
+    const addedDate = formState.resolutionDate
+
+    if (!isReview) {
+      if (addedDate?.id) {
+        resolutionDates.value = resolutionDates.value.filter(
+          rd => rd.new.id !== addedDate.id
+        )
+      }
+      return
+    }
+
+    if (!addedDate) {
+      return
+    }
+
+    const existingIndex = resolutionDates.value.findIndex(rd => rd.new.id === addedDate.id)
+
+    if (existingIndex > -1) {
+      resolutionDates.value[existingIndex] = { old: undefined, new: cloneDeep(addedDate) }
+    } else {
+      resolutionDates.value.unshift({ old: undefined, new: cloneDeep(addedDate) })
+    }
+  }
+
   function $reset() {
     correctedFilingId.value = undefined
     correctedFilingType.value = FilingType.UNKNOWN
@@ -427,6 +465,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeClass = undefined
     formState.activeSeries = undefined
     formState.activeNameTranslation = undefined
+    formState.activeResolutionDate = undefined
 
     tableNameTranslations.value = []
 
@@ -437,6 +476,10 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialOffices.value = []
     initialShareClasses.value = []
     initialNameTranslations.value = []
+    initialResolutionDates.value = []
+
+    initializing.value = false
+    requireResolutionDate.value = false
   }
 
   return {
@@ -449,12 +492,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDate,
     correctedFilingDateDisplay,
     correctionType,
+    requireResolutionDate,
     isStaffCorrectionType,
     directors: tableParties,
     receivers: tableReceivers,
     liquidators: tableLiquidators,
     offices: tableOffices,
     shareClasses: tableShareClasses,
+    resolutionDates,
     nameTranslations: tableNameTranslations,
     initialFormState,
     initialDirectors,
@@ -462,13 +507,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialLiquidators,
     initialOffices,
     initialShareClasses,
+    initialResolutionDates,
     initialNameTranslations,
     hasActiveSubForm,
-    hasCommentChanges,
     isStaff,
     companyName,
     init,
     submit,
+    syncResolutionTableState,
     $reset
   }
 })

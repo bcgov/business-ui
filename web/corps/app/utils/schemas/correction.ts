@@ -55,7 +55,9 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeClass: getActiveShareClassSchema(),
     activeSeries: getActiveShareSeriesSchema(),
     activeNameTranslation: getActiveNameTranslationSchema(),
-    activeNameRequest: getActiveNameRequestSchema()
+    activeNameRequest: getActiveNameRequestSchema(),
+    activeResolutionDate: getActiveResolutionDateSchema(),
+    resolutionDate: getActiveResolutionDateSchema()
   })
 
   if (isStaff) {

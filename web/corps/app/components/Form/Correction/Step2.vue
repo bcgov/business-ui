@@ -33,6 +33,7 @@ const hasDirectorChanges = computed(() => {
 /** Whether any share classes were changed */
 const hasShareStructureChanges = computed(() => {
   return store.shareClasses.some(sc => sc.new.actions.length > 0)
+    || store.resolutionDates.some(rd => rd.new.actions.length > 0)
 })
 
 /** Whether any receivers were changed */
@@ -140,6 +141,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="$t('label.noShareClasses')"
         variant="correct-readonly"
+        :collect-resolution-date="store.requireResolutionDate"
       />
     </section>
 

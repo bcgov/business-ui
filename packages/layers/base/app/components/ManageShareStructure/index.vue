@@ -78,8 +78,10 @@ watch(() => props.actionPreventedSignal, (value) => {
   }
 })
 
+const isReadOnly = computed(() => props.variant === 'readonly' || props.variant === 'correct-readonly')
+
 const showAddButton = computed(() => {
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return false
   }
   return !props.allowedActions || props.allowedActions.includes(ManageAllowedAction.ADD)
@@ -99,7 +101,7 @@ const tableAllowedActions = computed(() => {
   if (props.allowedActions) {
     return props.allowedActions
   }
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return []
   }
   return undefined
@@ -199,7 +201,7 @@ function onInitEdit(row: TableBusinessRow<ShareClassSchema | ShareSeriesSchema>)
 }
 
 function hideRowActionsWhen(row: TableBusinessRow<ShareClassSchema>) {
-  if (props.variant === 'readonly' || props.variant === 'correct-readonly') {
+  if (isReadOnly.value) {
     return true
   }
 
@@ -274,6 +276,7 @@ const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
 
 const requiresResolutionDate = computed(() => hasChangedShares.value
   && hasRightsOrRestrictions.value
+  && !isReadOnly.value
   && props.collectResolutionDate
 )
 const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
@@ -296,11 +299,11 @@ const addResolutionDateValidationContext = computed(() => ({
 
 watch(requiresResolutionDate, (v) => {
   if (v) {
-    resolutionDate.value = getResolutionDateSchema().parse({})
+    resolutionDate.value = getResolutionDateSchema().parse(toRaw(resolutionDate.value) ?? {})
   } else {
     resolutionDate.value = undefined
   }
-})
+}, { immediate: true })
 </script>
 
 <template>
@@ -424,7 +427,7 @@ watch(requiresResolutionDate, (v) => {
 
     <div
       v-if="requiresResolutionDate || existingResolutionDates.length > 0"
-      class="w-full rounded-md ring ring-default"
+      class="w-full rounded-md ring ring-default bg-white"
     >
       <template v-if="requiresResolutionDate && resolutionDate">
         <ConnectFieldset
@@ -442,6 +445,7 @@ watch(requiresResolutionDate, (v) => {
               v-model="resolutionDate"
               variant="add"
               standalone
+              name="resolutionDate"
               :validation-context="addResolutionDateValidationContext"
             />
           </div>
@@ -450,9 +454,11 @@ watch(requiresResolutionDate, (v) => {
       </template>
       <ConnectFieldset
         v-if="existingResolutionDates.length > 0"
-        :label="requiresResolutionDate
-          ? $t('label.previousDates')
-          : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
+        :label="isReadOnly
+          ? $t('label.resolutionsOrCourtOrdersRegardingShares')
+          : requiresResolutionDate
+            ? $t('label.previousDates')
+            : $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
         "
         padding-class="xy-default"
       >
@@ -462,7 +468,7 @@ watch(requiresResolutionDate, (v) => {
           :label-overrides="tableLabels"
           :allowed-actions="tableAllowedActions"
           :prevent-actions="shouldPreventActions"
-          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
+          :hide-actions-when="() => isReadOnly"
           :task-guard-config="{
             messageId: resolutionDateAlertMessageId,
             targetId: resolutionDateAlertTargetId,
@@ -478,6 +484,7 @@ watch(requiresResolutionDate, (v) => {
               v-if="activeResolutionDate"
               v-model="activeResolutionDate"
               :state-key
+              name="activeResolutionDate"
               :validation-context="changeResolutionDateValidationContext"
               :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
               @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"

@@ -4,7 +4,6 @@ import type { ExpandedState } from '@tanstack/vue-table'
 const props = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
-  emptyText?: string
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
@@ -34,7 +33,6 @@ defineOptions({
       v-model:expanded="expanded"
       :data="displayedData"
       :loading
-      :empty-text
       :columns
       :allowed-actions="allowedActions"
       :prevent-actions="preventActions"
@@ -42,6 +40,7 @@ defineOptions({
       :get-row-id="(row: TableBusinessState<T>) => row.new.id"
       :hide-actions-when
       hide-table-header
+      hide-empty-text
       tr-divider-full-width
     >
       <template #expanded="{ row }">
@@ -56,7 +55,7 @@ defineOptions({
         :label="showAll ? $t('label.showLess') : $t('label.showAll')"
         variant="link"
         class="w-min underline p-0"
-        @click="showAll = !showAll"
+        @click="() => { showAll = !showAll }"
       />
     </div>
   </div>
