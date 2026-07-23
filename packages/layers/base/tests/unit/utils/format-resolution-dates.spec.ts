@@ -124,4 +124,4 @@ describe('formatResolutionDatesSection', () => {
     expect(tableState[0]!.new.date).toBe('2026-01-01')
     expect(tableState[0]!.new.actions).toEqual([])
   })
-}) 
+})

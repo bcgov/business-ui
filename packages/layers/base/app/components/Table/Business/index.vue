@@ -118,8 +118,8 @@ const tableUi = computed(() => {
       <tr
         :class="!(props.hideEmptyText && props.hideTableHeader)
           && [
-          `relative after:absolute after:content-['']`,
-          'after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200'
+            `relative after:absolute after:content-['']`,
+            'after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200'
           ]
         "
       >

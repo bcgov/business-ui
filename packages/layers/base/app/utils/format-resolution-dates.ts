@@ -25,7 +25,7 @@ export function formatResolutionDatesSection(
 
   const drafts: Resolution[] = []
 
-  draftDates.forEach(d => {
+  draftDates.forEach((d) => {
     if (d.id === undefined) {
       newState = schema.parse({ ...d, actions: [ActionType.ADDED] })
     } else {
@@ -35,7 +35,7 @@ export function formatResolutionDatesSection(
 
   const tableState: TableBusinessState<ResolutionDateSchema>[] = originalDates.map((date) => {
     const oldParsed = schema.parse(date)
-    const matchingDraft = drafts.find((d) => d.id === date.id)
+    const matchingDraft = drafts.find(d => d.id === date.id)
 
     if (matchingDraft) {
       const newParsed = schema.parse(matchingDraft)
