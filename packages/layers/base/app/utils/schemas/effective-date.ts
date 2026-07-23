@@ -28,9 +28,11 @@ export function getEffectiveDateSchema(minDate?: string) {
     const minDt = DateTime.fromFormat(minDate, DATE_API_INPUT_FORMAT)
     if (minDt.isValid) {
       effectiveDateField = effectiveDateField.refine(
-        val => {
+        (val) => {
           const entered = DateTime.fromFormat(val, DATE_DISPLAY_FORMAT)
-          if (!entered.isValid) return true
+          if (!entered.isValid) {
+            return true
+          }
           return entered >= minDt
         },
         t('validation.dateNotBeforeMin', { date: minDt.toFormat(DATE_DISPLAY_FORMAT) })
@@ -46,8 +48,12 @@ export type FormEffectiveDateRef = InstanceType<typeof FormEffectiveDate>
 
 /** Converts an API-format date string (yyyy-MM-dd) to a CalendarDate, or undefined if invalid. */
 export function toCalendarDate(dateStr?: string): CalendarDate | undefined {
-  if (!dateStr) return undefined
+  if (!dateStr) {
+    return undefined
+  }
   const dt = DateTime.fromFormat(dateStr, DATE_API_INPUT_FORMAT)
-  if (!dt.isValid) return undefined
+  if (!dt.isValid) {
+    return undefined
+  }
   return new CalendarDate(dt.year, dt.month, dt.day)
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type DateValue } from '@internationalized/date'
+import type { DateValue } from '@internationalized/date'
 import type { DateRange } from 'reka-ui'
 import type { Form, FormError } from '@nuxt/ui'
 import { DateTime } from 'luxon'
@@ -25,9 +25,13 @@ const isCalendarOpen = ref(false)
 const calendarMinValue = computed(() => toCalendarDate(props.minDate))
 
 const calendarValue = computed(() => {
-  if (!localState.effectiveDate) return undefined
+  if (!localState.effectiveDate) {
+    return undefined
+  }
   const dt = DateTime.fromFormat(localState.effectiveDate, DATE_DISPLAY_FORMAT)
-  if (!dt.isValid) return undefined
+  if (!dt.isValid) {
+    return undefined
+  }
   return toCalendarDate(dt.toFormat(DATE_API_INPUT_FORMAT))
 })
 
@@ -181,7 +185,11 @@ defineExpose({ formRef })
             </template>
           </UInput>
           <p :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']">
-            <UIcon v-if="error" name="i-mdi-alert" class="size-4 shrink-0" />
+            <UIcon
+              v-if="error"
+              name="i-mdi-alert"
+              class="size-4 shrink-0"
+            />
             {{ t('text.effectiveDateFormat') }}
           </p>
         </template>
