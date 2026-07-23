@@ -141,6 +141,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :empty-text="$t('label.noShareClasses')"
         variant="correct-readonly"
+        :collect-resolution-date="store.requireResolutionDate"
       />
     </section>
 

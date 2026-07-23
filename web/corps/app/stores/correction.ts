@@ -16,6 +16,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<CorrectionDraftState>({} as CorrectionDraftState)
+  const requireResolutionDate = ref(false)
 
   const formState = reactive<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialFormState = shallowRef<CorrectionFormSchema>({} as CorrectionFormSchema)
@@ -97,11 +98,17 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       [OfficeType.RECORDS, OfficeType.REGISTERED],
       true // fetch share classes
     )
+
+    if (!draftFiling) {
+      initializing.value = false
+      return
+    }
+
     const aliasesNameTranslations = await service.getNameTranslations(businessId).catch(() => [] as NameTranslation[])
 
     // The draft is always expected to exist (pre-created before page load)
-    const draft = draftFiling!.filing.correction
-    draftFilingState.value = draftFiling!
+    const draft = draftFiling.filing.correction
+    draftFilingState.value = draftFiling
 
     // Correction metadata from the pre-created draft
     correctedFilingId.value = draft.correctedFilingId
@@ -222,7 +229,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
-    if (isResolutionFiling(correctedFilingType.value)) {
+    requireResolutionDate.value = isResolutionFiling(correctedFilingType.value)
+    if (requireResolutionDate.value) {
       const originalResolutions = await service.getResolutions(businessId).catch(() => [])
       const draftResolutions = draft.shareStructure?.resolutionDates
 
@@ -481,6 +489,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDate,
     correctedFilingDateDisplay,
     correctionType,
+    requireResolutionDate,
     isStaffCorrectionType,
     directors: tableParties,
     receivers: tableReceivers,
