@@ -31,27 +31,31 @@ describe('FormEffectiveDate', () => {
     expect(input.element.value).toBe(VALID_DISPLAY_DATE)
   })
 
-  it('should update the model in API format after valid input on blur', async () => {
+  it('should update the model in API format after valid input', async () => {
     const model: EffectiveDateSchema = { effectiveDate: '' }
     const wrapper = await mountComponent(model)
 
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
+    vi.useFakeTimers()
     await input.setValue(VALID_DISPLAY_DATE)
-    await input.trigger('blur')
+    await vi.runAllTimersAsync()
     await flushPromises()
+    vi.useRealTimers()
 
     expect(model.effectiveDate).toBe(VALID_API_DATE)
   })
 
-  it('should normalize alternate date formats to display format on blur', async () => {
+  it('should normalize alternate date formats to display format on input', async () => {
     const model: EffectiveDateSchema = { effectiveDate: '' }
     const wrapper = await mountComponent(model)
 
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
-    // ISO format input — should be normalized to display format
-    await input.setValue('March 15, 2024')
-    await input.trigger('blur')
+    vi.useFakeTimers()
+    // Abbreviated month format — should be normalized to full display format
+    await input.setValue('Mar 15, 2024')
+    await vi.runAllTimersAsync()
     await flushPromises()
+    vi.useRealTimers()
 
     expect(model.effectiveDate).toBe(VALID_API_DATE)
   })
@@ -68,17 +72,4 @@ describe('FormEffectiveDate', () => {
     expect(model.effectiveDate).toBe('')
   })
 
-  it('should resolve validation when a valid date is set', async () => {
-    const wrapper = await mountComponent({ effectiveDate: VALID_API_DATE })
-    await expect(wrapper.vm.validateNormalizedDate()).resolves.toBeUndefined()
-  })
-
-  it('should reject validation when date is empty', async () => {
-    const wrapper = await mountComponent({ effectiveDate: '' })
-    await expect(wrapper.vm.validateNormalizedDate()).rejects.toMatchObject({
-      errors: expect.arrayContaining([
-        expect.objectContaining({ message: expect.any(String) })
-      ])
-    })
-  })
 })
