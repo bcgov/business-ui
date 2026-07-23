@@ -71,5 +71,4 @@ describe('FormEffectiveDate', () => {
 
     expect(model.effectiveDate).toBe('')
   })
-
 })
