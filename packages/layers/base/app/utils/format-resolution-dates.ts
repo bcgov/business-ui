@@ -18,10 +18,23 @@ export function formatResolutionDatesApi(
 
 export function formatResolutionDatesSection(
   originalDates: Resolution[],
-  draftDates: Resolution[] = []
+  draftDates?: Resolution[]
 ): { newState: ResolutionDateSchema, tableState: TableBusinessState<ResolutionDateSchema>[] } {
   const schema = getResolutionDateSchema()
   let newState: ResolutionDateSchema = schema.parse({})
+
+  // if no draft state exists, do not modify the table state
+  if (draftDates === undefined) {
+    const tableState: TableBusinessState<ResolutionDateSchema>[] = originalDates.map((date) => {
+      const parsed = schema.parse(date)
+      return {
+        old: structuredClone(parsed),
+        new: structuredClone(parsed)
+      }
+    })
+
+    return { newState, tableState }
+  }
 
   const drafts: Resolution[] = []
 

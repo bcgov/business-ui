@@ -124,4 +124,14 @@ describe('formatResolutionDatesSection', () => {
     expect(tableState[0]!.new.date).toBe('2026-01-01')
     expect(tableState[0]!.new.actions).toEqual([])
   })
+
+  it('should not modify original dates when draftDates is undefined', () => {
+    const originalDates = [{ id: 10, type: 'TYPE_A', date: '2026-01-01' }]
+
+    const { tableState } = formatResolutionDatesSection(originalDates, undefined)
+
+    expect(tableState).toHaveLength(1)
+    expect(tableState[0]!.old).toEqual(tableState[0]!.new)
+    expect(tableState[0]!.new.actions).toEqual([])
+  })
 })
