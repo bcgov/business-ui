@@ -52,7 +52,7 @@ const tableUi = computed(() => {
   const tr = [
     '[&:has([data-is-editing="true"])]:hidden',
     /* eslint-disable-next-line max-len */
-    "relative after:absolute after:content-[''] after:bottom-0 last:after:hidden data-[expanded=true]:after:hidden after:h-px after:bg-gray-200",
+    "relative after:absolute after:content-[''] after:bottom-0 after:h-px after:bg-gray-200 last:after:hidden data-[expanded=true]:after:hidden",
     props.trDividerFullWidth
       ? 'after:left-0 after:right-0'
       : 'after:left-6 after:right-6'

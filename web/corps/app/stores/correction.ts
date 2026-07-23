@@ -86,8 +86,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
    * @param draftId - The pre-created correction draft filing ID (from route param `filingId`)
    */
   async function init(businessId: string, draftId?: string) {
-    initializing.value = true
     $reset()
+    initializing.value = true
 
     const { draftFiling, parties: allParties, addresses, shareClasses } = await initFiling<CorrectionFiling>(
       businessId,
@@ -477,6 +477,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialShareClasses.value = []
     initialNameTranslations.value = []
     initialResolutionDates.value = []
+
+    initializing.value = false
+    requireResolutionDate.value = false
   }
 
   return {
