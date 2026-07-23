@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { CalendarDate, type DateValue } from '@internationalized/date'
+import { type DateValue } from '@internationalized/date'
 import type { DateRange } from 'reka-ui'
 import type { Form, FormError } from '@nuxt/ui'
 import { DateTime } from 'luxon'
 
-defineProps<{
+const props = defineProps<{
   name?: string
+  minDate?: string
 }>()
 
 const { t } = useI18n()
 
-const effectiveDateSchema = getEffectiveDateSchema()
+const effectiveDateSchema = getEffectiveDateSchema(props.minDate)
 
 const model = defineModel<EffectiveDateSchema>({ required: true })
 
@@ -21,15 +22,13 @@ const localState = reactive<EffectiveDateSchema>({ effectiveDate: model.value.ef
 
 const isCalendarOpen = ref(false)
 
+const calendarMinValue = computed(() => toCalendarDate(props.minDate))
+
 const calendarValue = computed(() => {
-  if (!localState.effectiveDate) {
-    return undefined
-  }
+  if (!localState.effectiveDate) return undefined
   const dt = DateTime.fromFormat(localState.effectiveDate, DATE_DISPLAY_FORMAT)
-  if (!dt.isValid) {
-    return undefined
-  }
-  return new CalendarDate(dt.year, dt.month, dt.day)
+  if (!dt.isValid) return undefined
+  return toCalendarDate(dt.toFormat(DATE_API_INPUT_FORMAT))
 })
 
 function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefined) {
@@ -174,6 +173,7 @@ defineExpose({ formRef })
                 <template #content>
                   <UCalendar
                     :model-value="calendarValue"
+                    :min-value="calendarMinValue"
                     @update:model-value="onDateSelect"
                   />
                 </template>

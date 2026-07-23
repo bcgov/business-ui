@@ -48,6 +48,7 @@ const isRemovedOrEdited = computed(() => isRemoved.value || isEdited.value)
 const canRemove = computed(() => isActionAllowed(ManageAllowedAction.REMOVE) || isAdded.value)
 const canChange = computed(() => {
   const allowed = isActionAllowed(ManageAllowedAction.ADDRESS_CHANGE)
+    || isActionAllowed(ManageAllowedAction.EFFECTIVE_DATE_CHANGE)
     || isActionAllowed(ManageAllowedAction.NAME_CHANGE)
     || isActionAllowed(ManageAllowedAction.ROLE_CHANGE)
   return allowed || isAdded.value

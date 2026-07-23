@@ -798,6 +798,7 @@ export default {
       invalid: 'Name Request Number is invalid',
       required: 'Name Request Number is required'
     },
+    dateNotBeforeMin: 'Date must be on or after {date}',
     futureDateRequired: 'Effective date must be in the future',
     onlyNumbers: 'Only enter numbers',
     onlyWholeNumbers: 'Only enter whole numbers',

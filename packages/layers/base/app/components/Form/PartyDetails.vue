@@ -51,7 +51,7 @@ async function onDone() {
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate(),
-    isDirectorRole.value ? effectiveDateFormRef.value?.formRef?.validate() : undefined
+    isDirectorRole.value && isEffectiveDateChangeAllowed.value ? effectiveDateFormRef.value?.formRef?.validate() : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')
@@ -82,6 +82,7 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
 const isDirectorRole = computed(() => !!directorRole.value)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
@@ -135,7 +136,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <template v-if="isDirectorRole">
+        <template v-if="isDirectorRole && isEffectiveDateChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormEffectiveDate
             ref="effective-date-form"
