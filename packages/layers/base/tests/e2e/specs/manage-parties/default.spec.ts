@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 import { RoleType } from '#business/app/enums/role-type'
-import { fillOutName, fillOutRoles, selectDone } from '#business/tests/e2e/test-utils'
+import { fillOutRoles, fillOutName, selectCancel, selectDone } from '#business/tests/e2e/test-utils'
 
 // FUTURE: flush this out
 test.describe('ManageParties', () => {
@@ -17,12 +17,13 @@ test.describe('ManageParties', () => {
     expect(rows.length).toBe(3)
     // has expected columns
     const columns = await rows[0]!.locator('td').all()
-    expect(columns.length).toBe(5)
+    expect(columns.length).toBe(6)
     expect(columns[0]!).toHaveText('TESTER  TESTING')
     expect(columns[1]!).toContainText('5-14505 Boul De Pierrefonds,')
     expect(columns[2]!).toHaveText('Same as Mailing Address')
     expect(columns[3]!).toContainText('Director')
-    expect(columns[4]!).toContainText('Change')
+    expect(columns[4]!).toContainText('August 16, 2023 to current')
+    expect(columns[5]!).toContainText('Change')
   })
 
   test('Should be able to add a preferred name', async ({ page }) => {
@@ -38,7 +39,7 @@ test.describe('ManageParties', () => {
     // verify name
     await expect(columns[0]!).toHaveText('TESTER  TESTING')
     // edit first party
-    const changeBtn = columns[4]!.getByRole('button', { name: 'change' })
+    const changeBtn = columns[5]!.getByRole('button', { name: 'change' })
     await expect(changeBtn).toBeVisible()
     await changeBtn.click()
     // edit name
@@ -81,7 +82,7 @@ test.describe('ManageParties', () => {
     const rows = await manageParties.getByRole('table').locator('tbody').getByRole('row').all()
     const columns = await rows[0]!.locator('td').all()
     // edit first party
-    const changeBtn = columns[4]!.getByRole('button', { name: 'change' })
+    const changeBtn = columns[5]!.getByRole('button', { name: 'change' })
     await expect(changeBtn).toBeVisible()
     await changeBtn.click()
     // role selection
@@ -92,5 +93,23 @@ test.describe('ManageParties', () => {
     for (const role of roles) {
       await expect(columns[3]!).toContainText(role.roleType)
     }
+  })
+
+  test('Should show effective date field when party has Director role', async ({ page }) => {
+    await page.goto('./en-CA/examples/components/ManageParties')
+    await page.waitForLoadState('networkidle')
+
+    const manageParties = page.getByTestId('manage-parties')
+    const tbody = manageParties.getByRole('table').locator('tbody')
+
+    // find first row that contains a Director role
+    const directorRow = tbody.getByRole('row').filter({ hasText: RoleType.DIRECTOR }).first()
+    await directorRow.getByRole('button', { name: 'change' }).click()
+
+    // effective date input should be visible
+    const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Effective Date')
+    await expect(effectiveDateInput).toBeVisible()
+
+    await selectCancel(page)
   })
 })

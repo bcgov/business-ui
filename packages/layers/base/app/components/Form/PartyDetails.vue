@@ -32,13 +32,28 @@ const model = defineModel<PartyDetails>({ required: true })
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
+const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
+
+const directorRole = computed(() => model.value.roles.find(role => role.roleType === RoleTypeUi.DIRECTOR))
+
+const effectiveDateModel = computed({
+  get: (): EffectiveDateSchema => ({ effectiveDate: directorRole.value?.appointmentDate ?? '' }),
+  set: (val: EffectiveDateSchema) => {
+    if (directorRole.value) {
+      directorRole.value.appointmentDate = val.effectiveDate
+    }
+  }
+})
 
 async function onDone() {
   // need to validate child refs to get input IDs
   const result = await Promise.allSettled([
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
-    addressFormRef.value?.formRef?.validate()
+    addressFormRef.value?.formRef?.validate(),
+    isDirectorRole.value && isEffectiveDateChangeAllowed.value
+      ? effectiveDateFormRef.value?.formRef?.validate()
+      : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')
@@ -69,6 +84,8 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
+const isDirectorRole = computed(() => !!directorRole.value)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
@@ -121,6 +138,15 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
+        <template v-if="isDirectorRole && isEffectiveDateChangeAllowed">
+          <USeparator class="padding-x-default" />
+          <FormEffectiveDate
+            ref="effective-date-form"
+            v-model="effectiveDateModel"
+            name="effectiveDate"
+          />
+          <USeparator class="padding-x-default mb-8" />
+        </template>
       </template>
     </SubFormWrapper>
   </UForm>

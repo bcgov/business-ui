@@ -22,6 +22,7 @@ const activeParty = ref<ActivePartySchema | undefined>(undefined)
 const loading = ref(false)
 const selectItems = ref([
   ManageAllowedAction.ADDRESS_CHANGE,
+  ManageAllowedAction.EFFECTIVE_DATE_CHANGE,
   ManageAllowedAction.NAME_CHANGE,
   ManageAllowedAction.ROLE_CHANGE,
   ManageAllowedAction.ADD,
@@ -29,6 +30,7 @@ const selectItems = ref([
 ])
 const selectedItems = ref([
   ManageAllowedAction.ADDRESS_CHANGE,
+  ManageAllowedAction.EFFECTIVE_DATE_CHANGE,
   ManageAllowedAction.NAME_CHANGE,
   ManageAllowedAction.ROLE_CHANGE,
   ManageAllowedAction.ADD,
@@ -56,6 +58,7 @@ const selectedItems = ref([
       <ManageParties
         v-model:active-party="activeParty"
         :loading="loading"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"
