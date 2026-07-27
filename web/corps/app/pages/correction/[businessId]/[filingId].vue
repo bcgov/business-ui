@@ -3,13 +3,6 @@ const { t } = useI18n()
 const store = useCorrectionStore()
 const { initializing } = storeToRefs(store)
 const route = useRoute()
-const { setAlert: setPartiesAlert } = useFilingAlerts('manage-parties')
-const { setAlert: setOfficesAlert } = useFilingAlerts('manage-offices')
-const { setAlert: setReceiversAlert } = useFilingAlerts('manage-receivers')
-const { setAlert: setLiquidatorsAlert } = useFilingAlerts('manage-liquidators')
-const { setAlert: setSharesAlert } = useFilingAlerts('manage-share-structure')
-const { setAlert: setNameTranslationsAlert } = useFilingAlerts('manage-name-translations')
-const { setAlert: setCompanyNameAlert } = useFilingAlerts('manage-company-name')
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
@@ -34,19 +27,18 @@ const {
     [() => store.initialOffices, () => store.offices],
     [() => store.initialShareClasses, () => store.shareClasses],
     [() => store.initialNameTranslations, () => store.nameTranslations],
-    [() => store.companyName.old.legalName, () => store.companyName.new.legalName]
+    [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
+    [() => store.initialResolutionDates, () => store.resolutionDates]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
-    const hasValidComment = !!store.formState.comment?.detail?.trim()
-
     return store.directors.some(d => d.new.actions.length > 0)
       || store.receivers.some(r => r.new.actions.length > 0)
       || store.liquidators.some(l => l.new.actions.length > 0)
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
+      || store.resolutionDates.some(rd => rd.new.actions.length > 0)
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
-      || (store.hasCommentChanges && hasValidComment)
       || store.companyName.new.actions.length > 0
   }
 )
@@ -76,24 +68,9 @@ const originalFilingDate = computed(() => {
   return toReadableDate(store.correctedFilingDate)
 })
 
-function checkActiveSubForm() {
-  if (!store.hasActiveSubForm) {
-    return false
-  }
-  const alertMsg = t('text.finishTaskBeforeOtherChanges')
-  return (store.formState.activeOffice && setOfficesAlert('office-address-form', alertMsg))
-    || (store.formState.activeDirector && setPartiesAlert('party-details-form', alertMsg))
-    || (store.formState.activeReceiver && setReceiversAlert('party-details-form', alertMsg))
-    || (store.formState.activeLiquidator && setLiquidatorsAlert('party-details-form', alertMsg))
-    || (store.formState.activeClass && setSharesAlert('share-class-form', alertMsg))
-    || (store.formState.activeSeries && setSharesAlert('share-series-form', alertMsg))
-    || (store.formState.activeNameTranslation && setNameTranslationsAlert('name-translation-form', alertMsg))
-    || (store.formState.activeNameRequest && setCompanyNameAlert('company-name-form', alertMsg))
-}
-
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)
-  if (checkActiveSubForm()) {
+  if (store.hasActiveSubForm) {
     return
   }
   if (!canSubmit()) {
@@ -105,7 +82,7 @@ function reviewAndConfirm() {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (checkActiveSubForm()) {
+    if (store.hasActiveSubForm) {
       return
     }
     if (!canSubmit()) {
@@ -126,7 +103,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
   try {
     if (enableUnsavedChangesBlock) {
       setBtnCtrlAlert(undefined)
-      if (checkActiveSubForm()) {
+      if (store.hasActiveSubForm) {
         return
       }
       if (!canSave()) {
@@ -182,6 +159,10 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   ],
   buttonLayout: 'stackedDefault'
 })
+
+watch(currentStep, (step) => {
+  store.syncResolutionTableState(step === 2)
+}, { immediate: true })
 </script>
 
 <template>

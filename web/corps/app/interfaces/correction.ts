@@ -72,7 +72,7 @@ export interface CorrectionPayload extends FilingPayloadData {
   // UI submits with `actions` (plural) array — using flexible type for both directions
   shareStructure?: {
     shareClasses: Array<ShareClass & { action?: string, actions?: ActionType[] }>
-    resolutionDates?: string[]
+    resolutionDates?: Resolution[]
   }
 
   // TODO: add additional correction-specific fields as needed

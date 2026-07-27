@@ -116,10 +116,12 @@ const tableUi = computed(() => {
 
     <template v-if="showBodyTopSlot" #body-top>
       <tr
-        :class="[
-          `relative after:absolute after:content-['']`,
-          'after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200'
-        ]"
+        :class="!(props.hideEmptyText && props.hideTableHeader)
+          && [
+            `relative after:absolute after:content-['']`,
+            'after:bottom-0 after:left-6 after:right-6 after:h-px after:bg-gray-200'
+          ]
+        "
       >
         <td :colspan="columns.length">
           <div

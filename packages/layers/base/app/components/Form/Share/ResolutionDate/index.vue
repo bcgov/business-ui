@@ -34,6 +34,16 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
+
+watch(
+  [() => props.standalone, model],
+  ([isStandalone, val]) => {
+    if (isStandalone && val) {
+      val.actions = [ActionType.ADDED]
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
