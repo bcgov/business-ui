@@ -292,6 +292,38 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Submits a document to the Legal API which will be uploaded to the DRS.
+   * @param identifier The business identifier.
+   * @param file The file to upload
+   * @param filingType The filing this document is associated with eg courtOrder
+   * @param entityType The business entity type
+   * @param documentType The document type eg court_order
+   * @param filingId The filing ID this document is associated with, optional
+   * @returns A promise that resolves the response from the DRS
+  */
+  async function postDocument(
+    identifier: string,
+    file: File,
+    filingType: FilingType,
+    entityType: CorpTypeCd,
+    documentType: ClientDocumentType,
+    filingId?: number
+  ): Promise<DocumentUploadResponse> {
+    return $businessApi(`documents/client/${filingType}/${entityType}/${documentType}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/pdf' },
+        body: file,
+        params: {
+          filename: file.name,
+          businessIdentifier: identifier,
+          filingId
+        }
+      }
+    )
+  }
+
+  /**
    * Submits a new filing to the Legal API.
    * This function is generic and will return a typed response
    * @param identifier The business identifier object.
@@ -392,6 +424,7 @@ export const useBusinessService = () => {
     getTasks,
     getParties,
     // ...rest
+    postDocument,
     postFiling,
     saveOrUpdateDraftFiling,
     deleteFiling

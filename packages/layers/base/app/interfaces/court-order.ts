@@ -7,4 +7,6 @@ export interface CourtOrder {
   orderDate?: string
   effectOfOrder?: string
   hasPlanOfArrangement?: boolean
+  orderText?: string
+  files?: unknown[]
 }

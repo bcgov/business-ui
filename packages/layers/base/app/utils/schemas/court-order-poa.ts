@@ -28,3 +28,18 @@ export function getCourtOrderPoaSchema() {
 export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSchema>>
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
+
+export function getCourtOrderPoaFullSchema() {
+  const t = useNuxtApp().$i18n.t
+  return z.object({
+    hasPoa: z.boolean().optional(),
+    courtOrderNumber: z.string()
+      .min(5, t('connect.validation.minChars', { count: 5 }))
+      .max(20, t('connect.validation.maxChars', { count: 20 }))
+      .default(''),
+    courtOrderText: z.string().optional(),
+    files: z.array(z.unknown()).optional()
+  })
+}
+
+export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>

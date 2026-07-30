@@ -61,6 +61,7 @@ const removeButtonLabelMap: Record<FormVariant, string> = {
       :class="error ? 'border-l-error border-l-3' : ''"
     >
       <slot />
+      <USeparator class="padding-x-default pb-4 xl:pb-8" />
       <div
         class="flex flex-col xl:flex-row gap-2 xl:gap-6 items-center px-4 xl:px-8 pb-4 xl:pb-8"
         :class="showRemoveButton ? 'justify-between' : 'justify-end'"
