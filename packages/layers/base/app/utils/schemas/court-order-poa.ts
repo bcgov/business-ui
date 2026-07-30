@@ -31,8 +31,8 @@ export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 
 export function getCourtOrderPoaFullSchema() {
   return getCourtOrderPoaSchema().extend({
-    courtOrderText: z.string().default(''),
-    files: z.array(z.unknown()).default(() => [])
+    courtOrderText: z.string().optional(),
+    files: z.array(z.unknown()).optional()
   })
 }
 

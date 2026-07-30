@@ -109,6 +109,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             variant="add"
             subject="Court Order"
             state-key="manage-court-orders"
+            is-court-order
           />
         </div>
         <div class="flex gap-6 justify-end">

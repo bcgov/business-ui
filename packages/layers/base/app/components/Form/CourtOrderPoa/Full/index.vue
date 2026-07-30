@@ -7,6 +7,7 @@ const props = defineProps<{
   hideRemove?: boolean
   name?: string
   stateKey: string
+  isCourtOrder: boolean
 }>()
 // validationContext?: { existingNumbers: string[] } // Do we need to pass this to the schema?
 
@@ -102,8 +103,10 @@ defineExpose({
             />
           </ConnectFormFieldWrapper>
         </div>
+        <template v-if="isCourtOrder">
         <USeparator class="padding-x-default" />
         <ConnectFormFieldWrapper
+          v-if="model.courtOrderText"
           :label="$t('label.courtOrderText')"
           orientation="horizontal"
           details-aria-hidden
@@ -135,6 +138,7 @@ defineExpose({
         >
           <FormDocumentUpload @converted-files="(files) => model.files = files" />
         </ConnectFormFieldWrapper>
+        </template>
       </template>
     </SubFormWrapper>
   </UForm>
