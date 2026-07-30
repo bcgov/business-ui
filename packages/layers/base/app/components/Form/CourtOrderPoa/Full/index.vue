@@ -7,8 +7,8 @@ const props = defineProps<{
   hideRemove?: boolean
   name?: string
   stateKey: string
-  validationContext?: { existingNumbers: string[] } // Do we need to pass this to the schema?
 }>()
+// validationContext?: { existingNumbers: string[] } // Do we need to pass this to the schema?
 
 const emit = defineEmits<{
   done: []
@@ -21,7 +21,7 @@ const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-poa-f
 
 const formTarget = 'court-order-poa-form'
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
-const { targetId, messageId } = attachAlerts(formTarget, model)  
+const { targetId, messageId } = attachAlerts(formTarget, model)
 
 const schema = computed(() => getCourtOrderPoaFullSchema())
 
@@ -29,7 +29,7 @@ const formErrors = computed(() => {
   const errors = formRef.value?.getErrors()
 
   return {
-    courtOrderNumber: !!errors?.find(e => e.name?.includes('courtOrderNumber')),
+    courtOrderNumber: !!errors?.find(e => e.name?.includes('courtOrderNumber'))
   }
 })
 
@@ -110,7 +110,7 @@ defineExpose({
           class="padding-xy-default"
         >
           <UFormField
-            name="courtOrderText" 
+            name="courtOrderText"
             :help="`${model.courtOrderText.length} / 2000`"
             :ui="{
               help: 'text-right'

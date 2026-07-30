@@ -246,7 +246,7 @@ describe('useBusinessService', () => {
   it('postDocument should call the correct endpoint with POST and FormData payload', async () => {
     const mockFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
     const mockResponse = { documentServiceId: 'DS1234567890' }
-    
+
     mockBusinessApi.mockResolvedValue(mockResponse)
 
     const result = await service.postDocument(

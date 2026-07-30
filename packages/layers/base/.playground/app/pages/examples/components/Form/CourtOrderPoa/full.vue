@@ -49,8 +49,6 @@ const nameError = computed<FormError | undefined>(() => {
   return errors?.find(e => e.name?.startsWith('name'))
 })
 
-watchEffect(() => console.log(formRef.value?.getErrors()))
-
 // loses typing here
 // only accepts FormSubmitEvent<Schema> (not FullSchema)
 // cast type to get type completion if necessary

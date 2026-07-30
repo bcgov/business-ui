@@ -1,4 +1,4 @@
-import type { FormCourtOrderPoa, FormCourtOrderPoaFull } from '#components'
+import type { FormCourtOrderPoa } from '#components'
 import { z } from 'zod'
 
 export function getCourtOrderPoaSchema() {

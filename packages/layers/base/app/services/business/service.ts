@@ -322,7 +322,7 @@ export const useBusinessService = () => {
       }
     )
   }
-  
+
   /**
    * Submits a new filing to the Legal API.
    * This function is generic and will return a typed response
