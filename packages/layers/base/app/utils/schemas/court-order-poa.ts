@@ -1,4 +1,4 @@
-import type { FormCourtOrderPoa } from '#components'
+import type { FormCourtOrderPoa, FormCourtOrderPoaFull } from '#components'
 import { z } from 'zod'
 
 export function getCourtOrderPoaSchema() {
@@ -28,3 +28,12 @@ export function getCourtOrderPoaSchema() {
 export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSchema>>
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
+
+export function getCourtOrderPoaFullSchema() {
+  return getCourtOrderPoaSchema().extend({
+    courtOrderText: z.string().default(''),
+    files: z.array(z.unknown()).default(() => [])
+  })
+}
+
+export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>

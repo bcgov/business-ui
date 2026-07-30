@@ -126,6 +126,13 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Modal/StaffPay')
   },
   {
+    label: 'FormCourtOrderPoa',
+    children: [
+      { label: 'Default', to: localePath('/examples/components/Form/CourtOrderPoa/default') },
+      { label: 'Full', to: localePath('/examples/components/Form/CourtOrderPoa/full') }
+    ]
+  },
+  {
     label: 'FormDetail',
     to: localePath('/examples/components/Form/Detail')
   },

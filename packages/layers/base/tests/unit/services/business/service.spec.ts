@@ -243,6 +243,37 @@ describe('useBusinessService', () => {
     expect(result).toEqual(mockData.parties)
   })
 
+  it('postDocument should call the correct endpoint with POST and FormData payload', async () => {
+    const mockFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
+    const mockResponse = { documentServiceId: 'DS1234567890' }
+    
+    mockBusinessApi.mockResolvedValue(mockResponse)
+
+    const result = await service.postDocument(
+      businessId,
+      mockFile,
+      FilingType.CORRECTION,
+      CorpTypeCd.BC_COMPANY,
+      ClientDocumentType.COURT_ORDER
+    )
+
+    expect(mockBusinessApi).toHaveBeenCalledOnce()
+
+    const callArgs = mockBusinessApi.mock.calls[0]!
+    const calledUrl = callArgs[0]
+    const calledOptions = callArgs[1]
+    expect(calledUrl).toBe(`documents/client/${FilingType.CORRECTION}/BC/court_order`)
+    expect(calledOptions.method).toBe('POST')
+    expect(calledOptions.params).toEqual({
+      businessIdentifier: 'BC1234567',
+      filename: 'test.pdf',
+      filingId: undefined
+    })
+
+    expect(calledOptions.body).toBeDefined()
+    expect(result).toEqual(mockResponse)
+  })
+
   describe('postFiling', () => {
     it('should call the correct endpoint with POST and a fully constructed body', async () => {
       const business = {

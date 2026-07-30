@@ -343,6 +343,7 @@ export default {
   },
   label: {
     actions: 'Actions',
+    addCourtOrderTextOpt: 'Add court order text (Optional)',
     addDetail: 'Add Detail',
     adding: 'Adding',
     addingSeriesToClass: 'Adding Series to {name} Shares',
@@ -388,6 +389,7 @@ export default {
     courtOrderAndPoa: 'Court Order and Plan of Arrangement',
     courtOrderNumber: 'Court Order Number',
     courtOrderNumberOpt: 'Court Order Number (Optional)',
+    courtOrderText: 'Court Order Text',
     correcting: 'Correcting',
     correctingItemName: 'Correcting {name}',
     currency: 'Currency',
@@ -545,6 +547,7 @@ export default {
     submit: 'Submit',
     undo: 'Undo',
     unknown: 'Unknown',
+    uploadFiles: 'Upload Files',
     useNewNrNumber: 'Use a new name request number',
     useTheCorporationNumberAsTheName: 'Use the incorporation number {boldStart}{corpnum}{boldEnd} as the name',
     newNameRequestNumber: 'New Name Request Number',
