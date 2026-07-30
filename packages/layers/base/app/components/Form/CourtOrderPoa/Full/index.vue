@@ -97,9 +97,9 @@ defineExpose({
             <ConnectFormInput
               v-model="model.courtOrderNumber"
               input-id="court-order-number-input"
-              :label="model.hasPoa ? $t('label.courtOrderNumber') : $t('label.courtOrderNumberOpt')"
+              :label="$t('label.courtOrderNumber')"
               name="courtOrderNumber"
-              :required="model.hasPoa"
+              required
             />
           </ConnectFormFieldWrapper>
         </div>
