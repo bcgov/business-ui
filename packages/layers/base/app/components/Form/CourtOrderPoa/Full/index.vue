@@ -104,40 +104,39 @@ defineExpose({
           </ConnectFormFieldWrapper>
         </div>
         <template v-if="isCourtOrder">
-        <USeparator class="padding-x-default" />
-        <ConnectFormFieldWrapper
-          v-if="model.courtOrderText"
-          :label="$t('label.courtOrderText')"
-          orientation="horizontal"
-          details-aria-hidden
-          class="padding-xy-default"
-        >
-          <UFormField
-            name="courtOrderText"
-            :help="`${model.courtOrderText.length} / 2000`"
-            :ui="{
-              help: 'text-right'
-            }"
+          <USeparator class="padding-x-default" />
+          <ConnectFormFieldWrapper
+            :label="$t('label.courtOrderText')"
+            orientation="horizontal"
+            details-aria-hidden
+            class="padding-xy-default"
           >
-            <template #default>
-              <ConnectInput
-                id="court-order-text-input"
-                v-model="model.courtOrderText"
-                :label="$t('label.addCourtOrderTextOpt')"
-                maxlength="2000"
-              />
-            </template>
-          </UFormField>
-        </ConnectFormFieldWrapper>
-        <USeparator class="padding-x-default" />
-        <ConnectFormFieldWrapper
-          :label="$t('label.uploadFiles')"
-          orientation="horizontal"
-          details-aria-hidden
-          class="padding-xy-default"
-        >
-          <FormDocumentUpload @converted-files="(files) => model.files = files" />
-        </ConnectFormFieldWrapper>
+            <UFormField
+              name="courtOrderText"
+              :help="`${(model.courtOrderText?.length) || 0} / 2000`"
+              :ui="{
+                help: 'text-right'
+              }"
+            >
+              <template #default>
+                <ConnectInput
+                  id="court-order-text-input"
+                  v-model="model.courtOrderText"
+                  :label="$t('label.addCourtOrderTextOpt')"
+                  maxlength="2000"
+                />
+              </template>
+            </UFormField>
+          </ConnectFormFieldWrapper>
+          <USeparator class="padding-x-default" />
+          <ConnectFormFieldWrapper
+            :label="$t('label.uploadFiles')"
+            orientation="horizontal"
+            details-aria-hidden
+            class="padding-xy-default"
+          >
+            <FormDocumentUpload @converted-files="(files) => model.files = files" />
+          </ConnectFormFieldWrapper>
         </template>
       </template>
     </SubFormWrapper>
