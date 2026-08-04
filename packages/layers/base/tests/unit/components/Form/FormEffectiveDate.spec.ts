@@ -2,7 +2,11 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { FormEffectiveDate } from '#components'
-import { DATE_API_INPUT_FORMAT, DATE_DISPLAY_FORMAT } from '#business/app/utils/schemas/effective-date'
+import {
+  DATE_API_INPUT_FORMAT,
+  DATE_DISPLAY_FORMAT,
+  type EffectiveDateSchema
+} from '#business/app/utils/schemas/effective-date'
 import { DateTime } from 'luxon'
 
 const VALID_API_DATE = '2024-03-15'
