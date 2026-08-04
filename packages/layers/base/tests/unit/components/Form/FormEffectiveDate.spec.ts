@@ -22,12 +22,12 @@ const mountComponent = (modelValue: EffectiveDateSchema = { dateInput: '' }) => 
 describe('FormEffectiveDate', () => {
   it('should render the effective date input', async () => {
     const wrapper = await mountComponent()
-    expect(wrapper.find('#effective-date-input').exists()).toBe(true)
+    expect(wrapper.find('input').exists()).toBe(true)
   })
 
   it('should display an existing date value in display format', async () => {
     const wrapper = await mountComponent({ dateInput: VALID_API_DATE })
-    const input = wrapper.find<HTMLInputElement>('#effective-date-input')
+    const input = wrapper.find<HTMLInputElement>('input')
     expect(input.element.value).toBe(VALID_DISPLAY_DATE)
   })
 
@@ -35,7 +35,7 @@ describe('FormEffectiveDate', () => {
     const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
-    const input = wrapper.find<HTMLInputElement>('#effective-date-input')
+    const input = wrapper.find<HTMLInputElement>('input')
     vi.useFakeTimers()
     await input.setValue(VALID_DISPLAY_DATE)
     await vi.runAllTimersAsync()
@@ -49,7 +49,7 @@ describe('FormEffectiveDate', () => {
     const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
-    const input = wrapper.find<HTMLInputElement>('#effective-date-input')
+    const input = wrapper.find<HTMLInputElement>('input')
     vi.useFakeTimers()
     // Abbreviated month format — should be normalized to full display format
     await input.setValue('Mar 15, 2024')
@@ -64,7 +64,7 @@ describe('FormEffectiveDate', () => {
     const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
-    const input = wrapper.find<HTMLInputElement>('#effective-date-input')
+    const input = wrapper.find<HTMLInputElement>('input')
     await input.setValue('not a date')
     await input.trigger('blur')
     await flushPromises()

@@ -73,7 +73,11 @@ defineExpose({ formRef })
             :min-date="props.minDate"
             :disabled="props.disabled"
           />
-          <p :id="hintId" :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']" aria-live="polite">
+          <p
+            :id="hintId"
+            :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']"
+            aria-live="polite"
+          >
             <UIcon
               v-if="error"
               name="i-mdi-alert"
