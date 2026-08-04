@@ -8,12 +8,12 @@ import { DateTime } from 'luxon'
 const VALID_API_DATE = '2024-03-15'
 const VALID_DISPLAY_DATE = DateTime.fromFormat(VALID_API_DATE, DATE_API_INPUT_FORMAT).toFormat(DATE_DISPLAY_FORMAT) // 'March 15, 2024'
 
-const mountComponent = (modelValue: EffectiveDateSchema = { effectiveDate: '' }) => {
+const mountComponent = (modelValue: EffectiveDateSchema = { dateInput: '' }) => {
   return mountSuspended(FormEffectiveDate, {
     props: {
       modelValue,
       'onUpdate:modelValue': (val: EffectiveDateSchema) => {
-        modelValue.effectiveDate = val.effectiveDate
+        modelValue.dateInput = val.dateInput
       }
     }
   })
@@ -26,13 +26,13 @@ describe('FormEffectiveDate', () => {
   })
 
   it('should display an existing date value in display format', async () => {
-    const wrapper = await mountComponent({ effectiveDate: VALID_API_DATE })
+    const wrapper = await mountComponent({ dateInput: VALID_API_DATE })
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
     expect(input.element.value).toBe(VALID_DISPLAY_DATE)
   })
 
   it('should update the model in API format after valid input', async () => {
-    const model: EffectiveDateSchema = { effectiveDate: '' }
+    const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
@@ -42,11 +42,11 @@ describe('FormEffectiveDate', () => {
     await flushPromises()
     vi.useRealTimers()
 
-    expect(model.effectiveDate).toBe(VALID_API_DATE)
+    expect(model.dateInput).toBe(VALID_API_DATE)
   })
 
   it('should normalize alternate date formats to display format on input', async () => {
-    const model: EffectiveDateSchema = { effectiveDate: '' }
+    const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
@@ -57,11 +57,11 @@ describe('FormEffectiveDate', () => {
     await flushPromises()
     vi.useRealTimers()
 
-    expect(model.effectiveDate).toBe(VALID_API_DATE)
+    expect(model.dateInput).toBe(VALID_API_DATE)
   })
 
   it('should not update the model when an invalid date is entered', async () => {
-    const model: EffectiveDateSchema = { effectiveDate: '' }
+    const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
     const input = wrapper.find<HTMLInputElement>('#effective-date-input')
@@ -69,6 +69,6 @@ describe('FormEffectiveDate', () => {
     await input.trigger('blur')
     await flushPromises()
 
-    expect(model.effectiveDate).toBe('')
+    expect(model.dateInput).toBe('')
   })
 })

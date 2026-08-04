@@ -37,10 +37,10 @@ const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-dat
 const directorRole = computed(() => model.value.roles.find(role => role.roleType === RoleTypeUi.DIRECTOR))
 
 const effectiveDateModel = computed({
-  get: (): EffectiveDateSchema => ({ effectiveDate: directorRole.value?.appointmentDate ?? '' }),
+  get: (): EffectiveDateSchema => ({ dateInput: directorRole.value?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
     if (directorRole.value) {
-      directorRole.value.appointmentDate = val.effectiveDate
+      directorRole.value.appointmentDate = val.dateInput
     }
   }
 })

@@ -6,25 +6,25 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Form Effective Date' }]
 })
 
-type FullSchema = { effectiveDate: EffectiveDateSchema }
+type FullSchema = {
+  restrictedDate: EffectiveDateSchema
+  optionalDate: EffectiveDateSchema
+  disabledDate: EffectiveDateSchema
+}
 
 const state = reactive<FullSchema>({
-  effectiveDate: {
-    effectiveDate: ''
+  restrictedDate: {
+    dateInput: ''
+  },
+  optionalDate: {
+    dateInput: ''
+  },
+  disabledDate: {
+    dateInput: '2026-07-15'
   }
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
-const effectiveDateRef = useTemplateRef<FormEffectiveDateRef>('effective-date-ref')
-
-const hasErrors = computed<boolean | undefined>(() => {
-  const errors = formRef.value?.getErrors()
-  // nested doesnt propagate errors reactively
-  // but will propagate on submit
-  // workaround - check nested ref as well
-  const effectiveDateErrors = effectiveDateRef.value?.formRef?.getErrors()
-  return (errors && errors.length > 0) || (effectiveDateErrors && effectiveDateErrors.length > 0)
-})
 
 async function onSubmit(event: FormSubmitEvent<unknown>) {
   const data = event.data as FullSchema
@@ -36,7 +36,6 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
       :heading="{ label: 'Effective Date Form (default/nested)' }"
-      :ui-body="hasErrors ? 'p-10 border-l-2 border-error' : 'p-10'"
       class="max-w-3xl"
     >
       <UForm
@@ -47,12 +46,49 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
         @submit="onSubmit"
         @error="onFormSubmitError"
       >
-        <FormEffectiveDate
-          ref="effective-date-ref"
-          v-model="state.effectiveDate"
-          name="effectiveDate"
-        />
+        <ConnectPageSection
+          :heading="{
+            label: 'Basic Example with min and max date restrictions'
+          }"
+          ui-body="p-4 space-y-4"
+        >
+          <FormEffectiveDate
+            ref="effective-date-ref"
+            v-model="state.restrictedDate"
+            name="restrictedDate"
+            min-date="2026-06-01"
+            max-date="2026-07-30"
+          />
+        </ConnectPageSection>
 
+        <ConnectPageSection
+          :heading="{
+            label: 'Effective Date is not required and has no date restrictions'
+          }"
+          ui-body="p-4 space-y-4"
+        >
+          <FormEffectiveDate
+            ref="effective-date-ref"
+            v-model="state.optionalDate"
+            name="optionalDate"
+            :required="false"
+          />
+        </ConnectPageSection>
+
+        <ConnectPageSection
+          :heading="{
+            label: 'Effective Date is disabled/readonly'
+          }"
+          ui-body="p-4 space-y-4"
+        >
+          <FormEffectiveDate
+            ref="effective-date-ref"
+            v-model="state.disabledDate"
+            name="disabledDate"
+            :required="false"
+            :disabled="true"
+          />
+        </ConnectPageSection>
         <div class="flex gap-6 justify-end">
           <UButton type="submit" :label="$t('label.done')" />
           <UButton
