@@ -39,6 +39,7 @@ const isCalendarOpen = ref(false)
 const inputWrapperRef = useTemplateRef<HTMLElement>('inputWrapperRef')
 const calendarContentRef = useTemplateRef<HTMLElement>('calendarContentRef')
 let suppressCloseAutoFocus = false
+let suppressOpenOnFocus = false
 
 const FOCUSABLE_SELECTOR = 'button:not([disabled])'
 
@@ -138,10 +139,19 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
   localState.dateInput = formatDate(dt, DATE_DISPLAY_FORMAT)
   syncModelFromLocal()
   suppressCloseAutoFocus = true
+  suppressOpenOnFocus = true
   isCalendarOpen.value = false
   nextTick(() => {
     inputWrapperRef.value?.querySelector<HTMLElement>(`#${inputId}`)?.focus()
   })
+}
+
+function onInputFocus() {
+  if (suppressOpenOnFocus) {
+    suppressOpenOnFocus = false
+    return
+  }
+  isCalendarOpen.value = true
 }
 
 function normalizeDate(input: string): string {
@@ -228,7 +238,7 @@ function clearDate() {
       class="w-full"
       placeholder="&nbsp;"
       :aria-describedby="describedBy"
-      @focus="isCalendarOpen = true"
+      @focus="onInputFocus"
       @blur="onInputBlur"
       @keydown="onInputKeydown"
     >
