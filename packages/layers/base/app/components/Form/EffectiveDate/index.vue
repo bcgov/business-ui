@@ -4,7 +4,6 @@ import type { EffectiveDateSchema } from '../../../utils/schemas/effective-date'
 import { getEffectiveDateSchema } from '../../../utils/schemas/effective-date'
 
 const props = withDefaults(defineProps<{
-  name?: string
   minDate?: string
   maxDate?: string
   required?: boolean
