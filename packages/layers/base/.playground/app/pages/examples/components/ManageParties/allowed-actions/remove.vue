@@ -32,6 +32,7 @@ const loading = ref(false)
       <ManageParties
         v-model:active-party="activeParty"
         :loading="loading"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"

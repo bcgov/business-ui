@@ -33,7 +33,7 @@ const loading = ref(false)
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"
-        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'actions']"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :party-form-props="{
           partyNameProps: { allowBusinessName: true, allowPreferredName: true },
           partyRoleProps: { allowedRoles: [RoleTypeUi.DIRECTOR, RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR] }
