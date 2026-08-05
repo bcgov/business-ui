@@ -49,8 +49,6 @@ defineExpose({ formRef })
     ref="effective-date-form"
     :schema="effectiveDateSchema"
     :state="localState"
-    nested
-    :name="props.name"
     :validate-on="[]"
   >
     <ConnectFormFieldWrapper
