@@ -34,7 +34,9 @@ const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
-const rolesRequiringEffectiveDate = computed(() => model.value.roles.filter(role => ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType)))
+const rolesRequiringEffectiveDate = computed(() =>
+  model.value.roles.filter(role => ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType))
+)
 
 const effectiveDateModel = computed({
   get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
