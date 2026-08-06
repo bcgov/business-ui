@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import type { FormPartyRole } from '#components'
 
+export const ROLES_REQUIRING_EFFECTIVE_DATE: RoleTypeUi[] = [
+  RoleTypeUi.DIRECTOR,
+  // add others here as needed
+]
+
 export function getPartyRoleSchema(roleType?: RoleTypeUi) {
   const t = useNuxtApp().$i18n.t
 
