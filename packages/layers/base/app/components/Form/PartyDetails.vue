@@ -34,13 +34,13 @@ const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
-const directorRole = computed(() => model.value.roles.find(role => role.roleType === RoleTypeUi.DIRECTOR))
+const rolesRequiringEffectiveDate = computed(() => model.value.roles.filter(role => ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType)))
 
 const effectiveDateModel = computed({
-  get: (): EffectiveDateSchema => ({ dateInput: directorRole.value?.appointmentDate ?? '' }),
+  get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
-    if (directorRole.value) {
-      directorRole.value.appointmentDate = val.dateInput
+    for (const role of rolesRequiringEffectiveDate.value) {
+      role.appointmentDate = val.dateInput
     }
   }
 })
@@ -51,7 +51,7 @@ async function onDone() {
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate(),
-    isDirectorRole.value && isEffectiveDateChangeAllowed.value
+    isRoleRequiringEffectiveDate.value && isEffectiveDateChangeAllowed.value
       ? effectiveDateFormRef.value?.formRef?.validate()
       : undefined
   ])
@@ -85,7 +85,7 @@ const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.N
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
 const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
-const isDirectorRole = computed(() => !!directorRole.value)
+const isRoleRequiringEffectiveDate = computed(() => rolesRequiringEffectiveDate.value.length > 0)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
@@ -138,7 +138,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <template v-if="isDirectorRole && isEffectiveDateChangeAllowed">
+        <template v-if="isRoleRequiringEffectiveDate && isEffectiveDateChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormEffectiveDate
             ref="effective-date-form"
