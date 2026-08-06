@@ -2,7 +2,7 @@ import { z } from 'zod'
 import type { FormPartyRole } from '#components'
 
 export const ROLES_REQUIRING_EFFECTIVE_DATE: RoleTypeUi[] = [
-  RoleTypeUi.DIRECTOR,
+  RoleTypeUi.DIRECTOR
   // add others here as needed
 ]
 
