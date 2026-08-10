@@ -27,7 +27,8 @@ export function getResolutionDateColumn<T extends ResolutionDateSchema>(
           label: row.original.new.date,
           badges,
           class: defaultClass,
-          labelClass: isRemoved ? DELETED_CLASS : ''
+          labelClass: isRemoved ? DELETED_CLASS : '',
+          badgeOrientation: 'horizontal'
         }
       )
     }

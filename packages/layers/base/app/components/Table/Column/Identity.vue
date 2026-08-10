@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import type { BadgeProps } from '@nuxt/ui'
 
-defineProps<{
+const {
+  badgeOrientation = 'vertical'
+} = defineProps<{
   label?: string
   badges: BadgeProps[]
+  badgeOrientation?: 'vertical' | 'horizontal'
   labelClass?: string
 }>()
 </script>
 
 <template>
-  <div class="flex flex-col gap-1">
+  <div 
+    class="flex"
+    :class="{
+      'flex-col gap-1': badgeOrientation === 'vertical',
+      'flex-row gap-2 items-center': badgeOrientation === 'horizontal',
+    }"
+  >
     <div class="flex flex-col gap-1">
       <slot>
         <div v-if="label" :class="labelClass">
