@@ -532,7 +532,7 @@ export default {
     sameAsMailingAddress: 'Same as Mailing Address',
     save: 'Save',
     saveResumeLater: 'Save and Resume Later',
-    selectDate: 'Select Date',
+    selectDate: 'Enter or Select a Date',
     seriesNameShares: 'Series Name [Shares]',
     shareClass: 'Share Class',
     shareClasses: 'Share Classes',

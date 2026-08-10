@@ -146,7 +146,6 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             ref="effective-date-form"
             v-model="effectiveDateModel"
           />
-          <USeparator class="padding-x-default mb-8" />
         </template>
       </template>
     </SubFormWrapper>

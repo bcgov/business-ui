@@ -41,8 +41,6 @@ const calendarContentRef = useTemplateRef<HTMLElement>('calendarContentRef')
 let suppressCloseAutoFocus = false
 let suppressOpenOnFocus = false
 
-const FOCUSABLE_SELECTOR = 'button:not([disabled])'
-
 function onCloseAutoFocus(e: Event) {
   if (suppressCloseAutoFocus) {
     e.preventDefault()
@@ -66,7 +64,7 @@ function onInputBlur(e: FocusEvent) {
 
 function focusCalendarGrid() {
   nextTick(() => {
-    calendarContentRef.value?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus()
+    calendarContentRef.value?.querySelector<HTMLElement>('button:not([disabled])')?.focus()
   })
 }
 
@@ -252,58 +250,88 @@ function clearDate() {
         <UButton
           v-if="localState.dateInput && !disabled"
           icon="i-mdi-close"
+          type="button"
           :color="error ? 'error' : 'neutral'"
           variant="ghost"
-          :ui="{ base: 'size-7 p-0 flex items-center justify-center icon-btn-focus' }"
+          class="date-action-button"
           aria-label="Clear date"
+          @keydown.enter.prevent="clearDate"
           @click="clearDate"
         />
-        <UPopover
-          v-model:open="isCalendarOpen"
-          :reference="inputWrapperRef ?? undefined"
-          :content="{
-            side: 'top',
-            align: 'start',
-            onOpenAutoFocus: (e: Event) => e.preventDefault(),
-            onCloseAutoFocus,
-            onFocusOutside: ignoreInputInteraction,
-            onInteractOutside: ignoreInputInteraction
-          }"
-        >
-          <UButton
-            icon="i-mdi-calendar"
-            :disabled="disabled"
-            :color="error && !localState.dateInput ? 'error' : 'neutral'"
-            variant="ghost"
-            :ui="{ base: 'size-7 p-0 flex items-center justify-center icon-btn-focus' }"
-            aria-label="Open calendar"
-            @keydown="onCalendarIconKeydown"
-          />
-          <template #content>
-            <div ref="calendarContentRef">
-              <UCalendar
-                aria-label="Choose Date"
-                :placeholder="calendarPlaceholder"
-                :model-value="calendarValue"
-                :min-value="calendarMinValue"
-                :max-value="calendarMaxValue"
-                @update:model-value="onDateSelect"
-              />
-            </div>
-          </template>
-        </UPopover>
+        <!-- capture Enter before Reka UI asChild trigger strips the listener -->
+        <span @keydown.capture.enter.prevent.stop="isCalendarOpen = !isCalendarOpen">
+          <UPopover
+            v-model:open="isCalendarOpen"
+            :reference="inputWrapperRef ?? undefined"
+            :content="{
+              side: 'top',
+              align: 'start',
+              onOpenAutoFocus: (e: Event) => e.preventDefault(),
+              onCloseAutoFocus,
+              onFocusOutside: ignoreInputInteraction,
+              onInteractOutside: ignoreInputInteraction
+            }"
+          >
+            <UButton
+              icon="i-mdi-calendar"
+              type="button"
+              :disabled="disabled"
+              :color="error && !localState.dateInput ? 'error' : 'neutral'"
+              variant="ghost"
+              class="date-action-button"
+              aria-label="Open calendar"
+              @keydown="onCalendarIconKeydown"
+            />
+            <template #content>
+              <div ref="calendarContentRef">
+                <UCalendar
+                  aria-label="Choose Date"
+                  :placeholder="calendarPlaceholder"
+                  :model-value="calendarValue"
+                  :min-value="calendarMinValue"
+                  :max-value="calendarMaxValue"
+                  @update:model-value="onDateSelect"
+                />
+              </div>
+            </template>
+          </UPopover>
+        </span>
       </template>
     </UInput>
   </div>
 </template>
 
 <style scoped>
-:deep(.icon-btn-focus) {
+:deep(.date-action-button) {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   outline: none;
+  color: #1669BB;
 }
 
-:deep(.icon-btn-focus:focus-visible) {
+:deep(.date-action-button:focus-visible) {
   box-shadow: 0 0 0 2px var(--ui-primary);
   border-radius: 1px;
+}
+
+:deep([data-slot="header"] button:focus-visible) {
+  outline: 2px solid #1669BB;
+  outline-offset: -4px;
+  box-shadow: none;
+  border-radius: 20%;
+  background: transparent;
+}
+
+:deep([data-slot="cellTrigger"]:focus-visible) {
+  outline: 2px solid #1669BB;
+  border-radius: 50%;
+}
+
+:deep([data-slot="cellTrigger"][data-selected]) {
+  border-radius: 50%;
 }
 </style>

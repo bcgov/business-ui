@@ -63,7 +63,7 @@ defineExpose({ formRef })
         <template #default="{ error }">
           <Date
             v-model="localState.dateInput"
-            :label="$t('label.effectiveDate')"
+            :label="$t('label.selectDate')"
             :error="!!error"
             :described-by="hintId"
             :max-date="props.maxDate"
@@ -80,7 +80,11 @@ defineExpose({ formRef })
               name="i-mdi-alert"
               class="size-4 shrink-0"
             />
-            {{ error || $t('text.effectiveDateFormat') }}
+            {{
+              error === $t('validation.fieldRequired')
+                ? `${error}. ${$t('text.effectiveDateFormat')}`
+                : (error || $t('text.effectiveDateFormat'))
+            }}
           </p>
         </template>
       </UFormField>
