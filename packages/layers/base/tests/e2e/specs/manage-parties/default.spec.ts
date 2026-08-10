@@ -107,7 +107,7 @@ test.describe('ManageParties', () => {
     await directorRow.getByRole('button', { name: 'change' }).click()
 
     // effective date input should be visible
-    const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Effective Date')
+    const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Enter or Select a Date')
     await expect(effectiveDateInput).toBeVisible()
 
     await selectCancel(page)
