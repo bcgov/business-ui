@@ -48,7 +48,7 @@ const isArray = computed(() => Array.isArray(parsedT.value))
           :label="$t('label.hideHelp')"
           variant="link"
           class="w-min underline p-0 ml-auto"
-          @click="open = false"
+          @click="open = false;"
         />
       </div>
     </template>

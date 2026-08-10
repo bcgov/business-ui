@@ -4,6 +4,7 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Share Structure - Real Data Example' }]
 })
 
+const { isAuthenticated } = useConnectAuth()
 const service = useBusinessService()
 const identifier = ref('')
 const collectResolutionDate = ref(true)
@@ -62,7 +63,7 @@ onMounted(() => {
     >
       <template #default>
         <UAlert
-          v-if="!$connectAuth.authenticated"
+          v-if="!isAuthenticated"
           title="This example requires authentication and a business affiliated to your current account."
           color="error"
           icon="i-mdi-alert"
