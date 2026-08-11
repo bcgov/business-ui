@@ -18,7 +18,7 @@ const isArray = computed(() => Array.isArray(parsedT.value))
     <UButton
       variant="link"
       leading-icon="i-mdi-help-circle-outline"
-      class="p-0 text-left whitespace-normal w-fit"
+      class="px-2 text-left whitespace-normal w-fit -ml-2"
     >
       {{ open ? (closeLabel ?? $t('label.hideHelp')) : label }}
     </UButton>
@@ -47,8 +47,8 @@ const isArray = computed(() => Array.isArray(parsedT.value))
         <UButton
           :label="$t('label.hideHelp')"
           variant="link"
-          class="w-min underline p-0 ml-auto"
-          @click="open = false"
+          class="px-2 w-min underline ml-auto"
+          @click="open = false;"
         />
       </div>
     </template>

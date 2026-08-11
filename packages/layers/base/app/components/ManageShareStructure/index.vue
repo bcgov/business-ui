@@ -462,36 +462,38 @@ watch(requiresResolutionDate, (v) => {
         "
         padding-class="xy-default"
       >
-        <TableShareStructureResolutionDates
-          v-model:expanded="expandedResolutionDate"
-          :data="resolutionDates"
-          :label-overrides="tableLabels"
-          :allowed-actions="tableAllowedActions"
-          :prevent-actions="shouldPreventActions"
-          :hide-actions-when="() => isReadOnly"
-          :task-guard-config="{
-            messageId: resolutionDateAlertMessageId,
-            targetId: resolutionDateAlertTargetId,
-            message: alerts[resolutionDateAlertGroup]
-          }"
-          @init-edit="initEditResolutionDate"
-          @remove="removeResolutionDate"
-          @undo="undoResolutionDate"
-          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
-        >
-          <template #expanded="{ row }">
-            <FormShareResolutionDate
-              v-if="activeResolutionDate"
-              v-model="activeResolutionDate"
-              :state-key
-              name="activeResolutionDate"
-              :validation-context="changeResolutionDateValidationContext"
-              :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
-              @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
-              @cancel="cleanupForm"
-            />
-          </template>
-        </TableShareStructureResolutionDates>
+        <div class="-my-4">
+          <TableShareStructureResolutionDates
+            v-model:expanded="expandedResolutionDate"
+            :data="resolutionDates"
+            :label-overrides="tableLabels"
+            :allowed-actions="tableAllowedActions"
+            :prevent-actions="shouldPreventActions"
+            :hide-actions-when="() => isReadOnly"
+            :task-guard-config="{
+              messageId: resolutionDateAlertMessageId,
+              targetId: resolutionDateAlertTargetId,
+              message: alerts[resolutionDateAlertGroup]
+            }"
+            @init-edit="initEditResolutionDate"
+            @remove="removeResolutionDate"
+            @undo="undoResolutionDate"
+            @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
+          >
+            <template #expanded="{ row }">
+              <FormShareResolutionDate
+                v-if="activeResolutionDate"
+                v-model="activeResolutionDate"
+                :state-key
+                name="activeResolutionDate"
+                :validation-context="changeResolutionDateValidationContext"
+                :variant="variant === 'correct' ? 'correct' : (row.original.old ? 'change' : 'edit')"
+                @done="() => updateResolutionDate(row, activeResolutionDate, cleanupForm)"
+                @cancel="cleanupForm"
+              />
+            </template>
+          </TableShareStructureResolutionDates>
+        </div>
       </ConnectFieldset>
     </div>
   </component>
