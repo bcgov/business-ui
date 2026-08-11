@@ -154,11 +154,15 @@ export const useBusinessService = () => {
     return await getCachedOrFetch(options, force)
   }
 
+  /**
+   * Fetches all court orders that have been filed against a business.
+   * @param businessId the identifier of the business.
+   * @returns An array of Court Order objects.
+  */
   async function getCourtOrders(
     businessId: string,
     force = false
-  ): Promise<CourtOrderResponse[]>
-  {
+  ): Promise<CourtOrderResponse[]> {
     const options = query.courtOrdersOptions(businessId)
     return await getCachedOrFetch(options, force).then(res => res.courtOrders)
   }
