@@ -393,6 +393,8 @@ async function redirect (item: Business) {
     }
   } else if (isSocieties(item)) {
     affNav.goToSocieties()
+  } else if (isColinManaged(item)) { // no dashboard exists for a business not loaded in LEAR
+    affNav.goToCorpOnline()
   } else {
     await affStore.removeAcceptedAffiliationInvitations(item)
     affNav.goToDashboard(item.businessIdentifier)

@@ -22,6 +22,8 @@ export interface RegSearchResult {
   bn: string
   status: EntityStates.ACTIVE | EntityStates.HISTORICAL
   legalType: CorpTypes
+  /** True when the business is loaded in LEAR, false when it is still managed in COLIN. */
+  modernized?: boolean
 }
 
 // api responses
@@ -60,4 +62,6 @@ export interface ManageBusinessEvent {
   name: string
   score?: number
   status?: string
+  /** True when the business is loaded in LEAR, false when it is still managed in COLIN. */
+  modernized?: boolean
 }

@@ -270,6 +270,22 @@ describe('affiliations utils', () => {
     })
   })
 
+  describe('isColinManaged', () => {
+    it('should return true when the business is not loaded in LEAR', () => {
+      const business = { ...mockBusiness, isLoadedLear: false }
+      expect(isColinManaged(business)).toBe(true)
+    })
+
+    it('should return false when the business is loaded in LEAR', () => {
+      const business = { ...mockBusiness, isLoadedLear: true }
+      expect(isColinManaged(business)).toBe(false)
+    })
+
+    it('should return false when the api omits the field', () => {
+      expect(isColinManaged(mockBusiness)).toBe(false)
+    })
+  })
+
   describe('isBadstanding', () => {
     it('should return true if business is in bad standing', () => {
       expect(isBadstanding(mockBusiness)).toBe(true)

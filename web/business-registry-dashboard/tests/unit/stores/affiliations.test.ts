@@ -1234,7 +1234,7 @@ describe('useAffiliationsStore', () => {
       affStore = useAffiliationsStore()
     })
 
-    it('should open manage business modal when searchType is "reg"', () => {
+    it('should open manage business modal when searchType is "reg"', async () => {
       const event: ManageBusinessEvent = {
         bn: '123',
         identifier: '123',
@@ -1243,9 +1243,44 @@ describe('useAffiliationsStore', () => {
         score: 42,
         status: 'some status'
       }
-      affStore.handleManageBusinessOrNameRequest('reg', event)
+      await affStore.handleManageBusinessOrNameRequest('reg', event)
 
       expect(mockOpenManageBusiness).toHaveBeenCalled()
+    })
+
+    it('should sync a COLIN business before opening the manage business modal', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+      mockAuthApi.mockResolvedValue(undefined)
+      const event: ManageBusinessEvent = {
+        bn: '123',
+        identifier: 'BC0870226',
+        legalType: 'BC',
+        name: 'colin test company',
+        score: 42,
+        status: 'ACTIVE'
+      }
+
+      await affStore.handleManageBusinessOrNameRequest('reg', event)
+
+      expect(mockAuthApi).toHaveBeenCalledWith('/entities/BC0870226/synchronizations/colin', { method: 'POST' })
+      expect(mockOpenManageBusiness).toHaveBeenCalledOnce()
+    })
+
+    it('should still open the manage business modal when the COLIN sync fails', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+      mockAuthApi.mockRejectedValue(new Error('COLIN down'))
+      const event: ManageBusinessEvent = {
+        bn: '123',
+        identifier: 'BC0870226',
+        legalType: 'BC',
+        name: 'colin test company',
+        score: 42,
+        status: 'ACTIVE'
+      }
+
+      await affStore.handleManageBusinessOrNameRequest('reg', event)
+
+      expect(mockOpenManageBusiness).toHaveBeenCalledOnce()
     })
 
     it('should call addBusinessForStaffSilently when authorized', async () => {
@@ -1303,6 +1338,74 @@ describe('useAffiliationsStore', () => {
       affStore.handleManageBusinessOrNameRequest('namex', event)
 
       expect(mockOpenManageNameRequest).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('syncBusinessFromColin', () => {
+    let affStore: any
+
+    const colinBusinessEvent = (overrides: object = {}): ManageBusinessEvent => ({
+      bn: '123456789',
+      identifier: 'BC0870226',
+      legalType: 'BC',
+      name: 'colin test company',
+      status: 'ACTIVE',
+      modernized: false,
+      ...overrides
+    })
+
+    beforeEach(() => {
+      affStore = useAffiliationsStore()
+    })
+
+    it('should sync a COLIN style identifier when the feature is enabled', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+      mockAuthApi.mockResolvedValue(undefined)
+
+      await affStore.syncBusinessFromColin(colinBusinessEvent())
+
+      expect(mockAuthApi).toHaveBeenCalledWith('/entities/BC0870226/synchronizations/colin', { method: 'POST' })
+    })
+
+    it('should sync when the search does not report the modernized flag', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+      mockAuthApi.mockResolvedValue(undefined)
+
+      await affStore.syncBusinessFromColin(colinBusinessEvent({ modernized: undefined }))
+
+      expect(mockAuthApi).toHaveBeenCalledWith('/entities/BC0870226/synchronizations/colin', { method: 'POST' })
+    })
+
+    it('should do nothing when the feature flag is off', async () => {
+      mockGetStoredFlag.mockReturnValue(false)
+
+      await affStore.syncBusinessFromColin(colinBusinessEvent())
+
+      expect(mockAuthApi).not.toHaveBeenCalled()
+    })
+
+    it('should do nothing when the search reports the business as modernized', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+
+      await affStore.syncBusinessFromColin(colinBusinessEvent({ modernized: true }))
+
+      expect(mockAuthApi).not.toHaveBeenCalled()
+    })
+
+    it.each(['BEN', 'CBEN', 'C', 'CUL', 'CCC', 'CP', 'SP', 'GP'])(
+      'should do nothing for legal type %s outside the COLIN affiliation corp types', async (legalType: string) => {
+        mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+
+        await affStore.syncBusinessFromColin(colinBusinessEvent({ legalType }))
+
+        expect(mockAuthApi).not.toHaveBeenCalled()
+      })
+
+    it('should swallow errors so the manage business modal still opens', async () => {
+      mockGetStoredFlag.mockImplementation(flag => flag === LDFlags.EnableColinBusinessAffiliation)
+      mockAuthApi.mockRejectedValue(new Error('COLIN down'))
+
+      await expect(affStore.syncBusinessFromColin(colinBusinessEvent())).resolves.toBeUndefined()
     })
   })
 

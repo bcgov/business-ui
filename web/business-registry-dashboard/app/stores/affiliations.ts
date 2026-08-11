@@ -738,14 +738,34 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     })
   }
 
+  /**
+   * Creates or refreshes the auth entity for a business still managed in COLIN.
+   */
+  async function syncBusinessFromColin (business: ManageBusinessEvent) {
+    const colinAffiliationEnabled = ldStore.getStoredFlag(LDFlags.EnableColinBusinessAffiliation) || false
+    const colinCorpTypes = (useRuntimeConfig().public.colinAffiliationCorpTypes as string) || 'BC,ULC,CC'
+    if (!colinAffiliationEnabled || business.modernized || !colinCorpTypes.split(',').includes(business.legalType)) {
+      return
+    }
+    try {
+      await $authApi(`/entities/${business.identifier}/synchronizations/colin`, { method: 'POST' })
+    } catch (error) {
+      logFetchError(error, 'Error syncing business from COLIN')
+    }
+  }
+
   async function handleManageBusinessOrNameRequest (
     searchType: 'reg' | 'namex',
     event: ManageNameRequestEvent | ManageBusinessEvent
   ) {
     if (searchType === 'reg' && 'identifier' in event) {
       if (IsAuthorized(AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION)) {
+        // no sync needed - creating the affiliation syncs COLIN businesses server side
         await addBusinessForStaffSilently(event.identifier)
       } else {
+        // the manage-business modal decides which authentication options to offer from the
+        // entity auth-api holds, so a COLIN business must be synced before the modal opens
+        await syncBusinessFromColin(event)
         brdModal.openManageBusiness(event)
       }
     } else if (searchType === 'namex' && 'nrNum' in event) {
@@ -919,6 +939,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     authorizedActions,
     createNRAffiliation,
     createAffiliation,
+    syncBusinessFromColin,
     handleManageBusinessOrNameRequest,
     removeBusiness,
     canBusinessBeDeleted,

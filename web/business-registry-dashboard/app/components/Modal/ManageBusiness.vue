@@ -92,7 +92,9 @@ const authOptions = computed<AccordionItem[]>(() => {
     })
   }
 
-  if (affiliatedAccounts.value.length > 0 && (ldStore.getStoredFlag(LDFlags.EnableAffiliationDelegation) || false)) {
+  // businesses still managed in COLIN can only be affiliated with passcode or email
+  if (affiliatedAccounts.value.length > 0 && isLearBusiness.value &&
+    (ldStore.getStoredFlag(LDFlags.EnableAffiliationDelegation) || false)) {
     options.push({
       label: t('form.manageBusiness.authOption.delegation.radioLabel.default', { subject: subject.value }),
       slot: 'delegation-option'
