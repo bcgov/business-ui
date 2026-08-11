@@ -283,13 +283,13 @@ function clearDate() {
             v-model:open="isCalendarOpen"
             :reference="inputWrapperRef ?? undefined"
             :content="{
-              side: 'top',
-              align: 'start',
+              'side': 'top',
+              'align': 'start',
               'aria-describedby': calendarDescId,
-              onOpenAutoFocus: (e: Event) => e.preventDefault(),
+              'onOpenAutoFocus': (e: Event) => e.preventDefault(),
               onCloseAutoFocus,
-              onFocusOutside: ignoreInputInteraction,
-              onInteractOutside: ignoreInputInteraction
+              'onFocusOutside': ignoreInputInteraction,
+              'onInteractOutside': ignoreInputInteraction
             }"
           >
             <UButton
@@ -318,7 +318,11 @@ function clearDate() {
         </span>
       </template>
     </UInput>
-    <span aria-live="polite" aria-atomic="true" class="sr-only">{{ calendarAnnouncement }}</span>
+    <span
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >{{ calendarAnnouncement }}</span>
   </div>
 </template>
 

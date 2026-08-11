@@ -37,8 +37,12 @@ const localState = reactive<EffectiveDateSchema>({ dateInput: model.value.dateIn
 
 const hintText = computed(() => {
   const err = formError.value?.message
-  if (!err) return $t('text.effectiveDateFormat')
-  if (err === $t('validation.fieldRequired')) return `${err}. ${$t('text.effectiveDateFormat')}`
+  if (!err) {
+    return $t('text.effectiveDateFormat')
+  }
+  if (err === $t('validation.fieldRequired')) {
+    return `${err}. ${$t('text.effectiveDateFormat')}`
+  }
   return err
 })
 
@@ -102,7 +106,11 @@ defineExpose({ formRef })
               hintText
             }}
           </p>
-          <span aria-live="assertive" aria-atomic="true" class="sr-only">{{ liveAnnouncement }}</span>
+          <span
+            aria-live="assertive"
+            aria-atomic="true"
+            class="sr-only"
+          >{{ liveAnnouncement }}</span>
         </template>
       </UFormField>
     </ConnectFormFieldWrapper>
