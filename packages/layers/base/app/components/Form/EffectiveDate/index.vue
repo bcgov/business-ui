@@ -35,9 +35,26 @@ const formError = computed<FormError | undefined>(() =>
 
 const localState = reactive<EffectiveDateSchema>({ dateInput: model.value.dateInput })
 
+const hintText = computed(() => {
+  const err = formError.value?.message
+  if (!err) return $t('text.effectiveDateFormat')
+  if (err === $t('validation.fieldRequired')) return `${err}. ${$t('text.effectiveDateFormat')}`
+  return err
+})
+
+const liveAnnouncement = ref('')
+
 watch(() => localState.dateInput, async (val) => {
   model.value = { dateInput: val ?? '' }
   await formRef.value?.validate().catch(() => {})
+  const err = formError.value
+  if (!err) {
+    liveAnnouncement.value = ''
+  } else if (err.message === $t('validation.fieldRequired')) {
+    liveAnnouncement.value = hintText.value
+  } else {
+    liveAnnouncement.value = `${localState.dateInput.trim()}, ${$t('validation.invalidDate')}, ${hintText.value}`
+  }
 })
 
 defineExpose({ formRef })
@@ -63,11 +80,12 @@ defineExpose({ formRef })
         <template #default="{ error }">
           <Date
             v-model="localState.dateInput"
-            :label="$t('label.selectDate')"
+            :label="$t('label.effectiveDate')"
             :error="!!error"
             :described-by="hintId"
             :max-date="props.maxDate"
             :min-date="props.minDate"
+            :required="props.required"
             :disabled="props.disabled"
           />
           <p
@@ -81,11 +99,10 @@ defineExpose({ formRef })
               class="size-4 shrink-0"
             />
             {{
-              error === $t('validation.fieldRequired')
-                ? `${error}. ${$t('text.effectiveDateFormat')}`
-                : (error || $t('text.effectiveDateFormat'))
+              hintText
             }}
           </p>
+          <span aria-live="assertive" aria-atomic="true" class="sr-only">{{ liveAnnouncement }}</span>
         </template>
       </UFormField>
     </ConnectFormFieldWrapper>

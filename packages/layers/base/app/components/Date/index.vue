@@ -9,6 +9,7 @@ const props = defineProps<{
   minDate?: string
   maxDate?: string
   disabled?: boolean
+  required?: boolean
   error?: boolean
   describedBy?: string
 }>()
@@ -29,13 +30,22 @@ const DATE_INPUT_FORMATS = [
   'd MMM yyyy'
 ]
 
-const dateModel = defineModel<string>({ required: true })
+const dateModel = defineModel<string>()
 
 const inputId = `date-input-${useId()}`
+const calendarDescId = `date-calendar-desc-${useId()}`
 
 const localState = reactive({ dateInput: dateModel.value ?? '' })
 
 const isCalendarOpen = ref(false)
+const calendarAnnouncement = ref('')
+let suppressCalendarAnnouncement = false
+watch(isCalendarOpen, (open) => {
+  calendarAnnouncement.value = (open && !suppressCalendarAnnouncement)
+    ? `Choose Date, ${calendarDisplayMonth.value}`
+    : ''
+  suppressCalendarAnnouncement = false
+})
 const inputWrapperRef = useTemplateRef<HTMLElement>('inputWrapperRef')
 const calendarContentRef = useTemplateRef<HTMLElement>('calendarContentRef')
 let suppressCloseAutoFocus = false
@@ -103,6 +113,13 @@ const calendarPlaceholder = computed<CalendarDate>(() => {
   return today
 })
 
+const calendarDisplayMonth = computed(() =>
+  DateTime.fromObject(
+    { year: calendarPlaceholder.value.year, month: calendarPlaceholder.value.month, day: 1 },
+    { locale: activeLocale.value }
+  ).setLocale(activeLocale.value).toFormat('MMMM yyyy')
+)
+
 const activeLocale = computed(() => {
   if (typeof locale === 'string') {
     return locale
@@ -145,6 +162,7 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
 }
 
 function onInputFocus() {
+  suppressCalendarAnnouncement = true
   if (suppressOpenOnFocus) {
     suppressOpenOnFocus = false
     return
@@ -235,7 +253,8 @@ function clearDate() {
       :disabled="disabled"
       class="w-full"
       placeholder="&nbsp;"
-      :aria-describedby="describedBy"
+      :aria-required="required"
+      :aria-describedby="[describedBy].filter(Boolean).join(' ')"
       @focus="onInputFocus"
       @blur="onInputBlur"
       @keydown="onInputKeydown"
@@ -266,6 +285,7 @@ function clearDate() {
             :content="{
               side: 'top',
               align: 'start',
+              'aria-describedby': calendarDescId,
               onOpenAutoFocus: (e: Event) => e.preventDefault(),
               onCloseAutoFocus,
               onFocusOutside: ignoreInputInteraction,
@@ -298,6 +318,7 @@ function clearDate() {
         </span>
       </template>
     </UInput>
+    <span aria-live="polite" aria-atomic="true" class="sr-only">{{ calendarAnnouncement }}</span>
   </div>
 </template>
 
@@ -319,9 +340,8 @@ function clearDate() {
 }
 
 :deep([data-slot="header"] button:focus-visible) {
-  outline: 2px solid #1669BB;
+  outline: 3px solid #1669BB;
   outline-offset: -4px;
-  box-shadow: none;
   border-radius: 20%;
   background: transparent;
 }
