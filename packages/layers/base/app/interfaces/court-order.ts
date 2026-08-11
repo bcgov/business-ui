@@ -10,3 +10,14 @@ export interface CourtOrder {
   orderText?: string
   files?: unknown[]
 }
+
+export interface CourtOrderResponse {
+  effectOfOrder?: string | null
+  fileNumber: string
+  filingId: number
+  filingType: FilingType
+  id: number
+  orderDate?: string | null
+  orderDetails?: string | null
+  files?: unknown[] // FUTURE - not returned from API yet
+}

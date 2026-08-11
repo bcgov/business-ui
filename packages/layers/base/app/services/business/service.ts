@@ -154,6 +154,15 @@ export const useBusinessService = () => {
     return await getCachedOrFetch(options, force)
   }
 
+  async function getCourtOrders(
+    businessId: string,
+    force = false
+  ): Promise<CourtOrderResponse[]>
+  {
+    const options = query.courtOrdersOptions(businessId)
+    return await getCachedOrFetch(options, force).then(res => res.courtOrders)
+  }
+
   /**
    * Fetches documents object.
    * @param url the full URL to fetch the documents
@@ -413,6 +422,7 @@ export const useBusinessService = () => {
     getAuthorizedActions,
     getBusiness,
     getBootstrapFiling,
+    getCourtOrders,
     getDocument,
     getFiling,
     getFilingComments,
