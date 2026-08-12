@@ -282,12 +282,12 @@ function clearDate() {
             v-model:open="isCalendarOpen"
             :reference="inputWrapperRef ?? undefined"
             :content="{
-              'side': 'top',
-              'align': 'start',
-              'onOpenAutoFocus': (e: Event) => e.preventDefault(),
+              side: 'top',
+              align: 'start',
+              onOpenAutoFocus: (e: Event) => e.preventDefault(),
               onCloseAutoFocus,
-              'onFocusOutside': ignoreInputInteraction,
-              'onInteractOutside': ignoreInputInteraction
+              onFocusOutside: ignoreInputInteraction,
+              onInteractOutside: ignoreInputInteraction
             }"
           >
             <UButton
