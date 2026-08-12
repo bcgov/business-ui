@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
 // importing required as these are not registered to Nuxt's auto-imports
@@ -51,7 +52,7 @@ describe('getCourtOrderTableColumns', () => {
   })
 
   it('should pass badgeLabelOverrides to getCourtOrderNumberColumn', () => {
-    const badgeOverrides = { CORRECTION: 'Corrected' } as any
+    const badgeOverrides = { CHANGED: 'Corrected' }
 
     getCourtOrderTableColumns(badgeOverrides)
 

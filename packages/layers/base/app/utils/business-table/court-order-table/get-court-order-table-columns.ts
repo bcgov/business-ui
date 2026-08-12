@@ -1,7 +1,7 @@
-import { getAssociatedFilingColumn } from "./get-associated-filing-column"
-import { getCourtOrderNumberColumn } from "./get-court-order-number-column"
-import { getCourtOrderTextColumn } from "./get-court-order-text-column"
-import { getHasPoaColumn } from "./get-has-poa-column"
+import { getAssociatedFilingColumn } from './get-associated-filing-column'
+import { getCourtOrderNumberColumn } from './get-court-order-number-column'
+import { getCourtOrderTextColumn } from './get-court-order-text-column'
+import { getHasPoaColumn } from './get-has-poa-column'
 
 export function getCourtOrderTableColumns<T extends CourtOrderPoaFullSchema = CourtOrderPoaFullSchema>(
   badgeLabelOverrides?: Partial<Record<ActionType, string>>

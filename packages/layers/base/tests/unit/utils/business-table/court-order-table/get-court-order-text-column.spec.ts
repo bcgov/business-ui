@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-len */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockGetColumnMeta, mockGetIsRowRemoved } from '#business/tests/unit/mocks/business-table-utils'
 import { getCourtOrderTextColumn } from '#business/app/utils/business-table/court-order-table/get-court-order-text-column'
@@ -29,7 +30,7 @@ describe('getCourtOrderTextColumn', () => {
     expect(cell.children).toBe('Some text here')
     expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip break-words')
   })
-  
+
   it('should fallback to N/A when text is null', () => {
     const row = {
       original: { new: { courtOrderText: null } }
@@ -43,7 +44,7 @@ describe('getCourtOrderTextColumn', () => {
     expect(cell.children).toBe('N/A')
     expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip break-words')
   })
-  
+
   it('should fallback to N/A when text is empty string', () => {
     const row = {
       original: { new: { courtOrderText: '' } }

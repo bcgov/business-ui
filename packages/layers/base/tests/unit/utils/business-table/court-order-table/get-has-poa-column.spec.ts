@@ -29,7 +29,7 @@ describe('getHasPoaColumn', () => {
     expect(cell.children).toBe('Yes')
     expect(cell.props.class).toBe('min-w-36 max-w-36')
   })
-  
+
   it('should render the cell correctly when hasPoa = false', () => {
     const row = {
       original: { new: { hasPoa: false } }

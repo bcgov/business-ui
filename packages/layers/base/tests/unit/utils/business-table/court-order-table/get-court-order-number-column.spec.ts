@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-len */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockGetColumnMeta, mockGetIsRowRemoved, mockGetTableBadges } from '#business/tests/unit/mocks/business-table-utils'
 import { getCourtOrderNumberColumn } from '#business/app/utils/business-table/court-order-table/get-court-order-number-column'
