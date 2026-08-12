@@ -37,14 +37,8 @@ const inputId = `date-input-${useId()}`
 const localState = reactive({ dateInput: dateModel.value ?? '' })
 
 const isCalendarOpen = ref(false)
-const calendarAnnouncement = ref('')
-let suppressCalendarAnnouncement = false
-watch(isCalendarOpen, (open) => {
-  calendarAnnouncement.value = (open && !suppressCalendarAnnouncement)
-    ? `Choose Date, ${calendarDisplayMonth.value}`
-    : ''
-  suppressCalendarAnnouncement = false
-})
+// tracks whether the calendar opened from input focus (suppresses auto-focus into calendar)
+let calendarOpenedViaInput = false
 const inputWrapperRef = useTemplateRef<HTMLElement>('inputWrapperRef')
 const calendarContentRef = useTemplateRef<HTMLElement>('calendarContentRef')
 let suppressCloseAutoFocus = false
@@ -112,13 +106,6 @@ const calendarPlaceholder = computed<CalendarDate>(() => {
   return today
 })
 
-const calendarDisplayMonth = computed(() =>
-  DateTime.fromObject(
-    { year: calendarPlaceholder.value.year, month: calendarPlaceholder.value.month, day: 1 },
-    { locale: activeLocale.value }
-  ).setLocale(activeLocale.value).toFormat('MMMM yyyy')
-)
-
 const activeLocale = computed(() => {
   if (typeof locale === 'string') {
     return locale
@@ -160,10 +147,22 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
   })
 }
 
+function onOpenAutoFocus(e: Event) {
+  if (calendarOpenedViaInput) {
+    e.preventDefault()
+    calendarOpenedViaInput = false
+  }
+  // else: let focus enter the calendar so the screen reader announces it naturally
+}
+
 function onInputFocus() {
-  suppressCalendarAnnouncement = true
+  if (isCalendarOpen.value) {
+    return // already open (e.g. Shift+Tab back to input)
+  }
+  calendarOpenedViaInput = true
   if (suppressOpenOnFocus) {
     suppressOpenOnFocus = false
+    calendarOpenedViaInput = false
     return
   }
   isCalendarOpen.value = true
@@ -284,7 +283,7 @@ function clearDate() {
             :content="{
               side: 'top',
               align: 'start',
-              onOpenAutoFocus: (e: Event) => e.preventDefault(),
+              onOpenAutoFocus,
               onCloseAutoFocus,
               onFocusOutside: ignoreInputInteraction,
               onInteractOutside: ignoreInputInteraction
@@ -316,11 +315,6 @@ function clearDate() {
         </span>
       </template>
     </UInput>
-    <span
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >{{ calendarAnnouncement }}</span>
   </div>
 </template>
 
