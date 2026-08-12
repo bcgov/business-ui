@@ -24,6 +24,7 @@ const model = defineModel<EffectiveDateSchema>({ required: true })
 const hintId = `effective-date-hint-${useId()}`
 
 const formRef = useTemplateRef<Form<EffectiveDateSchema>>('effective-date-form')
+const dateRef = useTemplateRef<{ $el: HTMLElement }>('date-input')
 const formError = computed<FormError | undefined>(() =>
   formRef.value
     ?.getErrors()
@@ -48,17 +49,21 @@ const hintText = computed(() => {
 
 const liveAnnouncement = ref('')
 
+function buildAnnouncement(): string {
+  const err = formError.value
+  const val = localState.dateInput.trim()
+  if (!err) {
+    const displayVal = (dateRef.value?.$el?.querySelector('input') as HTMLInputElement | null)?.value.trim()
+    return displayVal || val
+  }
+  if (err.message === $t('validation.fieldRequired')) return hintText.value
+  return `${val}, ${$t('validation.invalidDate')}, ${hintText.value}`
+}
+
 watch(() => localState.dateInput, async (val) => {
   model.value = { dateInput: val ?? '' }
   await formRef.value?.validate().catch(() => {})
-  const err = formError.value
-  if (!err) {
-    liveAnnouncement.value = ''
-  } else if (err.message === $t('validation.fieldRequired')) {
-    liveAnnouncement.value = hintText.value
-  } else {
-    liveAnnouncement.value = `${localState.dateInput.trim()}, ${$t('validation.invalidDate')}, ${hintText.value}`
-  }
+  liveAnnouncement.value = buildAnnouncement()
 })
 
 defineExpose({ formRef })
@@ -83,6 +88,7 @@ defineExpose({ formRef })
       >
         <template #default="{ error }">
           <Date
+            ref="date-input"
             v-model="localState.dateInput"
             :label="$t('label.effectiveDate')"
             :error="!!error"
@@ -95,7 +101,6 @@ defineExpose({ formRef })
           <p
             :id="hintId"
             :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']"
-            aria-live="polite"
           >
             <UIcon
               v-if="error"
@@ -106,13 +111,16 @@ defineExpose({ formRef })
               hintText
             }}
           </p>
-          <span
-            aria-live="assertive"
-            aria-atomic="true"
-            class="sr-only"
-          >{{ liveAnnouncement }}</span>
         </template>
       </UFormField>
     </ConnectFormFieldWrapper>
   </UForm>
+  <!-- teleport to body so the region is registered before any v-if mount/unmount cycle -->
+  <Teleport to="body">
+    <span
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >{{ liveAnnouncement }}</span>
+  </Teleport>
 </template>
