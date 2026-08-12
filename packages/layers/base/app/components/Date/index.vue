@@ -33,7 +33,6 @@ const DATE_INPUT_FORMATS = [
 const dateModel = defineModel<string>()
 
 const inputId = `date-input-${useId()}`
-const calendarDescId = `date-calendar-desc-${useId()}`
 
 const localState = reactive({ dateInput: dateModel.value ?? '' })
 
@@ -285,7 +284,6 @@ function clearDate() {
             :content="{
               'side': 'top',
               'align': 'start',
-              'aria-describedby': calendarDescId,
               'onOpenAutoFocus': (e: Event) => e.preventDefault(),
               onCloseAutoFocus,
               'onFocusOutside': ignoreInputInteraction,
