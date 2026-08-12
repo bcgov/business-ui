@@ -56,7 +56,9 @@ function buildAnnouncement(): string {
     const displayVal = (dateRef.value?.$el?.querySelector('input') as HTMLInputElement | null)?.value.trim()
     return displayVal || val
   }
-  if (err.message === $t('validation.fieldRequired')) return hintText.value
+  if (err.message === $t('validation.fieldRequired')) {
+    return hintText.value
+  }
   return `${val}, ${$t('validation.invalidDate')}, ${hintText.value}`
 }
 
