@@ -15,7 +15,7 @@ export function getCourtOrderTextColumn<T extends CourtOrderPoaFullSchema>(
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-48 max-w-48 overflow-clip break-words'
 
-      const text = row.original.new.courtOrderText ?? 'N/A'
+      const text = row.original.new.courtOrderText || 'N/A'
 
       return h(
         'p',
