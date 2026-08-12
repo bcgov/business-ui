@@ -8,6 +8,9 @@ definePageMeta({
   layout: 'connect-auth'
 })
 
+const courtOrderSchema = getCourtOrderPoaFullSchema()
+const defaultData = courtOrderSchema.parse({})
+
 const schema = z.object({
   name: z.object({
     first: z.string().min(1, t('connect.validation.fieldRequired')),
@@ -25,12 +28,7 @@ const state = reactive<FullSchema>({
     middle: '',
     last: ''
   },
-  courtOrder: {
-    courtOrderNumber: '',
-    hasPoa: false,
-    courtOrderText: '',
-    files: []
-  }
+  courtOrder: { ...defaultData }
 })
 
 const formRef = useTemplateRef<Form<FullSchema>>('form-ref')

@@ -15,7 +15,7 @@ export function getHasPoaColumn<T extends CourtOrderPoaFullSchema>(
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-36 max-w-36'
 
-      const text = row.original.new.hasPoa ? t('label.yes') : t('label.no')
+      const text = row.original.new.effectOfOrder ? t('label.yes') : t('label.no')
 
       return h(
         'span',

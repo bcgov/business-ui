@@ -20,7 +20,7 @@ describe('getCourtOrderNumberColumn', () => {
 
   it('should render the cell correctly', () => {
     const row = {
-      original: { new: { courtOrderNumber: 'TT123456789' } }
+      original: { new: { fileNumber: 'TT123456789' } }
     }
     const column = getCourtOrderNumberColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -34,7 +34,7 @@ describe('getCourtOrderNumberColumn', () => {
 
   it('should add opacity-40 if the row is removed', () => {
     const row = {
-      original: { new: { courtOrderNumber: 'TT123456789' } }
+      original: { new: { fileNumber: 'TT123456789' } }
     }
     const column = getCourtOrderNumberColumn() as any
     mockGetIsRowRemoved.mockReturnValue(true)
@@ -46,7 +46,7 @@ describe('getCourtOrderNumberColumn', () => {
 
   it('should pass badges correctly to TableColumnIdentity', () => {
     const row = {
-      original: { new: { courtOrderNumber: 'TT123456789' } }
+      original: { new: { fileNumber: 'TT123456789' } }
     }
     const column = getCourtOrderNumberColumn() as any
     const mockBadges = [{ label: 'REMOVED', color: 'neutral' }]

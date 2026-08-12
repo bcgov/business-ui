@@ -21,7 +21,7 @@ export function getCourtOrderNumberColumn<T extends CourtOrderPoaFullSchema>(
       return h(
         TableColumnIdentity,
         {
-          label: `#${row.original.new.courtOrderNumber}`,
+          label: `#${row.original.new.fileNumber}`,
           badges,
           class: defaultClass,
           labelClass: isRemoved ? DELETED_CLASS : ''

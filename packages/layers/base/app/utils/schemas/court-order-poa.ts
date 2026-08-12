@@ -40,16 +40,19 @@ export function getCourtOrderPoaFullSchema() {
       val => (typeof val === 'number' ? String(val) : val),
       z.string().default(() => crypto.randomUUID())
     ),
-    hasPoa: z.boolean().optional(),
-    courtOrderNumber: z.string()
+    fileNumber: z.string()
       .min(5, t('connect.validation.minChars', { count: 5 }))
       .max(20, t('connect.validation.maxChars', { count: 20 }))
       .default(''),
-    courtOrderText: z.string().optional(),
-    filingId: z.number().optional(),
-    filingType: z.enum(FilingType).optional(),
-    orderDate: z.string().optional(),
-    files: z.array(z.unknown()).optional()
+    effectOfOrder: z.preprocess( // convert DB value into boolean for UI usage
+      val => val === 'planOfArrangement',
+      z.boolean()
+    ),
+    orderDetails: z.string().nullable(),
+    filingId: z.number(),
+    filingType: z.enum(FilingType),
+    orderDate: z.string().nullable(),
+    files: z.array(z.unknown()).optional() // FUTURE - not returned by API yet
   })
 }
 

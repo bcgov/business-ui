@@ -19,7 +19,7 @@ describe('getCourtOrderTextColumn', () => {
 
   it('should render the cell correctly when text is provided', () => {
     const row = {
-      original: { new: { courtOrderText: 'Some text here' } }
+      original: { new: { orderDetails: 'Some text here' } }
     }
     const column = getCourtOrderTextColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -33,7 +33,7 @@ describe('getCourtOrderTextColumn', () => {
 
   it('should fallback to N/A when text is null', () => {
     const row = {
-      original: { new: { courtOrderText: null } }
+      original: { new: { orderDetails: null } }
     }
     const column = getCourtOrderTextColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -47,7 +47,7 @@ describe('getCourtOrderTextColumn', () => {
 
   it('should fallback to N/A when text is empty string', () => {
     const row = {
-      original: { new: { courtOrderText: '' } }
+      original: { new: { orderDetails: '' } }
     }
     const column = getCourtOrderTextColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -61,7 +61,7 @@ describe('getCourtOrderTextColumn', () => {
 
   it('should add opacity-40 if the row is removed', () => {
     const row = {
-      original: { new: { courtOrderText: 'Some text here' } }
+      original: { new: { orderDetails: 'Some text here' } }
     }
     const column = getCourtOrderTextColumn() as any
     mockGetIsRowRemoved.mockReturnValue(true)

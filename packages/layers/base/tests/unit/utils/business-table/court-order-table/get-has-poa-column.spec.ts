@@ -16,9 +16,9 @@ describe('getHasPoaColumn', () => {
     expect(mockGetColumnMeta).toHaveBeenCalledWith('default')
   })
 
-  it('should render the cell correctly when hasPoa = true', () => {
+  it('should render the cell correctly when effectOfOrder = true', () => {
     const row = {
-      original: { new: { hasPoa: true } }
+      original: { new: { effectOfOrder: true } }
     }
     const column = getHasPoaColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -30,9 +30,9 @@ describe('getHasPoaColumn', () => {
     expect(cell.props.class).toBe('min-w-36 max-w-36')
   })
 
-  it('should render the cell correctly when hasPoa = false', () => {
+  it('should render the cell correctly when effectOfOrder = false', () => {
     const row = {
-      original: { new: { hasPoa: false } }
+      original: { new: { effectOfOrder: false } }
     }
     const column = getHasPoaColumn() as any
     mockGetIsRowRemoved.mockReturnValue(false)
@@ -46,7 +46,7 @@ describe('getHasPoaColumn', () => {
 
   it('should add opacity-40 if the row is removed', () => {
     const row = {
-      original: { new: { hasPoa: true } }
+      original: { new: { effectOfOrder: true } }
     }
     const column = getHasPoaColumn() as any
     mockGetIsRowRemoved.mockReturnValue(true)

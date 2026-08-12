@@ -4,39 +4,18 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Court Orders' }]
 })
 
+const schema = getCourtOrderPoaFullSchema()
 const service = useBusinessService()
+const data = ref<TableBusinessState<CourtOrderPoaFullSchema>[]>([])
 
 onMounted(async () => {
-  const data = await service.getCourtOrders('BC0878506')
-  console.log('COURT ORDERS: ', data)
+  const courtOrders = await service.getCourtOrders('BC0878506')
+  const mapped = courtOrders.map((co) => {
+    const parsed = schema.parse(co)
+    return { old: structuredClone(parsed), new: structuredClone(parsed) }
+  })
+  data.value = mapped
 })
-
-const exampleData: TableBusinessState<CourtOrderPoaFullSchema>[] = [
-  {
-    new: {
-      isEditing: false,
-      actions: [],
-      id: '12345',
-      courtOrderNumber: 'TT1234567890',
-      hasPoa: false,
-      courtOrderText: 'Some court order text here',
-      filingType: FilingType.RESTORATION,
-      filingId: 1234,
-      files: []
-    },
-    old: {
-      isEditing: false,
-      actions: [],
-      id: '12345',
-      courtOrderNumber: 'TT1234567890',
-      hasPoa: false,
-      courtOrderText: 'Some court order text here',
-      filingType: FilingType.RESTORATION,
-      filingId: 1234,
-      files: []
-    }
-  }
-]
 </script>
 
 <template>
@@ -45,7 +24,7 @@ const exampleData: TableBusinessState<CourtOrderPoaFullSchema>[] = [
       :heading="{ label: 'Manage Court Orders - Default' }"
       ui-body="p-10"
     >
-      <TableCourtOrder :data="exampleData" />
+      <TableCourtOrder :data="data" />
     </ConnectPageSection>
   </UContainer>
 </template>
