@@ -30,7 +30,6 @@ export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSch
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 
-// filingId and filingType
 export function getCourtOrderPoaFullSchema() {
   const t = useNuxtApp().$i18n.t
   return z.object({
