@@ -57,3 +57,9 @@ export function getCourtOrderPoaFullSchema() {
 }
 
 export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>
+
+export function getActiveCourtOrderPoaFullSchema() {
+  return getCourtOrderPoaFullSchema().nullable().optional()
+}
+
+export type ActiveCourtOrderPoaFullSchema = z.output<ReturnType<typeof getActiveCourtOrderPoaFullSchema>>
