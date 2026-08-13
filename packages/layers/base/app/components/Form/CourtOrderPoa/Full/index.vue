@@ -6,6 +6,7 @@ const props = defineProps<{
   subject: string
   hideRemove?: boolean
   name?: string
+  nested?: boolean
   stateKey: string
   isCourtOrder: boolean
 }>()
@@ -53,8 +54,9 @@ defineExpose({
     ref="court-order-poa-form"
     :data-testid="`${variant}-court-order-poa-form`"
     :name
-    nested
+    :nested
     :schema
+    :state="model"
     @keydown.enter.prevent.stop="onDone"
   >
     <SubFormWrapper
@@ -88,7 +90,7 @@ defineExpose({
             </UFormField>
           </ConnectFormFieldWrapper>
           <ConnectFormFieldWrapper
-            :label="$t('label.fileNumber')"
+            :label="$t('label.courtOrderNumber')"
             orientation="horizontal"
             details-aria-hidden
             :error="formErrors.fileNumber"
@@ -97,7 +99,7 @@ defineExpose({
             <ConnectFormInput
               v-model="model.fileNumber"
               input-id="court-order-number-input"
-              :label="$t('label.fileNumber')"
+              :label="$t('label.courtOrderNumber')"
               name="fileNumber"
               required
             />
@@ -106,7 +108,7 @@ defineExpose({
         <template v-if="isCourtOrder">
           <USeparator class="padding-x-default" />
           <ConnectFormFieldWrapper
-            :label="$t('label.orderDetails')"
+            :label="$t('label.courtOrderText')"
             orientation="horizontal"
             details-aria-hidden
             class="padding-xy-default"

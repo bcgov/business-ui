@@ -34,11 +34,14 @@ export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 export function getCourtOrderPoaFullSchema() {
   const t = useNuxtApp().$i18n.t
   return z.object({
-    isEditing: z.boolean().default(false),
-    actions: z.array(z.enum(ActionType)).default(() => []),
+    isEditing: z.boolean()
+      .default(false),
+    actions: z.array(z.enum(ActionType))
+      .default(() => []),
     id: z.preprocess( // convert DB `id` int to string for UI diff'ing
       val => (typeof val === 'number' ? String(val) : val),
-      z.string().default(() => crypto.randomUUID())
+      z.string()
+        .default(() => crypto.randomUUID())
     ),
     fileNumber: z.string()
       .min(5, t('connect.validation.minChars', { count: 5 }))
@@ -48,11 +51,19 @@ export function getCourtOrderPoaFullSchema() {
       val => val === 'planOfArrangement',
       z.boolean()
     ),
-    orderDetails: z.string().nullable(),
-    filingId: z.number(),
-    filingType: z.enum(FilingType),
-    orderDate: z.string().nullable(),
-    files: z.array(z.unknown()).optional() // FUTURE - not returned by API yet
+    orderDetails: z.string()
+      .nullable()
+      .default(''),
+    filingId: z.number()
+      .default(-1),
+    filingType: z.enum(FilingType)
+      .nullable()
+      .optional(),
+    orderDate: z.string()
+      .nullable()
+      .optional(),
+    files: z.array(z.unknown())
+      .optional() // FUTURE - not returned by API yet
   })
 }
 
