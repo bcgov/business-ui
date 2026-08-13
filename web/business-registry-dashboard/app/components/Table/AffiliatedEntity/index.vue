@@ -20,27 +20,39 @@ async function handleRefresh () {
   await affStore.loadAffiliations()
 }
 
-// Watch for newly added businesses or name requests to highlight them temporarily
+// Temp highlight newly added record and scroll to it.
+// The results are watched too because the identifier is usually set before the reload
+let highlightHandled = ''
 watch(
-  () => affStore.newlyAddedIdentifier,
-  () => {
-    const firstResult = affStore.filteredResults?.[0] as any
+  [() => affStore.newlyAddedIdentifier, () => affStore.filteredResults],
+  async () => {
     const newIdentifier = affStore.newlyAddedIdentifier
+    const results = affStore.filteredResults as any[]
+    const match = newIdentifier
+      ? results.find(row => row.businessIdentifier === newIdentifier || row.nrNumber === newIdentifier)
+      : undefined
 
-    // Skip if no results or no new identifier
-    if (!firstResult) { return }
+    // Clear any stale highlight (eg. the removal timer fired without a reload)
+    results.forEach((row) => {
+      if (row.class && row !== match) { row.class = '' }
+    })
 
-    // If the first result matches the newly added business or name request, highlight it
-    if (newIdentifier && (firstResult.businessIdentifier === newIdentifier || firstResult.nrNumber === newIdentifier)) {
-      firstResult.class = 'bg-[#E8F5E9]'
+    if (!newIdentifier) {
+      highlightHandled = ''
+      return
+    }
+    if (!match) { return }
 
-      // Remove highlight and clear identifier
+    match.class = 'new-affiliation-row bg-[#E8F5E9]'
+
+    // Scroll and schedule the highlight removal once per added identifier
+    if (highlightHandled !== newIdentifier) {
+      highlightHandled = newIdentifier
+      await nextTick()
+      document.querySelector('tr.new-affiliation-row')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       setTimeout(() => {
         affStore.newlyAddedIdentifier = ''
       }, 6000)
-    } else {
-      // Clear any existing highlight
-      firstResult.class = ''
     }
   },
   { immediate: true }

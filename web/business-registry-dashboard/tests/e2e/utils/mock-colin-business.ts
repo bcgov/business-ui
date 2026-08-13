@@ -18,8 +18,20 @@ export interface ColinBusinessMockOptions {
   orgsDetails?: Array<{ branchName?: string, name: string, uuid: string }>
   authenticationStatus?: number
   hasValidPassCode?: boolean
+  /**
+   * `modernized` on the search result. False (the default) marks the business as COLIN-only, which
+   * makes ManageBusiness.vue skip the LEAR lookup entirely - so set this true alongside
+   * `isLearBusiness` when a test needs the modernized path.
+   */
+  modernized?: boolean
   /** Whether GET /businesses/{identifier}?slim=true resolves (business already in LEAR) or 404s (COLIN-only) */
   isLearBusiness?: boolean
+  /**
+   * Businesses already affiliated to the account (returned by the affiliations GET).
+   * NB: loadAffiliations only processes pending invitations when the account has at
+   * least one affiliated business, so invite-flow tests need one of these.
+   */
+  existingAffiliations?: Array<{ identifier: string, legalName: string, legalType: string }>
 }
 
 export interface ColinBusinessMockHandles {
@@ -53,27 +65,99 @@ export async function mockColinBusinessFlow (
   const orgsDetails = options.orgsDetails ?? []
   const authenticationStatus = options.authenticationStatus ?? 200
   const hasValidPassCode = options.hasValidPassCode ?? true
+  const modernized = options.modernized ?? false
   const isLearBusiness = options.isLearBusiness ?? false
+  const existingAffiliations = options.existingAffiliations ?? []
 
   const handles: ColinBusinessMockHandles = { callOrder: [] }
+
+  // Surface uncaught page errors in the test output - a crashed page otherwise just
+  // shows up as "element not found" on whatever the test asserts next.
+  page.on('pageerror', (error) => {
+    // eslint-disable-next-line no-console
+    console.error(`Page error: ${error.stack ?? error.message}`)
+  })
 
   // Unmocked API calls fail loudly instead of hitting a real backend.
   // Playwright consults route handlers in reverse order, so it needs to come FIRST
   // otherwise it will overwrite every other mock
   await page.route('**/*', async (route) => {
     const resourceType = route.request().resourceType()
-    if (resourceType === 'fetch' || resourceType === 'xhr') {
+    const url = route.request().url()
+    // Nuxt internals (eg. the /_nuxt/builds/meta app manifest fetched on navigation) must
+    // reach the dev server - aborting the manifest fetch sends the router to the error page.
+    if ((resourceType === 'fetch' || resourceType === 'xhr') && !url.includes('/_nuxt/')) {
       // eslint-disable-next-line no-console
-      console.error(`Unmocked API call: ${route.request().method()} ${route.request().url()}`)
+      console.error(`Unmocked API call: ${route.request().method()} ${url}`)
       await route.abort('failed')
     } else {
       await route.continue()
     }
   })
 
+  // Icon metadata lookups (UIcon) - harmless, stub them out instead of failing loudly
+  await page.route('**/api.iconify.design/**', async (route) => {
+    await route.fulfill({ json: {} })
+  })
+
   await mockKeycloakSession(page)
   await mockDashboardApis(page)
   await mockLaunchDarkly(page, flags)
+
+  // Affiliation create + list. Stateful (registered after mockDashboardApis so it wins)
+  // so that the table reload after a successful add returns the newly added business.
+  let affiliated = false
+  await page.route('**/orgs/**/affiliations**', async (route) => {
+    if (route.request().method() === 'POST') {
+      handles.callOrder.push('create-affiliation')
+      affiliated = true
+      await route.fulfill({ status: 201, json: {} })
+    } else {
+      handles.callOrder.push('affiliations')
+      await route.fulfill({
+        json: {
+          entities: [
+            ...existingAffiliations.map(entity => ({ ...entity, state: 'ACTIVE' })),
+            ...(affiliated
+              ? [{ identifier, legalName: name, legalType, state: 'ACTIVE', businessNumber: '123456789' }]
+              : [])
+          ]
+        }
+      })
+    }
+  })
+
+  // Affiliation invitations create + list. Stateful like the affiliations mock: after the
+  // email option POSTs an invitation, GETs return it as pending. `entity` is null on
+  // purpose - auth-api enriches the entity from LEAR, so a COLIN business comes back
+  // null (or, after the auth-api fallback, with auth-local data); the table must
+  // survive the null shape.
+  let emailInvitePending = false
+  await page.route('**/affiliationInvitations**', async (route) => {
+    if (route.request().method() === 'POST') {
+      handles.callOrder.push('create-invitation')
+      emailInvitePending = true
+      await route.fulfill({ status: 201, json: { id: 99, type: 'EMAIL', status: 'PENDING' } })
+    } else {
+      handles.callOrder.push('invitations')
+      await route.fulfill({
+        json: {
+          affiliationInvitations: emailInvitePending
+            ? [{
+                id: 99,
+                type: 'EMAIL',
+                status: 'PENDING',
+                businessIdentifier: identifier,
+                entity: null,
+                fromOrg: { id: 123, name: 'Test Account' },
+                toOrg: null,
+                recipientEmail: contactsEmail
+              }]
+            : []
+        }
+      })
+    }
+  })
 
   // Membership check (dashboard.vue onMounted -> validateAccountStatus) - keep this a
   // clean admin/active account so no competing "account setup incomplete" modal opens.
@@ -103,7 +187,7 @@ export async function mockColinBusinessFlow (
         searchResults: {
           queryInfo: { query: {}, categories: {} },
           totalResults: 1,
-          results: [{ name, identifier, bn: '123456789', status: 'ACTIVE', legalType, modernized: false }]
+          results: [{ name, identifier, bn: '123456789', status: 'ACTIVE', legalType, modernized }]
         }
       }
     })

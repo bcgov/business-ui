@@ -316,6 +316,7 @@ export default {
       name: '{boldStart}Name:{boldEnd} {name}',
       number: '{boldStart}Number:{boldEnd} {number}',
       expiredLink: '{boldStart}Important:{boldEnd} The {subject} could not be added to your account due to an expired link or an error. Please send the request again below.',
+      colinBusinessAlert: '{boldStart}Important:{boldEnd} {name} has not been migrated to the new BC Business Registry. You can only use the company here for an Amalgamation; all other Business Registry actions must be performed at {linkStart}Corporate Online{linkEnd}.',
       missingInfo: {
         p1: 'Some required information for this {subject} is missing.',
         fragmentPrt1: 'The {subject} doesn\'t have an email on file. You can download and submit this',

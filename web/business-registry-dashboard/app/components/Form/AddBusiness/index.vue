@@ -21,6 +21,7 @@ defineProps<{
 const emit = defineEmits<{
   emailSuccess: [void]
   passcodeError: [void]
+  addSuccess: [void]
   retry: [void]
 }>()
 
@@ -75,6 +76,7 @@ defineExpose({
       @retry="handleRetry"
       @business-error="handleError"
       @email-success="handleEmailSuccess"
+      @add-success="emit('addSuccess')"
     />
   </transition>
 </template>

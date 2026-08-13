@@ -8,6 +8,7 @@ const affStore = useAffiliationsStore()
 const { t } = useNuxtApp().$i18n
 const { $authApi } = useNuxtApp()
 const ldStore = useConnectLaunchdarklyStore()
+const webUrl = getWebUrl()
 
 const props = defineProps<{
   alert?: ModalAlertProps
@@ -113,7 +114,50 @@ const subject = computed(() => {
   return GetCorpFullDescription(props.business.legalType as CorpTypeCd) || t('words.business')
 })
 
-async function handleEmailAuthSentStateClosed () {
+// a business still managed in COLIN can be added to BRD, but is only usable as an amalgamating party.
+const showColinAlert = computed(() =>
+  !loading.value && !isLearBusiness.value && authOptions.value.length > 0
+)
+
+const alertProps = computed<ModalAlertProps | undefined>(() => {
+  if (emailSent.value) {
+    return undefined
+  }
+  // an alert from the caller (i.e. a failed SAF affiliation) 
+  // takes precedence over the standing COLIN notice
+  if (props.alert) {
+    return { ...props.alert, extraTextCtx: { subject: subject.value } }
+  }
+  if (showColinAlert.value) {
+    return {
+      color: 'red',
+      icon: 'i-mdi-warning',
+      variant: 'subtle',
+      translationPath: 'form.manageBusiness.colinBusinessAlert',
+      extraTextCtx: {
+        name: props.business.name,
+        linkStart: `<a href="${webUrl.getCorporateOnlineUrl()}" target="_blank" rel="noopener noreferrer" class="text-blue-500 underline">`,
+        linkEnd: '</a>'
+      }
+    }
+  }
+  return undefined
+})
+
+const addSuccess = ref(false)
+
+function handleAddSuccess () {
+  addSuccess.value = true
+  brdModal.close()
+}
+
+async function handleModalClosed () {
+  if (addSuccess.value) {
+    // deferred so the modal provider's own after-leave reset runs first -
+    // opening synchronously here gets clobbered by that reset
+    setTimeout(() => brdModal.openAddBusinessSuccess(props.business.name, props.business.identifier), 0)
+    return
+  }
   if (formAddBusinessRef.value?.currentState === 'FormAddBusinessEmailAuthSent') {
     toast.add({ title: t('form.manageBusiness.toast.emailSent') }) // add success toast
     await affStore.loadAffiliations() // update table with new affilitations
@@ -147,7 +191,10 @@ onMounted(async () => {
     logFetchError(error, 'Error retrieving business passcode')
   }
 
-  isLearBusiness.value = await checkBusinessExistsInLear(props.business.identifier)
+  // the search result already reports a non-modernized business as not in LEAR - skip the lookup
+  isLearBusiness.value = props.business.modernized === false
+    ? false
+    : await checkBusinessExistsInLear(props.business.identifier)
 
   setTimeout(() => { // give enough time for computed options to update before removing loading state
     loading.value = false
@@ -157,9 +204,9 @@ onMounted(async () => {
 
 <template>
   <ModalBase
-    :alert="emailSent ? undefined : (alert && ({ ...alert, extraTextCtx: { subject } } as ModalAlertProps))"
+    :alert="alertProps"
     :title="emailSent ? $t('form.manageBusiness.headingRequestAccess', { subject }) : $t('form.manageBusiness.heading', { subject })"
-    @modal-closed="handleEmailAuthSentStateClosed"
+    @modal-closed="handleModalClosed"
   >
     <div class="flex flex-col gap-4 md:w-[700px]">
       <ul class="-mt-8 flex-col gap-2">
@@ -243,6 +290,7 @@ onMounted(async () => {
         :is-corp-or-ben-or-coop="isCorpOrBenOrCoop"
         :subject
         @email-success="emailSent = true"
+        @add-success="handleAddSuccess"
         @retry="emailSent = false"
       />
     </div>

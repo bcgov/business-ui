@@ -35,6 +35,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   businessError: [{ error: FetchError, type: 'email' | 'delegation' | 'firm' | 'passcode' }]
   emailSuccess: [void]
+  addSuccess: [void]
 }>()
 
 const formRef = ref()
@@ -211,9 +212,9 @@ async function submitManageRequest () {
 
       await affStore.createAffiliation(payload)
 
-      toast.add({ title: t('form.manageBusiness.toast.success', { identifier: props.identifier }) }) // add success toast
-      await affStore.loadAffiliations() // update table with new affilitations
-      brdModal.close() // close modal
+      // shared modal state can't swap components while a modal is open,
+      // so the success modal is opened by ManageBusiness after this modal has fully closed
+      emit('addSuccess')
     } catch (error) {
       const e = error as FetchError
       if (openAuthOption.value.slot === 'firm-option') {

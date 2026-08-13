@@ -3,14 +3,15 @@ const brdModal = useBrdModals()
 const affStore = useAffiliationsStore()
 const { t } = useNuxtApp().$i18n
 
-defineProps<{
+const props = defineProps<{
   businessName: string
   identifier: string
 }>()
 
-async function handleClose () {
+async function handleClosed () {
+  // newlyAddedIdentifier makes the reload highlight and scroll to the new row.
+  affStore.newlyAddedIdentifier = props.identifier
   await affStore.loadAffiliations()
-  brdModal.close()
 }
 </script>
 
@@ -18,9 +19,9 @@ async function handleClose () {
   <ModalBase
     :title="t('modal.addBusinessSuccess.title', { name: businessName })"
     :actions="[
-      { label: t('btn.ok'), handler: handleClose }
+      { label: t('btn.ok'), handler: () => brdModal.close() }
     ]"
-    @modal-closed="handleClose"
+    @modal-closed="handleClosed"
   >
     <div class="-my-6 space-y-2">
       <p v-for="text in $tm('modal.addBusinessSuccess.description')" :key="text" class="text-bcGovColor-darkGray">

@@ -532,6 +532,7 @@ const moreActionsDropdownOptions = computed<DropdownItem[][]>(() => {
           :label="getPrimaryActionLabel(item)"
           class="w-44 px-4 transition-all duration-200 hover:opacity-95 hover:brightness-125"
           :icon="affNav.isOpenExternal(item) ? 'i-mdi-open-in-new' : ''"
+          trailing
           :loading="isButtonActionProcessing"
           @click="primaryAction(item)"
         />
