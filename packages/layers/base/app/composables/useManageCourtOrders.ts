@@ -8,7 +8,12 @@ const NON_EDITABLE_FIELDS = [
   'orderDate'
 ] as const
 
-export const useManageCourtOrders = (stateKey: string = 'manage-court-orders') => {
+export const useManageCourtOrders = (
+  stateKey: string = 'manage-court-orders',
+  opts?: {
+    cleanupFn?: () => void
+  }
+) => {
   const tableState = useState<TableBusinessState<CourtOrderPoaFullSchema>[]>(
     `${stateKey}-table-state`,
     () => []
@@ -29,6 +34,8 @@ export const useManageCourtOrders = (stateKey: string = 'manage-court-orders') =
       // ID exists, update row
       tableState.value = tableState.value.toSpliced(index, 1, cloned)
     }
+
+    opts?.cleanupFn?.()
   }
 
   function addSubject(subject: ActiveCourtOrderPoaFullSchema) {
@@ -50,6 +57,7 @@ export const useManageCourtOrders = (stateKey: string = 'manage-court-orders') =
       tableState.value = tableState.value.filter(
         item => item.new.id !== newSubjectState.id
       )
+      opts?.cleanupFn?.()
       return
     }
 

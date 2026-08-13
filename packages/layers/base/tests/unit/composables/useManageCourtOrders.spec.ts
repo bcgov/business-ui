@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 describe('useManageCourtOrders', () => {
   const stateKey = 'manage-court-orders'
@@ -173,6 +173,39 @@ describe('useManageCourtOrders', () => {
 
       expect(tableState.value[0]!.new.actions).toHaveLength(1)
       expect(tableState.value[0]!.new.actions).toContain(ActionType.CHANGED)
+    })
+  })
+
+  describe('options', () => {
+    it('should trigger cleanupFn when any method is called', () => {
+      const cleanupFn = vi.fn()
+      const {
+        addSubject,
+        updateTable,
+        removeSubject,
+        undoSubject,
+        applyEdits
+      } = useManageCourtOrders(stateKey, { cleanupFn })
+
+      addSubject(mockSubject)
+      expect(cleanupFn).toHaveBeenCalledTimes(1)
+
+      updateTable({ new: mockSubject, old: undefined })
+      expect(cleanupFn).toHaveBeenCalledTimes(2)
+
+      const draftRow = mockRow(0, { new: mockSubject, old: undefined })
+      removeSubject(draftRow)
+      expect(cleanupFn).toHaveBeenCalledTimes(3)
+
+      const existingRow = mockRow(0, { new: mockSubject, old: mockSubject })
+      removeSubject(existingRow)
+      expect(cleanupFn).toHaveBeenCalledTimes(4)
+
+      undoSubject(existingRow)
+      expect(cleanupFn).toHaveBeenCalledTimes(5)
+
+      applyEdits(mockSubject, existingRow)
+      expect(cleanupFn).toHaveBeenCalledTimes(6)
     })
   })
 })
