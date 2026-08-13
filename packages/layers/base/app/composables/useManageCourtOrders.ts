@@ -1,10 +1,10 @@
 // These values will be omitted during the edit equality check
 const NON_EDITABLE_FIELDS = [
-  'isEditing', 
-  'actions', 
-  'id', 
-  'filingId', 
-  'filingType', 
+  'isEditing',
+  'actions',
+  'id',
+  'filingId',
+  'filingType',
   'orderDate'
 ] as const
 
@@ -101,6 +101,6 @@ export const useManageCourtOrders = (stateKey: string = 'manage-court-orders') =
     removeSubject,
     updateTable,
     applyEdits,
-    undoSubject,
+    undoSubject
   }
 }
