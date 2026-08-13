@@ -15,7 +15,7 @@ export function getAssociatedFilingColumn<T extends CourtOrderPoaFullSchema>(
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-48 max-w-48 overflow-clip break-words'
 
-      const text = row.original.new.filingType
+      const text = row.original.new.filingType || 'N/A'
 
       return h(
         'span',
