@@ -74,7 +74,6 @@ export async function mockColinBusinessFlow (
   // Surface uncaught page errors in the test output - a crashed page otherwise just
   // shows up as "element not found" on whatever the test asserts next.
   page.on('pageerror', (error) => {
-    // eslint-disable-next-line no-console
     console.error(`Page error: ${error.stack ?? error.message}`)
   })
 
@@ -87,7 +86,6 @@ export async function mockColinBusinessFlow (
     // Nuxt internals (eg. the /_nuxt/builds/meta app manifest fetched on navigation) must
     // reach the dev server - aborting the manifest fetch sends the router to the error page.
     if ((resourceType === 'fetch' || resourceType === 'xhr') && !url.includes('/_nuxt/')) {
-      // eslint-disable-next-line no-console
       console.error(`Unmocked API call: ${route.request().method()} ${url}`)
       await route.abort('failed')
     } else {

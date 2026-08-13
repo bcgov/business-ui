@@ -123,7 +123,7 @@ const alertProps = computed<ModalAlertProps | undefined>(() => {
   if (emailSent.value) {
     return undefined
   }
-  // an alert from the caller (i.e. a failed SAF affiliation) 
+  // an alert from the caller (i.e. a failed SAF affiliation)
   // takes precedence over the standing COLIN notice
   if (props.alert) {
     return { ...props.alert, extraTextCtx: { subject: subject.value } }
