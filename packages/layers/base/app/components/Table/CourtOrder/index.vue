@@ -32,6 +32,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded')
     :prevent-actions
     :label-overrides
     :task-guard-config
+    :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >
     <template #expanded="{ row }">
       <div class="py-4 sm:py-7.5">

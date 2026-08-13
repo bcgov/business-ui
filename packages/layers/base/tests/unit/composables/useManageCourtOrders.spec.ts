@@ -140,36 +140,36 @@ describe('useManageCourtOrders', () => {
     })
   })
 
-  describe('applyEdits', () => {
+  describe('editSubject', () => {
     it('should ignore undefined subject', () => {
-      const { applyEdits, tableState } = useManageCourtOrders(stateKey)
+      const { editSubject, tableState } = useManageCourtOrders(stateKey)
       const draftSubject = { new: mockSubject, old: undefined }
       tableState.value = [draftSubject]
 
-      applyEdits(undefined as any, mockRow(0, draftSubject))
+      editSubject(undefined as any, mockRow(0, draftSubject))
 
       expect(tableState.value[0]!.new.actions).toEqual([])
     })
 
     it('should keep the ADDED action if row has no old state', () => {
-      const { tableState, applyEdits } = useManageCourtOrders(stateKey)
+      const { tableState, editSubject } = useManageCourtOrders(stateKey)
       const draftRow = { new: mockSubject, old: undefined }
       tableState.value = [draftRow]
 
       const editedSubject = { ...mockSubject, fileNumber: 'EDITED_NUMBER' }
-      applyEdits(editedSubject, mockRow(0, draftRow))
+      editSubject(editedSubject, mockRow(0, draftRow))
 
       expect(tableState.value[0]!.new.actions).toHaveLength(1)
       expect(tableState.value[0]!.new.actions).toContain(ActionType.ADDED)
     })
 
     it('should set CHANGED action when new state !== old state', () => {
-      const { tableState, applyEdits } = useManageCourtOrders(stateKey)
+      const { tableState, editSubject } = useManageCourtOrders(stateKey)
       const existingRow = { new: mockSubject, old: mockSubject }
       tableState.value = [existingRow]
 
       const editedSubject = { ...mockSubject, fileNumber: '99999_CHANGED' }
-      applyEdits(editedSubject, mockRow(0, existingRow))
+      editSubject(editedSubject, mockRow(0, existingRow))
 
       expect(tableState.value[0]!.new.actions).toHaveLength(1)
       expect(tableState.value[0]!.new.actions).toContain(ActionType.CHANGED)
@@ -184,7 +184,7 @@ describe('useManageCourtOrders', () => {
         updateTable,
         removeSubject,
         undoSubject,
-        applyEdits
+        editSubject
       } = useManageCourtOrders(stateKey, { cleanupFn })
 
       addSubject(mockSubject)
@@ -204,7 +204,7 @@ describe('useManageCourtOrders', () => {
       undoSubject(existingRow)
       expect(cleanupFn).toHaveBeenCalledTimes(5)
 
-      applyEdits(mockSubject, existingRow)
+      editSubject(mockSubject, existingRow)
       expect(cleanupFn).toHaveBeenCalledTimes(6)
     })
   })

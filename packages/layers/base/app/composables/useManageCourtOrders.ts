@@ -20,8 +20,7 @@ export const useManageCourtOrders = (
   )
 
   function updateTable(subject: TableBusinessState<CourtOrderPoaFullSchema>): void {
-    // Deep clones and removes Vue proxies to prevent accidental updates to source object
-    const cloned = structuredClone(toRaw(subject))
+    const cloned = JSON.parse(JSON.stringify(subject))
 
     const index = tableState.value.findIndex(
       item => item.new.id === cloned.new.id
@@ -81,7 +80,7 @@ export const useManageCourtOrders = (
     })
   }
 
-  function applyEdits(subject: ActiveCourtOrderPoaFullSchema, row: TableBusinessRow<CourtOrderPoaFullSchema>): void {
+  function editSubject(subject: ActiveCourtOrderPoaFullSchema, row: TableBusinessRow<CourtOrderPoaFullSchema>): void {
     if (!subject) {
       return
     }
@@ -108,7 +107,7 @@ export const useManageCourtOrders = (
     addSubject,
     removeSubject,
     updateTable,
-    applyEdits,
+    editSubject,
     undoSubject
   }
 }
