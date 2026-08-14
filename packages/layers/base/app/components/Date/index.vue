@@ -91,6 +91,15 @@ const calendarMinValue = computed(() => toCalendarDate(props.minDate))
 const calendarMaxValue = computed(() => toCalendarDate(props.maxDate))
 const calendarValue = computed(() => toCalendarDate(localState.dateInput, DATE_DISPLAY_FORMAT))
 
+const isDateUnavailable = (date: DateValue) => {
+  return (
+    (calendarMinValue.value
+      && date.compare(calendarMinValue.value) < 0)
+    || (calendarMaxValue.value
+      && date.compare(calendarMaxValue.value) > 0)
+  )
+}
+
 const calendarPlaceholder = computed<CalendarDate>(() => {
   const today = new CalendarDate(
     DateTime.now().year,
@@ -307,6 +316,7 @@ function clearDate() {
                   :model-value="calendarValue"
                   :min-value="calendarMinValue"
                   :max-value="calendarMaxValue"
+                  :is-date-unavailable="isDateUnavailable"
                   @update:model-value="onDateSelect"
                 />
               </div>
@@ -349,5 +359,14 @@ function clearDate() {
 
 :deep([data-slot="cellTrigger"][data-selected]) {
   border-radius: 50%;
+}
+
+:deep([data-slot="cellTrigger"][data-unavailable]) {
+  text-decoration: none;
+  color: #C3C3C3 !important;
+}
+
+:deep([data-slot="cellTrigger"][data-outside-view]) {
+  color: #212529;
 }
 </style>

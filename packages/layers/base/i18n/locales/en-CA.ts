@@ -722,7 +722,7 @@ export default {
     limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
     noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
-    effectiveDateFormat: 'Format: Month DD, YYYY (Ex. January 1, 2026)',
+    effectiveDateFormat: 'Format: Month DD, YYYY (eg., January 1, 2026, Jan 1, 2026) or YYYY-MM-DD (e.g., 2026-01-01)',
     noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
     maxNumberOfSharesHelp: 'Maximum number of shares in this class',
     moreInfoReadTheLink: 'For more information, read the {link}',
