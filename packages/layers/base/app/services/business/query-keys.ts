@@ -28,6 +28,8 @@ export const useBusinessQueryKeys = () => {
     courtOrders: (businessId: string) => [...base.value, businessId, 'court-orders'] as const,
     document: (url: string) => [...base.value, 'document', { url }] as const,
     filing: (businessId: string, filingId: number | string) => [...base.value, businessId, 'filing', filingId] as const,
+    publicStateFiling: (businessId: string, filingId: number | string) =>
+      [...base.value, businessId, 'filing', filingId, 'public'] as const,
     filingComments: (url: string) => [...base.value, 'filing', 'comments', { url }] as const,
     filingDocumentUrls: (businessId: string, filingId: string | number) =>
       [...base.value, businessId, 'filing', filingId, 'document-urls'] as const,

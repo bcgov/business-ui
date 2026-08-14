@@ -193,6 +193,32 @@ export const useBusinessQuery = () => {
     return useQuery(() => filingOptions(businessId, filingId, options as DefineOptions<FilingGetByIdResponse<F>>))
   }
 
+  function publicStateFilingOptions(
+    businessId: MaybeRefOrGetter<string>,
+    filingId: MaybeRefOrGetter<string | number>,
+    options?: DefineOptions<PublicStateFilingResponse>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<PublicStateFilingResponse>(
+        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`,
+        { query: { public: true } }
+      ),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.publicStateFiling(toValue(businessId), toValue(filingId))
+    })
+  }
+
+  function publicStateFiling(
+    businessId: MaybeRefOrGetter<string>,
+    filingId: MaybeRefOrGetter<string | number>,
+    options?: QueryOptions<PublicStateFilingResponse>
+  ) {
+    return useQuery(() => publicStateFilingOptions(
+      businessId, filingId, options as DefineOptions<PublicStateFilingResponse>
+    ))
+  }
+
   function filingCommentsOptions(
     url: string,
     options?: DefineOptions<{ comments: { comment: BusinessComment }[] }>
@@ -422,6 +448,8 @@ export const useBusinessQuery = () => {
     linkedNameRequestOptions,
     parties,
     partiesOptions,
+    publicStateFiling,
+    publicStateFilingOptions,
     resolutions,
     resolutionsOptions,
     shareClasses,

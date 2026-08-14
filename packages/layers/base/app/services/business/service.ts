@@ -194,6 +194,21 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Fetches the public view of a filing (e.g., the business state filing).
+   * @param businessId the identifier of the business
+   * @param filingId the id of the filing
+   * @returns a promise to return the public filing data
+   */
+  async function getPublicStateFiling(
+    businessId: string,
+    filingId: number | string,
+    force = false
+  ): Promise<PublicStateFilingResponse> {
+    const options = query.publicStateFilingOptions(businessId, filingId)
+    return await getCachedOrFetch(options, force)
+  }
+
+  /**
    * Fetches the list of documents grouped by types.
    * @param url the full URL to fetch the comments
    * @returns a promise to return the comments list for the url
@@ -430,6 +445,7 @@ export const useBusinessService = () => {
     getDocument,
     getFiling,
     getFilingComments,
+    getPublicStateFiling,
     getFilingDocumentUrls,
     getLedger,
     getLinkedNameRequest,
