@@ -69,9 +69,13 @@ watch(() => localState.dateInput, async (val) => {
 })
 
 function onDateFocusIn(e: FocusEvent) {
-  if ((e.target as HTMLElement).tagName !== 'INPUT') return
+  if ((e.target as HTMLElement).tagName !== 'INPUT') {
+    return
+  }
   liveAnnouncement.value = ''
-  nextTick(() => { liveAnnouncement.value = hintText.value })
+  nextTick(() => {
+    liveAnnouncement.value = hintText.value
+  })
 }
 
 defineExpose({ formRef })
@@ -99,7 +103,6 @@ defineOptions({ inheritAttrs: false })
           <Date
             ref="date-input"
             v-model="localState.dateInput"
-            @focusin="onDateFocusIn"
             :label="$t('label.effectiveDate')"
             :error="!!error"
             :described-by="hintId"
@@ -107,6 +110,7 @@ defineOptions({ inheritAttrs: false })
             :min-date="props.minDate"
             :required="props.required"
             :disabled="props.disabled"
+            @focusin="onDateFocusIn"
           />
           <p
             :id="hintId"
