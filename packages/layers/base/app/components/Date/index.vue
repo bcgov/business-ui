@@ -34,7 +34,7 @@ const dateModel = defineModel<string>()
 
 const inputId = `date-input-${useId()}`
 
-const localState = reactive({ dateInput: dateModel.value ?? '' })
+const dateInput = ref(dateModel.value ?? '')
 
 const isCalendarOpen = ref(false)
 // tracks whether the calendar opened from input focus (suppresses auto-focus into calendar)
@@ -79,17 +79,9 @@ function onInputKeydown(event: KeyboardEvent) {
   focusCalendarGrid()
 }
 
-function onCalendarIconKeydown(event: KeyboardEvent) {
-  if (event.key !== 'Tab' || event.shiftKey || !isCalendarOpen.value) {
-    return
-  }
-  event.preventDefault()
-  focusCalendarGrid()
-}
-
 const calendarMinValue = computed(() => toCalendarDate(props.minDate))
 const calendarMaxValue = computed(() => toCalendarDate(props.maxDate))
-const calendarValue = computed(() => toCalendarDate(localState.dateInput, DATE_DISPLAY_FORMAT))
+const calendarValue = computed(() => toCalendarDate(dateInput.value, DATE_DISPLAY_FORMAT))
 
 const isDateUnavailable = (date: DateValue): boolean => {
   return (
@@ -146,7 +138,7 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
     return
   }
   const dt = DateTime.fromObject({ year: date.year, month: date.month, day: date.day }, { locale: activeLocale.value })
-  localState.dateInput = formatDate(dt, DATE_DISPLAY_FORMAT)
+  dateInput.value = formatDate(dt, DATE_DISPLAY_FORMAT)
   syncModelFromLocal()
   suppressCloseAutoFocus = true
   suppressOpenOnFocus = true
@@ -205,7 +197,7 @@ function normalizeDate(input: string): string {
 }
 
 function syncModelFromLocal() {
-  const trimmed = localState.dateInput.trim()
+  const trimmed = dateInput.value.trim()
 
   if (!trimmed) {
     dateModel.value = ''
@@ -223,14 +215,14 @@ function syncModelFromLocal() {
 }
 
 onMounted(() => {
-  const normalized = normalizeDate(localState.dateInput)
-  if (normalized !== localState.dateInput) {
-    localState.dateInput = normalized
+  const normalized = normalizeDate(dateInput.value)
+  if (normalized !== dateInput.value) {
+    dateInput.value = normalized
   }
 })
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
-watch(() => localState.dateInput, (val: string) => {
+watch(dateInput, (val: string) => {
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(async () => {
     if (!val) {
@@ -239,7 +231,7 @@ watch(() => localState.dateInput, (val: string) => {
     }
     const normalized = normalizeDate(val)
     if (normalized !== val) {
-      localState.dateInput = normalized
+      dateInput.value = normalized
       await nextTick()
     }
     syncModelFromLocal()
@@ -247,7 +239,7 @@ watch(() => localState.dateInput, (val: string) => {
 })
 
 function clearDate() {
-  localState.dateInput = ''
+  dateInput.value = ''
   syncModelFromLocal()
 }
 </script>
@@ -256,7 +248,7 @@ function clearDate() {
   <div ref="inputWrapperRef">
     <UInput
       :id="inputId"
-      v-model="localState.dateInput"
+      v-model="dateInput"
       :disabled="disabled"
       class="w-full"
       placeholder="&nbsp;"
@@ -274,13 +266,13 @@ function clearDate() {
       </label>
       <template #trailing>
         <UButton
-          v-if="localState.dateInput && !disabled"
+          v-if="dateInput && !disabled"
           icon="i-mdi-close"
           type="button"
           :color="error ? 'error' : 'neutral'"
           variant="ghost"
           class="date-action-button"
-          aria-label="Clear date"
+          :aria-label="$t('label.clearDate')"
           @keydown.enter.prevent="clearDate"
           @click="clearDate"
         />
@@ -302,16 +294,15 @@ function clearDate() {
               icon="i-mdi-calendar"
               type="button"
               :disabled="disabled"
-              :color="error && !localState.dateInput ? 'error' : 'neutral'"
+              :color="error && !dateInput ? 'error' : 'neutral'"
               variant="ghost"
               class="date-action-button"
-              aria-label="Open calendar"
-              @keydown="onCalendarIconKeydown"
+              :aria-label="$t('label.openCalendar')"
             />
             <template #content>
               <div ref="calendarContentRef">
                 <UCalendar
-                  aria-label="Choose Date"
+                  :aria-label="$t('label.chooseDate')"
                   :placeholder="calendarPlaceholder"
                   :model-value="calendarValue"
                   :min-value="calendarMinValue"

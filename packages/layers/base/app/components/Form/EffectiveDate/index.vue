@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { Form, FormError } from '@nuxt/ui'
-import type { EffectiveDateSchema } from '../../../utils/schemas/effective-date'
-import { getEffectiveDateSchema } from '../../../utils/schemas/effective-date'
 
 const props = withDefaults(defineProps<{
   minDate?: string
