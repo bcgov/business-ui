@@ -9,6 +9,7 @@ const mockKeys = {
   authorizedActions: vi.fn(),
   business: vi.fn(),
   bootstrapFiling: vi.fn(),
+  courtOrders: vi.fn(),
   document: vi.fn(),
   filing: vi.fn(),
   filingComments: vi.fn(),
@@ -116,6 +117,23 @@ describe('useBusinessQuery', () => {
     expect(custom.enabled).toBe(false)
     expect(custom.staleTime).toBe(500)
     expect(mockKeys.business).toHaveBeenLastCalledWith(businessId, false, false)
+  })
+
+  it('courtOrdersOptions should have correct config', () => {
+    const { courtOrdersOptions } = useBusinessQuery()
+
+    const options = courtOrdersOptions(businessId)
+    options.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/court-orders`)
+    expect(mockKeys.courtOrders).toHaveBeenCalledWith(businessId)
+    expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    const custom = courtOrdersOptions(businessId, {
+      enabled: false,
+      staleTime: 30000
+    })
+    expect(custom.enabled).toBe(false)
+    expect(custom.staleTime).toBe(30000)
   })
 
   it('documentOptions should have correct config', () => {
