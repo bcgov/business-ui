@@ -104,6 +104,29 @@ export const useBusinessQuery = () => {
     ))
   }
 
+  function courtOrdersOptions(
+    businessId: MaybeRefOrGetter<string>,
+    options?: DefineOptions<{ courtOrders: CourtOrderResponse[] }>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<{ courtOrders: CourtOrderResponse[] }>(
+        `businesses/${toValue(businessId)}/court-orders`
+      ),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.courtOrders(toValue(businessId))
+    })
+  }
+
+  function courtOrders(
+    businessId: MaybeRefOrGetter<string>,
+    options?: QueryOptions<{ courtOrders: CourtOrderResponse[] }>
+  ) {
+    return useQuery(() => courtOrdersOptions(
+      businessId, options as DefineOptions<{ courtOrders: CourtOrderResponse[] }>
+    ))
+  }
+
   function documentOptions(
     url: string,
     options?: DefineOptions<Blob>
@@ -383,6 +406,8 @@ export const useBusinessQuery = () => {
     businessOptions,
     bootstrapFiling,
     bootstrapFilingOptions,
+    courtOrders,
+    courtOrdersOptions,
     document,
     documentOptions,
     filing,

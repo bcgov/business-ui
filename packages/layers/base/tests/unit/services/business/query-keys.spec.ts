@@ -46,6 +46,7 @@ describe('useBusinessQueryKeys', () => {
       ['authorizedActions', [businessId], ['business', accountId, businessId, 'authorized-actions']],
       ['business', [businessId, true], ['business', accountId, businessId, 'information', { slim: true, publicData: undefined }]],
       ['bootstrapFiling', ['T12345'], ['business', accountId, 'T12345', 'bootstrap-filing']],
+      ['courtOrders', [businessId], ['business', accountId, businessId, 'court-orders']],
       ['document', ['http://api/pdf'], ['business', accountId, 'document', { url: 'http://api/pdf' }]],
       ['filing', [businessId, 55], ['business', accountId, businessId, 'filing', 55]],
       ['filingComments', ['http://comments'], ['business', accountId, 'filing', 'comments', { url: 'http://comments' }]],

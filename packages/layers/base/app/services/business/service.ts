@@ -155,6 +155,19 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Fetches all court orders that have been filed against a business.
+   * @param businessId the identifier of the business.
+   * @returns An array of Court Order objects.
+  */
+  async function getCourtOrders(
+    businessId: string,
+    force = false
+  ): Promise<CourtOrderResponse[]> {
+    const options = query.courtOrdersOptions(businessId)
+    return await getCachedOrFetch(options, force).then(res => res.courtOrders)
+  }
+
+  /**
    * Fetches documents object.
    * @param url the full URL to fetch the documents
    * @param options the options to fetch the documents
@@ -413,6 +426,7 @@ export const useBusinessService = () => {
     getAuthorizedActions,
     getBusiness,
     getBootstrapFiling,
+    getCourtOrders,
     getDocument,
     getFiling,
     getFilingComments,

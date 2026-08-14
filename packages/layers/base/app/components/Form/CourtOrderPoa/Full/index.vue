@@ -6,6 +6,7 @@ const props = defineProps<{
   subject: string
   hideRemove?: boolean
   name?: string
+  nested?: boolean
   stateKey: string
   isCourtOrder: boolean
 }>()
@@ -30,7 +31,7 @@ const formErrors = computed(() => {
   const errors = formRef.value?.getErrors()
 
   return {
-    courtOrderNumber: !!errors?.find(e => e.name?.includes('courtOrderNumber'))
+    fileNumber: !!errors?.find(e => e.name?.includes('fileNumber'))
   }
 })
 
@@ -53,8 +54,9 @@ defineExpose({
     ref="court-order-poa-form"
     :data-testid="`${variant}-court-order-poa-form`"
     :name
-    nested
+    :nested
     :schema
+    :state="model"
     @keydown.enter.prevent.stop="onDone"
   >
     <SubFormWrapper
@@ -76,12 +78,12 @@ defineExpose({
             :label="$t('label.planOfArrangement')"
             orientation="horizontal"
             details-aria-hidden
-            :error="formErrors.courtOrderNumber"
+            :error="formErrors.fileNumber"
             class="padding-x-default pt-6 sm:pt-10 pb-3 sm:pb-5"
           >
-            <UFormField name="hasPoa">
+            <UFormField name="effectOfOrder">
               <UCheckbox
-                v-model="model.hasPoa"
+                v-model="model.effectOfOrder"
                 :label="$t('label.filingPursuantToPlanOfArrangement')"
                 @update:model-value="formRef?.clear()"
               />
@@ -91,14 +93,14 @@ defineExpose({
             :label="$t('label.courtOrderNumber')"
             orientation="horizontal"
             details-aria-hidden
-            :error="formErrors.courtOrderNumber"
+            :error="formErrors.fileNumber"
             class="padding-x-default pb-6 sm:pb-10 pt-3 sm:pt-5"
           >
             <ConnectFormInput
-              v-model="model.courtOrderNumber"
+              v-model="model.fileNumber"
               input-id="court-order-number-input"
               :label="$t('label.courtOrderNumber')"
-              name="courtOrderNumber"
+              name="fileNumber"
               required
             />
           </ConnectFormFieldWrapper>
@@ -112,8 +114,8 @@ defineExpose({
             class="padding-xy-default"
           >
             <UFormField
-              name="courtOrderText"
-              :help="`${(model.courtOrderText?.length) || 0} / 2000`"
+              name="orderDetails"
+              :help="`${(model.orderDetails?.length) || 0} / 2000`"
               :ui="{
                 help: 'text-right'
               }"
@@ -121,7 +123,7 @@ defineExpose({
               <template #default>
                 <ConnectInput
                   id="court-order-text-input"
-                  v-model="model.courtOrderText"
+                  v-model="model.orderDetails"
                   :label="$t('label.addCourtOrderTextOpt')"
                   maxlength="2000"
                 />

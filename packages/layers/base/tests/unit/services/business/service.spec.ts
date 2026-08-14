@@ -7,6 +7,7 @@ const mockQuery = {
   authorizedActionsOptions: vi.fn(),
   businessOptions: vi.fn(),
   bootstrapFilingOptions: vi.fn(),
+  courtOrdersOptions: vi.fn(),
   documentOptions: vi.fn(),
   filingOptions: vi.fn(),
   filingCommentsOptions: vi.fn(),
@@ -112,6 +113,18 @@ describe('useBusinessService', () => {
     expect(opts).toHaveBeenCalledWith(tempId)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(tempIdResult).toEqual(mockData)
+  })
+
+  it('getCourtOrders should fetch options and call the cache helper', async () => {
+    const mockData = { courtOrders: [] }
+    mockGetCachedOrFetch.mockResolvedValue(mockData)
+
+    const result = await service.getCourtOrders(businessId, false)
+
+    const opts = mockQuery.courtOrdersOptions
+    expect(opts).toHaveBeenCalledWith(businessId)
+    expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
+    expect(result).toEqual(mockData.courtOrders)
   })
 
   it('getDocument should fetch options and call the cache helper', async () => {

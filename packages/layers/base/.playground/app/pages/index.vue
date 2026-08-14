@@ -32,92 +32,107 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/BusinessLedger/Wrapper')
   },
   {
-    label: 'ManageOffices',
+    label: 'Manager Components',
+    description: 'Stateful sections managing form controls, data tables, and row edits',
     children: [
       {
-        to: localePath('/examples/components/ManageOffices'),
-        label: 'Default'
-      },
-      {
-        label: 'Allowed Actions',
+        label: 'ManageCompanyName',
         children: [
           {
-            label: 'Add',
-            to: localePath('/examples/components/ManageOffices/allowed-actions/add')
+            to: localePath('/examples/components/ManageCompanyName'),
+            label: 'Readonly'
           },
           {
-            label: 'Edits',
-            to: localePath('/examples/components/ManageOffices/allowed-actions/edits')
-          },
-          {
-            label: 'Remove',
-            to: localePath('/examples/components/ManageOffices/allowed-actions/remove')
-          },
-          {
-            label: 'None',
-            to: localePath('/examples/components/ManageOffices/allowed-actions/none')
+            to: localePath('/examples/components/ManageCompanyName/editable'),
+            label: 'Editable'
           }
         ]
-      }
-    ]
-  },
-  {
-    label: 'ManageParties',
-    children: [
-      {
-        to: localePath('/examples/components/ManageParties'),
-        label: 'Default'
       },
       {
-        label: 'Allowed Actions',
+        label: 'ManageCourtOrders',
         children: [
           {
-            label: 'Add',
-            to: localePath('/examples/components/ManageParties/allowed-actions/add')
-          },
-          {
-            label: 'Remove',
-            to: localePath('/examples/components/ManageParties/allowed-actions/remove')
-          },
-          {
-            label: 'Edits',
-            to: localePath('/examples/components/ManageParties/allowed-actions/edits')
-          },
-          {
-            label: 'Mixed',
-            to: localePath('/examples/components/ManageParties/allowed-actions/mixed')
+            to: localePath('/examples/components/ManageCourtOrders'),
+            label: 'Default'
           }
         ]
-      }
-    ]
-  },
-  {
-    label: 'ManageShareStructure',
-    children: [
-      {
-        to: localePath('/examples/components/ManageShareStructure'),
-        label: 'Default'
       },
       {
-        to: localePath('/examples/components/ManageShareStructure/currency-other'),
-        label: 'Currency Other'
+        label: 'ManageOffices',
+        children: [
+          {
+            to: localePath('/examples/components/ManageOffices'),
+            label: 'Default'
+          },
+          {
+            label: 'Allowed Actions',
+            children: [
+              {
+                label: 'Add',
+                to: localePath('/examples/components/ManageOffices/allowed-actions/add')
+              },
+              {
+                label: 'Edits',
+                to: localePath('/examples/components/ManageOffices/allowed-actions/edits')
+              },
+              {
+                label: 'Remove',
+                to: localePath('/examples/components/ManageOffices/allowed-actions/remove')
+              },
+              {
+                label: 'None',
+                to: localePath('/examples/components/ManageOffices/allowed-actions/none')
+              }
+            ]
+          }
+        ]
       },
       {
-        to: localePath('/examples/components/ManageShareStructure/real-data'),
-        label: 'Real Data'
-      }
-    ]
-  },
-  {
-    label: 'ManageCompanyName',
-    children: [
-      {
-        to: localePath('/examples/components/ManageCompanyName'),
-        label: 'Readonly'
+        label: 'ManageParties',
+        children: [
+          {
+            to: localePath('/examples/components/ManageParties'),
+            label: 'Default'
+          },
+          {
+            label: 'Allowed Actions',
+            children: [
+              {
+                label: 'Add',
+                to: localePath('/examples/components/ManageParties/allowed-actions/add')
+              },
+              {
+                label: 'Remove',
+                to: localePath('/examples/components/ManageParties/allowed-actions/remove')
+              },
+              {
+                label: 'Edits',
+                to: localePath('/examples/components/ManageParties/allowed-actions/edits')
+              },
+              {
+                label: 'Mixed',
+                to: localePath('/examples/components/ManageParties/allowed-actions/mixed')
+              }
+            ]
+          }
+        ]
       },
       {
-        to: localePath('/examples/components/ManageCompanyName/editable'),
-        label: 'Editable'
+        label: 'ManageShareStructure',
+        children: [
+          {
+            to: localePath('/examples/components/ManageShareStructure'),
+            label: 'Default'
+          },
+          {
+            to: localePath('/examples/components/ManageShareStructure/currency-other'),
+            label: 'Currency Other'
+          },
+          {
+            to: localePath('/examples/components/ManageShareStructure/real-data'),
+            label: 'Real Data'
+          }
+        ]
       }
     ]
   },
