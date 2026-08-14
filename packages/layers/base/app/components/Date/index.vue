@@ -91,11 +91,11 @@ const calendarMinValue = computed(() => toCalendarDate(props.minDate))
 const calendarMaxValue = computed(() => toCalendarDate(props.maxDate))
 const calendarValue = computed(() => toCalendarDate(localState.dateInput, DATE_DISPLAY_FORMAT))
 
-const isDateUnavailable = (date: DateValue) => {
+const isDateUnavailable = (date: DateValue): boolean => {
   return (
-    (calendarMinValue.value
+    (!!calendarMinValue.value
       && date.compare(calendarMinValue.value) < 0)
-    || (calendarMaxValue.value
+    || (!!calendarMaxValue.value
       && date.compare(calendarMaxValue.value) > 0)
   )
 }
