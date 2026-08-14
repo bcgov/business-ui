@@ -13,14 +13,6 @@ export const useBusinessStateReason = () => {
 
   const enDash = '–' // ALT + 0150
 
-  /** Format a Date as 'Month Day, Year at HH:MM am/pm Pacific time'. */
-  const toDateTimeString = (date: Date): string | undefined => {
-    const dateStr = toFormattedDateStr(date, { ...DateTime.DATETIME_FULL, timeZoneName: undefined })
-    return dateStr
-      ? `${dateStr.replace('AM', 'am').replace('PM', 'pm')} ${t('label.pacificTime')}`
-      : undefined
-  }
-
   /** Return the reason text for the business state (empty when not historical). */
   const getStateReason = async (): Promise<string> => {
     const biz = business.value
@@ -90,7 +82,7 @@ export const useBusinessStateReason = () => {
 
     // reason for continuation out and default 'reason'
     const effectiveDate = toDate(stateFiling.header?.effectiveDate || '')
-    const date = (effectiveDate && toDateTimeString(effectiveDate)) || `[${t('text.unknown')}]`
+    const date = (effectiveDate && toPacificDateTime(effectiveDate)) || `[${t('text.unknown')}]`
     let reason = ''
     if (filingType === FilingType.CONTINUATION_OUT) {
       reason = t('stateReason.continuationOut')
