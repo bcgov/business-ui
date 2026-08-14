@@ -49,6 +49,7 @@ describe('useBusinessQueryKeys', () => {
       ['courtOrders', [businessId], ['business', accountId, businessId, 'court-orders']],
       ['document', ['http://api/pdf'], ['business', accountId, 'document', { url: 'http://api/pdf' }]],
       ['filing', [businessId, 55], ['business', accountId, businessId, 'filing', 55]],
+      ['publicStateFiling', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'public']],
       ['filingComments', ['http://comments'], ['business', accountId, 'filing', 'comments', { url: 'http://comments' }]],
       ['filingDocumentUrls', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'document-urls']],
       ['ledger', [businessId, '2026-01-13'], ['business', accountId, businessId, 'ledger', { date: '2026-01-13' }]],

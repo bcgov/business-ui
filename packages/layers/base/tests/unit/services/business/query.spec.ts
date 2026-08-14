@@ -12,6 +12,7 @@ const mockKeys = {
   courtOrders: vi.fn(),
   document: vi.fn(),
   filing: vi.fn(),
+  publicStateFiling: vi.fn(),
   filingComments: vi.fn(),
   filingDocumentUrls: vi.fn(),
   ledger: vi.fn(),
@@ -186,6 +187,24 @@ describe('useBusinessQuery', () => {
     const custom = filingOptions(businessId, '12345', { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
     expect(mockKeys.filing).toHaveBeenCalledWith(businessId, '12345')
+  })
+
+  it('publicStateFilingOptions should have correct config', () => {
+    const { publicStateFilingOptions } = useBusinessQuery()
+    const filingId = 123
+
+    const options = publicStateFilingOptions(businessId, filingId)
+    options.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}/filings/${filingId}`,
+      { query: { public: true } }
+    )
+    expect(mockKeys.publicStateFiling).toHaveBeenCalledWith(businessId, filingId)
+    expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    const custom = publicStateFilingOptions(businessId, '12345', { staleTime: 5000 })
+    expect(custom.staleTime).toBe(5000)
+    expect(mockKeys.publicStateFiling).toHaveBeenCalledWith(businessId, '12345')
   })
 
   it('filingCommentsOptions should have correct config', () => {

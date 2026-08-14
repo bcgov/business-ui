@@ -40,10 +40,7 @@ export const useBusinessStateReason = () => {
     }
     const stateFiling = await service.getPublicStateFiling(biz.identifier, filingId)
       .then(resp => resp?.filing)
-      .catch((error) => {
-        console.warn('Error fetching state filing', error)
-        return undefined
-      })
+      .catch(() => undefined)
     const filingType = stateFiling?.header?.name
     if (!filingType) {
       return ''
@@ -77,7 +74,7 @@ export const useBusinessStateReason = () => {
       const date = expiryDate
         ? toFormattedDateStr(expiryDate, DateTime.DATE_FULL)
         : `[${t('text.unknown')}]`
-      return `${filingData.reason} on ${date}`
+      return `${filingData.reason} ${enDash} ${date}`
     }
 
     // reason for continuation out and default 'reason'

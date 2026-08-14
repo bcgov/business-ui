@@ -106,7 +106,7 @@ describe('useBusinessStateReason', () => {
       }
     })
     const { getStateReason } = useBusinessStateReason()
-    expect(await getStateReason()).toBe('Limited Restoration Expired on January 15, 2026')
+    expect(await getStateReason()).toBe('Limited Restoration Expired – January 15, 2026')
   })
 
   it('returns the continuation out reason with a date time', async () => {
