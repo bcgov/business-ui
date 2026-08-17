@@ -46,6 +46,10 @@ const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
 })
 
+const hasCourtOrderChanges = computed(() => {
+  return store.courtOrders.some(co => co.new.actions.length > 0)
+})
+
 const requiresAuthorization = computed(() => {
   const legalType = businessStore.business?.legalType as CorpTypeCd | undefined
   return legalType ? CORPS.includes(legalType) : false
@@ -142,6 +146,13 @@ function onError(event: FormErrorEvent) {
         :empty-text="$t('label.noShareClasses')"
         variant="correct-readonly"
         :collect-resolution-date="store.requireResolutionDate"
+      />
+
+      <ManageCourtOrders
+        v-if="hasCourtOrderChanges"
+        data-testid="review-court-orders-section"
+        :loading="store.initializing"
+        variant="correct-readonly"
       />
     </section>
 
