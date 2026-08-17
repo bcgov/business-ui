@@ -553,7 +553,6 @@ export default {
     'text': 'Text',
     'undo': 'Undo',
     'unknown': 'Unknown',
-    'unknownCompany': 'Unknown Company',
     'uploadFiles': 'Upload Files',
     'useNewNrNumber': 'Use a new name request number',
     'useTheCorporationNumberAsTheName': 'Use the incorporation number {boldStart}{corpnum}{boldEnd} as the name',
@@ -677,16 +676,6 @@ export default {
     SECRETARY: 'Secretary',
     TREASURER: 'Treasurer',
     VICE_PRESIDENT: 'Vice President'
-  },
-  /* Reasons shown beside the business state badge, mirrors business-dashboard-ui filing.name/filing.reason */
-  stateReason: {
-    amalgamation: 'Amalgamation',
-    continuationOut: 'Continuation Out',
-    dissolutionAdministrative: 'Administrative Dissolution',
-    dissolutionFirm: 'Dissolution',
-    dissolutionInvoluntary: 'Dissolved for Failure to File',
-    dissolutionVoluntary: 'Voluntary Dissolution',
-    unknown: 'Unknown'
   },
   text: {
     addressChange: 'address change',

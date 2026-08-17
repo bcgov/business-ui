@@ -173,32 +173,24 @@ export const useBusinessQuery = () => {
   function filingOptions<F extends FilingRecord>(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    publicData = false,
-    options?: DefineOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
+    options?: DefineOptions<FilingGetByIdResponse<F>>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>(
-        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`,
-        { query: publicData ? { public: true } : undefined }
+      query: () => $businessApi<FilingGetByIdResponse<F>>(
+        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`
       ),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.filing(toValue(businessId), toValue(filingId), publicData)
+      key: keys.filing(toValue(businessId), toValue(filingId))
     })
   }
 
   function filing<F extends FilingRecord>(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    publicData = false,
-    options?: QueryOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
+    options?: QueryOptions<FilingGetByIdResponse<F>>
   ) {
-    return useQuery(() => filingOptions(
-      businessId,
-      filingId,
-      publicData,
-      options as DefineOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
-    ))
+    return useQuery(() => filingOptions(businessId, filingId, options as DefineOptions<FilingGetByIdResponse<F>>))
   }
 
   function filingCommentsOptions(

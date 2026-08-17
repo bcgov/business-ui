@@ -69,8 +69,7 @@ export function toFormattedDateStr(
  */
 export function toPacificDateTime(date: Date): string | undefined {
   const dateStr = toFormattedDateStr(date, { ...DateTime.DATETIME_FULL, timeZoneName: undefined })
-  // useNuxtApp().$i18n works outside setup (e.g. async calls after await), unlike useI18n()
-  const t = useNuxtApp().$i18n.t
+  const { t } = useI18n()
   return dateStr
     ? `${dateStr.replace('AM', 'am').replace('PM', 'pm')} ${t('label.pacificTime')}`
     : undefined
