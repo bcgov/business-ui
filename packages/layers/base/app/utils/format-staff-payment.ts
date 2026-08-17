@@ -19,7 +19,7 @@ export function formatStaffPaymentApi(staffPayment: StaffPaymentSchema): Partial
     staffPaymentOption: staffPayment.option,
     waiveFees,
     ...(staffPayment.bcolAccountNumber ? { bcolAccountNumber: staffPayment.bcolAccountNumber } : {}),
-    ...(staffPayment.datNumber ? { datNumber: staffPayment.datNumber } : {}),
+    ...(staffPayment.datNumber ? { datNumber: staffPayment.datNumber.toUpperCase() } : {}),
     ...(staffPayment.folioNumber ? { folioNumber: staffPayment.folioNumber } : {}),
     ...(staffPayment.isPriority ? { priority: staffPayment.isPriority } : {}),
     ...(staffPayment.routingSlipNumber ? { routingSlipNumber: staffPayment.routingSlipNumber } : {})
