@@ -38,7 +38,7 @@ export const useBusinessStateReason = () => {
     if (!filingId) {
       return ''
     }
-    const stateFiling = await service.getPublicStateFiling(biz.identifier, filingId)
+    const stateFiling = await service.getFiling(biz.identifier, filingId, true)
       .then(resp => resp?.filing)
       .catch(() => undefined)
     const filingType = stateFiling?.header.name

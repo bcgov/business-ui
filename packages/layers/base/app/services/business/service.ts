@@ -84,7 +84,7 @@ export const useBusinessService = () => {
     filingName: FilingType,
     force = false
   ): Promise<FilingGetByIdResponse<F>> {
-    const options = query.filingOptions<F>(businessId, draftId)
+    const options = query.filingOptions<F>(businessId, draftId, false)
     const result = await getCachedOrFetch(options, force)
 
     const isValid = isValidDraft<F>(filingName, result)
@@ -182,29 +182,25 @@ export const useBusinessService = () => {
    * Fetches a filing by its id.
    * @param businessId the identifier of the business
    * @param filingId the id of the filing
+   * @param publicData whether to fetch the public (unauthenticated) view of the filing
    * @returns a promise to return the filing
    */
+  function getFiling(
+    businessId: string, filingId: number | string, publicData: true, force?: boolean
+  ): Promise<FilingGetByIdPublicResponse>
+  function getFiling<F extends FilingRecord>(
+    businessId: string, filingId: number | string, publicData?: false, force?: boolean
+  ): Promise<FilingGetByIdResponse<F>>
+  function getFiling<F extends FilingRecord>(
+    businessId: string, filingId: number | string, publicData: boolean, force?: boolean
+  ): Promise<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
   async function getFiling<F extends FilingRecord>(
     businessId: string,
     filingId: number | string,
+    publicData = false,
     force = false
-  ): Promise<FilingGetByIdResponse<F>> {
-    const options = query.filingOptions<F>(businessId, filingId)
-    return await getCachedOrFetch(options, force)
-  }
-
-  /**
-   * Fetches the public view of a filing (e.g., the business state filing).
-   * @param businessId the identifier of the business
-   * @param filingId the id of the filing
-   * @returns a promise to return the public filing data
-   */
-  async function getPublicStateFiling(
-    businessId: string,
-    filingId: number | string,
-    force = false
-  ): Promise<PublicStateFilingResponse> {
-    const options = query.publicStateFilingOptions(businessId, filingId)
+  ): Promise<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse> {
+    const options = query.filingOptions<F>(businessId, filingId, publicData)
     return await getCachedOrFetch(options, force)
   }
 
@@ -445,7 +441,6 @@ export const useBusinessService = () => {
     getDocument,
     getFiling,
     getFilingComments,
-    getPublicStateFiling,
     getFilingDocumentUrls,
     getLedger,
     getLinkedNameRequest,

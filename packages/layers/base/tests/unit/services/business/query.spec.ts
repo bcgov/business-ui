@@ -12,7 +12,6 @@ const mockKeys = {
   courtOrders: vi.fn(),
   document: vi.fn(),
   filing: vi.fn(),
-  publicStateFiling: vi.fn(),
   filingComments: vi.fn(),
   filingDocumentUrls: vi.fn(),
   ledger: vi.fn(),
@@ -180,31 +179,24 @@ describe('useBusinessQuery', () => {
 
     const options = filingOptions(businessId, filingId)
     options.query({} as any)
-    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/filings/${filingId}`)
-    expect(mockKeys.filing).toHaveBeenCalledWith(businessId, filingId)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}/filings/${filingId}`,
+      { query: undefined }
+    )
+    expect(mockKeys.filing).toHaveBeenCalledWith(businessId, filingId, false)
     expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
 
-    const custom = filingOptions(businessId, '12345', { staleTime: 5000 })
+    const custom = filingOptions(businessId, '12345', false, { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
-    expect(mockKeys.filing).toHaveBeenCalledWith(businessId, '12345')
-  })
+    expect(mockKeys.filing).toHaveBeenCalledWith(businessId, '12345', false)
 
-  it('publicStateFilingOptions should have correct config', () => {
-    const { publicStateFilingOptions } = useBusinessQuery()
-    const filingId = 123
-
-    const options = publicStateFilingOptions(businessId, filingId)
-    options.query({} as any)
+    const publicOptions = filingOptions(businessId, filingId, true)
+    publicOptions.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(
       `businesses/${businessId}/filings/${filingId}`,
       { query: { public: true } }
     )
-    expect(mockKeys.publicStateFiling).toHaveBeenCalledWith(businessId, filingId)
-    expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
-
-    const custom = publicStateFilingOptions(businessId, '12345', { staleTime: 5000 })
-    expect(custom.staleTime).toBe(5000)
-    expect(mockKeys.publicStateFiling).toHaveBeenCalledWith(businessId, '12345')
+    expect(mockKeys.filing).toHaveBeenCalledWith(businessId, filingId, true)
   })
 
   it('filingCommentsOptions should have correct config', () => {

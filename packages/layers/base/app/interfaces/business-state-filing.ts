@@ -10,7 +10,7 @@ export interface BusinessAmalgamatedInto {
   legalName?: string
 }
 
-/** Filing body values returned by GET businesses/{id}/filings/{filingId}?public=true */
+/** State filing body values returned by GET businesses/{id}/filings/{filingId}?public=true */
 export interface PublicStateFilingBody {
   type?: string
   reason?: string
@@ -19,7 +19,7 @@ export interface PublicStateFilingBody {
 }
 
 /** Response from GET businesses/{id}/filings/{filingId}?public=true */
-export interface PublicStateFilingResponse {
+export interface FilingGetByIdPublicResponse {
   filing: {
     header: {
       name: string

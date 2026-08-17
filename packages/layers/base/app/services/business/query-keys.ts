@@ -27,9 +27,8 @@ export const useBusinessQueryKeys = () => {
     bootstrapFiling: (tempRegId: string) => [...base.value, tempRegId, 'bootstrap-filing'] as const,
     courtOrders: (businessId: string) => [...base.value, businessId, 'court-orders'] as const,
     document: (url: string) => [...base.value, 'document', { url }] as const,
-    filing: (businessId: string, filingId: number | string) => [...base.value, businessId, 'filing', filingId] as const,
-    publicStateFiling: (businessId: string, filingId: number | string) =>
-      [...base.value, businessId, 'filing', filingId, 'public'] as const,
+    filing: (businessId: string, filingId: number | string, publicData = false) =>
+      [...base.value, businessId, 'filing', filingId, { publicData }] as const,
     filingComments: (url: string) => [...base.value, 'filing', 'comments', { url }] as const,
     filingDocumentUrls: (businessId: string, filingId: string | number) =>
       [...base.value, businessId, 'filing', filingId, 'document-urls'] as const,

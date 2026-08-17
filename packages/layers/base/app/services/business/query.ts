@@ -173,49 +173,31 @@ export const useBusinessQuery = () => {
   function filingOptions<F extends FilingRecord>(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    options?: DefineOptions<FilingGetByIdResponse<F>>
+    publicData = false,
+    options?: DefineOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<FilingGetByIdResponse<F>>(
-        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`
+      query: () => $businessApi<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>(
+        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`,
+        { query: publicData ? { public: true } : undefined }
       ),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.filing(toValue(businessId), toValue(filingId))
+      key: keys.filing(toValue(businessId), toValue(filingId), publicData)
     })
   }
 
   function filing<F extends FilingRecord>(
     businessId: MaybeRefOrGetter<string>,
     filingId: MaybeRefOrGetter<string | number>,
-    options?: QueryOptions<FilingGetByIdResponse<F>>
+    publicData = false,
+    options?: QueryOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
   ) {
-    return useQuery(() => filingOptions(businessId, filingId, options as DefineOptions<FilingGetByIdResponse<F>>))
-  }
-
-  function publicStateFilingOptions(
-    businessId: MaybeRefOrGetter<string>,
-    filingId: MaybeRefOrGetter<string | number>,
-    options?: DefineOptions<PublicStateFilingResponse>
-  ) {
-    return defineQueryOptions({
-      query: () => $businessApi<PublicStateFilingResponse>(
-        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}`,
-        { query: { public: true } }
-      ),
-      staleTime: DEFAULT_STALE_TIME,
-      ...options,
-      key: keys.publicStateFiling(toValue(businessId), toValue(filingId))
-    })
-  }
-
-  function publicStateFiling(
-    businessId: MaybeRefOrGetter<string>,
-    filingId: MaybeRefOrGetter<string | number>,
-    options?: QueryOptions<PublicStateFilingResponse>
-  ) {
-    return useQuery(() => publicStateFilingOptions(
-      businessId, filingId, options as DefineOptions<PublicStateFilingResponse>
+    return useQuery(() => filingOptions(
+      businessId,
+      filingId,
+      publicData,
+      options as DefineOptions<FilingGetByIdResponse<F> | FilingGetByIdPublicResponse>
     ))
   }
 
@@ -448,8 +430,6 @@ export const useBusinessQuery = () => {
     linkedNameRequestOptions,
     parties,
     partiesOptions,
-    publicStateFiling,
-    publicStateFilingOptions,
     resolutions,
     resolutionsOptions,
     shareClasses,
