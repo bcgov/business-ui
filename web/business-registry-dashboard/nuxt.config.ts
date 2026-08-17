@@ -144,6 +144,8 @@ export default defineNuxtConfig({
       appName: 'Business Registry Dashboard',
       version: `Business Registry Dashboard v${process.env.npm_package_version}`,
       ldClientId: process.env.NUXT_LD_CLIENT_ID || '',
+      // corp types that may be affiliated while still managed in COLIN - same default as auth-api's COLIN_AFFILIATION_CORP_TYPES
+      colinAffiliationCorpTypes: process.env.NUXT_COLIN_AFFILIATION_CORP_TYPES || 'BC,ULC,CC',
       nrURL: process.env.NUXT_NAME_REQUEST_URL || '',
       oneStopUrl: process.env.NUXT_ONE_STOP_URL,
       societiesUrl: process.env.NUXT_APP_SOCIETIES_URL,

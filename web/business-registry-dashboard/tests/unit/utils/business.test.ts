@@ -105,6 +105,19 @@ describe('business utils', () => {
       })
     })
 
+    it('should carry isLoadedLear through for COLIN managed businesses', () => {
+      const response: AffiliationResponse = {
+        identifier: 'BC1234567',
+        legalName: 'Legal Name',
+        legalType: CorpTypes.BC_COMPANY,
+        isLoadedLear: false
+      }
+
+      const result = buildBusinessObject(response)
+
+      expect(result.isLoadedLear).toBe(false)
+    })
+
     it('should handle missing optional fields correctly', () => {
       const response: AffiliationResponse = {
         identifier: 'BC1234567',

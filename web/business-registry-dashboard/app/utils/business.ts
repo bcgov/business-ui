@@ -57,7 +57,8 @@ export function buildBusinessObject (resp: AffiliationResponse): Business {
     ...(resp.goodStanding !== undefined ? { goodStanding: resp.goodStanding } : { goodStanding: true }),
     ...(resp.state && { status: resp.state }),
     ...(resp.draftStatus && { draftStatus: resp.draftStatus }),
-    ...(resp.effectiveDate && { effectiveDate: resp.effectiveDate })
+    ...(resp.effectiveDate && { effectiveDate: resp.effectiveDate }),
+    ...(resp.isLoadedLear !== undefined && { isLoadedLear: resp.isLoadedLear })
   }
 }
 

@@ -52,6 +52,16 @@ export async function mockKeycloakSession (page: Page) {
     // Pre-seed session storage so the account store picks up the mock account
     sessionStorage.setItem('CURRENT_ACCOUNT', JSON.stringify(_mockCurrentAccount));
 
+    // The core layer's account store (defineStore('nuxt-core-connect-account-store', ..., { persist: true }))
+    // rehydrates from this session-storage key - without it currentAccount.id stays undefined and
+    // account-gated flows (eg. affiliations.loadAffiliations) silently bail.
+    sessionStorage.setItem('nuxt-core-connect-account-store', JSON.stringify({
+      currentAccount: _mockCurrentAccount,
+      userAccounts: [_mockCurrentAccount],
+      pendingApprovalCount: 0,
+      errors: []
+    }));
+
     // Create the mock Keycloak instance
     const mockKeycloakInstance = {
       authenticated: true,
@@ -156,6 +166,11 @@ export async function mockDashboardApis (
   // Affiliation invitations — use api path prefix to avoid matching module URLs
   await mockRoute(page, '**/api/**/affiliationInvitations**', {
     json: { affiliationInvitations: [] }
+  })
+
+  // Pending approvals count (runs once the account store has a current account)
+  await page.route('**/org/**/notifications', async (route) => {
+    await route.fulfill({ json: { count: 0 } })
   })
 
   // Products (for account validation)
