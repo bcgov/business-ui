@@ -119,5 +119,15 @@ function onActionPrevented() {
       :collect-resolution-date="store.requireResolutionDate"
       @action-prevented="onActionPrevented"
     />
+
+    <ManageCourtOrders
+      v-model:active-co="store.formState.activeCourtOrder"
+      data-testid="court-orders-section"
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.courtOrders') })"
+      :prevent-actions="hasActiveSubForm"
+      variant="correct"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
+    />
   </UForm>
 </template>

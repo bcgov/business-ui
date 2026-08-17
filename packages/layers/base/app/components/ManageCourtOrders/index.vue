@@ -157,7 +157,7 @@ watch(() => actionPreventedSignal, (value) => {
 
     <ConnectPageSection
       :heading="{
-        label: tableTitle,
+        label: tableTitle || $t('label.courtOrdersPlanofArrangement'),
         icon: 'i-mdi-gavel',
         ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
         level: sectionTitle ? 'h3' : 'h2'
@@ -165,7 +165,7 @@ watch(() => actionPreventedSignal, (value) => {
       :actions="allowAddCourtOrder
         ? [
           {
-            'label': $t('label.addSubject', { subject }),
+            'label': $t('label.addSubject', { subject: $t('label.courtOrder') }),
             'variant': 'outline',
             'icon': 'i-mdi-plus',
             // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
@@ -183,7 +183,7 @@ watch(() => actionPreventedSignal, (value) => {
           v-model="activeCourtOrder"
           variant="add"
           :name="modelName"
-          :subject="subject!"
+          :subject="$t('label.courtOrder')"
           :state-key="stateKey"
           class="p-6"
           :is-court-order="true"
