@@ -20,10 +20,10 @@ export interface PublicStateFilingBody {
 
 /** Response from GET businesses/{id}/filings/{filingId}?public=true */
 export interface PublicStateFilingResponse {
-  filing?: {
-    header?: {
-      name?: string
-      effectiveDate?: ApiDateTimeUtc
+  filing: {
+    header: {
+      name: string
+      effectiveDate: ApiDateTimeUtc
     }
   } & Partial<Record<string, PublicStateFilingBody>>
 }

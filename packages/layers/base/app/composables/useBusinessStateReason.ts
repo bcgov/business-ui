@@ -41,7 +41,7 @@ export const useBusinessStateReason = () => {
     const stateFiling = await service.getPublicStateFiling(biz.identifier, filingId)
       .then(resp => resp?.filing)
       .catch(() => undefined)
-    const filingType = stateFiling?.header?.name
+    const filingType = stateFiling?.header.name
     if (!filingType) {
       return ''
     }
@@ -61,7 +61,7 @@ export const useBusinessStateReason = () => {
         case DissolutionType.VOLUNTARY:
           reason = businessStore.isFirm() ? t('stateReason.dissolutionFirm') : t('stateReason.dissolutionVoluntary')
       }
-      const dissolutionDate = toDate(filingData.dissolutionDate || stateFiling.header?.effectiveDate || '')
+      const dissolutionDate = toDate(filingData.dissolutionDate || stateFiling.header.effectiveDate || '')
       const date = dissolutionDate
         ? toFormattedDateStr(dissolutionDate, DateTime.DATE_FULL)
         : `[${t('text.unknown')}]`
@@ -78,7 +78,7 @@ export const useBusinessStateReason = () => {
     }
 
     // reason for continuation out and default 'reason'
-    const effectiveDate = toDate(stateFiling.header?.effectiveDate || '')
+    const effectiveDate = toDate(stateFiling.header.effectiveDate || '')
     const date = (effectiveDate && toPacificDateTime(effectiveDate)) || `[${t('text.unknown')}]`
     let reason = ''
     if (filingType === FilingType.CONTINUATION_OUT) {
