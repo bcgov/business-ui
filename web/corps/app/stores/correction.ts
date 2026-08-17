@@ -9,6 +9,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { shareClasses: tableShareClasses, resolutionDates } = useManageShareStructure()
   const { tableState: tableNameTranslations } = useManageNameTranslations('manage-company-name-name-translations')
   const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
+  const { tableState: tableCourtOrders } = useManageCourtOrders()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -27,6 +28,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
   const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
   const initialResolutionDates = shallowRef<TableBusinessState<ResolutionDateSchema>[]>([])
+  const initialCourtOrders = shallowRef<TableBusinessState<CourtOrderPoaFullSchema>[]>([])
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
@@ -46,6 +48,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeClass
     || !!formState.activeSeries
     || !!formState.activeResolutionDate
+    || !!formState.activeCourtOrder
   )
 
   /** The original filing being corrected (fetched by correctedFilingId) */
@@ -104,7 +107,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       return
     }
 
-    const aliasesNameTranslations = await service.getNameTranslations(businessId).catch(() => [] as NameTranslation[])
+    const [
+      aliasesNameTranslations,
+      courtOrders
+    ] = await Promise.all([
+      service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
+      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[])
+    ])
 
     // The draft is always expected to exist (pre-created before page load)
     const draft = draftFiling.filing.correction
@@ -287,6 +296,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       })
     }
 
+    const formattedCourtOrders = formatCourtOrdersSection(courtOrders, draft.courtOrders)
+    tableCourtOrders.value = formattedCourtOrders
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableParties.value)
@@ -296,6 +308,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
     initialResolutionDates.value = cloneDeep(resolutionDates.value)
+    initialCourtOrders.value = cloneDeep(tableCourtOrders.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
     if (isStaffCorrectionType.value) {
@@ -383,7 +396,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           legalName: companyName.value.new.legalName,
           nrNumber: companyName.value.new.nrNumber
         }
-      })
+      }),
+
+      courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
 
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
@@ -407,6 +422,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       delete header.certifiedBy
       delete header.authorizationReceived
     }
+
+    console.log('PAYLOAD: ', filingPayload)
 
     // Draft is always pre-created, so we always have a filingId to update
     const filingId = draftFilingState.value?.filing?.header?.filingId
@@ -466,6 +483,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeSeries = undefined
     formState.activeNameTranslation = undefined
     formState.activeResolutionDate = undefined
+    formState.activeCourtOrder = undefined
 
     tableNameTranslations.value = []
 
@@ -477,6 +495,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialShareClasses.value = []
     initialNameTranslations.value = []
     initialResolutionDates.value = []
+    initialCourtOrders.value = []
 
     initializing.value = false
     requireResolutionDate.value = false
@@ -494,6 +513,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctionType,
     requireResolutionDate,
     isStaffCorrectionType,
+    courtOrders: tableCourtOrders,
     directors: tableParties,
     receivers: tableReceivers,
     liquidators: tableLiquidators,
@@ -509,6 +529,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialShareClasses,
     initialResolutionDates,
     initialNameTranslations,
+    initialCourtOrders,
     hasActiveSubForm,
     isStaff,
     companyName,

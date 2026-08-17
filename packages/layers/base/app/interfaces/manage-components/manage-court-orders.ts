@@ -2,7 +2,6 @@ import type { ManageBaseProps } from '#business/app/interfaces'
 
 export type ManageCourtOrdersProps = ManageBaseProps & {
   labelOverrides?: TableLabelOverrides
-  tableTitle?: string
 } & (
   | {
     variant?: 'default' | 'correct'

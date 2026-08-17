@@ -1,5 +1,5 @@
 export interface ManageBaseProps {
-  tableTitle: string
+  tableTitle?: string
   emptyText?: string
   sectionTitle?: string
   sectionDescription?: string

@@ -16,7 +16,7 @@ export interface CourtOrderResponse {
   fileNumber: string
   filingId: number
   filingType: FilingType
-  id: number
+  id?: number // may be undefined when loading a draft
   orderDate?: string | null
   orderDetails?: string | null
   files?: unknown[] // FUTURE - not returned from API yet

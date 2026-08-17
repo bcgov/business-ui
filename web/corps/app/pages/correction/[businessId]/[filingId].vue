@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const store = useCorrectionStore()
-const { initializing } = storeToRefs(store)
 const route = useRoute()
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
@@ -28,7 +27,8 @@ const {
     [() => store.initialShareClasses, () => store.shareClasses],
     [() => store.initialNameTranslations, () => store.nameTranslations],
     [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
-    [() => store.initialResolutionDates, () => store.resolutionDates]
+    [() => store.initialResolutionDates, () => store.resolutionDates],
+    [() => store.initialCourtOrders, () => store.courtOrders],
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -40,6 +40,7 @@ const {
       || store.resolutionDates.some(rd => rd.new.actions.length > 0)
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || store.companyName.new.actions.length > 0
+      || store.courtOrders.some(co => co.new.actions.length > 0)
   }
 )
 
@@ -60,17 +61,10 @@ const originalFilingName = computed(() => {
   return getFilingName(store.correctedFilingType) ?? store.correctedFilingType
 })
 
-/** Formatted date of the original filing (e.g. "February 8, 2021") */
-const originalFilingDate = computed(() => {
-  if (!store.correctedFilingDate) {
-    return ''
-  }
-  return toReadableDate(store.correctedFilingDate)
-})
-
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)
   if (store.hasActiveSubForm) {
+    console.log('active sub form')
     return
   }
   if (!canSubmit()) {
@@ -90,8 +84,9 @@ async function submitFiling() {
     }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
-    revokeBeforeUnload()
-    await navigateTo(dashboardUrl.value, { external: true })
+    // revokeBeforeUnload()
+    // await navigateTo(dashboardUrl.value, { external: true })
+    handleButtonLoading(false)
   } catch (error) {
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
@@ -167,19 +162,19 @@ watch(currentStep, (step) => {
 
 <template>
   <div class="py-6 space-y-6 sm:py-10 sm:space-y-10">
-    <ConnectSpinner v-if="initializing" fullscreen />
+    <ConnectSpinner v-if="store.initializing" fullscreen />
     <div class="space-y-2">
       <h1 id="filing-h1">
         {{ $t('page.correction.h1') }}
       </h1>
-      <p v-if="originalFilingDate">
-        <strong>{{ $t('label.originalFilingDate') }}:</strong> {{ originalFilingDate }}
+      <p v-if="store.correctedFilingDateDisplay">
+        <strong>{{ $t('label.originalFilingDate') }}:</strong> {{ store.correctedFilingDateDisplay }}
       </p>
       <ConnectI18nHelper
         as="p"
         translation-path="page.correction.desc"
         :filing-type="originalFilingName"
-        :filing-date="originalFilingDate"
+        :filing-date="store.correctedFilingDateDisplay"
       />
     </div>
     <FormCorrectionStep1
