@@ -145,10 +145,20 @@ describe('useBusinessService', () => {
     mockGetCachedOrFetch.mockResolvedValue(mockData)
     const filingId = 123
 
-    const result = await service.getFiling(businessId, filingId, true)
+    const result = await service.getFiling(businessId, filingId, false, true)
     const opts = mockQuery.filingOptions
-    expect(opts).toHaveBeenCalledWith(businessId, filingId)
+    expect(opts).toHaveBeenCalledWith(businessId, filingId, false)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
+    expect(result).toEqual(mockData)
+  })
+
+  it('getFiling should pass publicData through to the query options', async () => {
+    const mockData = { filing: { header: { name: 'dissolution' } } }
+    mockGetCachedOrFetch.mockResolvedValue(mockData)
+
+    const result = await service.getFiling(businessId, 123, true)
+    expect(mockQuery.filingOptions).toHaveBeenCalledWith(businessId, 123, true)
+    expect(mockGetCachedOrFetch).toHaveBeenCalledWith(mockQuery.filingOptions(), false)
     expect(result).toEqual(mockData)
   })
 

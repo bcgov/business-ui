@@ -6,6 +6,8 @@
 export interface BusinessDataPublic {
   adminFreeze: boolean
   alternateNames: AlternateName[]
+  // present when the business was made historical by an amalgamation
+  amalgamatedInto?: BusinessAmalgamatedInto
   foundingDate: ApiDateTimeUtc
   goodStanding: boolean
   identifier: string
@@ -15,6 +17,8 @@ export interface BusinessDataPublic {
   legalType: CorpTypeCd
   lastModified: ApiDateTimeUtc
   state: EntityState
+  // url of the filing that put the business in its current state (absent when amalgamatedInto is set)
+  stateFiling?: string
   taxId?: string // incorporation number
   // available when not pulling slim data (edge case requests can be very slow)
   warnings?: BusinessWarning[]
