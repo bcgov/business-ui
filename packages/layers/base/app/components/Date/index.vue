@@ -92,21 +92,6 @@ const isDateUnavailable = (date: DateValue): boolean => {
   )
 }
 
-const calendarPlaceholder = computed<CalendarDate>(() => {
-  const today = new CalendarDate(
-    DateTime.now().year,
-    DateTime.now().month,
-    DateTime.now().day
-  )
-  if (calendarMinValue.value && today.compare(calendarMinValue.value) < 0) {
-    return calendarMinValue.value
-  }
-  if (calendarMaxValue.value && today.compare(calendarMaxValue.value) > 0) {
-    return calendarMaxValue.value
-  }
-  return today
-})
-
 const activeLocale = computed(() => {
   if (typeof locale === 'string') {
     return locale
@@ -303,7 +288,6 @@ function clearDate() {
               <div ref="calendarContentRef">
                 <UCalendar
                   :aria-label="$t('label.chooseDate')"
-                  :placeholder="calendarPlaceholder"
                   :model-value="calendarValue"
                   :min-value="calendarMinValue"
                   :max-value="calendarMaxValue"
