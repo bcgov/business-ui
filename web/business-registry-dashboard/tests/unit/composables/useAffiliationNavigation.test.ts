@@ -116,6 +116,13 @@ describe('useAffiliationNavigation', () => {
     )
   })
 
+  it('goToViewAccess navigates internally, without an external redirect', () => {
+    const { goToViewAccess } = useAffiliationNavigation()
+    goToViewAccess('BC1234567')
+
+    expect(navigateToMock).toHaveBeenCalledWith('/business/BC1234567/viewAccess')
+  })
+
   it('goToNameRequest', () => {
     const { goToNameRequest } = useAffiliationNavigation()
     const nameRequest: NameRequest = {
