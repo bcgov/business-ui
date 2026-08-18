@@ -9,6 +9,7 @@ const props = defineProps<{
   minDate?: string
   maxDate?: string
   disabled?: boolean
+  required?: boolean
   error?: boolean
   describedBy?: string
 }>()
@@ -29,19 +30,19 @@ const DATE_INPUT_FORMATS = [
   'd MMM yyyy'
 ]
 
-const dateModel = defineModel<string>({ required: true })
+const dateModel = defineModel<string>()
 
 const inputId = `date-input-${useId()}`
 
-const localState = reactive({ dateInput: dateModel.value ?? '' })
+const dateInput = ref(dateModel.value ?? '')
 
 const isCalendarOpen = ref(false)
+// tracks whether the calendar opened from input focus (suppresses auto-focus into calendar)
+let calendarOpenedViaInput = false
 const inputWrapperRef = useTemplateRef<HTMLElement>('inputWrapperRef')
 const calendarContentRef = useTemplateRef<HTMLElement>('calendarContentRef')
 let suppressCloseAutoFocus = false
 let suppressOpenOnFocus = false
-
-const FOCUSABLE_SELECTOR = 'button:not([disabled])'
 
 function onCloseAutoFocus(e: Event) {
   if (suppressCloseAutoFocus) {
@@ -66,7 +67,7 @@ function onInputBlur(e: FocusEvent) {
 
 function focusCalendarGrid() {
   nextTick(() => {
-    calendarContentRef.value?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus()
+    calendarContentRef.value?.querySelector<HTMLElement>('button:not([disabled])')?.focus()
   })
 }
 
@@ -78,17 +79,18 @@ function onInputKeydown(event: KeyboardEvent) {
   focusCalendarGrid()
 }
 
-function onCalendarIconKeydown(event: KeyboardEvent) {
-  if (event.key !== 'Tab' || event.shiftKey || !isCalendarOpen.value) {
-    return
-  }
-  event.preventDefault()
-  focusCalendarGrid()
-}
-
 const calendarMinValue = computed(() => toCalendarDate(props.minDate))
 const calendarMaxValue = computed(() => toCalendarDate(props.maxDate))
-const calendarValue = computed(() => toCalendarDate(localState.dateInput, DATE_DISPLAY_FORMAT))
+const calendarValue = computed(() => toCalendarDate(dateInput.value, DATE_DISPLAY_FORMAT))
+
+const isDateUnavailable = (date: DateValue): boolean => {
+  return (
+    (!!calendarMinValue.value
+      && date.compare(calendarMinValue.value) < 0)
+    || (!!calendarMaxValue.value
+      && date.compare(calendarMaxValue.value) > 0)
+  )
+}
 
 const calendarPlaceholder = computed<CalendarDate>(() => {
   const today = new CalendarDate(
@@ -136,7 +138,7 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
     return
   }
   const dt = DateTime.fromObject({ year: date.year, month: date.month, day: date.day }, { locale: activeLocale.value })
-  localState.dateInput = formatDate(dt, DATE_DISPLAY_FORMAT)
+  dateInput.value = formatDate(dt, DATE_DISPLAY_FORMAT)
   syncModelFromLocal()
   suppressCloseAutoFocus = true
   suppressOpenOnFocus = true
@@ -146,9 +148,22 @@ function onDateSelect(date: DateValue | DateRange | DateValue[] | null | undefin
   })
 }
 
+function onOpenAutoFocus(e: Event) {
+  if (calendarOpenedViaInput) {
+    e.preventDefault()
+    calendarOpenedViaInput = false
+  }
+  // else: let focus enter the calendar so the screen reader announces it naturally
+}
+
 function onInputFocus() {
+  if (isCalendarOpen.value) {
+    return // already open (e.g. Shift+Tab back to input)
+  }
+  calendarOpenedViaInput = true
   if (suppressOpenOnFocus) {
     suppressOpenOnFocus = false
+    calendarOpenedViaInput = false
     return
   }
   isCalendarOpen.value = true
@@ -182,7 +197,7 @@ function normalizeDate(input: string): string {
 }
 
 function syncModelFromLocal() {
-  const trimmed = localState.dateInput.trim()
+  const trimmed = dateInput.value.trim()
 
   if (!trimmed) {
     dateModel.value = ''
@@ -200,14 +215,14 @@ function syncModelFromLocal() {
 }
 
 onMounted(() => {
-  const normalized = normalizeDate(localState.dateInput)
-  if (normalized !== localState.dateInput) {
-    localState.dateInput = normalized
+  const normalized = normalizeDate(dateInput.value)
+  if (normalized !== dateInput.value) {
+    dateInput.value = normalized
   }
 })
 
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
-watch(() => localState.dateInput, (val: string) => {
+watch(dateInput, (val: string) => {
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(async () => {
     if (!val) {
@@ -216,7 +231,7 @@ watch(() => localState.dateInput, (val: string) => {
     }
     const normalized = normalizeDate(val)
     if (normalized !== val) {
-      localState.dateInput = normalized
+      dateInput.value = normalized
       await nextTick()
     }
     syncModelFromLocal()
@@ -224,7 +239,7 @@ watch(() => localState.dateInput, (val: string) => {
 })
 
 function clearDate() {
-  localState.dateInput = ''
+  dateInput.value = ''
   syncModelFromLocal()
 }
 </script>
@@ -233,11 +248,12 @@ function clearDate() {
   <div ref="inputWrapperRef">
     <UInput
       :id="inputId"
-      v-model="localState.dateInput"
+      v-model="dateInput"
       :disabled="disabled"
       class="w-full"
       placeholder="&nbsp;"
-      :aria-describedby="describedBy"
+      :aria-required="required"
+      :aria-describedby="[describedBy].filter(Boolean).join(' ')"
       @focus="onInputFocus"
       @blur="onInputBlur"
       @keydown="onInputKeydown"
@@ -250,60 +266,98 @@ function clearDate() {
       </label>
       <template #trailing>
         <UButton
-          v-if="localState.dateInput && !disabled"
+          v-if="dateInput && !disabled"
           icon="i-mdi-close"
+          type="button"
           :color="error ? 'error' : 'neutral'"
           variant="ghost"
-          :ui="{ base: 'size-7 p-0 flex items-center justify-center icon-btn-focus' }"
-          aria-label="Clear date"
+          class="date-action-button"
+          :aria-label="$t('label.clearDate')"
+          @keydown.enter.prevent="clearDate"
           @click="clearDate"
         />
-        <UPopover
-          v-model:open="isCalendarOpen"
-          :reference="inputWrapperRef ?? undefined"
-          :content="{
-            side: 'top',
-            align: 'start',
-            onOpenAutoFocus: (e: Event) => e.preventDefault(),
-            onCloseAutoFocus,
-            onFocusOutside: ignoreInputInteraction,
-            onInteractOutside: ignoreInputInteraction
-          }"
-        >
-          <UButton
-            icon="i-mdi-calendar"
-            :disabled="disabled"
-            :color="error && !localState.dateInput ? 'error' : 'neutral'"
-            variant="ghost"
-            :ui="{ base: 'size-7 p-0 flex items-center justify-center icon-btn-focus' }"
-            aria-label="Open calendar"
-            @keydown="onCalendarIconKeydown"
-          />
-          <template #content>
-            <div ref="calendarContentRef">
-              <UCalendar
-                aria-label="Choose Date"
-                :placeholder="calendarPlaceholder"
-                :model-value="calendarValue"
-                :min-value="calendarMinValue"
-                :max-value="calendarMaxValue"
-                @update:model-value="onDateSelect"
-              />
-            </div>
-          </template>
-        </UPopover>
+        <!-- capture Enter before Reka UI asChild trigger strips the listener -->
+        <span @keydown.capture.enter.prevent.stop="isCalendarOpen = !isCalendarOpen">
+          <UPopover
+            v-model:open="isCalendarOpen"
+            :reference="inputWrapperRef ?? undefined"
+            :content="{
+              side: 'top',
+              align: 'start',
+              onOpenAutoFocus,
+              onCloseAutoFocus,
+              onFocusOutside: ignoreInputInteraction,
+              onInteractOutside: ignoreInputInteraction
+            }"
+          >
+            <UButton
+              icon="i-mdi-calendar"
+              type="button"
+              :disabled="disabled"
+              :color="error && !dateInput ? 'error' : 'neutral'"
+              variant="ghost"
+              class="date-action-button"
+              :aria-label="$t('label.openCalendar')"
+            />
+            <template #content>
+              <div ref="calendarContentRef">
+                <UCalendar
+                  :aria-label="$t('label.chooseDate')"
+                  :placeholder="calendarPlaceholder"
+                  :model-value="calendarValue"
+                  :min-value="calendarMinValue"
+                  :max-value="calendarMaxValue"
+                  :is-date-unavailable="isDateUnavailable"
+                  @update:model-value="onDateSelect"
+                />
+              </div>
+            </template>
+          </UPopover>
+        </span>
       </template>
     </UInput>
   </div>
 </template>
 
 <style scoped>
-:deep(.icon-btn-focus) {
+:deep(.date-action-button) {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   outline: none;
+  color: #1669BB;
 }
 
-:deep(.icon-btn-focus:focus-visible) {
+:deep(.date-action-button:focus-visible) {
   box-shadow: 0 0 0 2px var(--ui-primary);
   border-radius: 1px;
+}
+
+:deep([data-slot="header"] button:focus-visible) {
+  outline: 3px solid #1669BB;
+  outline-offset: -4px;
+  border-radius: 20%;
+  background: transparent;
+}
+
+:deep([data-slot="cellTrigger"]:focus-visible) {
+  outline: 2px solid #1669BB;
+  border-radius: 50%;
+}
+
+:deep([data-slot="cellTrigger"][data-selected]) {
+  border-radius: 50%;
+}
+
+:deep([data-slot="cellTrigger"][data-unavailable]) {
+  text-decoration: none;
+  color: #C3C3C3 !important;
+}
+
+:deep([data-slot="cellTrigger"][data-outside-view]) {
+  color: #212529;
 }
 </style>

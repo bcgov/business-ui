@@ -11,7 +11,7 @@ export function getCourtOrderNumberColumn<T extends CourtOrderPoaFullSchema>(
 
   const column: TableBusinessColumn<T> = {
     id: 'court-order-number',
-    header: t('label.courtOrder#'),
+    header: t('label.courtOrderNo'),
     meta,
     cell: ({ row }) => {
       const badges = getTableBadges(row, badgeLabelOverrides)
