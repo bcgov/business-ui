@@ -35,7 +35,7 @@ export function getStaffPaymentSchema() {
             message: t('validation.datNumberEmpty'),
             path: ['datNumber']
           })
-        } else if (!/^[A-Z]{1}[0-9]{7,9}$/.test(val.datNumber)) {
+        } else if (!/^[A-Za-z]{1}[0-9]{7,9}$/.test(val.datNumber)) {
           ctx.addIssue({
             code: 'custom',
             message: t('validation.datNumber'),
