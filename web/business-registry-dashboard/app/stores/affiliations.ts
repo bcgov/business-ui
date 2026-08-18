@@ -194,9 +194,11 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
           business.affiliationInvites = (business.affiliationInvites || []).concat([invite])
         } else if (!business && isFromOrg && !isAccepted) {
         // This returns corpType: 'BEN' instead of corpType: { code: 'BEN' }.
-          const corpType = invite.entity.corpType
+        // entity is null when not in LEAR (COLIN business)
+          const corpType = invite.entity?.corpType
           const newBusiness = {
             ...invite.entity,
+            businessIdentifier: invite.entity?.businessIdentifier ?? invite.businessIdentifier,
             affiliationInvites: [invite],
             corpType: { code: corpType as unknown as string } as CorpType
           }
@@ -306,10 +308,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
         affiliations.results = affiliatedEntities
         affiliations.count = affiliatedEntities.length
-
-        if (newlyAddedIdentifier.value.length >= 1) {
-          highlightNewAffiliation()
-        }
 
         // Set total results and hasMore if pagination is enabled and the api returns it
         if (enablePagination.value) {
@@ -508,26 +506,6 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     },
     { deep: true }
   )
-
-  // Mark any new affiliation on the list.
-  function highlightNewAffiliation () {
-    const newIdentifier = newlyAddedIdentifier.value
-    const firstResult = affiliations.results?.[0] as any
-
-    // Skip if no results or no new identifier
-    if (!firstResult) { return }
-    // If the first result matches the newly added business or name request, highlight it
-    if (newIdentifier && (firstResult.businessIdentifier === newIdentifier)) {
-      firstResult.class = 'bg-[#E8F5E9]'
-      // Remove highlight and clear identifier
-      setTimeout(() => {
-        newlyAddedIdentifier.value = ''
-      }, 4000)
-    } else {
-      // Clear any existing highlight
-      firstResult.class = ''
-    }
-  }
 
   function resetAffiliations () {
     affiliations.loading = false
@@ -738,14 +716,34 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     })
   }
 
+  /**
+   * Creates or refreshes the auth entity for a business still managed in COLIN.
+   */
+  async function syncBusinessFromColin (business: ManageBusinessEvent) {
+    const colinAffiliationEnabled = ldStore.getStoredFlag(LDFlags.EnableColinBusinessAffiliation) || false
+    const colinCorpTypes = (useRuntimeConfig().public.colinAffiliationCorpTypes as string) || 'BC,ULC,CC'
+    if (!colinAffiliationEnabled || business.modernized || !colinCorpTypes.split(',').includes(business.legalType)) {
+      return
+    }
+    try {
+      await $authApi(`/entities/${business.identifier}/synchronizations/colin`, { method: 'POST' })
+    } catch (error) {
+      logFetchError(error, 'Error syncing business from COLIN')
+    }
+  }
+
   async function handleManageBusinessOrNameRequest (
     searchType: 'reg' | 'namex',
     event: ManageNameRequestEvent | ManageBusinessEvent
   ) {
     if (searchType === 'reg' && 'identifier' in event) {
       if (IsAuthorized(AuthorizedActions.ADD_ENTITY_NO_AUTHENTICATION)) {
+        // no sync needed - creating the affiliation syncs COLIN businesses server side
         await addBusinessForStaffSilently(event.identifier)
       } else {
+        // the manage-business modal decides which authentication options to offer from the
+        // entity auth-api holds, so a COLIN business must be synced before the modal opens
+        await syncBusinessFromColin(event)
         brdModal.openManageBusiness(event)
       }
     } else if (searchType === 'namex' && 'nrNum' in event) {
@@ -845,7 +843,9 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
         }
       })
 
-      const pendingInvites = affiliationInvitations.filter(invite => businessIdentifier === invite.entity.businessIdentifier)
+      // the api might return null for entity (same workaround as handleAffiliationInvitations)
+      const pendingInvites = affiliationInvitations.filter(
+        invite => businessIdentifier === (invite.entity?.businessIdentifier ?? invite.businessIdentifier))
 
       if (pendingInvites.length > 0) {
         await Promise.all(pendingInvites.map(async (invite) => {
@@ -919,6 +919,7 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     authorizedActions,
     createNRAffiliation,
     createAffiliation,
+    syncBusinessFromColin,
     handleManageBusinessOrNameRequest,
     removeBusiness,
     canBusinessBeDeleted,

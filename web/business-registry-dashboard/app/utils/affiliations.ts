@@ -227,6 +227,11 @@ export const isFrozed = (item: Business): boolean => {
   return item.adminFreeze ?? false
 }
 
+/** Returns true for a business still managed in COLIN, i.e. affiliated but not loaded in LEAR. */
+export const isColinManaged = (item: Business): boolean => {
+  return item.isLoadedLear === false
+}
+
 export const isBadstanding = (item: Business) => {
   // Currently affiliation invitations don't return good standing etc.
   return item?.goodStanding === false

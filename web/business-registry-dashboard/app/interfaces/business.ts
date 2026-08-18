@@ -42,6 +42,7 @@ export interface Business {
     affiliationInvites?: AffiliationInviteInfo[]
     dissolved?: boolean
     effectiveDate?: string
+    isLoadedLear?: boolean
 }
 
 export interface BusinessSearchResultDto {

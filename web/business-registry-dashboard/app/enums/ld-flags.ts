@@ -11,6 +11,7 @@ export enum LDFlags {
   EnableBcCccUlc = 'enable-bc-ccc-ulc',
   EnableBcCccUlcBrd = 'enable-bc-ccc-ulc-brd',
   EnableBusinessNrSearch = 'enable-business-nr-search',
+  EnableColinBusinessAffiliation = 'enable-colin-business-affiliation',
   EnableCreditCardPremium = 'enable-credit-card-premium',
   EnableDetailsFilter = 'enable-transactions-detail-filter',
   EnableEFTPaymentMethod = 'enable-eft-payment-method',

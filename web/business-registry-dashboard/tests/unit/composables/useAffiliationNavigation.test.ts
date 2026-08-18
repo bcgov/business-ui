@@ -146,6 +146,29 @@ describe('useAffiliationNavigation', () => {
     )
   })
 
+  describe('isOpenExternal', () => {
+    it('should return true for a business still managed in COLIN', () => {
+      const { isOpenExternal } = useAffiliationNavigation()
+      const business: Business = {
+        corpType: { code: CorpTypes.BC_COMPANY },
+        businessIdentifier: 'BC0870226',
+        isLoadedLear: false
+      }
+
+      expect(isOpenExternal(business)).toBe(true)
+    })
+
+    it('should return false for a business loaded in LEAR', () => {
+      const { isOpenExternal } = useAffiliationNavigation()
+      const business: Business = {
+        corpType: { code: CorpTypes.BC_COMPANY },
+        businessIdentifier: 'BC0870226'
+      }
+
+      expect(isOpenExternal(business)).toBe(false)
+    })
+  })
+
   // switch (entityType) {
   //   case CorpTypes.LL_PARTNERSHIP:
   //     formUrl = webUrl.getLLPFormsUrl()

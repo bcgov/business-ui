@@ -1,5 +1,82 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.25.0
+
+### Minor Changes
+
+- [#526](https://github.com/bcgov/business-ui/pull/526) [`37b0336`](https://github.com/bcgov/business-ui/commit/37b0336ef20d95bb6c3033362f7f8e3b448b3d78) Thanks [@deetz99](https://github.com/deetz99)! - ### Components
+
+  - **New** - `TableCourtOrder` table component and column utilities
+  - **New** - `ManageCourtOrders` feature component
+
+  ### Composables
+
+  - `useManageCourtOrders`
+    - Table state management
+    - Methods for add, edit, remove, and undo actions
+
+  ### Schemas & Models
+
+  - Update court order Zod schemas to align with JSON schema and form models
+
+  ### Services
+
+  - Add court orders query hook, service abstraction, and API interface
+
+  ### Utils & i18n
+
+  - Add `isEqualOmit` object comparison utility
+  - Add court order i18n translation keys
+
+- [#517](https://github.com/bcgov/business-ui/pull/517) [`d061d55`](https://github.com/bcgov/business-ui/commit/d061d55c75a28c38d4a1abc0c10726e52e07fa54) Thanks [@deetz99](https://github.com/deetz99)! - ### Components
+
+  - **New** - Resolution date sub form
+  - **New** - HelpExpansion
+  - **New** - SubFormFieldWrapper
+  - `ManageShareStructure` - Add resolution date components and methods
+  - `BusinessTable` - Add `hideTableHeader` and `trDividerFullWidth` props
+
+  ### Composables
+
+  - `useManageShareStructure`
+    - Rename `tableState` ref -> `shareClasses`
+    - Add `resolutionDates` ref
+    - Add resolution date methods
+
+  ### Utils
+
+  - Add resolution table columns configurations
+  - Add resolution date Zod validation schema
+
+  ### Services
+
+  - Add resolutions query hook, query options, and API service methods
+
+- [#519](https://github.com/bcgov/business-ui/pull/519) [`39f5948`](https://github.com/bcgov/business-ui/commit/39f59482f49a980ea138447f7732a56c717d6233) Thanks [@deetz99](https://github.com/deetz99)! - Minor styling updates in ShareStructure and Business table components. Resolution date formatters'
+
+- [#518](https://github.com/bcgov/business-ui/pull/518) [`e250207`](https://github.com/bcgov/business-ui/commit/e2502073edfea0c8c98ee9420400bc8ad1074dec) Thanks [@eve-git](https://github.com/eve-git)! - Create an effective date component and add it to directors.
+
+- [#513](https://github.com/bcgov/business-ui/pull/513) [`5124bf6`](https://github.com/bcgov/business-ui/commit/5124bf6045d1de97c809ea6a60173134995ed588) Thanks [@deetz99](https://github.com/deetz99)! - Fix type errors around share class formatters. Update Nuxt to latest. Update connect-pay to pull in ts fixes.
+
+- [#520](https://github.com/bcgov/business-ui/pull/520) [`13f39b9`](https://github.com/bcgov/business-ui/commit/13f39b9fc61c82adcc4fc9e5b3dfd875d650b8dd) Thanks [@deetz99](https://github.com/deetz99)! - Create component for correcting a court order filing, update schema to support form component, create service method to post document.
+
+- [#521](https://github.com/bcgov/business-ui/pull/521) [`b4b40b5`](https://github.com/bcgov/business-ui/commit/b4b40b579d401e332c2652794038e1027c46e8e0) Thanks [@eve-git](https://github.com/eve-git)! - Support Configurable Effective Dates by Role
+
+- [#524](https://github.com/bcgov/business-ui/pull/524) [`ae7f2b0`](https://github.com/bcgov/business-ui/commit/ae7f2b0b574b159604649bf39126a51be1778830) Thanks [@deetz99](https://github.com/deetz99)! - Add badgeOrientation prop to TableColumnIdentity component. Fix cell alignment and make badges horizontal in ResolutionDate table.
+
+- [#527](https://github.com/bcgov/business-ui/pull/527) [`be0f76e`](https://github.com/bcgov/business-ui/commit/be0f76e51cefb7e6e76e54af06889d9feaf94b13) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - ### Composables
+
+  - **New** - useBusinessStateReason: historical state reason text (amalgamation, dissolution, continuation out, put back off) with tombstone integration
+
+  ### Services
+
+  - getFiling / filing query / keys.filing: added `publicData` flag (fetches `?public=true` view of a filing; query key now ends with `{ publicData }`)
+
+  ### Interfaces
+
+  - BusinessDataPublic: added amalgamatedInto and stateFiling fields
+  - **New** - FilingGetByIdPublicResponse, PublicStateFilingBody, BusinessAmalgamatedInto
+
 ## 0.24.0
 
 ### Minor Changes

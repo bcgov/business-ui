@@ -680,6 +680,16 @@ export default {
     TREASURER: 'Treasurer',
     VICE_PRESIDENT: 'Vice President'
   },
+  /* Reasons shown beside the business state badge, mirrors business-dashboard-ui filing.name/filing.reason */
+  stateReason: {
+    amalgamation: 'Amalgamation',
+    continuationOut: 'Continuation Out',
+    dissolutionAdministrative: 'Administrative Dissolution',
+    dissolutionFirm: 'Dissolution',
+    dissolutionInvoluntary: 'Dissolved for Failure to File',
+    dissolutionVoluntary: 'Voluntary Dissolution',
+    unknown: 'Unknown'
+  },
   text: {
     addressChange: 'address change',
     addNameTranslation: 'Add name translations if your company uses translations of its name outside of Canada.',

@@ -144,6 +144,11 @@ export function useAffiliationNavigation () {
       return false
     }
 
+    // businesses not loaded in LEAR are managed in COLIN -- show external icon
+    if (isColinManaged(item)) {
+      return true
+    }
+
     // existing businesses will route to Business Dashboard -- don't show external icon
     return false
   }

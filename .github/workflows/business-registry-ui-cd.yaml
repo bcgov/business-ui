@@ -33,6 +33,7 @@ jobs:
       app_name: "business-registry-ui"
       working_directory: "./web/business-registry-dashboard"
       node_version: 24
+      pnpm_version: 10
     secrets:
       WORKLOAD_IDENTIFY_POOLS_PROVIDER: ${{ secrets.WORKLOAD_IDENTIFY_POOLS_PROVIDER }}
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
