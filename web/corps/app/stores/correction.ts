@@ -398,7 +398,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         }
       }),
 
-      courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
+      // courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
 
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
@@ -422,8 +422,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       delete header.certifiedBy
       delete header.authorizationReceived
     }
-
-    console.log('PAYLOAD: ', filingPayload)
 
     // Draft is always pre-created, so we always have a filingId to update
     const filingId = draftFilingState.value?.filing?.header?.filingId

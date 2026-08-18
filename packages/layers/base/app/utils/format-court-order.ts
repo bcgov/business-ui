@@ -86,7 +86,7 @@ export function formatCourtOrdersSection(
 
 export function formatCourtOrdersApi(
   courtOrders: TableBusinessState<CourtOrderPoaFullSchema>[]
-): CourtOrderResponse[] | undefined {
+): Partial<CourtOrderResponse>[] | undefined {
   // return undefined if no changes have been made
   if (!courtOrders.some(co => co.new.actions.length > 0)) {
     return undefined
@@ -101,12 +101,11 @@ export function formatCourtOrdersApi(
 
       return {
         id: isNewCourtOrder ? undefined : parseInt(newItem.id),
-        effectOfOrder: newItem.effectOfOrder ? 'planOfArrangement' : null,
+        effectOfOrder: newItem.effectOfOrder ? 'planOfArrangement' : undefined,
         fileNumber: newItem.fileNumber,
-        filingId: newItem.filingId,
+        filingId: isNewCourtOrder ? undefined : newItem.filingId,
         filingType: newItem.filingType as FilingType,
-        orderDate: newItem.orderDate,
-        orderDetails: newItem.orderDetails || null,
+        orderDetails: newItem.orderDetails || undefined,
         files: newItem.files // FUTURE - not returned from API yet
       }
     })

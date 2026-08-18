@@ -61,10 +61,26 @@ const originalFilingName = computed(() => {
   return getFilingName(store.correctedFilingType) ?? store.correctedFilingType
 })
 
+function checkActiveSubForm() {
+  if (!store.hasActiveSubForm) {
+    return false
+  }
+  const alertMsg = t('text.finishTaskBeforeOtherChanges')
+  return (store.formState.activeOffice && useFilingAlerts('manage-offices').setAlert('office-address-form', alertMsg))
+    || (store.formState.activeDirector && useFilingAlerts('manage-parties').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeReceiver && useFilingAlerts('manage-receivers').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeLiquidator && useFilingAlerts('manage-liquidators').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeClass && useFilingAlerts('manage-share-structure').setAlert('share-class-form', alertMsg))
+    || (store.formState.activeSeries && useFilingAlerts('manage-share-structure').setAlert('share-series-form', alertMsg))
+    || (store.formState.activeResolutionDate && useFilingAlerts('manage-share-structure').setAlert('resolution-date-form', alertMsg))
+    || (store.formState.activeNameTranslation && useFilingAlerts('manage-name-translations').setAlert('name-translation-form', alertMsg))
+    || (store.formState.activeNameRequest && useFilingAlerts('manage-company-name').setAlert('company-name-form', alertMsg))
+    || (store.formState.activeCourtOrder && useFilingAlerts('manage-court-orders').setAlert('court-order-poa-form', alertMsg))
+}
+
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)
-  if (store.hasActiveSubForm) {
-    console.log('active sub form')
+  if (checkActiveSubForm()) {
     return
   }
   if (!canSubmit()) {
@@ -76,7 +92,7 @@ function reviewAndConfirm() {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (store.hasActiveSubForm) {
+    if (checkActiveSubForm()) {
       return
     }
     if (!canSubmit()) {
@@ -84,8 +100,8 @@ async function submitFiling() {
     }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
-    // revokeBeforeUnload()
-    // await navigateTo(dashboardUrl.value, { external: true })
+    revokeBeforeUnload()
+    await navigateTo(dashboardUrl.value, { external: true })
     handleButtonLoading(false)
   } catch (error) {
     modal.openSaveFilingErrorModal(error)
@@ -98,7 +114,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
   try {
     if (enableUnsavedChangesBlock) {
       setBtnCtrlAlert(undefined)
-      if (store.hasActiveSubForm) {
+      if (checkActiveSubForm()) {
         return
       }
       if (!canSave()) {

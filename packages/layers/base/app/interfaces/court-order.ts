@@ -14,7 +14,7 @@ export interface CourtOrder {
 export interface CourtOrderResponse {
   effectOfOrder?: string | null
   fileNumber: string
-  filingId: number
+  filingId?: number // may be undefined when loading a draft
   filingType: FilingType
   id?: number // may be undefined when loading a draft
   orderDate?: string | null
