@@ -578,6 +578,7 @@ export default {
     manageBusiness: 'Manage Business',
     cancelRequest: 'Cancel Request',
     amalgamateNowShortForm: 'Amalgamate Now (Short Form)',
+    viewAccess: 'View Access',
     noAffiliationRecords: {
       line1: 'You don\'t have any businesses listed.',
       line2: 'Retrieve an existing business or active Name Request from the search box above.'
@@ -797,6 +798,11 @@ export default {
     },
     help: {
       title: 'Annual Report Overview - Service BC Annual Report'
+    },
+    viewAccess: {
+      title: 'View Access - My Business Registry',
+      h1: 'View Access',
+      intro: 'List of BC Registries accounts that have access to view and manage this business.'
     }
   },
   search: {
@@ -818,6 +824,15 @@ export default {
     }
   },
   table: {
+    authorizedAccounts: {
+      title: 'Authorized Accounts ({count})',
+      columns: {
+        accountName: 'Account Name',
+        dateAdded: 'Date Added'
+      },
+      empty: 'No accounts have access to this business.',
+      error: 'We were unable to load the accounts that have access to this business. Please try again later.'
+    },
     affiliation: {
       filter: {
         busName: {

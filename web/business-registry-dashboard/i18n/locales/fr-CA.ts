@@ -559,6 +559,7 @@ export default {
     manageBusiness: 'Gérer les Affaires',
     cancelRequest: 'Annuler la Demande',
     amalgamateNowShortForm: 'Fusionner Maintenant (Forme Courte)',
+    viewAccess: "Voir l'Accès",
     noAffiliationRecords: {
       line1: "Vous n'avez aucune entreprise répertoriée.",
       line2: 'Récupérez une entreprise existante ou une demande de nom active à partir du champ de recherche ci-dessus.'
@@ -778,6 +779,11 @@ export default {
     },
     help: {
       title: "Vue d'Ensemble du Rapport Annuel - Rapport Annuel de Service CB"
+    },
+    viewAccess: {
+      title: "Voir l'Accès - Mon Registre d'Entreprise",
+      h1: "Voir l'Accès",
+      intro: 'Liste des comptes BC Registries qui ont accès à consulter et gérer cette entreprise.'
     }
   },
   search: {
@@ -799,6 +805,15 @@ export default {
     }
   },
   table: {
+    authorizedAccounts: {
+      title: 'Comptes Autorisés ({count})',
+      columns: {
+        accountName: 'Nom du Compte',
+        dateAdded: "Date d'Ajout"
+      },
+      empty: "Aucun compte n'a accès à cette entreprise.",
+      error: "Nous n'avons pas pu charger les comptes ayant accès à cette entreprise. Veuillez réessayer plus tard."
+    },
     affiliation: {
       filter: {
         busName: {
