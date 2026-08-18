@@ -1,5 +1,15 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.26.0
+
+### Minor Changes
+
+- [#523](https://github.com/bcgov/business-ui/pull/523) [`843d384`](https://github.com/bcgov/business-ui/commit/843d3849d063389a43b590247275c9ffb6dfe3b0) Thanks [@eve-git](https://github.com/eve-git)! - Improve effective date input behavior and accessibility based on UX review.
+
+### Patch Changes
+
+- [#529](https://github.com/bcgov/business-ui/pull/529) [`0300b39`](https://github.com/bcgov/business-ui/commit/0300b390f84e9be2c8c7e16486c2240195c71703) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Allow lower case letter in staff payment DAT number and upper case it when submitting.
+
 ## 0.25.0
 
 ### Minor Changes
