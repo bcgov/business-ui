@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { CorpTypeCd, GetCorpFullDescription } from '@bcrs-shared-components/corp-type-module'
 
-// No `order: 0` here on purpose: that marks a page as reachable without authentication
-// (see middleware/00.auth.global.ts), and this page shows who can access a business.
-definePageMeta({ layout: 'business' })
+definePageMeta({ order: 0 })
 
 const { t } = useI18n()
 const route = useRoute()
@@ -47,7 +45,10 @@ onMounted(async () => {
   // The business name/type only decorate the header and breadcrumb, so a failure here must not stop
   // the table from loading -- the identifier is shown in place of the name.
   try {
-    business.value = await $businessApi<LearBusiness>(`/businesses/${identifier.value}?slim=true`)
+    const { business: learBusiness } = await $businessApi<{ business: LearBusiness }>(
+      `/businesses/${identifier.value}?slim=true`
+    )
+    business.value = learBusiness
   } catch (e) {
     logFetchError(e, `Error retrieving business ${identifier.value}`)
   }
@@ -57,29 +58,31 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <div class="flex flex-col gap-1">
-      <h1 class="text-[32px] text-bcGovColor-darkGray">
-        {{ businessName }}
-      </h1>
-      <p v-if="businessType" class="text-gray-700">
-        {{ businessType }}
-      </p>
-    </div>
+  <NuxtLayout name="business">
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-1">
+        <h1 class="text-[32px] text-bcGovColor-darkGray">
+          {{ businessName }}
+        </h1>
+        <p v-if="businessType" class="text-gray-700">
+          {{ businessType }}
+        </p>
+      </div>
 
-    <div class="flex flex-col gap-1">
-      <h2 class="text-xl font-semibold text-bcGovColor-darkGray">
-        {{ $t('page.viewAccess.h1') }}
-      </h2>
-      <p class="text-gray-700">
-        {{ $t('page.viewAccess.intro') }}
-      </p>
-    </div>
+      <div class="flex flex-col gap-1">
+        <h2 class="text-xl font-semibold text-bcGovColor-darkGray">
+          {{ $t('page.viewAccess.h1') }}
+        </h2>
+        <p class="text-gray-700">
+          {{ $t('page.viewAccess.intro') }}
+        </p>
+      </div>
 
-    <TableAuthorizedAccounts
-      :accounts="accounts"
-      :loading="loading"
-      :error="error"
-    />
-  </div>
+      <TableAuthorizedAccounts
+        :accounts="accounts"
+        :loading="loading"
+        :error="error"
+      />
+    </div>
+  </NuxtLayout>
 </template>
