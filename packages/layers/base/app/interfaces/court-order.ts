@@ -12,11 +12,11 @@ export interface CourtOrder {
 }
 
 export interface CourtOrderResponse {
-  effectOfOrder?: string | null
+  effectOfOrder: string | null
   fileNumber: string
-  filingId?: number // may be undefined when loading a draft
+  filingId: number
   filingType: FilingType
-  id?: number // may be undefined when loading a draft
+  id: number
   orderDate?: string | null
   orderDetails?: string | null
   files?: unknown[] // FUTURE - not returned from API yet
