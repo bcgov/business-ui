@@ -40,8 +40,6 @@ onMounted(async () => {
       <ManageCourtOrders
         v-model:active-co="activeCourtOrder"
         :loading
-        subject="Court Order"
-        table-title="Court Orders/Plan of Arrangement"
       />
     </ConnectPageSection>
   </UContainer>

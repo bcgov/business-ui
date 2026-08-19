@@ -9,7 +9,8 @@ const {
   modelName = 'activeCourtOrder',
   variant = 'default',
   preventActions = false,
-  actionPreventedSignal = 0
+  actionPreventedSignal = 0,
+  addDefaultValues
 } = defineProps<ManageCourtOrdersProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
 
 const emit = defineEmits<{
@@ -46,6 +47,12 @@ const isReadOnly = computed(() => variant === 'readonly' || variant === 'correct
 const shouldPreventActions = computed(() => !!activeCourtOrder.value || preventActions)
 
 const allowAddCourtOrder = computed(() => {
+  const defaultFilingIdExists = addDefaultValues?.filingId !== undefined
+    && tableState.value.some(co => co.new.filingId === addDefaultValues.filingId)
+
+  if (defaultFilingIdExists) {
+    return false
+  }
   if (isReadOnly.value) {
     return false
   }
@@ -84,7 +91,7 @@ function initAddCourtOrder() {
     emit('action-prevented')
     return
   }
-  activeCourtOrder.value = activeSchema.parse({})
+  activeCourtOrder.value = activeSchema.parse({ ...addDefaultValues })
   addingCourtOrder.value = true
 }
 
@@ -157,7 +164,7 @@ watch(() => actionPreventedSignal, (value) => {
 
     <ConnectPageSection
       :heading="{
-        label: tableTitle,
+        label: tableTitle || $t('label.courtOrdersPlanofArrangement'),
         icon: 'i-mdi-gavel',
         ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
         level: sectionTitle ? 'h3' : 'h2'
@@ -165,7 +172,7 @@ watch(() => actionPreventedSignal, (value) => {
       :actions="allowAddCourtOrder
         ? [
           {
-            'label': $t('label.addSubject', { subject }),
+            'label': $t('label.addSubject', { subject: $t('label.courtOrder') }),
             'variant': 'outline',
             'icon': 'i-mdi-plus',
             // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
@@ -183,10 +190,10 @@ watch(() => actionPreventedSignal, (value) => {
           v-model="activeCourtOrder"
           variant="add"
           :name="modelName"
-          :subject="subject!"
+          :subject="$t('label.courtOrder')"
           :state-key="stateKey"
           class="p-6"
-          :is-court-order="true"
+          :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
           @done="() => addSubject(activeCourtOrder)"
           @cancel="cleanupForm"
         />
@@ -220,7 +227,7 @@ watch(() => actionPreventedSignal, (value) => {
                 :subject="editSubjectLabel"
                 :state-key="stateKey"
                 hide-remove
-                is-court-order
+                :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
                 @done="() => editSubject(activeCourtOrder, row)"
                 @cancel="cleanupForm"
                 @remove="() => removeSubject(row)"

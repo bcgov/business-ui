@@ -57,7 +57,8 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeNameTranslation: getActiveNameTranslationSchema(),
     activeNameRequest: getActiveNameRequestSchema(),
     activeResolutionDate: getActiveResolutionDateSchema(),
-    resolutionDate: getActiveResolutionDateSchema()
+    resolutionDate: getActiveResolutionDateSchema(),
+    activeCourtOrder: getActiveCourtOrderPoaFullSchema()
   })
 
   if (isStaff) {

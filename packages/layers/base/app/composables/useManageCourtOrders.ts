@@ -19,6 +19,8 @@ export const useManageCourtOrders = (
     () => []
   )
 
+  const hasChanges = computed(() => tableState.value.some(co => co.new.actions.length > 0))
+
   function updateTable(subject: TableBusinessState<CourtOrderPoaFullSchema>): void {
     const cloned = JSON.parse(JSON.stringify(subject))
 
@@ -104,6 +106,7 @@ export const useManageCourtOrders = (
 
   return {
     tableState,
+    hasChanges,
     addSubject,
     removeSubject,
     updateTable,

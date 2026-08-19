@@ -19,6 +19,81 @@ describe('useManageShareStructure', () => {
     vi.clearAllMocks()
   })
 
+  describe('hasChanges', () => {
+    it('should return false when there are no actions on share classes, series, or resolution dates', () => {
+      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+
+      shareClasses.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: {
+            id: '1',
+            actions: [],
+            series: [
+              { id: '10', actions: [] }
+            ]
+          }
+        }
+      ] as any
+      resolutionDates.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: { id: '1', actions: [] }
+        }
+      ] as any
+
+      expect(hasChanges.value).toBe(false)
+    })
+
+    it('should return true when a share class has actions', () => {
+      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+
+      shareClasses.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: { id: '1', actions: [ActionType.CHANGED], series: [] }
+        }
+      ] as any
+      resolutionDates.value = []
+
+      expect(hasChanges.value).toBe(true)
+    })
+
+    it('should return true when a share series has actions', () => {
+      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+
+      shareClasses.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: {
+            id: '1',
+            actions: [],
+            series: [
+              { id: '10', actions: [ActionType.ADDED] }
+            ]
+          }
+        }
+      ] as any
+      resolutionDates.value = []
+
+      expect(hasChanges.value).toBe(true)
+    })
+
+    it('should return true when a resolution date has actions', () => {
+      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+
+      shareClasses.value = []
+      resolutionDates.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: { id: '1', actions: [ActionType.REMOVED] }
+        }
+      ] as any
+
+      expect(hasChanges.value).toBe(true)
+    })
+  })
+
   describe('Share Class Methods', () => {
     describe('addNewShareClass', () => {
       it('should add a new class to start of array and increment existing priorities', () => {

@@ -11,6 +11,8 @@ export const useManageNameTranslations = (stateKey: string = 'manage-name-transl
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<NameTranslationSchema>[]>(`${stateKey}-table-state`, () => [])
 
+  const hasChanges = computed(() => tableState.value.some(nt => nt.new.actions.length > 0))
+
   function updateTable(
     newState: TableBusinessState<NameTranslationSchema>,
     row?: TableBusinessRow<NameTranslationSchema>
@@ -131,6 +133,7 @@ export const useManageNameTranslations = (stateKey: string = 'manage-name-transl
     addingNameTranslation,
     expandedState,
     tableState,
+    hasChanges,
     updateTable,
     addNewNameTranslation,
     removeNameTranslation,

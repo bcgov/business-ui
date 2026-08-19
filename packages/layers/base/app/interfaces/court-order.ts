@@ -12,7 +12,7 @@ export interface CourtOrder {
 }
 
 export interface CourtOrderResponse {
-  effectOfOrder?: string | null
+  effectOfOrder: string | null
   fileNumber: string
   filingId: number
   filingType: FilingType

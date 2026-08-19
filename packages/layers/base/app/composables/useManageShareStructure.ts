@@ -10,6 +10,17 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     () => []
   )
 
+  const hasChanges = computed(() => {
+    const hasShareClassChanges = shareClasses.value.some(
+      c => c.new.actions.length > 0 || c.new.series.some(s => s.actions.length > 0)
+    )
+    const hasResolutionDateChanges = resolutionDates.value.some(
+      rd => rd.new.actions.length > 0
+    )
+
+    return hasShareClassChanges || hasResolutionDateChanges
+  })
+
   function addNewShareClass(shareClass: ActiveShareClassSchema) {
     if (!shareClass) {
       return
@@ -315,6 +326,7 @@ export const useManageShareStructure = (stateKey: string = 'manage-share-structu
     expandedState,
     shareClasses,
     resolutionDates,
+    hasChanges,
     addNewShareClass,
     removeShareClass,
     undoShareClass,

@@ -13,6 +13,8 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<PartySchema>[]>(`${stateKey}-table-state`, () => [])
 
+  const hasChanges = computed(() => tableState.value.some(p => p.new.actions.length > 0))
+
   function updateTable(newState: TableBusinessState<PartySchema>, row?: TableBusinessRow<PartySchema>): void {
     const newItem = JSON.parse(JSON.stringify(newState))
 
@@ -117,6 +119,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     addingParty,
     expandedState,
     tableState,
+    hasChanges,
     updateTable,
     addNewParty,
     removeParty,

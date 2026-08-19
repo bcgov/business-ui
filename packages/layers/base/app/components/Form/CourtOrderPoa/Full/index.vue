@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { Form, FormErrorEvent } from '@nuxt/ui'
 
-const props = defineProps<{
+const {
+  stateKey,
+  nested = true
+} = defineProps<{
   variant: FormVariant
   subject: string
   hideRemove?: boolean
@@ -22,7 +25,7 @@ const model = defineModel<CourtOrderPoaFullSchema>({ required: true })
 const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-poa-form')
 
 const formTarget = 'court-order-poa-form'
-const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
+const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(formTarget, model)
 
 const schema = computed(() => getCourtOrderPoaFullSchema())

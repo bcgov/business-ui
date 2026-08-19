@@ -1,7 +1,7 @@
 <script setup lang="ts">
+/* eslint-disable max-len */
 const { t } = useI18n()
 const store = useCorrectionStore()
-const { initializing } = storeToRefs(store)
 const route = useRoute()
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
@@ -28,7 +28,8 @@ const {
     [() => store.initialShareClasses, () => store.shareClasses],
     [() => store.initialNameTranslations, () => store.nameTranslations],
     [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
-    [() => store.initialResolutionDates, () => store.resolutionDates]
+    [() => store.initialResolutionDates, () => store.resolutionDates],
+    [() => store.initialCourtOrders, () => store.courtOrders]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -40,6 +41,7 @@ const {
       || store.resolutionDates.some(rd => rd.new.actions.length > 0)
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || store.companyName.new.actions.length > 0
+      || store.courtOrders.some(co => co.new.actions.length > 0)
   }
 )
 
@@ -60,17 +62,26 @@ const originalFilingName = computed(() => {
   return getFilingName(store.correctedFilingType) ?? store.correctedFilingType
 })
 
-/** Formatted date of the original filing (e.g. "February 8, 2021") */
-const originalFilingDate = computed(() => {
-  if (!store.correctedFilingDate) {
-    return ''
+function checkActiveSubForm() {
+  if (!store.hasActiveSubForm) {
+    return false
   }
-  return toReadableDate(store.correctedFilingDate)
-})
+  const alertMsg = t('text.finishTaskBeforeOtherChanges')
+  return (store.formState.activeOffice && useFilingAlerts('manage-offices').setAlert('office-address-form', alertMsg))
+    || (store.formState.activeDirector && useFilingAlerts('manage-parties').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeReceiver && useFilingAlerts('manage-receivers').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeLiquidator && useFilingAlerts('manage-liquidators').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeClass && useFilingAlerts('manage-share-structure').setAlert('share-class-form', alertMsg))
+    || (store.formState.activeSeries && useFilingAlerts('manage-share-structure').setAlert('share-series-form', alertMsg))
+    || (store.formState.activeResolutionDate && useFilingAlerts('manage-share-structure').setAlert('resolution-date-form', alertMsg))
+    || (store.formState.activeNameTranslation && useFilingAlerts('manage-name-translations').setAlert('name-translation-form', alertMsg))
+    || (store.formState.activeNameRequest && useFilingAlerts('manage-company-name').setAlert('company-name-form', alertMsg))
+    || (store.formState.activeCourtOrder && useFilingAlerts('manage-court-orders').setAlert('court-order-poa-form', alertMsg))
+}
 
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)
-  if (store.hasActiveSubForm) {
+  if (checkActiveSubForm()) {
     return
   }
   if (!canSubmit()) {
@@ -82,7 +93,7 @@ function reviewAndConfirm() {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (store.hasActiveSubForm) {
+    if (checkActiveSubForm()) {
       return
     }
     if (!canSubmit()) {
@@ -92,6 +103,7 @@ async function submitFiling() {
     await store.submit(true)
     revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
+    handleButtonLoading(false)
   } catch (error) {
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
@@ -103,7 +115,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
   try {
     if (enableUnsavedChangesBlock) {
       setBtnCtrlAlert(undefined)
-      if (store.hasActiveSubForm) {
+      if (checkActiveSubForm()) {
         return
       }
       if (!canSave()) {
@@ -167,19 +179,19 @@ watch(currentStep, (step) => {
 
 <template>
   <div class="py-6 space-y-6 sm:py-10 sm:space-y-10">
-    <ConnectSpinner v-if="initializing" fullscreen />
+    <ConnectSpinner v-if="store.initializing" fullscreen />
     <div class="space-y-2">
       <h1 id="filing-h1">
         {{ $t('page.correction.h1') }}
       </h1>
-      <p v-if="originalFilingDate">
-        <strong>{{ $t('label.originalFilingDate') }}:</strong> {{ originalFilingDate }}
+      <p v-if="store.correctedFilingDateDisplay">
+        <strong>{{ $t('label.originalFilingDate') }}:</strong> {{ store.correctedFilingDateDisplay }}
       </p>
       <ConnectI18nHelper
         as="p"
         translation-path="page.correction.desc"
         :filing-type="originalFilingName"
-        :filing-date="originalFilingDate"
+        :filing-date="store.correctedFilingDateDisplay"
       />
     </div>
     <FormCorrectionStep1

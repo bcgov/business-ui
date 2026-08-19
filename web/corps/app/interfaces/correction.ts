@@ -46,6 +46,8 @@ export interface CorrectionPayload extends FilingPayloadData {
     extension?: string
   }
 
+  courtOrders?: Partial<CourtOrderResponse>[]
+
   // Name-related corrections
   nameRequest?: {
     legalName: string
