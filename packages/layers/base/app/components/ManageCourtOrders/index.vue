@@ -9,7 +9,8 @@ const {
   modelName = 'activeCourtOrder',
   variant = 'default',
   preventActions = false,
-  actionPreventedSignal = 0
+  actionPreventedSignal = 0,
+  addDefaultValues
 } = defineProps<ManageCourtOrdersProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
 
 const emit = defineEmits<{
@@ -46,6 +47,9 @@ const isReadOnly = computed(() => variant === 'readonly' || variant === 'correct
 const shouldPreventActions = computed(() => !!activeCourtOrder.value || preventActions)
 
 const allowAddCourtOrder = computed(() => {
+  if (tableState.value.some(co => co.new.actions.includes(ActionType.ADDED))) {
+    return false
+  }
   if (isReadOnly.value) {
     return false
   }
@@ -84,7 +88,7 @@ function initAddCourtOrder() {
     emit('action-prevented')
     return
   }
-  activeCourtOrder.value = activeSchema.parse({})
+  activeCourtOrder.value = activeSchema.parse({ ...addDefaultValues })
   addingCourtOrder.value = true
 }
 

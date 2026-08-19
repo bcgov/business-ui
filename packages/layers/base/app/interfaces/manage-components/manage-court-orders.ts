@@ -7,10 +7,12 @@ export type ManageCourtOrdersProps = ManageBaseProps & {
     variant?: 'default' | 'correct'
     modelName?: string
     allowedActions?: ManageAllowedAction[]
+    addDefaultValues?: Partial<CourtOrderPoaFullSchema>
   }
   | {
     variant: 'readonly' | 'correct-readonly'
     modelName?: never
     allowedActions?: never
+    addDefaultValues?: never
   }
 )
