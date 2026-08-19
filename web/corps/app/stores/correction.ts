@@ -2,13 +2,13 @@ import { cloneDeep } from 'es-toolkit'
 
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
-  const { tableState: tableParties } = useManageParties()
+  const { tableState: tableDirectors } = useManageParties()
   const { tableState: tableReceivers } = useManageParties('manage-receivers')
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
-  const { tableState: tableOffices } = useManageOffices()
-  const { shareClasses: tableShareClasses, resolutionDates } = useManageShareStructure()
-  const { tableState: tableNameTranslations } = useManageNameTranslations('manage-company-name-name-translations')
-  const { state: companyName, hasNameChange, updateState: updateCompanyName } = useManageCompanyName()
+  const { tableState: tableOffices, hasChanges: hasOfficeChange } = useManageOffices()
+  const { shareClasses: tableShareClasses, resolutionDates, hasChanges: hasShareStructureChange } = useManageShareStructure()
+  const { tableState: tableNameTranslations, hasChanges: hasNameTranslationChange } = useManageNameTranslations('manage-company-name-name-translations')
+  const { state: companyName, hasNameChange: hasCompanyNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { tableState: tableCourtOrders } = useManageCourtOrders()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
@@ -181,7 +181,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       const draftDirectorEntries = draftRelationships?.filter(
         dp => dp.roles?.some(r => r.roleType === RoleType.DIRECTOR)
       )
-      tableParties.value = draftDirectorEntries?.length
+      tableDirectors.value = draftDirectorEntries?.length
         ? getPartiesMergedWithRelationships(parties, draftDirectorEntries)
         : parties
     }
@@ -301,7 +301,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     await nextTick()
     initialFormState.value = cloneDeep(formState)
-    initialDirectors.value = cloneDeep(tableParties.value)
+    initialDirectors.value = cloneDeep(tableDirectors.value)
     initialReceivers.value = cloneDeep(tableReceivers.value)
     initialLiquidators.value = cloneDeep(tableLiquidators.value)
     initialOffices.value = cloneDeep(tableOffices.value)
@@ -339,7 +339,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Parties — formatted as relationships (with `entity`), matching transition store pattern
       // All party types (directors, receivers, liquidators, completing party) are combined in one array
       relationships: [
-        ...tableParties.value,
+        ...tableDirectors.value,
         ...tableReceivers.value,
         ...tableLiquidators.value
       ].map(entry => formatRelationshipApi(entry.new)).concat(
@@ -350,16 +350,20 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ),
 
       // Offices
-      offices: {
+      ...(hasOfficeChange.value && {
+        offices: {
         registeredOffice: formatOfficeApi(regOffice),
         recordsOffice: formatOfficeApi(recOffice)
-      } as unknown as ApiEntityOfficeAddress,
+      } as unknown as ApiEntityOfficeAddress
+      }),
 
       // Share structure
-      shareStructure: {
-        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission),
-        resolutionDates: formatResolutionDatesApi(resolutionDates.value)
-      },
+      ...(hasShareStructureChange.value && {
+        shareStructure: {
+          shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission),
+          resolutionDates: formatResolutionDatesApi(resolutionDates.value)
+        }
+      }),
 
       // Court order (common filing data)
       ...getCommonFilingPayloadData(formState.courtOrder),
@@ -382,23 +386,25 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // - name: the corrected/effective name
       // - oldName: only when the name was actually changed
       // - action: the correction action
-      nameTranslations: tableNameTranslations.value
-        .filter(nt => nt.new.actions.length > 0)
-        .map(nt => ({
-          ...(nt.old ? { id: nt.new.id } : {}),
-          name: nt.new.name,
-          ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
-          action: nt.new.actions[0]
-        })),
+      ...(hasNameTranslationChange.value && { 
+        nameTranslations: tableNameTranslations.value
+          .filter(nt => nt.new.actions.length > 0)
+          .map(nt => ({
+            ...(nt.old ? { id: nt.new.id } : {}),
+            name: nt.new.name,
+            ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
+            action: nt.new.actions[0]
+          }))
+      }),
 
-      ...(hasNameChange.value && {
+      ...(hasCompanyNameChange.value && {
         nameRequest: {
           legalName: companyName.value.new.legalName,
           nrNumber: companyName.value.new.nrNumber
         }
       }),
 
-      // courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
+      courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
 
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
@@ -512,7 +518,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     requireResolutionDate,
     isStaffCorrectionType,
     courtOrders: tableCourtOrders,
-    directors: tableParties,
+    directors: tableDirectors,
     receivers: tableReceivers,
     liquidators: tableLiquidators,
     offices: tableOffices,
