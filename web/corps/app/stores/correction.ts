@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { cloneDeep } from 'es-toolkit'
 
 export const useCorrectionStore = defineStore('correction-store', () => {
@@ -352,9 +353,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Offices
       ...(hasOfficeChange.value && {
         offices: {
-        registeredOffice: formatOfficeApi(regOffice),
-        recordsOffice: formatOfficeApi(recOffice)
-      } as unknown as ApiEntityOfficeAddress
+          registeredOffice: formatOfficeApi(regOffice),
+          recordsOffice: formatOfficeApi(recOffice)
+        } as unknown as ApiEntityOfficeAddress
       }),
 
       // Share structure
@@ -386,7 +387,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // - name: the corrected/effective name
       // - oldName: only when the name was actually changed
       // - action: the correction action
-      ...(hasNameTranslationChange.value && { 
+      ...(hasNameTranslationChange.value && {
         nameTranslations: tableNameTranslations.value
           .filter(nt => nt.new.actions.length > 0)
           .map(nt => ({

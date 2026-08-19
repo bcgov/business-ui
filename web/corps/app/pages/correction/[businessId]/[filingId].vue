@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* eslint-disable max-len */
 const { t } = useI18n()
 const store = useCorrectionStore()
 const route = useRoute()
@@ -28,7 +29,7 @@ const {
     [() => store.initialNameTranslations, () => store.nameTranslations],
     [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
     [() => store.initialResolutionDates, () => store.resolutionDates],
-    [() => store.initialCourtOrders, () => store.courtOrders],
+    [() => store.initialCourtOrders, () => store.courtOrders]
   ],
   // At least one correctable section must have changes to allow submission
   () => {

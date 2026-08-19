@@ -47,7 +47,7 @@ export function getCourtOrderPoaFullSchema() {
       .max(20, t('connect.validation.maxChars', { count: 20 }))
       .default(''),
     effectOfOrder: z.preprocess(
-      val => (typeof val === 'boolean' ? val : val === 'planOfArrangement'),  // convert DB value into boolean for UI usage
+      val => (typeof val === 'boolean' ? val : val === 'planOfArrangement'), // convert DB value into boolean for UI usage
       z.boolean().default(false)
     ),
     orderDetails: z.preprocess(

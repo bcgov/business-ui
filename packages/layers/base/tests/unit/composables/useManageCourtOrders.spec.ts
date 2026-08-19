@@ -32,34 +32,34 @@ describe('useManageCourtOrders', () => {
   })
 
   describe('hasChanges', () => {
-  it('should return false when tableState has no items or no actions', () => {
-    const { tableState, hasChanges } = useManageCourtOrders(stateKey)
+    it('should return false when tableState has no items or no actions', () => {
+      const { tableState, hasChanges } = useManageCourtOrders(stateKey)
 
-    tableState.value = []
-    expect(hasChanges.value).toBe(false)
+      tableState.value = []
+      expect(hasChanges.value).toBe(false)
 
-    tableState.value = [
-      {
-        old: { id: '1', actions: [] },
-        new: { id: '1', actions: [] }
-      }
-    ] as any
-    expect(hasChanges.value).toBe(false)
+      tableState.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: { id: '1', actions: [] }
+        }
+      ] as any
+      expect(hasChanges.value).toBe(false)
+    })
+
+    it('should return true when any item has populated actions', () => {
+      const { tableState, hasChanges } = useManageCourtOrders(stateKey)
+
+      tableState.value = [
+        {
+          old: { id: '1', actions: [] },
+          new: { id: '1', actions: [ActionType.CHANGED] }
+        }
+      ] as any
+
+      expect(hasChanges.value).toBe(true)
+    })
   })
-
-  it('should return true when any item has populated actions', () => {
-    const { tableState, hasChanges } = useManageCourtOrders(stateKey)
-
-    tableState.value = [
-      {
-        old: { id: '1', actions: [] },
-        new: { id: '1', actions: [ActionType.CHANGED] }
-      }
-    ] as any
-
-    expect(hasChanges.value).toBe(true)
-  })
-})
 
   describe('addSubject', () => {
     it('should add a new subject to the table with ADDED action', () => {
