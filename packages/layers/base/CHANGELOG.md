@@ -1,5 +1,14 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.27.0
+
+### Minor Changes
+
+- [#534](https://github.com/bcgov/business-ui/pull/534) [`20092ba`](https://github.com/bcgov/business-ui/commit/20092ba29f5a8202f930a024a4fb1693b23eb3a6) Thanks [@deetz99](https://github.com/deetz99)! - - **ManageCourtOrders**: Added `addDefaultValues` prop to support pre-populating default state when adding a new court order.
+  - **FormCourtOrderPoaFull / Schema**: Updated `effectOfOrder` default handling in schema normalization to ensure consistent boolean conversion.
+  - **Court Order Formatters**: Added utility functions to normalize court order data between table UI state and backend API payloads.
+  - **useManageX Composables**: Added a reactive `hasChanges` computed property across management composables (`useManageCourtOrders`, `useManageOffices`, `useManageShareStructure`, etc.) to track section mutation states.
+
 ## 0.26.0
 
 ### Minor Changes
