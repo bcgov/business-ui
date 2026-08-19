@@ -36,6 +36,36 @@ describe('useManageOffices', () => {
     })
   })
 
+  describe('hasChanges', () => {
+  it('should return false when tableState has no items or no actions', () => {
+    const { tableState, hasChanges } = useManageOffices(stateKey)
+
+    tableState.value = []
+    expect(hasChanges.value).toBe(false)
+
+    tableState.value = [
+      {
+        old: { id: '1', actions: [] },
+        new: { id: '1', actions: [] }
+      }
+    ] as any
+    expect(hasChanges.value).toBe(false)
+  })
+
+  it('should return true when any item has populated actions', () => {
+    const { tableState, hasChanges } = useManageOffices(stateKey)
+
+    tableState.value = [
+      {
+        old: { id: '1', actions: [] },
+        new: { id: '1', actions: [ActionType.CHANGED] }
+      }
+    ] as any
+
+    expect(hasChanges.value).toBe(true)
+  })
+})
+
   describe('addNewOffice', () => {
     it('should add a new office to the table with ADDED action', () => {
       const { addNewOffice, tableState } = useManageOffices(stateKey)

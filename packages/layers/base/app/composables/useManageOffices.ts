@@ -11,6 +11,8 @@ export const useManageOffices = (stateKey: string = 'manage-offices') => {
   const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
   const tableState = useState<TableBusinessState<OfficesSchema>[]>(`${stateKey}-table-state`, () => [])
 
+  const hasChanges = computed(() => tableState.value.some(o => o.new.actions?.length > 0))
+
   function updateTable(newState: TableBusinessState<OfficesSchema>, row?: TableBusinessRow<OfficesSchema>): void {
     if (!row) {
       tableState.value = [
@@ -116,6 +118,7 @@ export const useManageOffices = (stateKey: string = 'manage-offices') => {
     addingOffice,
     expandedState,
     tableState,
+    hasChanges,
     updateTable,
     addNewOffice,
     removeOffice,
