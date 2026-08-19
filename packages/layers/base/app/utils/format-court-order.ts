@@ -24,7 +24,7 @@ const NON_EDITABLE_FIELDS = [
 
 export function formatCourtOrdersSection(
   originalCourtOrders: CourtOrderResponse[],
-  draftCourtOrders?: CourtOrderResponse[]
+  draftCourtOrders?: Partial<CourtOrderResponse>[]
 ): TableBusinessState<CourtOrderPoaFullSchema>[] {
   const schema = getCourtOrderPoaFullSchema()
 
@@ -103,9 +103,10 @@ export function formatCourtOrdersApi(
         id: isNewCourtOrder ? undefined : parseInt(newItem.id),
         effectOfOrder: newItem.effectOfOrder ? 'planOfArrangement' : undefined,
         fileNumber: newItem.fileNumber,
-        filingId: isNewCourtOrder ? undefined : newItem.filingId,
         filingType: newItem.filingType as FilingType,
         orderDetails: newItem.orderDetails || undefined,
+        orderDate: newItem.orderDate || undefined,
+        filingId: newItem.filingId,
         files: newItem.files // FUTURE - not returned from API yet
       }
     })

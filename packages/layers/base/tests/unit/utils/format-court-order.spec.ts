@@ -56,8 +56,7 @@ describe('Format Court Order Utils', () => {
     })
 
     it('should add ADDED action for draft items without an id', () => {
-      const newDraft: CourtOrderResponse = {
-        id: undefined,
+      const newDraft = {
         fileNumber: 'CO-99999',
         effectOfOrder: null,
         filingId: 2,
@@ -133,9 +132,9 @@ describe('Format Court Order Utils', () => {
         fileNumber: 'CO-12345',
         filingId: 1,
         filingType: FilingType.COURT_ORDER,
-        orderDate: '2026-01-15',
         orderDetails: 'Updated',
-        files: []
+        files: [],
+        orderDate: '2026-01-15'
       })
     })
 
@@ -169,8 +168,8 @@ describe('Format Court Order Utils', () => {
 
       const result = formatCourtOrdersApi(mockState)
 
-      expect(result![0]!.effectOfOrder).toBeNull()
-      expect(result![0]!.orderDetails).toBeNull()
+      expect(result![0]!.effectOfOrder).toBeUndefined()
+      expect(result![0]!.orderDetails).toBeUndefined()
     })
   })
 })
