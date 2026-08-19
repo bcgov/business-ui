@@ -47,7 +47,10 @@ const isReadOnly = computed(() => variant === 'readonly' || variant === 'correct
 const shouldPreventActions = computed(() => !!activeCourtOrder.value || preventActions)
 
 const allowAddCourtOrder = computed(() => {
-  if (tableState.value.some(co => co.new.actions.includes(ActionType.ADDED))) {
+  const defaultFilingIdExists = addDefaultValues?.filingId !== undefined &&
+    tableState.value.some(co => co.new.filingId === addDefaultValues.filingId)
+
+  if (defaultFilingIdExists) {
     return false
   }
   if (isReadOnly.value) {
@@ -190,7 +193,7 @@ watch(() => actionPreventedSignal, (value) => {
           :subject="$t('label.courtOrder')"
           :state-key="stateKey"
           class="p-6"
-          :is-court-order="true"
+          :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
           @done="() => addSubject(activeCourtOrder)"
           @cancel="cleanupForm"
         />
@@ -224,7 +227,7 @@ watch(() => actionPreventedSignal, (value) => {
                 :subject="editSubjectLabel"
                 :state-key="stateKey"
                 hide-remove
-                is-court-order
+                :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
                 @done="() => editSubject(activeCourtOrder, row)"
                 @cancel="cleanupForm"
                 @remove="() => removeSubject(row)"
