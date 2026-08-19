@@ -47,8 +47,8 @@ const isReadOnly = computed(() => variant === 'readonly' || variant === 'correct
 const shouldPreventActions = computed(() => !!activeCourtOrder.value || preventActions)
 
 const allowAddCourtOrder = computed(() => {
-  const defaultFilingIdExists = addDefaultValues?.filingId !== undefined &&
-    tableState.value.some(co => co.new.filingId === addDefaultValues.filingId)
+  const defaultFilingIdExists = addDefaultValues?.filingId !== undefined
+    && tableState.value.some(co => co.new.filingId === addDefaultValues.filingId)
 
   if (defaultFilingIdExists) {
     return false
