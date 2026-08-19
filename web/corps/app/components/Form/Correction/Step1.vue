@@ -124,6 +124,7 @@ function onActionPrevented() {
       v-model:active-co="store.formState.activeCourtOrder"
       data-testid="court-orders-section"
       variant="correct"
+      :loading="store.initializing"
       :add-default-values="{ filingId: store.correctedFilingId, filingType: store.correctedFilingType }"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.courtOrders') })"
       :prevent-actions="hasActiveSubForm"

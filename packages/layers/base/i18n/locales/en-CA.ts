@@ -391,6 +391,7 @@ export default {
     continuationOutComplete: 'Continuation Out Complete',
     continueToPayment: 'Continue to Payment',
     courtOrder: 'Court Order',
+    courtOrders: 'Court Orders',
     courtOrderAndPoa: 'Court Order and Plan of Arrangement',
     courtOrdersPlanofArrangement: 'Court Orders/Plan of Arrangement',
     courtOrderNo: 'Court Order #',
