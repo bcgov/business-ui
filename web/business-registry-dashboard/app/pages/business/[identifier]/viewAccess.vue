@@ -60,20 +60,22 @@ onMounted(async () => {
 <template>
   <NuxtLayout name="business">
     <div class="flex flex-col gap-6">
-      <div class="flex flex-col gap-1">
-        <h1 class="text-[32px] text-bcGovColor-darkGray">
-          {{ businessName }}
-        </h1>
-        <p v-if="businessType" class="text-gray-700">
-          {{ businessType }}
-        </p>
+      <div class="relative inset-x-1/2 mx-[-50vw] -mt-8 w-screen overflow-x-hidden bg-white sm:-mt-10">
+        <div class="mx-auto flex max-w-bcGovLg flex-col gap-1 px-6 pb-6 pt-[60px] sm:px-8">
+          <h1 class="text-xl font-bold text-bcGovColor-darkGray">
+            {{ businessName }}
+          </h1>
+          <p v-if="businessType" class="text-sm text-gray-700">
+            {{ businessType }}
+          </p>
+        </div>
       </div>
 
       <div class="flex flex-col gap-1">
-        <h2 class="text-xl font-semibold text-bcGovColor-darkGray">
+        <h2 class="text-lg font-semibold text-bcGovColor-darkGray">
           {{ $t('page.viewAccess.h1') }}
         </h2>
-        <p class="text-gray-700">
+        <p class="text-sm text-gray-700">
           {{ $t('page.viewAccess.intro') }}
         </p>
       </div>
