@@ -46,13 +46,14 @@ export function getCourtOrderPoaFullSchema() {
       .min(5, t('connect.validation.minChars', { count: 5 }))
       .max(20, t('connect.validation.maxChars', { count: 20 }))
       .default(''),
-    effectOfOrder: z.preprocess( // convert DB value into boolean for UI usage
-      val => val === 'planOfArrangement',
-      z.boolean()
+    effectOfOrder: z.preprocess(
+      val => (typeof val === 'boolean' ? val : val === 'planOfArrangement'),  // convert DB value into boolean for UI usage
+      z.boolean().default(false)
     ),
-    orderDetails: z.string()
-      .nullable()
-      .default(''),
+    orderDetails: z.preprocess(
+      val => (!val ? null : val),
+      z.string().nullable()
+    ).default(null),
     filingId: z.number()
       .default(-1),
     filingType: z.enum(FilingType)
