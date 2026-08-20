@@ -21,7 +21,7 @@ function accountLabel (account: AuthorizedAccount) {
 <template>
   <SbcPageSectionCard>
     <template #header-left>
-      <h2 class="text-base font-normal">
+      <h2 class="text-base font-bold">
         {{ $t('table.authorizedAccounts.title', { count: props.accounts.length }) }}
       </h2>
     </template>
@@ -42,12 +42,12 @@ function accountLabel (account: AuthorizedAccount) {
             class="mt-0.5 size-5 shrink-0 text-gray-700"
             aria-hidden="true"
           />
-          <span class="font-normal text-gray-900">{{ accountLabel(row) }}</span>
+          <span class="font-normal text-bcGovColor-midGray">{{ accountLabel(row) }}</span>
         </div>
       </template>
 
       <template #dateAdded-data="{ row }">
-        <span class="text-gray-900">{{ datetimeStringToDateString(row.dateAdded) }}</span>
+        <span class="text-bcGovColor-midGray">{{ datetimeStringToDateString(row.dateAdded) }}</span>
       </template>
 
       <template #empty-state>
