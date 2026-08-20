@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Form, FormError } from '@nuxt/ui'
+import { DateTime } from 'luxon'
+import { DATE_API_INPUT_FORMAT, DATE_DISPLAY_FORMAT, getDateSchema } from '#base/app/utils/schemas/date'
 
 const props = withDefaults(defineProps<{
   minDate?: string
@@ -11,11 +13,34 @@ const props = withDefaults(defineProps<{
   disabled: false
 })
 
-const effectiveDateSchema = getEffectiveDateSchema(
-  props.minDate,
-  props.maxDate,
-  props.required
+const minBoundary = computed(() =>
+  props.minDate ? DateTime.fromFormat(props.minDate, DATE_API_INPUT_FORMAT) : undefined
 )
+const maxBoundary = computed(() =>
+  props.maxDate ? DateTime.fromFormat(props.maxDate, DATE_API_INPUT_FORMAT) : undefined
+)
+
+const effectiveDateSchema = getDateSchema({
+  required: props.required,
+  minDate: props.minDate,
+  maxDate: props.maxDate,
+  messages: {
+    invalidDate: $t('text.effectiveDateFormat'),
+    minDate: minBoundary.value?.isValid
+      ? $t('validation.dateNotBeforeMin', { date: minBoundary.value.toFormat(DATE_DISPLAY_FORMAT) })
+      : undefined,
+    maxDate: maxBoundary.value?.isValid
+      ? $t('validation.dateNotAfterMax', { date: maxBoundary.value.toFormat(DATE_DISPLAY_FORMAT) })
+      : undefined,
+    dateRange: minBoundary.value?.isValid && maxBoundary.value?.isValid
+      ? $t('validation.dateNotInRange', {
+        minDate: minBoundary.value.toFormat(DATE_DISPLAY_FORMAT),
+        maxDate: maxBoundary.value.toFormat(DATE_DISPLAY_FORMAT)
+      })
+      : undefined,
+    required: $t('validation.fieldRequired')
+  }
+})
 
 const model = defineModel<EffectiveDateSchema>({ required: true })
 
@@ -66,16 +91,6 @@ watch(() => localState.dateInput, async (val) => {
   liveAnnouncement.value = buildAnnouncement()
 })
 
-function onDateFocusIn(e: FocusEvent) {
-  if ((e.target as HTMLElement).tagName !== 'INPUT') {
-    return
-  }
-  liveAnnouncement.value = ''
-  nextTick(() => {
-    liveAnnouncement.value = hintText.value
-  })
-}
-
 defineExpose({ formRef })
 defineOptions({ inheritAttrs: false })
 </script>
@@ -98,26 +113,25 @@ defineOptions({ inheritAttrs: false })
         :ui="{ error: 'sr-only' }"
       >
         <template #default="{ error }">
-          <Date
+          <ConnectInputDatePicker
             ref="date-input"
             v-model="localState.dateInput"
             :label="$t('label.effectiveDate')"
             :error="!!error"
-            :described-by="hintId"
+            :help="hintText"
             :max-date="props.maxDate"
             :min-date="props.minDate"
             :required="props.required"
             :disabled="props.disabled"
-            @focusin="onDateFocusIn"
           />
           <p
             :id="hintId"
-            :class="['mt-1 text-sm flex items-center gap-1', error ? 'text-error' : 'text-neutral']"
+            :class="['mt-1 text-sm flex items-start gap-1', error ? 'text-error' : 'text-neutral']"
           >
             <UIcon
               v-if="error"
               name="i-mdi-alert"
-              class="size-4 shrink-0"
+              class="size-4 shrink-0 mt-0.5"
             />
             {{
               hintText

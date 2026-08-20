@@ -2,11 +2,8 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { FormEffectiveDate } from '#components'
-import {
-  DATE_API_INPUT_FORMAT,
-  DATE_DISPLAY_FORMAT,
-  type EffectiveDateSchema
-} from '#business/app/utils/schemas/effective-date'
+import type { EffectiveDateSchema } from '#business/app/utils/schemas/effective-date'
+import { DATE_API_INPUT_FORMAT, DATE_DISPLAY_FORMAT } from '#base/app/utils/schemas/date'
 import { DateTime } from 'luxon'
 
 const VALID_API_DATE = '2024-03-15'
@@ -64,7 +61,7 @@ describe('FormEffectiveDate', () => {
     expect(model.dateInput).toBe(VALID_API_DATE)
   })
 
-  it('should not update the model when an invalid date is entered', async () => {
+  it('should pass an invalid date through to the model as-is for schema validation to catch', async () => {
     const model: EffectiveDateSchema = { dateInput: '' }
     const wrapper = await mountComponent(model)
 
@@ -73,6 +70,6 @@ describe('FormEffectiveDate', () => {
     await input.trigger('blur')
     await flushPromises()
 
-    expect(model.dateInput).toBe('')
+    expect(model.dateInput).toBe('not a date')
   })
 })
