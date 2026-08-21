@@ -116,7 +116,7 @@ defineOptions({ inheritAttrs: false })
           <ConnectInputDatePicker
             ref="date-input"
             v-model="localState.dateInput"
-            :label="$t('label.effectiveDate')"
+            :label="$t('label.enterOrSelectEffectiveDate')"
             :error="!!error"
             :help="hintText"
             :max-date="props.maxDate"
