@@ -432,6 +432,7 @@ export default {
     email: 'Email',
     emailAddress: 'Email Address',
     emailAddressOpt: 'Email Address (Optional)',
+    enterOrSelectEffectiveDate: 'Enter or Select an Effective Date',
     enterTheNrNumber: 'Enter the NR Number',
     exitWithoutSaving: 'Exit Without Saving',
     extensionOfLimitedRestoration: 'Extension of Limited Restoration',
