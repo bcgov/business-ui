@@ -2,6 +2,7 @@
 import type { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { DateTime } from 'luxon'
+import { DATE_DISPLAY_FORMAT } from '#base/app/utils/schemas/date'
 
 const { t } = useI18n()
 const store = useDodStore()
@@ -11,7 +12,6 @@ const route = useRoute()
 const businessStore = useBusinessStore()
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
-const rtc = useRuntimeConfig().public
 
 const businessId = route.params.businessId as string
 const filingSubType = route.params.filingSubType as DissolutionType
@@ -34,31 +34,26 @@ useHead({
   title: filingText.title
 })
 
-const delayDateDisplay = computed<string>((previous) => {
-  const dissolutionDate = DateTime.fromISO(
-    store.dissolutionInfo.targetDissolutionDate,
-    { zone: 'America/Vancouver' }
-  )
+const delayDateDisplay = computed<string>(() => {
   const unknownStr = `[${t('text.unknown')}]`
-
-  if (!dissolutionDate.isValid) {
-    return unknownStr
-  }
-
-  const delayDate = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
   const delayOption = store.formState.delay.option
 
   if (delayOption === DelayOption.DEFAULT) {
-    return dissolutionDate.plus({ months: 6 }).toFormat('DDD')
-  } else {
-    // selected date
-    if (!delayDate.isValid) {
-      return previous || unknownStr
-    }
-    return store.dissolutionInfo.isStage1
-      ? delayDate.plus({ days: Number(rtc.disStageDelay) }).toFormat('DDD')
-      : delayDate.toFormat('DDD')
+    const dissolutionDate = DateTime.fromISO(
+      store.dissolutionInfo.targetDissolutionDate,
+      { zone: 'America/Vancouver' }
+    )
+    return dissolutionDate.isValid
+      ? dissolutionDate.plus({ months: 6 }).toFormat(DATE_DISPLAY_FORMAT)
+      : unknownStr
   }
+
+  // selected date
+  const delayDate = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
+  if (!delayDate.isValid) {
+    return unknownStr
+  }
+  return delayDate.toFormat(DATE_DISPLAY_FORMAT)
 })
 
 // no canSubmit check as no changes are actually required to submit the filing

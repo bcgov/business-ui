@@ -22,6 +22,13 @@ const schema = computed(() => getResolutionDateSchema(props.validationContext))
 const model = defineModel<ResolutionDateSchema>()
 const formRef = useTemplateRef<Form<ResolutionDateSchema>>('resolution-date-form')
 
+// mirrors the superRefine rules in getResolutionDateSchema: dates can't be in the future,
+// and are required when there are rights/restrictions or an existing date is being edited
+const maxDate = getToday('America/Vancouver')
+const isDateRequired = computed(() =>
+  !!(props.validationContext?.hasRightsOrRestrictions || props.validationContext?.isEditingExisting)
+)
+
 const formTarget = 'resolution-date-form'
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const { targetId, messageId } = props.standalone ? { targetId: '', messageId: '' } : attachAlerts(formTarget, model)
@@ -69,10 +76,11 @@ watch(
       @done="onDone"
       @cancel="$emit('cancel')"
     >
-      <ConnectInputDate
-        :id="`${variant}-resolution-date`"
+      <ConnectInputDatePicker
         v-model="model.date"
         :label="$t('label.resolutionOrCourtOrderDate')"
+        :max-date="maxDate"
+        :required="isDateRequired"
       />
     </SubFormFieldWrapper>
     <UFormField
@@ -81,10 +89,11 @@ watch(
       :help="$t('text.formatYYYYMMDD')"
       class="grow flex-1"
     >
-      <ConnectInputDate
-        id="resolution-date"
+      <ConnectInputDatePicker
         v-model="model.date"
         :label="$t('label.resolutionOrCourtOrderDate')"
+        :max-date="maxDate"
+        :required="isDateRequired"
       />
     </UFormField>
   </UForm>
