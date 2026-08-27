@@ -61,7 +61,10 @@ watch(() => model.value.date, () => {
 // mirrors the schema's "must be after today" rule (Pacific time) so the calendar
 // itself never offers a date the form would then reject
 const minDate = computed(() =>
-  DateTime.fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' }).plus({ days: 1 }).toISODate() ?? undefined
+  DateTime
+    .fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' })
+    .plus({ days: 1 })
+    .toISODate() ?? undefined
 )
 
 defineExpose({
@@ -105,8 +108,8 @@ defineExpose({
             <ConnectInputDatePicker
               :key="model.option"
               ref="delay-date-input"
-              data-testid="delay-date-input"
               v-model="model.date"
+              data-testid="delay-date-input"
               :label="t('label.chooseAnEndDate')"
               :disabled="isDateInputDisabled"
               :min-date="minDate"
