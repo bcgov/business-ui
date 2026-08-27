@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+export * from './email'
 export * from './name'
 export * from './roles'
 
@@ -37,6 +38,7 @@ export function getPartySchema(roleType?: RoleTypeUi) {
       preferredName: ''
     }),
     roles: getPartyRoleSchema(roleType),
+    email: z.string().default(''),
     id: z.string().optional().default(() => ''),
     isEditing: z.boolean().default(false)
   })

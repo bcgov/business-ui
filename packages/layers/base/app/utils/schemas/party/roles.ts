@@ -1,10 +1,21 @@
 import { z } from 'zod'
 import type { FormPartyRole } from '#components'
 
-export const ROLES_REQUIRING_EFFECTIVE_DATE: RoleTypeUi[] = [
-  RoleTypeUi.DIRECTOR
-  // add others here as needed
-]
+export interface RoleAdditionalFields {
+  effectiveDate?: boolean
+  showEmail?: boolean
+  requireEmail?: boolean
+}
+
+// single source of truth for which extra PartyDetails sections a role triggers
+export const ROLE_ADDITIONAL_FIELDS: Partial<Record<RoleTypeUi, RoleAdditionalFields>> = {
+  [RoleTypeUi.DIRECTOR]: {
+    effectiveDate: true,
+    showEmail: true,
+    requireEmail: true
+  }
+  // add other roles/fields as needed
+}
 
 export function getPartyRoleSchema(roleType?: RoleTypeUi) {
   const t = useNuxtApp().$i18n.t

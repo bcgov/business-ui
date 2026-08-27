@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 import { RoleType } from '#business/app/enums/role-type'
-import { fillOutRoles, fillOutName, selectCancel, selectDone } from '#business/tests/e2e/test-utils'
+import { fillOutRoles, fillOutName, fillOutEmail, selectCancel, selectDone } from '#business/tests/e2e/test-utils'
 
 // FUTURE: flush this out
 test.describe('ManageParties', () => {
@@ -54,6 +54,7 @@ test.describe('ManageParties', () => {
       identifier: ''
     }
     await fillOutName(page, entity)
+    await fillOutEmail(page, 'tester.testing@example.com')
     await selectDone(page)
 
     // should now have preferred name as well
@@ -87,6 +88,7 @@ test.describe('ManageParties', () => {
     await changeBtn.click()
     // role selection
     await fillOutRoles(page, roles)
+    await fillOutEmail(page, 'tester.testing@example.com')
     await selectDone(page)
 
     // should display all roles
@@ -109,6 +111,24 @@ test.describe('ManageParties', () => {
     // effective date input should be visible
     const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Effective Date')
     await expect(effectiveDateInput).toBeVisible()
+
+    await selectCancel(page)
+  })
+
+  test('Should show email field when party has Director role', async ({ page }) => {
+    await page.goto('./en-CA/examples/components/ManageParties')
+    await page.waitForLoadState('networkidle')
+
+    const manageParties = page.getByTestId('manage-parties')
+    const tbody = manageParties.getByRole('table').locator('tbody')
+
+    // find first row that contains a Director role
+    const directorRow = tbody.getByRole('row').filter({ hasText: RoleType.DIRECTOR }).first()
+    await directorRow.getByRole('button', { name: 'change' }).click()
+
+    // email input should be visible
+    const emailInput = page.getByTestId('party-email-input')
+    await expect(emailInput).toBeVisible()
 
     await selectCancel(page)
   })

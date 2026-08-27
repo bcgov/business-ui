@@ -432,6 +432,7 @@ export default {
     email: 'Email',
     emailAddress: 'Email Address',
     emailAddressOpt: 'Email Address (Optional)',
+    enterEmailAddress: 'Enter an Email Address',
     enterOrSelectEffectiveDate: 'Enter or Select an Effective Date',
     enterTheNrNumber: 'Enter the NR Number',
     exitWithoutSaving: 'Exit Without Saving',
@@ -843,6 +844,7 @@ export default {
     selectAPaymentOption: 'Select a payment option',
     seriesNameInvalidWords: 'Series name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     totalOfAllSeriesCantExceedMaxOfClass: 'The maximum number for all series combined cannot exceed the maximum number for the class',
-    uniqueName: 'Name must be unique'
+    uniqueName: 'Name must be unique',
+    validEmailAddressRequired: 'Valid email address is required'
   }
 }

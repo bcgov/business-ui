@@ -94,6 +94,7 @@ export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchem
       sameAs: isEqual(mailingAddress, deliveryAddress)
     },
     roles: roles ? formatRelationshipRolesUi(roles) : [],
+    email: party.officer.email ?? '',
     actions: [],
     isEditing: false
   }
@@ -120,6 +121,7 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
       sameAs: isEqual(mailingAddress, deliveryAddress)
     },
     roles: party.roles ? formatRelationshipRolesUi(party.roles) : [],
+    email: party.entity.email ?? '',
     actions: party.actions ?? [],
     isEditing: false
   }
@@ -135,7 +137,8 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
       middleInitial: party.name.middleName ?? '',
       familyName: party.name.lastName ?? '',
       businessName: party.name.businessName ?? '',
-      alternateName: party.name.preferredName ?? ''
+      alternateName: party.name.preferredName ?? '',
+      email: party.email ?? ''
     },
     mailingAddress,
     deliveryAddress,

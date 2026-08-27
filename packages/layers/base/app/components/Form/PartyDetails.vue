@@ -25,18 +25,23 @@ const emit = defineEmits<{
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'party-details-form'
 
-type PartyDetails = Pick<PartySchema, 'name' | 'address' | 'roles'>
+type PartyDetails = Pick<PartySchema, 'name' | 'address' | 'roles' | 'email'>
 
 const model = defineModel<PartyDetails>({ required: true })
 
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
+const partyEmailFormRef = useTemplateRef<FormPartyEmailRef>('party-email-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
-const rolesRequiringEffectiveDate = computed(() =>
-  model.value.roles.filter(role => ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType))
-)
+function rolesWithField<K extends keyof RoleAdditionalFields>(field: K) {
+  return model.value.roles.filter(role => ROLE_ADDITIONAL_FIELDS[role.roleType]?.[field])
+}
+
+const rolesRequiringEffectiveDate = computed(() => rolesWithField('effectiveDate'))
+const rolesShowingEmail = computed(() => rolesWithField('showEmail'))
+const rolesRequiringEmail = computed(() => rolesWithField('requireEmail'))
 
 const effectiveDateModel = computed({
   get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
@@ -53,6 +58,7 @@ async function onDone() {
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate(),
+    partyEmailFormRef.value?.formRef?.validate(),
     isRoleRequiringEffectiveDate.value && isEffectiveDateChangeAllowed.value
       ? effectiveDateFormRef.value?.formRef?.validate()
       : undefined
@@ -86,8 +92,11 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+const isEmailChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EMAIL_CHANGE))
 const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
 const isRoleRequiringEffectiveDate = computed(() => rolesRequiringEffectiveDate.value.length > 0)
+const isRoleShowingEmail = computed(() => rolesShowingEmail.value.length > 0)
+const isEmailRequiredForRole = computed(() => rolesRequiringEmail.value.length > 0)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
@@ -140,6 +149,14 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
+        <template v-if="isRoleShowingEmail && isEmailChangeAllowed">
+          <USeparator class="padding-x-default" />
+          <FormPartyEmail
+            ref="party-email-form"
+            v-model="model.email"
+            :required="isEmailRequiredForRole"
+          />
+        </template>
         <template v-if="isRoleRequiringEffectiveDate && isEffectiveDateChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormEffectiveDate
