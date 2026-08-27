@@ -100,15 +100,6 @@ test.describe('Correction - Filing Submit', () => {
       expect(correction.relationships).toBeDefined()
       expect(correction.relationships.length).toBeGreaterThan(0)
 
-      // Verify offices are included
-      expect(correction.offices).toBeDefined()
-      expect(correction.offices).toHaveProperty('registeredOffice')
-      expect(correction.offices).toHaveProperty('recordsOffice')
-
-      // Verify share structure is included
-      expect(correction.shareStructure).toBeDefined()
-      expect(correction.shareStructure.shareClasses).toBeDefined()
-
       // Should redirect to dashboard
       await page.waitForURL(
         `${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`,

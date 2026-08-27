@@ -62,10 +62,21 @@ describe('getResolutionDateSchema', () => {
       })
     })
 
-    describe('dateRegex check', () => {
+    describe('date format check', () => {
       it('should fail when date string format is incorrect', () => {
         const schema = getResolutionDateSchema()
         const result = schema.safeParse({ date: '01-01-2026' })
+
+        expect(result.success).toBe(false)
+        const issues = result.error!.issues
+        expect(issues).toHaveLength(1)
+        expect(issues[0]!.path).toEqual(['date'])
+        expect(issues[0]!.message).toBe('Date must be a valid date in YYYY-MM-DD format')
+      })
+
+      it('should fail when date does not exist on the calendar', () => {
+        const schema = getResolutionDateSchema()
+        const result = schema.safeParse({ date: '2026-02-31' })
 
         expect(result.success).toBe(false)
         const issues = result.error!.issues

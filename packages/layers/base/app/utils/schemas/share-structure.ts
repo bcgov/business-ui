@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { DateTime } from 'luxon'
+import { DATE_API_INPUT_FORMAT } from '#base/app/utils/schemas/date'
 
 export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
   const t = useNuxtApp().$i18n.t
@@ -208,7 +209,6 @@ export function getResolutionDateSchema(context?: {
   existingResolutions?: { id: string, date: string, type?: string }[]
 }) {
   const t = useNuxtApp().$i18n.t
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/
 
   return z.object({
     id: z.preprocess( // convert DB `id` int to string for UI diff'ing
@@ -243,8 +243,9 @@ export function getResolutionDateSchema(context?: {
       return
     }
 
-    // Date must pass YYYY-MM-DD regex (datepicker outputs correct format - fallback check when entered manually)
-    if (!dateRegex.test(date) && !isDateEmpty) {
+    // Date must be a valid calendar date in YYYY-MM-DD format
+    // (datepicker outputs this format - fallback check when entered manually)
+    if (!isDateEmpty && !DateTime.fromFormat(date, DATE_API_INPUT_FORMAT).isValid) {
       ctx.addIssue({
         code: 'custom',
         path: ['date'],

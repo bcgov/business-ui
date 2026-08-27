@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { FormError, Form, RadioGroupItem, InputProps } from '@nuxt/ui'
+import type { FormError, Form, RadioGroupItem } from '@nuxt/ui'
+import type { ComponentPublicInstance } from 'vue'
+import { DateTime } from 'luxon'
 
 const { t } = useI18n()
 
@@ -31,25 +33,39 @@ const delayOptions = computed<RadioGroupItem[]>(() => {
   return options
 })
 
+const delayDateInputRef = useTemplateRef('delay-date-input')
+
 async function onDelayOptionChange(e: unknown) {
   const option = e as DelayOption
   model.value.date = ''
 
   await nextTick()
   if (option === DelayOption.CUSTOM) {
-    const element = document.getElementById('delay-date-input')
-    if (element) {
-      element.focus({ preventScroll: true })
-    }
+    const element = (delayDateInputRef.value as ComponentPublicInstance | null)?.$el?.querySelector('input')
+    element?.focus({ preventScroll: true })
   } else {
     // DelayOption.DEFAULT
     formRef.value?.clear()
   }
 }
-const uInputProps = computed<InputProps>(() => ({
-  disabled: model.value.option === DelayOption.DEFAULT
-}))
-provide('UInput-props-delay-date-input', uInputProps)
+
+const isDateInputDisabled = computed(() => model.value.option === DelayOption.DEFAULT)
+
+// ConnectInputDatePicker never emits an 'input' event onto the form bus (only 'blur'),
+// so UForm's default validateOn never revalidates this field as the user types. Drive
+// it manually instead, matching EffectiveDate/index.vue's workaround for the same gap.
+watch(() => model.value.date, () => {
+  formRef.value?.validate({ silent: true })
+})
+
+// mirrors the schema's "must be after today" rule (Pacific time) so the calendar
+// itself never offers a date the form would then reject
+const minDate = computed(() =>
+  DateTime
+    .fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' })
+    .plus({ days: 1 })
+    .toISODate() ?? undefined
+)
 
 defineExpose({
   formRef
@@ -62,6 +78,7 @@ defineExpose({
     :schema
     nested
     :name
+    :validate-on="[]"
   >
     <ConnectFieldset
       :label="order ? `${order}. ${t('label.delayDate')}` : t('label.delayDate')"
@@ -88,11 +105,14 @@ defineExpose({
             name="date"
             :help="t('text.formatYYYYMMDD')"
           >
-            <ConnectInputDate
-              id="delay-date-input"
+            <ConnectInputDatePicker
+              :key="model.option"
+              ref="delay-date-input"
               v-model="model.date"
+              data-testid="delay-date-input"
               :label="t('label.chooseAnEndDate')"
-              @blur="formRef?.validate({ silent: true })"
+              :disabled="isDateInputDisabled"
+              :min-date="minDate"
             />
           </UFormField>
           <ConnectI18nHelper
