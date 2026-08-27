@@ -138,7 +138,7 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
       familyName: party.name.lastName ?? '',
       businessName: party.name.businessName ?? '',
       alternateName: party.name.preferredName ?? '',
-      email: party.email ?? ''
+      ...(party.email ? { email: party.email } : {})
     },
     mailingAddress,
     deliveryAddress,
