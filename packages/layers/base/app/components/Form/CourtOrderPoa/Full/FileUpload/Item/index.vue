@@ -15,7 +15,7 @@ const { data } = useQuery({
   key: () => ['documents-client-blob', props.fileKey ?? null],
   query: () => $businessApi<Blob>(`documents/client/${props.fileKey}`, {
     responseType: 'blob' as 'json'
-  }).then((blob) => new Blob([blob], { type: 'application/pdf' })),
+  }).then(blob => new Blob([blob], { type: 'application/pdf' })),
   enabled: () => !!props.fileKey
 })
 
