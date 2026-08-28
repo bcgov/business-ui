@@ -215,7 +215,7 @@ export function useCourtOrderDocs(
         if (file.action === FileAction.ADDED) {
           deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
-        // existing files get soft deleted with the deleted action  
+        // existing files get soft deleted with the deleted action
         } else {
           file.action = FileAction.DELETED
         }
