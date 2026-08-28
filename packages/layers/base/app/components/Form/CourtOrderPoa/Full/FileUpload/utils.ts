@@ -1,20 +1,24 @@
+// NB: temporary util file before creating the full reusable component
 import * as z from 'zod'
 import { isEqual } from 'es-toolkit'
 import type { ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
+// doc types returned by the drs api
 export enum DrsDocType {
   DEFAULT = 'COSD',
   COURT_ORDER = 'CRTO',
-  SUPPORTING_DOCUMENT = 'SUPP'
+  SUPPORTING_DOCUMENT = 'SUPP' // not returned by api yet
 }
 
+// action a user has taken on a file
 export enum FileAction {
   NONE = 'NONE',
   ADDED = 'ADDED',
   DELETED = 'DELETED'
 }
 
+// status of uploaded file, idle is an existing file sttached to a court order already
 export enum FileStatus {
   IDLE = 'IDLE',
   LOADING = 'LOADING',
@@ -22,6 +26,7 @@ export enum FileStatus {
   ERROR = 'ERROR'
 }
 
+// full response type from drs api
 interface DrsDocument {
   author: string
   consumerDocumentId: string
@@ -39,6 +44,7 @@ interface DrsDocument {
   key: string // "CORP-DS0000102166"
 }
 
+// ui state
 export interface FileType {
   id: string
   fileKey?: string // may be undefined during initial load
@@ -70,6 +76,7 @@ const fileSchema = z.object({
     .max(maxFileSize, 'validation.fileTooLargeNamed')
 })
 
+// appends (x) on a filename to help prevent duplicate filenames
 function getUniqueFileName(rawName: string, existingNames: Set<string>): string {
   if (!existingNames.has(rawName)) {
     return rawName
@@ -90,6 +97,7 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
   return newName
 }
 
+// upload a document to the drs via business api client endpoint
 async function uploadDocument(
   file: File,
   documentType: DocumentTypeClient,
@@ -119,9 +127,11 @@ function deleteDocument(fileKey?: string) {
   if (!fileKey) {
     return
   }
+  // UI doesn't care if delete failed, silently handle errors
   useNuxtApp().$businessApi(`documents/client/${fileKey}`, { method: 'DELETE' }).catch(() => {})
 }
 
+// helper to determine if an uploaded court order file is in an active state
 function isActiveCourtOrder(doc: FileType, excludeId?: string) {
   return doc.type === DrsDocType.COURT_ORDER
     && doc.id !== excludeId
@@ -129,6 +139,7 @@ function isActiveCourtOrder(doc: FileType, excludeId?: string) {
     && [FileStatus.SUCCESS, FileStatus.IDLE, FileStatus.LOADING].includes(doc.status)
 }
 
+// main functionality/state handling
 export function useCourtOrderDocs(
   model: ModelRef<FileType[]>,
   props: {
@@ -145,15 +156,17 @@ export function useCourtOrderDocs(
     preventDefaultForUnhandled: true
   })
 
-  const courtOrderFile = ref<File>()
-  const supportingFiles = ref<File[]>([])
-  const uploadedDocuments = ref<FileType[]>([])
-  const courtOrderUploadTimestamp = ref<number | undefined>(undefined)
-  const inProgressFilenames = new Set<string>()
+  const uploadedDocuments = ref<FileType[]>([]) // full list of files
+  const courtOrderFile = ref<File>() // model value for court order upload
+  const supportingFiles = ref<File[]>([]) // model value for supporting docs upload
+  const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
+  const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
 
+  // full list of court order files
   const courtOrderDocs = computed(() =>
     uploadedDocuments.value.filter(doc => doc.type === DrsDocType.COURT_ORDER)
   )
+  // full list of supporting files
   const supportingDocs = computed(() =>
     uploadedDocuments.value.filter(doc => doc.type !== DrsDocType.COURT_ORDER)
   )
@@ -189,6 +202,7 @@ export function useCourtOrderDocs(
     open()
   }
 
+  // file item action handling
   function onFileItemEmit(id: string, actionType: 'delete' | 'undo' | 'cancel') {
     const file = uploadedDocuments.value.find(f => f.id === id)
     if (!file) {
@@ -197,9 +211,11 @@ export function useCourtOrderDocs(
 
     switch (actionType) {
       case 'delete':
+        // newly added files get hard deleted
         if (file.action === FileAction.ADDED) {
           deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
+        // existing files get soft deleted with the deleted action  
         } else {
           file.action = FileAction.DELETED
         }
@@ -207,29 +223,35 @@ export function useCourtOrderDocs(
         break
 
       case 'undo': {
+        // prevent undo on a court order if another court order is active
         if (file.type === DrsDocType.COURT_ORDER && preventDuplicateCourtOrderCheck(file.id)) {
           return
         }
+        // else revert the action to none
         file.action = FileAction.NONE
         courtOrderUploadTimestamp.value = undefined
         break
       }
 
       case 'cancel':
+        // cancel network request and remove file from uploaded docs
         file.abortController?.abort()
         uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
         break
     }
   }
 
+  // main file handler
   async function processFiles(
     submitted: File[] | File | undefined,
     docType: DocumentTypeClient.COURT_ORDER | DocumentTypeClient.SUPPORTING_DOCUMENT
   ) {
+    // safety check
     if (!submitted) {
       return
     }
 
+    // safety check
     if (docType === DocumentTypeClient.COURT_ORDER && preventDuplicateCourtOrderCheck()) {
       courtOrderFile.value = undefined
       return
@@ -240,10 +262,12 @@ export function useCourtOrderDocs(
       return
     }
 
+    // filter out docs with errors on any new upload
     uploadedDocuments.value = uploadedDocuments.value.filter(
       doc => doc.status !== FileStatus.ERROR
     )
 
+    // reset model values for future uploads
     courtOrderFile.value = undefined
     supportingFiles.value = []
 
@@ -262,24 +286,28 @@ export function useCourtOrderDocs(
 
         const newFile = new File([file], uniqueName, { type: file.type })
 
+        // normalize doc type
         const uiDocType = docType === DocumentTypeClient.COURT_ORDER
           ? DrsDocType.COURT_ORDER
           : DrsDocType.SUPPORTING_DOCUMENT
 
+        // temporary file item for loading state
         const fileItem = reactive<FileType>({
           id: crypto.randomUUID(),
           name: newFile.name,
           type: uiDocType,
           status: FileStatus.LOADING,
           action: FileAction.ADDED,
-          abortController: markRaw(new AbortController())
+          abortController: markRaw(new AbortController()) // exclude web api from reactivity
         })
 
         uploadedDocuments.value.push(fileItem)
 
         try {
+          // validate max bytes and accepted types, will throw if invalid
           fileSchema.parse({ file: newFile })
 
+          // upload to drs via business api client endpoint
           const doc = await uploadDocument(
             newFile,
             docType,
@@ -287,6 +315,7 @@ export function useCourtOrderDocs(
             fileItem.abortController?.signal
           )
 
+          // update file item with drs props and success status
           Object.assign(fileItem, {
             fileKey: doc.key,
             name: doc.consumerFilename,
@@ -303,14 +332,17 @@ export function useCourtOrderDocs(
 
           fileItem.status = FileStatus.ERROR
 
+          // get zod error message
           const tKey = e?.issues?.[0]?.message
 
+          // i18n props
           const tData = {
             filename: fileItem.name,
             validtype: acceptedFileTypes.map(type => `.${type.split('/').pop()?.toUpperCase()}`).join(', '),
             maxsize: formatBytes(maxFileSize)
           }
 
+          // use zod error message if available or fallbackl to generic
           const errorMessage = te(tKey)
             ? t(tKey, tData)
             : t('validation.uploadFailedGeneric', tData)
@@ -323,17 +355,23 @@ export function useCourtOrderDocs(
     )
   }
 
+  // process user uploaded court order file
   watch(courtOrderFile, async newVal => await processFiles(newVal, DocumentTypeClient.COURT_ORDER))
+  // process user uploaded supporting files
   watch(supportingFiles, async newVal => await processFiles(newVal, DocumentTypeClient.SUPPORTING_DOCUMENT))
 
+  // sync model value (external state) with uploaded documents (internal state)
   watch(uploadedDocuments, (newVal) => {
     model.value = newVal.map(({ abortController, ...rest }) => ({ ...rest }))
   }, { deep: true })
 
+  // sync uploaded documents (internal state) with model value (external state)
+  // either by parent mutation or onMounted from immediate: true
   watch(
     model,
     (newVal) => {
       const internal = uploadedDocuments.value.map(({ abortController, ...rest }) => ({ ...rest }))
+      // safety check to prevent recursive updates
       if (!isEqual(newVal, internal)) {
         uploadedDocuments.value = newVal.map(item => ({ ...item }))
       }
