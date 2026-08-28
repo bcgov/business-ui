@@ -227,12 +227,7 @@ watch(() => actionPreventedSignal, (value) => {
                 :subject="editSubjectLabel"
                 :state-key="stateKey"
                 hide-remove
-<<<<<<< HEAD
                 :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
-=======
-                is-court-order
-                :identifier
->>>>>>> 2de688cb (update props)
                 @done="() => editSubject(activeCourtOrder, row)"
                 @cancel="cleanupForm"
                 @remove="() => removeSubject(row)"

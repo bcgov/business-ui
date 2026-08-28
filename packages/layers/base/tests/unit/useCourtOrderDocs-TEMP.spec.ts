@@ -212,7 +212,7 @@ describe('useCourtOrderDocs', () => {
     })
   })
 
-  describe('onFileItemEmit', () => {
+  describe('onFileAction', () => {
     it('should hard delete a newly added file', async () => {
       const mockDoc = {
         id: '1234567',
@@ -224,10 +224,10 @@ describe('useCourtOrderDocs', () => {
       }
       model.value = [mockDoc]
 
-      const { onFileItemEmit, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
 
-      onFileItemEmit(mockDoc.id, 'delete')
+      onFileAction(mockDoc.id, 'delete')
 
       expect(mockBusinessApi).toHaveBeenCalledWith(`documents/client/${mockDoc.fileKey}`, { method: 'DELETE' })
       expect(supportingDocs.value).toHaveLength(0)
@@ -244,11 +244,11 @@ describe('useCourtOrderDocs', () => {
       }
       model.value = [mockDoc]
 
-      const { onFileItemEmit, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
 
       expect(supportingDocs.value[0]!.action).toBe(FileAction.NONE)
 
-      onFileItemEmit(mockDoc.id, 'delete')
+      onFileAction(mockDoc.id, 'delete')
 
       expect(mockBusinessApi).not.toHaveBeenCalled()
       expect(supportingDocs.value[0]!.action).toBe(FileAction.DELETED)
@@ -265,10 +265,10 @@ describe('useCourtOrderDocs', () => {
       }
       model.value = [mockDoc]
 
-      const { onFileItemEmit, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       expect(supportingDocs.value[0]!.action).toBe(FileAction.DELETED)
 
-      onFileItemEmit(mockDoc.id, 'undo')
+      onFileAction(mockDoc.id, 'undo')
       expect(supportingDocs.value[0]!.action).toBe(FileAction.NONE)
     })
 
@@ -290,9 +290,9 @@ describe('useCourtOrderDocs', () => {
         }
       ]
 
-      const { onFileItemEmit, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
+      const { onFileAction, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
 
-      onFileItemEmit('file-2', 'undo')
+      onFileAction('file-2', 'undo')
 
       const file2 = courtOrderDocs.value.find(d => d.id === 'file-2')
       expect(file2?.action).toBe(FileAction.DELETED)
@@ -301,14 +301,14 @@ describe('useCourtOrderDocs', () => {
     it('should call abort and remove file on cancel', async () => {
       const abortSpy = vi.spyOn(AbortController.prototype, 'abort')
 
-      const { onFileItemEmit, supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const { onFileAction, supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       mockBusinessApi.mockImplementation(() => new Promise(() => {}))
 
       supportingFiles.value = [new File(['test file'], 'uploading.pdf', { type: 'application/pdf' })]
       await nextTick()
 
       const activeFile = supportingDocs.value[0]!
-      onFileItemEmit(activeFile.id, 'cancel')
+      onFileAction(activeFile.id, 'cancel')
 
       expect(abortSpy).toHaveBeenCalledOnce()
       expect(supportingDocs.value).toHaveLength(0)

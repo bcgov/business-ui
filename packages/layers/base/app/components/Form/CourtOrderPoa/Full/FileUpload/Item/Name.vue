@@ -111,15 +111,5 @@ function handleDownload() {
         </template>
       </UButton>
     </UTooltip>
-
-    <!-- <UTooltip
-      :text="name"
-      :disabled="!isTruncated"
-    >
-      <div class="flex min-w-0 whitespace-nowrap">
-        <span ref="first-half" class="shrink overflow-hidden text-ellipsis">{{ firstHalf }}</span>
-        <span v-if="secondHalf">{{ secondHalf }}</span>
-      </div>
-    </UTooltip> -->
   </div>
 </template>

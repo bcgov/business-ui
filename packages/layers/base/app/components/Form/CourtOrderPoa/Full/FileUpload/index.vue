@@ -18,7 +18,7 @@ const {
   courtOrderUploadTimestamp,
   displayMaxOneCourtOrderAlert,
   onUploadCourtOrder,
-  onFileItemEmit
+  onFileAction
 } = useCourtOrderDocs(model, { identifier, filingId })
 </script>
 
@@ -74,9 +74,7 @@ const {
           :key="doc.id"
           v-bind="doc"
           class="py-4"
-          @delete="onFileItemEmit($event, 'delete')"
-          @undo="onFileItemEmit($event, 'undo')"
-          @cancel="onFileItemEmit($event, 'cancel')"
+          @file-action="onFileAction"
         />
       </FormCourtOrderPoaFullFileUploadList>
     </fieldset>
@@ -116,9 +114,7 @@ const {
           :key="doc.id"
           v-bind="doc"
           class="py-4"
-          @delete="onFileItemEmit($event, 'delete')"
-          @undo="onFileItemEmit($event, 'undo')"
-          @cancel="onFileItemEmit($event, 'cancel')"
+          @file-action="onFileAction"
         />
       </FormCourtOrderPoaFullFileUploadList>
     </fieldset>

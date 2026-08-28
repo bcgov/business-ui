@@ -203,13 +203,13 @@ export function useCourtOrderDocs(
   }
 
   // file item action handling
-  function onFileItemEmit(id: string, actionType: 'delete' | 'undo' | 'cancel') {
+  function onFileAction(id: string, action: 'delete' | 'undo' | 'cancel') {
     const file = uploadedDocuments.value.find(f => f.id === id)
     if (!file) {
       return
     }
 
-    switch (actionType) {
+    switch (action) {
       case 'delete':
         // newly added files get hard deleted
         if (file.action === FileAction.ADDED) {
@@ -342,7 +342,7 @@ export function useCourtOrderDocs(
             maxsize: formatBytes(maxFileSize)
           }
 
-          // use zod error message if available or fallbackl to generic
+          // use zod error message if available or fallback to generic
           const errorMessage = te(tKey)
             ? t(tKey, tData)
             : t('validation.uploadFailedGeneric', tData)
@@ -390,6 +390,6 @@ export function useCourtOrderDocs(
     courtOrderUploadTimestamp,
     displayMaxOneCourtOrderAlert,
     onUploadCourtOrder,
-    onFileItemEmit
+    onFileAction
   }
 }

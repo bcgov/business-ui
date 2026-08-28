@@ -5,9 +5,7 @@ import type { ButtonProps } from '@nuxt/ui'
 const props = defineProps<FileType>()
 
 const emit = defineEmits<{
-  delete: [id: string]
-  cancel: [id: string]
-  undo: [id: string]
+  fileAction: [id: string, action: 'cancel' | 'undo' | 'delete']
 }>()
 
 const { $businessApi } = useNuxtApp()
@@ -32,7 +30,7 @@ const actionProps = computed(() => {
       label: t('label.cancel'),
       ariaLabel: t('label.cancelUploadOfFilename', { filename: props.name }),
       icon: 'i-mdi-close',
-      onClick: () => emit('cancel', props.id)
+      onClick: () => emit('fileAction', props.id, 'cancel')
     }
   }
 
@@ -41,19 +39,19 @@ const actionProps = computed(() => {
       label: t('label.delete'),
       ariaLabel: `${t('label.delete')} ${props.name}`,
       icon: 'i-mdi-delete',
-      onClick: () => emit('delete', props.id)
+      onClick: () => emit('fileAction', props.id, 'delete')
     },
     ADDED: {
       label: t('label.remove'),
       ariaLabel: `${t('label.remove')} ${props.name}`,
       icon: 'i-mdi-delete',
-      onClick: () => emit('delete', props.id)
+      onClick: () => emit('fileAction', props.id, 'delete')
     },
     DELETED: {
       label: t('label.undo'),
       ariaLabel: `${t('label.undo')} ${props.name}`,
       icon: 'i-mdi-undo',
-      onClick: () => emit('undo', props.id)
+      onClick: () => emit('fileAction', props.id, 'undo')
     }
   }
 
