@@ -54,6 +54,52 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
   const data = event.data as FullSchema
   console.info('Form data: ', data)
 }
+
+type FileType = {
+  id: string
+  fileKey: string
+  name: string
+  type?: string
+  action: 'NONE' | 'ADDED' | 'DELETED'
+  status: 'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'
+}
+
+const files: FileType[] = [
+  {
+    id: crypto.randomUUID(),
+    fileKey: 'CORP-DS0000102187',
+    name: 'BC1200839 Summary - 2026-07-02.pdf',
+    type: 'SUPP',
+    action: 'NONE',
+    status: 'IDLE'
+  },
+  {
+    id: crypto.randomUUID(),
+    fileKey: 'CORP-DS0000102188',
+    name: 'BC1200823 Summary - 2026-06-29.pdf',
+    type: 'CRTO',
+    action: 'NONE',
+    status: 'IDLE'
+  },
+  {
+    id: crypto.randomUUID(),
+    fileKey: 'CORP-DS0000102189',
+    name: 'BC1200839 Summary - 2026-07-02 (1).pdf',
+    type: 'SUPP',
+    action: 'NONE',
+    status: 'IDLE'
+  },
+  {
+    id: crypto.randomUUID(),
+    fileKey: 'CORP-DS0000102190',
+    name: 'BC1200839 Summary - 2026-07-02 (2).pdf',
+    type: 'SUPP',
+    action: 'NONE',
+    status: 'IDLE'
+  }
+]
+
+state.courtOrder.files = files
 </script>
 
 <template>
@@ -72,7 +118,11 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
         @submit="onSubmit"
         @error="onFormSubmitError"
       >
-        <ConnectFieldset label="Legal Name" :error="nameError">
+        <ConnectFieldset
+          label="Legal Name"
+          :error="nameError"
+          class="min-w-0 w-full"
+        >
           <div class="flex gap-4">
             <ConnectFormInput
               v-model="state.name.first"
@@ -108,6 +158,8 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             subject="Court Order"
             state-key="manage-court-orders"
             is-court-order
+            identifier="BC1234567"
+            class="min-w-0 w-full"
           />
         </div>
         <div class="flex gap-6 justify-end">
