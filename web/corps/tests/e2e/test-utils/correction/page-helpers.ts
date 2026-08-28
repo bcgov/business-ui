@@ -95,6 +95,8 @@ export async function setupCorrectionPage(
 }
 
 export async function navigateToCorrectionPage(page: Page, identifier: string, filingId: string) {
-  await page.goto(`./en-CA/correction/${identifier}/${filingId}`)
-  await page.waitForResponse('*/**/businesses/**/*')
+  await Promise.all([
+    page.waitForResponse('*/**/businesses/**/*'),
+    page.goto(`./en-CA/correction/${identifier}/${filingId}`)
+  ])
 }
