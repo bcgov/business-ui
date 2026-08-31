@@ -62,7 +62,7 @@ export function getCourtOrderPoaFullSchema() {
     orderDate: z.string()
       .nullable()
       .optional(),
-    files: z.array(z.unknown())
+    files: z.array(z.any())
       .optional() // FUTURE - not returned by API yet
   })
 }

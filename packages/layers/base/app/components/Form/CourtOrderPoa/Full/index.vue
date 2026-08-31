@@ -12,8 +12,8 @@ const {
   nested?: boolean
   stateKey: string
   isCourtOrder: boolean
+  identifier?: string
 }>()
-// validationContext?: { existingNumbers: string[] } // Do we need to pass this to the schema?
 
 const emit = defineEmits<{
   done: []
@@ -134,14 +134,11 @@ defineExpose({
             </UFormField>
           </ConnectFormFieldWrapper>
           <USeparator class="padding-x-default" />
-          <ConnectFormFieldWrapper
-            :label="$t('label.uploadFiles')"
-            orientation="horizontal"
-            details-aria-hidden
-            class="padding-xy-default"
-          >
-            <FormDocumentUpload @converted-files="(files) => model.files = files" />
-          </ConnectFormFieldWrapper>
+          <FormCourtOrderPoaFullFileUpload
+            v-model="model.files"
+            :filing-id="model.filingId"
+            :identifier
+          />
         </template>
       </template>
     </SubFormWrapper>
