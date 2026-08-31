@@ -126,8 +126,8 @@ describe('Format Court Order Utils', () => {
         fileKey: 'key-1',
         name: 'order_1.pdf',
         type: DocumentTypeDrs.COURT_ORDER,
-          action: CourtOrderFileAction.NONE,
-          status: CourtOrderFileStatus.IDLE
+        action: CourtOrderFileAction.NONE,
+        status: CourtOrderFileStatus.IDLE
       })
 
       expect(result[0]!.new.files[1]).toEqual({
@@ -135,8 +135,8 @@ describe('Format Court Order Utils', () => {
         fileKey: 'key-2',
         name: 'supporting_doc.pdf',
         type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
-          action: CourtOrderFileAction.ADDED,
-          status: CourtOrderFileStatus.SUCCESS
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       })
     })
 
@@ -156,8 +156,8 @@ describe('Format Court Order Utils', () => {
         fileKey: 'key-1',
         name: 'order_1.pdf',
         type: DocumentTypeDrs.COURT_ORDER,
-          action: CourtOrderFileAction.DELETED,
-          status: CourtOrderFileStatus.IDLE
+        action: CourtOrderFileAction.DELETED,
+        status: CourtOrderFileStatus.IDLE
       })
     })
 
@@ -338,10 +338,30 @@ describe('Format Court Order Utils', () => {
             ...baseItem,
             actions: [ActionType.CHANGED],
             files: [
-              mockFile({ id: 'f1', fileKey: 'valid-key', name: 'valid.pdf', type: DocumentTypeDrs.COURT_ORDER }),
-              mockFile({ id: 'f2', fileKey: 'key-2', action: CourtOrderFileAction.DELETED, type: DocumentTypeDrs.COURT_ORDER }),
-              mockFile({ id: 'f3', fileKey: 'key-3', status: CourtOrderFileStatus.ERROR, type: DocumentTypeDrs.COURT_ORDER }),
-              mockFile({ id: 'f4', fileKey: undefined, name: 'no-key.pdf', type: DocumentTypeDrs.COURT_ORDER })
+              mockFile({
+                id: 'f1',
+                fileKey: 'valid-key',
+                name: 'valid.pdf',
+                type: DocumentTypeDrs.COURT_ORDER
+              }),
+              mockFile({
+                id: 'f2',
+                fileKey: 'key-2',
+                action: CourtOrderFileAction.DELETED,
+                type: DocumentTypeDrs.COURT_ORDER
+              }),
+              mockFile({
+                id: 'f3',
+                fileKey: 'key-3',
+                status: CourtOrderFileStatus.ERROR,
+                type: DocumentTypeDrs.COURT_ORDER
+              }),
+              mockFile({
+                id: 'f4',
+                fileKey: undefined,
+                name: 'no-key.pdf',
+                type: DocumentTypeDrs.COURT_ORDER
+              })
             ]
           }
         }

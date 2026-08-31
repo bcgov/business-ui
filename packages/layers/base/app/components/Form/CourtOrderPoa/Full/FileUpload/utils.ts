@@ -101,7 +101,7 @@ function deleteDocument(fileKey?: string) {
 function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
   return doc.type === DocumentTypeDrs.COURT_ORDER
     && doc.id !== excludeId
-    && doc.action !== FileAction.DELETED
+    && doc.action !== CourtOrderFileAction.DELETED
     && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(doc.status)
 }
 
