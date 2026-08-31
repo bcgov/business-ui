@@ -4,28 +4,6 @@ import { isEqual } from 'es-toolkit'
 import type { ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
-// doc types returned by the drs api
-export enum DrsDocType {
-  DEFAULT = 'COSD',
-  COURT_ORDER = 'CRTO',
-  SUPPORTING_DOCUMENT = 'SUPP' // not returned by api yet
-}
-
-// action a user has taken on a file
-export enum FileAction {
-  NONE = 'NONE',
-  ADDED = 'ADDED',
-  DELETED = 'DELETED'
-}
-
-// status of uploaded file, idle is an existing file sttached to a court order already
-export enum FileStatus {
-  IDLE = 'IDLE',
-  LOADING = 'LOADING',
-  SUCCESS = 'SUCCESS',
-  ERROR = 'ERROR'
-}
-
 // full response type from drs api
 interface DrsDocument {
   author: string
@@ -37,23 +15,11 @@ interface DrsDocument {
   documentClass: string // "CORP"
   /** The DRS document service id, eg "DS0100001003" */
   documentServiceId: string // "DS0000102166"
-  documentType: DrsDocType // string // "CRTO"
+  documentType: DocumentTypeDrs // "CRTO"
   documentTypeDescription: string // "Court Orders"
   documentURL: string
   /** The file key to store in the filing, eg "CORP-DS0100001003" (or a Minio key on the legacy flow). */
   key: string // "CORP-DS0000102166"
-}
-
-// ui state
-export interface FileType {
-  id: string
-  fileKey?: string // may be undefined during initial load
-  name: string
-  type: string
-  action: FileAction
-  status: FileStatus
-  errorMessage?: string
-  abortController?: AbortController
 }
 
 export const maxFileSize = 50 * 1024 * 1024 // 50MB
@@ -132,16 +98,16 @@ function deleteDocument(fileKey?: string) {
 }
 
 // helper to determine if an uploaded court order file is in an active state
-function isActiveCourtOrder(doc: FileType, excludeId?: string) {
-  return doc.type === DrsDocType.COURT_ORDER
+function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
+  return doc.type === DocumentTypeDrs.COURT_ORDER
     && doc.id !== excludeId
     && doc.action !== FileAction.DELETED
-    && [FileStatus.SUCCESS, FileStatus.IDLE, FileStatus.LOADING].includes(doc.status)
+    && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(doc.status)
 }
 
 // main functionality/state handling
 export function useCourtOrderDocs(
-  model: ModelRef<FileType[]>,
+  model: ModelRef<CourtOrderFileUi[]>,
   props: {
     identifier?: string
     filingId: string | number
@@ -156,7 +122,7 @@ export function useCourtOrderDocs(
     preventDefaultForUnhandled: true
   })
 
-  const uploadedDocuments = ref<FileType[]>([]) // full list of files
+  const uploadedDocuments = ref<CourtOrderFileUi[]>([]) // full list of files
   const courtOrderFile = ref<File>() // model value for court order upload
   const supportingFiles = ref<File[]>([]) // model value for supporting docs upload
   const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
@@ -164,11 +130,11 @@ export function useCourtOrderDocs(
 
   // full list of court order files
   const courtOrderDocs = computed(() =>
-    uploadedDocuments.value.filter(doc => doc.type === DrsDocType.COURT_ORDER)
+    uploadedDocuments.value.filter(doc => doc.type === DocumentTypeDrs.COURT_ORDER)
   )
   // full list of supporting files
   const supportingDocs = computed(() =>
-    uploadedDocuments.value.filter(doc => doc.type !== DrsDocType.COURT_ORDER)
+    uploadedDocuments.value.filter(doc => doc.type !== DocumentTypeDrs.COURT_ORDER)
   )
 
   const activeCourtOrderDoc = computed(() => {
@@ -212,23 +178,23 @@ export function useCourtOrderDocs(
     switch (action) {
       case 'delete':
         // newly added files get hard deleted
-        if (file.action === FileAction.ADDED) {
+        if (file.action === CourtOrderFileAction.ADDED) {
           deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
         // existing files get soft deleted with the deleted action
         } else {
-          file.action = FileAction.DELETED
+          file.action = CourtOrderFileAction.DELETED
         }
         courtOrderUploadTimestamp.value = undefined
         break
 
       case 'undo': {
         // prevent undo on a court order if another court order is active
-        if (file.type === DrsDocType.COURT_ORDER && preventDuplicateCourtOrderCheck(file.id)) {
+        if (file.type === DocumentTypeDrs.COURT_ORDER && preventDuplicateCourtOrderCheck(file.id)) {
           return
         }
         // else revert the action to none
-        file.action = FileAction.NONE
+        file.action = CourtOrderFileAction.NONE
         courtOrderUploadTimestamp.value = undefined
         break
       }
@@ -264,7 +230,7 @@ export function useCourtOrderDocs(
 
     // filter out docs with errors on any new upload
     uploadedDocuments.value = uploadedDocuments.value.filter(
-      doc => doc.status !== FileStatus.ERROR
+      doc => doc.status !== CourtOrderFileStatus.ERROR
     )
 
     // reset model values for future uploads
@@ -273,7 +239,7 @@ export function useCourtOrderDocs(
 
     const existingNames = new Set([
       ...uploadedDocuments.value
-        .filter(item => item.action !== FileAction.DELETED)
+        .filter(item => item.action !== CourtOrderFileAction.DELETED)
         .map(item => item.name),
       ...inProgressFilenames
     ])
@@ -288,16 +254,16 @@ export function useCourtOrderDocs(
 
         // normalize doc type
         const uiDocType = docType === DocumentTypeClient.COURT_ORDER
-          ? DrsDocType.COURT_ORDER
-          : DrsDocType.SUPPORTING_DOCUMENT
+          ? DocumentTypeDrs.COURT_ORDER
+          : DocumentTypeDrs.SUPPORTING_DOCUMENT
 
         // temporary file item for loading state
-        const fileItem = reactive<FileType>({
+        const fileItem = reactive<CourtOrderFileUi>({
           id: crypto.randomUUID(),
           name: newFile.name,
           type: uiDocType,
-          status: FileStatus.LOADING,
-          action: FileAction.ADDED,
+          status: CourtOrderFileStatus.LOADING,
+          action: CourtOrderFileAction.ADDED,
           abortController: markRaw(new AbortController()) // exclude web api from reactivity
         })
 
@@ -321,7 +287,7 @@ export function useCourtOrderDocs(
             name: doc.consumerFilename,
             type: uiDocType,
             url: doc.documentURL,
-            status: FileStatus.SUCCESS,
+            status: CourtOrderFileStatus.SUCCESS,
             abortController: undefined
           })
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -330,7 +296,7 @@ export function useCourtOrderDocs(
             return
           }
 
-          fileItem.status = FileStatus.ERROR
+          fileItem.status = CourtOrderFileStatus.ERROR
 
           // get zod error message
           const tKey = e?.issues?.[0]?.message

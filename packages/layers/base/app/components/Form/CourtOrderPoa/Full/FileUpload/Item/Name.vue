@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { type FileType, FileStatus, FileAction } from '../utils'
 import type { IconProps } from '@nuxt/ui'
 
-const props = defineProps<FileType & { blob?: Blob }>()
+const props = defineProps<CourtOrderFileUi & { blob?: Blob }>()
 
 const secondHalfLength = 14
 
@@ -33,20 +32,20 @@ const secondHalf = computed(() => {
 const iconProps = computed(() => {
   const isDeleted = props.action === FileAction.DELETED
 
-  const iconMap: Record<FileStatus, IconProps & { class: string }> = {
-    LOADING: {
+  const iconMap: Record<CourtOrderFileStatus, IconProps & { class: string }> = {
+    [CourtOrderFileStatus.LOADING]: {
       class: 'text-neutral',
       name: 'i-mdi-file-pdf-outline'
     },
-    ERROR: {
+    [CourtOrderFileStatus.ERROR]: {
       class: 'text-error',
       name: 'i-mdi-warning'
     },
-    SUCCESS: {
+    [CourtOrderFileStatus.SUCCESS]: {
       class: 'text-success',
       name: 'i-mdi-check-circle'
     },
-    IDLE: {
+    [CourtOrderFileStatus.IDLE]: {
       class: isDeleted ? 'text-neutral-toned' : 'text-primary',
       name: 'i-mdi-file-pdf-outline'
     }
@@ -57,8 +56,8 @@ const iconProps = computed(() => {
 
 const isDownloadAllowed = computed(() =>
   Boolean(props.blob)
-  && props.status === FileStatus.IDLE
-  && props.action === FileAction.NONE
+  && props.status === CourtOrderFileStatus.IDLE
+  && props.action === CourtOrderFileAction.NONE
 )
 
 function handleDownload() {
@@ -70,7 +69,7 @@ function handleDownload() {
 
 <template>
   <div class="flex gap-1 items-start min-w-0">
-    <div v-if="status === FileStatus.ERROR && errorMessage" class="flex gap-1 items-start pl-2">
+    <div v-if="status === CourtOrderFileStatus.ERROR && errorMessage" class="flex gap-1 items-start pl-2">
       <UIcon
         class="size-6 shrink-0"
         v-bind="iconProps"

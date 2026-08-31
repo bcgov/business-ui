@@ -277,7 +277,7 @@ describe('useBusinessService', () => {
       mockFile,
       FilingType.CORRECTION,
       CorpTypeCd.BC_COMPANY,
-      ClientDocumentType.COURT_ORDER
+      DocumentTypeClient.COURT_ORDER
     )
 
     expect(mockBusinessApi).toHaveBeenCalledOnce()

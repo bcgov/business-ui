@@ -22,37 +22,11 @@ const NON_EDITABLE_FIELDS = [
   'orderDate'
 ] as const
 
-// action a user has taken on a file
-export enum FileAction {
-  NONE = 'NONE',
-  ADDED = 'ADDED',
-  DELETED = 'DELETED'
-}
-
-// status of uploaded file, idle is an existing file sttached to a court order already
-export enum FileStatus {
-  IDLE = 'IDLE',
-  LOADING = 'LOADING',
-  SUCCESS = 'SUCCESS',
-  ERROR = 'ERROR'
-}
-// ui state
-export interface FileType {
-  id: string
-  fileKey?: string // may be undefined during initial load
-  name: string
-  type: string
-  action: FileAction
-  status: FileStatus
-  errorMessage?: string
-  abortController?: AbortController
-}
-
 function formatFiles(
-  originalFiles: FileType[] = [],
-  draftFiles: FileType[] = []
-): FileType[] {
-  const result: FileType[] = []
+  originalFiles: CourtOrderFileUi[] = [],
+  draftFiles: CourtOrderFileUi[] = []
+): CourtOrderFileUi[] {
+  const result: CourtOrderFileUi[] = []
 
   // mark files not found in the original state as newly added
   for (const file of draftFiles) {
@@ -61,8 +35,8 @@ function formatFiles(
     if (!existsInOriginal) {
       result.push({
         ...file,
-        action: FileAction.ADDED,
-        status: FileStatus.SUCCESS
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       })
     } else {
       result.push(file)
@@ -76,7 +50,7 @@ function formatFiles(
     if (!existsInDraft) {
       result.push({
         ...file,
-        action: FileAction.DELETED
+        action: CourtOrderFileAction.DELETED
       })
     }
   }
@@ -139,8 +113,8 @@ export function formatCourtOrdersSection(
 
       const formattedFiles = (parsed.files || []).map(file => ({
         ...file,
-        action: FileAction.ADDED,
-        status: FileStatus.SUCCESS
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       }))
 
       return {
@@ -176,7 +150,9 @@ export function formatCourtOrdersApi(
         .map(file => ({
           fileName: file.name,
           fileKey: file.fileKey!,
-          documentType: file.type === 'CRTO' ? 'court_order' : 'supporting_document'
+          documentType: file.type === DocumentTypeDrs.COURT_ORDER
+            ? DocumentTypeClient.COURT_ORDER
+            : DocumentTypeClient.SUPPORTING_DOCUMENT
         }))
 
       return {

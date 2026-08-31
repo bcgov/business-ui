@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { type FileType, FileStatus, FileAction } from './utils'
-
-const props = defineProps<FileType & {
+const props = defineProps<CourtOrderFileUi & {
   blob?: Blob
 }>()
 
 const objectUrl = useObjectUrl(() => props.blob)
 
 const srcUrl = computed(() => objectUrl.value ? `${objectUrl.value}#toolbar=0&navpanes=0&page=1&view=FitH` : undefined)
-const showPlaceholder = computed(() => ![FileStatus.SUCCESS, FileStatus.IDLE].includes(props.status) || !srcUrl.value)
+const showPlaceholder = computed(() => ![
+  CourtOrderFileStatus.SUCCESS,
+  CourtOrderFileStatus.IDLE
+].includes(props.status) || !srcUrl.value)
 </script>
 
 <template>
@@ -22,7 +23,7 @@ const showPlaceholder = computed(() => ![FileStatus.SUCCESS, FileStatus.IDLE].in
       class="size-10 text-neutral"
     />
     <div
-      v-if="action === FileAction.DELETED"
+      v-if="action === CourtOrderFileAction.DELETED"
       class="absolute inset-0 bg-white/50 pointer-events-none"
     />
   </div>
@@ -39,7 +40,7 @@ const showPlaceholder = computed(() => ![FileStatus.SUCCESS, FileStatus.IDLE].in
       tabindex="-1"
     />
     <div
-      v-if="action === FileAction.DELETED"
+      v-if="action === CourtOrderFileAction.DELETED"
       class="absolute inset-0 bg-white/50 pointer-events-none"
     />
   </div>

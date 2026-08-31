@@ -55,47 +55,38 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
   console.info('Form data: ', data)
 }
 
-type FileType = {
-  id: string
-  fileKey: string
-  name: string
-  type?: string
-  action: 'NONE' | 'ADDED' | 'DELETED'
-  status: 'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR'
-}
-
-const files: FileType[] = [
+const files: CourtOrderFileUi[] = [
   {
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102187',
     name: 'BC1200839 Summary - 2026-07-02.pdf',
     type: 'SUPP',
-    action: 'NONE',
-    status: 'IDLE'
+    action: CourtOrderFileAction.NONE,
+    status: CourtOrderFileStatus.IDLE
   },
   {
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102188',
     name: 'BC1200823 Summary - 2026-06-29.pdf',
     type: 'CRTO',
-    action: 'NONE',
-    status: 'IDLE'
+    action: CourtOrderFileAction.NONE,
+    status: CourtOrderFileStatus.IDLE
   },
   {
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102189',
     name: 'BC1200839 Summary - 2026-07-02 (1).pdf',
     type: 'SUPP',
-    action: 'NONE',
-    status: 'IDLE'
+    action: CourtOrderFileAction.NONE,
+    status: CourtOrderFileStatus.IDLE
   },
   {
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102190',
     name: 'BC1200839 Summary - 2026-07-02 (2).pdf',
     type: 'SUPP',
-    action: 'NONE',
-    status: 'IDLE'
+    action: CourtOrderFileAction.NONE,
+    status: CourtOrderFileStatus.IDLE
   }
 ]
 

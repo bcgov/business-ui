@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { type FileType, useCourtOrderDocs } from './utils'
+import { useCourtOrderDocs } from './utils'
 
 const { identifier, filingId } = defineProps<{
   identifier?: string
   filingId: string | number
 }>()
 
-const model = defineModel<FileType[]>({ default: () => [] })
+const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
 
 const {
   courtOrderFile,

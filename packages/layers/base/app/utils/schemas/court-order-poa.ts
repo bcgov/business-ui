@@ -31,27 +31,28 @@ export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSch
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 
 // action a user has taken on a file
-export enum FileAction {
+export enum CourtOrderFileAction {
   NONE = 'NONE',
   ADDED = 'ADDED',
   DELETED = 'DELETED'
 }
 
 // status of uploaded file, idle is an existing file sttached to a court order already
-export enum FileStatus {
+export enum CourtOrderFileStatus {
   IDLE = 'IDLE',
   LOADING = 'LOADING',
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR'
 }
+
 // ui state
-export interface FileType {
+export interface CourtOrderFileUi {
   id: string
   fileKey?: string // may be undefined during initial load
   name: string
   type: string
-  action: FileAction
-  status: FileStatus
+  action: CourtOrderFileAction
+  status: CourtOrderFileStatus
   errorMessage?: string
   abortController?: AbortController
 }
@@ -92,7 +93,7 @@ export function getCourtOrderPoaFullSchema() {
       if (!Array.isArray(val)) {
         return []
       }
-      return val.map((doc: CourtOrderDocPayload | FileType) => {
+      return val.map((doc: CourtOrderDocPayload | CourtOrderFileUi) => {
         const isFileType = 'id' in doc
 
         return {
@@ -100,11 +101,11 @@ export function getCourtOrderPoaFullSchema() {
           fileKey: doc.fileKey,
           name: isFileType ? doc.name : doc.fileName,
           type: isFileType ? doc.type : (doc.documentType === 'court_order' ? 'CRTO' : 'SUPP'),
-          action: isFileType ? doc.action : FileAction.NONE,
-          status: isFileType ? doc.status : FileStatus.IDLE
+          action: isFileType ? doc.action : CourtOrderFileAction.NONE,
+          status: isFileType ? doc.status : CourtOrderFileStatus.IDLE
         }
       })
-    }, z.array(z.custom<FileType>())).default([]) // FUTURE - not returned by API yet
+    }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet
   })
 }
 

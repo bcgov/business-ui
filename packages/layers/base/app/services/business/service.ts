@@ -330,7 +330,7 @@ export const useBusinessService = () => {
     file: File,
     filingType: FilingType,
     entityType: CorpTypeCd,
-    documentType: ClientDocumentType,
+    documentType: DocumentTypeClient,
     filingId?: number
   ): Promise<DocumentUploadResponse> {
     return $businessApi(`documents/client/${filingType}/${entityType}/${documentType}`,
