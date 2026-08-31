@@ -60,7 +60,7 @@ function formatFiles(
 
 export function formatCourtOrdersSection(
   originalCourtOrders: CourtOrderResponse[],
-  draftCourtOrders?: Partial<CourtOrderResponse>[]
+  draftCourtOrders?: Partial<CourtOrderResponse | CourtOrderPayload>[]
 ): TableBusinessState<CourtOrderPoaFullSchema>[] {
   const schema = getCourtOrderPoaFullSchema()
 

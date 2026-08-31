@@ -151,6 +151,7 @@ state.courtOrder.files = files
             is-court-order
             identifier="BC1234567"
             class="min-w-0 w-full"
+            :entity-type="CorpTypeCd.BC_COMPANY"
           />
         </div>
         <div class="flex gap-6 justify-end">

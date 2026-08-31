@@ -316,6 +316,24 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Deletes a document in the DRS via the business API client endpoint
+   * @param fileKey - The document key in DRS to be deleted
+   * @param throwOnError - Set to true to throw request errors, defaults to false
+   * @returns void
+   */
+  function deleteDocument(fileKey?: string, throwOnError = false) {
+    if (!fileKey) {
+      return
+    }
+    return $businessApi(`documents/client/${fileKey}`, { method: 'DELETE' })
+      .catch((e) => {
+        if (throwOnError) {
+          throw e
+        }
+      })
+  }
+
+  /**
    * Submits a document to the Legal API which will be uploaded to the DRS.
    * @param identifier The business identifier.
    * @param file The file to upload
@@ -326,23 +344,36 @@ export const useBusinessService = () => {
    * @returns A promise that resolves the response from the DRS
   */
   async function postDocument(
-    identifier: string,
     file: File,
-    filingType: FilingType,
-    entityType: CorpTypeCd,
-    documentType: DocumentTypeClient,
-    filingId?: number
+    options: {
+      filingType: FilingType
+      entityType: CorpTypeCd
+      documentType: DocumentTypeClient
+      identifier?: string
+      filingId?: string | number
+      signal?: AbortSignal
+    }
   ): Promise<DocumentUploadResponse> {
+    const {
+      documentType,
+      filingType,
+      entityType,
+      identifier = '',
+      filingId,
+      signal
+    } = options
+
     return $businessApi(`documents/client/${filingType}/${entityType}/${documentType}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/pdf' },
         body: file,
-        params: {
+        query: {
           filename: file.name,
           businessIdentifier: identifier,
-          filingId
-        }
+          filingId: (filingId && Number(filingId)) || undefined
+        },
+        signal
       }
     )
   }
@@ -449,6 +480,7 @@ export const useBusinessService = () => {
     getTasks,
     getParties,
     // ...rest
+    deleteDocument,
     postDocument,
     postFiling,
     saveOrUpdateDraftFiling,

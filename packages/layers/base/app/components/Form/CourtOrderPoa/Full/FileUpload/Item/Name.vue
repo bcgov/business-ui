@@ -30,7 +30,7 @@ const secondHalf = computed(() => {
 })
 
 const iconProps = computed(() => {
-  const isDeleted = props.action === FileAction.DELETED
+  const isDeleted = props.action === CourtOrderFileAction.DELETED
 
   const iconMap: Record<CourtOrderFileStatus, IconProps & { class: string }> = {
     [CourtOrderFileStatus.LOADING]: {

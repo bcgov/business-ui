@@ -13,6 +13,7 @@ const {
   stateKey: string
   isCourtOrder: boolean
   identifier?: string
+  entityType: CorpTypeCd
 }>()
 
 const emit = defineEmits<{
@@ -138,6 +139,7 @@ defineExpose({
             v-model="model.files"
             :filing-id="model.filingId"
             :identifier
+            :entity-type
           />
         </template>
       </template>

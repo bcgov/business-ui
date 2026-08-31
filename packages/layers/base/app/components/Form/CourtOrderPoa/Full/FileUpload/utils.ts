@@ -4,24 +4,6 @@ import { isEqual } from 'es-toolkit'
 import type { ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
-// full response type from drs api
-interface DrsDocument {
-  author: string
-  consumerDocumentId: string
-  consumerFilename: string
-  consumerIdentifier: string
-  consumerReferenceId: string
-  createDateTime: string
-  documentClass: string // "CORP"
-  /** The DRS document service id, eg "DS0100001003" */
-  documentServiceId: string // "DS0000102166"
-  documentType: DocumentTypeDrs // "CRTO"
-  documentTypeDescription: string // "Court Orders"
-  documentURL: string
-  /** The file key to store in the filing, eg "CORP-DS0100001003" (or a Minio key on the legacy flow). */
-  key: string // "CORP-DS0000102166"
-}
-
 export const maxFileSize = 50 * 1024 * 1024 // 50MB
 export const acceptedFileTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif']
 
@@ -63,40 +45,6 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
   return newName
 }
 
-// upload a document to the drs via business api client endpoint
-async function uploadDocument(
-  file: File,
-  documentType: DocumentTypeClient,
-  props: {
-    identifier?: string
-    filingId: string | number
-  },
-  signal?: AbortSignal
-) {
-  return await useNuxtApp().$businessApi<DrsDocument>(
-    `documents/client/${FilingType.COURT_ORDER}/${CorpTypeCd.BC_COMPANY}/${documentType}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/pdf' },
-      query: {
-        filename: file.name,
-        businessIdentifier: props.identifier || '',
-        filingId: Number(props.filingId)
-      },
-      body: file,
-      signal
-    }
-  )
-}
-
-function deleteDocument(fileKey?: string) {
-  if (!fileKey) {
-    return
-  }
-  // UI doesn't care if delete failed, silently handle errors
-  useNuxtApp().$businessApi(`documents/client/${fileKey}`, { method: 'DELETE' }).catch(() => {})
-}
-
 // helper to determine if an uploaded court order file is in an active state
 function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
   return doc.type === DocumentTypeDrs.COURT_ORDER
@@ -111,9 +59,11 @@ export function useCourtOrderDocs(
   props: {
     identifier?: string
     filingId: string | number
+    entityType: CorpTypeCd
   }
 ) {
   const { te, t } = useNuxtApp().$i18n
+  const service = useBusinessService()
 
   const dropzoneRef = useTemplateRef<HTMLDivElement>('dropzoneRef')
   const { isOverDropZone } = useDropZone(dropzoneRef, {
@@ -179,7 +129,7 @@ export function useCourtOrderDocs(
       case 'delete':
         // newly added files get hard deleted
         if (file.action === CourtOrderFileAction.ADDED) {
-          deleteDocument(file.fileKey)
+          service.deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
         // existing files get soft deleted with the deleted action
         } else {
@@ -274,11 +224,16 @@ export function useCourtOrderDocs(
           fileSchema.parse({ file: newFile })
 
           // upload to drs via business api client endpoint
-          const doc = await uploadDocument(
+          const doc = await service.postDocument(
             newFile,
-            docType,
-            props,
-            fileItem.abortController?.signal
+            {
+              filingType: FilingType.COURT_ORDER,
+              entityType: props.entityType,
+              documentType: docType,
+              identifier: props.identifier,
+              filingId: props.filingId,
+              signal: fileItem.abortController?.signal
+            }
           )
 
           // update file item with drs props and success status

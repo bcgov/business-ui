@@ -194,6 +194,8 @@ watch(() => actionPreventedSignal, (value) => {
           :state-key="stateKey"
           class="p-6"
           :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
+          :identifier
+          :entity-type="entityType!"
           @done="() => addSubject(activeCourtOrder)"
           @cancel="cleanupForm"
         />
@@ -228,6 +230,8 @@ watch(() => actionPreventedSignal, (value) => {
                 :state-key="stateKey"
                 hide-remove
                 :is-court-order="activeCourtOrder.filingType === FilingType.COURT_ORDER"
+                :identifier
+                :entity-type="entityType!"
                 @done="() => editSubject(activeCourtOrder, row)"
                 @cancel="cleanupForm"
                 @remove="() => removeSubject(row)"

@@ -266,6 +266,25 @@ describe('useBusinessService', () => {
     expect(result).toEqual(mockData.parties)
   })
 
+  it('deleteDocument should call the correct endpoint with DELETE', async () => {
+    const mockFileKey = 'CORP-DS0100001003'
+    const mockResponse = { success: true }
+
+    mockBusinessApi.mockResolvedValue(mockResponse)
+
+    const result = await service.deleteDocument(mockFileKey)
+
+    expect(mockBusinessApi).toHaveBeenCalledOnce()
+
+    const callArgs = mockBusinessApi.mock.calls[0]!
+    const calledUrl = callArgs[0]
+    const calledOptions = callArgs[1]
+
+    expect(calledUrl).toBe(`documents/client/${mockFileKey}`)
+    expect(calledOptions.method).toBe('DELETE')
+    expect(result).toEqual(mockResponse)
+  })
+
   it('postDocument should call the correct endpoint with POST and FormData payload', async () => {
     const mockFile = new File(['test content'], 'test.pdf', { type: 'application/pdf' })
     const mockResponse = { documentServiceId: 'DS1234567890' }
@@ -273,11 +292,13 @@ describe('useBusinessService', () => {
     mockBusinessApi.mockResolvedValue(mockResponse)
 
     const result = await service.postDocument(
-      businessId,
       mockFile,
-      FilingType.CORRECTION,
-      CorpTypeCd.BC_COMPANY,
-      DocumentTypeClient.COURT_ORDER
+      {
+        identifier: businessId,
+        filingType: FilingType.CORRECTION,
+        entityType: CorpTypeCd.BC_COMPANY,
+        documentType: DocumentTypeClient.COURT_ORDER
+      }
     )
 
     expect(mockBusinessApi).toHaveBeenCalledOnce()
@@ -287,7 +308,7 @@ describe('useBusinessService', () => {
     const calledOptions = callArgs[1]
     expect(calledUrl).toBe(`documents/client/${FilingType.CORRECTION}/BC/court_order`)
     expect(calledOptions.method).toBe('POST')
-    expect(calledOptions.params).toEqual({
+    expect(calledOptions.query).toEqual({
       businessIdentifier: 'BC1234567',
       filename: 'test.pdf',
       filingId: undefined

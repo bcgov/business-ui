@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { ModelRef } from 'vue'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 import {
   formatBytes,
@@ -8,6 +9,13 @@ import {
 } from '../../app/components/Form/CourtOrderPoa/Full/FileUpload/utils'
 
 const mockBusinessApi = vi.fn()
+
+const mockBusinessService = {
+  postDocument: vi.fn(),
+  deleteDocument: vi.fn()
+}
+
+mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 vi.mock('#app', async (importOriginal) => {
   const original = await importOriginal<typeof import('#app')>()
@@ -42,7 +50,8 @@ describe('useCourtOrderDocs', () => {
   let model: ModelRef<CourtOrderFileUi[]>
   const defaultProps = {
     identifier: 'BC1234567',
-    filingId: 9876543
+    filingId: 9876543,
+    entityType: CorpTypeCd.BC_COMPANY
   }
 
   beforeEach(() => {
@@ -138,25 +147,26 @@ describe('useCourtOrderDocs', () => {
         consumerFilename: 'valid_order.pdf',
         documentURL: 'https://example.com/doc'
       }
-      mockBusinessApi.mockResolvedValueOnce(mockApiResponse)
+      mockBusinessService.postDocument.mockResolvedValueOnce(mockApiResponse)
 
       const { courtOrderFile, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
       courtOrderFile.value = new File(['pdf data'], 'valid_order.pdf', { type: 'application/pdf' })
 
       await new Promise(resolve => setTimeout(resolve, 10)) // required to transition from status LOADING -> SUCCESS
 
-      expect(mockBusinessApi).toHaveBeenCalledOnce()
+      expect(mockBusinessService.postDocument).toHaveBeenCalledOnce()
       expect(courtOrderDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
       expect(courtOrderDocs.value[0]!.fileKey).toBe(mockApiResponse.key)
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(
-        expect.any(String),
+      expect(mockBusinessService.postDocument).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'valid_order.pdf' }),
         expect.objectContaining({
-          query: expect.objectContaining({
-            filename: 'valid_order.pdf',
-            businessIdentifier: defaultProps.identifier,
-            filingId: defaultProps.filingId
-          })
+          filingType: FilingType.COURT_ORDER,
+          entityType: defaultProps.entityType,
+          documentType: DocumentTypeClient.COURT_ORDER,
+          identifier: defaultProps.identifier,
+          filingId: defaultProps.filingId,
+          signal: expect.any(AbortSignal)
         })
       )
     })
@@ -170,7 +180,7 @@ describe('useCourtOrderDocs', () => {
 
       expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
-      expect(mockBusinessApi).not.toHaveBeenCalled()
+      expect(mockBusinessService.postDocument).not.toHaveBeenCalled()
     })
 
     it('should ensure unique file names', async () => {
@@ -182,7 +192,7 @@ describe('useCourtOrderDocs', () => {
         status: CourtOrderFileStatus.SUCCESS
       }]
 
-      mockBusinessApi.mockResolvedValueOnce({
+      mockBusinessService.postDocument.mockResolvedValueOnce({
         key: 'drs-key',
         consumerFilename: 'document (1).pdf',
         documentURL: 'https://example.com/doc'
@@ -197,12 +207,14 @@ describe('useCourtOrderDocs', () => {
       expect(supportingDocs.value).toHaveLength(2)
       expect(supportingDocs.value[1]!.name).toBe('document (1).pdf')
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(
-        expect.any(String),
+      expect(mockBusinessService.postDocument).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'document (1).pdf' }),
         expect.objectContaining({
-          query: expect.objectContaining({
-            filename: 'document (1).pdf' // filename incremented in payload
-          })
+          filingType: FilingType.COURT_ORDER,
+          entityType: defaultProps.entityType,
+          documentType: DocumentTypeClient.SUPPORTING_DOCUMENT,
+          identifier: defaultProps.identifier,
+          filingId: defaultProps.filingId
         })
       )
     })
@@ -225,7 +237,7 @@ describe('useCourtOrderDocs', () => {
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(`documents/client/${mockDoc.fileKey}`, { method: 'DELETE' })
+      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith('drs-key')
       expect(supportingDocs.value).toHaveLength(0)
     })
 
@@ -246,7 +258,7 @@ describe('useCourtOrderDocs', () => {
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessApi).not.toHaveBeenCalled()
+      expect(mockBusinessService.deleteDocument).not.toHaveBeenCalled()
       expect(supportingDocs.value[0]!.action).toBe(CourtOrderFileAction.DELETED)
     })
 
