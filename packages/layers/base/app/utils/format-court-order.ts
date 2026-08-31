@@ -22,6 +22,68 @@ const NON_EDITABLE_FIELDS = [
   'orderDate'
 ] as const
 
+// action a user has taken on a file
+export enum FileAction {
+  NONE = 'NONE',
+  ADDED = 'ADDED',
+  DELETED = 'DELETED'
+}
+
+// status of uploaded file, idle is an existing file sttached to a court order already
+export enum FileStatus {
+  IDLE = 'IDLE',
+  LOADING = 'LOADING',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR'
+}
+// ui state
+export interface FileType {
+  id: string
+  fileKey?: string // may be undefined during initial load
+  name: string
+  type: string
+  action: FileAction
+  status: FileStatus
+  errorMessage?: string
+  abortController?: AbortController
+}
+
+function formatFiles(
+  originalFiles: FileType[] = [],
+  draftFiles: FileType[] = []
+): FileType[] {
+  const result: FileType[] = []
+
+  // mark files not found in the original state as newly added
+  for (const file of draftFiles) {
+    const existsInOriginal = originalFiles.some(orig => orig.id === file.id)
+
+    if (!existsInOriginal) {
+      result.push({
+        ...file,
+        action: FileAction.ADDED,
+        status: FileStatus.SUCCESS
+      })
+    } else {
+      result.push(file)
+    }
+  }
+
+  // mark files in original state but not draft as deleted
+  for (const file of originalFiles) {
+    const existsInDraft = draftFiles.some(draft => (draft.id === file.id))
+
+    if (!existsInDraft) {
+      result.push({
+        ...file,
+        action: FileAction.DELETED
+      })
+    }
+  }
+
+  return result
+}
+
 export function formatCourtOrdersSection(
   originalCourtOrders: CourtOrderResponse[],
   draftCourtOrders?: Partial<CourtOrderResponse>[]
@@ -46,6 +108,8 @@ export function formatCourtOrdersSection(
     // if a matching id was found, check for changes
     if (matchingDraft) {
       const newParsed = schema.parse(matchingDraft)
+      newParsed.files = formatFiles(oldParsed.files, newParsed.files)
+
       const isChanged = !isEqualOmit(oldParsed, newParsed, NON_EDITABLE_FIELDS)
 
       return {
@@ -72,10 +136,18 @@ export function formatCourtOrdersSection(
     .filter(draft => !draft.id)
     .map((draft) => {
       const parsed = schema.parse(draft)
+
+      const formattedFiles = (parsed.files || []).map(file => ({
+        ...file,
+        action: FileAction.ADDED,
+        status: FileStatus.SUCCESS
+      }))
+
       return {
         old: undefined,
         new: {
           ...parsed,
+          files: formattedFiles,
           actions: [ActionType.ADDED]
         }
       }
@@ -86,7 +158,7 @@ export function formatCourtOrdersSection(
 
 export function formatCourtOrdersApi(
   courtOrders: TableBusinessState<CourtOrderPoaFullSchema>[]
-): Partial<CourtOrderResponse>[] | undefined {
+): Partial<CourtOrderPayload>[] | undefined {
   // return undefined if no changes have been made
   if (!courtOrders.some(co => co.new.actions.length > 0)) {
     return undefined
@@ -99,6 +171,14 @@ export function formatCourtOrdersApi(
       const isNewCourtOrder = co.old === undefined
       const newItem = co.new
 
+      const files: CourtOrderDocPayload[] = (newItem.files || [])
+        .filter(file => file.action !== 'DELETED' && Boolean(file.fileKey) && file.status !== 'ERROR') // Exclude deleted files or without a valid fileKey (failed uploads)
+        .map(file => ({
+          fileName: file.name,
+          fileKey: file.fileKey!,
+          documentType: file.type === 'CRTO' ? 'court_order' : 'supporting_document'
+        }))
+
       return {
         id: isNewCourtOrder ? undefined : parseInt(newItem.id),
         effectOfOrder: newItem.effectOfOrder ? 'planOfArrangement' : undefined,
@@ -107,7 +187,7 @@ export function formatCourtOrdersApi(
         orderDetails: newItem.orderDetails || undefined,
         orderDate: newItem.orderDate || undefined,
         filingId: newItem.filingId,
-        files: newItem.files // FUTURE - not returned from API yet
+        files: files.length > 0 ? files : undefined // FUTURE - not returned from API yet
       }
     })
 }
