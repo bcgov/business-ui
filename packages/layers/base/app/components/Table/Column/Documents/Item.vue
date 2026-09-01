@@ -41,7 +41,7 @@ function handleDownload() {
         'p-0 text-base max-w-full',
         isDownloadAllowed
           ? ''
-          : 'text-neutral pointer-events-none'
+          : 'text-neutral cursor-default hover:text-neutral active:text-neutral'
       ]"
       @click="handleDownload"
     >

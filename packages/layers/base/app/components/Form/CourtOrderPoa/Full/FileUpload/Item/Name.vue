@@ -72,7 +72,7 @@ function handleDownload() {
           'px-2 py-1 h-min gap-1 text-base min-w-0',
           isDownloadAllowed
             ? ''
-            : 'text-neutral pointer-events-none'
+            : 'text-neutral cursor-default hover:text-neutral active:text-neutral'
         ]"
         @click="handleDownload"
       >
