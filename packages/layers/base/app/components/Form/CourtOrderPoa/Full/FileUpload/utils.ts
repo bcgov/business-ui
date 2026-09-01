@@ -31,10 +31,17 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
   }
 
   const lastDotIndex = rawName.lastIndexOf('.')
-  const baseName = lastDotIndex !== -1 ? rawName.slice(0, lastDotIndex) : rawName
+  let baseName = lastDotIndex !== -1 ? rawName.slice(0, lastDotIndex) : rawName
   const extension = lastDotIndex !== -1 ? rawName.slice(lastDotIndex) : ''
 
+  const match = baseName.match(/^(.*?)\s*\((\d+)\)$/)
   let counter = 1
+
+  if (match) {
+    baseName = match[1]!
+    counter = parseInt(match[2]!, 10) + 1
+  }
+
   let newName = `${baseName} (${counter})${extension}`
 
   while (existingNames.has(newName)) {

@@ -192,11 +192,17 @@ describe('useCourtOrderDocs', () => {
         status: CourtOrderFileStatus.SUCCESS
       }]
 
-      mockBusinessService.postDocument.mockResolvedValueOnce({
-        key: 'drs-key',
-        consumerFilename: 'document (1).pdf',
-        documentURL: 'https://example.com/doc'
-      })
+      mockBusinessService.postDocument
+        .mockResolvedValueOnce({
+          key: 'drs-key-1',
+          consumerFilename: 'document (1).pdf',
+          documentURL: 'https://example.com/doc1'
+        })
+        .mockResolvedValueOnce({
+          key: 'drs-key-2',
+          consumerFilename: 'document (2).pdf',
+          documentURL: 'https://example.com/doc2'
+        })
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
@@ -207,8 +213,14 @@ describe('useCourtOrderDocs', () => {
       expect(supportingDocs.value).toHaveLength(2)
       expect(supportingDocs.value[1]!.name).toBe('document (1).pdf')
 
-      expect(mockBusinessService.postDocument).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'document (1).pdf' }),
+      supportingFiles.value = [new File(['test file'], 'document (1).pdf', { type: 'application/pdf' })]
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      expect(supportingDocs.value).toHaveLength(3)
+      expect(supportingDocs.value[2]!.name).toBe('document (2).pdf')
+
+      expect(mockBusinessService.postDocument).toHaveBeenLastCalledWith(
+        expect.objectContaining({ name: 'document (2).pdf' }),
         expect.objectContaining({
           filingType: FilingType.COURT_ORDER,
           entityType: defaultProps.entityType,
