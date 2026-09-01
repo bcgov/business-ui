@@ -26,7 +26,7 @@ const {
 <template>
   <FormCourtOrderPoaFullFileUploadFieldset v-slot="{ descriptionId: fileSizeAndTypeDescId }">
     <fieldset class="flex flex-col min-w-0 pb-6" :aria-label="$t('label.courtOrderDocumentUpload')">
-      <div class="pb-4" aria-hidden="true">
+      <div class="pb-4 text-base" aria-hidden="true">
         <span class="font-bold text-neutral-highlighted">{{ $t('label.courtOrder') }}</span>
         <p id="max-one-court-order-desc">
           {{ $t('text.uploadMaxOneCourtOrder') }}
@@ -63,7 +63,7 @@ const {
             role="alert"
           >
             <UIcon name="i-mdi-warning" class="text-error size-6 shrink-0" />
-            <p class="text-error">
+            <p class="text-error text-base">
               {{ $t('validation.onlyOneCourtOrderPerFiling') }}
             </p>
           </div>
@@ -86,7 +86,7 @@ const {
         class="flex flex-col gap-4 -mx-6 p-6 rounded transition-colors -mt-2"
         :class="isOverDropZone ? 'bg-(--ui-primary)/10' : ''"
       >
-        <div aria-hidden="true">
+        <div aria-hidden="true" class="text-base">
           <span class="font-bold text-neutral-highlighted">{{ $t('label.supportingDocuments') }}</span>
           <p id="multiple-supporting-docs-desc">
             {{ $t('text.uploadOneOrMoreSupportingDocs') }}
@@ -105,7 +105,7 @@ const {
               aria-describedby="multiple-supporting-docs-desc"
               @click="open()"
             />
-            <span aria-hidden="true" class="text-primary italic">{{ $t('text.orDragAndDropFiles') }}</span>
+            <span aria-hidden="true" class="text-primary text-base italic">{{ $t('text.orDragAndDropFiles') }}</span>
           </div>
         </UFileUpload>
       </div>
