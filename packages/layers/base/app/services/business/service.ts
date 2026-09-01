@@ -366,7 +366,6 @@ export const useBusinessService = () => {
     return $businessApi(`documents/client/${filingType}/${entityType}/${documentType}`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/pdf' },
         body: file,
         query: {
           filename: file.name,
