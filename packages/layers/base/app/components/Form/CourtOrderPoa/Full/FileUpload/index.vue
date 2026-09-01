@@ -52,6 +52,7 @@ const {
               max-one-court-order-desc
               max-one-court-order-alert
             `"
+            @keydown.enter.stop
             @click="onUploadCourtOrder(open)"
           />
 
@@ -103,6 +104,7 @@ const {
               :label="$t('label.uploadDocuments')"
               icon="i-mdi-file-upload-outline"
               aria-describedby="multiple-supporting-docs-desc"
+              @keydown.enter.stop
               @click="open()"
             />
             <span aria-hidden="true" class="text-primary text-base italic">{{ $t('text.orDragAndDropFiles') }}</span>
