@@ -1,36 +1,17 @@
 <script setup lang="ts">
 import type { IconProps } from '@nuxt/ui'
 
-const props = defineProps<CourtOrderFileUi & { blob?: Blob }>()
+const {
+  name,
+  action,
+  status,
+  blob
+} = defineProps<CourtOrderFileUi & { blob?: Blob }>()
 
-const secondHalfLength = 14
-
-const firstHalfRef = useTemplateRef('first-half')
-const { width: spanWidth } = useElementBounding(firstHalfRef)
-
-const isTruncated = computed(() => {
-  if (!firstHalfRef.value) {
-    return false
-  }
-  return firstHalfRef.value.scrollWidth > spanWidth.value
-})
-
-const firstHalf = computed(() => {
-  if (props.name.length <= secondHalfLength) {
-    return props.name
-  }
-  return props.name.slice(0, props.name.length - secondHalfLength)
-})
-
-const secondHalf = computed(() => {
-  if (props.name.length <= secondHalfLength) {
-    return ''
-  }
-  return props.name.slice(props.name.length - secondHalfLength)
-})
+const { firstHalfRefKey, isTruncated, firstHalf, secondHalf } = useTruncateText(() => name)
 
 const iconProps = computed(() => {
-  const isDeleted = props.action === CourtOrderFileAction.DELETED
+  const isDeleted = action === CourtOrderFileAction.DELETED
 
   const iconMap: Record<CourtOrderFileStatus, IconProps & { class: string }> = {
     [CourtOrderFileStatus.LOADING]: {
@@ -51,18 +32,18 @@ const iconProps = computed(() => {
     }
   }
 
-  return iconMap[props.status]
+  return iconMap[status]
 })
 
 const isDownloadAllowed = computed(() =>
-  Boolean(props.blob)
-  && props.status === CourtOrderFileStatus.IDLE
-  && props.action === CourtOrderFileAction.NONE
+  Boolean(blob)
+  && status === CourtOrderFileStatus.IDLE
+  && action === CourtOrderFileAction.NONE
 )
 
 function handleDownload() {
-  if (props.blob && isDownloadAllowed.value) {
-    saveBlob(props.blob, props.name)
+  if (blob && isDownloadAllowed.value) {
+    saveBlob(blob, name)
   }
 }
 </script>
@@ -104,7 +85,7 @@ function handleDownload() {
         <template #default>
           <div class="flex min-w-0 whitespace-nowrap">
             <span v-if="isDownloadAllowed" class="sr-only">{{ $t('label.download') }}</span>
-            <span ref="first-half" class="shrink overflow-hidden text-ellipsis">{{ firstHalf }}</span>
+            <span :ref="firstHalfRefKey" class="shrink overflow-hidden text-ellipsis">{{ firstHalf }}</span>
             <span v-if="secondHalf">{{ secondHalf }}</span>
           </div>
         </template>
