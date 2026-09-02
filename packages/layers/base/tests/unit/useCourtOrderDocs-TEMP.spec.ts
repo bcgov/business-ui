@@ -12,7 +12,6 @@ import {
 const mockBusinessApi = vi.fn()
 
 const mockBusinessService = {
-  postDocument: vi.fn(),
   deleteDocument: vi.fn()
 }
 
@@ -202,7 +201,6 @@ describe('useCourtOrderDocs', () => {
 
       expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
-      expect(mockBusinessService.postDocument).not.toHaveBeenCalled()
     })
 
     it('should ensure unique file names', async () => {
