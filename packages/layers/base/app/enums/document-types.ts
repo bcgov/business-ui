@@ -157,7 +157,7 @@ export enum DocumentTypeClient {
 export enum DocumentTypeDrs {
   DEFAULT = 'COSD',
   COURT_ORDER = 'CRTO',
-  SUPPORTING_DOCUMENT = 'SUPP' // not returned by api yet
+  SUPPORTING_DOCUMENT = 'SUPP'
 }
 
 export const DOCUMENT_TYPES = {

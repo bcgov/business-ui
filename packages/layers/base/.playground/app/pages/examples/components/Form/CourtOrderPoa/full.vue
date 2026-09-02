@@ -60,7 +60,7 @@ const files: CourtOrderFileUi[] = [
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102187',
     name: 'BC1200839 Summary - 2026-07-02.pdf',
-    type: 'SUPP',
+    type: DocumentTypeClient.SUPPORTING_DOCUMENT,
     action: CourtOrderFileAction.NONE,
     status: CourtOrderFileStatus.IDLE
   },
@@ -68,7 +68,7 @@ const files: CourtOrderFileUi[] = [
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102188',
     name: 'BC1200823 Summary - 2026-06-29.pdf',
-    type: 'CRTO',
+    type: DocumentTypeClient.COURT_ORDER,
     action: CourtOrderFileAction.NONE,
     status: CourtOrderFileStatus.IDLE
   },
@@ -76,7 +76,7 @@ const files: CourtOrderFileUi[] = [
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102189',
     name: 'BC1200839 Summary - 2026-07-02 (1).pdf',
-    type: 'SUPP',
+    type: DocumentTypeClient.SUPPORTING_DOCUMENT,
     action: CourtOrderFileAction.NONE,
     status: CourtOrderFileStatus.IDLE
   },
@@ -84,7 +84,7 @@ const files: CourtOrderFileUi[] = [
     id: crypto.randomUUID(),
     fileKey: 'CORP-DS0000102190',
     name: 'BC1200839 Summary - 2026-07-02 (2).pdf',
-    type: 'SUPP',
+    type: DocumentTypeClient.SUPPORTING_DOCUMENT,
     action: CourtOrderFileAction.NONE,
     status: CourtOrderFileStatus.IDLE
   }

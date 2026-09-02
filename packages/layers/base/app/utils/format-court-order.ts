@@ -150,9 +150,7 @@ export function formatCourtOrdersApi(
         .map(file => ({
           fileName: file.name,
           fileKey: file.fileKey!,
-          documentType: file.type === DocumentTypeDrs.COURT_ORDER
-            ? DocumentTypeClient.COURT_ORDER
-            : DocumentTypeClient.SUPPORTING_DOCUMENT
+          documentType: file.type
         }))
 
       return {
