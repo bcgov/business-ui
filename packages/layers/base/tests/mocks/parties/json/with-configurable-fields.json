@@ -1,0 +1,38 @@
+[
+    {
+        "deliveryAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "deliveryInstructions": "",
+            "id": 2736131,
+            "postalCode": "V6B 1A1",
+            "streetAddress": "100 Water Street",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Vancouver",
+            "addressCountry": "CA",
+            "addressRegion": "BC",
+            "deliveryInstructions": "",
+            "id": 2736132,
+            "postalCode": "V6B 1A1",
+            "streetAddress": "100 Water Street",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "casey.custodian@example.com",
+            "firstName": "CASEY",
+            "id": 575365,
+            "lastName": "CUSTODIAN",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-08-16",
+                "cessationDate": null,
+                "roleType": "Custodian"
+            }
+        ]
+    }
+]

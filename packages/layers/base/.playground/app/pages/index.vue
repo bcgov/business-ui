@@ -95,6 +95,10 @@ const componentExamples: DropdownMenuItem[] = [
             label: 'Default'
           },
           {
+            to: localePath('/examples/components/ManageParties/with-configurable-fields'),
+            label: 'With Configurable Fields'
+          },
+          {
             label: 'Allowed Actions',
             children: [
               {

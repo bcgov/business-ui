@@ -1,16 +1,20 @@
 import { z } from 'zod'
 import type { FormPartyRole } from '#components'
+import { RoleTypeUi } from '#business/app/enums/role-type'
+import { RoleClass } from '#business/app/enums/role-class'
 
-export interface RoleAdditionalFields {
+export interface RoleFieldConfig {
   effectiveDate?: boolean
   showEmail?: boolean
   requireEmail?: boolean
 }
 
 // single source of truth for which extra PartyDetails sections a role triggers
-export const ROLE_ADDITIONAL_FIELDS: Partial<Record<RoleTypeUi, RoleAdditionalFields>> = {
+export const ROLE_FIELD_CONFIG: Partial<Record<RoleTypeUi, RoleFieldConfig>> = {
   [RoleTypeUi.DIRECTOR]: {
-    effectiveDate: true,
+    effectiveDate: true
+  },
+  [RoleTypeUi.CUSTODIAN]: {
     showEmail: true,
     requireEmail: true
   }

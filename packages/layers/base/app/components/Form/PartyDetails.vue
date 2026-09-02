@@ -35,8 +35,8 @@ const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 const partyEmailFormRef = useTemplateRef<FormPartyEmailRef>('party-email-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
-function rolesWithField<K extends keyof RoleAdditionalFields>(field: K) {
-  return model.value.roles.filter(role => ROLE_ADDITIONAL_FIELDS[role.roleType]?.[field])
+function rolesWithField<K extends keyof RoleFieldConfig>(field: K) {
+  return model.value.roles.filter(role => ROLE_FIELD_CONFIG[role.roleType]?.[field])
 }
 
 const rolesRequiringEffectiveDate = computed(() => rolesWithField('effectiveDate'))
@@ -47,7 +47,7 @@ const effectiveDateModel = computed({
   get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
     model.value.roles = model.value.roles.map(role =>
-      ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType)
+      ROLE_FIELD_CONFIG[role.roleType]?.effectiveDate
         ? { ...role, appointmentDate: val.dateInput }
         : role
     )
@@ -97,8 +97,9 @@ const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedActio
 const isEmailChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EMAIL_CHANGE))
 const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
 const isRoleRequiringEffectiveDate = computed(() => rolesRequiringEffectiveDate.value.length > 0)
-const isRoleShowingEmail = computed(() => rolesShowingEmail.value.length > 0)
 const isEmailRequiredForRole = computed(() => rolesRequiringEmail.value.length > 0)
+// a role requiring email implies it should be shown, even if showEmail isn't also set
+const isRoleShowingEmail = computed(() => rolesShowingEmail.value.length > 0 || isEmailRequiredForRole.value)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
