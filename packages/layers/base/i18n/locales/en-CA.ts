@@ -414,7 +414,7 @@ export default {
     detail: 'Detail',
     details: 'Details',
     dismiss: 'Dismiss',
-    dismissError: 'Dismiss Error',    
+    dismissError: 'Dismiss Error',
     documents: 'Documents',
     documentUpload: 'Document Upload',
     documentUploadOpt: 'Document Upload (Optional)',

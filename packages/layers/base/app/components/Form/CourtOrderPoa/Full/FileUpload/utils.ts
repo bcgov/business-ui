@@ -81,6 +81,7 @@ async function uploadFile(
   headers.set('Authorization', `Bearer ${token}`)
   headers.set('App-Name', rtc.appName)
   headers.set('X-Apikey', rtc.xApiKey)
+
   const accountId = accountStore.currentAccount?.id
   if (accountId) {
     headers.set('Account-Id', String(accountId))
@@ -273,10 +274,11 @@ export function useCourtOrderDocs(
         file.abortController?.abort()
         uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
         break
-      
+
       case 'dismiss':
         // clear file with upload error on dismiss
         uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
+        break
     }
   }
 

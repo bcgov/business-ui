@@ -39,7 +39,8 @@ const actionProps = computed(() => {
       label: t('label.dismiss'),
       ariaLabel: t('label.dismissError'),
       icon: 'i-mdi-close',
-      class: 'text-neutral-highlighted hover:text-text-neutral-highlighted/75 active:text-text-neutral-highlighted/75 focus-visible:ring-text-neutral-highlighted',
+      class: 'text-neutral-highlighted hover:text-text-neutral-highlighted/75'
+        + ' active:text-text-neutral-highlighted/75 focus-visible:ring-text-neutral-highlighted',
       onClick: () => emit('fileAction', props.id, 'dismiss')
     }
   }
