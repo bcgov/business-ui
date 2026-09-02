@@ -16,7 +16,7 @@ export function getPartyRoleSchema(roleType?: RoleTypeUi) {
     roleType: z.enum(RoleTypeUi)
   }))
     .min(1, { message: t('validation.role.min') })
-    .default(roleType ? [{ roleType }] : [])
+    .default(() => (roleType ? [{ roleType }] : []))
     .superRefine((val, ctx) => {
       if (val?.length) {
         const activeRole = val.find(role => !role.cessationDate)
