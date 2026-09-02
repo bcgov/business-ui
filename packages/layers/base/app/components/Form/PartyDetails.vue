@@ -46,9 +46,11 @@ const rolesRequiringEmail = computed(() => rolesWithField('requireEmail'))
 const effectiveDateModel = computed({
   get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
-    for (const role of rolesRequiringEffectiveDate.value) {
-      role.appointmentDate = val.dateInput
-    }
+    model.value.roles = model.value.roles.map(role =>
+      ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType)
+        ? { ...role, appointmentDate: val.dateInput }
+        : role
+    )
   }
 })
 
