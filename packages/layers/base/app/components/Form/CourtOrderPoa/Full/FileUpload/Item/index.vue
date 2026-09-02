@@ -89,11 +89,17 @@ defineOptions({
         />
       </div>
       <div class="flex flex-col gap-1 ml-7">
-        <UProgress
-          v-if="status === CourtOrderFileStatus.LOADING"
-          animation="carousel"
-          class="max-w-3xs mt-2"
-        />
+        <div v-if="status === CourtOrderFileStatus.LOADING" class="flex flex-col gap-1 text-neutral-toned">
+          <span>{{ $t(`label.${(progress ?? 0) >= 95 ? 'processing' : 'uploading'}`) }}...</span>
+          <UProgress
+            :model-value="progress"
+            class="max-w-3xs"
+            :ui="{
+
+            }"
+          />
+          <span v-if="progress" class="ml-5">{{ progress }}%</span>
+        </div>
         <span v-else class="-mt-1">{{ fileSize }}</span>
         <UBadge
           v-if="action === CourtOrderFileAction.DELETED"
