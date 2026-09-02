@@ -413,6 +413,8 @@ export default {
     deliveryAddressSameAsMailing: 'Delivery Address same as Mailing Address',
     detail: 'Detail',
     details: 'Details',
+    dismiss: 'Dismiss',
+    dismissError: 'Dismiss Error',    
     documents: 'Documents',
     documentUpload: 'Document Upload',
     documentUploadOpt: 'Document Upload (Optional)',

@@ -5,7 +5,7 @@ import type { ButtonProps } from '@nuxt/ui'
 const props = defineProps<CourtOrderFileUi>()
 
 const emit = defineEmits<{
-  fileAction: [id: string, action: 'cancel' | 'undo' | 'delete']
+  fileAction: [id: string, action: 'cancel' | 'undo' | 'delete' | 'dismiss']
 }>()
 
 const { $businessApi } = useNuxtApp()
@@ -31,6 +31,16 @@ const actionProps = computed(() => {
       ariaLabel: t('label.cancelUploadOfFilename', { filename: props.name }),
       icon: 'i-mdi-close',
       onClick: () => emit('fileAction', props.id, 'cancel')
+    }
+  }
+
+  if (props.status === CourtOrderFileStatus.ERROR) {
+    return {
+      label: t('label.dismiss'),
+      ariaLabel: t('label.dismissError'),
+      icon: 'i-mdi-close',
+      class: 'text-neutral-highlighted hover:text-text-neutral-highlighted/75 active:text-text-neutral-highlighted/75 focus-visible:ring-text-neutral-highlighted',
+      onClick: () => emit('fileAction', props.id, 'dismiss')
     }
   }
 
@@ -82,7 +92,6 @@ defineOptions({
           class="-ml-2"
         />
         <UButton
-          v-if="status !== CourtOrderFileStatus.ERROR"
           v-bind="actionProps"
           variant="link"
           class="px-2 py-1 h-min gap-1 @max-[350px]:hidden text-base"
@@ -94,9 +103,6 @@ defineOptions({
           <UProgress
             :model-value="progress"
             class="max-w-3xs"
-            :ui="{
-
-            }"
           />
           <span v-if="progress" class="ml-5">{{ progress }}%</span>
         </div>
@@ -108,7 +114,6 @@ defineOptions({
         />
       </div>
       <UButton
-        v-if="status !== CourtOrderFileStatus.ERROR"
         v-bind="actionProps"
         variant="link"
         class="px-2 py-1 h-min gap-1 @min-[350px]:hidden ml-4 mt-auto text-base"

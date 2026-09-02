@@ -238,7 +238,7 @@ export function useCourtOrderDocs(
   }
 
   // file item action handling
-  function onFileAction(id: string, action: 'delete' | 'undo' | 'cancel') {
+  function onFileAction(id: string, action: 'delete' | 'undo' | 'cancel' | 'dismiss') {
     const file = uploadedDocuments.value.find(f => f.id === id)
     if (!file) {
       return
@@ -273,6 +273,10 @@ export function useCourtOrderDocs(
         file.abortController?.abort()
         uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
         break
+      
+      case 'dismiss':
+        // clear file with upload error on dismiss
+        uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
     }
   }
 
