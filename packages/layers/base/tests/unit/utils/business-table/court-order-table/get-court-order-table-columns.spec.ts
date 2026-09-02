@@ -6,6 +6,7 @@ import { getCourtOrderNumberColumn } from '#business/app/utils/business-table/co
 import { getCourtOrderTextColumn } from '#business/app/utils/business-table/court-order-table/get-court-order-text-column'
 import { getHasPoaColumn } from '#business/app/utils/business-table/court-order-table/get-has-poa-column'
 import { getAssociatedFilingColumn } from '#business/app/utils/business-table/court-order-table/get-associated-filing-column'
+import { getDocumentsColumn } from '#business/app/utils/business-table/court-order-table/get-documents-column'
 
 vi.mock('#business/app/utils/business-table/court-order-table/get-court-order-number-column', () => ({
   getCourtOrderNumberColumn: vi.fn(() => ({ id: 'court-order-number' }))
@@ -21,6 +22,10 @@ vi.mock('#business/app/utils/business-table/court-order-table/get-has-poa-column
 
 vi.mock('#business/app/utils/business-table/court-order-table/get-associated-filing-column', () => ({
   getAssociatedFilingColumn: vi.fn(() => ({ id: 'court-order-associated-filing' }))
+}))
+
+vi.mock('#business/app/utils/business-table/court-order-table/get-documents-column', () => ({
+  getDocumentsColumn: vi.fn(() => ({ id: 'court-order-documents' }))
 }))
 
 vi.mock('~/utils/business-table/columns/get-actions-column', () => ({
@@ -39,14 +44,16 @@ describe('getCourtOrderTableColumns', () => {
     expect(getCourtOrderTextColumn).toHaveBeenCalledOnce()
     expect(getHasPoaColumn).toHaveBeenCalledOnce()
     expect(getAssociatedFilingColumn).toHaveBeenCalledOnce()
+    expect(getDocumentsColumn).toHaveBeenCalledOnce()
     expect(getActionsColumn).toHaveBeenCalledOnce()
 
-    expect(columns).toHaveLength(5)
+    expect(columns).toHaveLength(6)
     expect(columns.map(c => c.id)).toEqual([
       'court-order-number',
-      'court-order-text',
       'court-order-has-poa',
+      'court-order-text',
       'court-order-associated-filing',
+      'court-order-documents',
       'actions'
     ])
   })

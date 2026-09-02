@@ -1,17 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { ModelRef } from 'vue'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 import {
   formatBytes,
   useCourtOrderDocs,
-  DrsDocType,
-  FileAction,
-  FileStatus,
-  type FileType,
   maxFileSize
 } from '../../app/components/Form/CourtOrderPoa/Full/FileUpload/utils'
 
 const mockBusinessApi = vi.fn()
+
+const mockBusinessService = {
+  postDocument: vi.fn(),
+  deleteDocument: vi.fn()
+}
+
+mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 vi.mock('#app', async (importOriginal) => {
   const original = await importOriginal<typeof import('#app')>()
@@ -43,26 +47,27 @@ describe('formatBytes', () => {
 })
 
 describe('useCourtOrderDocs', () => {
-  let model: ModelRef<FileType[]>
+  let model: ModelRef<CourtOrderFileUi[]>
   const defaultProps = {
     identifier: 'BC1234567',
-    filingId: 9876543
+    filingId: 9876543,
+    entityType: CorpTypeCd.BC_COMPANY
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
-    model = ref<FileType[]>([]) as ModelRef<FileType[]>
+    model = ref<CourtOrderFileUi[]>([]) as ModelRef<CourtOrderFileUi[]>
     mockBusinessApi.mockResolvedValue({})
   })
 
   describe('State sync', () => {
     it('should sync internal state from model', async () => {
-      const initial: FileType = {
+      const initial: CourtOrderFileUi = {
         id: '1234567',
         name: 'court_order.pdf',
-        type: DrsDocType.COURT_ORDER,
-        action: FileAction.NONE,
-        status: FileStatus.SUCCESS
+        type: DocumentTypeDrs.COURT_ORDER,
+        action: CourtOrderFileAction.NONE,
+        status: CourtOrderFileStatus.SUCCESS
       }
       model.value = [initial]
 
@@ -95,9 +100,9 @@ describe('useCourtOrderDocs', () => {
       model.value = [{
         id: '1234567',
         name: 'court_order.pdf',
-        type: DrsDocType.COURT_ORDER,
-        action: FileAction.ADDED,
-        status: FileStatus.SUCCESS
+        type: DocumentTypeDrs.COURT_ORDER,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       }]
 
       const { onUploadCourtOrder, displayMaxOneCourtOrderAlert } = useCourtOrderDocs(model, defaultProps)
@@ -122,9 +127,9 @@ describe('useCourtOrderDocs', () => {
       model.value = [{
         id: '1234567',
         name: 'court_order.pdf',
-        type: DrsDocType.COURT_ORDER,
-        action: FileAction.DELETED,
-        status: FileStatus.IDLE
+        type: DocumentTypeDrs.COURT_ORDER,
+        action: CourtOrderFileAction.DELETED,
+        status: CourtOrderFileStatus.IDLE
       }]
 
       const { onUploadCourtOrder } = useCourtOrderDocs(model, defaultProps)
@@ -142,25 +147,26 @@ describe('useCourtOrderDocs', () => {
         consumerFilename: 'valid_order.pdf',
         documentURL: 'https://example.com/doc'
       }
-      mockBusinessApi.mockResolvedValueOnce(mockApiResponse)
+      mockBusinessService.postDocument.mockResolvedValueOnce(mockApiResponse)
 
       const { courtOrderFile, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
       courtOrderFile.value = new File(['pdf data'], 'valid_order.pdf', { type: 'application/pdf' })
 
       await new Promise(resolve => setTimeout(resolve, 10)) // required to transition from status LOADING -> SUCCESS
 
-      expect(mockBusinessApi).toHaveBeenCalledOnce()
-      expect(courtOrderDocs.value[0]!.status).toBe(FileStatus.SUCCESS)
+      expect(mockBusinessService.postDocument).toHaveBeenCalledOnce()
+      expect(courtOrderDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
       expect(courtOrderDocs.value[0]!.fileKey).toBe(mockApiResponse.key)
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(
-        expect.any(String),
+      expect(mockBusinessService.postDocument).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'valid_order.pdf' }),
         expect.objectContaining({
-          query: expect.objectContaining({
-            filename: 'valid_order.pdf',
-            businessIdentifier: defaultProps.identifier,
-            filingId: defaultProps.filingId
-          })
+          filingType: FilingType.COURT_ORDER,
+          entityType: defaultProps.entityType,
+          documentType: DocumentTypeClient.COURT_ORDER,
+          identifier: defaultProps.identifier,
+          filingId: defaultProps.filingId,
+          signal: expect.any(AbortSignal)
         })
       )
     })
@@ -172,25 +178,31 @@ describe('useCourtOrderDocs', () => {
       supportingFiles.value = [oversizedFile]
       await new Promise(resolve => setTimeout(resolve, 10))
 
-      expect(supportingDocs.value[0]!.status).toBe(FileStatus.ERROR)
+      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
-      expect(mockBusinessApi).not.toHaveBeenCalled()
+      expect(mockBusinessService.postDocument).not.toHaveBeenCalled()
     })
 
     it('should ensure unique file names', async () => {
       model.value = [{
         id: '1234567',
         name: 'document.pdf',
-        type: DrsDocType.SUPPORTING_DOCUMENT,
-        action: FileAction.ADDED,
-        status: FileStatus.SUCCESS
+        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       }]
 
-      mockBusinessApi.mockResolvedValueOnce({
-        key: 'drs-key',
-        consumerFilename: 'document (1).pdf',
-        documentURL: 'https://example.com/doc'
-      })
+      mockBusinessService.postDocument
+        .mockResolvedValueOnce({
+          key: 'drs-key-1',
+          consumerFilename: 'document (1).pdf',
+          documentURL: 'https://example.com/doc1'
+        })
+        .mockResolvedValueOnce({
+          key: 'drs-key-2',
+          consumerFilename: 'document (2).pdf',
+          documentURL: 'https://example.com/doc2'
+        })
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
@@ -201,12 +213,20 @@ describe('useCourtOrderDocs', () => {
       expect(supportingDocs.value).toHaveLength(2)
       expect(supportingDocs.value[1]!.name).toBe('document (1).pdf')
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(
-        expect.any(String),
+      supportingFiles.value = [new File(['test file'], 'document (1).pdf', { type: 'application/pdf' })]
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      expect(supportingDocs.value).toHaveLength(3)
+      expect(supportingDocs.value[2]!.name).toBe('document (2).pdf')
+
+      expect(mockBusinessService.postDocument).toHaveBeenLastCalledWith(
+        expect.objectContaining({ name: 'document (2).pdf' }),
         expect.objectContaining({
-          query: expect.objectContaining({
-            filename: 'document (1).pdf' // filename incremented in payload
-          })
+          filingType: FilingType.COURT_ORDER,
+          entityType: defaultProps.entityType,
+          documentType: DocumentTypeClient.SUPPORTING_DOCUMENT,
+          identifier: defaultProps.identifier,
+          filingId: defaultProps.filingId
         })
       )
     })
@@ -218,9 +238,9 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DrsDocType.SUPPORTING_DOCUMENT,
-        action: FileAction.ADDED,
-        status: FileStatus.SUCCESS
+        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
       }
       model.value = [mockDoc]
 
@@ -229,7 +249,7 @@ describe('useCourtOrderDocs', () => {
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessApi).toHaveBeenCalledWith(`documents/client/${mockDoc.fileKey}`, { method: 'DELETE' })
+      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith('drs-key')
       expect(supportingDocs.value).toHaveLength(0)
     })
 
@@ -238,20 +258,20 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DrsDocType.SUPPORTING_DOCUMENT,
-        action: FileAction.NONE,
-        status: FileStatus.SUCCESS
+        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.NONE,
+        status: CourtOrderFileStatus.SUCCESS
       }
       model.value = [mockDoc]
 
       const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
 
-      expect(supportingDocs.value[0]!.action).toBe(FileAction.NONE)
+      expect(supportingDocs.value[0]!.action).toBe(CourtOrderFileAction.NONE)
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessApi).not.toHaveBeenCalled()
-      expect(supportingDocs.value[0]!.action).toBe(FileAction.DELETED)
+      expect(mockBusinessService.deleteDocument).not.toHaveBeenCalled()
+      expect(supportingDocs.value[0]!.action).toBe(CourtOrderFileAction.DELETED)
     })
 
     it('should undo a soft deleted file', async () => {
@@ -259,17 +279,17 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DrsDocType.SUPPORTING_DOCUMENT,
-        action: FileAction.DELETED,
-        status: FileStatus.IDLE
+        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.DELETED,
+        status: CourtOrderFileStatus.IDLE
       }
       model.value = [mockDoc]
 
       const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
-      expect(supportingDocs.value[0]!.action).toBe(FileAction.DELETED)
+      expect(supportingDocs.value[0]!.action).toBe(CourtOrderFileAction.DELETED)
 
       onFileAction(mockDoc.id, 'undo')
-      expect(supportingDocs.value[0]!.action).toBe(FileAction.NONE)
+      expect(supportingDocs.value[0]!.action).toBe(CourtOrderFileAction.NONE)
     })
 
     it('should not undo a court order if another active court order exists', async () => {
@@ -277,16 +297,16 @@ describe('useCourtOrderDocs', () => {
         {
           id: 'file-1',
           name: 'active.pdf',
-          type: DrsDocType.COURT_ORDER,
-          action: FileAction.ADDED,
-          status: FileStatus.SUCCESS
+          type: DocumentTypeDrs.COURT_ORDER,
+          action: CourtOrderFileAction.ADDED,
+          status: CourtOrderFileStatus.SUCCESS
         },
         {
           id: 'file-2',
           name: 'deleted.pdf',
-          type: DrsDocType.COURT_ORDER,
-          action: FileAction.DELETED,
-          status: FileStatus.SUCCESS
+          type: DocumentTypeDrs.COURT_ORDER,
+          action: CourtOrderFileAction.DELETED,
+          status: CourtOrderFileStatus.SUCCESS
         }
       ]
 
@@ -295,7 +315,7 @@ describe('useCourtOrderDocs', () => {
       onFileAction('file-2', 'undo')
 
       const file2 = courtOrderDocs.value.find(d => d.id === 'file-2')
-      expect(file2?.action).toBe(FileAction.DELETED)
+      expect(file2?.action).toBe(CourtOrderFileAction.DELETED)
     })
 
     it('should call abort and remove file on cancel', async () => {

@@ -22,9 +22,45 @@ const NON_EDITABLE_FIELDS = [
   'orderDate'
 ] as const
 
+function formatFiles(
+  originalFiles: CourtOrderFileUi[] = [],
+  draftFiles: CourtOrderFileUi[] = []
+): CourtOrderFileUi[] {
+  const result: CourtOrderFileUi[] = []
+
+  // mark files not found in the original state as newly added
+  for (const file of draftFiles) {
+    const existsInOriginal = originalFiles.some(orig => orig.id === file.id)
+
+    if (!existsInOriginal) {
+      result.push({
+        ...file,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
+      })
+    } else {
+      result.push(file)
+    }
+  }
+
+  // mark files in original state but not draft as deleted
+  for (const file of originalFiles) {
+    const existsInDraft = draftFiles.some(draft => (draft.id === file.id))
+
+    if (!existsInDraft) {
+      result.push({
+        ...file,
+        action: CourtOrderFileAction.DELETED
+      })
+    }
+  }
+
+  return result
+}
+
 export function formatCourtOrdersSection(
   originalCourtOrders: CourtOrderResponse[],
-  draftCourtOrders?: Partial<CourtOrderResponse>[]
+  draftCourtOrders?: Partial<CourtOrderResponse | CourtOrderPayload>[]
 ): TableBusinessState<CourtOrderPoaFullSchema>[] {
   const schema = getCourtOrderPoaFullSchema()
 
@@ -46,6 +82,8 @@ export function formatCourtOrdersSection(
     // if a matching id was found, check for changes
     if (matchingDraft) {
       const newParsed = schema.parse(matchingDraft)
+      newParsed.files = formatFiles(oldParsed.files, newParsed.files)
+
       const isChanged = !isEqualOmit(oldParsed, newParsed, NON_EDITABLE_FIELDS)
 
       return {
@@ -72,10 +110,18 @@ export function formatCourtOrdersSection(
     .filter(draft => !draft.id)
     .map((draft) => {
       const parsed = schema.parse(draft)
+
+      const formattedFiles = (parsed.files || []).map(file => ({
+        ...file,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
+      }))
+
       return {
         old: undefined,
         new: {
           ...parsed,
+          files: formattedFiles,
           actions: [ActionType.ADDED]
         }
       }
@@ -86,7 +132,7 @@ export function formatCourtOrdersSection(
 
 export function formatCourtOrdersApi(
   courtOrders: TableBusinessState<CourtOrderPoaFullSchema>[]
-): Partial<CourtOrderResponse>[] | undefined {
+): Partial<CourtOrderPayload>[] | undefined {
   // return undefined if no changes have been made
   if (!courtOrders.some(co => co.new.actions.length > 0)) {
     return undefined
@@ -99,6 +145,16 @@ export function formatCourtOrdersApi(
       const isNewCourtOrder = co.old === undefined
       const newItem = co.new
 
+      const files: CourtOrderDocPayload[] = (newItem.files || [])
+        .filter(file => file.action !== 'DELETED' && Boolean(file.fileKey) && file.status !== 'ERROR') // Exclude deleted files or without a valid fileKey (failed uploads)
+        .map(file => ({
+          fileName: file.name,
+          fileKey: file.fileKey!,
+          documentType: file.type === DocumentTypeDrs.COURT_ORDER
+            ? DocumentTypeClient.COURT_ORDER
+            : DocumentTypeClient.SUPPORTING_DOCUMENT
+        }))
+
       return {
         id: isNewCourtOrder ? undefined : parseInt(newItem.id),
         effectOfOrder: newItem.effectOfOrder ? 'planOfArrangement' : undefined,
@@ -107,7 +163,7 @@ export function formatCourtOrdersApi(
         orderDetails: newItem.orderDetails || undefined,
         orderDate: newItem.orderDate || undefined,
         filingId: newItem.filingId,
-        files: newItem.files // FUTURE - not returned from API yet
+        files: files.length > 0 ? files : undefined // FUTURE - not returned from API yet
       }
     })
 }
