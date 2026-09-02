@@ -20,7 +20,7 @@ const showPlaceholder = computed(() => ![
   >
     <UIcon
       name="i-mdi-image-outline"
-      class="size-10 text-neutral"
+      class="size-7 text-[#D4D4D4]"
     />
     <div
       v-if="action === CourtOrderFileAction.DELETED"
@@ -54,9 +54,9 @@ const showPlaceholder = computed(() => ![
 }
 
 .pdf-frame__iframe {
-  width: 120%;
+  width: 100%;
   overflow: hidden;
-  transform: scale(1.01);
+  transform: translateY(1px) scale(1.02);
   transform-origin: center;
   pointer-events: none;
 }
