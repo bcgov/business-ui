@@ -41,7 +41,7 @@ describe('Format Court Order Utils', () => {
           id: 'key-1',
           fileKey: 'key-1',
           name: 'order_1.pdf',
-          type: DocumentTypeDrs.COURT_ORDER,
+          type: DocumentTypeClient.COURT_ORDER,
           action: CourtOrderFileAction.NONE,
           status: CourtOrderFileStatus.IDLE
         }
@@ -61,7 +61,7 @@ describe('Format Court Order Utils', () => {
           id: 'key-1',
           fileKey: 'key-1',
           name: 'order_1.pdf',
-          type: DocumentTypeDrs.COURT_ORDER,
+          type: DocumentTypeClient.COURT_ORDER,
           action: CourtOrderFileAction.NONE,
           status: CourtOrderFileStatus.IDLE
         }
@@ -125,7 +125,7 @@ describe('Format Court Order Utils', () => {
         id: 'key-1',
         fileKey: 'key-1',
         name: 'order_1.pdf',
-        type: DocumentTypeDrs.COURT_ORDER,
+        type: DocumentTypeClient.COURT_ORDER,
         action: CourtOrderFileAction.NONE,
         status: CourtOrderFileStatus.IDLE
       })
@@ -134,7 +134,7 @@ describe('Format Court Order Utils', () => {
         id: 'key-2',
         fileKey: 'key-2',
         name: 'supporting_doc.pdf',
-        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
         action: CourtOrderFileAction.ADDED,
         status: CourtOrderFileStatus.SUCCESS
       })
@@ -155,7 +155,7 @@ describe('Format Court Order Utils', () => {
         id: 'key-1',
         fileKey: 'key-1',
         name: 'order_1.pdf',
-        type: DocumentTypeDrs.COURT_ORDER,
+        type: DocumentTypeClient.COURT_ORDER,
         action: CourtOrderFileAction.DELETED,
         status: CourtOrderFileStatus.IDLE
       })
@@ -185,7 +185,7 @@ describe('Format Court Order Utils', () => {
           id: 'key-2',
           fileKey: 'key-2',
           name: 'supporting_doc.pdf',
-          type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+          type: DocumentTypeClient.SUPPORTING_DOCUMENT,
           action: CourtOrderFileAction.ADDED,
           status: CourtOrderFileStatus.SUCCESS
         }
@@ -198,7 +198,7 @@ describe('Format Court Order Utils', () => {
       id: 'file-1',
       fileKey: 'key-123',
       name: 'order.pdf',
-      type: 'application/pdf',
+      type: DocumentTypeClient.COURT_ORDER,
       action: CourtOrderFileAction.ADDED,
       status: CourtOrderFileStatus.SUCCESS,
       ...overrides
@@ -307,8 +307,8 @@ describe('Format Court Order Utils', () => {
             ...baseItem,
             actions: [ActionType.CHANGED],
             files: [
-              mockFile({ id: 'f1', fileKey: 'key-1', name: 'doc1.pdf', type: DocumentTypeDrs.COURT_ORDER }),
-              mockFile({ id: 'f2', fileKey: 'key-2', name: 'doc2.pdf', type: DocumentTypeDrs.SUPPORTING_DOCUMENT })
+              mockFile({ id: 'f1', fileKey: 'key-1', name: 'doc1.pdf', type: DocumentTypeClient.COURT_ORDER }),
+              mockFile({ id: 'f2', fileKey: 'key-2', name: 'doc2.pdf', type: DocumentTypeClient.SUPPORTING_DOCUMENT })
             ]
           }
         }
@@ -342,25 +342,25 @@ describe('Format Court Order Utils', () => {
                 id: 'f1',
                 fileKey: 'valid-key',
                 name: 'valid.pdf',
-                type: DocumentTypeDrs.COURT_ORDER
+                type: DocumentTypeClient.COURT_ORDER
               }),
               mockFile({
                 id: 'f2',
                 fileKey: 'key-2',
                 action: CourtOrderFileAction.DELETED,
-                type: DocumentTypeDrs.COURT_ORDER
+                type: DocumentTypeClient.COURT_ORDER
               }),
               mockFile({
                 id: 'f3',
                 fileKey: 'key-3',
                 status: CourtOrderFileStatus.ERROR,
-                type: DocumentTypeDrs.COURT_ORDER
+                type: DocumentTypeClient.COURT_ORDER
               }),
               mockFile({
                 id: 'f4',
                 fileKey: undefined,
                 name: 'no-key.pdf',
-                type: DocumentTypeDrs.COURT_ORDER
+                type: DocumentTypeClient.COURT_ORDER
               })
             ]
           }
