@@ -54,10 +54,122 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
 
 // helper to determine if an uploaded court order file is in an active state
 function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
-  return doc.type === DocumentTypeDrs.COURT_ORDER
+  return doc.type === DocumentTypeClient.COURT_ORDER
     && doc.id !== excludeId
     && doc.action !== CourtOrderFileAction.DELETED
     && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(doc.status)
+}
+
+// custom xhr request to return upload percentage
+async function uploadFile(
+  file: File,
+  fileItem: CourtOrderFileUi,
+  options: {
+    entityType: CorpTypeCd
+    documentType: DocumentTypeClient
+    identifier?: string
+    filingId?: string | number
+  }
+): Promise<DocumentUploadResponse> {
+  const auth = useConnectAuth()
+  const accountStore = useConnectAccountStore()
+  const rtc = useRuntimeConfig().public
+
+  const token = await auth.getToken()
+
+  const headers = new Headers()
+  headers.set('Authorization', `Bearer ${token}`)
+  headers.set('App-Name', rtc.appName)
+  headers.set('X-Apikey', rtc.xApiKey)
+  const accountId = accountStore.currentAccount?.id
+  if (accountId) {
+    headers.set('Account-Id', String(accountId))
+  }
+
+  const {
+    documentType,
+    entityType,
+    identifier = '',
+    filingId
+  } = options
+
+  // must manually build url or new URL may strip trailing characters with how our env vars are set
+  const base = `${rtc.businessApiUrl}${rtc.businessApiVersion}`.replace(/\/+$/, '')
+  const url = new URL(`${base}/documents/client/${FilingType.COURT_ORDER}/${entityType}/${documentType}`)
+
+  const params = new URLSearchParams({
+    filename: file.name
+  })
+
+  if (identifier) {
+    params.set('businessIdentifier', identifier)
+  }
+
+  if (filingId && Number(filingId)) {
+    params.set('filingId', String(filingId))
+  }
+
+  url.search = params.toString()
+
+  const signal = fileItem.abortController?.signal
+  if (signal?.aborted) {
+    return Promise.reject(Object.assign(new Error('Aborted'), { name: 'AbortError' }))
+  }
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', url.toString())
+    xhr.timeout = 30000
+
+    headers.forEach((v, k) => xhr.setRequestHeader(k, v))
+
+    // Simulate progress up to 95% -> provides better UX
+    const timer = setInterval(() => {
+      const currentProgress = fileItem.progress ?? 0
+      if (currentProgress < 85) {
+        fileItem.progress = currentProgress + Math.floor(Math.random() * 6) + 4
+      } else if (currentProgress < 95) {
+        fileItem.progress = currentProgress + 1
+      }
+    }, 120)
+
+    const onAbort = () => xhr.abort()
+    signal?.addEventListener('abort', onAbort, { once: true })
+
+    xhr.onloadend = () => {
+      clearInterval(timer)
+      signal?.removeEventListener('abort', onAbort)
+    }
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable && e.total > 0) {
+        const realPercentage = Math.round((e.loaded / e.total) * 90)
+        if (realPercentage > (fileItem.progress ?? 0)) {
+          fileItem.progress = realPercentage
+        }
+      }
+    }
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        fileItem.progress = 100
+        try {
+          const data = xhr.responseText ? JSON.parse(xhr.responseText) : {}
+          resolve(data)
+        } catch {
+          reject(new Error('Invalid JSON response'))
+        }
+      } else {
+        reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText || 'Upload failed'}`))
+      }
+    }
+
+    xhr.ontimeout = () => reject(new Error('Request timed out after 30 seconds'))
+    xhr.onerror = () => reject(new TypeError('Network error'))
+    xhr.onabort = () => reject(Object.assign(new Error('Aborted'), { name: 'AbortError' }))
+
+    xhr.send(file)
+  })
 }
 
 // main functionality/state handling
@@ -87,11 +199,11 @@ export function useCourtOrderDocs(
 
   // full list of court order files
   const courtOrderDocs = computed(() =>
-    uploadedDocuments.value.filter(doc => doc.type === DocumentTypeDrs.COURT_ORDER)
+    uploadedDocuments.value.filter(doc => doc.type === DocumentTypeClient.COURT_ORDER)
   )
   // full list of supporting files
   const supportingDocs = computed(() =>
-    uploadedDocuments.value.filter(doc => doc.type !== DocumentTypeDrs.COURT_ORDER)
+    uploadedDocuments.value.filter(doc => doc.type !== DocumentTypeClient.COURT_ORDER)
   )
 
   const activeCourtOrderDoc = computed(() => {
@@ -147,7 +259,7 @@ export function useCourtOrderDocs(
 
       case 'undo': {
         // prevent undo on a court order if another court order is active
-        if (file.type === DocumentTypeDrs.COURT_ORDER && preventDuplicateCourtOrderCheck(file.id)) {
+        if (file.type === DocumentTypeClient.COURT_ORDER && preventDuplicateCourtOrderCheck(file.id)) {
           return
         }
         // else revert the action to none
@@ -209,18 +321,14 @@ export function useCourtOrderDocs(
 
         const newFile = new File([file], uniqueName, { type: file.type })
 
-        // normalize doc type
-        const uiDocType = docType === DocumentTypeClient.COURT_ORDER
-          ? DocumentTypeDrs.COURT_ORDER
-          : DocumentTypeDrs.SUPPORTING_DOCUMENT
-
         // temporary file item for loading state
         const fileItem = reactive<CourtOrderFileUi>({
           id: crypto.randomUUID(),
           name: newFile.name,
-          type: uiDocType,
+          type: docType,
           status: CourtOrderFileStatus.LOADING,
           action: CourtOrderFileAction.ADDED,
+          progress: 0,
           abortController: markRaw(new AbortController()) // exclude web api from reactivity
         })
 
@@ -231,15 +339,14 @@ export function useCourtOrderDocs(
           fileSchema.parse({ file: newFile })
 
           // upload to drs via business api client endpoint
-          const doc = await service.postDocument(
+          const doc = await uploadFile(
             newFile,
+            fileItem,
             {
-              filingType: FilingType.COURT_ORDER,
               entityType: props.entityType,
-              documentType: docType,
+              documentType: fileItem.type,
               identifier: props.identifier,
-              filingId: props.filingId,
-              signal: fileItem.abortController?.signal
+              filingId: props.filingId
             }
           )
 
@@ -247,9 +354,10 @@ export function useCourtOrderDocs(
           Object.assign(fileItem, {
             fileKey: doc.key,
             name: doc.consumerFilename,
-            type: uiDocType,
+            type: docType,
             url: doc.documentURL,
             status: CourtOrderFileStatus.SUCCESS,
+            progress: 100,
             abortController: undefined
           })
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -290,22 +398,21 @@ export function useCourtOrderDocs(
 
   // sync model value (external state) with uploaded documents (internal state)
   watch(uploadedDocuments, (newVal) => {
-    model.value = newVal.map(({ abortController, ...rest }) => ({ ...rest }))
+    const internal = newVal.map(({ abortController, progress, ...rest }) => ({ ...rest }))
+    if (!isEqual(model.value, internal)) {
+      model.value = internal
+    }
   }, { deep: true })
 
   // sync uploaded documents (internal state) with model value (external state)
   // either by parent mutation or onMounted from immediate: true
-  watch(
-    model,
-    (newVal) => {
-      const internal = uploadedDocuments.value.map(({ abortController, ...rest }) => ({ ...rest }))
-      // safety check to prevent recursive updates
-      if (!isEqual(newVal, internal)) {
-        uploadedDocuments.value = newVal.map(item => ({ ...item }))
-      }
-    },
-    { immediate: true }
-  )
+  watch(model, (newVal) => {
+    const internal = uploadedDocuments.value.map(({ abortController, progress, ...rest }) => ({ ...rest }))
+    // safety check to prevent recursive updates
+    if (!isEqual(newVal, internal)) {
+      uploadedDocuments.value = newVal.map(item => ({ ...item }))
+    }
+  }, { immediate: true })
 
   return {
     courtOrderFile,
