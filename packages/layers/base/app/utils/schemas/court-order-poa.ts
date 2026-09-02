@@ -30,6 +30,33 @@ export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSch
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 
+// action a user has taken on a file
+export enum CourtOrderFileAction {
+  NONE = 'NONE',
+  ADDED = 'ADDED',
+  DELETED = 'DELETED'
+}
+
+// status of uploaded file, idle is an existing file sttached to a court order already
+export enum CourtOrderFileStatus {
+  IDLE = 'IDLE',
+  LOADING = 'LOADING',
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR'
+}
+
+// ui state
+export interface CourtOrderFileUi {
+  id: string
+  fileKey?: string // may be undefined during initial load
+  name: string
+  type: string
+  action: CourtOrderFileAction
+  status: CourtOrderFileStatus
+  errorMessage?: string
+  abortController?: AbortController
+}
+
 export function getCourtOrderPoaFullSchema() {
   const t = useNuxtApp().$i18n.t
   return z.object({
@@ -53,7 +80,7 @@ export function getCourtOrderPoaFullSchema() {
     orderDetails: z.preprocess(
       val => (!val ? null : val),
       z.string().nullable()
-    ).default(null),
+    ),
     filingId: z.number()
       .default(-1),
     filingType: z.enum(FilingType)
@@ -62,8 +89,23 @@ export function getCourtOrderPoaFullSchema() {
     orderDate: z.string()
       .nullable()
       .optional(),
-    files: z.array(z.any())
-      .optional() // FUTURE - not returned by API yet
+    files: z.preprocess((val) => {
+      if (!Array.isArray(val)) {
+        return []
+      }
+      return val.map((doc: CourtOrderDocPayload | CourtOrderFileUi) => {
+        const isFileType = 'id' in doc
+
+        return {
+          id: (isFileType ? doc.id : undefined) ?? doc.fileKey ?? crypto.randomUUID(),
+          fileKey: doc.fileKey,
+          name: isFileType ? doc.name : doc.fileName,
+          type: isFileType ? doc.type : (doc.documentType === 'court_order' ? 'CRTO' : 'SUPP'),
+          action: isFileType ? doc.action : CourtOrderFileAction.NONE,
+          status: isFileType ? doc.status : CourtOrderFileStatus.IDLE
+        }
+      })
+    }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet
   })
 }
 

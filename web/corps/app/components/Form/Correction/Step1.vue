@@ -129,6 +129,8 @@ function onActionPrevented() {
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.courtOrders') })"
       :prevent-actions="hasActiveSubForm"
       :action-prevented-signal="actionPreventedSignal"
+      :identifier="business?.identifier"
+      :entity-type="business?.legalType!"
       @action-prevented="onActionPrevented"
     />
   </UForm>

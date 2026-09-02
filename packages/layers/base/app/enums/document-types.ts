@@ -138,6 +138,28 @@ export enum DocumentType {
   PPRC = 'PPRC' // PPR Secure Party Codes
 }
 
+/**
+ * Document types accepted by the Legal API client document (DRS) endpoint:
+ * POST documents/client/{filingType}/{entityType}/{documentType}
+ */
+export enum DocumentTypeClient {
+  AFFIDAVIT = 'affidavit',
+  AUTHORIZATION_FILE = 'authorization_file',
+  CONTINUATION_OUT = 'continuation_out',
+  COOP_RULES = 'coop_rules',
+  COOP_MEMORANDUM = 'coop_memorandum',
+  COURT_ORDER = 'court_order',
+  DIRECTOR_AFFIDAVIT = 'director_affidavit',
+  SUPPORTING_DOCUMENT = 'supporting_document'
+}
+
+// doc types returned by the drs api
+export enum DocumentTypeDrs {
+  DEFAULT = 'COSD',
+  COURT_ORDER = 'CRTO',
+  SUPPORTING_DOCUMENT = 'SUPP' // not returned by api yet
+}
+
 export const DOCUMENT_TYPES = {
   coopMemorandum: {
     class: DocumentClass.COOP,
@@ -639,14 +661,4 @@ export const DOCUMENT_TYPES = {
     class: DocumentClass.PPR,
     type: DocumentType.PPRC
   }
-}
-
-/**
- * Document types accepted by the Legal API client document (DRS) endpoint:
- * POST documents/client/{filingType}/{entityType}/{documentType}
- */
-export enum DocumentTypeClient {
-  CONTINUATION_OUT = 'continuation_out',
-  COURT_ORDER = 'court_order',
-  SUPPORTING_DOCUMENT = 'supporting_document'
 }

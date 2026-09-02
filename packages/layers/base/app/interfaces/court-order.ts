@@ -11,6 +11,13 @@ export interface CourtOrder {
   files?: unknown[]
 }
 
+export interface CourtOrderDoc {
+  fileName: string
+  fileKey: string
+  documentType: string
+  url: string
+}
+
 export interface CourtOrderResponse {
   effectOfOrder: string | null
   fileNumber: string
@@ -19,5 +26,22 @@ export interface CourtOrderResponse {
   id: number
   orderDate?: string | null
   orderDetails?: string | null
-  files?: unknown[] // FUTURE - not returned from API yet
+  files?: CourtOrderDoc[] // FUTURE - not returned from API yet
+}
+
+export interface CourtOrderDocPayload {
+  fileName: string
+  fileKey: string
+  documentType: string
+}
+
+export interface CourtOrderPayload {
+  effectOfOrder: string | null
+  fileNumber: string
+  filingId: number
+  filingType: FilingType
+  id: number
+  orderDate?: string | null
+  orderDetails?: string | null
+  files?: CourtOrderDocPayload[]
 }

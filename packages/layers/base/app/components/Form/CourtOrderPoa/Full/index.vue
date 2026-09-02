@@ -13,6 +13,7 @@ const {
   stateKey: string
   isCourtOrder: boolean
   identifier?: string
+  entityType: CorpTypeCd
 }>()
 
 const emit = defineEmits<{
@@ -41,6 +42,11 @@ const formErrors = computed(() => {
 async function onDone() {
   try {
     await formRef.value?.validate()
+
+    if (model.value.files?.length) {
+      model.value.files = model.value.files.filter(file => file.status !== CourtOrderFileStatus.ERROR)
+    }
+
     emit('done')
   } catch (e) {
     onFormSubmitError(e as FormErrorEvent)
@@ -138,6 +144,7 @@ defineExpose({
             v-model="model.files"
             :filing-id="model.filingId"
             :identifier
+            :entity-type
           />
         </template>
       </template>

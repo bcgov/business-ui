@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { type FileType, useCourtOrderDocs } from './utils'
+import { useCourtOrderDocs } from './utils'
 
-const { identifier, filingId } = defineProps<{
+const { identifier, filingId, entityType } = defineProps<{
   identifier?: string
   filingId: string | number
+  entityType: CorpTypeCd
 }>()
 
-const model = defineModel<FileType[]>({ default: () => [] })
+const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
 
 const {
   courtOrderFile,
@@ -19,7 +20,7 @@ const {
   displayMaxOneCourtOrderAlert,
   onUploadCourtOrder,
   onFileAction
-} = useCourtOrderDocs(model, { identifier, filingId })
+} = useCourtOrderDocs(model, { identifier, filingId, entityType })
 </script>
 
 <template>
