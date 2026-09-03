@@ -21,6 +21,28 @@ const {
   onUploadCourtOrder,
   onFileAction
 } = useCourtOrderDocs(model, { identifier, filingId, entityType })
+
+const supportingDocErrorIds = computed(() => supportingDocs.value
+  .filter(doc => doc.status === CourtOrderFileStatus.ERROR && doc.errorMessage)
+  .map(doc => `file-error-${doc.id}`)
+  .join(' ')
+)
+
+const supportingDocsAriaDescribedBy = computed(() => {
+  const base = 'multiple-supporting-docs-desc'
+  return supportingDocErrorIds.value ? `${base} ${supportingDocErrorIds.value}` : base
+})
+
+const courtOrderDocErrorIds = computed(() => courtOrderDocs.value
+  .filter(doc => doc.status === CourtOrderFileStatus.ERROR && doc.errorMessage)
+  .map(doc => `file-error-${doc.id}`)
+  .join(' ')
+)
+
+const courtOrderDocsAriaDescribedBy = computed(() => {
+  const base = 'max-one-court-order-desc max-one-court-order-alert'
+  return courtOrderDocErrorIds.value ? `${base} ${courtOrderDocErrorIds.value}` : base
+})
 </script>
 
 <template>
@@ -49,8 +71,7 @@ const {
             `"
             :aria-describedby="`
               ${fileSizeAndTypeDescId}
-              max-one-court-order-desc
-              max-one-court-order-alert
+              ${courtOrderDocsAriaDescribedBy}
             `"
             @keydown.enter.stop
             @click="onUploadCourtOrder(open)"
@@ -103,7 +124,7 @@ const {
             <UButton
               :label="$t('label.uploadDocuments')"
               icon="i-mdi-file-upload-outline"
-              aria-describedby="multiple-supporting-docs-desc"
+              :aria-describedby="supportingDocsAriaDescribedBy"
               @keydown.enter.stop
               @click="open()"
             />

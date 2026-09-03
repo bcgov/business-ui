@@ -577,6 +577,7 @@ export default {
     uploadDocuments: 'Upload Documents',
     uploadedCourtOrders: 'Uploaded Court Orders',
     uploadedSupportingDocs: 'Uploaded Supporting Documents',
+    uploadFailed: 'Upload Failed',
     uploadFiles: 'Upload Files',
     uploading: 'Uploading',
     useNewNrNumber: 'Use a new name request number',
