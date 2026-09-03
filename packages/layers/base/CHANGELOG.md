@@ -1,5 +1,51 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.27.0
+
+### Minor Changes
+
+- [#546](https://github.com/bcgov/business-ui/pull/546) [`3591917`](https://github.com/bcgov/business-ui/commit/3591917253d6ac44213674eb2cb5b407639d28eb) Thanks [@deetz99](https://github.com/deetz99)! - FormCourtOrderPoaFull document upload - update typing to use and normalize into client type
+
+  - add dismiss button to remove errored docs
+  - add upload percentage in ui
+  - create custom xhr request to return upload progress
+  - add upload error text to button aria describedby
+  - increase font sizes
+  - stop click event propagation from submitting form
+  - disable dropzone on touch devices
+  - fix thumbnail display
+
+  SubFormWrapper - scroll into view on mount
+
+- [#543](https://github.com/bcgov/business-ui/pull/543) [`50af5c5`](https://github.com/bcgov/business-ui/commit/50af5c562248c4ad75fdca63d90ad39c5ad52d4e) Thanks [@deetz99](https://github.com/deetz99)! - Create court order file formatters, add documents to court orders table.
+
+- [#542](https://github.com/bcgov/business-ui/pull/542) [`483f5a0`](https://github.com/bcgov/business-ui/commit/483f5a0e0c3b32a9414182ceb46955f80629efb6) Thanks [@deetz99](https://github.com/deetz99)! - Create realtime upload for court order documents section'
+
+- [#534](https://github.com/bcgov/business-ui/pull/534) [`20092ba`](https://github.com/bcgov/business-ui/commit/20092ba29f5a8202f930a024a4fb1693b23eb3a6) Thanks [@deetz99](https://github.com/deetz99)! - - **ManageCourtOrders**: Added `addDefaultValues` prop to support pre-populating default state when adding a new court order.
+
+  - **FormCourtOrderPoaFull / Schema**: Updated `effectOfOrder` default handling in schema normalization to ensure consistent boolean conversion.
+  - **Court Order Formatters**: Added utility functions to normalize court order data between table UI state and backend API payloads.
+  - **useManageX Composables**: Added a reactive `hasChanges` computed property across management composables (`useManageCourtOrders`, `useManageOffices`, `useManageShareStructure`, etc.) to track section mutation states.
+
+- [#537](https://github.com/bcgov/business-ui/pull/537) [`6015887`](https://github.com/bcgov/business-ui/commit/601588750d0802a7f39cdd3e72439a5be37b51a6) Thanks [@eve-git](https://github.com/eve-git)! - Update Effective Date to use the shared Date Picker component from the Connect Nuxt base layer
+
+- [#540](https://github.com/bcgov/business-ui/pull/540) [`d78fb98`](https://github.com/bcgov/business-ui/commit/d78fb9834ad6531dc5534a1cc32f6dd5d62f37f0) Thanks [@eve-git](https://github.com/eve-git)! - **PartyDetails**: Added an Email Address section, shown and required automatically for parties holding a role configured in `ROLE_ADDITIONAL_FIELDS` (currently Director), mirroring the existing effective-date-by-role pattern.
+
+  - Added `FormPartyEmail` component and `getPartyEmailSchema` (required/max-254-chars/valid-format validation, in that priority order).
+  - Added `PartySchema.email` and wired it through `formatPartyUi`/`formatRelationshipUi`/`formatRelationshipApi`.
+  - Added `ManageAllowedAction.EMAIL_CHANGE`.
+  - Consolidated the per-role additional-field config (`ROLES_REQUIRING_EFFECTIVE_DATE`) and the new email rules into a single `ROLE_ADDITIONAL_FIELDS` map with independent `showEmail`/`requireEmail`/`effectiveDate` flags per role.
+
+### Patch Changes
+
+- [#544](https://github.com/bcgov/business-ui/pull/544) [`332461e`](https://github.com/bcgov/business-ui/commit/332461edd2efb9b9fd1cf0f8dc49f995a2c619e0) Thanks [@kialj876](https://github.com/kialj876)! - Chore: update sbc-connect/nuxt-pay, consume login description tweak
+
+- [#545](https://github.com/bcgov/business-ui/pull/545) [`d58d2e4`](https://github.com/bcgov/business-ui/commit/d58d2e42695426378e5f408131456d59b27ba17f) Thanks [@eve-git](https://github.com/eve-git)! - Fixed an issue where a new party could retain the previous party’s effective date because the role state was being reused and mutated.
+
+- [#539](https://github.com/bcgov/business-ui/pull/539) [`95141ab`](https://github.com/bcgov/business-ui/commit/95141ab8293e13a61eb86a07876a2c5d9b8e4355) Thanks [@eve-git](https://github.com/eve-git)! - Replace the ConnectInputDate component used for the Delay of Dissolution date with ConnectInputDatePicker.
+
+- [#541](https://github.com/bcgov/business-ui/pull/541) [`ea3e12e`](https://github.com/bcgov/business-ui/commit/ea3e12e30f0422d6a9213f5482577bb315366078) Thanks [@eve-git](https://github.com/eve-git)! - Upgrade @sbc-connect/nuxt-pay to fix Safari date picker tab navigation issue.
+
 ## 0.26.0
 
 ### Minor Changes
