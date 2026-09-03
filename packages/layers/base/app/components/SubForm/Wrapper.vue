@@ -46,7 +46,7 @@ onMounted(async () => {
   await nextTick()
   if (!isHeaderVisible.value && legendRef.value) {
     const rect = legendRef.value.getBoundingClientRect()
-    
+
     window.scrollTo({
       top: rect.top + window.scrollY - 60,
       behavior: 'smooth'
@@ -57,7 +57,10 @@ onMounted(async () => {
 
 <template>
   <fieldset :aria-labelledby="labelId">
-    <legend ref="legendRef" class="rounded-t bg-blue-350 py-4 flex justify-between items-center gap-2.5 w-full padding-x-default">
+    <legend
+      ref="legendRef"
+      class="rounded-t bg-blue-350 py-4 flex justify-between items-center gap-2.5 w-full padding-x-default"
+    >
       <span :id="labelId" class="text-white font-bold text-lg">
         {{ itemLabelPrefixMap[variant] }} {{ subject }}
       </span>
