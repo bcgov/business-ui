@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   corps-ui-ci:
-    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
       app_name: "business-corps"
       working_directory: "./web/corps"

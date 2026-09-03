@@ -11,7 +11,8 @@ export default defineAppConfig({
     bcscUser: {
       login: {
         idps: ['bcsc'],
-        idpEnforcement: true
+        idpEnforcement: true,
+        description: 'connect.page.login.descriptionBCSC'
       }
     }
   }
