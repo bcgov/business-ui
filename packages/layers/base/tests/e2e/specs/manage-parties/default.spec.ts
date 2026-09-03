@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
 
-import { RoleType } from '#business/app/enums/role-type'
-import { fillOutRoles, fillOutName, selectCancel, selectDone } from '#business/tests/e2e/test-utils'
+import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
+import { ROLE_FIELD_CONFIG } from '#business/app/utils/schemas/party/roles'
+import { fillOutRoles, fillOutName, fillOutEmail, selectCancel, selectDone } from '#business/tests/e2e/test-utils'
 
 // FUTURE: flush this out
 test.describe('ManageParties', () => {
@@ -54,6 +55,7 @@ test.describe('ManageParties', () => {
       identifier: ''
     }
     await fillOutName(page, entity)
+    await fillOutEmail(page, 'tester.testing@example.com')
     await selectDone(page)
 
     // should now have preferred name as well
@@ -87,6 +89,7 @@ test.describe('ManageParties', () => {
     await changeBtn.click()
     // role selection
     await fillOutRoles(page, roles)
+    await fillOutEmail(page, 'tester.testing@example.com')
     await selectDone(page)
 
     // should display all roles
@@ -95,7 +98,7 @@ test.describe('ManageParties', () => {
     }
   })
 
-  test('Should show effective date field when party has Director role', async ({ page }) => {
+  test('Should show/hide effective date field for Director role per config', async ({ page }) => {
     await page.goto('./en-CA/examples/components/ManageParties')
     await page.waitForLoadState('networkidle')
 
@@ -106,9 +109,14 @@ test.describe('ManageParties', () => {
     const directorRow = tbody.getByRole('row').filter({ hasText: RoleType.DIRECTOR }).first()
     await directorRow.getByRole('button', { name: 'change' }).click()
 
-    // effective date input should be visible
+    // effective date input visibility is driven by config, not hardcoded to this role
+    const shouldShowEffectiveDate = !!ROLE_FIELD_CONFIG[RoleTypeUi.DIRECTOR]?.effectiveDate
     const effectiveDateInput = page.getByTestId('party-details-form').getByLabel('Effective Date')
-    await expect(effectiveDateInput).toBeVisible()
+    if (shouldShowEffectiveDate) {
+      await expect(effectiveDateInput).toBeVisible()
+    } else {
+      await expect(effectiveDateInput).not.toBeVisible()
+    }
 
     await selectCancel(page)
   })

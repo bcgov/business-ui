@@ -25,24 +25,28 @@ const emit = defineEmits<{
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'party-details-form'
 
-type PartyDetails = Pick<PartySchema, 'name' | 'address' | 'roles'>
+type PartyDetails = Pick<PartySchema, 'name' | 'address' | 'roles' | 'email'>
 
 const model = defineModel<PartyDetails>({ required: true })
 
 const partyNameFormRef = useTemplateRef<FormPartyNameRef>('party-name-form')
 const partyRoleFormRef = useTemplateRef<FormPartyRoleRef>('party-role-form')
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
+const partyEmailFormRef = useTemplateRef<FormPartyEmailRef>('party-email-form')
 const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
-const rolesRequiringEffectiveDate = computed(() =>
-  model.value.roles.filter(role => ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType))
-)
+function rolesWithField<K extends keyof RoleFieldConfig>(field: K) {
+  return model.value.roles.filter(role => ROLE_FIELD_CONFIG[role.roleType]?.[field])
+}
+
+const rolesWithEffectiveDate = computed(() => rolesWithField('effectiveDate'))
+const rolesWithEmail = computed(() => rolesWithField('email'))
 
 const effectiveDateModel = computed({
-  get: (): EffectiveDateSchema => ({ dateInput: rolesRequiringEffectiveDate.value[0]?.appointmentDate ?? '' }),
+  get: (): EffectiveDateSchema => ({ dateInput: rolesWithEffectiveDate.value[0]?.appointmentDate ?? '' }),
   set: (val: EffectiveDateSchema) => {
     model.value.roles = model.value.roles.map(role =>
-      ROLES_REQUIRING_EFFECTIVE_DATE.includes(role.roleType)
+      ROLE_FIELD_CONFIG[role.roleType]?.effectiveDate
         ? { ...role, appointmentDate: val.dateInput }
         : role
     )
@@ -55,7 +59,8 @@ async function onDone() {
     partyNameFormRef.value?.formRef?.validate(),
     partyRoleFormRef.value?.formRef?.validate(),
     addressFormRef.value?.formRef?.validate(),
-    isRoleRequiringEffectiveDate.value && isEffectiveDateChangeAllowed.value
+    partyEmailFormRef.value?.formRef?.validate(),
+    isEffectiveDateVisibleForRole.value && isEffectiveDateChangeAllowed.value
       ? effectiveDateFormRef.value?.formRef?.validate()
       : undefined
   ])
@@ -88,8 +93,20 @@ function isAllowedAction(action: ManageAllowedAction) {
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
 const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
+const isEmailChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EMAIL_CHANGE))
 const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
-const isRoleRequiringEffectiveDate = computed(() => rolesRequiringEffectiveDate.value.length > 0)
+const isEffectiveDateVisibleForRole = computed(() => rolesWithEffectiveDate.value.length > 0)
+const isEffectiveDateRequiredForRole = computed(() =>
+  rolesWithEffectiveDate.value.some(
+    role => ROLE_FIELD_CONFIG[role.roleType]?.effectiveDate === RoleFieldRequirement.REQUIRED
+  )
+)
+const isEmailVisibleForRole = computed(() => rolesWithEmail.value.length > 0)
+const isEmailRequiredForRole = computed(() =>
+  rolesWithEmail.value.some(
+    role => ROLE_FIELD_CONFIG[role.roleType]?.email === RoleFieldRequirement.REQUIRED
+  )
+)
 
 const { targetId, messageId } = attachAlerts(formTarget, model)
 </script>
@@ -142,11 +159,20 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <template v-if="isRoleRequiringEffectiveDate && isEffectiveDateChangeAllowed">
+        <template v-if="isEmailVisibleForRole && isEmailChangeAllowed">
+          <USeparator class="padding-x-default" />
+          <FormPartyEmail
+            ref="party-email-form"
+            v-model="model.email"
+            :required="isEmailRequiredForRole"
+          />
+        </template>
+        <template v-if="isEffectiveDateVisibleForRole && isEffectiveDateChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormEffectiveDate
             ref="effective-date-form"
             v-model="effectiveDateModel"
+            :required="isEffectiveDateRequiredForRole"
           />
         </template>
       </template>

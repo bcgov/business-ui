@@ -66,7 +66,8 @@ const data: TableBusinessState<PartySchema>[] = [
           cessationDate: null,
           roleClass: RoleClass.AGENT
         }
-      ]
+      ],
+      email: ''
     },
     old: {
       id: '',
@@ -108,7 +109,8 @@ const data: TableBusinessState<PartySchema>[] = [
           cessationDate: null,
           roleClass: RoleClass.AGENT
         }
-      ]
+      ],
+      email: ''
     }
   }
 ]

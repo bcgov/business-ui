@@ -17,7 +17,7 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
 
       // FUTURE: handle multiple roles/dates?
-      const foundDate = row.original.new.roles[0]?.appointmentDate
+      const foundDate = row.original.new.roles.find(role => role.appointmentDate)?.appointmentDate
       let displayDate: string | undefined
       if (foundDate) {
         const dt = DateTime.fromISO(foundDate, { zone: 'America/Vancouver' })

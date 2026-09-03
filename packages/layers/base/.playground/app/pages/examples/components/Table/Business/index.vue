@@ -80,7 +80,8 @@ const data: TableBusinessState<TableDataState>[] = [
           cessationDate: null,
           roleClass: RoleClass.AGENT
         }
-      ]
+      ],
+      email: ''
     },
     old: {
       id: '',
@@ -127,7 +128,8 @@ const data: TableBusinessState<TableDataState>[] = [
           cessationDate: null,
           roleClass: RoleClass.AGENT
         }
-      ]
+      ],
+      email: ''
     }
   }
 ]
