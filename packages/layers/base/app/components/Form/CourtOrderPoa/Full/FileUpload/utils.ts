@@ -185,8 +185,10 @@ export function useCourtOrderDocs(
   const { te, t } = useNuxtApp().$i18n
   const service = useBusinessService()
 
+  const isTouchscreen = useMediaQuery('(pointer: coarse)')
+
   const dropzoneRef = useTemplateRef<HTMLDivElement>('dropzoneRef')
-  const { isOverDropZone } = useDropZone(dropzoneRef, {
+  const { isOverDropZone } = useDropZone(() => isTouchscreen.value ? null : dropzoneRef.value, {
     onDrop: (files) => { supportingFiles.value = [...supportingFiles.value, ...files ?? []] },
     multiple: true,
     preventDefaultForUnhandled: true
@@ -197,6 +199,8 @@ export function useCourtOrderDocs(
   const supportingFiles = ref<File[]>([]) // model value for supporting docs upload
   const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
   const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
+
+  const isDropZoneEnabled = computed(() => !isTouchscreen.value)
 
   // full list of court order files
   const courtOrderDocs = computed(() =>
@@ -425,6 +429,7 @@ export function useCourtOrderDocs(
     supportingFiles,
     dropzoneRef,
     isOverDropZone,
+    isDropZoneEnabled,
     courtOrderDocs,
     supportingDocs,
     activeCourtOrderDoc,

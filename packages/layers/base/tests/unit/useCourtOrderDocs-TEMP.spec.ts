@@ -30,6 +30,8 @@ mockNuxtImport('useRuntimeConfig', () => () => ({
     businessApiVersion: '/v1'
   }
 }))
+const mockMediaQuery = ref(false)
+mockNuxtImport('useMediaQuery', () => () => mockMediaQuery)
 
 vi.mock('#app', async (importOriginal) => {
   const original = await importOriginal<typeof import('#app')>()
@@ -90,6 +92,7 @@ describe('useCourtOrderDocs', () => {
     vi.unstubAllGlobals()
     model = ref<CourtOrderFileUi[]>([]) as ModelRef<CourtOrderFileUi[]>
     mockBusinessApi.mockResolvedValue({})
+    mockMediaQuery.value = false
   })
 
   describe('State sync', () => {
@@ -374,6 +377,26 @@ describe('useCourtOrderDocs', () => {
       expect(abortSpy).toHaveBeenCalledOnce()
       expect(xhrMock.abort).toHaveBeenCalledOnce()
       expect(supportingDocs.value).toHaveLength(0)
+    })
+  })
+
+  describe('isDropZoneEnabled', () => {
+    it('should be enabled when media query returns false', async () => {
+      mockMediaQuery.value = false
+      await nextTick()
+
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
+
+      expect(isDropZoneEnabled.value).toBe(true)
+    })
+
+    it('should be disabled when media query returns true', async () => {
+      mockMediaQuery.value = true
+      await nextTick()
+
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
+
+      expect(isDropZoneEnabled.value).toBe(false)
     })
   })
 })

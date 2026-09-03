@@ -13,6 +13,7 @@ const {
   courtOrderFile,
   supportingFiles,
   isOverDropZone,
+  isDropZoneEnabled,
   courtOrderDocs,
   supportingDocs,
   activeCourtOrderDoc,
@@ -128,7 +129,13 @@ const courtOrderDocsAriaDescribedBy = computed(() => {
               @keydown.enter.stop
               @click="open()"
             />
-            <span aria-hidden="true" class="text-primary text-base italic">{{ $t('text.orDragAndDropFiles') }}</span>
+            <span
+              v-if="isDropZoneEnabled"
+              aria-hidden="true"
+              class="text-primary text-base italic"
+            >
+              {{ $t('text.orDragAndDropFiles') }}
+            </span>
           </div>
         </UFileUpload>
       </div>

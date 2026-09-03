@@ -55,7 +55,7 @@ function handleDownload() {
         class="size-6 shrink-0"
         v-bind="iconProps"
       />
-      <span class="text-error wrap-anywhere" :id="`file-error-${id}`">
+      <span :id="`file-error-${id}`" class="text-error wrap-anywhere">
         <span class="sr-only">{{ $t('label.uploadFailed') }}</span>
         {{ errorMessage }}
       </span>
