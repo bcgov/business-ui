@@ -26,7 +26,7 @@ export interface CourtOrderResponse {
   id: number
   orderDate?: string | null
   orderDetails?: string | null
-  files?: CourtOrderDoc[] // FUTURE - not returned from API yet
+  files?: CourtOrderDoc[]
 }
 
 export interface CourtOrderDocPayload {

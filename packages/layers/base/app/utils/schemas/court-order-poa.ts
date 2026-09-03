@@ -50,10 +50,11 @@ export interface CourtOrderFileUi {
   id: string
   fileKey?: string // may be undefined during initial load
   name: string
-  type: string
+  type: DocumentTypeClient
   action: CourtOrderFileAction
   status: CourtOrderFileStatus
   errorMessage?: string
+  progress?: number
   abortController?: AbortController
 }
 
@@ -95,14 +96,20 @@ export function getCourtOrderPoaFullSchema() {
       }
       return val.map((doc: CourtOrderDocPayload | CourtOrderFileUi) => {
         const isFileType = 'id' in doc
+        // normalize document type from either Client or Drs type
+        const docType: DocumentTypeClient = isFileType
+          ? doc.type
+          : (doc.documentType === DocumentTypeClient.COURT_ORDER
+            ? DocumentTypeClient.COURT_ORDER
+            : DocumentTypeClient.SUPPORTING_DOCUMENT)
 
         return {
           id: (isFileType ? doc.id : undefined) ?? doc.fileKey ?? crypto.randomUUID(),
           fileKey: doc.fileKey,
           name: isFileType ? doc.name : doc.fileName,
-          type: isFileType ? doc.type : (doc.documentType === 'court_order' ? 'CRTO' : 'SUPP'),
           action: isFileType ? doc.action : CourtOrderFileAction.NONE,
-          status: isFileType ? doc.status : CourtOrderFileStatus.IDLE
+          status: isFileType ? doc.status : CourtOrderFileStatus.IDLE,
+          type: docType
         }
       })
     }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet

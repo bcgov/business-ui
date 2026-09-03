@@ -5,7 +5,7 @@ import type { ButtonProps } from '@nuxt/ui'
 const props = defineProps<CourtOrderFileUi>()
 
 const emit = defineEmits<{
-  fileAction: [id: string, action: 'cancel' | 'undo' | 'delete']
+  fileAction: [id: string, action: 'cancel' | 'undo' | 'delete' | 'dismiss']
 }>()
 
 const { $businessApi } = useNuxtApp()
@@ -31,6 +31,17 @@ const actionProps = computed(() => {
       ariaLabel: t('label.cancelUploadOfFilename', { filename: props.name }),
       icon: 'i-mdi-close',
       onClick: () => emit('fileAction', props.id, 'cancel')
+    }
+  }
+
+  if (props.status === CourtOrderFileStatus.ERROR) {
+    return {
+      label: t('label.dismiss'),
+      ariaLabel: t('label.dismissError'),
+      icon: 'i-mdi-close',
+      class: 'text-neutral-highlighted hover:text-text-neutral-highlighted/75'
+        + ' active:text-text-neutral-highlighted/75 focus-visible:ring-text-neutral-highlighted',
+      onClick: () => emit('fileAction', props.id, 'dismiss')
     }
   }
 
@@ -82,18 +93,20 @@ defineOptions({
           class="-ml-2"
         />
         <UButton
-          v-if="status !== CourtOrderFileStatus.ERROR"
           v-bind="actionProps"
           variant="link"
           class="px-2 py-1 h-min gap-1 @max-[350px]:hidden text-base"
         />
       </div>
       <div class="flex flex-col gap-1 ml-7">
-        <UProgress
-          v-if="status === CourtOrderFileStatus.LOADING"
-          animation="carousel"
-          class="max-w-3xs mt-2"
-        />
+        <div v-if="status === CourtOrderFileStatus.LOADING" class="flex flex-col gap-1 text-neutral-toned">
+          <span>{{ $t(`label.${(progress ?? 0) >= 95 ? 'processing' : 'uploading'}`) }}...</span>
+          <UProgress
+            :model-value="progress"
+            class="max-w-3xs"
+          />
+          <span v-if="progress" class="ml-5">{{ progress }}%</span>
+        </div>
         <span v-else class="-mt-1">{{ fileSize }}</span>
         <UBadge
           v-if="action === CourtOrderFileAction.DELETED"
@@ -102,7 +115,6 @@ defineOptions({
         />
       </div>
       <UButton
-        v-if="status !== CourtOrderFileStatus.ERROR"
         v-bind="actionProps"
         variant="link"
         class="px-2 py-1 h-min gap-1 @min-[350px]:hidden ml-4 mt-auto text-base"

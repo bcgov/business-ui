@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { ModelRef } from 'vue'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -11,11 +12,26 @@ import {
 const mockBusinessApi = vi.fn()
 
 const mockBusinessService = {
-  postDocument: vi.fn(),
   deleteDocument: vi.fn()
 }
 
 mockNuxtImport('useBusinessService', () => () => mockBusinessService)
+
+const mockAuth = { getToken: vi.fn().mockResolvedValue('mock-token') }
+const mockAccountStore = { currentAccount: { id: '123' } }
+
+mockNuxtImport('useConnectAuth', () => () => mockAuth)
+mockNuxtImport('useConnectAccountStore', () => () => mockAccountStore)
+mockNuxtImport('useRuntimeConfig', () => () => ({
+  public: {
+    appName: 'test-app',
+    xApiKey: 'test-key',
+    businessApiUrl: 'https://test-api.gov.bc.ca',
+    businessApiVersion: '/v1'
+  }
+}))
+const mockMediaQuery = ref(false)
+mockNuxtImport('useMediaQuery', () => () => mockMediaQuery)
 
 vi.mock('#app', async (importOriginal) => {
   const original = await importOriginal<typeof import('#app')>()
@@ -31,6 +47,23 @@ vi.mock('#app', async (importOriginal) => {
       }
     })
   }
+})
+
+const getXhrMock = (sendMock?: any, abortMock?: any) => ({
+  open: vi.fn(),
+  setRequestHeader: vi.fn(),
+  send: sendMock || vi.fn(function (this: any) {
+    this.status = 200
+    this.responseText = JSON.stringify({
+      key: 'drs-key',
+      consumerFilename: 'valid_order.pdf',
+      documentURL: 'https://example.com/doc'
+    })
+    this.onload?.()
+    this.onloadend?.()
+  }),
+  abort: abortMock || vi.fn(),
+  upload: {}
 })
 
 describe('formatBytes', () => {
@@ -56,8 +89,10 @@ describe('useCourtOrderDocs', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.unstubAllGlobals()
     model = ref<CourtOrderFileUi[]>([]) as ModelRef<CourtOrderFileUi[]>
     mockBusinessApi.mockResolvedValue({})
+    mockMediaQuery.value = false
   })
 
   describe('State sync', () => {
@@ -65,7 +100,7 @@ describe('useCourtOrderDocs', () => {
       const initial: CourtOrderFileUi = {
         id: '1234567',
         name: 'court_order.pdf',
-        type: DocumentTypeDrs.COURT_ORDER,
+        type: DocumentTypeClient.COURT_ORDER,
         action: CourtOrderFileAction.NONE,
         status: CourtOrderFileStatus.SUCCESS
       }
@@ -100,7 +135,7 @@ describe('useCourtOrderDocs', () => {
       model.value = [{
         id: '1234567',
         name: 'court_order.pdf',
-        type: DocumentTypeDrs.COURT_ORDER,
+        type: DocumentTypeClient.COURT_ORDER,
         action: CourtOrderFileAction.ADDED,
         status: CourtOrderFileStatus.SUCCESS
       }]
@@ -127,7 +162,7 @@ describe('useCourtOrderDocs', () => {
       model.value = [{
         id: '1234567',
         name: 'court_order.pdf',
-        type: DocumentTypeDrs.COURT_ORDER,
+        type: DocumentTypeClient.COURT_ORDER,
         action: CourtOrderFileAction.DELETED,
         status: CourtOrderFileStatus.IDLE
       }]
@@ -142,33 +177,22 @@ describe('useCourtOrderDocs', () => {
 
   describe('processFiles', () => {
     it('should upload files successfully', async () => {
-      const mockApiResponse = {
-        key: 'drs-key',
-        consumerFilename: 'valid_order.pdf',
-        documentURL: 'https://example.com/doc'
-      }
-      mockBusinessService.postDocument.mockResolvedValueOnce(mockApiResponse)
-
+      const xhrMock = getXhrMock()
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
       const { courtOrderFile, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
       courtOrderFile.value = new File(['pdf data'], 'valid_order.pdf', { type: 'application/pdf' })
 
-      await new Promise(resolve => setTimeout(resolve, 10)) // required to transition from status LOADING -> SUCCESS
+      await new Promise(resolve => setTimeout(resolve, 10))
 
-      expect(mockBusinessService.postDocument).toHaveBeenCalledOnce()
-      expect(courtOrderDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
-      expect(courtOrderDocs.value[0]!.fileKey).toBe(mockApiResponse.key)
-
-      expect(mockBusinessService.postDocument).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'valid_order.pdf' }),
-        expect.objectContaining({
-          filingType: FilingType.COURT_ORDER,
-          entityType: defaultProps.entityType,
-          documentType: DocumentTypeClient.COURT_ORDER,
-          identifier: defaultProps.identifier,
-          filingId: defaultProps.filingId,
-          signal: expect.any(AbortSignal)
-        })
+      expect(xhrMock.open).toHaveBeenCalledWith(
+        'POST',
+        expect.stringContaining('/documents/client/courtOrder/BC/court_order?filename=valid_order.pdf')
       )
+      expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Authorization', expect.stringMatching(/^Bearer/))
+      expect(xhrMock.send).toHaveBeenCalledOnce()
+
+      expect(courtOrderDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
+      expect(courtOrderDocs.value[0]!.fileKey).toBe('drs-key')
     })
 
     it('should set error status when file fails schema check', async () => {
@@ -180,29 +204,43 @@ describe('useCourtOrderDocs', () => {
 
       expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
-      expect(mockBusinessService.postDocument).not.toHaveBeenCalled()
     })
 
     it('should ensure unique file names', async () => {
       model.value = [{
         id: '1234567',
         name: 'document.pdf',
-        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
         action: CourtOrderFileAction.ADDED,
         status: CourtOrderFileStatus.SUCCESS
       }]
 
-      mockBusinessService.postDocument
-        .mockResolvedValueOnce({
+      const sendMock = vi.fn()
+
+      sendMock.mockImplementationOnce(function (this: any) {
+        this.status = 200
+        this.responseText = JSON.stringify({
           key: 'drs-key-1',
           consumerFilename: 'document (1).pdf',
           documentURL: 'https://example.com/doc1'
         })
-        .mockResolvedValueOnce({
+        this.onload?.()
+        this.onloadend?.()
+      })
+
+      sendMock.mockImplementationOnce(function (this: any) {
+        this.status = 200
+        this.responseText = JSON.stringify({
           key: 'drs-key-2',
           consumerFilename: 'document (2).pdf',
           documentURL: 'https://example.com/doc2'
         })
+        this.onload?.()
+        this.onloadend?.()
+      })
+
+      const xhrMock = getXhrMock(sendMock)
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
@@ -212,23 +250,22 @@ describe('useCourtOrderDocs', () => {
 
       expect(supportingDocs.value).toHaveLength(2)
       expect(supportingDocs.value[1]!.name).toBe('document (1).pdf')
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('filename=document+%281%29.pdf')
+      )
 
       supportingFiles.value = [new File(['test file'], 'document (1).pdf', { type: 'application/pdf' })]
       await new Promise(resolve => setTimeout(resolve, 10))
 
       expect(supportingDocs.value).toHaveLength(3)
       expect(supportingDocs.value[2]!.name).toBe('document (2).pdf')
-
-      expect(mockBusinessService.postDocument).toHaveBeenLastCalledWith(
-        expect.objectContaining({ name: 'document (2).pdf' }),
-        expect.objectContaining({
-          filingType: FilingType.COURT_ORDER,
-          entityType: defaultProps.entityType,
-          documentType: DocumentTypeClient.SUPPORTING_DOCUMENT,
-          identifier: defaultProps.identifier,
-          filingId: defaultProps.filingId
-        })
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('filename=document+%282%29.pdf')
       )
+
+      expect(sendMock).toHaveBeenCalledTimes(2)
     })
   })
 
@@ -238,7 +275,7 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
         action: CourtOrderFileAction.ADDED,
         status: CourtOrderFileStatus.SUCCESS
       }
@@ -258,7 +295,7 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
         action: CourtOrderFileAction.NONE,
         status: CourtOrderFileStatus.SUCCESS
       }
@@ -279,7 +316,7 @@ describe('useCourtOrderDocs', () => {
         id: '1234567',
         fileKey: 'drs-key',
         name: 'doc.pdf',
-        type: DocumentTypeDrs.SUPPORTING_DOCUMENT,
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
         action: CourtOrderFileAction.DELETED,
         status: CourtOrderFileStatus.IDLE
       }
@@ -297,14 +334,14 @@ describe('useCourtOrderDocs', () => {
         {
           id: 'file-1',
           name: 'active.pdf',
-          type: DocumentTypeDrs.COURT_ORDER,
+          type: DocumentTypeClient.COURT_ORDER,
           action: CourtOrderFileAction.ADDED,
           status: CourtOrderFileStatus.SUCCESS
         },
         {
           id: 'file-2',
           name: 'deleted.pdf',
-          type: DocumentTypeDrs.COURT_ORDER,
+          type: DocumentTypeClient.COURT_ORDER,
           action: CourtOrderFileAction.DELETED,
           status: CourtOrderFileStatus.SUCCESS
         }
@@ -320,9 +357,16 @@ describe('useCourtOrderDocs', () => {
 
     it('should call abort and remove file on cancel', async () => {
       const abortSpy = vi.spyOn(AbortController.prototype, 'abort')
+      const xhrMock = getXhrMock(
+        vi.fn(),
+        vi.fn(function (this: any) {
+          this.onabort?.()
+          this.onloadend?.()
+        })
+      )
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
 
       const { onFileAction, supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
-      mockBusinessApi.mockImplementation(() => new Promise(() => {}))
 
       supportingFiles.value = [new File(['test file'], 'uploading.pdf', { type: 'application/pdf' })]
       await nextTick()
@@ -331,7 +375,28 @@ describe('useCourtOrderDocs', () => {
       onFileAction(activeFile.id, 'cancel')
 
       expect(abortSpy).toHaveBeenCalledOnce()
+      expect(xhrMock.abort).toHaveBeenCalledOnce()
       expect(supportingDocs.value).toHaveLength(0)
+    })
+  })
+
+  describe('isDropZoneEnabled', () => {
+    it('should be enabled when media query returns false', async () => {
+      mockMediaQuery.value = false
+      await nextTick()
+
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
+
+      expect(isDropZoneEnabled.value).toBe(true)
+    })
+
+    it('should be disabled when media query returns true', async () => {
+      mockMediaQuery.value = true
+      await nextTick()
+
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
+
+      expect(isDropZoneEnabled.value).toBe(false)
     })
   })
 })
