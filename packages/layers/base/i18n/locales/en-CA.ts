@@ -866,7 +866,7 @@ export default {
     seriesNameInvalidWords: 'Series name cannot contain the term ‘share’, ‘shares’, or ‘value’',
     totalOfAllSeriesCantExceedMaxOfClass: 'The maximum number for all series combined cannot exceed the maximum number for the class',
     uniqueName: 'Name must be unique',
-    validEmailAddressRequired: 'Valid email address is required',
-    uploadFailedGeneric: 'Unable to upload {filename}.'
+    uploadFailedGeneric: 'Unable to upload {filename}.',
+    validEmailAddressRequired: 'Valid email address is required'
   }
 }
