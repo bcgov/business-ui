@@ -86,7 +86,7 @@ defineOptions({
       :blob="data"
     />
     <div class="flex flex-col min-w-0 w-full">
-      <div class="flex justify-between w-full min-w-0">
+      <div class="flex gap-8 justify-between w-full min-w-0">
         <FormCourtOrderPoaFullFileUploadItemName
           v-bind="$props"
           :blob="data"

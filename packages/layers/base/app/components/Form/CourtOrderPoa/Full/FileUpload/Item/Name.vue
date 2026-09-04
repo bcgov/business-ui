@@ -50,7 +50,10 @@ function handleDownload() {
 
 <template>
   <div class="flex gap-1 items-start min-w-0">
-    <div v-if="status === CourtOrderFileStatus.ERROR && errorMessage" class="flex gap-1 items-start pl-2">
+    <div
+      v-if="status === CourtOrderFileStatus.ERROR && errorMessage"
+      class="flex gap-1 items-start pl-2 text-base px-2 py-1"
+    >
       <UIcon
         class="size-6 shrink-0"
         v-bind="iconProps"
