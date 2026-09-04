@@ -1,4 +1,5 @@
 export * from './address'
+export * from './amalgamation'
 export * from './certify'
 export * from './effective-date'
 export * from './confirm-authorization'
