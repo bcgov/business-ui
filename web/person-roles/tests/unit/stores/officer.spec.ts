@@ -54,6 +54,7 @@ function createPartyMock(
       actions,
       name: nameData,
       roles: [{ roleType: RoleTypeUi.PRESIDENT, roleClass: RoleClass.OFFICER }],
+      email: '',
       address: {
         mailingAddress: formatAddressUi(addressData.mailing),
         deliveryAddress: formatAddressUi(addressData.delivery),

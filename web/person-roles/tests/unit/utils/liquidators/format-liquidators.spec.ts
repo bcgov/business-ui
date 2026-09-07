@@ -17,6 +17,7 @@ function createPartyMock(
       actions,
       name: nameData,
       roles: [{ roleType: RoleTypeUi.LIQUIDATOR }],
+      email: '',
       address: {
         mailingAddress: formatAddressUi(addressData.mailing),
         deliveryAddress: formatAddressUi(addressData.delivery),
