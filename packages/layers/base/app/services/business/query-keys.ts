@@ -24,6 +24,8 @@ export const useBusinessQueryKeys = () => {
     authorizedActions: (businessId: string) => [...base.value, businessId, 'authorized-actions'] as const,
     business: (businessId: string, slim: boolean, publicData: boolean) =>
       [...base.value, businessId, 'information', { slim, publicData }] as const,
+    businessExt: (businessId: string, forCorrection: boolean, filingType?: FilingType) =>
+      [...base.value, businessId, 'information-ext', { forCorrection, filingType }] as const,
     bootstrapFiling: (tempRegId: string) => [...base.value, tempRegId, 'bootstrap-filing'] as const,
     courtOrders: (businessId: string) => [...base.value, businessId, 'court-orders'] as const,
     document: (url: string) => [...base.value, 'document', { url }] as const,
