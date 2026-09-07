@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormSubmitEvent, Form, FormError, InputMenuItem } from '@nuxt/ui'
+import type { FormSubmitEvent, Form, FormError } from '@nuxt/ui'
 import * as z from 'zod'
 
 const { t } = useI18n()
@@ -49,10 +49,6 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
   const data = event.data as FullSchema
   console.info('Form data: ', data)
 }
-
-onMounted(async () => {
-  await useBusinessService().getBusinessExtended('BC3000190')
-})
 </script>
 
 <template>

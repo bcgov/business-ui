@@ -119,7 +119,7 @@ describe('useBusinessQuery', () => {
     expect(custom.staleTime).toBe(500)
     expect(mockKeys.business).toHaveBeenLastCalledWith(businessId, false, false)
   })
-  
+
   it('businessExtOptions should have correct config', () => {
     const { businessExtOptions } = useBusinessQuery()
 
@@ -130,7 +130,7 @@ describe('useBusinessQuery', () => {
       `businesses/extended/${businessId}`, { query: undefined })
     expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, false, undefined)
     expect(basic.staleTime).toBe(DEFAULT_STALE_TIME)
-    
+
     // forCorrection
     const forCorrection = businessExtOptions(businessId, true)
     forCorrection.query({} as any)
@@ -138,7 +138,7 @@ describe('useBusinessQuery', () => {
       `businesses/extended/${businessId}`, { query: { forCorrection: true } })
     expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, true, undefined)
     expect(forCorrection.staleTime).toBe(DEFAULT_STALE_TIME)
-    
+
     // forCorrection with filing type
     const forCorrectionAndFiling = businessExtOptions(businessId, true, FilingType.CHANGE_OF_DIRECTORS)
     forCorrectionAndFiling.query({} as any)

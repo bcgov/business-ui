@@ -49,14 +49,14 @@ defineOptions({ inheritAttrs: false })
 <template>
   <div class="relative group">
     <span
-        :id="labelId"
-  :class="[
-    'absolute left-2.5 z-10 pointer-events-none text-neutral transition-transform duration-200 ease-out origin-left text-base line-clamp-1',
-    'top-1/2 -translate-y-1/2',
-    'group-focus-within:translate-y-[-115%] group-focus-within:scale-75 group-focus-within:text-primary',
-    'group-has-aria-invalid:text-error',
-    hasValue ? 'translate-y-[-115%] scale-75' : '',
-  ]"
+      :id="labelId"
+      :class="[
+        'absolute text-neutral transition-transform duration-200 ease-out origin-left text-base line-clamp-1',
+        'top-1/2 left-2.5 z-10 pointer-events-none -translate-y-1/2',
+        'group-focus-within:translate-y-[-115%] group-focus-within:scale-75 group-focus-within:text-primary',
+        'group-has-aria-invalid:text-error',
+        hasValue ? 'translate-y-[-115%] scale-75' : ''
+      ]"
     >
       {{ label }}
     </span>

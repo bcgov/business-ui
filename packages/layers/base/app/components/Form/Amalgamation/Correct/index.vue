@@ -45,12 +45,12 @@ const caOpts: InputMenuItem[] = [
   ...countrySubdivisions.ca
     .filter(p => p.code !== 'BC')
     .map(p => ({
-      label: p.name,
+      label: `${p.name}, Canada`,
       region: p.code,
       country: 'CA'
     })),
-    { type: 'separator' },
-    { region: 'FEDERAL', country: "CA", label: t('label.federal') }
+  { type: 'separator' },
+  { region: 'FEDERAL', country: 'CA', label: t('label.federal') }
 ]
 
 const internationalOpts = [
@@ -58,8 +58,12 @@ const internationalOpts = [
   ...isoCountriesListSortedByName
     .filter(c => c.alpha_2 !== 'CA')
     .sort((a, b) => {
-      if (a.alpha_2 === 'US') return -1
-      if (b.alpha_2 === 'US') return 1
+      if (a.alpha_2 === 'US') {
+        return -1
+      }
+      if (b.alpha_2 === 'US') {
+        return 1
+      }
       return 0
     })
     .map(c => ({
@@ -120,7 +124,7 @@ defineExpose({
             class="padding-x-default pt-6 sm:pt-10 pb-3 sm:pb-5"
             :error="formErrors.name"
           >
-           <ConnectFormInput
+            <ConnectFormInput
               v-model="model.name"
               input-id="business-name-home-jurisdiction"
               :label="$t('label.businessFullNameInHomeJurisdiction')"
@@ -145,28 +149,28 @@ defineExpose({
           </ConnectFormFieldWrapper>
         </div>
         <USeparator class="padding-x-default" />
-          <ConnectFormFieldWrapper
-            :label="$t('label.homeJurisdiction')"
-            orientation="horizontal"
-            details-aria-hidden
-            class="padding-xy-default"
-            :error="formErrors.jurisdiction"
-          >
-            <UFormField name="jurisdiction.country">
-              <ConnectInputMenu
-                v-model="model.jurisdiction"
-                id="foreign-jurisdiction-menu"
-                :label="$t('label.selectHomeJurisdiction')"
-                :items="jurisdictionOpts"
-                open-on-focus
-                class="w-full"
-                :ui="{
-                  label: 'font-bold px-4 pb-2 pt-3',
-                  separator: 'mx-0'
-                }"
-              />
-            </UFormField>
-          </ConnectFormFieldWrapper>
+        <ConnectFormFieldWrapper
+          :label="$t('label.homeJurisdiction')"
+          orientation="horizontal"
+          details-aria-hidden
+          class="padding-xy-default"
+          :error="formErrors.jurisdiction"
+        >
+          <UFormField name="jurisdiction.country">
+            <ConnectInputMenu
+              id="foreign-jurisdiction-menu"
+              v-model="model.jurisdiction"
+              :label="$t('label.selectHomeJurisdiction')"
+              :items="jurisdictionOpts"
+              open-on-focus
+              class="w-full"
+              :ui="{
+                label: 'font-bold px-4 pb-2 pt-3',
+                separator: 'mx-0'
+              }"
+            />
+          </UFormField>
+        </ConnectFormFieldWrapper>
       </template>
     </SubFormWrapper>
   </UForm>

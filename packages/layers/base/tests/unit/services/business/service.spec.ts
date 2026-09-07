@@ -97,7 +97,7 @@ describe('useBusinessService', () => {
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData.business)
   })
-  
+
   it('getBusinessExtended should fetch options and call the cache helper', async () => {
     const mockData = { amalgamation: { someData: true } }
     mockGetCachedOrFetch.mockResolvedValue(mockData)

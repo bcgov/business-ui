@@ -136,7 +136,7 @@ export const useBusinessService = () => {
     return await getCachedOrFetch<{ business: BusinessData | BusinessDataPublic }>(options, force)
       .then(res => res.business)
   }
-  
+
   async function getBusinessExtended(
     businessId: string,
     forCorrection: boolean = false,

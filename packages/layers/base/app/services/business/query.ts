@@ -103,7 +103,7 @@ export const useBusinessQuery = () => {
       businessId, slim, publicData, options as DefineOptions<{ business: BusinessData | BusinessDataPublic }>
     ))
   }
-  
+
   function businessExtOptions(
     businessId: MaybeRefOrGetter<string>,
     forCorrection: boolean = false,
