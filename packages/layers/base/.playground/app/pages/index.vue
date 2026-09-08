@@ -151,7 +151,8 @@ const componentExamples: DropdownMenuItem[] = [
       {
         label: 'FormAmalgamation',
         children: [
-          { label: 'Correct', to: localePath('/examples/components/Form/Amalgamation/Correct') }
+          { label: 'Correct', to: localePath('/examples/components/Form/Amalgamation/Correct') },
+          { label: 'Correct Statement', to: localePath('/examples/components/Form/Amalgamation/Correct/Statement') }
         ]
       },
       {

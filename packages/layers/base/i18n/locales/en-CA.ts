@@ -358,6 +358,7 @@ export default {
     alterationPending: 'Alteration Pending',
     amalgamation: 'Amalgamation',
     amalgamationOutComplete: 'Amalgamation Out Complete',
+    amalgamationStatement: 'Amalgamation Statement',
     associatedFiling: 'Associated Filing',
     back: 'Back',
     bcRegistriesContactInformation: 'BC Registries Contact Information',
@@ -595,6 +596,8 @@ export default {
     viewDetails: 'View Details',
     viewDocuments: 'View Documents',
     voluntaryDissolutionPending: 'Voluntary Dissolution Pending',
+    withCourtApproval: 'With Court Approval',
+    withoutCourtApproval: 'Without Court Approval',
     WITHDRAWN: 'WITHDRAWN',
     yes: 'Yes',
     yourCompany: 'Your Company'
@@ -765,6 +768,7 @@ export default {
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     haspreferredName: 'This person also has another name they prefer to use',
     incorporation: 'incorporation',
+    indicateStatementForAmalgamation: 'Please indicate the statement applicable to this amalgamation.',
     itMayTake1hourToProcessFiling: 'It may take up to one hour to process this filing. If this issue persists, please contact us.',
     latinAlphabetOnly: 'Latin alphabet only. If the name uses another script, spell it phonetically in English or French.',
     limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
@@ -811,6 +815,8 @@ export default {
     unknown: 'unknown',
     uploadMaxOneCourtOrder: 'Upload a maximum of one court order.',
     uploadOneOrMoreSupportingDocs: 'Upload one or more supporting documents.',
+    withCourtApprovalDescription: 'This amalgamation has been approved by the court and a copy of the entered court order approving the amalgamation has been obtained and has been deposited in the records office of each of the amalgamating companies.',
+    withoutCourtApprovalDescription: 'This amalgamation has been effected without court approval. A copy of all the required affidavits under section 277(1) have been obtained and the affidavit obtained from each amalgamating company’s records office.',
     withdrawnOn: 'WITHDRAWN on',
     youHaveNoBusinessLedger: 'You have no filing history',
     yourFilingsWillAppearHere: 'Your completed filings and transactions will appear here'

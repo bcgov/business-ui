@@ -30,3 +30,18 @@ export function getActiveAmalgamationCorrectSchema() {
 
 export type AmalgamationCorrectSchema = z.output<ReturnType<typeof getAmalgamationCorrectSchema>>
 export type ActiveAmalgamationCorrectSchema = z.output<ReturnType<typeof getActiveAmalgamationCorrectSchema>>
+
+export function getAmalgamationCorrectStatementSchema() {
+  return z.object({
+    courtApproval: z.boolean().default(false)
+  })
+}
+
+export function getActiveAmalgamationCorrectStatementSchema() {
+  return getAmalgamationCorrectSchema().nullable().optional()
+}
+
+export type AmalgamationCorrectStatementSchema = z.output<ReturnType<typeof getAmalgamationCorrectStatementSchema>>
+export type ActiveAmalgamationCorrectStatementSchema = z.output<
+  ReturnType<typeof getActiveAmalgamationCorrectStatementSchema>
+>
