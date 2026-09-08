@@ -167,3 +167,17 @@ describe('getAmalgamationCorrectSchema', () => {
     })
   })
 })
+
+describe('getAmalgamationCorrectStatementSchema', () => {
+  const schema = getAmalgamationCorrectStatementSchema()
+
+  it('defaults courtApproval to false when empty', () => {
+    const result = schema.parse({})
+    expect(result).toEqual({ courtApproval: false })
+  })
+
+  it('accepts boolean values', () => {
+    expect(schema.parse({ courtApproval: true })).toEqual({ courtApproval: true })
+    expect(schema.parse({ courtApproval: false })).toEqual({ courtApproval: false })
+  })
+})

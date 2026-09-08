@@ -1,9 +1,12 @@
 <script setup lang="ts">
 // wrapper/container component used in table (or similar) expansion slots when opening a sub-form
 // to be used for single fields only
-defineProps<{
+const {
+  orientation = 'horizontal'
+} = defineProps<{
   name?: string
   help?: string
+  orientation?: 'horizontal' | 'vertical'
   taskGuardConfig?: {
     message?: string
     messageId: string
@@ -29,12 +32,14 @@ defineEmits<{
           <div class="w-full flex gap-4 items-center">
             <slot />
             <UButton
+              v-if="orientation === 'horizontal'"
               variant="outline"
               :label="$t('label.cancel')"
               class="justify-center hidden lg:block"
               @click="$emit('cancel')"
             />
             <UButton
+              v-if="orientation === 'horizontal'"
               :data-alert-focus-target="taskGuardConfig?.targetId"
               :aria-describedby="taskGuardConfig?.messageId"
               :label="$t('label.done')"
@@ -49,7 +54,12 @@ defineEmits<{
         </template>
       </UFormField>
     </div>
-    <div class="flex gap-2 lg:hidden">
+    <div
+      :class="[
+        'flex gap-2 ml-auto',
+        { 'lg:hidden': orientation === 'horizontal' }
+      ]"
+    >
       <UButton
         variant="outline"
         :label="$t('label.cancel')"
