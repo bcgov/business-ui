@@ -104,6 +104,34 @@ export const useBusinessQuery = () => {
     ))
   }
 
+  function businessExtOptions(
+    businessId: MaybeRefOrGetter<string>,
+    forCorrection: boolean = false,
+    filingType?: FilingType,
+    options?: DefineOptions<{ amalgamation: Amalgamation }>
+  ) {
+    const addedPath = filingType ? `/${filingType}` : ''
+    return defineQueryOptions({
+      query: () => $businessApi(`businesses/extended/${toValue(businessId)}${addedPath}`, {
+        query: forCorrection ? { forCorrection: true } : undefined
+      }),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.businessExt(toValue(businessId), forCorrection, filingType)
+    })
+  }
+
+  function businessExt(
+    businessId: MaybeRefOrGetter<string>,
+    forCorrection: boolean = false,
+    filingType?: FilingType,
+    options?: QueryOptions<{ amalgamation: Amalgamation }>
+  ) {
+    return useQuery(() => businessExtOptions(
+      businessId, forCorrection, filingType, options as DefineOptions<{ amalgamation: Amalgamation }>
+    ))
+  }
+
   function courtOrdersOptions(
     businessId: MaybeRefOrGetter<string>,
     options?: DefineOptions<{ courtOrders: CourtOrderResponse[] }>
@@ -412,6 +440,8 @@ export const useBusinessQuery = () => {
     authorizedActionsOptions,
     business,
     businessOptions,
+    businessExt,
+    businessExtOptions,
     bootstrapFiling,
     bootstrapFilingOptions,
     courtOrders,

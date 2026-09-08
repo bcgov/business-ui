@@ -145,59 +145,76 @@ const componentExamples: DropdownMenuItem[] = [
     to: localePath('/examples/components/Modal/StaffPay')
   },
   {
-    label: 'FormCourtOrderPoa',
+    label: 'Form Components',
+    description: 'Forms, form sections and form sub sections',
     children: [
-      { label: 'Default', to: localePath('/examples/components/Form/CourtOrderPoa/default') },
-      { label: 'Full', to: localePath('/examples/components/Form/CourtOrderPoa/full') }
+      {
+        label: 'FormAmalgamation',
+        children: [
+          { label: 'Correct', to: localePath('/examples/components/Form/Amalgamation/Correct') }
+        ]
+      },
+      {
+        label: 'FormBusinessName',
+        to: localePath('/examples/components/Form/BusinessName')
+      },
+      {
+        label: 'FormCertify',
+        to: localePath('/examples/components/Form/Certify/default')
+      },
+      {
+        label: 'FormConfirmAuthorization',
+        to: localePath('/examples/components/Form/ConfirmAuthorization/default')
+      },
+      {
+        label: 'FormCourtOrderPoa',
+        children: [
+          { label: 'Default', to: localePath('/examples/components/Form/CourtOrderPoa/default') },
+          { label: 'Full', to: localePath('/examples/components/Form/CourtOrderPoa/full') }
+        ]
+      },
+      {
+        label: 'FormDetail',
+        to: localePath('/examples/components/Form/Detail')
+      },
+      {
+        label: 'FormDocumentDelivery',
+        to: localePath('/examples/components/Form/DocumentDelivery')
+      },
+      {
+        label: 'FormDocumentId',
+        to: localePath('/examples/components/Form/DocumentId')
+      },
+      {
+        label: 'FormDocumentUpload',
+        children: [
+          {
+            label: 'Default',
+            to: localePath('/examples/components/Form/DocumentUpload')
+          },
+          {
+            label: 'Invalid',
+            to: localePath('/examples/components/Form/DocumentUpload/invalid')
+          }
+        ]
+      },
+      {
+        label: 'FormEffectiveDate',
+        to: localePath('/examples/components/Form/EffectiveDate')
+      },
+      {
+        label: 'FormNameRequestNumber',
+        to: localePath('/examples/components/Form/NameRequest/Number')
+      },
+      {
+        label: 'FormNameTranslation',
+        to: localePath('/examples/components/Form/NameTranslation')
+      },
+      {
+        label: 'FormPreExistingCompanyRevisions',
+        to: localePath('/examples/components/Form/PreExistingCompanyProvisions')
+      }
     ]
-  },
-  {
-    label: 'FormDetail',
-    to: localePath('/examples/components/Form/Detail')
-  },
-  {
-    label: 'FormDocumentDelivery',
-    to: localePath('/examples/components/Form/DocumentDelivery')
-  },
-  {
-    label: 'FormDocumentId',
-    to: localePath('/examples/components/Form/DocumentId')
-  },
-  {
-    label: 'FormDocumentUpload',
-    to: localePath('/examples/components/Form/DocumentUpload')
-  },
-  {
-    label: 'FormDocumentUpload: Invalid',
-    to: localePath('/examples/components/Form/DocumentUpload/invalid')
-  },
-  {
-    label: 'FormEffectiveDate',
-    to: localePath('/examples/components/Form/EffectiveDate')
-  },
-  {
-    label: 'FormBusinessName',
-    to: localePath('/examples/components/Form/BusinessName')
-  },
-  {
-    label: 'FormCertify',
-    to: localePath('/examples/components/Form/Certify/default')
-  },
-  {
-    label: 'FormConfirmAuthorization',
-    to: localePath('/examples/components/Form/ConfirmAuthorization/default')
-  },
-  {
-    label: 'FormNameRequestNumber',
-    to: localePath('/examples/components/Form/NameRequest/Number')
-  },
-  {
-    label: 'FormNameTranslation',
-    to: localePath('/examples/components/Form/NameTranslation')
-  },
-  {
-    label: 'FormPreExistingCompanyRevisions',
-    to: localePath('/examples/components/Form/PreExistingCompanyProvisions')
   },
   {
     label: 'Table Examples',

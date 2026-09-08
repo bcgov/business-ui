@@ -6,6 +6,7 @@ const mockQuery = {
   addressesOptions: vi.fn(),
   authorizedActionsOptions: vi.fn(),
   businessOptions: vi.fn(),
+  businessExtOptions: vi.fn(),
   bootstrapFilingOptions: vi.fn(),
   courtOrdersOptions: vi.fn(),
   documentOptions: vi.fn(),
@@ -95,6 +96,18 @@ describe('useBusinessService', () => {
     expect(opts).toHaveBeenCalledWith(businessId, false, false)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     expect(result).toEqual(mockData.business)
+  })
+
+  it('getBusinessExtended should fetch options and call the cache helper', async () => {
+    const mockData = { amalgamation: { someData: true } }
+    mockGetCachedOrFetch.mockResolvedValue(mockData)
+
+    const result = await service.getBusinessExtended(businessId, true, FilingType.ALTERATION)
+
+    const opts = mockQuery.businessExtOptions
+    expect(opts).toHaveBeenCalledWith(businessId, true, FilingType.ALTERATION)
+    expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
+    expect(result).toEqual(mockData.amalgamation)
   })
 
   it('getBootstrapFiling should fetch options and call the cache helper', async () => {

@@ -137,6 +137,17 @@ export const useBusinessService = () => {
       .then(res => res.business)
   }
 
+  async function getBusinessExtended(
+    businessId: string,
+    forCorrection: boolean = false,
+    filingType?: FilingType,
+    force = false
+  ): Promise<Amalgamation> {
+    const options = query.businessExtOptions(businessId, forCorrection, filingType)
+    return await getCachedOrFetch<{ amalgamation: Amalgamation }>(options, force)
+      .then(res => res.amalgamation)
+  }
+
   /**
    * Fetches a bootstrap filing by its temporary business identifier.
    * @param tempRegId the temporary identifier of the business
@@ -466,6 +477,7 @@ export const useBusinessService = () => {
     getAuthInfo,
     getAuthorizedActions,
     getBusiness,
+    getBusinessExtended,
     getBootstrapFiling,
     getCourtOrders,
     getDocument,

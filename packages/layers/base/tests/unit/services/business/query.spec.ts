@@ -8,6 +8,7 @@ const mockKeys = {
   authInfo: vi.fn(),
   authorizedActions: vi.fn(),
   business: vi.fn(),
+  businessExt: vi.fn(),
   bootstrapFiling: vi.fn(),
   courtOrders: vi.fn(),
   document: vi.fn(),
@@ -117,6 +118,43 @@ describe('useBusinessQuery', () => {
     expect(custom.enabled).toBe(false)
     expect(custom.staleTime).toBe(500)
     expect(mockKeys.business).toHaveBeenLastCalledWith(businessId, false, false)
+  })
+
+  it('businessExtOptions should have correct config', () => {
+    const { businessExtOptions } = useBusinessQuery()
+
+    // basic
+    const basic = businessExtOptions(businessId)
+    basic.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/extended/${businessId}`, { query: undefined })
+    expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, false, undefined)
+    expect(basic.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    // forCorrection
+    const forCorrection = businessExtOptions(businessId, true)
+    forCorrection.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/extended/${businessId}`, { query: { forCorrection: true } })
+    expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, true, undefined)
+    expect(forCorrection.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    // forCorrection with filing type
+    const forCorrectionAndFiling = businessExtOptions(businessId, true, FilingType.CHANGE_OF_DIRECTORS)
+    forCorrectionAndFiling.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/extended/${businessId}/${FilingType.CHANGE_OF_DIRECTORS}`, { query: { forCorrection: true } })
+    expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, true, FilingType.CHANGE_OF_DIRECTORS)
+    expect(forCorrectionAndFiling.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    // custom options
+    const custom = businessExtOptions(businessId, false, undefined, {
+      enabled: false,
+      staleTime: 500
+    })
+    expect(custom.enabled).toBe(false)
+    expect(custom.staleTime).toBe(500)
+    expect(mockKeys.businessExt).toHaveBeenLastCalledWith(businessId, false, undefined)
   })
 
   it('courtOrdersOptions should have correct config', () => {
