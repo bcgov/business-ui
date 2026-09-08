@@ -112,7 +112,7 @@ export const useBusinessQuery = () => {
   ) {
     const addedPath = filingType ? `/${filingType}` : ''
     return defineQueryOptions({
-      query: () => $businessApi(`businesses/extended/${toValue(businessId)}${addedPath}`, {
+      query: () => $businessApi(`businesses/${toValue(businessId)}/extended${addedPath}`, {
         query: forCorrection ? { forCorrection: true } : undefined
       }),
       staleTime: DEFAULT_STALE_TIME,
