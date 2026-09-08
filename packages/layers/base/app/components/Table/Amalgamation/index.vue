@@ -32,7 +32,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded')
     :prevent-actions
     :label-overrides
     :task-guard-config
-    :hide-actions-when="(row) => !Boolean(row.original.new.jurisdiction?.country)"
+    :hide-actions-when="(row) => !row.original.new.jurisdiction?.country"
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >
     <template #expanded="{ row }">

@@ -29,7 +29,7 @@ export function getAddressOrJurisdictionColumn<T extends AmalgamationTableRow>(
             textDecor: true,
             class: [defaultClass, isRemoved ? DELETED_CLASS : '']
           }
-        )  
+        )
       }
 
       const { region, country } = business.jurisdiction

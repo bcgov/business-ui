@@ -1,5 +1,5 @@
-import { getBusinessNameColumn } from "./get-business-name-column"
-import { getBusinessTypeColumn } from "./get-business-type-column"
+import { getBusinessNameColumn } from './get-business-name-column'
+import { getBusinessTypeColumn } from './get-business-type-column'
 import { getAddressOrJurisdictionColumn } from './get-address-or-jurisdiction-column'
 
 export function getAmalgamationTableColumns<T extends AmalgamationTableRow = AmalgamationTableRow>(
