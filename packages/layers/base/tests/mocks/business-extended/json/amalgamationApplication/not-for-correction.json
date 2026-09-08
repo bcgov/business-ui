@@ -1,0 +1,32 @@
+{
+  "amalgamation": {
+    "amalgamatingBusinesses": [
+      {
+        "id": 662,
+        "identifier": "BC0888620",
+        "role": "amalgamating"
+      },
+      {
+        "foreignJurisdiction": {
+          "country": "AL",
+          "region": null
+        },
+        "id": 663,
+        "identifier": "AL12345",
+        "legalName": "ALBANIA CORP",
+        "role": "amalgamating"
+      },
+      {
+        "foreignJurisdiction": {
+          "country": "CA",
+          "region": "NB"
+        },
+        "id": 664,
+        "identifier": "NB12345",
+        "legalName": "REALLY LONG COMPANY 12345",
+        "role": "amalgamating"
+      }
+    ],
+    "courtApproval": false
+  }
+}
