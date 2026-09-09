@@ -53,7 +53,7 @@ const caOpts: InputMenuItem[] = [
   { region: 'FEDERAL', country: 'CA', label: t('label.federal') }
 ]
 
-const internationalOpts = [
+const internationalOpts: InputMenuItem[] = [
   { type: 'label', label: t('label.international') },
   ...isoCountriesListSortedByName
     .filter(c => c.alpha_2 !== 'CA')
@@ -73,10 +73,51 @@ const internationalOpts = [
     }))
 ]
 
-const jurisdictionOpts: InputMenuItem = [
+const jurisdictionOpts: InputMenuItem[][] = [
   caOpts,
   internationalOpts
 ]
+
+// normalize InputMenuItem to match form schema - no label in form schema
+const selectedJurisdiction = computed({
+  get() {
+    if (!model.value.jurisdiction?.country) {
+      return undefined
+    }
+
+    const { country, region } = model.value.jurisdiction
+
+    if (country === 'CA') {
+      if (region === 'FEDERAL') {
+        return { label: t('label.federal'), country, region }
+      }
+      const provinceDisplay = countrySubdivisions.ca.find(p => p.code === region)?.name || region
+      return {
+        label: `${provinceDisplay}, Canada`,
+        country,
+        region
+      }
+    }
+
+    const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === country)?.name || country
+    return {
+      label: countryDisplay,
+      country,
+      region
+    }
+  },
+  set(val: { label?: string, country: string, region: string | null } | undefined) {
+    if (!val) {
+      model.value.jurisdiction = { country: '', region: null }
+      return
+    }
+
+    model.value.jurisdiction = {
+      country: val.country,
+      region: val.region ?? null
+    }
+  }
+})
 
 async function onDone() {
   try {
@@ -159,7 +200,7 @@ defineExpose({
           <UFormField name="jurisdiction.country">
             <ConnectInputMenu
               id="foreign-jurisdiction-menu"
-              v-model="model.jurisdiction"
+              v-model="selectedJurisdiction"
               :label="$t('label.selectHomeJurisdiction')"
               :items="jurisdictionOpts"
               open-on-focus

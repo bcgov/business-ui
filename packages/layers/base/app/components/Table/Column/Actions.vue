@@ -51,6 +51,7 @@ const canChange = computed(() => {
     || isActionAllowed(ManageAllowedAction.EFFECTIVE_DATE_CHANGE)
     || isActionAllowed(ManageAllowedAction.NAME_CHANGE)
     || isActionAllowed(ManageAllowedAction.ROLE_CHANGE)
+    || isActionAllowed(ManageAllowedAction.CHANGE)
   return allowed || isAdded.value
 })
 
