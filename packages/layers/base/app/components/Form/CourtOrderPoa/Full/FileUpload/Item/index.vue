@@ -96,6 +96,7 @@ defineOptions({
           v-bind="actionProps"
           variant="link"
           class="px-2 py-1 h-min gap-1 @max-[350px]:hidden text-base"
+          @keydown.enter.stop
         />
       </div>
       <div class="flex flex-col gap-1 ml-7">
@@ -118,6 +119,7 @@ defineOptions({
         v-bind="actionProps"
         variant="link"
         class="px-2 py-1 h-min gap-1 @min-[350px]:hidden ml-4 mt-auto text-base"
+        @keydown.enter.stop
       />
     </div>
   </li>

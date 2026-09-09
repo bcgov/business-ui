@@ -127,7 +127,7 @@ describe('useBusinessQuery', () => {
     const basic = businessExtOptions(businessId)
     basic.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(
-      `businesses/extended/${businessId}`, { query: undefined })
+      `businesses/${businessId}/extended`, { query: undefined })
     expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, false, undefined)
     expect(basic.staleTime).toBe(DEFAULT_STALE_TIME)
 
@@ -135,7 +135,7 @@ describe('useBusinessQuery', () => {
     const forCorrection = businessExtOptions(businessId, true)
     forCorrection.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(
-      `businesses/extended/${businessId}`, { query: { forCorrection: true } })
+      `businesses/${businessId}/extended`, { query: { forCorrection: true } })
     expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, true, undefined)
     expect(forCorrection.staleTime).toBe(DEFAULT_STALE_TIME)
 
@@ -143,7 +143,7 @@ describe('useBusinessQuery', () => {
     const forCorrectionAndFiling = businessExtOptions(businessId, true, FilingType.CHANGE_OF_DIRECTORS)
     forCorrectionAndFiling.query({} as any)
     expect(mockBusinessApi).toHaveBeenCalledWith(
-      `businesses/extended/${businessId}/${FilingType.CHANGE_OF_DIRECTORS}`, { query: { forCorrection: true } })
+      `businesses/${businessId}/extended/${FilingType.CHANGE_OF_DIRECTORS}`, { query: { forCorrection: true } })
     expect(mockKeys.businessExt).toHaveBeenCalledWith(businessId, true, FilingType.CHANGE_OF_DIRECTORS)
     expect(forCorrectionAndFiling.staleTime).toBe(DEFAULT_STALE_TIME)
 

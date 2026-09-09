@@ -4,6 +4,15 @@ export function getAmalgamationCorrectSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
+    isEditing: z.boolean()
+      .default(false),
+    actions: z.array(z.enum(ActionType))
+      .default(() => []),
+    id: z.preprocess( // convert DB `id` int to string for UI diff'ing
+      val => (typeof val === 'number' ? String(val) : val),
+      z.string()
+        .default(() => crypto.randomUUID())
+    ),
     name: z.string()
       .trim()
       .min(1, t('connect.validation.fieldRequired'))

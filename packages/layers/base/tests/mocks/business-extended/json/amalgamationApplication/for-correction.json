@@ -1,0 +1,45 @@
+{
+  "amalgamation": {
+    "amalgamatingBusinesses": [
+      {
+        "id": 662,
+        "identifier": "BC0888620",
+        "legalName": "0888620 B.C. LTD.",
+        "legalType": "BC",
+        "mailingAddress": {
+          "addressCity": "Victoria",
+          "addressCountry": "CA",
+          "addressRegion": "BC",
+          "addressType": "mailing",
+          "deliveryInstructions": "",
+          "id": 5521565,
+          "postalCode": "V8W 3E6",
+          "streetAddress": "200-940 Blanshard St",
+          "streetAddressAdditional": ""
+        },
+        "role": "amalgamating"
+      },
+      {
+        "foreignJurisdiction": {
+          "country": "AL",
+          "region": null
+        },
+        "id": 663,
+        "identifier": "AL12345",
+        "legalName": "ALBANIA CORP",
+        "role": "amalgamating"
+      },
+      {
+        "foreignJurisdiction": {
+          "country": "CA",
+          "region": "NB"
+        },
+        "id": 664,
+        "identifier": "NB12345",
+        "legalName": "REALLY LONG COMPANY 12345",
+        "role": "amalgamating"
+      }
+    ],
+    "courtApproval": false
+  }
+}

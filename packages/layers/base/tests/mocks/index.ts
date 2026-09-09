@@ -1,6 +1,7 @@
 export * from './auth'
 export * from './bootstrap'
 export * from './business'
+export * from './business-extended'
 export * from './business-addresses'
 export * from './business-comments'
 export * from './business-ledger'

@@ -221,6 +221,10 @@ const componentExamples: DropdownMenuItem[] = [
     label: 'Table Examples',
     children: [
       {
+        label: 'TableAmalgamation',
+        to: localePath('/examples/components/Table/Amalgamation')
+      },
+      {
         label: 'TableBusiness',
         to: localePath('/examples/components/Table/Business')
       },
