@@ -99,7 +99,7 @@ function initEditRow(row: TableBusinessRow<AmalgamationCorrectSchema>) {
   currentEditingRow = row.original.new
   currentEditingRow.isEditing = true
 
-  editSubjectLabel = row.original.new.name
+  editSubjectLabel = row.original.new.legalName
 
   expandedState.value = { [row.id]: true }
 }
@@ -200,7 +200,7 @@ watch(() => actionPreventedSignal, (value) => {
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :hide-actions-when="
-            (row: TableBusinessRow<AmalgamationTableRow>) => !row.original.new.jurisdiction?.country || isReadOnly
+            (row: TableBusinessRow<AmalgamationTableRow>) => !row.original.new.foreignJurisdiction?.country || isReadOnly
           "
           :task-guard-config="{
             messageId,

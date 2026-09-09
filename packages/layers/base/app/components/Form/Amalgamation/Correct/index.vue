@@ -34,9 +34,9 @@ const formErrors = computed(() => {
   const errors = formRef.value?.getErrors()
 
   return {
-    name: !!errors?.find(e => e.name?.includes('name')),
-    number: !!errors?.find(e => e.name?.includes('number')),
-    jurisdiction: !!errors?.find(e => e.name?.includes('country'))
+    legalName: !!errors?.find(e => e.name?.includes('legalName')),
+    identifier: !!errors?.find(e => e.name?.includes('identifier')),
+    foreignJurisdiction: !!errors?.find(e => e.name?.includes('country'))
   }
 })
 
@@ -81,11 +81,11 @@ const jurisdictionOpts: InputMenuItem[][] = [
 // normalize InputMenuItem to match form schema - no label in form schema
 const selectedJurisdiction = computed({
   get() {
-    if (!model.value.jurisdiction?.country) {
+    if (!model.value.foreignJurisdiction?.country) {
       return undefined
     }
 
-    const { country, region } = model.value.jurisdiction
+    const { country, region } = model.value.foreignJurisdiction
 
     if (country === 'CA') {
       if (region === 'FEDERAL') {
@@ -108,11 +108,11 @@ const selectedJurisdiction = computed({
   },
   set(val: { label?: string, country: string, region: string | null } | undefined) {
     if (!val) {
-      model.value.jurisdiction = { country: '', region: null }
+      model.value.foreignJurisdiction = { country: '', region: null }
       return
     }
 
-    model.value.jurisdiction = {
+    model.value.foreignJurisdiction = {
       country: val.country,
       region: val.region ?? null
     }
@@ -163,13 +163,13 @@ defineExpose({
             orientation="horizontal"
             details-aria-hidden
             class="padding-x-default pt-6 sm:pt-10 pb-3 sm:pb-5"
-            :error="formErrors.name"
+            :error="formErrors.legalName"
           >
             <ConnectFormInput
-              v-model="model.name"
+              v-model="model.legalName"
               input-id="business-name-home-jurisdiction"
               :label="$t('label.businessFullNameInHomeJurisdiction')"
-              name="name"
+              name="legalName"
               required
             />
           </ConnectFormFieldWrapper>
@@ -178,13 +178,13 @@ defineExpose({
             orientation="horizontal"
             details-aria-hidden
             class="padding-x-default pb-6 sm:pb-10 pt-3 sm:pt-5"
-            :error="formErrors.number"
+            :error="formErrors.identifier"
           >
             <ConnectFormInput
-              v-model="model.number"
-              input-id="corp-num-home-jurisdiction"
+              v-model="model.identifier"
+              input-id="corp-identifier-home-jurisdiction"
               :label="$t('label.corpNumHomeJurisdiction')"
-              name="number"
+              name="identifier"
               required
             />
           </ConnectFormFieldWrapper>
@@ -195,9 +195,9 @@ defineExpose({
           orientation="horizontal"
           details-aria-hidden
           class="padding-xy-default"
-          :error="formErrors.jurisdiction"
+          :error="formErrors.foreignJurisdiction"
         >
-          <UFormField name="jurisdiction.country">
+          <UFormField name="foreignJurisdiction.country">
             <ConnectInputMenu
               id="foreign-jurisdiction-menu"
               v-model="selectedJurisdiction"

@@ -1,9 +1,9 @@
 export * from './get-amalgamation-table-columns'
 
-export type BCBusinessTableRow = Omit<AmalgamationCorrectSchema, 'jurisdiction'> & {
+export type BCBusinessTableRow = Omit<AmalgamationCorrectSchema, 'foreignJurisdiction'> & {
   legalType: string
   mailingAddress?: ApiAddress
-  jurisdiction?: never
+  foreignJurisdiction?: never
 }
 
 export type ExtraBCBusinessTableRow = AmalgamationCorrectSchema & {

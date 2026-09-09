@@ -18,8 +18,8 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
       id: '13456',
       isEditing: false,
       actions: [],
-      name: '0888620 B.C. LTD.',
-      number: 'BC0888620',
+      legalName: '0888620 B.C. LTD.',
+      identifier: 'BC0888620',
       legalType: 'BC',
       mailingAddress: {
         addressCity: 'Victoria',
@@ -31,14 +31,15 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
         postalCode: 'V8W 3E6',
         streetAddress: '200-940 Blanshard St',
         streetAddressAdditional: ''
-      }
+      },
+      role: 'amalgamating'
     },
     old: {
       id: '13456',
       isEditing: false,
       actions: [],
-      name: '0888620 B.C. LTD.',
-      number: 'BC0888620',
+      legalName: '0888620 B.C. LTD.',
+      identifier: 'BC0888620',
       legalType: 'BC',
       mailingAddress: {
         addressCity: 'Victoria',
@@ -50,7 +51,8 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
         postalCode: 'V8W 3E6',
         streetAddress: '200-940 Blanshard St',
         streetAddressAdditional: ''
-      }
+      },
+      role: 'amalgamating'
     }
   },
   {
@@ -58,23 +60,25 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
       id: '1324546587463',
       isEditing: false,
       actions: [],
-      name: 'ALBANIA CORP',
-      number: 'AL12345',
-      jurisdiction: {
+      legalName: 'ALBANIA CORP',
+      identifier: 'AL12345',
+      foreignJurisdiction: {
         country: 'AL',
         region: null
-      }
+      },
+      role: 'amalgamating'
     },
     old: {
       id: '1324546587463',
       isEditing: false,
       actions: [],
-      name: 'ALBANIA CORP',
-      number: 'AL12345',
-      jurisdiction: {
+      legalName: 'ALBANIA CORP',
+      identifier: 'AL12345',
+      foreignJurisdiction: {
         country: 'AL',
         region: null
-      }
+      },
+      role: 'amalgamating'
     }
   },
   {
@@ -82,23 +86,25 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
       id: '13245464536587463',
       isEditing: false,
       actions: [],
-      name: 'REALLY LONG COMPANY 12345',
-      number: 'NB12345',
-      jurisdiction: {
+      legalName: 'REALLY LONG COMPANY 12345',
+      identifier: 'NB12345',
+      foreignJurisdiction: {
         country: 'CA',
         region: 'NB'
-      }
+      },
+      role: 'amalgamating'
     },
     old: {
       id: '13245464536587463',
       isEditing: false,
       actions: [],
-      name: 'REALLY LONG COMPANY 12345',
-      number: 'NB12345',
-      jurisdiction: {
+      legalName: 'REALLY LONG COMPANY 12345',
+      identifier: 'NB12345',
+      foreignJurisdiction: {
         country: 'CA',
         region: 'NB'
-      }
+      },
+      role: 'amalgamating'
     }
   }]
 

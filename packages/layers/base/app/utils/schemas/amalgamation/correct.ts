@@ -1,3 +1,4 @@
+// https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/correction_amalgamation.json
 import { z } from 'zod'
 
 export function getAmalgamationCorrectSchema() {
@@ -13,23 +14,26 @@ export function getAmalgamationCorrectSchema() {
       z.string()
         .default(() => crypto.randomUUID())
     ),
-    name: z.string()
+    legalName: z.string()
       .trim()
       .min(1, t('connect.validation.fieldRequired'))
       .min(3, t('connect.validation.minChars', { count: 3 }))
       .default(''),
-    number: z.string()
+    identifier: z.string()
       .trim()
       .min(1, t('connect.validation.fieldRequired'))
       .min(3, t('connect.validation.minChars', { count: 3 }))
+      .max(40, t('connect.validation.maxChars', { count: 40 }))
       .regex(/^[a-zA-Z0-9-]+$/, t('validation.corpNumFormat'))
       .default(''),
-    jurisdiction: z.object({
+    foreignJurisdiction: z.object({
       country: z.string()
         .trim()
         .min(1, t('connect.validation.fieldRequired')),
       region: z.string().nullable()
-    }).default(() => ({ country: '', region: null }))
+    }).default(() => ({ country: '', region: null })),
+    role: z.string()
+      .default('amalgamating')
   })
 }
 
