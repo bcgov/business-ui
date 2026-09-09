@@ -7,6 +7,9 @@ describe('getAmalgamationCorrectSchema', () => {
     it('should generate expected default state via parse({})', () => {
       const result = schema.parse({})
       expect(result).toEqual({
+        id: expect.any(String),
+        actions: [],
+        isEditing: false,
         name: '',
         number: '',
         jurisdiction: {
