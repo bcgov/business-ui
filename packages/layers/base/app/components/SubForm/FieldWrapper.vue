@@ -57,9 +57,16 @@ defineEmits<{
     <div
       :class="[
         'flex gap-2 ml-auto',
-        { 'lg:hidden': orientation === 'horizontal' }
+        { 'lg:hidden': orientation === 'horizontal' },
+        { 'items-center': orientation === 'vertical' }
       ]"
     >
+      <FormAlertMessage
+        v-if="taskGuardConfig && orientation === 'vertical'"
+        :id="taskGuardConfig.messageId"
+        :message="taskGuardConfig.message"
+        class="w-full text-sm text-center lg:text-left"
+      />
       <UButton
         variant="outline"
         :label="$t('label.cancel')"
@@ -75,7 +82,7 @@ defineEmits<{
       />
     </div>
     <FormAlertMessage
-      v-if="taskGuardConfig"
+      v-if="taskGuardConfig && orientation === 'horizontal'"
       :id="taskGuardConfig.messageId"
       :message="taskGuardConfig.message"
       class="w-full text-sm text-center lg:text-left"
