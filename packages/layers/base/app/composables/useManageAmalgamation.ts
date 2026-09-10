@@ -17,7 +17,20 @@ export const useManageAmalgamation = (
     () => []
   )
 
-  const hasChanges = computed(() => tableState.value.some(co => co.new.actions.length > 0))
+  const stmtDefaults = getAmalgamationCorrectStatementSchema().parse({})
+  const statementState = useState<TableBusinessState<AmalgamationCorrectStatementSchema>>(
+    `${stateKey}-statement-state`,
+    () => ({
+      new: structuredClone(stmtDefaults),
+      old: structuredClone(stmtDefaults)
+    })
+  )
+
+  const hasChanges = computed(() => {
+    const tableChanged = tableState.value.some(am => am.new.actions.length > 0)
+    const statementChanged = statementState.value.new.actions.length > 0
+    return tableChanged || statementChanged
+  })
 
   function updateTable(subject: TableBusinessState<AmalgamationTableRow>): void {
     const cloned = JSON.parse(JSON.stringify(subject))
@@ -80,19 +93,22 @@ export const useManageAmalgamation = (
     })
   }
 
-  function editSubject(subject: AmalgamationTableRow| null | undefined, row: TableBusinessRow<AmalgamationTableRow>): void {
+  function editSubject(
+    subject: AmalgamationTableRow | null | undefined,
+    row: TableBusinessRow<AmalgamationTableRow>
+  ): void {
     if (!subject) {
       return
     }
 
-    const { old: oldSubjectState, new: newSubjectState } = row.original
+    const { old: oldSubjectState } = row.original
     let actions: ActionType[] = []
 
     // If new subject, only ever apply the ADDED badge
     if (oldSubjectState === undefined) {
       actions = [ActionType.ADDED]
     // else compare new and old state, omitting values the user can't edit
-    } else if (!isEqualOmit(subject, newSubjectState, NON_EDITABLE_FIELDS)) {
+    } else if (!isEqualOmit(subject, oldSubjectState, NON_EDITABLE_FIELDS)) {
       actions = [ActionType.CHANGED]
     }
 
@@ -102,13 +118,42 @@ export const useManageAmalgamation = (
     })
   }
 
+  function updateStatement(newStatement: ActiveAmalgamationCorrectStatementSchema) {
+    if (newStatement) {
+      const initialState = JSON.parse(JSON.stringify(statementState.value.old!)) // old is guaranteed here
+      const isChanged = !isEqualOmit(newStatement, initialState, ['isEditing', 'actions'])
+
+      statementState.value = {
+        old: initialState,
+        new: {
+          courtApproval: newStatement.courtApproval,
+          isEditing: false,
+          actions: isChanged ? [ActionType.CHANGED] : []
+        }
+      }
+    }
+
+    opts?.cleanupFn?.()
+  }
+
+  function undoStatement() {
+    const initialState = statementState.value.old!
+    statementState.value = {
+      old: JSON.parse(JSON.stringify(initialState)),
+      new: JSON.parse(JSON.stringify(initialState))
+    }
+  }
+
   return {
     tableState,
+    statementState,
     hasChanges,
     addSubject,
     removeSubject,
     updateTable,
     editSubject,
-    undoSubject
+    undoSubject,
+    updateStatement,
+    undoStatement
   }
 }

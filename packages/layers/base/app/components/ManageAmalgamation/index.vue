@@ -17,6 +17,7 @@ const emit = defineEmits<{
 }>()
 
 const activeAmal = defineModel<ActiveAmalgamationCorrectSchema | undefined>('active-amal')
+const activeAmalStmnt = defineModel<ActiveAmalgamationCorrectStatementSchema | undefined>('active-amal-stmnt')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingAmal = ref(false)
@@ -31,19 +32,23 @@ const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
 const tableTarget = 'amalgamation-table'
 const { messageId, targetId } = attachAlerts(tableTarget, activeAmal)
 const activeSchema = getActiveAmalgamationCorrectSchema()
+const activeStmntSchema = getActiveAmalgamationCorrectStatementSchema()
 
 const {
   tableState,
+  statementState,
   addSubject,
   removeSubject,
   undoSubject,
-  editSubject
+  editSubject,
+  updateStatement,
+  undoStatement
 } = useManageAmalgamation(stateKey, {
   cleanupFn: cleanupForm
 })
 
 const isReadOnly = computed(() => variant === 'readonly' || variant === 'correct-readonly')
-const shouldPreventActions = computed(() => !!activeAmal.value || preventActions)
+const shouldPreventActions = computed(() => !!activeAmal.value || !!activeAmalStmnt.value || preventActions)
 
 const allowAddAmal = computed(() => {
   if (isReadOnly.value) {
@@ -73,15 +78,17 @@ const tableLabels = computed(() => {
 })
 
 function setActiveFormAlert() {
-  if (activeAmal.value !== undefined) {
+  if (shouldPreventActions.value && (!!activeAmal.value || !!activeAmalStmnt.value)) {
     setAlert('amalgamation-correct-form', t('text.finishTaskBeforeOtherChanges'))
+    setAlert('amalgamation-correct-statement-form', t('text.finishTaskBeforeOtherChanges'))
+    emit('action-prevented')
+    return true
   }
+  return false
 }
 
 function initAddAmal() {
-  if (shouldPreventActions.value) {
-    setActiveFormAlert()
-    emit('action-prevented')
+  if (setActiveFormAlert()) {
     return
   }
   activeAmal.value = activeSchema.parse({})
@@ -104,6 +111,16 @@ function initEditRow(row: TableBusinessRow<AmalgamationCorrectSchema>) {
   expandedState.value = { [row.id]: true }
 }
 
+function initEditStatement() {
+  const data = { ...statementState.value.new, isEditing: true }
+  const parsed = activeStmntSchema.safeParse(data)
+  const subject = parsed.success
+    ? parsed.data
+    : JSON.parse(JSON.stringify(data))
+
+  activeAmalStmnt.value = subject
+}
+
 function cleanupForm() {
   if (currentEditingRow) {
     currentEditingRow.isEditing = false
@@ -112,6 +129,7 @@ function cleanupForm() {
   expandedState.value = undefined
   activeAmal.value = undefined
   addingAmal.value = false
+  activeAmalStmnt.value = undefined
 }
 
 function clearAllAlerts() {
@@ -187,7 +205,7 @@ watch(() => actionPreventedSignal, (value) => {
           :subject="$t('label.business')"
           :state-key="stateKey"
           class="p-6"
-          @done="() => addSubject(activeAmal)"
+          @done="addSubject(activeAmal)"
           @cancel="cleanupForm"
         />
         <USeparator />
@@ -200,14 +218,15 @@ watch(() => actionPreventedSignal, (value) => {
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :hide-actions-when="
-            (row: TableBusinessRow<AmalgamationTableRow>) => !row.original.new.foreignJurisdiction?.country || isReadOnly
+            (row: TableBusinessRow<AmalgamationTableRow>) =>
+              !row.original.new.foreignJurisdiction?.country || isReadOnly
           "
           :task-guard-config="{
             messageId,
             targetId,
             message: alerts[tableTarget]
           }"
-          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented'); }"
+          @action-prevented="setActiveFormAlert"
           @init-edit="initEditRow"
           @remove="removeSubject"
           @undo="undoSubject"
@@ -222,14 +241,27 @@ watch(() => actionPreventedSignal, (value) => {
                 :subject="editSubjectLabel"
                 :state-key="stateKey"
                 hide-remove
-                @done="() => editSubject(activeAmal, row)"
+                @done="editSubject(activeAmal, row)"
                 @cancel="cleanupForm"
-                @remove="() => removeSubject(row)"
+                @remove="removeSubject(row)"
               />
             </div>
           </template>
         </TableAmalgamation>
       </template>
     </ConnectPageSection>
+
+    <ManageAmalgamationStatement
+      v-model="activeAmalStmnt"
+      :variant
+      :label-overrides="tableLabels"
+      :prevent-actions="shouldPreventActions"
+      :is-read-only
+      @init-edit="initEditStatement"
+      @done="updateStatement(activeAmalStmnt)"
+      @cancel="cleanupForm"
+      @undo="undoStatement"
+      @action-prevented="setActiveFormAlert"
+    />
   </component>
 </template>
