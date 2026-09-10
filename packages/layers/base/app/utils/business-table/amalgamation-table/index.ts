@@ -6,9 +6,9 @@ export type BCBusinessTableRow = Omit<AmalgamationCorrectSchema, 'foreignJurisdi
   foreignJurisdiction?: never
 }
 
-export type ExtraBCBusinessTableRow = AmalgamationCorrectSchema & {
+export type ExBCBusinessTableRow = AmalgamationCorrectSchema & {
   legalType?: never
   mailingAddress?: never
 }
 
-export type AmalgamationTableRow = BCBusinessTableRow | ExtraBCBusinessTableRow
+export type AmalgamationTableRow = BCBusinessTableRow | ExBCBusinessTableRow

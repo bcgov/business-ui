@@ -46,12 +46,16 @@ export type ActiveAmalgamationCorrectSchema = z.output<ReturnType<typeof getActi
 
 export function getAmalgamationCorrectStatementSchema() {
   return z.object({
+    isEditing: z.boolean()
+      .default(false),
+    actions: z.array(z.enum(ActionType))
+      .default(() => []),
     courtApproval: z.boolean().default(false)
   })
 }
 
 export function getActiveAmalgamationCorrectStatementSchema() {
-  return getAmalgamationCorrectSchema().nullable().optional()
+  return getAmalgamationCorrectStatementSchema().nullable().optional()
 }
 
 export type AmalgamationCorrectStatementSchema = z.output<ReturnType<typeof getAmalgamationCorrectStatementSchema>>
