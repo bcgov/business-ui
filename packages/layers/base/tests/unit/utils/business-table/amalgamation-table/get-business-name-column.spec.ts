@@ -26,8 +26,8 @@ describe('getBusinessNameColumn', () => {
     const row = {
       original: {
         new: {
-          name: '0888620 B.C. LTD.',
-          number: 'BC0888620'
+          legalName: '0888620 B.C. LTD.',
+          identifier: 'BC0888620'
         }
       }
     }
@@ -52,8 +52,8 @@ describe('getBusinessNameColumn', () => {
     const row = {
       original: {
         new: {
-          name: 'ALBANIA CORP',
-          number: 'AL12345'
+          legalName: 'ALBANIA CORP',
+          identifier: 'AL12345'
         }
       }
     }
@@ -70,8 +70,8 @@ describe('getBusinessNameColumn', () => {
     const row = {
       original: {
         new: {
-          name: 'REALLY LONG COMPANY 12345',
-          number: 'NB12345'
+          legalName: 'REALLY LONG COMPANY 12345',
+          identifier: 'NB12345'
         }
       }
     }
