@@ -4,13 +4,14 @@ import type { Form } from '@nuxt/ui'
 definePageMeta({
   layout: 'connect-auth'
 })
-type FullSchema = { courtApproval: boolean }
 
-const state = ref<FullSchema>({
-  courtApproval: false
+const state = ref<AmalgamationCorrectStatementSchema>({
+  courtApproval: false,
+  isEditing: false,
+  actions: []
 })
 
-const formRef = useTemplateRef<Form<FullSchema>>('form-ref')
+const formRef = useTemplateRef<Form<AmalgamationCorrectStatementSchema>>('form-ref')
 
 const hasErrors = computed<boolean | undefined>(() => {
   const errors = formRef.value?.getErrors()

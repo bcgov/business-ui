@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { delay, merge } from 'es-toolkit'
+import { delay } from 'es-toolkit'
 import mockAmal from '#test-mocks/business-extended/json/amalgamationApplication/for-correction.json'
 
 definePageMeta({
@@ -7,122 +7,19 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Amalgamation - Correct' }]
 })
 
-const { tableState } = useManageAmalgamation()
-
-const schema = getAmalgamationCorrectSchema()
-
-const test = mockAmal.amalgamation.amalgamatingBusinesses
-test.map(d => {
-  const parsed = schema.parse(d)
-  console.log('ORIGINAL: ', d)
-  console.log('PARSED: ', parsed)
-  console.log('MERGED: ', merge(d, parsed))
-})
-
+const { tableState, statementState } = useManageAmalgamation()
 const activeAmal = ref<ActiveAmalgamationCorrectSchema | undefined>(undefined)
+const activeAmalStmnt = ref<ActiveAmalgamationCorrectStatementSchema | undefined>(undefined)
 const loading = ref(false)
-
-const data: TableBusinessState<AmalgamationTableRow>[] = [
-  {
-    new: {
-      id: '13456',
-      isEditing: false,
-      actions: [],
-      legalName: '0888620 B.C. LTD.',
-      identifier: 'BC0888620',
-      legalType: 'BC',
-      mailingAddress: {
-        addressCity: 'Victoria',
-        addressCountry: 'CA',
-        addressRegion: 'BC',
-        addressType: 'mailing',
-        deliveryInstructions: '',
-        id: 5521565,
-        postalCode: 'V8W 3E6',
-        streetAddress: '200-940 Blanshard St',
-        streetAddressAdditional: ''
-      },
-      role: 'amalgamating'
-    },
-    old: {
-      id: '13456',
-      isEditing: false,
-      actions: [],
-      legalName: '0888620 B.C. LTD.',
-      identifier: 'BC0888620',
-      legalType: 'BC',
-      mailingAddress: {
-        addressCity: 'Victoria',
-        addressCountry: 'CA',
-        addressRegion: 'BC',
-        addressType: 'mailing',
-        deliveryInstructions: '',
-        id: 5521565,
-        postalCode: 'V8W 3E6',
-        streetAddress: '200-940 Blanshard St',
-        streetAddressAdditional: ''
-      },
-      role: 'amalgamating'
-    }
-  },
-  {
-    new: {
-      id: '1324546587463',
-      isEditing: false,
-      actions: [],
-      legalName: 'ALBANIA CORP',
-      identifier: 'AL12345',
-      foreignJurisdiction: {
-        country: 'AL',
-        region: null
-      },
-      role: 'amalgamating'
-    },
-    old: {
-      id: '1324546587463',
-      isEditing: false,
-      actions: [],
-      legalName: 'ALBANIA CORP',
-      identifier: 'AL12345',
-      foreignJurisdiction: {
-        country: 'AL',
-        region: null
-      },
-      role: 'amalgamating'
-    }
-  },
-  {
-    new: {
-      id: '13245464536587463',
-      isEditing: false,
-      actions: [],
-      legalName: 'REALLY LONG COMPANY 12345',
-      identifier: 'NB12345',
-      foreignJurisdiction: {
-        country: 'CA',
-        region: 'NB'
-      },
-      role: 'amalgamating'
-    },
-    old: {
-      id: '13245464536587463',
-      isEditing: false,
-      actions: [],
-      legalName: 'REALLY LONG COMPANY 12345',
-      identifier: 'NB12345',
-      foreignJurisdiction: {
-        country: 'CA',
-        region: 'NB'
-      },
-      role: 'amalgamating'
-    }
-  }]
 
 onMounted(async () => {
   try {
+    tableState.value = []
     loading.value = true
     await delay(1500)
-    tableState.value = data // formatCourtOrdersSection(mockCourtOrders.courtOrders as unknown as CourtOrderResponse[])
+    const formatted = formatAmalCorrectUi(mockAmal.amalgamation as Amalgamation)
+    tableState.value = formatted.tableState
+    statementState.value = formatted.statementState
   } catch {
     // should never happen
     console.error('Error initializing mock data')
@@ -130,19 +27,33 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const variant = ref<ManageVariant>('correct')
 </script>
 
 <template>
   <UContainer>
-    <ConnectPageSection
-      :heading="{ label: 'Manage Amalgamation - Correct' }"
-      ui-body="p-10"
-    >
-      <ManageAmalgamation
-        v-model:active-amal="activeAmal"
-        variant="correct"
-        :loading
-      />
+    <ConnectPageSection ui-body="p-10">
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="font-semibold text-neutral-highlighted text-base">Manage Amalgamation - Correct</span>
+          <ConnectSelect
+            id="variant-select"
+            v-model="variant"
+            label="Select Variant"
+            :items="['default', 'readonly', 'correct', 'correct-readonly']"
+            class="w-48"
+          />
+        </div>
+      </template>
+      <template #default>
+        <ManageAmalgamation
+          v-model:active-amal="activeAmal"
+          v-model:active-amal-stmnt="activeAmalStmnt"
+          :variant
+          :loading
+        />
+      </template>
     </ConnectPageSection>
   </UContainer>
 </template>
