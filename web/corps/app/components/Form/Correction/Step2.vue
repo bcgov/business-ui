@@ -9,6 +9,7 @@ const businessStore = useBusinessStore()
 const { business, businessContact } = storeToRefs(businessStore)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates']
+const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email']
 
 /**
  * Change detection for review sections.
@@ -44,6 +45,11 @@ const hasReceiverChanges = computed(() => {
 /** Whether any liquidators were changed */
 const hasLiquidatorChanges = computed(() => {
   return store.liquidators.some(l => l.new.actions.length > 0)
+})
+
+/** Whether any custodians were changed */
+const hasCustodianChanges = computed(() => {
+  return store.custodians.some(c => c.new.actions.length > 0)
 })
 
 const hasCourtOrderChanges = computed(() => {
@@ -135,6 +141,18 @@ function onError(event: FormErrorEvent) {
         :table-title="$t('label.currentLiquidators')"
         :columns-to-display="partyColumns"
         data-testid="review-liquidators-section"
+        variant="correct-readonly"
+      />
+
+      <!-- Custodians (readonly, only if changed) -->
+      <ManageParties
+        v-if="hasCustodianChanges"
+        state-key="manage-custodians"
+        :loading="store.initializing"
+        :empty-text="$t('label.noCustodians')"
+        :table-title="$t('label.currentCustodians')"
+        :columns-to-display="custodianColumns"
+        data-testid="review-custodians-section"
         variant="correct-readonly"
       />
 

@@ -51,6 +51,7 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeDirector: getActivePartySchema(),
     activeReceiver: getActivePartySchema(RoleTypeUi.RECEIVER),
     activeLiquidator: getActivePartySchema(RoleTypeUi.LIQUIDATOR),
+    activeCustodian: getActivePartySchema(RoleTypeUi.CUSTODIAN),
     activeOffice: getActiveOfficesSchema(),
     activeClass: getActiveShareClassSchema(),
     activeSeries: getActiveShareSeriesSchema(),

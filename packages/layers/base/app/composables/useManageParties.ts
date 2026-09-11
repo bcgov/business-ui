@@ -1,11 +1,12 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 import { isEqual } from 'es-toolkit'
 
-type EditedSection = 'address' | 'name' | 'roles'
+type EditedSection = 'address' | 'name' | 'roles' | 'email'
 const actionsMap: Record<EditedSection, ActionType> = {
   name: ActionType.NAME_CHANGED,
   address: ActionType.ADDRESS_CHANGED,
-  roles: ActionType.ROLES_CHANGED
+  roles: ActionType.ROLES_CHANGED,
+  email: ActionType.EMAIL_CHANGED
 }
 
 export const useManageParties = (stateKey: string = 'manage-parties') => {
@@ -89,7 +90,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     if (originalPartyState === undefined) {
       newActions = [ActionType.ADDED]
     } else {
-      const sectionsToCompare: EditedSection[] = ['address', 'name', 'roles']
+      const sectionsToCompare: EditedSection[] = ['address', 'name', 'roles', 'email']
       const editedSections: EditedSection[] = []
 
       for (const section of sectionsToCompare) {

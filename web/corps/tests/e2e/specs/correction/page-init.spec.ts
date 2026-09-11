@@ -56,6 +56,8 @@ async function assertStep1Sections(page: Page) {
   await expect(page.getByTestId('receivers-section')).toBeVisible()
   // has liquidators section
   await expect(page.getByTestId('liquidators-section')).toBeVisible()
+  // has custodians section
+  await expect(page.getByTestId('custodians-section')).toBeVisible()
   // correction comment section should NOT be on step 1 (it's on step 2)
   await expect(page.getByTestId('correction-comment-section')).not.toBeVisible()
 }
@@ -165,6 +167,7 @@ test.describe('Correction - Page init', () => {
       await expect(page.getByTestId('review-share-structure-section')).not.toBeVisible()
       await expect(page.getByTestId('review-receivers-section')).not.toBeVisible()
       await expect(page.getByTestId('review-liquidators-section')).not.toBeVisible()
+      await expect(page.getByTestId('review-custodians-section')).not.toBeVisible()
     })
 
     test('should show completing party on step 2 for client corrections', async ({ page }) => {
