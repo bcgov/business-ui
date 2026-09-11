@@ -103,7 +103,7 @@ async function submitFiling() {
       return
     }
     if (!canSubmit()) {
-      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
+      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
     }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
@@ -125,7 +125,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
         return
       }
       if (!canSave()) {
-        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 1)
       }
     }
     await store.submit(false)
