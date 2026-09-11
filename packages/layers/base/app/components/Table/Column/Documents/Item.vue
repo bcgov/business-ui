@@ -18,8 +18,6 @@ const { data: blob } = useQuery({
 const isDownloadAllowed = computed(() =>
   !props.isRemoved
   && Boolean(blob.value)
-  && props.status === CourtOrderFileStatus.IDLE
-  && props.action === CourtOrderFileAction.NONE
 )
 
 function handleDownload() {
@@ -38,7 +36,7 @@ function handleDownload() {
       variant="link"
       :as="isDownloadAllowed ? 'button' : 'div'"
       :class="[
-        'p-0 text-base max-w-full',
+        'p-0 text-sm max-w-full',
         isDownloadAllowed
           ? ''
           : 'text-neutral cursor-default hover:text-neutral active:text-neutral'
