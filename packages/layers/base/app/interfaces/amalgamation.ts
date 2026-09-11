@@ -1,16 +1,16 @@
 interface AmalBusinessBase {
-  id: number
+  id?: number // may be undefined when loading a draft
   identifier: string
   legalName: string
   role: string // amalgamating | primary | ???
 }
 
-interface AmalBusinessBC extends AmalBusinessBase {
+export interface AmalBusinessBC extends AmalBusinessBase {
   legalType: CorpTypeCd
   mailingAddress: ApiAddress
 }
 
-interface AmalBusinessExBC extends AmalBusinessBase {
+export interface AmalBusinessExBC extends AmalBusinessBase {
   foreignJurisdiction: {
     country: string
     region: string | null
