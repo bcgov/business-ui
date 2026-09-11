@@ -10,12 +10,13 @@ describe('getAmalgamationCorrectSchema', () => {
         id: expect.any(String),
         actions: [],
         isEditing: false,
-        name: '',
-        number: '',
-        jurisdiction: {
+        legalName: '',
+        identifier: '',
+        foreignJurisdiction: {
           country: '',
           region: null
-        }
+        },
+        role: 'amalgamating'
       })
     })
   })
@@ -23,48 +24,48 @@ describe('getAmalgamationCorrectSchema', () => {
   describe('name', () => {
     it('should fail when empty string', () => {
       const result = schema.safeParse({
-        name: '',
-        number: 'ABC-123',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: '',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('This field is required')
-      expect(issues[0]!.path).toEqual(['name'])
+      expect(issues[0]!.path).toEqual(['legalName'])
     })
 
     it('should fail when whitespace only', () => {
       const result = schema.safeParse({
-        name: '   ',
-        number: 'ABC-123',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: '   ',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('This field is required')
-      expect(issues[0]!.path).toEqual(['name'])
+      expect(issues[0]!.path).toEqual(['legalName'])
     })
 
     it('should fail when fewer than 3 characters', () => {
       const result = schema.safeParse({
-        name: 'AB',
-        number: 'ABC-123',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'AB',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('Minimum 3 characters')
-      expect(issues[0]!.path).toEqual(['name'])
+      expect(issues[0]!.path).toEqual(['legalName'])
     })
 
     it('should pass when equal to or greater than 3 characters', () => {
       const result = schema.safeParse({
-        name: 'ABC',
-        number: 'ABC-123',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'ABC',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(true)
@@ -74,48 +75,48 @@ describe('getAmalgamationCorrectSchema', () => {
   describe('number', () => {
     it('should fail when empty string', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: '',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'Valid Name',
+        identifier: '',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('This field is required')
-      expect(issues[0]!.path).toEqual(['number'])
+      expect(issues[0]!.path).toEqual(['identifier'])
     })
 
     it('should fail when fewer than 3 characters', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: 'A1',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'Valid Name',
+        identifier: 'A1',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('Minimum 3 characters')
-      expect(issues[0]!.path).toEqual(['number'])
+      expect(issues[0]!.path).toEqual(['identifier'])
     })
 
     it('should fail when invalid characters are used', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: 'ABC_123!',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'Valid Name',
+        identifier: 'ABC_123!',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('Corporate number may only contain letters, numbers, and hyphens')
-      expect(issues[0]!.path).toEqual(['number'])
+      expect(issues[0]!.path).toEqual(['identifier'])
     })
 
     it('should pass with valid alphanumeric characters and hyphens', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: 'BC-123456',
-        jurisdiction: { country: 'CA', region: 'BC' }
+        legalName: 'Valid Name',
+        identifier: 'BC-123456',
+        foreignJurisdiction: { country: 'CA', region: 'BC' }
       })
 
       expect(result.success).toBe(true)
@@ -125,35 +126,35 @@ describe('getAmalgamationCorrectSchema', () => {
   describe('jurisdiction', () => {
     it('should fail when jurisdiction country is empty string', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: 'ABC-123',
-        jurisdiction: { country: '', region: null }
+        legalName: 'Valid Name',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: '', region: null }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('This field is required')
-      expect(issues[0]!.path).toEqual(['jurisdiction', 'country'])
+      expect(issues[0]!.path).toEqual(['foreignJurisdiction', 'country'])
     })
 
     it('should fail when jurisdiction country is whitespace only', () => {
       const result = schema.safeParse({
-        name: 'Valid Name',
-        number: 'ABC-123',
-        jurisdiction: { country: '   ', region: null }
+        legalName: 'Valid Name',
+        identifier: 'ABC-123',
+        foreignJurisdiction: { country: '   ', region: null }
       })
 
       expect(result.success).toBe(false)
       const issues = result.error!.issues
       expect(issues[0]!.message).toBe('This field is required')
-      expect(issues[0]!.path).toEqual(['jurisdiction', 'country'])
+      expect(issues[0]!.path).toEqual(['foreignJurisdiction', 'country'])
     })
 
     it('should pass with valid country and null region', () => {
       const result = schema.safeParse({
         name: 'Valid Name',
         number: 'ABC-123',
-        jurisdiction: { country: 'US', region: null }
+        foreignJurisdiction: { country: 'US', region: null }
       })
 
       expect(result.success).toBe(true)
@@ -163,7 +164,7 @@ describe('getAmalgamationCorrectSchema', () => {
       const result = schema.safeParse({
         name: 'Valid Name',
         number: 'ABC-123',
-        jurisdiction: { country: 'CA', region: 'ON' }
+        foreignJurisdiction: { country: 'CA', region: 'ON' }
       })
 
       expect(result.success).toBe(true)
@@ -176,11 +177,23 @@ describe('getAmalgamationCorrectStatementSchema', () => {
 
   it('defaults courtApproval to false when empty', () => {
     const result = schema.parse({})
-    expect(result).toEqual({ courtApproval: false })
+    expect(result).toEqual({
+      courtApproval: false,
+      actions: [],
+      isEditing: false
+    })
   })
 
   it('accepts boolean values', () => {
-    expect(schema.parse({ courtApproval: true })).toEqual({ courtApproval: true })
-    expect(schema.parse({ courtApproval: false })).toEqual({ courtApproval: false })
+    expect(schema.parse({ courtApproval: true })).toEqual({
+      courtApproval: true,
+      actions: [],
+      isEditing: false
+    })
+    expect(schema.parse({ courtApproval: false })).toEqual({
+      courtApproval: false,
+      actions: [],
+      isEditing: false
+    })
   })
 })

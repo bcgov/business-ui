@@ -62,7 +62,7 @@ describe('getAddressOrJurisdictionColumn', () => {
     const row = {
       original: {
         new: {
-          jurisdiction: {
+          foreignJurisdiction: {
             country: 'CA',
             region: 'NB'
           }
@@ -85,7 +85,7 @@ describe('getAddressOrJurisdictionColumn', () => {
     const row = {
       original: {
         new: {
-          jurisdiction: {
+          foreignJurisdiction: {
             country: 'AL',
             region: null
           }
@@ -105,7 +105,7 @@ describe('getAddressOrJurisdictionColumn', () => {
 
   it('should apply DELETED_CLASS to both BC address and extra-provincial jurisdiction when row is removed', () => {
     const bcRow = { original: { new: { mailingAddress: {} } } }
-    const exBcRow = { original: { new: { jurisdiction: { country: 'AL', region: null } } } }
+    const exBcRow = { original: { new: { foreignJurisdiction: { country: 'AL', region: null } } } }
 
     mockGetIsRowRemoved.mockReturnValue(true)
 

@@ -36,6 +36,15 @@ const componentExamples: DropdownMenuItem[] = [
     description: 'Stateful sections managing form controls, data tables, and row edits',
     children: [
       {
+        label: 'ManageAmalgamation',
+        children: [
+          {
+            to: localePath('/examples/components/ManageAmalgamation/Correct'),
+            label: 'Correct'
+          }
+        ]
+      },
+      {
         label: 'ManageCompanyName',
         children: [
           {

@@ -34,9 +34,9 @@ const formErrors = computed(() => {
   const errors = formRef.value?.getErrors()
 
   return {
-    name: !!errors?.find(e => e.name?.includes('name')),
-    number: !!errors?.find(e => e.name?.includes('number')),
-    jurisdiction: !!errors?.find(e => e.name?.includes('country'))
+    legalName: !!errors?.find(e => e.name?.includes('legalName')),
+    identifier: !!errors?.find(e => e.name?.includes('identifier')),
+    foreignJurisdiction: !!errors?.find(e => e.name?.includes('country'))
   }
 })
 
@@ -53,7 +53,7 @@ const caOpts: InputMenuItem[] = [
   { region: 'FEDERAL', country: 'CA', label: t('label.federal') }
 ]
 
-const internationalOpts = [
+const internationalOpts: InputMenuItem[] = [
   { type: 'label', label: t('label.international') },
   ...isoCountriesListSortedByName
     .filter(c => c.alpha_2 !== 'CA')
@@ -73,10 +73,51 @@ const internationalOpts = [
     }))
 ]
 
-const jurisdictionOpts: InputMenuItem = [
+const jurisdictionOpts: InputMenuItem[][] = [
   caOpts,
   internationalOpts
 ]
+
+// normalize InputMenuItem to match form schema - no label in form schema
+const selectedJurisdiction = computed({
+  get() {
+    if (!model.value.foreignJurisdiction?.country) {
+      return undefined
+    }
+
+    const { country, region } = model.value.foreignJurisdiction
+
+    if (country === 'CA') {
+      if (region === 'FEDERAL') {
+        return { label: t('label.federal'), country, region }
+      }
+      const provinceDisplay = countrySubdivisions.ca.find(p => p.code === region)?.name || region
+      return {
+        label: `${provinceDisplay}, Canada`,
+        country,
+        region
+      }
+    }
+
+    const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === country)?.name || country
+    return {
+      label: countryDisplay,
+      country,
+      region
+    }
+  },
+  set(val: { label?: string, country: string, region: string | null } | undefined) {
+    if (!val) {
+      model.value.foreignJurisdiction = { country: '', region: null }
+      return
+    }
+
+    model.value.foreignJurisdiction = {
+      country: val.country,
+      region: val.region ?? null
+    }
+  }
+})
 
 async function onDone() {
   try {
@@ -122,13 +163,13 @@ defineExpose({
             orientation="horizontal"
             details-aria-hidden
             class="padding-x-default pt-6 sm:pt-10 pb-3 sm:pb-5"
-            :error="formErrors.name"
+            :error="formErrors.legalName"
           >
             <ConnectFormInput
-              v-model="model.name"
+              v-model="model.legalName"
               input-id="business-name-home-jurisdiction"
               :label="$t('label.businessFullNameInHomeJurisdiction')"
-              name="name"
+              name="legalName"
               required
             />
           </ConnectFormFieldWrapper>
@@ -137,13 +178,13 @@ defineExpose({
             orientation="horizontal"
             details-aria-hidden
             class="padding-x-default pb-6 sm:pb-10 pt-3 sm:pt-5"
-            :error="formErrors.number"
+            :error="formErrors.identifier"
           >
             <ConnectFormInput
-              v-model="model.number"
-              input-id="corp-num-home-jurisdiction"
+              v-model="model.identifier"
+              input-id="corp-identifier-home-jurisdiction"
               :label="$t('label.corpNumHomeJurisdiction')"
-              name="number"
+              name="identifier"
               required
             />
           </ConnectFormFieldWrapper>
@@ -154,12 +195,12 @@ defineExpose({
           orientation="horizontal"
           details-aria-hidden
           class="padding-xy-default"
-          :error="formErrors.jurisdiction"
+          :error="formErrors.foreignJurisdiction"
         >
-          <UFormField name="jurisdiction.country">
+          <UFormField name="foreignJurisdiction.country">
             <ConnectInputMenu
               id="foreign-jurisdiction-menu"
-              v-model="model.jurisdiction"
+              v-model="selectedJurisdiction"
               :label="$t('label.selectHomeJurisdiction')"
               :items="jurisdictionOpts"
               open-on-focus

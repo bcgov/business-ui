@@ -1,3 +1,4 @@
+export * from './manage-amalgamation'
 export * from './manage-base-props'
 export * from './manage-company-name'
 export * from './manage-court-orders'
