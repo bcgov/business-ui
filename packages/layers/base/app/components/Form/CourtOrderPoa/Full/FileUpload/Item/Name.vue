@@ -35,11 +35,7 @@ const iconProps = computed(() => {
   return iconMap[status]
 })
 
-const isDownloadAllowed = computed(() =>
-  Boolean(blob)
-  && status === CourtOrderFileStatus.IDLE
-  && action === CourtOrderFileAction.NONE
-)
+const isDownloadAllowed = computed(() => Boolean(blob))
 
 function handleDownload() {
   if (blob && isDownloadAllowed.value) {
