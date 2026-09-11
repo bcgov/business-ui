@@ -81,6 +81,8 @@ function checkActiveSubForm() {
     || (store.formState.activeNameTranslation && useFilingAlerts('manage-name-translations').setAlert('name-translation-form', alertMsg))
     || (store.formState.activeNameRequest && useFilingAlerts('manage-company-name').setAlert('company-name-form', alertMsg))
     || (store.formState.activeCourtOrder && useFilingAlerts('manage-court-orders').setAlert('court-order-poa-form', alertMsg))
+    || (store.formState.activeAmal && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-form', alertMsg))
+    || (store.formState.activeAmalStmnt && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-statement-form', alertMsg))
 }
 
 function reviewAndConfirm() {
