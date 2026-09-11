@@ -24,6 +24,7 @@ const {
     [() => store.initialDirectors, () => store.directors],
     [() => store.initialReceivers, () => store.receivers],
     [() => store.initialLiquidators, () => store.liquidators],
+    [() => store.initialCustodians, () => store.custodians],
     [() => store.initialOffices, () => store.offices],
     [() => store.initialShareClasses, () => store.shareClasses],
     [() => store.initialNameTranslations, () => store.nameTranslations],
@@ -36,6 +37,7 @@ const {
     return store.directors.some(d => d.new.actions.length > 0)
       || store.receivers.some(r => r.new.actions.length > 0)
       || store.liquidators.some(l => l.new.actions.length > 0)
+      || store.custodians.some(c => c.new.actions.length > 0)
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
       || store.resolutionDates.some(rd => rd.new.actions.length > 0)
@@ -71,6 +73,7 @@ function checkActiveSubForm() {
     || (store.formState.activeDirector && useFilingAlerts('manage-parties').setAlert('party-details-form', alertMsg))
     || (store.formState.activeReceiver && useFilingAlerts('manage-receivers').setAlert('party-details-form', alertMsg))
     || (store.formState.activeLiquidator && useFilingAlerts('manage-liquidators').setAlert('party-details-form', alertMsg))
+    || (store.formState.activeCustodian && useFilingAlerts('manage-custodians').setAlert('party-details-form', alertMsg))
     || (store.formState.activeClass && useFilingAlerts('manage-share-structure').setAlert('share-class-form', alertMsg))
     || (store.formState.activeSeries && useFilingAlerts('manage-share-structure').setAlert('share-series-form', alertMsg))
     || (store.formState.activeResolutionDate && useFilingAlerts('manage-share-structure').setAlert('resolution-date-form', alertMsg))

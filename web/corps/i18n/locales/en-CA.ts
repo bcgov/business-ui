@@ -13,6 +13,7 @@ export default {
     }
   },
   label: {
+    addCustodian: 'Add Custodian',
     addDirector: 'Add Director',
     addLiquidator: 'Add Liquidator',
     addOffice: 'Add Office',
@@ -26,6 +27,7 @@ export default {
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
     important: 'Important',
+    noCustodians: 'There are currently no custodians.',
     noDirectors: 'No Directors',
     noLiquidators: 'There are currently no liquidators.',
     noOffices: 'No Offices',

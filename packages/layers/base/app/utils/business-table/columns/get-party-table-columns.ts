@@ -8,6 +8,7 @@ export function getPartyTableColumns<T extends PartySchema = PartySchema>(
     delivery: getDeliveryAddressColumn<T>(),
     mailing: getMailingAddressColumn<T>(),
     effectiveDates: getEffectiveDatesColumn<T>(),
+    email: getEmailColumn<T>(),
     actions: getActionsColumn<T>()
   }
 
