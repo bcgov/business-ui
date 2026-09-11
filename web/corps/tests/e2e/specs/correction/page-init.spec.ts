@@ -11,11 +11,18 @@ async function makeDirectorEdit(page: Page, fillValue: string) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').first()
   const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
+  const sameAsMailingCheckbox = directors.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
   await expect(streetInput).toBeVisible()
+  await streetInput.fill(fillValue)
+  // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
+  // (see Form/Address/index.vue) — wait it out, then re-confirm delivery matches mailing.
+  await page.waitForTimeout(200)
   await expect(async () => {
     if (await streetInput.isVisible()) {
-      await streetInput.fill(fillValue)
+      if (!(await sameAsMailingCheckbox.isChecked())) {
+        await sameAsMailingCheckbox.check({ force: true })
+      }
       await directors.getByRole('button', { name: 'Done' }).click()
     }
     await expect(streetInput).not.toBeVisible()

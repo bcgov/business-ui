@@ -10,13 +10,20 @@ async function makeDirectorChange(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'TESTER TESTING' })
   const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
+  const sameAsMailingCheckbox = directors.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
   await rowToEdit.getByRole('button', { name: 'Correct' }).click()
   await expect(streetInput).toBeVisible()
-  // Use toPass for CI resilience — retries the fill+Done+verify cycle if the form
+  await streetInput.fill('Corrected Unit 1A')
+  // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
+  // (see Form/Address/index.vue) — wait it out, then re-confirm delivery matches mailing.
+  await page.waitForTimeout(200)
+  // Use toPass for CI resilience — retries the check+Done+verify cycle if the form
   // is slow to validate/close on resource-constrained environments
   await expect(async () => {
     if (await streetInput.isVisible()) {
-      await streetInput.fill('Corrected Unit 1A')
+      if (!(await sameAsMailingCheckbox.isChecked())) {
+        await sameAsMailingCheckbox.check({ force: true })
+      }
       await directors.getByRole('button', { name: 'Done' }).click()
     }
     await expect(streetInput).not.toBeVisible()
@@ -302,10 +309,18 @@ test.describe('Correction - Filing Submit', () => {
       await page.keyboard.press('Enter')
       await expect(regionList).not.toBeVisible()
       await form.getByTestId('mailing-address-input-postalCode').fill('V8V 1A1')
-      await form.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' }).check({ force: true })
-
-      await form.getByRole('button', { name: 'Done' }).click()
-      await expect(form).not.toBeVisible()
+      // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
+      // (see Form/Address/index.vue) — wait it out before checking the box, otherwise the
+      // pending reset from the last mailing edit fires after and unchecks it.
+      await page.waitForTimeout(200)
+      const sameAsMailingCheckbox = form.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
+      await expect(async () => {
+        if (!(await sameAsMailingCheckbox.isChecked())) {
+          await sameAsMailingCheckbox.check({ force: true })
+        }
+        await form.getByRole('button', { name: 'Done' }).click()
+        await expect(form).not.toBeVisible()
+      }).toPass({ timeout: 15000 })
 
       // table should now show the new custodian with their email
       await expect(custodians).toContainText('NEW CUSTODIAN')
@@ -396,8 +411,8 @@ test.describe('Correction - Filing Submit', () => {
       await rowToEdit.getByRole('button', { name: 'Correct' }).click()
       await expect(officeStreetInput).toBeVisible()
       await officeStreetInput.fill('Suite 200')
-      // Editing the mailing address debounce-resets "same as mailing" for 100ms (see Form/Address/index.vue) —
-      // wait it out before checking the box, otherwise the reset fires after and unchecks it.
+      // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
+      // (see Form/Address/index.vue) — wait it out, then re-confirm delivery matches mailing.
       await page.waitForTimeout(200)
       await expect(async () => {
         if (await officeStreetInput.isVisible()) {
