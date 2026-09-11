@@ -4,7 +4,7 @@ import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
   stateKey = 'manage-amalgamation',
-  allowedActions = [ManageAllowedAction.REMOVE, ManageAllowedAction.CHANGE],
+  allowedActions = [ManageAllowedAction.CHANGE],
   labelOverrides,
   modelName = 'activeAmal',
   variant = 'default',
