@@ -133,5 +133,17 @@ function onActionPrevented() {
       :entity-type="business?.legalType!"
       @action-prevented="onActionPrevented"
     />
+
+    <ManageAmalgamation
+      v-model:active-amal="store.formState.activeAmal"
+      v-model:active-amal-stmnt="store.formState.activeAmalStmnt"
+      data-testid="amalgamation-section"
+      variant="correct"
+      :loading="store.initializing"
+      :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.amalgamations') })"
+      :prevent-actions="hasActiveSubForm"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
+    />
   </UForm>
 </template>

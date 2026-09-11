@@ -29,7 +29,9 @@ const {
     [() => store.initialNameTranslations, () => store.nameTranslations],
     [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
     [() => store.initialResolutionDates, () => store.resolutionDates],
-    [() => store.initialCourtOrders, () => store.courtOrders]
+    [() => store.initialCourtOrders, () => store.courtOrders],
+    [() => store.initialAmalgamation, () => store.amalgamation],
+    [() => store.initialAmalStmnt, () => store.amalStmnt],
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -42,6 +44,8 @@ const {
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || store.companyName.new.actions.length > 0
       || store.courtOrders.some(co => co.new.actions.length > 0)
+      || store.amalgamation.some(a => a.new.actions.length > 0)
+      || store.amalStmnt.new.actions.length > 0
   }
 )
 

@@ -11,6 +11,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableNameTranslations, hasChanges: hasNameTranslationChange } = useManageNameTranslations('manage-company-name-name-translations')
   const { state: companyName, hasNameChange: hasCompanyNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { tableState: tableCourtOrders } = useManageCourtOrders()
+  const { tableState: tableAmalgamation, statementState, hasChanges: hasAmalChanges } = useManageAmalgamation()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
@@ -30,6 +31,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
   const initialResolutionDates = shallowRef<TableBusinessState<ResolutionDateSchema>[]>([])
   const initialCourtOrders = shallowRef<TableBusinessState<CourtOrderPoaFullSchema>[]>([])
+  const initialAmalgamation = shallowRef<TableBusinessState<AmalgamationTableRow>[]>([])
+  const initialAmalStmnt = shallowRef<TableBusinessState<AmalgamationCorrectStatementSchema>>({} as TableBusinessState<AmalgamationCorrectStatementSchema>)
 
   const correctionComment = computed({
     get: () => formState.comment ?? { detail: '' },
@@ -50,6 +53,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeSeries
     || !!formState.activeResolutionDate
     || !!formState.activeCourtOrder
+    || !!formState.activeAmal
+    || !!formState.activeAmalStmnt
   )
 
   /** The original filing being corrected (fetched by correctedFilingId) */
@@ -110,10 +115,15 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     const [
       aliasesNameTranslations,
-      courtOrders
+      courtOrders,
+      amalgamation
     ] = await Promise.all([
       service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
-      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[])
+      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
+      service.getBusinessExtended(businessId, true, FilingType.AMALGAMATION_APPLICATION).catch(() => ({
+        amalgamatingBusinesses: [],
+        courtApproval: false
+      }) as Amalgamation)
     ])
 
     // The draft is always expected to exist (pre-created before page load)
@@ -300,6 +310,10 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const formattedCourtOrders = formatCourtOrdersSection(courtOrders, draft.courtOrders)
     tableCourtOrders.value = formattedCourtOrders
 
+    const formattedAmalgamation = formatAmalCorrectSection(amalgamation, draft.amalgamation)
+    tableAmalgamation.value = formattedAmalgamation.tableState
+    statementState.value = formattedAmalgamation.statementState
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableDirectors.value)
@@ -310,6 +324,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
     initialResolutionDates.value = cloneDeep(resolutionDates.value)
     initialCourtOrders.value = cloneDeep(tableCourtOrders.value)
+    initialAmalgamation.value = cloneDeep(tableAmalgamation.value)
+    initialAmalStmnt.value = cloneDeep(statementState.value)
 
     // Fee: STAFF type corrections = no fee, CLIENT type corrections = $20 (CRCTN fee code)
     if (isStaffCorrectionType.value) {
@@ -405,7 +421,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         }
       }),
 
-      courtOrders: formatCourtOrdersApi(tableCourtOrders.value)
+      courtOrders: formatCourtOrdersApi(tableCourtOrders.value),
+
+      amalgamation: formatAmalCorrectApi(tableAmalgamation.value, statementState.value)
 
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
@@ -489,6 +507,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeNameTranslation = undefined
     formState.activeResolutionDate = undefined
     formState.activeCourtOrder = undefined
+    formState.activeAmal = undefined
+    formState.activeAmalStmnt = undefined
 
     tableNameTranslations.value = []
 
@@ -501,6 +521,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialNameTranslations.value = []
     initialResolutionDates.value = []
     initialCourtOrders.value = []
+    initialAmalgamation.value = []
+    initialAmalStmnt.value = {} as TableBusinessState<AmalgamationCorrectStatementSchema>
 
     initializing.value = false
     requireResolutionDate.value = false
@@ -526,6 +548,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     shareClasses: tableShareClasses,
     resolutionDates,
     nameTranslations: tableNameTranslations,
+    amalgamation: tableAmalgamation,
+    amalStmnt: statementState,
     initialFormState,
     initialDirectors,
     initialReceivers,
@@ -535,6 +559,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialResolutionDates,
     initialNameTranslations,
     initialCourtOrders,
+    initialAmalgamation,
+    initialAmalStmnt,
     hasActiveSubForm,
     isStaff,
     companyName,
