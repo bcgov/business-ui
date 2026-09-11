@@ -11,7 +11,14 @@ describe('useManageParties', () => {
 
   const mockParty = {
     actions: [],
-    name: { partyType: PartyType.PERSON, firstName: 'Tester', middleName: '', lastName: 'Testing' },
+    name: {
+      partyType: PartyType.PERSON,
+      firstName: 'Tester',
+      middleName: '',
+      lastName: 'Testing',
+      hasPreferredName: false,
+      businessName: ''
+    },
     address: {
       deliveryAddress: { street: '123 Main St', city: 'Victoria', country: 'CA', region: 'BC', postalCode: 'V1X 1X1' },
       mailingAddress: { street: '123 Main St', city: 'Victoria', country: 'CA', region: 'BC', postalCode: 'V1X 1X1' },
