@@ -26,17 +26,17 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 export async function validatePdf(
   file: File
-): Promise<{ isValid: boolean; tKey?: string }> {
+): Promise<{ isValid: boolean, tKey?: string }> {
   const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
 
   if (!isPdf || !file.arrayBuffer) {
     return { isValid: true }
   }
 
-    const expectedWidthInches = 8.5
-    const expectedHeightInches = 11.0
-    const pointsPerInch = 72
-    const epsilonInches = 0.02
+  const expectedWidthInches = 8.5
+  const expectedHeightInches = 11.0
+  const pointsPerInch = 72
+  const epsilonInches = 0.02
 
   let pdf: pdfjs.PDFDocumentProxy | null = null
 
@@ -48,25 +48,25 @@ export async function validatePdf(
       password: ''
     }).promise
 
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum)
-        const viewport = page.getViewport({ scale: 1 })
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum)
+      const viewport = page.getViewport({ scale: 1 })
 
-        const widthInches = viewport.width / pointsPerInch
-        const heightInches = viewport.height / pointsPerInch
+      const widthInches = viewport.width / pointsPerInch
+      const heightInches = viewport.height / pointsPerInch
 
-        const isValidPageSize =
-          (Math.abs(widthInches - expectedWidthInches) < epsilonInches) &&
-          (Math.abs(heightInches - expectedHeightInches) < epsilonInches)
+      const isValidPageSize
+        = (Math.abs(widthInches - expectedWidthInches) < epsilonInches)
+          && (Math.abs(heightInches - expectedHeightInches) < epsilonInches)
 
-        if (!isValidPageSize) {
-          return { isValid: false, tKey: 'validation.invalidPageSizeLetterNamed' }
-        }
+      if (!isValidPageSize) {
+        return { isValid: false, tKey: 'validation.invalidPageSizeLetterNamed' }
       }
+    }
 
     return { isValid: true }
   } catch (err: unknown) {
-    const error = err as { name?: string; message?: string }
+    const error = err as { name?: string, message?: string }
     if (error?.name === 'PasswordException' || error?.message?.toLowerCase().includes('password')) {
       return { isValid: false, tKey: 'validation.fileMustBeUnencryptedNamed' }
     }
@@ -86,12 +86,12 @@ const fileSchema = z.object({
   const result = await validatePdf(data.file)
 
   if (!result.isValid) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['file'],
-        message: result.tKey
-      })
-    }
+    ctx.addIssue({
+      code: 'custom',
+      path: ['file'],
+      message: result.tKey
+    })
+  }
 })
 
 // appends (x) on a filename to help prevent duplicate filenames
