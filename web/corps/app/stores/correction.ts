@@ -11,7 +11,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableNameTranslations, hasChanges: hasNameTranslationChange } = useManageNameTranslations('manage-company-name-name-translations')
   const { state: companyName, hasNameChange: hasCompanyNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { tableState: tableCourtOrders } = useManageCourtOrders()
-  const { tableState: tableAmalgamation, statementState, hasChanges: hasAmalChanges } = useManageAmalgamation()
+  const { tableState: tableAmalgamation, statementState } = useManageAmalgamation()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()

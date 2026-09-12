@@ -31,7 +31,7 @@ const {
     [() => store.initialResolutionDates, () => store.resolutionDates],
     [() => store.initialCourtOrders, () => store.courtOrders],
     [() => store.initialAmalgamation, () => store.amalgamation],
-    [() => store.initialAmalStmnt, () => store.amalStmnt],
+    [() => store.initialAmalStmnt, () => store.amalStmnt]
   ],
   // At least one correctable section must have changes to allow submission
   () => {

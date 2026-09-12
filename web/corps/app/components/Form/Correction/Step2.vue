@@ -159,7 +159,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         variant="correct-readonly"
       />
-      
+
       <ManageAmalgamation
         v-if="hasAmalgamationChanges"
         data-testid="review-amalgamation-section"

@@ -143,7 +143,7 @@ describe('formatAmalCorrectSection', () => {
         amalgamatingBusinesses: [
           {
             ...mockOriginalData.amalgamatingBusinesses[1]!,
-            isEditing: true,
+            isEditing: true
           } as any
         ]
       }
