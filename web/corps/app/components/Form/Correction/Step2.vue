@@ -50,6 +50,11 @@ const hasCourtOrderChanges = computed(() => {
   return store.courtOrders.some(co => co.new.actions.length > 0)
 })
 
+const hasAmalgamationChanges = computed(() => {
+  return store.amalgamation.some(a => a.new.actions.length > 0)
+    || store.amalStmnt.new.actions.length > 0
+})
+
 const requiresAuthorization = computed(() => {
   const legalType = businessStore.business?.legalType as CorpTypeCd | undefined
   return legalType ? CORPS.includes(legalType) : false
@@ -151,6 +156,13 @@ function onError(event: FormErrorEvent) {
       <ManageCourtOrders
         v-if="hasCourtOrderChanges"
         data-testid="review-court-orders-section"
+        :loading="store.initializing"
+        variant="correct-readonly"
+      />
+
+      <ManageAmalgamation
+        v-if="hasAmalgamationChanges"
+        data-testid="review-amalgamation-section"
         :loading="store.initializing"
         variant="correct-readonly"
       />

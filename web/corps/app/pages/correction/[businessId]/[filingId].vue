@@ -29,7 +29,9 @@ const {
     [() => store.initialNameTranslations, () => store.nameTranslations],
     [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
     [() => store.initialResolutionDates, () => store.resolutionDates],
-    [() => store.initialCourtOrders, () => store.courtOrders]
+    [() => store.initialCourtOrders, () => store.courtOrders],
+    [() => store.initialAmalgamation, () => store.amalgamation],
+    [() => store.initialAmalStmnt, () => store.amalStmnt]
   ],
   // At least one correctable section must have changes to allow submission
   () => {
@@ -42,6 +44,8 @@ const {
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || store.companyName.new.actions.length > 0
       || store.courtOrders.some(co => co.new.actions.length > 0)
+      || store.amalgamation.some(a => a.new.actions.length > 0)
+      || store.amalStmnt.new.actions.length > 0
   }
 )
 
@@ -77,6 +81,8 @@ function checkActiveSubForm() {
     || (store.formState.activeNameTranslation && useFilingAlerts('manage-name-translations').setAlert('name-translation-form', alertMsg))
     || (store.formState.activeNameRequest && useFilingAlerts('manage-company-name').setAlert('company-name-form', alertMsg))
     || (store.formState.activeCourtOrder && useFilingAlerts('manage-court-orders').setAlert('court-order-poa-form', alertMsg))
+    || (store.formState.activeAmal && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-form', alertMsg))
+    || (store.formState.activeAmalStmnt && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-statement-form', alertMsg))
 }
 
 function reviewAndConfirm() {
@@ -97,7 +103,7 @@ async function submitFiling() {
       return
     }
     if (!canSubmit()) {
-      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
+      return setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
     }
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
@@ -119,7 +125,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
         return
       }
       if (!canSave()) {
-        return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+        return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 1)
       }
     }
     await store.submit(false)

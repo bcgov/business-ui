@@ -4,7 +4,7 @@ import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
   stateKey = 'manage-amalgamation',
-  allowedActions = [ManageAllowedAction.REMOVE, ManageAllowedAction.CHANGE],
+  allowedActions = [ManageAllowedAction.CHANGE],
   labelOverrides,
   modelName = 'activeAmal',
   variant = 'default',
@@ -78,17 +78,18 @@ const tableLabels = computed(() => {
 })
 
 function setActiveFormAlert() {
-  if (shouldPreventActions.value && (!!activeAmal.value || !!activeAmalStmnt.value)) {
+  if (activeAmal.value !== undefined) {
     setAlert('amalgamation-correct-form', t('text.finishTaskBeforeOtherChanges'))
-    setAlert('amalgamation-correct-statement-form', t('text.finishTaskBeforeOtherChanges'))
-    emit('action-prevented')
-    return true
   }
-  return false
+  if (activeAmalStmnt.value !== undefined) {
+    setAlert('amalgamation-correct-statement-form', t('text.finishTaskBeforeOtherChanges'))
+  }
 }
 
 function initAddAmal() {
-  if (setActiveFormAlert()) {
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
     return
   }
   activeAmal.value = activeSchema.parse({})
@@ -226,7 +227,7 @@ watch(() => actionPreventedSignal, (value) => {
             targetId,
             message: alerts[tableTarget]
           }"
-          @action-prevented="setActiveFormAlert"
+          @action-prevented="$emit('action-prevented')"
           @init-edit="initEditRow"
           @remove="removeSubject"
           @undo="undoSubject"
@@ -261,7 +262,7 @@ watch(() => actionPreventedSignal, (value) => {
       @done="updateStatement(activeAmalStmnt)"
       @cancel="cleanupForm"
       @undo="undoStatement"
-      @action-prevented="setActiveFormAlert"
+      @action-prevented="$emit('action-prevented')"
     />
   </component>
 </template>

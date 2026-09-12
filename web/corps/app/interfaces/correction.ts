@@ -77,6 +77,7 @@ export interface CorrectionPayload extends FilingPayloadData {
     resolutionDates?: Resolution[]
   }
 
+  amalgamation?: Amalgamation
   // TODO: add additional correction-specific fields as needed
   // memorandum?: unknown
   // rules?: unknown
