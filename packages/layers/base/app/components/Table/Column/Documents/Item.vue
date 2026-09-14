@@ -12,6 +12,7 @@ const { data: blob } = useQuery({
   query: () => $businessApi<Blob>(`documents/client/${props.fileKey}`, {
     responseType: 'blob' as 'json'
   }),
+  staleTime: 2 * 60000,
   enabled: () => !!props.fileKey && !props.isRemoved
 })
 
