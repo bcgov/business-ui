@@ -4,7 +4,7 @@ import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
   stateKey = 'manage-court-orders',
-  allowedActions,
+  allowedActions = [ManageAllowedAction.ADD, ManageAllowedAction.CHANGE],
   labelOverrides,
   modelName = 'activeCourtOrder',
   variant = 'default',
