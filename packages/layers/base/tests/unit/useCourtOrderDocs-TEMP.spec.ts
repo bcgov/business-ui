@@ -353,7 +353,7 @@ describe('useCourtOrderDocs', () => {
   })
 
   describe('onFileAction', () => {
-    it('should hard delete a newly added file', async () => {
+    it('should soft delete a newly added file if it was not added during this form session', async () => {
       const mockDoc = {
         id: '1234567',
         fileKey: 'drs-key',
@@ -370,8 +370,39 @@ describe('useCourtOrderDocs', () => {
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith('drs-key')
+      expect(mockBusinessService.deleteDocument).not.toHaveBeenCalled()
       expect(supportingDocs.value).toHaveLength(0)
+    })
+
+    it('should hard delete a newly added file if it was added during this form session', async () => {
+      const mockDoc = {
+        id: '1234567',
+        fileKey: 'drs-key',
+        name: 'doc.pdf',
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
+      }
+      model.value = [mockDoc]
+
+      const xhrMock = getXhrMock()
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+
+      const { supportingFiles, supportingDocs, onFileAction } = useCourtOrderDocs(model, defaultProps)
+      await nextTick()
+      await flushPromises()
+
+      supportingFiles.value = [new File(['test file'], 'document.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(supportingDocs.value).toHaveLength(2)
+      const expectedKey = 'drs-key'
+      expect(supportingDocs.value[1]!.fileKey).toBe(expectedKey)
+
+      onFileAction(supportingDocs.value[1]!.id, 'delete')
+
+      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith(expectedKey)
     })
 
     it('should soft delete an existing file', async () => {

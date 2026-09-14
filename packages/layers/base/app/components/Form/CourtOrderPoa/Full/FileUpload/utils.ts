@@ -482,7 +482,7 @@ export function useCourtOrderDocs(
   }
 
   function cleanupFilesOnSessionCancel() {
-    sessionUploadedKeys.forEach(k => {
+    sessionUploadedKeys.forEach((k) => {
       service.deleteDocument(k)
     })
     sessionUploadedKeys.clear()
