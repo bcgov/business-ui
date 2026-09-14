@@ -269,6 +269,7 @@ export function useCourtOrderDocs(
   const supportingFiles = ref<File[]>([]) // model value for supporting docs upload
   const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
   const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
+  const sessionUploadedKeys: Set<string> = new Set() // DRS keys that were successfully uploaded during this form session only
 
   const isDropZoneEnabled = computed(() => !isTouchscreen.value)
 
@@ -321,10 +322,15 @@ export function useCourtOrderDocs(
 
     switch (action) {
       case 'delete':
-        // newly added files get hard deleted
+        // newly added files get removed from UI state
         if (file.action === CourtOrderFileAction.ADDED) {
-          service.deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
+
+          // newly added files during this form session get hard deleted
+          if (file.fileKey && sessionUploadedKeys.has(file.fileKey)) {
+            service.deleteDocument(file.fileKey)
+            sessionUploadedKeys.delete(file.fileKey)
+          }
         // existing files get soft deleted with the deleted action
         } else {
           file.action = CourtOrderFileAction.DELETED
@@ -440,7 +446,11 @@ export function useCourtOrderDocs(
             progress: 100,
             abortController: undefined
           })
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+          // track docs uploaded during this form session
+          sessionUploadedKeys.add(doc.key)
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
           if (e?.name === 'AbortError') {
             return
@@ -469,6 +479,13 @@ export function useCourtOrderDocs(
         }
       })
     )
+  }
+
+  function cleanupFilesOnSessionCancel() {
+    sessionUploadedKeys.forEach(k => {
+      service.deleteDocument(k)
+    })
+    sessionUploadedKeys.clear()
   }
 
   // process user uploaded court order file
@@ -506,6 +523,7 @@ export function useCourtOrderDocs(
     courtOrderUploadTimestamp,
     displayMaxOneCourtOrderAlert,
     onUploadCourtOrder,
-    onFileAction
+    onFileAction,
+    cleanupFilesOnSessionCancel
   }
 }
