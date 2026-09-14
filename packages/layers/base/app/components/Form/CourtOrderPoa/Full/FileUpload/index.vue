@@ -20,7 +20,8 @@ const {
   courtOrderUploadTimestamp,
   displayMaxOneCourtOrderAlert,
   onUploadCourtOrder,
-  onFileAction
+  onFileAction,
+  cleanupFilesOnSessionCancel
 } = useCourtOrderDocs(model, { identifier, filingId, entityType })
 
 const supportingDocErrorIds = computed(() => supportingDocs.value
@@ -43,6 +44,10 @@ const courtOrderDocErrorIds = computed(() => courtOrderDocs.value
 const courtOrderDocsAriaDescribedBy = computed(() => {
   const base = 'max-one-court-order-desc max-one-court-order-alert'
   return courtOrderDocErrorIds.value ? `${base} ${courtOrderDocErrorIds.value}` : base
+})
+
+defineExpose({
+  cleanupFilesOnSessionCancel
 })
 </script>
 

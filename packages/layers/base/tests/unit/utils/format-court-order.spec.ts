@@ -81,7 +81,8 @@ describe('Format Court Order Utils', () => {
       expect(result[0]!.new.orderDetails).toBe('Updated order details')
     })
 
-    it('should add REMOVED action when original item is missing from draftCourtOrders', () => {
+    // remove/delete currently not supported by api - test will need updating if remove/delete needs implementing
+    it.skip('should add REMOVED action when original item is missing from draftCourtOrders', () => {
       const result = formatCourtOrdersSection([mockOriginal], [])
 
       expect(result).toHaveLength(1)
@@ -229,7 +230,8 @@ describe('Format Court Order Utils', () => {
       expect(result).toBeUndefined()
     })
 
-    it('should filter out items with REMOVED action', () => {
+    // remove/delete currently not supported by api - test will need updating if remove/delete needs implementing
+    it.skip('should filter out items with REMOVED action', () => {
       const mockState = [
         {
           old: { ...baseItem, actions: [] },

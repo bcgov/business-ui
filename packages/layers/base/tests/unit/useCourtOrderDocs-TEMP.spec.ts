@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
 import type { ModelRef } from 'vue'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import * as pdfjs from 'pdfjs-dist'
 
 import {
   formatBytes,
@@ -49,6 +51,11 @@ vi.mock('#app', async (importOriginal) => {
   }
 })
 
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: vi.fn()
+}))
+
 const getXhrMock = (sendMock?: any, abortMock?: any) => ({
   open: vi.fn(),
   setRequestHeader: vi.fn(),
@@ -93,6 +100,17 @@ describe('useCourtOrderDocs', () => {
     model = ref<CourtOrderFileUi[]>([]) as ModelRef<CourtOrderFileUi[]>
     mockBusinessApi.mockResolvedValue({})
     mockMediaQuery.value = false
+
+    // default to letter size
+    vi.mocked(pdfjs.getDocument).mockReturnValue({
+      promise: Promise.resolve({
+        numPages: 1,
+        getPage: vi.fn().mockResolvedValue({
+          getViewport: () => ({ width: 612, height: 792 })
+        }),
+        cleanup: vi.fn().mockResolvedValue(undefined)
+      })
+    } as unknown as ReturnType<typeof pdfjs.getDocument>)
   })
 
   describe('State sync', () => {
@@ -182,7 +200,8 @@ describe('useCourtOrderDocs', () => {
       const { courtOrderFile, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
       courtOrderFile.value = new File(['pdf data'], 'valid_order.pdf', { type: 'application/pdf' })
 
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await nextTick()
+      await flushPromises()
 
       expect(xhrMock.open).toHaveBeenCalledWith(
         'POST',
@@ -200,7 +219,68 @@ describe('useCourtOrderDocs', () => {
       const oversizedFile = new File([new Uint8Array(maxFileSize + 100)], 'test.pdf', { type: 'application/pdf' })
 
       supportingFiles.value = [oversizedFile]
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await nextTick()
+      await flushPromises()
+
+      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
+      expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
+    })
+
+    it('should set error status when PDF page size is not Letter', async () => {
+      vi.mocked(pdfjs.getDocument).mockReturnValueOnce({
+        promise: Promise.resolve({
+          numPages: 1,
+          getPage: vi.fn(() => Promise.resolve({
+            getViewport: () => ({ width: 595, height: 842 }) // Not 8.5 x 11 inches
+          })),
+          cleanup: vi.fn(() => Promise.resolve())
+        })
+      } as any)
+
+      const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const invalidSizeFile = new File(['pdf data'], 'a4_order.pdf', { type: 'application/pdf' })
+      invalidSizeFile.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
+
+      supportingFiles.value = [invalidSizeFile]
+      await nextTick()
+      await flushPromises()
+
+      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
+      expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
+    })
+
+    it('should set error status when PDF is password protected', async () => {
+      const passwordError = new Error('Password required')
+      passwordError.name = 'PasswordException'
+
+      vi.mocked(pdfjs.getDocument).mockReturnValueOnce({
+        promise: Promise.reject(passwordError)
+      } as any)
+
+      const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const encryptedFile = new File(['pdf data'], 'locked_order.pdf', { type: 'application/pdf' })
+      encryptedFile.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
+
+      supportingFiles.value = [encryptedFile]
+      await nextTick()
+      await flushPromises()
+
+      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
+      expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
+    })
+
+    it('should set error status when PDF is corrupted', async () => {
+      vi.mocked(pdfjs.getDocument).mockReturnValueOnce({
+        promise: Promise.reject(new Error('Invalid PDF structure'))
+      } as any)
+
+      const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
+      const corruptFile = new File(['bad data'], 'corrupt.pdf', { type: 'application/pdf' })
+      corruptFile.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
+
+      supportingFiles.value = [corruptFile]
+      await nextTick()
+      await flushPromises()
 
       expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
@@ -244,9 +324,11 @@ describe('useCourtOrderDocs', () => {
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
+      await flushPromises()
 
       supportingFiles.value = [new File(['test file'], 'document.pdf', { type: 'application/pdf' })]
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await nextTick()
+      await flushPromises()
 
       expect(supportingDocs.value).toHaveLength(2)
       expect(supportingDocs.value[1]!.name).toBe('document (1).pdf')
@@ -256,7 +338,8 @@ describe('useCourtOrderDocs', () => {
       )
 
       supportingFiles.value = [new File(['test file'], 'document (1).pdf', { type: 'application/pdf' })]
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await nextTick()
+      await flushPromises()
 
       expect(supportingDocs.value).toHaveLength(3)
       expect(supportingDocs.value[2]!.name).toBe('document (2).pdf')
@@ -270,7 +353,7 @@ describe('useCourtOrderDocs', () => {
   })
 
   describe('onFileAction', () => {
-    it('should hard delete a newly added file', async () => {
+    it('should soft delete a newly added file if it was not added during this form session', async () => {
       const mockDoc = {
         id: '1234567',
         fileKey: 'drs-key',
@@ -283,11 +366,43 @@ describe('useCourtOrderDocs', () => {
 
       const { onFileAction, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
+      await flushPromises()
 
       onFileAction(mockDoc.id, 'delete')
 
-      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith('drs-key')
+      expect(mockBusinessService.deleteDocument).not.toHaveBeenCalled()
       expect(supportingDocs.value).toHaveLength(0)
+    })
+
+    it('should hard delete a newly added file if it was added during this form session', async () => {
+      const mockDoc = {
+        id: '1234567',
+        fileKey: 'drs-key',
+        name: 'doc.pdf',
+        type: DocumentTypeClient.SUPPORTING_DOCUMENT,
+        action: CourtOrderFileAction.ADDED,
+        status: CourtOrderFileStatus.SUCCESS
+      }
+      model.value = [mockDoc]
+
+      const xhrMock = getXhrMock()
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+
+      const { supportingFiles, supportingDocs, onFileAction } = useCourtOrderDocs(model, defaultProps)
+      await nextTick()
+      await flushPromises()
+
+      supportingFiles.value = [new File(['test file'], 'document.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(supportingDocs.value).toHaveLength(2)
+      const expectedKey = 'drs-key'
+      expect(supportingDocs.value[1]!.fileKey).toBe(expectedKey)
+
+      onFileAction(supportingDocs.value[1]!.id, 'delete')
+
+      expect(mockBusinessService.deleteDocument).toHaveBeenCalledWith(expectedKey)
     })
 
     it('should soft delete an existing file', async () => {
@@ -370,6 +485,7 @@ describe('useCourtOrderDocs', () => {
 
       supportingFiles.value = [new File(['test file'], 'uploading.pdf', { type: 'application/pdf' })]
       await nextTick()
+      await flushPromises()
 
       const activeFile = supportingDocs.value[0]!
       onFileAction(activeFile.id, 'cancel')
@@ -384,6 +500,7 @@ describe('useCourtOrderDocs', () => {
     it('should be enabled when media query returns false', async () => {
       mockMediaQuery.value = false
       await nextTick()
+      await flushPromises()
 
       const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
 
@@ -393,6 +510,7 @@ describe('useCourtOrderDocs', () => {
     it('should be disabled when media query returns true', async () => {
       mockMediaQuery.value = true
       await nextTick()
+      await flushPromises()
 
       const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
 

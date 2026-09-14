@@ -87,14 +87,14 @@ export const useManageCourtOrders = (
       return
     }
 
-    const { old: oldSubjectState, new: newSubjectState } = row.original
+    const { old: oldSubjectState } = row.original
     let actions: ActionType[] = []
 
     // If new subject, only ever apply the ADDED badge
     if (oldSubjectState === undefined) {
       actions = [ActionType.ADDED]
     // else compare new and old state, omitting values the user can't edit
-    } else if (!isEqualOmit(subject, newSubjectState, NON_EDITABLE_FIELDS)) {
+    } else if (!isEqualOmit(subject, oldSubjectState, NON_EDITABLE_FIELDS)) {
       actions = [ActionType.CHANGED]
     }
 

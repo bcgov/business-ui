@@ -31,7 +31,8 @@
     "@sbc-connect/nuxt-pay": "0.6.6",
     "http-status-codes": "2.3.0",
     "iso-3166-2": "1.0.0",
-    "luxon": "3.7.2"
+    "luxon": "3.7.2",
+    "pdfjs-dist": "^6.3.289"
   },
   "devDependencies": {
     "@axe-core/playwright": "catalog:",

@@ -24,6 +24,7 @@ const emit = defineEmits<{
 
 const model = defineModel<CourtOrderPoaFullSchema>({ required: true })
 const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-poa-form')
+const fileRef = useTemplateRef('file-ref')
 
 const formTarget = 'court-order-poa-form'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
@@ -53,6 +54,11 @@ async function onDone() {
   }
 }
 
+function onCancel() {
+  fileRef.value?.cleanupFilesOnSessionCancel()
+  emit('cancel')
+}
+
 defineExpose({
   formRef
 })
@@ -77,7 +83,7 @@ defineExpose({
         targetId
       }"
       :hide-remove
-      @cancel="$emit('cancel')"
+      @cancel="onCancel"
       @remove="$emit('remove')"
       @done="onDone"
     >
@@ -141,6 +147,7 @@ defineExpose({
           </ConnectFormFieldWrapper>
           <USeparator class="padding-x-default" />
           <FormCourtOrderPoaFullFileUpload
+            ref="file-ref"
             v-model="model.files"
             :filing-id="model.filingId"
             :identifier

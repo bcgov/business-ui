@@ -95,14 +95,22 @@ export function formatCourtOrdersSection(
       }
     }
 
-    // if no matching id is found, item has been removed
+    // if no matching id is found, item is an existing record
     return {
-      old: oldParsed,
-      new: {
-        ...oldParsed,
-        actions: [ActionType.REMOVED]
-      }
+      old: structuredClone(oldParsed),
+      new: structuredClone(oldParsed)
     }
+
+    // API currently does not support removing court orders
+    // Leaving this here as a reference if needed in future
+    // if no matching id is found, item has been removed
+    // return {
+    //   old: oldParsed,
+    //   new: {
+    //     ...oldParsed,
+    //     actions: [ActionType.REMOVED]
+    //   }
+    // }
   })
 
   // any draft without an ID is a newly added item
@@ -140,7 +148,8 @@ export function formatCourtOrdersApi(
 
   // only if changes have been made, format the court orders
   return courtOrders
-    .filter(co => !co.new.actions.includes(ActionType.REMOVED))
+    // .filter(co => !co.new.actions.includes(ActionType.REMOVED)) // remove/delete currently not supported by api
+    .filter(co => co.new.actions.length > 0) // only include if changes have been made
     .map((co) => {
       const isNewCourtOrder = co.old === undefined
       const newItem = co.new

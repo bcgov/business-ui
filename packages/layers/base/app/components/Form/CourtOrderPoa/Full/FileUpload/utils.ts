@@ -1,10 +1,11 @@
 // NB: temporary util file before creating the full reusable component
 import * as z from 'zod'
+import * as pdfjs from 'pdfjs-dist'
 import { isEqual } from 'es-toolkit'
 import type { ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
-export const maxFileSize = 50 * 1024 * 1024 // 50MB
+export const maxFileSize = 30 * 1024 * 1024 // 30MB
 export const acceptedFileTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif']
 
 export function formatBytes(bytes: number, decimals = 2) {
@@ -18,10 +19,79 @@ export function formatBytes(bytes: number, decimals = 2) {
   return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString()
+
+export async function validatePdf(
+  file: File
+): Promise<{ isValid: boolean, tKey?: string }> {
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')
+
+  if (!isPdf || !file.arrayBuffer) {
+    return { isValid: true }
+  }
+
+  const expectedWidthInches = 8.5
+  const expectedHeightInches = 11.0
+  const pointsPerInch = 72
+  const epsilonInches = 0.02
+
+  let pdf: pdfjs.PDFDocumentProxy | null = null
+
+  try {
+    const arrayBuffer = await file.arrayBuffer()
+
+    pdf = await pdfjs.getDocument({
+      data: new Uint8Array(arrayBuffer),
+      password: ''
+    }).promise
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum)
+      const viewport = page.getViewport({ scale: 1 })
+
+      const widthInches = viewport.width / pointsPerInch
+      const heightInches = viewport.height / pointsPerInch
+
+      const isValidPageSize
+        = (Math.abs(widthInches - expectedWidthInches) < epsilonInches)
+          && (Math.abs(heightInches - expectedHeightInches) < epsilonInches)
+
+      if (!isValidPageSize) {
+        return { isValid: false, tKey: 'validation.invalidPageSizeLetterNamed' }
+      }
+    }
+
+    return { isValid: true }
+  } catch (err: unknown) {
+    const error = err as { name?: string, message?: string }
+    if (error?.name === 'PasswordException' || error?.message?.toLowerCase().includes('password')) {
+      return { isValid: false, tKey: 'validation.fileMustBeUnencryptedNamed' }
+    }
+    return { isValid: false, tKey: 'validation.corruptFileNamed' }
+  } finally {
+    if (pdf) {
+      await pdf.cleanup().catch(() => {})
+    }
+  }
+}
+
 const fileSchema = z.object({
   file: z.file()
     .mime(acceptedFileTypes, 'validation.invalidFileTypeNamed')
     .max(maxFileSize, 'validation.fileTooLargeNamed')
+}).superRefine(async (data, ctx) => {
+  const result = await validatePdf(data.file)
+
+  if (!result.isValid) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['file'],
+      message: result.tKey
+    })
+  }
 })
 
 // appends (x) on a filename to help prevent duplicate filenames
@@ -199,6 +269,7 @@ export function useCourtOrderDocs(
   const supportingFiles = ref<File[]>([]) // model value for supporting docs upload
   const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
   const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
+  const sessionUploadedKeys: Set<string> = new Set() // DRS keys that were successfully uploaded during this form session only
 
   const isDropZoneEnabled = computed(() => !isTouchscreen.value)
 
@@ -251,10 +322,15 @@ export function useCourtOrderDocs(
 
     switch (action) {
       case 'delete':
-        // newly added files get hard deleted
+        // newly added files get removed from UI state
         if (file.action === CourtOrderFileAction.ADDED) {
-          service.deleteDocument(file.fileKey)
           uploadedDocuments.value = uploadedDocuments.value.filter(f => f.id !== id)
+
+          // newly added files during this form session get hard deleted
+          if (file.fileKey && sessionUploadedKeys.has(file.fileKey)) {
+            service.deleteDocument(file.fileKey)
+            sessionUploadedKeys.delete(file.fileKey)
+          }
         // existing files get soft deleted with the deleted action
         } else {
           file.action = CourtOrderFileAction.DELETED
@@ -345,8 +421,8 @@ export function useCourtOrderDocs(
         uploadedDocuments.value.push(fileItem)
 
         try {
-          // validate max bytes and accepted types, will throw if invalid
-          fileSchema.parse({ file: newFile })
+          // validate max bytes, accepted types and pdf dimensions if pdf, will throw if invalid
+          await fileSchema.parseAsync({ file: newFile })
 
           // upload to drs via business api client endpoint
           const doc = await uploadFile(
@@ -370,7 +446,11 @@ export function useCourtOrderDocs(
             progress: 100,
             abortController: undefined
           })
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+          // track docs uploaded during this form session
+          sessionUploadedKeys.add(doc.key)
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
           if (e?.name === 'AbortError') {
             return
@@ -399,6 +479,13 @@ export function useCourtOrderDocs(
         }
       })
     )
+  }
+
+  function cleanupFilesOnSessionCancel() {
+    sessionUploadedKeys.forEach((k) => {
+      service.deleteDocument(k)
+    })
+    sessionUploadedKeys.clear()
   }
 
   // process user uploaded court order file
@@ -436,6 +523,7 @@ export function useCourtOrderDocs(
     courtOrderUploadTimestamp,
     displayMaxOneCourtOrderAlert,
     onUploadCourtOrder,
-    onFileAction
+    onFileAction,
+    cleanupFilesOnSessionCancel
   }
 }

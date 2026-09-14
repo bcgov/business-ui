@@ -27,7 +27,7 @@ describe('getAssociatedFilingColumn', () => {
     const cell = column.cell({ row })
 
     expect(cell.type).toBe('span')
-    expect(cell.children).toBe('restoration')
+    expect(cell.children).toBe('Restoration Application')
     expect(cell.props.class).toBe('min-w-48 max-w-48 overflow-clip break-words')
   })
 

@@ -12,14 +12,13 @@ const { data: blob } = useQuery({
   query: () => $businessApi<Blob>(`documents/client/${props.fileKey}`, {
     responseType: 'blob' as 'json'
   }),
+  staleTime: 2 * 60000,
   enabled: () => !!props.fileKey && !props.isRemoved
 })
 
 const isDownloadAllowed = computed(() =>
   !props.isRemoved
   && Boolean(blob.value)
-  && props.status === CourtOrderFileStatus.IDLE
-  && props.action === CourtOrderFileAction.NONE
 )
 
 function handleDownload() {
@@ -38,7 +37,7 @@ function handleDownload() {
       variant="link"
       :as="isDownloadAllowed ? 'button' : 'div'"
       :class="[
-        'p-0 text-base max-w-full',
+        'p-0 text-sm max-w-full',
         isDownloadAllowed
           ? ''
           : 'text-neutral cursor-default hover:text-neutral active:text-neutral'
