@@ -17,7 +17,7 @@ onMounted(async () => {
     tableState.value = []
     loading.value = true
     await delay(1500)
-    const formatted = formatAmalCorrectUi(mockAmal.amalgamation as Amalgamation)
+    const formatted = formatAmalCorrectSection(mockAmal.amalgamation as Amalgamation)
     tableState.value = formatted.tableState
     statementState.value = formatted.statementState
   } catch {

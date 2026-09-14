@@ -357,6 +357,7 @@ export default {
     alterationComplete: 'Alteration Complete',
     alterationPending: 'Alteration Pending',
     amalgamation: 'Amalgamation',
+    amalgamations: 'Amalgamations',
     amalgamationOutComplete: 'Amalgamation Out Complete',
     amalgamationStatement: 'Amalgamation Statement',
     associatedFiling: 'Associated Filing',
