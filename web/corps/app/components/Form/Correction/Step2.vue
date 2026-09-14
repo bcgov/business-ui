@@ -51,8 +51,9 @@ const hasCourtOrderChanges = computed(() => {
 })
 
 const hasAmalgamationChanges = computed(() => {
-  return store.amalgamation.some(a => a.new.actions.length > 0)
-    || store.amalStmnt.new.actions.length > 0
+  return (store.amalgamation.some(a => a.new.actions.length > 0)
+    || store.amalStmnt.new.actions.length > 0)
+    && store.correctedFilingType === FilingType.AMALGAMATION_APPLICATION
 })
 
 const requiresAuthorization = computed(() => {

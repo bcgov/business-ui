@@ -135,6 +135,7 @@ function onActionPrevented() {
     />
 
     <ManageAmalgamation
+      v-if="store.correctedFilingType === FilingType.AMALGAMATION_APPLICATION"
       v-model:active-amal="store.formState.activeAmal"
       v-model:active-amal-stmnt="store.formState.activeAmalStmnt"
       data-testid="amalgamation-section"
