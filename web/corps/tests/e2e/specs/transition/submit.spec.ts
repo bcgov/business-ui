@@ -68,9 +68,23 @@ async function confirmOffices(page: Page) {
 async function editAndConfirmDirectors(page: Page) {
   const directors = page.getByTestId('current-directors-section').locator('tbody')
   const rowToEdit = directors.locator('tr').filter({ hasText: 'WALLABY WAY ' })
+  const streetInput = directors.getByTestId('mailing-address-input-streetAdditional')
+  const sameAsMailingCheckbox = directors.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
   await rowToEdit.getByRole('button', { name: 'Change' }).click()
-  await directors.getByTestId('mailing-address-input-streetAdditional').fill('Unit 1A')
-  await directors.getByRole('button', { name: 'Done' }).click()
+  await expect(streetInput).toBeVisible()
+  await streetInput.fill('Unit 1A')
+  // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
+  // (see Form/Address/index.vue) — wait it out, then re-confirm delivery matches mailing.
+  await page.waitForTimeout(200)
+  await expect(async () => {
+    if (await streetInput.isVisible()) {
+      if (!(await sameAsMailingCheckbox.isChecked())) {
+        await sameAsMailingCheckbox.check({ force: true })
+      }
+      await directors.getByRole('button', { name: 'Done' }).click()
+    }
+    await expect(streetInput).not.toBeVisible()
+  }).toPass({ timeout: 15000 })
 
   await page.getByRole('checkbox', {
     name: 'I confirm that the director information listed for this business is correct.'

@@ -3,6 +3,7 @@ const store = useCorrectionStore()
 const { hasActiveSubForm } = storeToRefs(store)
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
+const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email', 'actions']
 
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
@@ -100,6 +101,27 @@ function onActionPrevented() {
       variant="correct"
       :party-form-props="{
         partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+      }"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
+    />
+
+    <!-- FUTURE: conditionally show custodians? -->
+    <ManageParties
+      v-model:active-party="store.formState.activeCustodian"
+      state-key="manage-custodians"
+      :loading="store.initializing"
+      :empty-text="$t('label.noCustodians')"
+      :table-title="$t('label.currentCustodians')"
+      :subject="$t('label.custodian')"
+      :columns-to-display="custodianColumns"
+      data-testid="custodians-section"
+      :role-type="RoleTypeUi.CUSTODIAN"
+      model-name="activeCustodian"
+      :prevent-actions="hasActiveSubForm"
+      variant="correct"
+      :party-form-props="{
+        partyNameProps: { allowBusinessName: false, allowPreferredName: false }
       }"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"

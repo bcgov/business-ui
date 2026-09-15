@@ -6,6 +6,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { tableState: tableDirectors } = useManageParties()
   const { tableState: tableReceivers } = useManageParties('manage-receivers')
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
+  const { tableState: tableCustodians } = useManageParties('manage-custodians')
   const { tableState: tableOffices, hasChanges: hasOfficeChange } = useManageOffices()
   const { shareClasses: tableShareClasses, resolutionDates, hasChanges: hasShareStructureChange } = useManageShareStructure()
   const { tableState: tableNameTranslations, hasChanges: hasNameTranslationChange } = useManageNameTranslations('manage-company-name-name-translations')
@@ -26,6 +27,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialReceivers = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
+  const initialCustodians = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialOffices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
   const initialShareClasses = shallowRef<TableBusinessState<ShareClassSchema>[]>([])
   const initialNameTranslations = shallowRef<TableBusinessState<NameTranslationSchema>[]>([])
@@ -49,6 +51,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeDirector
     || !!formState.activeReceiver
     || !!formState.activeLiquidator
+    || !!formState.activeCustodian
     || !!formState.activeClass
     || !!formState.activeSeries
     || !!formState.activeResolutionDate
@@ -140,6 +143,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
     const receivers = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.RECEIVER))
     const liquidators = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.LIQUIDATOR))
+    const custodians = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.CUSTODIAN))
 
     // Comment (may be empty on initial draft)
     formState.comment = { detail: draft.comment ?? '' }
@@ -280,6 +284,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         : liquidators
     }
 
+    // Custodians — merge with draft relationships if applicable
+    if (custodians) {
+      const draftCustodianEntries = draftRelationships?.filter(
+        dp => dp.roles?.some(r => r.roleType === RoleType.CUSTODIAN)
+      )
+      tableCustodians.value = draftCustodianEntries?.length
+        ? getPartiesMergedWithRelationships(custodians, draftCustodianEntries)
+        : custodians
+    }
+
     // Name translations — convert API format to table state, merge with draft if applicable
     if (aliasesNameTranslations.length) {
       const originalTableState = mapOriginalNameTranslations(aliasesNameTranslations)
@@ -319,6 +333,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors.value = cloneDeep(tableDirectors.value)
     initialReceivers.value = cloneDeep(tableReceivers.value)
     initialLiquidators.value = cloneDeep(tableLiquidators.value)
+    initialCustodians.value = cloneDeep(tableCustodians.value)
     initialOffices.value = cloneDeep(tableOffices.value)
     initialShareClasses.value = cloneDeep(tableShareClasses.value)
     initialNameTranslations.value = cloneDeep(tableNameTranslations.value)
@@ -358,7 +373,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       relationships: [
         ...tableDirectors.value,
         ...tableReceivers.value,
-        ...tableLiquidators.value
+        ...tableLiquidators.value,
+        ...tableCustodians.value
       ].map(entry => formatRelationshipApi(entry.new)).concat(
         // Completing party (client corrections) — submitted as a relationship
         formState.completingParty?.lastName
@@ -501,6 +517,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeDirector = undefined
     formState.activeReceiver = undefined
     formState.activeLiquidator = undefined
+    formState.activeCustodian = undefined
     formState.activeOffice = undefined
     formState.activeClass = undefined
     formState.activeSeries = undefined
@@ -516,6 +533,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors.value = []
     initialReceivers.value = []
     initialLiquidators.value = []
+    initialCustodians.value = []
     initialOffices.value = []
     initialShareClasses.value = []
     initialNameTranslations.value = []
@@ -544,6 +562,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     directors: tableDirectors,
     receivers: tableReceivers,
     liquidators: tableLiquidators,
+    custodians: tableCustodians,
     offices: tableOffices,
     shareClasses: tableShareClasses,
     resolutionDates,
@@ -554,6 +573,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialDirectors,
     initialReceivers,
     initialLiquidators,
+    initialCustodians,
     initialOffices,
     initialShareClasses,
     initialResolutionDates,

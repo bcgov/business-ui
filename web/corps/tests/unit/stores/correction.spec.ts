@@ -267,6 +267,7 @@ describe('Correction Schema', () => {
       expect(result.data!.activeDirector).toBeUndefined()
       expect(result.data!.activeReceiver).toBeUndefined()
       expect(result.data!.activeLiquidator).toBeUndefined()
+      expect(result.data!.activeCustodian).toBeUndefined()
       expect(result.data!.activeOffice).toBeUndefined()
       expect(result.data!.activeClass).toBeUndefined()
       expect(result.data!.activeSeries).toBeUndefined()
