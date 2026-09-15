@@ -254,15 +254,15 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     requireResolutionDate.value = isResolutionFiling(correctedFilingType.value)
-    if (requireResolutionDate.value) {
-      const originalResolutions = await service.getResolutions(businessId).catch(() => [])
-      const draftResolutions = draft.shareStructure?.resolutionDates
 
-      const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
+    // Always show resolution dates in correction filings so staff can manage share changes as needed.
+    const originalResolutions = await service.getResolutions(businessId).catch(() => [])
+    const draftResolutions = draft.shareStructure?.resolutionDates
 
-      formState.resolutionDate = cloneDeep(newState)
-      resolutionDates.value = cloneDeep(tableState)
-    }
+    const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
+
+    formState.resolutionDate = cloneDeep(newState)
+    resolutionDates.value = cloneDeep(tableState)
 
     // Receivers — merge with draft relationships if applicable
     if (receivers) {
