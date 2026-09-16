@@ -9,17 +9,20 @@ definePageMeta({
 const { tableState } = useManageOffices()
 
 tableState.value = Object.entries(mockOffices).map(([key, value]) => {
+  const id = crypto.randomUUID()
   return {
     new: {
+      id,
       type: key as OfficeType,
       actions: [],
-      address: formatBaseAddressUi(value),
+      address: { ...formatBaseAddressUi(value) },
       isEditing: false
     },
     old: {
+      id,
       type: key as OfficeType,
       actions: [],
-      address: formatBaseAddressUi(value),
+      address: { ...formatBaseAddressUi(value) },
       isEditing: false
     }
   }
