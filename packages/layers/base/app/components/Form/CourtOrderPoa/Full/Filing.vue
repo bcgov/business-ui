@@ -21,6 +21,17 @@ const sectionError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
   return errors?.find(e => ['fileNumber', 'orderDetails', 'files'].some(name => e.name?.includes(name)))
 })
+
+// retrigger validation on the order details and files fields when one changes
+watch(
+  () => [model.value.orderDetails, model.value.files],
+  () => {
+    if (formRef.value?.getErrors()?.length) {
+      formRef.value.validate({ silent: true })
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
@@ -32,7 +43,6 @@ const sectionError = computed<FormError | undefined>(() => {
   >
     <ConnectFieldset
       :label="order ? `${order}. ${$t('label.courtOrderAndPoa')}` : $t('label.courtOrderAndPoa')"
-      :description="$t('text.courtOrderAndPoaDescription')"
       body-variant="card"
       orientation="vertical"
       :error="sectionError"
@@ -41,6 +51,7 @@ const sectionError = computed<FormError | undefined>(() => {
         v-model="model"
         variant="section"
         is-court-order
+        :optional-labels="false"
         :disabled
         :filing-id="filingId"
         :identifier

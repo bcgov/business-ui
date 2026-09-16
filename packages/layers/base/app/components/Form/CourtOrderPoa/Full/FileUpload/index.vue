@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { acceptedFileTypes, useCourtOrderDocs } from './utils'
 
-const { identifier, filingId, entityType } = defineProps<{
+const { identifier, filingId, entityType, optionalLabels = true } = defineProps<{
   identifier?: string
   filingId: string | number
   entityType: CorpTypeCd
+  optionalLabels?: boolean
 }>()
 
 const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
@@ -55,7 +56,10 @@ defineExpose({
 </script>
 
 <template>
-  <FormCourtOrderPoaFullFileUploadFieldset v-slot="{ descriptionId: fileSizeAndTypeDescId }">
+  <FormCourtOrderPoaFullFileUploadFieldset
+    v-slot="{ descriptionId: fileSizeAndTypeDescId }"
+    :optional-labels="optionalLabels"
+  >
     <fieldset class="flex flex-col min-w-0 pb-6" :aria-label="$t('label.courtOrderDocumentUpload')">
       <div class="pb-4 text-base" aria-hidden="true">
         <span class="font-bold text-neutral-highlighted">{{ $t('label.courtOrder') }}</span>

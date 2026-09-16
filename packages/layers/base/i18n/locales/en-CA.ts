@@ -343,6 +343,7 @@ export default {
   },
   label: {
     actions: 'Actions',
+    addCourtOrderText: 'Add court order text',
     addCourtOrderTextOpt: 'Add court order text (Optional)',
     addDetail: 'Add Detail',
     adding: 'Adding',

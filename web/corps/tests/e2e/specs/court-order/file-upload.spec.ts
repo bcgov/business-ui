@@ -78,4 +78,55 @@ test.describe('Court Order - File Upload', () => {
     // should remain on the court order page - the request should never have been sent
     await expect(page).toHaveURL(/.*court-order.*/)
   })
+
+  test('clears the validation error as soon as court order text is entered', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await page.getByTestId('court-order-number-input').fill('12345-6789')
+    await page.getByRole('radio', { name: 'No Fee' }).click()
+    await page.getByRole('button', { name: 'Submit' }).click()
+    await expect(page.getByText('Enter a court order or upload a file')).toBeVisible()
+
+    // entering text must clear the cross-field error immediately - no resubmit required
+    await page.getByTestId('court-order-text-input').fill('Ordered by the court')
+    await expect(page.getByText('Enter a court order or upload a file')).not.toBeVisible()
+  })
+
+  test('clears the validation error as soon as a court order file is uploaded', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
+    await page.route('**/documents/client/courtOrder/**', async (route) => {
+      await route.fulfill({
+        status: 201,
+        json: {
+          key: 'CORP-DS0100001003',
+          consumerFilename: 'Court Order.pdf',
+          documentURL: 'https://mock-api-url/documents/client/CORP-DS0100001003'
+        }
+      })
+    })
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await page.getByTestId('court-order-number-input').fill('12345-6789')
+    await page.getByRole('radio', { name: 'No Fee' }).click()
+    await page.getByRole('button', { name: 'Submit' }).click()
+    await expect(page.getByText('Enter a court order or upload a file')).toBeVisible()
+
+    // uploading a court order file must clear the cross-field error immediately
+    const uploadResponse = page.waitForResponse(
+      res => res.url().includes('/documents/client/courtOrder/') && res.request().method() === 'POST',
+      { timeout: 10000 }
+    )
+    await page.getByTestId('court-order-file-upload').locator('input[type="file"]').first().setInputFiles({
+      name: 'Court Order.pdf',
+      mimeType: 'application/pdf',
+      buffer: createLetterSizePdfBuffer()
+    })
+    await uploadResponse
+    await expect(page.getByText('Enter a court order or upload a file')).not.toBeVisible()
+  })
 })

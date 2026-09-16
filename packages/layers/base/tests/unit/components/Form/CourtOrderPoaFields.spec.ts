@@ -74,6 +74,22 @@ describe('FormCourtOrderPoaFields', () => {
     expect((wrapper.vm as any).fileUploadRef?.cleanupFilesOnSessionCancel).toBeTypeOf('function')
   })
 
+  it('should label the order details input and the document upload as optional by default', async () => {
+    const wrapper = await mountFields()
+
+    expect(wrapper.html()).toContain('Add court order text (Optional)')
+    expect(wrapper.html()).toContain('Document Upload (Optional)')
+  })
+
+  it('should drop the optional wording from both labels when optionalLabels is false', async () => {
+    const wrapper = await mountFields({ optionalLabels: false })
+
+    expect(wrapper.html()).toContain('Add court order text')
+    expect(wrapper.html()).not.toContain('Add court order text (Optional)')
+    expect(wrapper.html()).toContain('Document Upload')
+    expect(wrapper.html()).not.toContain('Document Upload (Optional)')
+  })
+
   it('should use the sub-form field spacing for the subform variant', async () => {
     const wrapper = await mountFields({ variant: 'subform' })
 

@@ -3,9 +3,11 @@ import type { FormError } from '@nuxt/ui'
 import { formatBytes, maxFileSize, acceptedFileTypes } from './utils'
 
 const {
-  error
+  error,
+  optionalLabels = true
 } = defineProps<{
   error?: FormError | boolean
+  optionalLabels?: boolean
 }>()
 
 const id = useId()
@@ -32,7 +34,7 @@ const description = computed(() => {
   >
     <div class="flex flex-col gap-1">
       <span :id="legendId" class="text-base text-neutral-highlighted font-bold">
-        {{ $t('label.documentUploadOpt') }}
+        {{ $t(optionalLabels ? 'label.documentUploadOpt' : 'label.documentUpload') }}
       </span>
       <p :id="descriptionId" aria-hidden="true">
         {{ description }}
