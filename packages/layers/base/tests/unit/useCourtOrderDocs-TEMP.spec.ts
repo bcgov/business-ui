@@ -8,7 +8,8 @@ import * as pdfjs from 'pdfjs-dist'
 import {
   formatBytes,
   useCourtOrderDocs,
-  maxFileSize
+  maxFileSize,
+  acceptedFileTypes
 } from '../../app/components/Form/CourtOrderPoa/Full/FileUpload/utils'
 
 const mockBusinessApi = vi.fn()
@@ -73,11 +74,19 @@ const getXhrMock = (sendMock?: any, abortMock?: any) => ({
   upload: {}
 })
 
+describe('court order file constraints', () => {
+  it('should default to the limits enforced by the api', () => {
+    expect(maxFileSize).toBe(30 * 1024 * 1024)
+    expect(formatBytes(maxFileSize)).toBe('30 MB')
+    expect(acceptedFileTypes).toEqual(['application/pdf', 'image/jpeg', 'image/png', 'image/gif'])
+  })
+})
+
 describe('formatBytes', () => {
   it('should format bytes correctly', () => {
     expect(formatBytes(0)).toBe('0 Bytes')
     expect(formatBytes(1024)).toBe('1 KB')
-    expect(formatBytes(52428800)).toBe('50 MB')
+    expect(formatBytes(31457280)).toBe('30 MB')
     expect(formatBytes(1500)).toBe('1.46 KB')
     expect(formatBytes(1500, 3)).toBe('1.465 KB')
     expect(formatBytes(1500, 0)).toBe('1 KB')
@@ -214,7 +223,7 @@ describe('useCourtOrderDocs', () => {
       expect(courtOrderDocs.value[0]!.fileKey).toBe('drs-key')
     })
 
-    it('should set error status when file fails schema check', async () => {
+    it('should set error status when file is larger than the max file size', async () => {
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       const oversizedFile = new File([new Uint8Array(maxFileSize + 100)], 'test.pdf', { type: 'application/pdf' })
 

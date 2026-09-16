@@ -122,14 +122,6 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
   return newName
 }
 
-// helper to determine if an uploaded court order file is in an active state
-function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
-  return doc.type === DocumentTypeClient.COURT_ORDER
-    && doc.id !== excludeId
-    && doc.action !== CourtOrderFileAction.DELETED
-    && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(doc.status)
-}
-
 // custom xhr request to return upload percentage
 async function uploadFile(
   file: File,
@@ -283,7 +275,7 @@ export function useCourtOrderDocs(
   )
 
   const activeCourtOrderDoc = computed(() => {
-    const doc = uploadedDocuments.value.find(d => isActiveCourtOrder(d))
+    const doc = uploadedDocuments.value.find(d => isActiveCourtOrderFile(d))
     return {
       doc,
       exists: Boolean(doc)
@@ -296,7 +288,7 @@ export function useCourtOrderDocs(
 
   function preventDuplicateCourtOrderCheck(excludeId?: string): boolean {
     const hasActive = excludeId
-      ? uploadedDocuments.value.some(d => isActiveCourtOrder(d, excludeId))
+      ? uploadedDocuments.value.some(d => isActiveCourtOrderFile(d, excludeId))
       : activeCourtOrderDoc.value.exists
 
     if (hasActive) {
