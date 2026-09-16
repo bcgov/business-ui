@@ -14,3 +14,20 @@ export function getAddressSchema() {
 export type AddressSchema = z.output<ReturnType<typeof getAddressSchema>>
 
 export type AddressFormRef = InstanceType<typeof FormAddress>
+
+export function getAddressWithIdSchema() {
+  const reqSchema = getRequiredAddressSchema()
+  const reqWithIdSchema = reqSchema.and(
+    z.object({
+      id: z.string().optional()
+    })
+  )
+
+  return z.object({
+    deliveryAddress: reqWithIdSchema,
+    mailingAddress: reqWithIdSchema,
+    sameAs: z.boolean()
+  })
+}
+
+export type AddressWithIdSchema = z.output<ReturnType<typeof getAddressWithIdSchema>>
