@@ -127,7 +127,7 @@ useFilingPageWatcher({
 
       <!-- v-if: the nested file-upload composable snapshots identifier/entityType at mount,
         so this section must not mount until the business data has loaded -->
-      <FormCourtOrderFiling
+      <FormCourtOrderPoaFullFiling
         v-if="!initializing"
         v-model="store.formState.courtOrder"
         data-testid="form-section-court-order"

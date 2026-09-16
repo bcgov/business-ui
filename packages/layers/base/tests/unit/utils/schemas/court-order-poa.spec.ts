@@ -109,8 +109,8 @@ describe('getCourtOrderPoaSchema', () => {
   })
 })
 
-describe('getCourtOrderFilingSchema', () => {
-  const schema = getCourtOrderFilingSchema()
+describe('getCourtOrderPoaFullFilingSchema', () => {
+  const schema = getCourtOrderPoaFullFilingSchema()
 
   const getFile = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
     id: 'file-1',

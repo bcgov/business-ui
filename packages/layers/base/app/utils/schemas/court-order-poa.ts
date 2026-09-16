@@ -1,5 +1,5 @@
 // https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/court_order.json
-import type { FormCourtOrderPoa } from '#components'
+import type { FormCourtOrderPoa, FormCourtOrderPoaFields } from '#components'
 import { z } from 'zod'
 
 export function getCourtOrderPoaSchema() {
@@ -29,6 +29,8 @@ export function getCourtOrderPoaSchema() {
 export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSchema>>
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
+
+export type FormCourtOrderPoaFieldsRef = InstanceType<typeof FormCourtOrderPoaFields>
 
 // action a user has taken on a file
 export enum CourtOrderFileAction {
@@ -130,7 +132,7 @@ export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPo
  * Full court order schema with the cross field rules legal-api enforces on a standalone court order filing.
  * NB: use `getCourtOrderPoaFullSchema` for court orders attached to another filing type.
  */
-export function getCourtOrderFilingSchema() {
+export function getCourtOrderPoaFullFilingSchema() {
   const t = useNuxtApp().$i18n.t
 
   return getCourtOrderPoaFullSchema().superRefine((data, ctx) => {
@@ -165,7 +167,7 @@ export function getCourtOrderFilingSchema() {
   })
 }
 
-export type CourtOrderFilingSchema = z.output<ReturnType<typeof getCourtOrderFilingSchema>>
+export type CourtOrderPoaFullFilingSchema = z.output<ReturnType<typeof getCourtOrderPoaFullFilingSchema>>
 
 export function getActiveCourtOrderPoaFullSchema() {
   return getCourtOrderPoaFullSchema().nullable().optional()

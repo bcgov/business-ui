@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
 const model = defineModel<CourtOrderPoaFullSchema>({ required: true })
 const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-poa-form')
-const fileRef = useTemplateRef('file-ref')
+const fieldsRef = useTemplateRef<FormCourtOrderPoaFieldsRef>('court-order-fields')
 
 const formTarget = 'court-order-poa-form'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
@@ -55,7 +55,7 @@ async function onDone() {
 }
 
 function onCancel() {
-  fileRef.value?.cleanupFilesOnSessionCancel()
+  fieldsRef.value?.fileUploadRef?.cleanupFilesOnSessionCancel()
   emit('cancel')
 }
 
@@ -88,72 +88,17 @@ defineExpose({
       @done="onDone"
     >
       <template #default>
-        <div>
-          <ConnectFormFieldWrapper
-            :label="$t('label.planOfArrangement')"
-            orientation="horizontal"
-            details-aria-hidden
-            :error="formErrors.fileNumber"
-            class="padding-x-default pt-6 sm:pt-10 pb-3 sm:pb-5"
-          >
-            <UFormField name="effectOfOrder">
-              <UCheckbox
-                v-model="model.effectOfOrder"
-                :label="$t('label.filingPursuantToPlanOfArrangement')"
-                @update:model-value="formRef?.clear()"
-              />
-            </UFormField>
-          </ConnectFormFieldWrapper>
-          <ConnectFormFieldWrapper
-            :label="$t('label.courtOrderNumber')"
-            orientation="horizontal"
-            details-aria-hidden
-            :error="formErrors.fileNumber"
-            class="padding-x-default pb-6 sm:pb-10 pt-3 sm:pt-5"
-          >
-            <ConnectFormInput
-              v-model="model.fileNumber"
-              input-id="court-order-number-input"
-              :label="$t('label.courtOrderNumber')"
-              name="fileNumber"
-              required
-            />
-          </ConnectFormFieldWrapper>
-        </div>
-        <template v-if="isCourtOrder">
-          <USeparator class="padding-x-default" />
-          <ConnectFormFieldWrapper
-            :label="$t('label.courtOrderText')"
-            orientation="horizontal"
-            details-aria-hidden
-            class="padding-xy-default"
-          >
-            <UFormField
-              name="orderDetails"
-              :help="`${(model.orderDetails?.length) || 0} / 2000`"
-              :ui="{
-                help: 'text-right'
-              }"
-            >
-              <template #default>
-                <ConnectInput
-                  id="court-order-text-input"
-                  v-model="model.orderDetails"
-                  :label="$t('label.addCourtOrderTextOpt')"
-                  maxlength="2000"
-                />
-              </template>
-            </UFormField>
-          </ConnectFormFieldWrapper>
-          <USeparator class="padding-x-default" />
-          <FormCourtOrderPoaFullFileUpload
-            ref="file-ref"
-            v-model="model.files"
-            :filing-id="model.filingId"
-            :identifier
-            :entity-type
-          />
-        </template>
+        <FormCourtOrderPoaFields
+          ref="court-order-fields"
+          v-model="model"
+          variant="subform"
+          :is-court-order="isCourtOrder"
+          :file-number-error="formErrors.fileNumber"
+          :filing-id="model.filingId"
+          :identifier
+          :entity-type
+          @poa-change="formRef?.clear()"
+        />
       </template>
     </SubFormWrapper>
   </UForm>

@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 /**
  * Unit tests for the standalone court order filing form schema.
  *
- * `getCourtOrderFormSchema` composes the base layer's `getCourtOrderFilingSchema` (court order
+ * `getCourtOrderFormSchema` composes the base layer's `getCourtOrderPoaFullFilingSchema` (court order
  * number + 'order details OR one court order file' cross field rules) with the shared staff
  * payment schema. The base layer rules are covered in depth by the base layer spec - these tests
  * assert the composition (defaults, nested paths, staff payment) the corps page relies on.
