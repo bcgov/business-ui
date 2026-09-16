@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { acceptedFileTypes, useCourtOrderDocs } from './utils'
+import { useCourtOrderDocs } from './utils'
 
 const { identifier, filingId, entityType, optionalLabels = true } = defineProps<{
   identifier?: string
@@ -24,9 +24,6 @@ const {
   onFileAction,
   cleanupFilesOnSessionCancel
 } = useCourtOrderDocs(model, { identifier, filingId, entityType })
-
-// restrict the native file picker to the file types the api will accept
-const accept = acceptedFileTypes.join(',')
 
 const supportingDocErrorIds = computed(() => supportingDocs.value
   .filter(doc => doc.status === CourtOrderFileStatus.ERROR && doc.errorMessage)
@@ -70,7 +67,6 @@ defineExpose({
       <UFileUpload
         v-slot="{ open }"
         v-model="courtOrderFile"
-        :accept
         :multiple="false"
         aria-hidden="true"
       >
@@ -131,7 +127,6 @@ defineExpose({
         <UFileUpload
           v-slot="{ open }"
           v-model="supportingFiles"
-          :accept
           multiple
           aria-hidden="true"
         >
