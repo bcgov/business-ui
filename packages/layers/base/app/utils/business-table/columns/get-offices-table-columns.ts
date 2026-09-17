@@ -1,4 +1,4 @@
-export function getOfficesTableColumns<T extends OfficesSchema = OfficesSchema>(
+export function getOfficesTableColumns<T extends OfficeSchema = OfficeSchema>(
   badgeLabelOverrides?: Partial<Record<ActionType, string>>
 ): TableBusinessColumn<T>[] {
   const typeColumn = getOfficeTypeColumn<T>('first', badgeLabelOverrides)
