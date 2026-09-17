@@ -2,7 +2,7 @@
 import * as z from 'zod'
 import * as pdfjs from 'pdfjs-dist'
 import { isEqual } from 'es-toolkit'
-import type { ModelRef } from 'vue'
+import type { MaybeRefOrGetter, ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
 export const maxFileSize = 30 * 1024 * 1024 // 30MB
@@ -236,12 +236,15 @@ async function uploadFile(
 }
 
 // main functionality/state handling
+// NB: props are read at time of use (not captured on creation) so values that resolve after mount
+// (ex: the business data still loading) are picked up by the next upload
 export function useCourtOrderDocs(
   model: ModelRef<CourtOrderFileUi[]>,
   props: {
-    identifier?: string
-    filingId: string | number
-    entityType: CorpTypeCd
+    identifier?: MaybeRefOrGetter<string | undefined>
+    filingId: MaybeRefOrGetter<string | number>
+    entityType: MaybeRefOrGetter<CorpTypeCd>
+    disabled?: MaybeRefOrGetter<boolean | undefined>
   }
 ) {
   const { te, t } = useNuxtApp().$i18n
@@ -249,8 +252,10 @@ export function useCourtOrderDocs(
 
   const isTouchscreen = useMediaQuery('(pointer: coarse)')
 
+  const isDropZoneEnabled = computed(() => !isTouchscreen.value && !toValue(props.disabled))
+
   const dropzoneRef = useTemplateRef<HTMLDivElement>('dropzoneRef')
-  const { isOverDropZone } = useDropZone(() => isTouchscreen.value ? null : dropzoneRef.value, {
+  const { isOverDropZone } = useDropZone(() => isDropZoneEnabled.value ? dropzoneRef.value : null, {
     onDrop: (files) => { supportingFiles.value = [...supportingFiles.value, ...files ?? []] },
     multiple: true,
     preventDefaultForUnhandled: true
@@ -262,8 +267,6 @@ export function useCourtOrderDocs(
   const courtOrderUploadTimestamp = ref<number | undefined>(undefined) // flag to trigger sr alert
   const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
   const sessionUploadedKeys: Set<string> = new Set() // DRS keys that were successfully uploaded during this form session only
-
-  const isDropZoneEnabled = computed(() => !isTouchscreen.value)
 
   // full list of court order files
   const courtOrderDocs = computed(() =>
@@ -421,10 +424,10 @@ export function useCourtOrderDocs(
             newFile,
             fileItem,
             {
-              entityType: props.entityType,
+              entityType: toValue(props.entityType),
               documentType: fileItem.type,
-              identifier: props.identifier,
-              filingId: props.filingId
+              identifier: toValue(props.identifier),
+              filingId: toValue(props.filingId)
             }
           )
 

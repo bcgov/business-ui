@@ -125,14 +125,12 @@ useFilingPageWatcher({
         <p>{{ $t('page.courtOrder.desc') }}</p>
       </div>
 
-      <!-- v-if: the nested file-upload composable snapshots identifier/entityType at mount,
-        so this section must not mount until the business data has loaded -->
       <FormCourtOrderPoaFullFiling
-        v-if="!initializing"
         v-model="store.formState.courtOrder"
         data-testid="form-section-court-order"
         name="courtOrder"
         order="1"
+        :disabled="initializing"
         :identifier="businessStore.businessIdentifier"
         :entity-type="businessStore.business?.legalType as CorpTypeCd"
         :filing-id="filingId"

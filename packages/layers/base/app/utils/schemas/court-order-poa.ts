@@ -68,7 +68,7 @@ export function isActiveCourtOrderFile(file: CourtOrderFileUi, excludeId?: strin
     && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(file.status)
 }
 
-export function getCourtOrderPoaFullSchema() {
+export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?: boolean }) {
   const t = useNuxtApp().$i18n.t
   return z.object({
     isEditing: z.boolean()
@@ -123,19 +123,11 @@ export function getCourtOrderPoaFullSchema() {
         }
       })
     }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet
-  })
-}
+  }).superRefine((data, ctx) => {
+    if (!context?.isFileOrDetailsRequired) {
+      return
+    }
 
-export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>
-
-/**
- * Full court order schema with the cross field rules legal-api enforces on a standalone court order filing.
- * NB: use `getCourtOrderPoaFullSchema` for court orders attached to another filing type.
- */
-export function getCourtOrderPoaFullFilingSchema() {
-  const t = useNuxtApp().$i18n.t
-
-  return getCourtOrderPoaFullSchema().superRefine((data, ctx) => {
     // a standalone court order filing always requires a court order number
     if (!data.fileNumber) {
       ctx.addIssue({
@@ -167,7 +159,7 @@ export function getCourtOrderPoaFullFilingSchema() {
   })
 }
 
-export type CourtOrderPoaFullFilingSchema = z.output<ReturnType<typeof getCourtOrderPoaFullFilingSchema>>
+export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>
 
 export function getActiveCourtOrderPoaFullSchema() {
   return getCourtOrderPoaFullSchema().nullable().optional()

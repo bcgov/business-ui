@@ -81,8 +81,8 @@ describe('FormCourtOrderPoaFields', () => {
     expect(wrapper.html()).toContain('Document Upload (Optional)')
   })
 
-  it('should drop the optional wording from both labels when optionalLabels is false', async () => {
-    const wrapper = await mountFields({ optionalLabels: false })
+  it('should drop the optional wording from both labels when isFileOrDetailsRequired is true', async () => {
+    const wrapper = await mountFields({ isFileOrDetailsRequired: true })
 
     expect(wrapper.html()).toContain('Add court order text')
     expect(wrapper.html()).not.toContain('Add court order text (Optional)')

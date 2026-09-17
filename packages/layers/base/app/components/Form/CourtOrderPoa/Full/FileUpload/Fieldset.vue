@@ -4,10 +4,10 @@ import { formatBytes, maxFileSize, acceptedFileTypes } from './utils'
 
 const {
   error,
-  optionalLabels = true
+  isFileOrDetailsRequired = false
 } = defineProps<{
   error?: FormError | boolean
-  optionalLabels?: boolean
+  isFileOrDetailsRequired?: boolean
 }>()
 
 const id = useId()
@@ -34,7 +34,7 @@ const description = computed(() => {
   >
     <div class="flex flex-col gap-1">
       <span :id="legendId" class="text-base text-neutral-highlighted font-bold">
-        {{ $t(optionalLabels ? 'label.documentUploadOpt' : 'label.documentUpload') }}
+        {{ $t(isFileOrDetailsRequired ? 'label.documentUpload' : 'label.documentUploadOpt') }}
       </span>
       <p :id="descriptionId" aria-hidden="true">
         {{ description }}

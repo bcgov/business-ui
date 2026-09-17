@@ -4,7 +4,7 @@
  * - `FormCourtOrderPoaFull` - the sub form rendered in `ManageCourtOrders` table rows (`variant="subform"`)
  * - `FormCourtOrderPoaFullFiling` - the standalone court order filing page section (`variant="section"`)
  */
-const { variant = 'section', optionalLabels = true } = defineProps<{
+const { variant = 'section', isFileOrDetailsRequired = false } = defineProps<{
   isCourtOrder: boolean
   entityType: CorpTypeCd
   filingId: string | number
@@ -12,7 +12,7 @@ const { variant = 'section', optionalLabels = true } = defineProps<{
   disabled?: boolean
   fileNumberError?: boolean
   variant?: 'section' | 'subform'
-  optionalLabels?: boolean
+  isFileOrDetailsRequired?: boolean
 }>()
 
 defineEmits<{
@@ -103,7 +103,7 @@ defineExpose({
               id="court-order-text-input"
               v-model="model.orderDetails"
               :disabled
-              :label="$t(optionalLabels ? 'label.addCourtOrderTextOpt' : 'label.addCourtOrderText')"
+              :label="$t(isFileOrDetailsRequired ? 'label.addCourtOrderText' : 'label.addCourtOrderTextOpt')"
               maxlength="2000"
             />
           </template>
@@ -117,7 +117,8 @@ defineExpose({
         :filing-id="filingId"
         :identifier
         :entity-type="entityType"
-        :optional-labels="optionalLabels"
+        :disabled
+        :is-file-or-details-required="isFileOrDetailsRequired"
       />
     </template>
   </div>

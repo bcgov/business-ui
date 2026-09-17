@@ -223,6 +223,45 @@ describe('useCourtOrderDocs', () => {
       expect(courtOrderDocs.value[0]!.fileKey).toBe('drs-key')
     })
 
+    it('should use the current prop values on each upload (reactive props)', async () => {
+      const xhrMock = getXhrMock()
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+
+      const filingId = ref<string | number>(9876543)
+      const entityType = ref(CorpTypeCd.BC_COMPANY)
+
+      const { supportingFiles } = useCourtOrderDocs(model, {
+        identifier: 'BC1234567',
+        filingId,
+        entityType
+      })
+
+      supportingFiles.value = [new File(['pdf data'], 'first.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('/documents/client/courtOrder/BC/supporting_document?filename=first.pdf')
+      )
+      expect(xhrMock.open).toHaveBeenLastCalledWith('POST', expect.stringContaining('filingId=9876543'))
+
+      // values resolving after the composable was created should be used by the next upload
+      filingId.value = 1234567
+      entityType.value = CorpTypeCd.BENEFIT_COMPANY
+      await nextTick()
+
+      supportingFiles.value = [new File(['pdf data'], 'second.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('/documents/client/courtOrder/BEN/supporting_document?filename=second.pdf')
+      )
+      expect(xhrMock.open).toHaveBeenLastCalledWith('POST', expect.stringContaining('filingId=1234567'))
+    })
+
     it('should set error status when file is larger than the max file size', async () => {
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       const oversizedFile = new File([new Uint8Array(maxFileSize + 100)], 'test.pdf', { type: 'application/pdf' })
@@ -524,6 +563,18 @@ describe('useCourtOrderDocs', () => {
       const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
 
       expect(isDropZoneEnabled.value).toBe(false)
+    })
+
+    it('should be disabled when the disabled prop is true', async () => {
+      const disabled = ref(true)
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, { ...defaultProps, disabled })
+
+      expect(isDropZoneEnabled.value).toBe(false)
+
+      disabled.value = false
+      await nextTick()
+
+      expect(isDropZoneEnabled.value).toBe(true)
     })
   })
 })

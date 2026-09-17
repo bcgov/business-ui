@@ -109,8 +109,32 @@ describe('getCourtOrderPoaSchema', () => {
   })
 })
 
-describe('getCourtOrderPoaFullFilingSchema', () => {
-  const schema = getCourtOrderPoaFullFilingSchema()
+describe('getCourtOrderPoaFullSchema', () => {
+  const schema = getCourtOrderPoaFullSchema()
+
+  it('should not apply the standalone filing cross field rules without the context option', () => {
+    // no court order number, no order details and no files
+    const result = schema.safeParse({})
+    expect(result.success).toBe(true)
+  })
+
+  it('should not apply the max one court order file rule without the context option', () => {
+    const getFile = (id: string): CourtOrderFileUi => ({
+      id,
+      fileKey: `drs-key-${id}`,
+      name: 'court_order.pdf',
+      type: DocumentTypeClient.COURT_ORDER,
+      action: CourtOrderFileAction.NONE,
+      status: CourtOrderFileStatus.SUCCESS
+    })
+
+    const result = schema.safeParse({ files: [getFile('file-1'), getFile('file-2')] })
+    expect(result.success).toBe(true)
+  })
+})
+
+describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
+  const schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
 
   const getFile = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
     id: 'file-1',

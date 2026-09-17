@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useCourtOrderDocs } from './utils'
 
-const { identifier, filingId, entityType, optionalLabels = true } = defineProps<{
+const { identifier, filingId, entityType, disabled, isFileOrDetailsRequired = false } = defineProps<{
   identifier?: string
   filingId: string | number
   entityType: CorpTypeCd
-  optionalLabels?: boolean
+  disabled?: boolean
+  isFileOrDetailsRequired?: boolean
 }>()
 
 const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
@@ -23,7 +24,13 @@ const {
   onUploadCourtOrder,
   onFileAction,
   cleanupFilesOnSessionCancel
-} = useCourtOrderDocs(model, { identifier, filingId, entityType })
+} = useCourtOrderDocs(model, {
+  // getters so values resolving after mount (ex: the business data) are used by the next upload
+  identifier: () => identifier,
+  filingId: () => filingId,
+  entityType: () => entityType,
+  disabled: () => disabled
+})
 
 const supportingDocErrorIds = computed(() => supportingDocs.value
   .filter(doc => doc.status === CourtOrderFileStatus.ERROR && doc.errorMessage)
@@ -55,7 +62,7 @@ defineExpose({
 <template>
   <FormCourtOrderPoaFullFileUploadFieldset
     v-slot="{ descriptionId: fileSizeAndTypeDescId }"
-    :optional-labels="optionalLabels"
+    :is-file-or-details-required="isFileOrDetailsRequired"
   >
     <fieldset class="flex flex-col min-w-0 pb-6" :aria-label="$t('label.courtOrderDocumentUpload')">
       <div class="pb-4 text-base" aria-hidden="true">
@@ -68,6 +75,7 @@ defineExpose({
         v-slot="{ open }"
         v-model="courtOrderFile"
         :multiple="false"
+        :disabled
         aria-hidden="true"
       >
         <div class="flex flex-col gap-4 pb-6">
@@ -75,6 +83,7 @@ defineExpose({
             :label="$t('label.uploadCourtOrder')"
             icon="i-mdi-file-upload-outline"
             class="w-min"
+            :disabled
             :aria-label="`
               ${$t('label.uploadCourtOrder')}.
               ${$t('text.currentCourtOrderFile', { filename: activeCourtOrderDoc.doc?.name || $t('label.none') })}
@@ -128,12 +137,14 @@ defineExpose({
           v-slot="{ open }"
           v-model="supportingFiles"
           multiple
+          :disabled
           aria-hidden="true"
         >
           <div class="flex flex-wrap gap-4 items-center">
             <UButton
               :label="$t('label.uploadDocuments')"
               icon="i-mdi-file-upload-outline"
+              :disabled
               :aria-describedby="supportingDocsAriaDescribedBy"
               @keydown.enter.stop
               @click="open()"

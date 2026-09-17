@@ -11,11 +11,11 @@ defineProps<{
   filingId: string | number
 }>()
 
-const model = defineModel<CourtOrderPoaFullFilingSchema>({ required: true })
+const model = defineModel<CourtOrderPoaFullSchema>({ required: true })
 
-const schema = getCourtOrderPoaFullFilingSchema()
+const schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
 
-const formRef = useTemplateRef<Form<CourtOrderPoaFullFilingSchema>>('court-order-filing-form')
+const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-filing-form')
 
 const sectionError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
@@ -51,7 +51,7 @@ watch(
         v-model="model"
         variant="section"
         is-court-order
-        :optional-labels="false"
+        is-file-or-details-required
         :disabled
         :filing-id="filingId"
         :identifier

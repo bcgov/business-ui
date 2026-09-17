@@ -93,7 +93,7 @@ function getCourtOrderFileMock(overrides: Partial<CourtOrderFileUi> = {}): Court
 }
 
 /** The court order schema generates a random `id` for UI diff'ing - ignore it when comparing. */
-function withoutId(courtOrder: CourtOrderPoaFullFilingSchema) {
+function withoutId(courtOrder: CourtOrderPoaFullSchema) {
   const { id: _id, ...rest } = courtOrder
   return rest
 }
@@ -289,7 +289,7 @@ describe('useCourtOrderStore', () => {
 
   describe('submit(isSubmission)', () => {
     /** Resume the pre-created draft, then apply the given form state edits. */
-    async function initAndEdit(courtOrder: Partial<CourtOrderPoaFullFilingSchema> = {}) {
+    async function initAndEdit(courtOrder: Partial<CourtOrderPoaFullSchema> = {}) {
       mockInitFiling.mockResolvedValue({
         draftFiling: getDraftMock({ fileNumber: '12345-6789', orderDetails: 'some court order text' })
       })
