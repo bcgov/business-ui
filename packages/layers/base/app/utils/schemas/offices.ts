@@ -1,41 +1,40 @@
 import { z } from 'zod'
+import { merge } from 'es-toolkit'
 
-export function getOfficesSchema() {
+export function getOfficeSchema() {
   return z.object({
-    id: z.string().default(() => crypto.randomUUID()),
-    isEditing: z.boolean().default(false),
-    actions: z.array(z.enum(ActionType)).default(() => []),
-    type: z.enum(OfficeType).default(() => OfficeType.REGISTERED),
-    address: getAddressWithIdSchema().default(() => ({
-      deliveryAddress: {
-        id: crypto.randomUUID(),
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      mailingAddress: {
-        id: crypto.randomUUID(),
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: 'CA',
-        locationDescription: ''
-      },
-      sameAs: false
-    }))
+    id: z.string(),
+    isEditing: z.boolean(),
+    actions: z.array(z.enum(ActionType)),
+    type: z.enum(OfficeType),
+    address: getAddressWithIdSchema()
   })
 }
 
-export type OfficesSchema = z.output<ReturnType<typeof getOfficesSchema>>
+export type OfficeSchema = z.output<ReturnType<typeof getOfficeSchema>>
 
-export function getActiveOfficesSchema() {
-  return getOfficesSchema().nullable().optional()
+export function getActiveOfficeSchema() {
+  return getOfficeSchema().nullable().optional()
 }
 
-export type ActiveOfficesSchema = z.output<ReturnType<typeof getActiveOfficesSchema>>
+export type ActiveOfficeSchema = z.output<ReturnType<typeof getActiveOfficeSchema>>
+
+
+
+export function createDefaultOffice(
+  overrides?: Partial<OfficeSchema>
+): OfficeSchema {
+  const defaults: OfficeSchema = {
+    id: crypto.randomUUID(),
+    isEditing: false,
+    actions: [],
+    type: OfficeType.REGISTERED,
+    address: createDefaultAddress()
+  }
+
+  if (!overrides) {
+    return defaults
+  }
+
+  return merge(defaults, overrides)
+}

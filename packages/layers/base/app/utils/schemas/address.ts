@@ -31,3 +31,29 @@ export function getAddressWithIdSchema() {
 }
 
 export type AddressWithIdSchema = z.output<ReturnType<typeof getAddressWithIdSchema>>
+
+export function createDefaultAddress(): AddressWithIdSchema {
+  return {
+    deliveryAddress: {
+      id: crypto.randomUUID(),
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: '',
+      locationDescription: ''
+    },
+    mailingAddress: {
+      id: crypto.randomUUID(),
+      street: '',
+      streetAdditional: '',
+      city: '',
+      region: '',
+      postalCode: '',
+      country: '',
+      locationDescription: ''
+    },
+    sameAs: false
+  }
+}
