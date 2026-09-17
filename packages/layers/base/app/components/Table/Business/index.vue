@@ -1,4 +1,5 @@
-<script setup lang="ts" generic="T extends { actions: ActionType[], isEditing: boolean }">
+<!-- FUTURE - id is optional here to be backwards compatible but this should be made mandatory once everything has been refactored -->
+<script setup lang="ts" generic="T extends { id?: string, actions: ActionType[], isEditing: boolean }">
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
@@ -30,6 +31,43 @@ defineEmits<{
 }>()
 
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
+
+// Local reference to the currently editing item
+let activeEditingRow: T | null = null
+
+watch(
+  expanded,
+  (v) => {
+    if (!props.data) {
+      return
+    }
+
+    // 1. Reset previous editing row
+    if (activeEditingRow) {
+      activeEditingRow.isEditing = false
+      activeEditingRow = null
+    }
+
+    // 2. Set the newly expanded row to true
+    if (v) {
+      // Get the ExpandedState` key value
+      // @ts-expect-error - key can't index type error
+      const activeKey = Object.keys(v).find((key) => v[key])
+
+      if (activeKey !== undefined) {
+        // Find the row item matching the key
+        // This will only work if getRowId is set to row.original.new.id
+        const target = props.data.find((item) => item.new?.id === activeKey)?.new
+
+        if (target) {
+          target.isEditing = true
+          activeEditingRow = target
+        }
+      }
+    }
+  },
+  { deep: true, immediate: true }
+)
 
 const showBodyTopSlot = computed(() => {
   if (!props.data || props.data.length === 0 || props.loading) {

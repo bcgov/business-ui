@@ -1,3 +1,4 @@
+<!-- FUTURE: Refactor other methods into useManageCommon -->
 <script setup lang="ts">
 import type { ManageOfficesProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
@@ -18,21 +19,18 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeSubject = defineModel<ActiveOfficesSchema | undefined>('active-office')
+const activeSubject = defineModel<ActiveOfficeSchema | undefined>('active-office')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
 
 let editSubjectLabel = ''
-let currentEditingSubject: OfficesSchema | null = null
 
 const tableTarget = 'offices-table'
 const formTarget = 'office-address-form'
 
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { messageId, targetId } = attachAlerts(tableTarget, activeSubject)
-
-const schema = getActiveOfficesSchema()
 
 const {
   tableState,
@@ -86,45 +84,23 @@ function initAddSubject() {
     emit('action-prevented')
     return
   }
-  activeSubject.value = schema.parse({ type: allowAddOfficeType })
+  const overrides = allowAddOfficeType ? { type: allowAddOfficeType } : {}
+  const defaultState = createDefaultOffice(overrides)
+
+  activeSubject.value = defaultState
   addingSubject.value = true
 }
 
-// function initAddOffice() {
-//   if (shouldPreventActions.value) {
-//     setActiveFormAlert()
-//     emit('action-prevented')
-//     return
-//   }
-//   activeSubject.value = schema.parse({ type: allowAddOfficeType })
-//   addingSubject.value = true
-// }
-
 function cleanupForm() {
-  if (currentEditingSubject) {
-    currentEditingSubject.isEditing = false
-  }
-  currentEditingSubject = null
   expandedState.value = undefined
   addingSubject.value = false
   activeSubject.value = undefined
 }
 
-function addOffice(office: ActiveOfficesSchema) {
-  addSubject(office)
-  cleanupForm()
-}
-
-function initEditSubject(row: TableBusinessRow<OfficesSchema>) {
+function initEditSubject(row: TableBusinessRow<OfficeSchema>) {
   const subject = cloneDeep(row.original.new)
-
   activeSubject.value = subject
-
-  currentEditingSubject = row.original.new
-  currentEditingSubject.isEditing = true
-
   editSubjectLabel = t(`officeType.${row.original.new.type}`)
-
   expandedState.value = { [row.id]: true }
 }
 
@@ -180,9 +156,9 @@ function onActionPrevented() {
           variant="add"
           :name="modelName"
           :subject="subject!"
-          :state-key="stateKey"
+          :state-key
           class="p-6"
-          @done="() => addOffice(activeSubject)"
+          @done="() => addSubject(activeSubject)"
           @cancel="cleanupForm"
         />
         <USeparator />
@@ -213,7 +189,7 @@ function onActionPrevented() {
                 :variant="getExpandedFormVariant(variant, row)"
                 :name="modelName"
                 :subject="editSubjectLabel"
-                :state-key="stateKey"
+                :state-key
                 :hide-remove="variant === 'correct'"
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"

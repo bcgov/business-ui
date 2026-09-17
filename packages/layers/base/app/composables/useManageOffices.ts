@@ -13,11 +13,11 @@ export const useManageOffices = (
     cleanupFn?: () => void
   }
 ) => {
-  const tableState = useState<TableBusinessState<OfficesSchema>[]>(`${stateKey}-table-state`, () => [])
+  const tableState = useState<TableBusinessState<OfficeSchema>[]>(`${stateKey}-table-state`, () => [])
 
   const hasChanges = computed(() => tableState.value.some(o => o.new.actions?.length > 0))
 
-  function updateTable(subject: TableBusinessState<OfficesSchema>): void {
+  function updateTable(subject: TableBusinessState<OfficeSchema>): void {
     const cloned = cloneDeep(subject)
 
     const index = tableState.value.findIndex(
@@ -35,7 +35,7 @@ export const useManageOffices = (
     opts?.cleanupFn?.()
   }
 
-  function addSubject(subject: ActiveOfficesSchema): void {
+  function addSubject(subject: ActiveOfficeSchema): void {
     if (!subject) {
       return
     }
@@ -49,7 +49,7 @@ export const useManageOffices = (
     })
   }
 
-  function removeSubject(row: TableBusinessRow<OfficesSchema>): void {
+  function removeSubject(row: TableBusinessRow<OfficeSchema>): void {
     const { old: oldSubjectState, new: newSubjectState } = row.original
 
     // If new subject, remove from state entirely
@@ -68,7 +68,7 @@ export const useManageOffices = (
     })
   }
 
-  function undoSubject(row: TableBusinessRow<OfficesSchema>): void {
+  function undoSubject(row: TableBusinessRow<OfficeSchema>): void {
     if (!getIsExistingRecord(row)) {
       return
     }
@@ -81,7 +81,7 @@ export const useManageOffices = (
     })
   }
 
-  function editSubject(subject: ActiveOfficesSchema, row: TableBusinessRow<OfficesSchema>): void {
+  function editSubject(subject: ActiveOfficeSchema, row: TableBusinessRow<OfficeSchema>): void {
     if (!subject) {
       return
     }

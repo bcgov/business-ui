@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends OfficesSchema = OfficesSchema">
+<script setup lang="ts" generic="T extends OfficeSchema = OfficeSchema">
 import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
