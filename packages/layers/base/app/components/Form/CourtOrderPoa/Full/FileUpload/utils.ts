@@ -2,7 +2,7 @@
 import * as z from 'zod'
 import * as pdfjs from 'pdfjs-dist'
 import { isEqual } from 'es-toolkit'
-import type { ModelRef } from 'vue'
+import type { MaybeRefOrGetter, ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
 export const maxFileSize = 30 * 1024 * 1024 // 30MB
@@ -122,14 +122,6 @@ function getUniqueFileName(rawName: string, existingNames: Set<string>): string 
   return newName
 }
 
-// helper to determine if an uploaded court order file is in an active state
-function isActiveCourtOrder(doc: CourtOrderFileUi, excludeId?: string) {
-  return doc.type === DocumentTypeClient.COURT_ORDER
-    && doc.id !== excludeId
-    && doc.action !== CourtOrderFileAction.DELETED
-    && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(doc.status)
-}
-
 // custom xhr request to return upload percentage
 async function uploadFile(
   file: File,
@@ -244,12 +236,15 @@ async function uploadFile(
 }
 
 // main functionality/state handling
+// NB: props are read at time of use (not captured on creation) so values that resolve after mount
+// (ex: the business data still loading) are picked up by the next upload
 export function useCourtOrderDocs(
   model: ModelRef<CourtOrderFileUi[]>,
   props: {
-    identifier?: string
-    filingId: string | number
-    entityType: CorpTypeCd
+    identifier?: MaybeRefOrGetter<string | undefined>
+    filingId: MaybeRefOrGetter<string | number>
+    entityType: MaybeRefOrGetter<CorpTypeCd>
+    disabled?: MaybeRefOrGetter<boolean | undefined>
   }
 ) {
   const { te, t } = useNuxtApp().$i18n
@@ -257,8 +252,10 @@ export function useCourtOrderDocs(
 
   const isTouchscreen = useMediaQuery('(pointer: coarse)')
 
+  const isDropZoneEnabled = computed(() => !isTouchscreen.value && !toValue(props.disabled))
+
   const dropzoneRef = useTemplateRef<HTMLDivElement>('dropzoneRef')
-  const { isOverDropZone } = useDropZone(() => isTouchscreen.value ? null : dropzoneRef.value, {
+  const { isOverDropZone } = useDropZone(() => isDropZoneEnabled.value ? dropzoneRef.value : null, {
     onDrop: (files) => { supportingFiles.value = [...supportingFiles.value, ...files ?? []] },
     multiple: true,
     preventDefaultForUnhandled: true
@@ -271,8 +268,6 @@ export function useCourtOrderDocs(
   const inProgressFilenames = new Set<string>() // list of filenames actively being uploaded
   const sessionUploadedKeys: Set<string> = new Set() // DRS keys that were successfully uploaded during this form session only
 
-  const isDropZoneEnabled = computed(() => !isTouchscreen.value)
-
   // full list of court order files
   const courtOrderDocs = computed(() =>
     uploadedDocuments.value.filter(doc => doc.type === DocumentTypeClient.COURT_ORDER)
@@ -283,7 +278,7 @@ export function useCourtOrderDocs(
   )
 
   const activeCourtOrderDoc = computed(() => {
-    const doc = uploadedDocuments.value.find(d => isActiveCourtOrder(d))
+    const doc = uploadedDocuments.value.find(d => isActiveCourtOrderFile(d))
     return {
       doc,
       exists: Boolean(doc)
@@ -296,7 +291,7 @@ export function useCourtOrderDocs(
 
   function preventDuplicateCourtOrderCheck(excludeId?: string): boolean {
     const hasActive = excludeId
-      ? uploadedDocuments.value.some(d => isActiveCourtOrder(d, excludeId))
+      ? uploadedDocuments.value.some(d => isActiveCourtOrderFile(d, excludeId))
       : activeCourtOrderDoc.value.exists
 
     if (hasActive) {
@@ -429,10 +424,10 @@ export function useCourtOrderDocs(
             newFile,
             fileItem,
             {
-              entityType: props.entityType,
+              entityType: toValue(props.entityType),
               documentType: fileItem.type,
-              identifier: props.identifier,
-              filingId: props.filingId
+              identifier: toValue(props.identifier),
+              filingId: toValue(props.filingId)
             }
           )
 

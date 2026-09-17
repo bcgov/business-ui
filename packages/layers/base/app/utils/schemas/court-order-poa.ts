@@ -1,5 +1,5 @@
 // https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/court_order.json
-import type { FormCourtOrderPoa } from '#components'
+import type { FormCourtOrderPoa, FormCourtOrderPoaFields } from '#components'
 import { z } from 'zod'
 
 export function getCourtOrderPoaSchema() {
@@ -30,6 +30,8 @@ export type CourtOrderPoaSchema = z.output<ReturnType<typeof getCourtOrderPoaSch
 
 export type FormCourtOrderPoaRef = InstanceType<typeof FormCourtOrderPoa>
 
+export type FormCourtOrderPoaFieldsRef = InstanceType<typeof FormCourtOrderPoaFields>
+
 // action a user has taken on a file
 export enum CourtOrderFileAction {
   NONE = 'NONE',
@@ -58,7 +60,15 @@ export interface CourtOrderFileUi {
   abortController?: AbortController
 }
 
-export function getCourtOrderPoaFullSchema() {
+// helper to determine if an uploaded court order file is in an active (not removed) state
+export function isActiveCourtOrderFile(file: CourtOrderFileUi, excludeId?: string) {
+  return file.type === DocumentTypeClient.COURT_ORDER
+    && file.id !== excludeId
+    && file.action !== CourtOrderFileAction.DELETED
+    && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(file.status)
+}
+
+export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?: boolean }) {
   const t = useNuxtApp().$i18n.t
   return z.object({
     isEditing: z.boolean()
@@ -113,6 +123,39 @@ export function getCourtOrderPoaFullSchema() {
         }
       })
     }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet
+  }).superRefine((data, ctx) => {
+    if (!context?.isFileOrDetailsRequired) {
+      return
+    }
+
+    // a standalone court order filing always requires a court order number
+    if (!data.fileNumber) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['fileNumber'],
+        message: t('connect.validation.fieldRequired')
+      })
+    }
+
+    const activeCourtOrderFiles = (data.files ?? []).filter(file => isActiveCourtOrderFile(file))
+
+    // either the court order text or an uploaded court order file is required
+    if (!data.orderDetails?.trim() && activeCourtOrderFiles.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['orderDetails'],
+        message: t('validation.enterCourtOrderOrUploadFile')
+      })
+    }
+
+    // only one court order file may be attached to a filing, any number of supporting documents are allowed
+    if (activeCourtOrderFiles.length > 1) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['files'],
+        message: t('validation.onlyOneCourtOrderPerFiling')
+      })
+    }
   })
 }
 

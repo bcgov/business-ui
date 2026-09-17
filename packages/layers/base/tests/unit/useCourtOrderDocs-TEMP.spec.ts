@@ -8,7 +8,8 @@ import * as pdfjs from 'pdfjs-dist'
 import {
   formatBytes,
   useCourtOrderDocs,
-  maxFileSize
+  maxFileSize,
+  acceptedFileTypes
 } from '../../app/components/Form/CourtOrderPoa/Full/FileUpload/utils'
 
 const mockBusinessApi = vi.fn()
@@ -73,11 +74,19 @@ const getXhrMock = (sendMock?: any, abortMock?: any) => ({
   upload: {}
 })
 
+describe('court order file constraints', () => {
+  it('should default to the limits enforced by the api', () => {
+    expect(maxFileSize).toBe(30 * 1024 * 1024)
+    expect(formatBytes(maxFileSize)).toBe('30 MB')
+    expect(acceptedFileTypes).toEqual(['application/pdf', 'image/jpeg', 'image/png', 'image/gif'])
+  })
+})
+
 describe('formatBytes', () => {
   it('should format bytes correctly', () => {
     expect(formatBytes(0)).toBe('0 Bytes')
     expect(formatBytes(1024)).toBe('1 KB')
-    expect(formatBytes(52428800)).toBe('50 MB')
+    expect(formatBytes(31457280)).toBe('30 MB')
     expect(formatBytes(1500)).toBe('1.46 KB')
     expect(formatBytes(1500, 3)).toBe('1.465 KB')
     expect(formatBytes(1500, 0)).toBe('1 KB')
@@ -214,7 +223,46 @@ describe('useCourtOrderDocs', () => {
       expect(courtOrderDocs.value[0]!.fileKey).toBe('drs-key')
     })
 
-    it('should set error status when file fails schema check', async () => {
+    it('should use the current prop values on each upload (reactive props)', async () => {
+      const xhrMock = getXhrMock()
+      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+
+      const filingId = ref<string | number>(9876543)
+      const entityType = ref(CorpTypeCd.BC_COMPANY)
+
+      const { supportingFiles } = useCourtOrderDocs(model, {
+        identifier: 'BC1234567',
+        filingId,
+        entityType
+      })
+
+      supportingFiles.value = [new File(['pdf data'], 'first.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('/documents/client/courtOrder/BC/supporting_document?filename=first.pdf')
+      )
+      expect(xhrMock.open).toHaveBeenLastCalledWith('POST', expect.stringContaining('filingId=9876543'))
+
+      // values resolving after the composable was created should be used by the next upload
+      filingId.value = 1234567
+      entityType.value = CorpTypeCd.BENEFIT_COMPANY
+      await nextTick()
+
+      supportingFiles.value = [new File(['pdf data'], 'second.pdf', { type: 'application/pdf' })]
+      await nextTick()
+      await flushPromises()
+
+      expect(xhrMock.open).toHaveBeenLastCalledWith(
+        'POST',
+        expect.stringContaining('/documents/client/courtOrder/BEN/supporting_document?filename=second.pdf')
+      )
+      expect(xhrMock.open).toHaveBeenLastCalledWith('POST', expect.stringContaining('filingId=1234567'))
+    })
+
+    it('should set error status when file is larger than the max file size', async () => {
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       const oversizedFile = new File([new Uint8Array(maxFileSize + 100)], 'test.pdf', { type: 'application/pdf' })
 
@@ -515,6 +563,18 @@ describe('useCourtOrderDocs', () => {
       const { isDropZoneEnabled } = useCourtOrderDocs(model, defaultProps)
 
       expect(isDropZoneEnabled.value).toBe(false)
+    })
+
+    it('should be disabled when the disabled prop is true', async () => {
+      const disabled = ref(true)
+      const { isDropZoneEnabled } = useCourtOrderDocs(model, { ...defaultProps, disabled })
+
+      expect(isDropZoneEnabled.value).toBe(false)
+
+      disabled.value = false
+      await nextTick()
+
+      expect(isDropZoneEnabled.value).toBe(true)
     })
   })
 })

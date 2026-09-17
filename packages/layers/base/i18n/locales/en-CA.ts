@@ -343,6 +343,7 @@ export default {
   },
   label: {
     actions: 'Actions',
+    addCourtOrderText: 'Add court order text',
     addCourtOrderTextOpt: 'Add court order text (Optional)',
     addDetail: 'Add Detail',
     adding: 'Adding',
@@ -841,6 +842,7 @@ export default {
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
     duplicateDocId: 'A document record already exists with this document ID',
+    enterCourtOrderOrUploadFile: 'Enter a court order or upload a file',
     enterLastName: 'Enter a last name',
     exactDocIDChars: 'Document ID must be 8 characters',
     fieldRequired: 'This field is required',

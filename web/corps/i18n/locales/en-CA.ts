@@ -46,6 +46,13 @@ export default {
       h1: 'Correction',
       title: 'Correction - BC Registries and Online Services'
     },
+    courtOrder: {
+      desc: 'Enter the court order number and either the court order text or upload the court order document.',
+      feeCode: 'COURT',
+      feeLabel: 'Court Order',
+      h1: 'Court Order',
+      title: 'Court Order - BC Registries and Online Services'
+    },
     dissolution: {
       delay: {
         desc: 'The dissolution or cancellation of this business will be delayed until {boldStart}{date}{boldEnd}.',
