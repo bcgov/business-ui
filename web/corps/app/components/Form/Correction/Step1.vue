@@ -138,7 +138,6 @@ function onActionPrevented() {
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
-      :collect-resolution-date="store.requireResolutionDate"
       @action-prevented="onActionPrevented"
     />
 
