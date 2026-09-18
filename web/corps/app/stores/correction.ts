@@ -20,7 +20,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<CorrectionDraftState>({} as CorrectionDraftState)
-  const requireResolutionDate = ref(false)
 
   const formState = reactive<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialFormState = shallowRef<CorrectionFormSchema>({} as CorrectionFormSchema)
@@ -253,9 +252,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
-    requireResolutionDate.value = isResolutionFiling(correctedFilingType.value)
-
-    // Always show resolution dates in correction filings so staff can manage share changes as needed.
     const originalResolutions = await service.getResolutions(businessId).catch(() => [])
     const draftResolutions = draft.shareStructure?.resolutionDates
 
@@ -543,7 +539,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialAmalStmnt.value = {} as TableBusinessState<AmalgamationCorrectStatementSchema>
 
     initializing.value = false
-    requireResolutionDate.value = false
   }
 
   return {
@@ -556,7 +551,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDate,
     correctedFilingDateDisplay,
     correctionType,
-    requireResolutionDate,
     isStaffCorrectionType,
     courtOrders: tableCourtOrders,
     directors: tableDirectors,

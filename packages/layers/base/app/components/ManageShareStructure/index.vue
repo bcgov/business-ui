@@ -274,11 +274,19 @@ const hasRightsOrRestrictions = computed(() => shareClasses.value.some((c) => {
   return classHasRor || seriesHasRor
 }))
 
-const requiresResolutionDate = computed(() => hasChangedShares.value
+// a resolution date is only mandatory when this session's edits changed rights/restrictions
+const resolutionDateRequired = computed(() => hasChangedShares.value
   && hasRightsOrRestrictions.value
   && !isReadOnly.value
   && props.collectResolutionDate
 )
+
+// in corrections, staff can add a resolution/court order date any time the filing type
+// collects them, even if they haven't changed shares in this session
+const requiresResolutionDate = computed(() => {
+  return props.variant === 'correct' || resolutionDateRequired.value
+})
+
 const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
 
 const changeResolutionDateValidationContext = computed(() => {
@@ -293,7 +301,7 @@ const changeResolutionDateValidationContext = computed(() => {
 })
 
 const addResolutionDateValidationContext = computed(() => ({
-  hasRightsOrRestrictions: requiresResolutionDate.value,
+  hasRightsOrRestrictions: resolutionDateRequired.value,
   existingResolutions: existingResolutionDates.value
 }))
 
