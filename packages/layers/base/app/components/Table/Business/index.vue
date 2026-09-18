@@ -52,12 +52,12 @@ watch(
     if (v) {
       // Get the ExpandedState` key value
       // @ts-expect-error - key can't index type error
-      const activeKey = Object.keys(v).find((key) => v[key])
+      const activeKey = Object.keys(v).find(key => v[key])
 
       if (activeKey !== undefined) {
         // Find the row item matching the key
         // This will only work if getRowId is set to row.original.new.id
-        const target = props.data.find((item) => item.new?.id === activeKey)?.new
+        const target = props.data.find(item => item.new?.id === activeKey)?.new
 
         if (target) {
           target.isEditing = true

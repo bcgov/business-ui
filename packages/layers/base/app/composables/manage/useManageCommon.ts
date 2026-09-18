@@ -110,7 +110,7 @@ export const useManageCommon = (opts: ManageCommonOptions) => {
   // returns true if the Manage variant includes 'correct' - allows partial string matching for variant combos
   const isCorrectVariant = computed(() => toValue(opts.variant)?.includes('correct') ?? false)
 
-  // returns true if there's an active subject being added or edited 
+  // returns true if there's an active subject being added or edited
   // or if the parent component has set the preventActions prop to true
   const shouldPreventActions = computed(() => hasActiveSubject.value || toValue(opts.preventActions))
 

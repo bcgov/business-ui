@@ -66,13 +66,18 @@ const { t } = useI18n()
 
 // enable/disable the 'Add Office' button
 const allowAddOffice = computed(() => {
-  // 1. Check the allowed actions defined by the variants and/or props
+  // 1. If no office type is configured to add, return false
+  if (!allowAddOfficeType) {
+    return false
+  }
+
+  // 2. Check the allowed actions defined by the variants and/or props
   const canAdd = !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
   if (!canAdd) {
     return false
   }
 
-  // 2. Check if the table already contains the type configured to add
+  // 3. Check if the table already contains the type configured to add
   const tableHasAddType = allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
 
   return !tableHasAddType

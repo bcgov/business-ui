@@ -19,8 +19,6 @@ export function getActiveOfficeSchema() {
 
 export type ActiveOfficeSchema = z.output<ReturnType<typeof getActiveOfficeSchema>>
 
-
-
 export function createDefaultOffice(
   overrides?: Partial<OfficeSchema>
 ): OfficeSchema {

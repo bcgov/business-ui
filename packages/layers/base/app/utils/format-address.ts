@@ -27,9 +27,10 @@ export function formatBaseAddressUi(address: ApiBaseAddressObj | undefined): UiB
 export function formatAddressApi(
   address: (ConnectAddress | AddressSchema['deliveryAddress']) & { id?: string } | undefined
 ): ApiAddress {
+  // a temp uuid is created for newly added addresses for UI diff's, set to undefined for new addresses or
   const isIdUuid = address?.id && typeof address.id === 'string' && address.id.includes('-')
   return {
-    id: isIdUuid ? undefined : Number(address?.id),
+    id: isIdUuid || !address?.id ? undefined : Number(address.id),
     streetAddress: address?.street ?? '',
     streetAddressAdditional: address?.streetAdditional ?? '',
     addressCity: address?.city ?? '',

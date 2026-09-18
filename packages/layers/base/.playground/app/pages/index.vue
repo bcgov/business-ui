@@ -93,6 +93,10 @@ const componentExamples: DropdownMenuItem[] = [
                 to: localePath('/examples/components/ManageOffices/allowed-actions/none')
               }
             ]
+          },
+          {
+            to: localePath('/examples/components/ManageOffices/live-data'),
+            label: 'Live Data'
           }
         ]
       },
