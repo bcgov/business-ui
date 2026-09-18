@@ -74,9 +74,10 @@ async function assertCorrectOffices(page: Page) {
   const tbody = section.locator('tbody')
   await expect(tbody).toContainText('Registered Office')
   await expect(tbody).toContainText('Records Office')
+  await expect(tbody).toContainText('Liquidation Records Office')
 
   const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(2)
+  await expect(rows).toHaveCount(3)
 }
 
 async function assertCorrectDirectors(page: Page) {
