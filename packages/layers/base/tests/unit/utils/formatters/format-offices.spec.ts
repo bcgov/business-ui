@@ -172,30 +172,30 @@ describe('formatOfficesApi', () => {
   }
 
   const createMockOfficeState = (
-  type: OfficeType,
-  actions: ActionType[] = [],
-  addressOverrides?: Partial<UiBaseAddressObj>
-): TableBusinessState<OfficesSchema> => {
+    type: OfficeType,
+    actions: ActionType[] = [],
+    addressOverrides?: Partial<UiBaseAddressObj>
+  ): TableBusinessState<OfficesSchema> => {
   // Use deep merge instead of shallow spread
-  const address = merge(cloneDeep(mockUiBaseAddressObj), addressOverrides ?? {})
+    const address = merge(cloneDeep(mockUiBaseAddressObj), addressOverrides ?? {})
 
-  return {
-    old: {
-      id: '123',
-      type,
-      address,
-      isEditing: false,
-      actions: []
-    },
-    new: {
-      id: '123',
-      type,
-      address,
-      isEditing: false,
-      actions
+    return {
+      old: {
+        id: '123',
+        type,
+        address,
+        isEditing: false,
+        actions: []
+      },
+      new: {
+        id: '123',
+        type,
+        address,
+        isEditing: false,
+        actions
+      }
     }
   }
-}
 
   describe('formatOfficesApi', () => {
     it('should return undefined if no offices have changes', () => {
@@ -233,11 +233,7 @@ describe('formatOfficesApi', () => {
         }
       )
 
-      
-
       const result = formatOfficesApi([addedOffice])
-
-      console.log(result!.custodialOffice)
 
       expect(result).toBeDefined()
       expect(result!.custodialOffice).toBeDefined()

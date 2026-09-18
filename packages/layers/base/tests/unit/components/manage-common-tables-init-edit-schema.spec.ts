@@ -1,7 +1,7 @@
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 
-import { ManageParties, ManageOffices, ManageShareStructure } from '#components'
+import { ManageParties, ManageShareStructure } from '#components'
 
 // --- Mock composables used by the three manager components ---
 
@@ -12,16 +12,6 @@ mockNuxtImport('useManageParties', () => () => ({
   addNewParty: vi.fn(),
   removeParty: vi.fn(),
   undoParty: vi.fn(),
-  applyTableEdits: vi.fn()
-}))
-
-mockNuxtImport('useManageOffices', () => () => ({
-  addingOffice: ref(false),
-  expandedState: ref<undefined>(undefined),
-  tableState: ref([]),
-  addNewOffice: vi.fn(),
-  removeOffice: vi.fn(),
-  undoOffice: vi.fn(),
   applyTableEdits: vi.fn()
 }))
 
@@ -79,7 +69,7 @@ const stubs = {
 // --- Helper: mount a component, emit init-edit, return the wrapper ---
 
 async function emitInitEdit(
-  component: typeof ManageParties | typeof ManageOffices | typeof ManageShareStructure,
+  component: typeof ManageParties | typeof ManageShareStructure,
   props: Record<string, unknown>,
   tableStub: ReturnType<typeof defineComponent>,
   row: Record<string, unknown>

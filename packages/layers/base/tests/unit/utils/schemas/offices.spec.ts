@@ -37,7 +37,7 @@ describe('getOfficesSchema', () => {
     it('should pass when actions is an empty array', () => {
       const result = schema.safeParse(mockOffice)
       expect(result.success).toBe(true)
-    }) 
+    })
 
     it('should pass with valid ActionTypes', () => {
       const result = schema.safeParse({ ...mockOffice, actions: [ActionType.ADDED, ActionType.ADDRESS_CHANGED] })
@@ -52,7 +52,7 @@ describe('getOfficesSchema', () => {
 
   describe('type', () => {
     it('should pass with a valid OfficeType', () => {
-      Object.values(OfficeType).forEach(type => {
+      Object.values(OfficeType).forEach((type) => {
         const result = schema.safeParse({ ...mockOffice, type })
         expect(result.success).toBe(true)
       })
