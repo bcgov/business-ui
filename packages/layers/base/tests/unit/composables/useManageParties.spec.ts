@@ -171,7 +171,7 @@ describe('useManageParties', () => {
               ...mockParty.address.deliveryAddress,
               street: 'new street'
             }
-          } 
+          }
         }
       }
       tableState.value = [existing]

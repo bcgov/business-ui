@@ -1,4 +1,3 @@
-<!-- FUTURE - id is optional here to be backwards compatible but this should be made mandatory once everything has been refactored -->
 <script setup lang="ts" generic="T extends { id?: string, actions: ActionType[], isEditing: boolean }">
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
