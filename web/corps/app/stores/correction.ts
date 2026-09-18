@@ -203,7 +203,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     // Offices (corrections may include address changes)
-    tableOffices.value = formatOfficesSection(addresses, draft?.offices, [OfficeType.RECORDS, OfficeType.REGISTERED])
+    tableOffices.value = formatOfficesSection(addresses, draft?.offices)
 
     // Share structure
     if (shareClasses) {

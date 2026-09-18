@@ -34,7 +34,7 @@ export const useBusinessAddresses = () => {
       return offices
     }
 
-    // return TableBusinessState<OfficeSchema> array if table config option provided
+    // return TableBusinessState<OfficesSchema> array if table config option provided
     // used for ManageOffices functionality
     return formatAddressTableState(res, filteredTypes)
   }
