@@ -65,10 +65,9 @@ jobs:
     - uses: actions/setup-node@v6
       with:
         node-version: 24
-    - name: Purge cache
-      run: find . -type d \( -name "node_modules" -o -name ".nuxt" -o -name ".output" \) -prune -exec rm -rf {} +
+        cache: 'pnpm'
     - name: Install dependencies
-      run: pnpm install -f
+      run: pnpm install
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
     - name: Set basic env

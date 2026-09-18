@@ -2,7 +2,7 @@ import { isEqual } from 'es-toolkit'
 // NB: direct imports needed so that this util can be used in e2e tests
 import { ActionType } from '#business/app/enums/action-type'
 import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
-import { formatAddressApi, formatAddressUi, formatBaseAddressUi } from './format-address'
+import { formatAddressApi, formatAddressUi, formatBaseAddressUi } from '#business/app/utils/format-address'
 
 const ROLE_RELATIONSHIPS: [RoleTypeUi, RoleType][] = [
   [RoleTypeUi.APPLICANT, RoleType.APPLICANT],
