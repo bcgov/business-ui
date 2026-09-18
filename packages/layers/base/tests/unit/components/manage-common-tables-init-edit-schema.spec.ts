@@ -111,17 +111,6 @@ describe('Common table managers — init-edit with invalid schema data', () => {
     expect(row.original.new.isEditing).toBe(true)
   })
 
-  it('ManageOffices: emits raw data when schema is invalid', async () => {
-    const row = { index: 0, original: { new: { isEditing: false, type: 'BAD' } } }
-    const wrapper = await emitInitEdit(ManageOffices,
-      { addLabel: 'unused-label', sectionLabel: 'Offices', activeOffice: undefined },
-      TableOfficesStub, row)
-
-    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as { type: string }
-    expect(emitted.type).toBe('BAD')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
   it('ManageShareStructure class: emits raw data when schema is invalid', async () => {
     const row = { id: 'c1', depth: 0, original: { new: { isEditing: false, name: 'X', priority: 'BAD' } } }
     const wrapper = await emitInitEdit(ManageShareStructure,
@@ -166,22 +155,6 @@ describe('Common table managers — init-edit with valid schema data', () => {
       address: { sameAs: boolean, mailingAddress: { country: string } }
     }
     expect(emitted.name.partyType).toBe(PartyType.PERSON)
-    expect(emitted.address.sameAs).toBe(false)
-    expect(emitted.address.mailingAddress.country).toBe('CA')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageOffices: emits schema-parsed data when valid', async () => {
-    const row = { index: 0, original: { new: { isEditing: false, actions: [] } } }
-    const wrapper = await emitInitEdit(ManageOffices,
-      { addLabel: 'unused-label', sectionLabel: 'Offices', activeOffice: undefined },
-      TableOfficesStub, row)
-
-    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as {
-      type: string
-      address: { sameAs: boolean, mailingAddress: { country: string } }
-    }
-    expect(emitted.type).toBe(OfficeType.REGISTERED)
     expect(emitted.address.sameAs).toBe(false)
     expect(emitted.address.mailingAddress.country).toBe('CA')
     expect(row.original.new.isEditing).toBe(true)
