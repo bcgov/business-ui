@@ -1,4 +1,4 @@
-import { isEqualOmit } from '#imports'
+import { isEqualOmit } from '#business/app/utils/is-equal-omit'
 
 export function formatAddressUi(
   address: ApiAddress | undefined
