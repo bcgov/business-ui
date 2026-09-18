@@ -159,7 +159,20 @@ describe('useManageParties', () => {
       const { tableState, applyTableEdits } = useManageParties(stateKey)
       const existing = {
         new: mockParty,
-        old: { ...mockParty, address: { ...mockParty.address, sameAs: false } }
+        old: {
+          ...mockParty,
+          address: {
+            ...mockParty.address,
+            deliveryAddress: {
+              ...mockParty.address.deliveryAddress,
+              street: 'old street'
+            },
+            mailingAddress: {
+              ...mockParty.address.deliveryAddress,
+              street: 'new street'
+            }
+          } 
+        }
       }
       tableState.value = [existing]
 
