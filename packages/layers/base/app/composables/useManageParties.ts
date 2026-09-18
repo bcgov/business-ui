@@ -97,7 +97,15 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
         const originalSection = originalPartyState[section]
         const newSection = party[section]
 
-        if (!isEqual(originalSection, newSection)) {
+        if (section === 'address') {
+          // @ts-expect-error - loses type inference here
+          const deliveryEqual = isEqualOmit(originalSection.deliveryAddress, newSection.deliveryAddress, ['id'])
+          // @ts-expect-error - loses type inference here
+          const mailingEqual = isEqualOmit(originalSection.mailingAddress, newSection.mailingAddress, ['id'])
+          if (!deliveryEqual || !mailingEqual) {
+            editedSections.push('address')
+          }
+        } else if (!isEqual(originalSection, newSection)) {
           editedSections.push(section)
         }
       }

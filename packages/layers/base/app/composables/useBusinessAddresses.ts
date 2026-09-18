@@ -46,6 +46,7 @@ export const useBusinessAddresses = () => {
     const types = officeTypes ?? allOfficeTypes
     return types.map((type) => {
       const formatted = {
+        id: crypto.randomUUID(),
         type,
         actions: [],
         address: formatBaseAddressUi(addresses[type]),

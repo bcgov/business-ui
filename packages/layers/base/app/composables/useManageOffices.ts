@@ -1,128 +1,118 @@
-import type { ExpandedState } from '@tanstack/vue-table'
-import { isEqual } from 'es-toolkit'
+import { cloneDeep } from 'es-toolkit'
 
-type EditedSection = 'address'
-const actionsMap: Record<EditedSection, ActionType> = {
-  address: ActionType.ADDRESS_CHANGED
-}
+const NON_EDITABLE_FIELDS = [
+  'id',
+  'isEditing',
+  'actions',
+  'type'
+] as const
 
-export const useManageOffices = (stateKey: string = 'manage-offices') => {
-  const addingOffice = useState<boolean>(`${stateKey}-adding-state`, () => false)
-  const expandedState = useState<ExpandedState | undefined>(`${stateKey}-expanded-state`, () => undefined)
+export const useManageOffices = (
+  stateKey: string = 'manage-offices',
+  opts?: {
+    cleanupFn?: () => void
+  }
+) => {
   const tableState = useState<TableBusinessState<OfficesSchema>[]>(`${stateKey}-table-state`, () => [])
 
   const hasChanges = computed(() => tableState.value.some(o => o.new.actions?.length > 0))
 
-  function updateTable(newState: TableBusinessState<OfficesSchema>, row?: TableBusinessRow<OfficesSchema>): void {
-    if (!row) {
-      tableState.value = [
-        ...tableState.value,
-        JSON.parse(JSON.stringify(newState))
-      ]
-    } else {
-      const index = row.index
+  function updateTable(subject: TableBusinessState<OfficesSchema>): void {
+    const cloned = cloneDeep(subject)
 
-      tableState.value = [
-        ...tableState.value.slice(0, index),
-        JSON.parse(JSON.stringify(newState)),
-        ...tableState.value.slice(index + 1)
-      ]
+    const index = tableState.value.findIndex(
+      item => item.new.id === cloned.new.id
+    )
+
+    if (index === -1) {
+      // ID not found, add new row
+      tableState.value = [...tableState.value, cloned]
+    } else {
+      // ID exists, update row
+      tableState.value = tableState.value.toSpliced(index, 1, cloned)
     }
+
+    opts?.cleanupFn?.()
   }
 
-  function addNewOffice(office: ActiveOfficesSchema) {
-    if (!office) {
+  function addSubject(subject: ActiveOfficesSchema): void {
+    if (!subject) {
       return
     }
 
-    const newState: TableBusinessState<OfficesSchema> = {
+    updateTable({
+      old: undefined,
       new: {
-        ...office,
+        ...subject,
         actions: [ActionType.ADDED]
-      },
-      old: undefined
-    }
-    updateTable(newState)
-  }
-
-  function removeOffice(row: TableBusinessRow<OfficesSchema>): void {
-    const oldOfficesState = row.original.old
-    const newOfficesState = row.original.new
-
-    if (oldOfficesState === undefined) {
-      tableState.value = [
-        ...tableState.value.slice(0, row.index),
-        ...tableState.value.slice(row.index + 1)
-      ]
-    } else {
-      const newState: TableBusinessState<OfficesSchema> = {
-        new: { ...newOfficesState, actions: [ActionType.REMOVED] },
-        old: oldOfficesState
       }
-
-      updateTable(newState, row)
-    }
+    })
   }
 
-  function undoOffice(row: TableBusinessRow<OfficesSchema>): void {
-    const oldOffice = row.original.old
+  function removeSubject(row: TableBusinessRow<OfficesSchema>): void {
+    const { old: oldSubjectState, new: newSubjectState } = row.original
 
-    if (oldOffice) {
-      const newState: TableBusinessState<OfficesSchema> = {
-        new: oldOffice,
-        old: oldOffice
-      }
-
-      updateTable(newState, row)
-    }
-  }
-
-  function applyTableEdits(office: ActiveOfficesSchema, row: TableBusinessRow<OfficesSchema>): void {
-    if (!office) {
+    // If new subject, remove from state entirely
+    if (!getIsExistingRecord(row)) {
+      tableState.value = tableState.value.filter(
+        item => item.new.id !== newSubjectState.id
+      )
+      opts?.cleanupFn?.()
       return
     }
 
-    const originalOfficeState = row.original.old
-    let newActions: ActionType[] = []
+    // If existing subject, add REMOVED action
+    updateTable({
+      old: oldSubjectState,
+      new: { ...newSubjectState, actions: [ActionType.REMOVED] }
+    })
+  }
 
-    if (originalOfficeState === undefined) {
-      newActions = [ActionType.ADDED]
-    } else {
-      const sectionsToCompare: EditedSection[] = ['address']
-      const editedSections: EditedSection[] = []
-
-      for (const section of sectionsToCompare) {
-        const originalSection = originalOfficeState[section]
-        const newSection = office[section]
-
-        if (!isEqual(originalSection, newSection)) {
-          editedSections.push(section)
-        }
-      }
-
-      newActions = editedSections.map(section => actionsMap[section])
+  function undoSubject(row: TableBusinessRow<OfficesSchema>): void {
+    if (!getIsExistingRecord(row)) {
+      return
     }
 
-    const newState: TableBusinessState<OfficesSchema> = {
-      old: originalOfficeState,
+    const oldSubjectState = row.original.old
+
+    updateTable({
+      old: oldSubjectState,
+      new: oldSubjectState
+    })
+  }
+
+  function editSubject(subject: ActiveOfficesSchema, row: TableBusinessRow<OfficesSchema>): void {
+    if (!subject) {
+      return
+    }
+
+    if (!getIsExistingRecord(row)) {
+      updateTable({
+        old: undefined,
+        new: { ...subject, actions: [ActionType.ADDED] }
+      })
+      return
+    }
+
+    const oldSubjectState = row.original.old
+    const isChanged = !isEqualOmit(subject, oldSubjectState, NON_EDITABLE_FIELDS)
+
+    updateTable({
+      old: oldSubjectState,
       new: {
-        ...office,
-        actions: newActions
+        ...subject,
+        actions: isChanged ? [ActionType.CHANGED] : []
       }
-    }
-
-    updateTable(newState, row)
+    })
   }
 
   return {
-    addingOffice,
-    expandedState,
     tableState,
     hasChanges,
     updateTable,
-    addNewOffice,
-    removeOffice,
-    undoOffice,
-    applyTableEdits
+    addSubject,
+    removeSubject,
+    undoSubject,
+    editSubject
   }
 }

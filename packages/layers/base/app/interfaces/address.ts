@@ -37,8 +37,8 @@ export interface ApiBaseAddressObj {
 }
 
 export interface UiBaseAddressObj {
-  mailingAddress: ConnectAddress | AddressSchema['mailingAddress']
-  deliveryAddress: ConnectAddress | AddressSchema['deliveryAddress']
+  mailingAddress: ConnectAddress | AddressSchema['mailingAddress'] & { id?: string }
+  deliveryAddress: ConnectAddress | AddressSchema['deliveryAddress'] & { id?: string }
   sameAs: boolean
 }
 

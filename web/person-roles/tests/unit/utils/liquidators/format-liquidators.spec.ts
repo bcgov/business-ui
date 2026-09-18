@@ -35,6 +35,7 @@ function createOfficeTableMock(
   type: OfficeType = OfficeType.LIQUIDATION
 ): TableBusinessState<OfficesSchema> {
   const office = {
+    id: '123',
     type,
     actions,
     address: { mailingAddress: mailing, deliveryAddress: delivery, sameAs: false },

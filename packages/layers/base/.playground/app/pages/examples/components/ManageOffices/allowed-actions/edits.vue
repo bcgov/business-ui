@@ -8,22 +8,7 @@ definePageMeta({
 
 const { tableState } = useManageOffices()
 
-tableState.value = Object.entries(mockOffices).map(([key, value]) => {
-  return {
-    new: {
-      type: key as OfficeType,
-      actions: [],
-      address: formatBaseAddressUi(value),
-      isEditing: false
-    },
-    old: {
-      type: key as OfficeType,
-      actions: [],
-      address: formatBaseAddressUi(value),
-      isEditing: false
-    }
-  }
-})
+tableState.value = formatOfficesSection(mockOffices)
 
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const loading = ref(false)

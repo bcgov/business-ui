@@ -11,11 +11,11 @@ defineEmits<{
   'should-validate': []
 }>()
 
-const addressSchema = getAddressSchema()
+const schema = getAddressWithIdSchema()
 
-const model = defineModel<AddressSchema>({ required: true })
+const model = defineModel<AddressWithIdSchema>({ required: true })
 
-const formRef = useTemplateRef<Form<AddressSchema>>('address-form')
+const formRef = useTemplateRef<Form<AddressWithIdSchema>>('address-form')
 
 const formErrors = computed<{
   mailing: FormError<string> | undefined
@@ -34,6 +34,7 @@ watchDebounced(
   () => {
     if (model.value.sameAs) {
       model.value.deliveryAddress = {
+        id: model.value.deliveryAddress.id,
         street: '',
         streetAdditional: '',
         city: '',
@@ -53,7 +54,8 @@ watch(
   () => model.value.sameAs,
   (v) => {
     if (v) {
-      model.value.deliveryAddress = { ...model.value.mailingAddress }
+      const id = model.value.deliveryAddress.id
+      model.value.deliveryAddress = { ...model.value.mailingAddress, id }
     }
   }
 )
@@ -68,7 +70,7 @@ defineExpose({
   <UForm
     ref="address-form"
     :state="model"
-    :schema="addressSchema"
+    :schema
     :nested
     :name
     novalidate

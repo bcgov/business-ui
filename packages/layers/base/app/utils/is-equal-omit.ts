@@ -25,5 +25,10 @@ export function isEqualOmit<T extends object>(
     return objA === objB
   }
 
+  // return basic isEqual if no omit keys provided
+  if (!keys || keys.length === 0) {
+    return isEqual(objA, objB)
+  }
+
   return isEqual(omit(objA, keys), omit(objB, keys))
 }
