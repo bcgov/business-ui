@@ -3,9 +3,12 @@ import { merge, cloneDeep } from 'es-toolkit'
 const NON_EDITABLE_FIELDS = ['isEditing', 'actions', 'id'] as const
 
 export function formatOfficesSection(
-  originalAddresses: ApiEntityOfficeAddress,
-  draftAddresses?: ApiEntityOfficeAddress
+  originalAddresses?: ApiEntityOfficeAddress,
+  draftAddresses?: ApiEntityOfficeAddress,
+  officeTypes?: OfficeType[]
 ): TableBusinessState<OfficeSchema>[] {
+  const originals = originalAddresses ?? {}
+
   // Helper to format OfficeSchema from an api office object
   function processItem(type: OfficeType, office?: ApiBaseAddressObj): OfficeSchema {
     const address = formatBaseAddressUi(office)
@@ -17,18 +20,23 @@ export function formatOfficesSection(
     })
   }
 
-  // Helper to get all office types from an api response - filtering out null or undefined values
+  // Helper to get all office types from an api response
+  // Filters out null, undefined or office types excluded by the officeTypes param
   function getTypes(addresses: ApiEntityOfficeAddress): OfficeType[] {
     return (Object.keys(addresses) as OfficeType[])
-      .filter(type => Boolean(addresses[type]))
+      .filter((type) => {
+        const hasValue = Boolean(addresses[type])
+        const isAllowed = !officeTypes || officeTypes.includes(type)
+        return hasValue && isAllowed
+      })
   }
 
-  const originalTypes = getTypes(originalAddresses)
+  const originalTypes = getTypes(originals)
 
   // 1. If no draft state exists, format and return only originals
   if (draftAddresses === undefined) {
     return originalTypes.map((type) => {
-      const item = processItem(type, originalAddresses[type])
+      const item = processItem(type, originals[type])
       return {
         old: item,
         new: cloneDeep(item)
@@ -40,7 +48,7 @@ export function formatOfficesSection(
   const draftTypes = getTypes(draftAddresses)
 
   const formattedOriginals: TableBusinessState<OfficeSchema>[] = originalTypes.map((type) => {
-    const oldItem = processItem(type, originalAddresses[type])
+    const oldItem = processItem(type, originals[type])
     const draftOffice = draftAddresses[type]
 
     // If a draft office type matching an original type is found, do equality check and add actions
@@ -66,7 +74,7 @@ export function formatOfficesSection(
   })
 
   // 3. Process new addresses (exists in draft but not original)
-  const addedTypes = draftTypes.filter(type => !originalAddresses[type])
+  const addedTypes = draftTypes.filter(type => !originals[type])
 
   const addedDrafts: TableBusinessState<OfficeSchema>[] = addedTypes.map((type) => {
     const item = processItem(type, draftAddresses[type])
