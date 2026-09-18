@@ -13,7 +13,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const { state: companyName, hasNameChange: hasCompanyNameChange, updateState: updateCompanyName } = useManageCompanyName()
   const { tableState: tableCourtOrders } = useManageCourtOrders()
   const { tableState: tableAmalgamation, statementState } = useManageAmalgamation()
-  const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
   const businessStore = useBusinessStore()
@@ -101,13 +100,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     $reset()
     initializing.value = true
 
-    const { draftFiling, parties: allParties, addresses, shareClasses } = await initFiling<CorrectionFiling>(
+    const { draftFiling, parties: allParties, shareClasses } = await initFiling<CorrectionFiling>(
       businessId,
       FilingType.CORRECTION,
       undefined,
       draftId,
       {}, // fetch all parties (no role filter) — 1 API call for directors, receivers, liquidators
-      [OfficeType.RECORDS, OfficeType.REGISTERED],
+      undefined,
       true // fetch share classes
     )
 
@@ -117,10 +116,12 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     const [
+      addresses,
       aliasesNameTranslations,
       courtOrders,
       amalgamation
     ] = await Promise.all([
+      service.getAddresses(businessId).catch(() => undefined),
       service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
       service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
       service.getBusinessExtended(businessId, true, FilingType.AMALGAMATION_APPLICATION).catch(() => ({
@@ -202,19 +203,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
 
     // Offices (corrections may include address changes)
-    if (addresses) {
-      if (draft?.offices) {
-        // Draft offices are in ApiEntityOfficeAddress format — convert to table state
-        // then merge with original addresses to detect and mark changes
-        const draftOffices = formatAddressTableState(
-          draft.offices as ApiEntityOfficeAddress,
-          [OfficeType.RECORDS, OfficeType.REGISTERED]
-        )
-        tableOffices.value = formatDraftTableState(addresses, draftOffices)
-      } else {
-        tableOffices.value = addresses
-      }
-    }
+    tableOffices.value = formatOfficesSection(addresses, draft?.offices, [OfficeType.RECORDS, OfficeType.REGISTERED])
 
     // Share structure
     if (shareClasses) {

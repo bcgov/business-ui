@@ -175,7 +175,7 @@ describe('formatOfficesApi', () => {
   type: OfficeType,
   actions: ActionType[] = [],
   addressOverrides?: Partial<UiBaseAddressObj>
-): TableBusinessState<OfficeSchema> => {
+): TableBusinessState<OfficesSchema> => {
   // Use deep merge instead of shallow spread
   const address = merge(cloneDeep(mockUiBaseAddressObj), addressOverrides ?? {})
 

@@ -46,7 +46,7 @@ watch(data, (v) => {
   }
 })
 
-const activeOffice = ref<ActiveOfficeSchema | undefined>(undefined)
+const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 </script>
 
 <template>

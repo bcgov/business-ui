@@ -30,8 +30,8 @@ const mockOffice = {
   }
 }
 
-describe('getOfficeSchema', () => {
-  const schema = getOfficeSchema()
+describe('getOfficesSchema', () => {
+  const schema = getOfficesSchema()
 
   describe('actions', () => {
     it('should pass when actions is an empty array', () => {
@@ -65,8 +65,8 @@ describe('getOfficeSchema', () => {
   })
 })
 
-describe('getActiveOfficeSchema', () => {
-  const activeSchema = getActiveOfficeSchema()
+describe('getActiveOfficesSchema', () => {
+  const activeSchema = getActiveOfficesSchema()
 
   it('should pass when null', () => {
     const result = activeSchema.safeParse(null)

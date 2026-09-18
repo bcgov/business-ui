@@ -19,7 +19,7 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeSubject = defineModel<ActiveOfficeSchema | undefined>('active-office')
+const activeSubject = defineModel<ActiveOfficesSchema | undefined>('active-office')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
@@ -102,7 +102,7 @@ function cleanupForm() {
   activeSubject.value = undefined
 }
 
-function initEditSubject(row: TableBusinessRow<OfficeSchema>) {
+function initEditSubject(row: TableBusinessRow<OfficesSchema>) {
   const subject = cloneDeep(row.original.new)
   activeSubject.value = subject
   editSubjectLabel = t(`officeType.${row.original.new.type}`)

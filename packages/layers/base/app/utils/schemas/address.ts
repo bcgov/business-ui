@@ -41,7 +41,7 @@ export function createDefaultAddress(): AddressWithIdSchema {
       city: '',
       region: '',
       postalCode: '',
-      country: '',
+      country: 'CA',
       locationDescription: ''
     },
     mailingAddress: {
@@ -51,7 +51,7 @@ export function createDefaultAddress(): AddressWithIdSchema {
       city: '',
       region: '',
       postalCode: '',
-      country: '',
+      country: 'CA',
       locationDescription: ''
     },
     sameAs: false

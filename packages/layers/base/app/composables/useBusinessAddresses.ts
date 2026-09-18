@@ -13,12 +13,12 @@ export const useBusinessAddresses = () => {
     businessId: string,
     config: 'table',
     officeTypes?: OfficeType[]
-  ): Promise<TableBusinessState<OfficeSchema>[]>
+  ): Promise<TableBusinessState<OfficesSchema>[]>
   async function getBusinessAddresses(
     businessId: string,
     config: 'default' | 'table' = 'default',
     officeTypes?: OfficeType[]
-  ): Promise<UiEntityOfficeAddress | TableBusinessState<OfficeSchema>[]> {
+  ): Promise<UiEntityOfficeAddress | TableBusinessState<OfficesSchema>[]> {
     const res = await service.getAddresses(businessId)
 
     const filteredTypes = allOfficeTypes.filter(type =>
@@ -42,10 +42,11 @@ export const useBusinessAddresses = () => {
   function formatAddressTableState(
     addresses: ApiEntityOfficeAddress,
     officeTypes?: OfficeType[]
-  ): TableBusinessState<OfficeSchema>[] {
+  ): TableBusinessState<OfficesSchema>[] {
     const types = officeTypes ?? allOfficeTypes
     return types.map((type) => {
       const formatted = {
+        id: crypto.randomUUID(),
         type,
         actions: [],
         address: formatBaseAddressUi(addresses[type]),
@@ -60,9 +61,9 @@ export const useBusinessAddresses = () => {
   }
 
   function formatDraftTableState(
-    tableState: TableBusinessState<OfficeSchema>[],
-    draftState: TableBusinessState<OfficeSchema>[]
-  ): TableBusinessState<OfficeSchema>[] {
+    tableState: TableBusinessState<OfficesSchema>[],
+    draftState: TableBusinessState<OfficesSchema>[]
+  ): TableBusinessState<OfficesSchema>[] {
     return draftState.map((draft) => {
       const oldOffice = tableState.find(o => o.new.type === draft.new.type)
       const addressChanged = oldOffice && !isEqual(draft.new.address, oldOffice.new.address)

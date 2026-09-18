@@ -6,11 +6,11 @@ export function formatOfficesSection(
   originalAddresses?: ApiEntityOfficeAddress,
   draftAddresses?: ApiEntityOfficeAddress,
   officeTypes?: OfficeType[]
-): TableBusinessState<OfficeSchema>[] {
+): TableBusinessState<OfficesSchema>[] {
   const originals = originalAddresses ?? {}
 
-  // Helper to format OfficeSchema from an api office object
-  function processItem(type: OfficeType, office?: ApiBaseAddressObj): OfficeSchema {
+  // Helper to format OfficesSchema from an api office object
+  function processItem(type: OfficeType, office?: ApiBaseAddressObj): OfficesSchema {
     const address = formatBaseAddressUi(office)
     const defaults = createDefaultOffice({ type })
 
@@ -47,7 +47,7 @@ export function formatOfficesSection(
   // 2. Process draft addresses
   const draftTypes = getTypes(draftAddresses)
 
-  const formattedOriginals: TableBusinessState<OfficeSchema>[] = originalTypes.map((type) => {
+  const formattedOriginals: TableBusinessState<OfficesSchema>[] = originalTypes.map((type) => {
     const oldItem = processItem(type, originals[type])
     const draftOffice = draftAddresses[type]
 
@@ -76,7 +76,7 @@ export function formatOfficesSection(
   // 3. Process new addresses (exists in draft but not original)
   const addedTypes = draftTypes.filter(type => !originals[type])
 
-  const addedDrafts: TableBusinessState<OfficeSchema>[] = addedTypes.map((type) => {
+  const addedDrafts: TableBusinessState<OfficesSchema>[] = addedTypes.map((type) => {
     const item = processItem(type, draftAddresses[type])
 
     return {
@@ -92,7 +92,7 @@ export function formatOfficesSection(
 }
 
 export function formatOfficesApi(
-  offices: TableBusinessState<OfficeSchema>[]
+  offices: TableBusinessState<OfficesSchema>[]
 ): ApiEntityOfficeAddress | undefined {
   // Return undefined if no changes exist
   if (!offices.some(office => office.new.actions.length > 0)) {

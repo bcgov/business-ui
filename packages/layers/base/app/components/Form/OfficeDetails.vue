@@ -18,7 +18,7 @@ const emit = defineEmits<{
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
 const formTarget = 'office-address-form'
 
-const model = defineModel<ActiveOfficeSchema>({ required: true })
+const model = defineModel<ActiveOfficesSchema>({ required: true })
 
 const addressFormRef = useTemplateRef<AddressFormRef>('address-form')
 

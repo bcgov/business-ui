@@ -25,7 +25,7 @@ tableState.value = Object.entries(mockOffices).map(([key, value]) => {
   }
 })
 
-const activeOffice = ref<ActiveOfficeSchema | undefined>(undefined)
+const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const loading = ref(false)
 </script>
 

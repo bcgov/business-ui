@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { merge } from 'es-toolkit'
 
-export function getOfficeSchema() {
+export function getOfficesSchema() {
   return z.object({
     id: z.string(),
     isEditing: z.boolean(),
@@ -11,18 +11,18 @@ export function getOfficeSchema() {
   })
 }
 
-export type OfficeSchema = z.output<ReturnType<typeof getOfficeSchema>>
+export type OfficesSchema = z.output<ReturnType<typeof getOfficesSchema>>
 
-export function getActiveOfficeSchema() {
-  return getOfficeSchema().nullable().optional()
+export function getActiveOfficesSchema() {
+  return getOfficesSchema().nullable().optional()
 }
 
-export type ActiveOfficeSchema = z.output<ReturnType<typeof getActiveOfficeSchema>>
+export type ActiveOfficesSchema = z.output<ReturnType<typeof getActiveOfficesSchema>>
 
 export function createDefaultOffice(
-  overrides?: Partial<OfficeSchema>
-): OfficeSchema {
-  const defaults: OfficeSchema = {
+  overrides?: Partial<OfficesSchema>
+): OfficesSchema {
+  const defaults: OfficesSchema = {
     id: crypto.randomUUID(),
     isEditing: false,
     actions: [],
