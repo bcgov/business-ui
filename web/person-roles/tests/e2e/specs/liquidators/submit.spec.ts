@@ -6,6 +6,7 @@ import type { ApiAddress } from '#business/app/interfaces/address'
 import { fillOutAddress, fillOutNewRelationship, selectDone } from '#business/tests/e2e/test-utils'
 import { getBusinessMock, getPartiesMock, getBusinessAddressesMock, mockCommonApiCallsForFiling } from '#test-mocks'
 import { navigateToManageLiquidatorsPage } from '../../test-utils'
+import { isEqualOmit } from '#business/app/utils/is-equal-omit'
 
 const identifier = 'BC1234567'
 const address = {
@@ -246,12 +247,14 @@ test.describe('Manage Liquidators - Submission', () => {
         await submitBtn.click()
         const request = await submitRequest
         const requestBody = request.postDataJSON() as FilingSubmissionBody<ChangeOfLiquidators>
-        expect(requestBody.filing.changeOfLiquidators.type).toBe(LiquidateType.ADDRESS)
-        expect(requestBody.filing.changeOfLiquidators.relationships).toBeUndefined()
-        expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.deliveryAddress)
-          .toEqual(newAddress)
-        expect(requestBody.filing.changeOfLiquidators.offices?.liquidationRecordsOffice.mailingAddress)
-          .toEqual(newAddress)
+        const col = requestBody.filing.changeOfLiquidators
+        const office = col.offices?.liquidationRecordsOffice
+
+        expect(col.type).toBe(LiquidateType.ADDRESS)
+        expect(col.relationships).toBeUndefined()
+
+        expect(isEqualOmit(office!.deliveryAddress, newAddress, ['id'])).toBe(true)
+        expect(isEqualOmit(office!.mailingAddress, newAddress, ['id'])).toBe(true)
       })
     })
 

@@ -1,4 +1,3 @@
-import { isEqual } from 'es-toolkit'
 // NB: direct imports needed so that this util can be used in e2e tests
 import { ActionType } from '#business/app/enums/action-type'
 import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
@@ -96,8 +95,7 @@ export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchem
 }
 
 export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
-  const mailingAddress = formatAddressUi(party.mailingAddress)
-  const deliveryAddress = formatAddressUi(party.deliveryAddress)
+  const { mailingAddress, deliveryAddress } = party
   const partyType = party.entity.businessName ? PartyType.ORGANIZATION : PartyType.PERSON
   return {
     id: party.entity.identifier ?? '',
@@ -110,11 +108,7 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
       hasPreferredName: !!party.entity.alternateName,
       preferredName: party.entity.alternateName ?? ''
     },
-    address: {
-      mailingAddress,
-      deliveryAddress,
-      sameAs: isEqual(mailingAddress, deliveryAddress)
-    },
+    address: formatBaseAddressUi({ mailingAddress: mailingAddress!, deliveryAddress }),
     roles: party.roles ? formatRelationshipRolesUi(party.roles) : [],
     email: party.entity.email ?? '',
     actions: party.actions ?? [],

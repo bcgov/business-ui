@@ -1,5 +1,5 @@
 import type { ExpandedState } from '@tanstack/vue-table'
-import { isEqual } from 'es-toolkit'
+import { isEqual, cloneDeep } from 'es-toolkit'
 
 type EditedSection = 'address' | 'name' | 'roles' | 'email'
 const actionsMap: Record<EditedSection, ActionType> = {
@@ -7,6 +7,23 @@ const actionsMap: Record<EditedSection, ActionType> = {
   address: ActionType.ADDRESS_CHANGED,
   roles: ActionType.ROLES_CHANGED,
   email: ActionType.EMAIL_CHANGED
+}
+
+// normalize party address sameAs
+function normalizeParty<T extends ActivePartySchema>(party: T): T {
+  if (!party?.address) {
+    return party
+  }
+
+  const normalized = cloneDeep(party)
+  const { mailingAddress, deliveryAddress } = normalized.address
+
+  if (mailingAddress && deliveryAddress) {
+    // @ts-expect-error - id not in party schema currently, needs greater refactor
+    normalized.address.sameAs = isEqualOmit(mailingAddress, deliveryAddress, ['id'])
+  }
+
+  return normalized
 }
 
 export const useManageParties = (stateKey: string = 'manage-parties') => {
@@ -17,7 +34,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
   const hasChanges = computed(() => tableState.value.some(p => p.new.actions.length > 0))
 
   function updateTable(newState: TableBusinessState<PartySchema>, row?: TableBusinessRow<PartySchema>): void {
-    const newItem = JSON.parse(JSON.stringify(newState))
+    const newItem = cloneDeep(newState)
 
     if (!row) {
       tableState.value = [...tableState.value, newItem]
@@ -26,7 +43,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
 
       tableState.value = [
         ...tableState.value.slice(0, index),
-        JSON.parse(JSON.stringify(newState)),
+        newItem,
         ...tableState.value.slice(index + 1)
       ]
     }
@@ -37,9 +54,11 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
       return
     }
 
+    const normalizedParty = normalizeParty(party)
+
     const newState: TableBusinessState<PartySchema> = {
       new: {
-        ...party,
+        ...normalizedParty,
         actions: [ActionType.ADDED]
       },
       old: undefined
@@ -84,6 +103,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
       return
     }
 
+    const normalizedParty = normalizeParty(party)
     const originalPartyState = row.original.old
     let newActions: ActionType[] = []
 
@@ -95,7 +115,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
 
       for (const section of sectionsToCompare) {
         const originalSection = originalPartyState[section]
-        const newSection = party[section]
+        const newSection = normalizedParty[section]
 
         if (section === 'address') {
           // @ts-expect-error - loses type inference here
