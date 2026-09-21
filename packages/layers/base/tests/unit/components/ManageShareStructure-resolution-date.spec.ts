@@ -3,12 +3,17 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { ManageShareStructure } from '#components'
 
+// mutated per-test to control hasChangedShares/hasRightsOrRestrictions without re-registering the mock
+const mockShareClasses = {
+  // no actions on any class/series -> hasChangedShares is false this session
+  value: [
+    { new: { id: 'c1', name: 'A Shares', actions: [], series: [], hasRightsOrRestrictions: true }, old: undefined }
+  ]
+}
+
 mockNuxtImport('useManageShareStructure', () => () => ({
   expandedState: ref<undefined>(undefined),
-  // no actions on any class/series -> hasChangedShares is false this session
-  shareClasses: ref([
-    { new: { id: 'c1', name: 'A Shares', actions: [], series: [], hasRightsOrRestrictions: true }, old: undefined }
-  ]),
+  shareClasses: ref(mockShareClasses.value),
   resolutionDates: ref([]),
   addNewShareClass: vi.fn(),
   removeShareClass: vi.fn(),
@@ -45,7 +50,11 @@ const stubs = {
   ConnectFieldset: defineComponent({ name: 'ConnectFieldset', template: '<div><slot /></div>' }),
   FormShareClass: true,
   FormShareSeries: true,
-  FormShareResolutionDate: defineComponent({ name: 'FormShareResolutionDate', template: '<div data-testid="rd-form" />' }),
+  FormShareResolutionDate: defineComponent({
+    name: 'FormShareResolutionDate',
+    props: ['validationContext'],
+    template: '<div data-testid="rd-form" :data-required="!!validationContext?.hasRightsOrRestrictions" />'
+  }),
   TableShareStructure: defineComponent({ name: 'TableShareStructure', props: { expanded: Object }, template: '<div />' }),
   TableShareStructureResolutionDates: defineComponent({
     name: 'TableShareStructureResolutionDates',
@@ -83,5 +92,47 @@ describe('ManageShareStructure — resolution date add section in correction', (
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('[data-testid="rd-form"]').exists()).toBe(false)
+  })
+
+  it('does not require a resolution date in a correction filing even when a new share class with rights or restrictions was added', async () => {
+    // a share class was added this session and has rights/restrictions -> would require a
+    // resolution date outside of corrections (see equivalent 'change' variant test below)
+    mockShareClasses.value = [
+      { new: { id: 'c1', name: 'A Shares', actions: ['ADDED'], series: [], hasRightsOrRestrictions: true }, old: undefined }
+    ]
+
+    const wrapper = await mountSuspended(ManageShareStructure, {
+      props: {
+        variant: 'correct',
+        collectResolutionDate: true
+      },
+      global: { stubs }
+    })
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    const form = wrapper.find('[data-testid="rd-form"]')
+    expect(form.exists()).toBe(true)
+    expect(form.attributes('data-required')).toBe('false')
+  })
+
+  it('requires a resolution date outside of corrections when a new share class with rights or restrictions was added', async () => {
+    mockShareClasses.value = [
+      { new: { id: 'c1', name: 'A Shares', actions: ['ADDED'], series: [], hasRightsOrRestrictions: true }, old: undefined }
+    ]
+
+    const wrapper = await mountSuspended(ManageShareStructure, {
+      props: {
+        variant: 'change',
+        collectResolutionDate: true
+      },
+      global: { stubs }
+    })
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    const form = wrapper.find('[data-testid="rd-form"]')
+    expect(form.exists()).toBe(true)
+    expect(form.attributes('data-required')).toBe('true')
   })
 })
