@@ -488,7 +488,10 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       return
     }
 
-    if (!addedDate) {
+    // Only treat the add-resolution-date placeholder as a real addition once a date has
+    // actually been entered — the form marks it ActionType.ADDED as soon as it mounts
+    // (see Form/Share/ResolutionDate), so an untouched placeholder must not be synced in.
+    if (!addedDate?.date) {
       return
     }
 
