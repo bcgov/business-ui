@@ -43,6 +43,7 @@ const {
       || store.offices.some(o => o.new.actions?.length > 0)
       || store.shareClasses.some(sc => sc.new.actions.length > 0)
       || store.resolutionDates.some(rd => rd.new.actions.length > 0)
+      || !!store.formState.resolutionDate?.date?.trim()
       || store.nameTranslations.some(nt => nt.new.actions.length > 0)
       || store.companyName.new.actions.length > 0
       || store.courtOrders.some(co => co.new.actions.length > 0)

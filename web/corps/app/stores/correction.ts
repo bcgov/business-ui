@@ -19,7 +19,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<CorrectionDraftState>({} as CorrectionDraftState)
-  const requireResolutionDate = ref(false)
 
   const formState = reactive<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialFormState = shallowRef<CorrectionFormSchema>({} as CorrectionFormSchema)
@@ -242,16 +241,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
-    requireResolutionDate.value = isResolutionFiling(correctedFilingType.value)
-    if (requireResolutionDate.value) {
-      const originalResolutions = await service.getResolutions(businessId).catch(() => [])
-      const draftResolutions = draft.shareStructure?.resolutionDates
+    const originalResolutions = await service.getResolutions(businessId).catch(() => [])
+    const draftResolutions = draft.shareStructure?.resolutionDates
 
-      const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
+    const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
 
-      formState.resolutionDate = cloneDeep(newState)
-      resolutionDates.value = cloneDeep(tableState)
-    }
+    formState.resolutionDate = cloneDeep(newState)
+    resolutionDates.value = cloneDeep(tableState)
 
     // Receivers — merge with draft relationships if applicable
     if (receivers) {
@@ -481,7 +477,10 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       return
     }
 
-    if (!addedDate) {
+    // Only treat the add-resolution-date placeholder as a real addition once a date has
+    // actually been entered — the form marks it ActionType.ADDED as soon as it mounts
+    // (see Form/Share/ResolutionDate), so an untouched placeholder must not be synced in.
+    if (!addedDate?.date) {
       return
     }
 
@@ -532,7 +531,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     initialAmalStmnt.value = {} as TableBusinessState<AmalgamationCorrectStatementSchema>
 
     initializing.value = false
-    requireResolutionDate.value = false
   }
 
   return {
@@ -545,7 +543,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDate,
     correctedFilingDateDisplay,
     correctionType,
-    requireResolutionDate,
     isStaffCorrectionType,
     courtOrders: tableCourtOrders,
     directors: tableDirectors,
