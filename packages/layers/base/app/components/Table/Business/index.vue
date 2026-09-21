@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends { actions: ActionType[], isEditing: boolean }">
+<script setup lang="ts" generic="T extends { id?: string, actions: ActionType[], isEditing: boolean }">
 import type { ExpandedState } from '@tanstack/vue-table'
 import type { DropdownMenuItem } from '@nuxt/ui'
 

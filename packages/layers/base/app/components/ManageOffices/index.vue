@@ -1,5 +1,8 @@
+<!-- FUTURE: Refactor other methods into useManageCommon -->
 <script setup lang="ts">
 import type { ManageOfficesProps } from '#business/app/interfaces'
+import type { ExpandedState } from '@tanstack/vue-table'
+import { cloneDeep } from 'es-toolkit'
 
 const {
   stateKey = 'manage-offices',
@@ -16,137 +19,99 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeOffice = defineModel<ActiveOfficesSchema | undefined>('active-office')
-const shouldPreventActions = computed(() => {
-  return !!activeOffice.value || preventActions
+const activeSubject = defineModel<ActiveOfficesSchema | undefined>('active-office')
+
+const expandedState = ref<ExpandedState | undefined>(undefined)
+const addingSubject = ref(false)
+
+let editSubjectLabel = ''
+
+const tableTarget = 'offices-table'
+const formTarget = 'office-address-form'
+
+const { alerts, attachAlerts } = useFilingAlerts(stateKey)
+const { messageId, targetId } = attachAlerts(tableTarget, activeSubject)
+
+const {
+  tableState,
+  addSubject,
+  removeSubject,
+  undoSubject,
+  editSubject
+} = useManageOffices(stateKey, {
+  cleanupFn: cleanupForm
 })
 
 const {
-  addingOffice,
-  expandedState,
-  tableState,
-  addNewOffice,
-  removeOffice,
-  undoOffice,
-  applyTableEdits
-} = useManageOffices(stateKey)
+  isReadOnlyVariant,
+  shouldPreventActions,
+  tableAllowedActions,
+  tableLabels,
+  setActiveSubjectAlert,
+  clearAllAlerts
+} = useManageCommon({
+  stateKey,
+  variant,
+  allowedActions,
+  labelOverrides,
+  preventActions,
+  actionPreventedSignal,
+  activeSubjects: {
+    subject: activeSubject,
+    alertTarget: formTarget
+  }
+})
 
 const { t } = useI18n()
-const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
-const tableTarget = 'offices-table'
-const { messageId, targetId } = attachAlerts(tableTarget, activeOffice)
-const { setAlertText } = useConnectButtonControl()
-const activeOfficeSchema = getActiveOfficesSchema()
 
-watch(() => actionPreventedSignal, (value) => {
-  if (value) {
-    setActiveFormAlert()
-  }
-})
-
-let editSubject = ''
-let currentEditingRow: OfficesSchema | null = null
-
-const tableLabels = computed(() => {
-  if (labelOverrides) {
-    return labelOverrides
-  }
-  if (variant === 'correct' || variant === 'correct-readonly') {
-    return getCorrectionLabelOverrides()
-  }
-  return undefined
-})
-
-const officeAllowedActions = computed(() => {
-  if (allowedActions) {
-    return allowedActions
-  }
-  if (variant === 'readonly' || variant === 'correct-readonly') {
-    return []
-  }
-  return undefined
-})
-
-const tableHasAddType = computed(() => {
-  return allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
-})
+// enable/disable the 'Add Office' button
 const allowAddOffice = computed(() => {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
+  // 1. If no office type is configured to add, return false
+  if (!allowAddOfficeType) {
     return false
   }
-  const hasAllowedActions = !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
-  if (!allowAddOfficeType) {
-    return hasAllowedActions
+
+  // 2. Check the allowed actions defined by the variants and/or props
+  const canAdd = !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
+  if (!canAdd) {
+    return false
   }
-  return !tableHasAddType.value && hasAllowedActions
+
+  // 3. Check if the table already contains the type configured to add
+  const tableHasAddType = allowAddOfficeType ? tableState.value.some(o => o.new.type === allowAddOfficeType) : false
+
+  return !tableHasAddType
 })
 
-function setActiveFormAlert() {
-  if (activeOffice.value !== undefined) {
-    setAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
-  }
-}
-
-function initAddOffice() {
+function initAddSubject() {
   if (shouldPreventActions.value) {
-    setActiveFormAlert()
+    setActiveSubjectAlert()
     emit('action-prevented')
     return
   }
-  activeOffice.value = activeOfficeSchema.parse({ type: allowAddOfficeType })
-  addingOffice.value = true
+  const overrides = allowAddOfficeType ? { type: allowAddOfficeType } : {}
+  const defaultState = createDefaultOffice(overrides)
+
+  activeSubject.value = defaultState
+  addingSubject.value = true
 }
 
-function cleanupOfficeForm() {
-  if (currentEditingRow) {
-    currentEditingRow.isEditing = false
-  }
-  addingOffice.value = false
+function cleanupForm() {
   expandedState.value = undefined
-  activeOffice.value = undefined
+  addingSubject.value = false
+  activeSubject.value = undefined
 }
 
-function addOffice(office: ActiveOfficesSchema) {
-  addNewOffice(office)
-  cleanupOfficeForm()
+function initEditSubject(row: TableBusinessRow<OfficesSchema>) {
+  const subject = cloneDeep(row.original.new)
+  activeSubject.value = subject
+  editSubjectLabel = t(`officeType.${row.original.new.type}`)
+  expandedState.value = { [row.id]: true }
 }
 
-function initEditOffice(row: TableBusinessRow<OfficesSchema>) {
-  const parsedOffice = activeOfficeSchema.safeParse({ ...row.original.new })
-  const office = parsedOffice.success
-    ? parsedOffice.data
-    : JSON.parse(JSON.stringify({ ...row.original.new }))
-
-  activeOffice.value = office
-
-  currentEditingRow = row.original.new
-  currentEditingRow.isEditing = true
-
-  editSubject = t(`officeType.${row.original.new.type}`)
-
-  expandedState.value = { [row.index]: true }
-}
-
-function applyEdits(office: ActiveOfficesSchema, row: TableBusinessRow<OfficesSchema>) {
-  applyTableEdits(office, row)
-  cleanupOfficeForm()
-}
-
-function clearAllAlerts() {
-  clearAlert('office-address-form') // clear alert in sub form
-  setAlertText(undefined) // clear alert in button control
-}
-
-function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVariant {
-  // old is always undefined for newly added offices
-  const isAdded = row.original.old === undefined
-  if (isAdded) {
-    return 'edit'
-  }
-  if (variant === 'correct') {
-    return 'correct'
-  }
-  return 'change'
+function onActionPrevented() {
+  setActiveSubjectAlert()
+  emit('action-prevented')
 }
 </script>
 
@@ -183,7 +148,7 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
             // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
             'data-alert-focus-target': targetId,
             'aria-describedby': messageId,
-            'onClick': initAddOffice
+            'onClick': initAddSubject
           }
         ]
         : undefined
@@ -191,15 +156,15 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
     >
       <template #default>
         <FormOfficeDetails
-          v-if="addingOffice && activeOffice"
-          v-model="activeOffice"
+          v-if="addingSubject && activeSubject"
+          v-model="activeSubject"
           variant="add"
           :name="modelName"
           :subject="subject!"
-          :state-key="stateKey"
+          :state-key
           class="p-6"
-          @done="() => addOffice(activeOffice)"
-          @cancel="cleanupOfficeForm"
+          @done="() => addSubject(activeSubject)"
+          @cancel="cleanupForm"
         />
         <USeparator />
         <TableOffices
@@ -207,33 +172,33 @@ function getExpandedFormVariant(row: TableBusinessRow<OfficesSchema>): FormVaria
           :data="tableState"
           :loading
           :empty-text="emptyText"
-          :allowed-actions="officeAllowedActions"
+          :allowed-actions="tableAllowedActions"
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
-          :hide-actions-when="() => variant === 'readonly' || variant === 'correct-readonly'"
+          :hide-actions-when="() => isReadOnlyVariant"
           :task-guard-config="{
             messageId,
             targetId,
             message: alerts[tableTarget]
           }"
-          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
-          @init-edit="initEditOffice"
-          @remove="removeOffice"
-          @undo="undoOffice"
+          @action-prevented="onActionPrevented"
+          @init-edit="initEditSubject"
+          @remove="removeSubject"
+          @undo="undoSubject"
         >
           <template #expanded="{ row }">
             <div class="px-4 sm:px-6">
               <FormOfficeDetails
-                v-if="activeOffice"
-                v-model="activeOffice"
-                :variant="getExpandedFormVariant(row)"
+                v-if="activeSubject"
+                v-model="activeSubject"
+                :variant="getExpandedFormVariant(variant, row)"
                 :name="modelName"
-                :subject="editSubject"
-                :state-key="stateKey"
+                :subject="editSubjectLabel"
+                :state-key
                 :hide-remove="variant === 'correct'"
-                @done="() => applyEdits(activeOffice, row)"
-                @cancel="cleanupOfficeForm"
-                @remove="cleanupOfficeForm(); removeOffice(row)"
+                @done="() => editSubject(activeSubject, row)"
+                @cancel="cleanupForm"
+                @remove="removeSubject(row)"
               />
             </div>
           </template>

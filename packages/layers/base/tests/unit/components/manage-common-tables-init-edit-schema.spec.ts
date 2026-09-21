@@ -1,7 +1,7 @@
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 
-import { ManageParties, ManageOffices, ManageShareStructure } from '#components'
+import { ManageParties, ManageShareStructure } from '#components'
 
 // --- Mock composables used by the three manager components ---
 
@@ -12,16 +12,6 @@ mockNuxtImport('useManageParties', () => () => ({
   addNewParty: vi.fn(),
   removeParty: vi.fn(),
   undoParty: vi.fn(),
-  applyTableEdits: vi.fn()
-}))
-
-mockNuxtImport('useManageOffices', () => () => ({
-  addingOffice: ref(false),
-  expandedState: ref<undefined>(undefined),
-  tableState: ref([]),
-  addNewOffice: vi.fn(),
-  removeOffice: vi.fn(),
-  undoOffice: vi.fn(),
   applyTableEdits: vi.fn()
 }))
 
@@ -79,7 +69,7 @@ const stubs = {
 // --- Helper: mount a component, emit init-edit, return the wrapper ---
 
 async function emitInitEdit(
-  component: typeof ManageParties | typeof ManageOffices | typeof ManageShareStructure,
+  component: typeof ManageParties | typeof ManageShareStructure,
   props: Record<string, unknown>,
   tableStub: ReturnType<typeof defineComponent>,
   row: Record<string, unknown>
@@ -108,17 +98,6 @@ describe('Common table managers — init-edit with invalid schema data', () => {
 
     const emitted = wrapper.emitted('update:active-party')?.[0]?.[0] as { name: { partyType: string } }
     expect(emitted.name.partyType).toBe('BAD')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageOffices: emits raw data when schema is invalid', async () => {
-    const row = { index: 0, original: { new: { isEditing: false, type: 'BAD' } } }
-    const wrapper = await emitInitEdit(ManageOffices,
-      { addLabel: 'unused-label', sectionLabel: 'Offices', activeOffice: undefined },
-      TableOfficesStub, row)
-
-    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as { type: string }
-    expect(emitted.type).toBe('BAD')
     expect(row.original.new.isEditing).toBe(true)
   })
 
@@ -166,22 +145,6 @@ describe('Common table managers — init-edit with valid schema data', () => {
       address: { sameAs: boolean, mailingAddress: { country: string } }
     }
     expect(emitted.name.partyType).toBe(PartyType.PERSON)
-    expect(emitted.address.sameAs).toBe(false)
-    expect(emitted.address.mailingAddress.country).toBe('CA')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageOffices: emits schema-parsed data when valid', async () => {
-    const row = { index: 0, original: { new: { isEditing: false, actions: [] } } }
-    const wrapper = await emitInitEdit(ManageOffices,
-      { addLabel: 'unused-label', sectionLabel: 'Offices', activeOffice: undefined },
-      TableOfficesStub, row)
-
-    const emitted = wrapper.emitted('update:active-office')?.[0]?.[0] as {
-      type: string
-      address: { sameAs: boolean, mailingAddress: { country: string } }
-    }
-    expect(emitted.type).toBe(OfficeType.REGISTERED)
     expect(emitted.address.sameAs).toBe(false)
     expect(emitted.address.mailingAddress.country).toBe('CA')
     expect(row.original.new.isEditing).toBe(true)

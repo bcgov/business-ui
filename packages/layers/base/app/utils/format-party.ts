@@ -1,8 +1,7 @@
-import { isEqual } from 'es-toolkit'
 // NB: direct imports needed so that this util can be used in e2e tests
 import { ActionType } from '#business/app/enums/action-type'
 import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
-import { formatAddressApi, formatAddressUi } from './format-address'
+import { formatAddressApi, formatAddressUi, formatBaseAddressUi } from '#business/app/utils/format-address'
 
 const ROLE_RELATIONSHIPS: [RoleTypeUi, RoleType][] = [
   [RoleTypeUi.APPLICANT, RoleType.APPLICANT],
@@ -73,10 +72,9 @@ export function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = f
 }
 
 export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchema {
-  const mailingAddress = formatAddressUi(party.mailingAddress)
-  const deliveryAddress = formatAddressUi(party.deliveryAddress)
-  const roles = party.roles?.filter(role => roleType ? role.roleType === roleType : true) || []
-  const id = party.officer.id ? String(party.officer.id) : ''
+  const { mailingAddress, deliveryAddress, roles, officer } = party
+  const filteredRoles = roles?.filter(role => roleType ? role.roleType === roleType : true) || []
+  const id = officer.id ? String(officer.id) : ''
   return {
     id,
     name: {
@@ -88,21 +86,16 @@ export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchem
       hasPreferredName: !!party.officer.alternateName,
       preferredName: party.officer.alternateName ?? ''
     },
-    address: {
-      mailingAddress,
-      deliveryAddress,
-      sameAs: isEqual(mailingAddress, deliveryAddress)
-    },
-    roles: roles ? formatRelationshipRolesUi(roles) : [],
-    email: party.officer.email ?? '',
+    address: formatBaseAddressUi({ mailingAddress, deliveryAddress }),
+    roles: filteredRoles ? formatRelationshipRolesUi(filteredRoles) : [],
+    email: officer.email ?? '',
     actions: [],
     isEditing: false
   }
 }
 
 export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
-  const mailingAddress = formatAddressUi(party.mailingAddress)
-  const deliveryAddress = formatAddressUi(party.deliveryAddress)
+  const { mailingAddress, deliveryAddress } = party
   const partyType = party.entity.businessName ? PartyType.ORGANIZATION : PartyType.PERSON
   return {
     id: party.entity.identifier ?? '',
@@ -115,11 +108,7 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
       hasPreferredName: !!party.entity.alternateName,
       preferredName: party.entity.alternateName ?? ''
     },
-    address: {
-      mailingAddress,
-      deliveryAddress,
-      sameAs: isEqual(mailingAddress, deliveryAddress)
-    },
+    address: formatBaseAddressUi({ mailingAddress: mailingAddress!, deliveryAddress }),
     roles: party.roles ? formatRelationshipRolesUi(party.roles) : [],
     email: party.entity.email ?? '',
     actions: party.actions ?? [],
