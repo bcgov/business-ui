@@ -150,6 +150,15 @@ const componentExamples: DropdownMenuItem[] = [
             label: 'Real Data'
           }
         ]
+      },
+      {
+        label: 'ManageYourCompany',
+        children: [
+          {
+            to: localePath('/examples/components/Manage/YourCompany'),
+            label: 'Default'
+          }
+        ]
       }
     ]
   },

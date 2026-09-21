@@ -630,6 +630,7 @@ export default {
     changeOfDirectors: 'Director Change',
     changeOfName: 'Legal Name Change',
     changeOfOfficers: 'Officer Change',
+    changeOfReceivers: 'Change of Receivers',
     changeOfRegistration: 'Change of Registration',
     consentAmalgamationOut: 'Consent to Amalgamation Out',
     consentContinuationOut: 'Consent to Continuation Out',

@@ -1,0 +1,233 @@
+<script setup lang="ts">
+import { DateTime } from 'luxon'
+import type { ManageCompanyNameProps } from '#business/app/interfaces'
+
+const {
+  stateKey = 'manage-company-name',
+  business,
+  contact,
+  variant = 'default',
+  correctNameOptions,
+  nrAllowedActionsTypes,
+  nameTranslationAllowedActions,
+  preventActions = false,
+  actionPreventedSignal = 0
+} = defineProps<ManageCompanyNameProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+
+const emit = defineEmits<{
+  'action-prevented': []
+}>()
+
+const nameTranslationsStateKey = computed(() => `${stateKey}-name-translations`)
+
+const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('active-name-request')
+const activeNameTranslation = defineModel<ActiveNameTranslationSchema | undefined>('active-name-translation')
+
+const { t } = useI18n()
+const schema = getNameRequestSchema()
+const { state, nrDetails, undoState, updateState } = useManageYourCompany(stateKey)
+
+const isReadOnlyVariant = computed(() => toValue(variant)?.includes('readonly') ?? false)
+
+// const {
+//   isReadOnlyVariant,
+//   // shouldPreventActions,
+//   tableAllowedActions,
+//   tableLabels,
+//   setActiveSubjectAlert,
+//   // clearAllAlerts
+// } = useManageCommon({
+//   stateKey,
+//   variant,
+//   allowedActions,
+//   labelOverrides,
+//   preventActions,
+//   actionPreventedSignal,
+//   // activeSubjects: {
+//   //   subject: activeSubject,
+//   //   alertTarget: formTarget
+//   // }
+// })
+
+const { setAlert, clearAlert } = useFilingAlerts(stateKey)
+const { setAlertText } = useConnectButtonControl()
+const shouldPreventActions = computed(() => {
+  return !!activeNameRequest.value || !!activeNameTranslation.value || preventActions
+})
+
+watch(() => actionPreventedSignal, (value) => {
+  if (value) {
+    setActiveFormAlert()
+  }
+})
+
+const formattedFoundingDate = computed(() => {
+  return toReadableDate(business?.foundingDate ?? '', DateTime.DATETIME_FULL)
+})
+
+const mainAction = computed(() => {
+  if (state.value.new.actions.length) {
+    return { label: t('label.undo'), icon: 'i-mdi-undo', click: undoState }
+  }
+  return { label: t('label.correct'), icon: 'i-mdi-pencil', click: initEdit }
+})
+
+const dropdownActions = computed(() => {
+  if (state.value.new.actions.length) {
+    return [{ label: t('label.correct'), icon: 'i-mdi-pencil', onSelect: initEdit }]
+  }
+  return []
+})
+const nameOptions = computed(() => {
+  if (isReadOnlyVariant.value) {
+    return []
+  }
+  return correctNameOptions
+})
+
+const nrTypes = computed(() => {
+  if (isReadOnlyVariant.value) {
+    return []
+  }
+  return nrAllowedActionsTypes
+})
+
+const ntActions = computed(() => {
+  if (isReadOnlyVariant.value) {
+    return []
+  }
+  return nameTranslationAllowedActions
+})
+
+function initEdit() {
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
+    return
+  }
+  activeNameRequest.value = schema.parse({})
+}
+
+function setActiveFormAlert() {
+  if (activeNameRequest.value !== undefined) {
+    setAlert('company-name-form', t('text.finishTaskBeforeOtherChanges'))
+  }
+}
+
+function clearAllAlerts() {
+  clearAlert('company-name-form')
+  setAlertText(undefined)
+}
+
+function cleanupForm() {
+  activeNameRequest.value = undefined
+}
+</script>
+
+<template>
+  <ConnectPageSection
+    :heading="{
+      label: $t('label.yourCompany'),
+      icon: 'i-mdi-domain',
+      ui: 'bg-shade-secondary px-4 py-4 sm:px-6 rounded-t-md'
+    }"
+    ui-body="p-0 sm:p-0"
+  >
+    <div class="flex flex-col">
+      <!-- Company Name -->
+      <ConnectFieldset v-if="!activeNameRequest" padding-class="py-4 px-4 sm:py-5 sm:px-6">
+        <template #label>
+          <div class="space-y-1">
+            <div>{{ $t('label.companyName') }}</div>
+            <UBadge
+              v-if="state.new.actions.includes(ActionType.CORRECTED)"
+              :label="$t('badge.corrected')"
+            />
+          </div>
+        </template>
+        <template #default>
+          <div @pointerdown="clearAllAlerts" @keydown="clearAllAlerts">
+            <div class="flex justify-between">
+              <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
+              <ManageCompanyNameNrDetails v-else-if="nrDetails" :details="nrDetails" />
+              <span v-else class="text-xl font-bold">{{ state.new.legalName }}</span>
+              <UFieldGroup v-if="!isReadOnlyVariant" class="divide-x divide-line-muted h-min">
+                <UButton
+                  :label="mainAction.label"
+                  :icon="mainAction.icon"
+                  variant="ghost"
+                  @click="mainAction.click"
+                />
+                <UDropdownMenu
+                  v-if="dropdownActions.length"
+                  :items="dropdownActions"
+                  :content="{
+                    align: 'end'
+                  }"
+                >
+                  <UButton
+                    variant="ghost"
+                    icon="i-mdi-caret-down"
+                    class="px-4 data-[state=open]:bg-(--ui-primary)/25 group"
+                    :aria-label="t('label.moreActions')"
+                    :ui="{
+                      leadingIcon: 'shrink-0 group-data-[state=open]:rotate-180 transition-transform duration-200'
+                    }"
+                  />
+                </UDropdownMenu>
+              </UFieldGroup>
+            </div>
+          </div>
+        </template>
+      </ConnectFieldset>
+      <div v-if="business && activeNameRequest" class="py-4 px-4 sm:py-5 sm:px-6">
+        <FormBusinessName
+          ref="business-name-form"
+          v-model="activeNameRequest"
+          variant="correct"
+          :subject="$t('label.companyName')"
+          name="activeNameRequest"
+          :state-key="stateKey"
+          :initial-company-name="state.new.legalName"
+          :business-identifier="business.identifier"
+          :business-type="business.legalType"
+          :correct-name-options="nameOptions!"
+          :filing-name="useFiling().getFilingName(FilingType.CORRECTION)!"
+          :nr-allowed-action-types="nrTypes!"
+          @cancel="activeNameRequest = undefined"
+          @done="() => { updateState(activeNameRequest); cleanupForm() }"
+        />
+      </div>
+      <USeparator class="padding-x-default" />
+      <div class="flex gap-2 sm:gap-6 px-4 sm:px-6 flex-col sm:flex-row py-4 sm:py-5">
+        <span class="text-neutral-highlighted font-bold w-full sm:basis-1/4">
+          {{ $t('label.recognitionDateAndTime') }}
+        </span>
+        <USkeleton v-if="loading" class="h-6 w-2/3 sm:w-1/3" />
+        <span v-else class="flex-1">{{ formattedFoundingDate }}</span>
+      </div>
+      <USeparator class="padding-x-default" />
+      <div class="flex gap-2 lg:gap-6 px-4 lg:px-6 flex-col lg:flex-row py-4 lg:py-5">
+        <span class="text-neutral-highlighted font-bold w-full lg:basis-1/4">
+          {{ $t('label.nameTranslations') }}
+        </span>
+        <div class="flex flex-col flex-1 gap-4">
+          <span v-if="!['readonly', 'correct-readonly'].includes(variant)">{{ $t('text.addNameTranslation') }}</span>
+          <ManageNameTranslations
+            v-model:active-name-translation="activeNameTranslation"
+            :state-key="nameTranslationsStateKey"
+            :loading="loading"
+            :variant
+            :allowed-actions="ntActions"
+            :label-overrides="nameTranslationLabelOverrides"
+            :prevent-actions="shouldPreventActions"
+            :action-prevented-signal="actionPreventedSignal"
+            @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
+          />
+        </div>
+      </div>
+      <USeparator class="padding-x-default" />
+      <ManageYourCompanyContactInfo :contact :loading />
+    </div>
+  </ConnectPageSection>
+</template>
