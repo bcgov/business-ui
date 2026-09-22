@@ -23,7 +23,7 @@ test.describe('ManageParties', () => {
     expect(columns[1]!).toContainText('5-14505 Boul De Pierrefonds,')
     expect(columns[2]!).toHaveText('Same as Mailing Address')
     expect(columns[3]!).toContainText('Director')
-    expect(columns[4]!).toContainText('August 16, 2023')
+    expect(columns[4]!).toContainText('August 16, 2023 to current')
     expect(columns[5]!).toContainText('Change')
   })
 

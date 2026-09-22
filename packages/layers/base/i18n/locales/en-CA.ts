@@ -759,6 +759,7 @@ export default {
     correctionForRegistrationFiledOn: 'Correction for Registration filed on {date}',
     currencyOtherNotSupported: '{boldStart}Currency Update:{boldEnd} The currency option “Other” is no longer supported in the new BC Registries system. Please select a valid currency from the dropdown list.',
     currentCourtOrderFile: 'Current Court Order File: {filename}',
+    dateToCurrent: '{date} to current',
     detailDescription: 'Enter a Detail that will appear on the ledger for this entity.',
     dissolution: 'dissolution',
     dissolutionCompletedFirm: 'The statement of dissolution for {entitytitle} {name} was successfully submitted on {boldStart}{submitteddate}{boldEnd} with dissolution date of {boldStart}{dissolutiondate}{boldEnd}. The {entitytitle} has been struck from the register and dissolved, and ceased to be a registered {entitytitle} under the {acttitle} Act.',

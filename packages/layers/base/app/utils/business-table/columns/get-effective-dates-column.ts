@@ -41,7 +41,7 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
         ])
       }
 
-      return h('span', { class: cellClass }, startDate)
+      return h('span', { class: cellClass }, t('text.dateToCurrent', { date: startDate }))
     }
   }
 

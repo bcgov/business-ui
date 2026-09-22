@@ -63,7 +63,7 @@ describe('getEffectiveDatesColumn', () => {
 
     expect(cell.type).toBe('span')
     expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip')
-    expect(cell.children).toBe('April 12, 2025')
+    expect(cell.children).toBe('April 12, 2025 to current')
   })
 
   it('cell should render "Not Available" text if missing an appointment date', () => {
