@@ -7,7 +7,7 @@ import { ManageShareStructure } from '#components'
 const mockShareClasses = {
   // no actions on any class/series -> hasChangedShares is false this session
   value: [
-    { new: { id: 'c1', name: 'A Shares', actions: [], series: [], hasRightsOrRestrictions: true }, old: undefined }
+    { new: { id: 'c1', name: 'A Shares', actions: [] as ActionType[], series: [], hasRightsOrRestrictions: true }, old: undefined }
   ]
 }
 
@@ -98,7 +98,7 @@ describe('ManageShareStructure — resolution date add section in correction', (
     // a share class was added this session and has rights/restrictions -> would require a
     // resolution date outside of corrections (see equivalent 'change' variant test below)
     mockShareClasses.value = [
-      { new: { id: 'c1', name: 'A Shares', actions: ['ADDED'], series: [], hasRightsOrRestrictions: true }, old: undefined }
+      { new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true }, old: undefined }
     ]
 
     const wrapper = await mountSuspended(ManageShareStructure, {
@@ -118,7 +118,7 @@ describe('ManageShareStructure — resolution date add section in correction', (
 
   it('requires a resolution date outside of corrections when a new share class with rights or restrictions was added', async () => {
     mockShareClasses.value = [
-      { new: { id: 'c1', name: 'A Shares', actions: ['ADDED'], series: [], hasRightsOrRestrictions: true }, old: undefined }
+      { new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true }, old: undefined }
     ]
 
     const wrapper = await mountSuspended(ManageShareStructure, {
