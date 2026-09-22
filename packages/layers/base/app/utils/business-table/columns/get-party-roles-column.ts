@@ -20,7 +20,7 @@ export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions:
         TableColumnRoles,
         {
           roles: row.original.new.roles,
-          isRemoved,
+          includeCeasedRoles: true,
           class: [defaultClass, isRemoved ? DELETED_CLASS : '']
         },
         () => []

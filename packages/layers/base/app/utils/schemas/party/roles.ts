@@ -6,6 +6,7 @@ import { RoleFieldRequirement } from '#business/app/enums/role-field-requirement
 
 // a field's presence (either REQUIRED or OPTIONAL) means its section is shown for the role; absence hides it
 export interface RoleFieldConfig {
+  cessationDate?: RoleFieldRequirement
   effectiveDate?: RoleFieldRequirement
   email?: RoleFieldRequirement
 }
@@ -13,6 +14,10 @@ export interface RoleFieldConfig {
 // single source of truth for which extra PartyDetails sections a role triggers
 export const ROLE_FIELD_CONFIG: Partial<Record<RoleTypeUi, RoleFieldConfig>> = {
   [RoleTypeUi.DIRECTOR]: {
+    // cessationDate section is only shown once a director role has actually been ceased; once
+    // shown it's required (can't leave it blank) - to undo a mistaken cessation, uncheck then
+    // recheck the role instead of blanking the date
+    cessationDate: RoleFieldRequirement.REQUIRED,
     effectiveDate: RoleFieldRequirement.REQUIRED
   },
   [RoleTypeUi.CUSTODIAN]: {

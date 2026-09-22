@@ -112,6 +112,10 @@ const componentExamples: DropdownMenuItem[] = [
             label: 'With Configurable Fields'
           },
           {
+            to: localePath('/examples/components/ManageParties/with-ceased-director'),
+            label: 'With Ceased Director'
+          },
+          {
             label: 'Allowed Actions',
             children: [
               {
