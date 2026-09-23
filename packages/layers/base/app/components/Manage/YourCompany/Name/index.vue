@@ -30,22 +30,6 @@ const emit = defineEmits<{
 }>()
 
 const model = defineModel<ActiveYourCompanySchema>()
-
-function onInitEdit(key: keyof ManageYourCompanyFields) {
-  if (preventActions) {
-    emit('action-prevented')
-    return
-  }
-  emit('init-edit', key)
-}
-
-function onUndo(key: keyof ManageYourCompanyFields) {
-  if (preventActions) {
-    emit('action-prevented')
-    return
-  }
-  emit('undo', key)
-}
 </script>
 
 <template>
@@ -59,8 +43,8 @@ function onUndo(key: keyof ManageYourCompanyFields) {
     :business
     :correct-name-options
     :nr-allowed-actions-types
-    @init-edit="onInitEdit('nameRequest')"
-    @undo="onUndo('nameRequest')"
+    @init-edit="$emit('init-edit', 'nameRequest')"
+    @undo="$emit('undo', 'nameRequest')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   />
@@ -72,8 +56,8 @@ function onUndo(key: keyof ManageYourCompanyFields) {
     :state-key
     :is-read-only-variant
     :label-overrides
-    @init-edit="onInitEdit('nameNewJurisdiction')"
-    @undo="onUndo('nameNewJurisdiction')"
+    @init-edit="$emit('init-edit', 'nameNewJurisdiction')"
+    @undo="$emit('undo', 'nameNewJurisdiction')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   />

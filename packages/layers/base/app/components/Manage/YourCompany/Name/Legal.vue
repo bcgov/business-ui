@@ -56,23 +56,23 @@ const nrTypes = computed(() => {
     <template #default>
       <USkeleton v-if="loading" class="h-8 w-3/4 sm:w-1/2" />
 
-        <FormBusinessName
-          v-else-if="business && model && model.key === 'nameRequest'"
-          ref="business-name-form"
-          v-model="model.value"
-          variant="correct"
-          :subject="$t('label.companyName')"
-          name="value"
-          :state-key="stateKey"
-          :initial-company-name="fieldState?.value?.legalName || ''"
-          :business-identifier="business.identifier"
-          :business-type="business.legalType"
-          :correct-name-options="nameOptions!"
-          :filing-name
-          :nr-allowed-action-types="nrTypes!"
-          @cancel="$emit('cancel')"
-          @done="$emit('done')"
-        />
+      <FormBusinessName
+        v-else-if="business && model && model.key === 'nameRequest'"
+        ref="business-name-form"
+        v-model="model.value"
+        variant="correct"
+        :subject="$t('label.companyName')"
+        name="value"
+        :state-key="stateKey"
+        :initial-company-name="fieldState?.value?.legalName || ''"
+        :business-identifier="business.identifier"
+        :business-type="business.legalType"
+        :correct-name-options="nameOptions!"
+        :filing-name
+        :nr-allowed-action-types="nrTypes!"
+        @cancel="$emit('cancel')"
+        @done="$emit('done')"
+      />
 
       <div
         v-else-if="fieldState?.value"
@@ -86,6 +86,6 @@ const nrTypes = computed(() => {
           @undo="$emit('undo')"
         />
       </div>
-      </template>
+    </template>
   </ConnectFieldset>
 </template>

@@ -11,7 +11,7 @@ export function getActiveYourCompanySchema() {
       key: z.literal('namePreviousJurisdiction'),
       value: z.string().trim().min(1, 'Name in previous jurisdiction is required')
     }),
-    
+
     // Identification / Extrapro Numbers
     z.object({
       key: z.literal('numberExpro'),

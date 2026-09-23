@@ -6,7 +6,7 @@ export interface ManageYourCompanyFieldState<T> {
 export interface ManageYourCompanyFields {
   // Current business name
   // legalName: ManageYourCompanyFieldState<string>
-  
+
   // Current business legal type
   legalType: ManageYourCompanyFieldState<CorpTypeCd | undefined>
 

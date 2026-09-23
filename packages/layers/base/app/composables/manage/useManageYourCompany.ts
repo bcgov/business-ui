@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual } from 'es-toolkit'
+import { cloneDeep } from 'es-toolkit'
 
 const emptyState = createDefaultYourCompany()
 const defaultState: ManageYourCompanyState = {
@@ -27,7 +27,7 @@ export const useManageYourCompany = (
 
   function editSubject<K extends keyof ManageYourCompanyFields>(
     subject?: {
-      key: K,
+      key: K
       value: Required<ManageYourCompanyFields>[K]['value']
     }
   ): void {
@@ -45,7 +45,7 @@ export const useManageYourCompany = (
 
     newSubject.value = value
 
-    if (!isEqual(value, oldSubject?.value)) {
+    if (!isEqualOmit(value, oldSubject?.value, ['changeOption'])) {
       newSubject.actions = [ActionType.CHANGED]
     } else {
       newSubject.actions = []
@@ -53,25 +53,6 @@ export const useManageYourCompany = (
 
     opts?.cleanupFn?.()
   }
-
-  // function updateState(data: ActiveNameRequestSchema) {
-  //   const name = data?.legalName.trim()
-
-  //   if (!name) {
-  //     return
-  //   }
-
-  //   state.value.new.legalName.value = name
-  //   state.value.new.nrNumber!.value = data?.nrNumber
-
-  //   state.value.new.legalName.actions = name !== state.value.old.legalName.value
-  //     ? [ActionType.CORRECTED]
-  //     : []
-  // }
-
-  // function undoState() {
-  //   state.value.new = cloneDeep(state.value.old)
-  // }
 
   function undoSubject<K extends keyof ManageYourCompanyFields>(key: K) {
     if (state.value.old[key]) {

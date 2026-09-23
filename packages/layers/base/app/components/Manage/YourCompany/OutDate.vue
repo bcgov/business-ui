@@ -29,15 +29,18 @@ const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
 
 const displayValue = computed(() => fieldState?.value ? toReadableDate(fieldState.value) : '')
-const fieldsetLabel = computed(() => 
+const fieldsetLabel = computed(() =>
   correctedFilingType === FilingType.AMALGAMATION_OUT
-  ? 'Date of Amalgamation Out'
-  : 'Date of Continuation Out'
+    ? 'Date of Amalgamation Out'
+    : 'Date of Continuation Out'
 )
 </script>
 
 <template>
-  <ConnectFieldset @keydown.enter.stop="$emit('done')">
+  <ConnectFieldset
+    class="py-4 sm:py-5"
+    @keydown.enter.stop="$emit('done')"
+  >
     <template #label>
       <div class="space-y-1">
         <div>{{ fieldsetLabel }}</div>
@@ -50,7 +53,6 @@ const fieldsetLabel = computed(() =>
       <SubFormFieldWrapper
         v-else-if="model && model.key === 'outDate'"
         name="value"
-        :help="$t('text.formatYYYYMMDD')"
         :task-guard-config="{
           message: alerts[alertTarget],
           messageId,
@@ -59,17 +61,17 @@ const fieldsetLabel = computed(() =>
         @done="$emit('done')"
         @cancel="$emit('cancel')"
       >
-      <ConnectInputDatePicker
-        v-model="model.value"
-        label="Enter or Select a Date"
-        required
-        class="w-full"
-      />
+        <ConnectInputDatePicker
+          v-model="model.value"
+          label="Enter or Select a Date"
+          required
+          class="w-full"
+        />
       </SubFormFieldWrapper>
 
       <div
         v-else-if="fieldState?.value"
-        class="flex items-center justify-between"
+        class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
         <span>{{ displayValue }}</span>
         <ManageYourCompanyActions

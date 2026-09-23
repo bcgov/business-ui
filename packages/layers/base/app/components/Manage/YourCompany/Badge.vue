@@ -10,7 +10,7 @@ const {
 // getTableBadges returns an array of badges, we only need the first one
 const badge = computed(() => getTableBadges(
   // @ts-expect-error - first arg is typed as a tanstack table row
-  { original: { new: { actions: actions  } }},
+  { original: { new: { actions: actions } } },
   labelOverrides
 )[0])
 </script>

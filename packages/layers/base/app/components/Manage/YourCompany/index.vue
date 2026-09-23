@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cloneDeep } from 'es-toolkit'
 import type { Form, FormErrorEvent } from '@nuxt/ui'
 import type { ManageCompanyNameProps } from '#business/app/interfaces'
 
@@ -68,24 +69,13 @@ const {
     {
       subject: activeSubject,
       alertTarget: 'out-date'
+    },
+    {
+      subject: activeSubject,
+      alertTarget: 'new-jurisdiction'
     }
   ]
 })
-
-// function initEdit() {
-//   if (shouldPreventActions.value) {
-//     setActiveFormAlert()
-//     emit('action-prevented')
-//     return
-//   }
-//   activeNameRequest.value = schema.parse({})
-// }
-
-// function setActiveFormAlert() {
-//   if (activeNameRequest.value !== undefined) {
-//     setAlert('company-name-form', t('text.finishTaskBeforeOtherChanges'))
-//   }
-// }
 
 function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
   console.log('init edit: ', key)
@@ -107,7 +97,7 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
 
   activeSubject.value = {
     key,
-    value: subject.value
+    value: cloneDeep(subject.value)
   } as ActiveYourCompanySchema
 }
 
@@ -121,6 +111,7 @@ function onUndo<K extends keyof ManageYourCompanyFields>(key: K) {
 }
 
 function cleanupForm() {
+  formRef.value?.clear()
   activeSubject.value = undefined
   activeNameRequest.value = undefined
   activeNt.value = undefined
@@ -178,8 +169,8 @@ async function onDone() {
         :state-key="stateKey + '-nt'"
         :variant
         :loading
-        :preventActions
-        :actionPreventedSignal
+        :prevent-actions
+        :action-prevented-signal
       />
 
       <USeparator class="padding-x-default" />
@@ -191,7 +182,7 @@ async function onDone() {
       />
 
       <USeparator class="padding-x-default" />
-      
+
       <!-- Recognition Date - non-editable -->
       <ManageYourCompanyOutDate
         v-model="activeSubject"
@@ -208,9 +199,23 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
 
+      <ManageYourCompanyJurisdiction
+        v-model="activeSubject"
+        :fields="state.new"
+        :state-key
+        :is-read-only-variant
+        :loading
+        @done="onDone"
+        @cancel="cleanupForm"
+        @init-edit="onInitEdit"
+        @undo="onUndo"
+      />
+
+      <USeparator class="padding-x-default" />
+
       <!-- Contact Info - non-editable -->
       <ManageYourCompanyContactInfo
-        :loading 
+        :loading
         :contact
       />
     </UForm>

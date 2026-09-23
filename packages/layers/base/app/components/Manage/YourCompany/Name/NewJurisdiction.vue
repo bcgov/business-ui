@@ -50,8 +50,8 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         @cancel="$emit('cancel')"
       >
         <ConnectInput
-          v-model="model.value"
           id="new-juridiction-name"
+          v-model="model.value"
           label="Enter name in new jurisdiction"
           @keydown.enter.stop="$emit('done')"
         />
@@ -59,7 +59,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 
       <div
         v-else-if="fieldState?.value"
-        class="flex items-center justify-between"
+        class="flex items-center justify-between -mt-4 sm:-mt-1.5 ml-4 sm:ml-0"
       >
         <span>{{ fieldState.value }}</span>
         <ManageYourCompanyActions

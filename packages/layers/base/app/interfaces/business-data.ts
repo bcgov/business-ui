@@ -54,19 +54,19 @@ export interface BusinessData extends BusinessDataPublic {
 interface BusinessOutData {
   country: string
   date: IsoDatePacific // YYYY-MM-DD
-	legalName: string
-	region: string | null
+  legalName: string
+  region: string | null
 }
 
 export interface BusinessDataExtended {
   amalgamation?: Amalgamation
   amalgamationOut?: BusinessOutData
   continuationIn?: {
-    country: string,
-		identifier: string
-		incorporationDate: IsoDatePacific // YYYY-MM-DD
-		legalName: string
-		region: string | null
+    country: string
+    identifier: string
+    incorporationDate: IsoDatePacific // YYYY-MM-DD
+    legalName: string
+    region: string | null
   }
   continuationOut?: BusinessOutData
 }
