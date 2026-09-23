@@ -63,7 +63,6 @@ function onUndo(key: keyof ManageYourCompanyFields) {
     @undo="onUndo('nameRequest')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-    @action-prevented="$emit('action-prevented')"
   />
 
   <ManageYourCompanyNameNewJurisdiction
@@ -77,6 +76,5 @@ function onUndo(key: keyof ManageYourCompanyFields) {
     @undo="onUndo('nameNewJurisdiction')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-    @action-prevented="$emit('action-prevented')"
   />
 </template>

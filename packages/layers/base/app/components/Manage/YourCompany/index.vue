@@ -13,7 +13,13 @@ const {
   preventActions = false,
   actionPreventedSignal = 0,
   nested = true
-} = defineProps<ManageCompanyNameProps & { preventActions?: boolean, actionPreventedSignal?: number, businessExtended?: BusinessDataExtended, nested?: boolean }>()
+} = defineProps<ManageCompanyNameProps & {
+  preventActions?: boolean
+  actionPreventedSignal?: number
+  businessExtended?: BusinessDataExtended
+  nested?: boolean
+  correctedFilingType?: FilingType
+}>()
 
 const emit = defineEmits<{
   'action-prevented': []
@@ -25,7 +31,6 @@ const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt
 
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
-// const schema = getNameRequestSchema()
 const {
   state,
   nrDetails,
@@ -59,6 +64,10 @@ const {
     {
       subject: activeSubject,
       alertTarget: 'company-name-form'
+    },
+    {
+      subject: activeSubject,
+      alertTarget: 'out-date'
     }
   ]
 })
@@ -79,7 +88,7 @@ const {
 // }
 
 function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
-  console.log('company name init edit')
+  console.log('init edit: ', key)
   if (shouldPreventActions.value) {
     console.log('preventing actions')
     setActiveSubjectAlert()
@@ -90,8 +99,11 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
   const subject = state.value.new[key] as ManageYourCompanyFieldState<any> | undefined
 
   if (!subject) {
+    console.log('no subject found')
     return
   }
+
+  console.log('subject: ', subject)
 
   activeSubject.value = {
     key,
@@ -117,11 +129,7 @@ function cleanupForm() {
 async function onDone() {
   try {
     await formRef.value?.validate()
-
-    // emit('done')
     editSubject(activeSubject.value)
-    console.log('VALID')
-    cleanupForm()
   } catch (e) {
     onFormSubmitError(e as FormErrorEvent)
   }
@@ -155,6 +163,7 @@ async function onDone() {
         :nr-allowed-actions-types
         :correct-name-options
         :business
+        :loading
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -182,9 +191,28 @@ async function onDone() {
       />
 
       <USeparator class="padding-x-default" />
+      
+      <!-- Recognition Date - non-editable -->
+      <ManageYourCompanyOutDate
+        v-model="activeSubject"
+        :field-state="state.new.outDate"
+        :state-key
+        :is-read-only-variant
+        :loading
+        :corrected-filing-type
+        @done="onDone"
+        @cancel="cleanupForm"
+        @init-edit="onInitEdit"
+        @undo="onUndo"
+      />
+
+      <USeparator class="padding-x-default" />
 
       <!-- Contact Info - non-editable -->
-      <ManageYourCompanyContactInfo :contact :loading />
+      <ManageYourCompanyContactInfo
+        :loading 
+        :contact
+      />
     </UForm>
   </ConnectPageSection>
 </template>

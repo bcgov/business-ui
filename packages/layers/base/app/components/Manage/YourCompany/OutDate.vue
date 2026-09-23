@@ -4,34 +4,43 @@ const {
   stateKey,
   fieldState,
   loading,
-  labelOverrides
+  labelOverrides,
+  correctedFilingType
 } = defineProps<{
   stateKey: string
-  fieldState?: ManageYourCompanyFields['nameNewJurisdiction']
+  fieldState?: ManageYourCompanyFields['outDate']
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
+  correctedFilingType?: FilingType
 }>()
 
 const emit = defineEmits<{
-  'init-edit': []
+  'init-edit': ['outDate']
   'done': []
   'cancel': []
-  'undo': []
+  'undo': ['outDate']
 }>()
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-const alertTarget = 'new-juridiction-name'
+const alertTarget = 'out-date'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
+
+const displayValue = computed(() => fieldState?.value ? toReadableDate(fieldState.value) : '')
+const fieldsetLabel = computed(() => 
+  correctedFilingType === FilingType.AMALGAMATION_OUT
+  ? 'Date of Amalgamation Out'
+  : 'Date of Continuation Out'
+)
 </script>
 
 <template>
-  <ConnectFieldset>
+  <ConnectFieldset @keydown.enter.stop="$emit('done')">
     <template #label>
-      <div class="ml-4 space-y-1">
-        <div>Name in new Jurisdiction</div>
+      <div class="space-y-1">
+        <div>{{ fieldsetLabel }}</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
@@ -39,8 +48,9 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
       <USkeleton v-if="loading" class="h-6 w-2/3 sm:w-1/3" />
 
       <SubFormFieldWrapper
-        v-else-if="model && model.key === 'nameNewJurisdiction'"
+        v-else-if="model && model.key === 'outDate'"
         name="value"
+        :help="$t('text.formatYYYYMMDD')"
         :task-guard-config="{
           message: alerts[alertTarget],
           messageId,
@@ -49,24 +59,24 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         @done="$emit('done')"
         @cancel="$emit('cancel')"
       >
-        <ConnectInput
-          v-model="model.value"
-          id="new-juridiction-name"
-          label="Enter name in new jurisdiction"
-          @keydown.enter.stop="$emit('done')"
-        />
+      <ConnectInputDatePicker
+        v-model="model.value"
+        label="Enter or Select a Date"
+        required
+        class="w-full"
+      />
       </SubFormFieldWrapper>
 
       <div
         v-else-if="fieldState?.value"
         class="flex items-center justify-between"
       >
-        <span>{{ fieldState.value }}</span>
+        <span>{{ displayValue }}</span>
         <ManageYourCompanyActions
           v-if="!isReadOnlyVariant"
           :actions="fieldState.actions"
-          @init-edit="$emit('init-edit')"
-          @undo="$emit('undo')"
+          @init-edit="$emit('init-edit', 'outDate')"
+          @undo="$emit('undo', 'outDate')"
         />
       </div>
     </template>

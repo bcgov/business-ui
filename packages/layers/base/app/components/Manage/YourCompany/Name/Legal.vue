@@ -24,14 +24,9 @@ const emit = defineEmits<{
   'done': []
   'cancel': []
   'undo': []
-  'action-prevented': []
 }>()
 
 const model = defineModel<ActiveYourCompanySchema>()
-
-const alertTarget = 'name-request'
-const { alerts, attachAlerts } = useFilingAlerts(stateKey)
-const { targetId, messageId } = attachAlerts(alertTarget, model)
 
 const filingName = computed(() => getFilingName(FilingType.CORRECTION)!)
 
