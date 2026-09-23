@@ -141,7 +141,7 @@ const useEffectiveDateRange = computed(() =>
 const effectiveDateRangeDescription = computed(() => {
   const roleType = rolesEligibleForCessationDate.value[0]?.roleType
   const roleLabel = roleType ? $t(`roleType.${roleType}`).toLowerCase() : ''
-  return $t('text.effectiveDateRangeDescription', { role: roleLabel })
+  return $t('text.effectiveDateRangeDescription', { role: roleLabel, boldStart: '<strong>', boldEnd: '</strong>' })
 })
 const isEmailVisibleForRole = computed(() => rolesWithEmail.value.length > 0)
 const isEmailRequiredForRole = computed(() =>

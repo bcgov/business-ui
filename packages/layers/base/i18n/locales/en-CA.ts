@@ -789,7 +789,7 @@ export default {
     noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
     effectiveDateFormat: 'Format: Month DD, YYYY (eg., January 1, 2026, Jan 1, 2026) or YYYY-MM-DD (e.g., 2026-01-01)',
-    effectiveDateRangeDescription: 'The dates the individual became and ceased to be a {role}.',
+    effectiveDateRangeDescription: 'The dates the individual {boldStart}became and ceased{boldEnd} to be a {role}.',
     noLongerWishToFileWithdraw: ['If you no longer wish to file this {filing}, you must submit a', 'and a $20.00 fee to BC Registries. You must provide BC Registries with enough time to process the withdrawal before the effective date and time. If you withdraw this record, your filing fees will not be refunded.'],
     maxFileSizeAndAcceptedTypesDescription: 'Max file size {max}. Accepted file types: {types}.',
     maxNumberOfSharesHelp: 'Maximum number of shares in this class',

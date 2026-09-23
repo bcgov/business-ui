@@ -60,9 +60,8 @@ defineOptions({ inheritAttrs: false })
     :error="rangeError"
     padding-class="xy-default"
   >
-    <p class="text-sm text-neutral mb-4">
-      {{ description }}
-    </p>
+    <!-- eslint-disable-next-line vue/no-v-html -->
+    <p class="text-sm text-neutral mb-4" v-html="description" />
     <div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
       <div class="flex-1">
         <FormEffectiveDateField

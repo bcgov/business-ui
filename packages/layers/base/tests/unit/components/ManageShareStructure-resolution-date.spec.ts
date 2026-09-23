@@ -7,7 +7,10 @@ import { ManageShareStructure } from '#components'
 const mockShareClasses = {
   // no actions on any class/series -> hasChangedShares is false this session
   value: [
-    { new: { id: 'c1', name: 'A Shares', actions: [] as ActionType[], series: [], hasRightsOrRestrictions: true }, old: undefined }
+    {
+      new: { id: 'c1', name: 'A Shares', actions: [] as ActionType[], series: [], hasRightsOrRestrictions: true },
+      old: undefined
+    }
   ]
 }
 
@@ -55,7 +58,11 @@ const stubs = {
     props: ['validationContext'],
     template: '<div data-testid="rd-form" :data-required="!!validationContext?.hasRightsOrRestrictions" />'
   }),
-  TableShareStructure: defineComponent({ name: 'TableShareStructure', props: { expanded: Object }, template: '<div />' }),
+  TableShareStructure: defineComponent({
+    name: 'TableShareStructure',
+    props: { expanded: Object },
+    template: '<div />'
+  }),
   TableShareStructureResolutionDates: defineComponent({
     name: 'TableShareStructureResolutionDates',
     props: { expanded: Object },
@@ -64,19 +71,22 @@ const stubs = {
 }
 
 describe('ManageShareStructure — resolution date add section in correction', () => {
-  it('shows the add-resolution-date input in a correction filing even when shares were not changed this session', async () => {
-    const wrapper = await mountSuspended(ManageShareStructure, {
-      props: {
-        variant: 'correct',
-        collectResolutionDate: true
-      },
-      global: { stubs }
-    })
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+  it(
+    'shows the add-resolution-date input in a correction filing even when shares were not changed this session',
+    async () => {
+      const wrapper = await mountSuspended(ManageShareStructure, {
+        props: {
+          variant: 'correct',
+          collectResolutionDate: true
+        },
+        global: { stubs }
+      })
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('[data-testid="rd-form"]').exists()).toBe(true)
-  })
+      expect(wrapper.find('[data-testid="rd-form"]').exists()).toBe(true)
+    }
+  )
 
   // note: collectResolutionDate does not gate the 'correct' variant (see previous test) —
   // only non-correct variants fall through to resolutionDateRequired, which does check it
@@ -94,45 +104,57 @@ describe('ManageShareStructure — resolution date add section in correction', (
     expect(wrapper.find('[data-testid="rd-form"]').exists()).toBe(false)
   })
 
-  it('does not require a resolution date in a correction filing even when a new share class with rights or restrictions was added', async () => {
-    // a share class was added this session and has rights/restrictions -> would require a
-    // resolution date outside of corrections (see equivalent 'change' variant test below)
-    mockShareClasses.value = [
-      { new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true }, old: undefined }
-    ]
+  it(
+    'does not require a resolution date in a correction filing for a new share class with rights or restrictions',
+    async () => {
+      // a share class was added this session and has rights/restrictions -> would require a
+      // resolution date outside of corrections (see equivalent 'change' variant test below)
+      mockShareClasses.value = [
+        {
+          new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true },
+          old: undefined
+        }
+      ]
 
-    const wrapper = await mountSuspended(ManageShareStructure, {
-      props: {
-        variant: 'correct',
-        collectResolutionDate: true
-      },
-      global: { stubs }
-    })
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+      const wrapper = await mountSuspended(ManageShareStructure, {
+        props: {
+          variant: 'correct',
+          collectResolutionDate: true
+        },
+        global: { stubs }
+      })
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
 
-    const form = wrapper.find('[data-testid="rd-form"]')
-    expect(form.exists()).toBe(true)
-    expect(form.attributes('data-required')).toBe('false')
-  })
+      const form = wrapper.find('[data-testid="rd-form"]')
+      expect(form.exists()).toBe(true)
+      expect(form.attributes('data-required')).toBe('false')
+    }
+  )
 
-  it('requires a resolution date outside of corrections when a new share class with rights or restrictions was added', async () => {
-    mockShareClasses.value = [
-      { new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true }, old: undefined }
-    ]
+  it(
+    'requires a resolution date outside of corrections when a new share class with rights or restrictions was added',
+    async () => {
+      mockShareClasses.value = [
+        {
+          new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true },
+          old: undefined
+        }
+      ]
 
-    const wrapper = await mountSuspended(ManageShareStructure, {
-      props: {
-        variant: 'change',
-        collectResolutionDate: true
-      },
-      global: { stubs }
-    })
-    await wrapper.vm.$nextTick()
-    await wrapper.vm.$nextTick()
+      const wrapper = await mountSuspended(ManageShareStructure, {
+        props: {
+          variant: 'change',
+          collectResolutionDate: true
+        },
+        global: { stubs }
+      })
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
 
-    const form = wrapper.find('[data-testid="rd-form"]')
-    expect(form.exists()).toBe(true)
-    expect(form.attributes('data-required')).toBe('true')
-  })
+      const form = wrapper.find('[data-testid="rd-form"]')
+      expect(form.exists()).toBe(true)
+      expect(form.attributes('data-required')).toBe('true')
+    }
+  )
 })
