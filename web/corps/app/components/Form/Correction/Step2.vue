@@ -31,6 +31,11 @@ const hasDirectorChanges = computed(() => {
   return store.directors.some(d => d.new.actions.length > 0)
 })
 
+/** Whether any ceased directors were changed */
+const hasCeasedDirectorChanges = computed(() => {
+  return store.ceasedDirectors.some(d => d.new.actions.length > 0)
+})
+
 /** Whether any share classes were changed */
 const hasShareStructureChanges = computed(() => {
   return store.shareClasses.some(sc => sc.new.actions.length > 0)
@@ -123,6 +128,18 @@ function onError(event: FormErrorEvent) {
         :table-title="$t('label.currentDirectors')"
         :columns-to-display="partyColumns"
         data-testid="review-current-directors-section"
+        variant="correct-readonly"
+      />
+
+      <!-- Ceased Directors (readonly, only if changed) -->
+      <ManageParties
+        v-if="hasCeasedDirectorChanges"
+        state-key="manage-ceased-directors"
+        :loading="store.initializing"
+        :empty-text="$t('label.noCeasedDirectors')"
+        :table-title="$t('label.ceasedDirectors')"
+        :columns-to-display="partyColumns"
+        data-testid="review-ceased-directors-section"
         variant="correct-readonly"
       />
 

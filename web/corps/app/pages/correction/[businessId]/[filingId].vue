@@ -22,6 +22,7 @@ const {
   [
     [() => store.initialFormState, () => store.formState],
     [() => store.initialDirectors, () => store.directors],
+    [() => store.initialCeasedDirectors, () => store.ceasedDirectors],
     [() => store.initialReceivers, () => store.receivers],
     [() => store.initialLiquidators, () => store.liquidators],
     [() => store.initialCustodians, () => store.custodians],
@@ -37,6 +38,7 @@ const {
   // At least one correctable section must have changes to allow submission
   () => {
     return store.directors.some(d => d.new.actions.length > 0)
+      || store.ceasedDirectors.some(d => d.new.actions.length > 0)
       || store.receivers.some(r => r.new.actions.length > 0)
       || store.liquidators.some(l => l.new.actions.length > 0)
       || store.custodians.some(c => c.new.actions.length > 0)
@@ -76,6 +78,7 @@ function checkActiveSubForm() {
   const alertMsg = t('text.finishTaskBeforeOtherChanges')
   return (store.formState.activeOffice && useFilingAlerts('manage-offices').setAlert('office-address-form', alertMsg))
     || (store.formState.activeDirector && useFilingAlerts('manage-parties').setAlert('party-details-form', alertMsg))
+    || (store.formState.ceasedDirector && useFilingAlerts('manage-ceased-directors').setAlert('party-details-form', alertMsg))
     || (store.formState.activeReceiver && useFilingAlerts('manage-receivers').setAlert('party-details-form', alertMsg))
     || (store.formState.activeLiquidator && useFilingAlerts('manage-liquidators').setAlert('party-details-form', alertMsg))
     || (store.formState.activeCustodian && useFilingAlerts('manage-custodians').setAlert('party-details-form', alertMsg))

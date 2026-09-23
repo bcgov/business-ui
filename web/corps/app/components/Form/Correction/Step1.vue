@@ -64,6 +64,29 @@ function onActionPrevented() {
       @action-prevented="onActionPrevented"
     />
 
+    <ManageParties
+      v-model:active-party="store.formState.ceasedDirector"
+      state-key="manage-ceased-directors"
+      :loading="store.initializing"
+      :empty-text="$t('label.noCeasedDirectors')"
+      :table-title="$t('label.ceasedDirectors')"
+      :subject="$t('label.director')"
+      :columns-to-display="partyColumns"
+      data-testid="ceased-directors-section"
+      :role-type="RoleTypeUi.DIRECTOR"
+      model-name="ceasedDirector"
+      :allowed-actions="[
+        ManageAllowedAction.NAME_CHANGE,
+        ManageAllowedAction.ADDRESS_CHANGE,
+        ManageAllowedAction.EFFECTIVE_DATE_CHANGE,
+        ManageAllowedAction.CESSATION_DATE_CHANGE
+      ]"
+      :prevent-actions="hasActiveSubForm"
+      variant="correct"
+      :action-prevented-signal="actionPreventedSignal"
+      @action-prevented="onActionPrevented"
+    />
+
     <!-- FUTURE: conditionally show receivers? -->
     <ManageParties
       v-model:active-party="store.formState.activeReceiver"
