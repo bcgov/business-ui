@@ -1,14 +1,9 @@
-import { cloneDeep } from 'es-toolkit'
+import { cloneDeep, isEqual } from 'es-toolkit'
 
-const defaultState: ManageCompanyNameState = {
-  new: {
-    legalName: '',
-    actions: []
-  },
-  old: {
-    legalName: '',
-    actions: []
-  }
+const emptyState = createDefaultYourCompany()
+const defaultState: ManageYourCompanyState = {
+  old: emptyState,
+  new: cloneDeep(emptyState)
 }
 
 export const useManageYourCompany = (
@@ -20,36 +15,74 @@ export const useManageYourCompany = (
   const service = useBusinessService()
   const { t } = useNuxtApp().$i18n
 
-  const state = useState<ManageCompanyNameState>(`${stateKey}-state`, () => defaultState)
+  const state = useState<ManageYourCompanyState>(`${stateKey}-state`, () => defaultState)
   const nrData = useState<NameRequest | undefined>(`${stateKey}-nrData`, () => undefined)
 
-  const hasNameChange = computed(() => {
-    return state.value.old.legalName !== state.value.new.legalName
-      && !!state.value.new.legalName.trim()
+  const hasChanges = computed(() => {
+    return Object.keys(state.value.new).some((k) => {
+      const field = state.value.new[k as keyof ManageYourCompanyFields]
+      return typeof field === 'object' && field?.actions?.length > 0
+    })
   })
 
-  function updateState(data: ActiveNameRequestSchema) {
-    const name = data?.legalName.trim()
-
-    if (!name) {
+  function editSubject<K extends keyof ManageYourCompanyFields>(
+    subject?: {
+      key: K,
+      value: Required<ManageYourCompanyFields>[K]['value']
+    }
+  ): void {
+    if (!subject) {
       return
     }
 
-    state.value.new.legalName = name
-    state.value.new.nrNumber = data?.nrNumber
+    const { key, value } = subject
+    const newSubject = state.value.new[key] as ManageYourCompanyFieldState<any> | undefined
+    const oldSubject = state.value.old[key] as ManageYourCompanyFieldState<any> | undefined
 
-    state.value.new.actions = name !== state.value.old.legalName
-      ? [ActionType.CORRECTED]
-      : []
+    if (!newSubject) {
+      return
+    }
+
+    newSubject.value = value
+
+    if (!isEqual(value, oldSubject?.value)) {
+      newSubject.actions = [ActionType.CHANGED]
+    } else {
+      newSubject.actions = []
+    }
+
+    opts?.cleanupFn?.()
   }
 
-  function undoState() {
-    state.value.new = cloneDeep(state.value.old)
+  // function updateState(data: ActiveNameRequestSchema) {
+  //   const name = data?.legalName.trim()
+
+  //   if (!name) {
+  //     return
+  //   }
+
+  //   state.value.new.legalName.value = name
+  //   state.value.new.nrNumber!.value = data?.nrNumber
+
+  //   state.value.new.legalName.actions = name !== state.value.old.legalName.value
+  //     ? [ActionType.CORRECTED]
+  //     : []
+  // }
+
+  // function undoState() {
+  //   state.value.new = cloneDeep(state.value.old)
+  // }
+
+  function undoSubject<K extends keyof ManageYourCompanyFields>(key: K) {
+    if (state.value.old[key]) {
+      state.value.new[key] = cloneDeep(state.value.old[key])
+    }
+    opts?.cleanupFn?.()
   }
 
   // fetch the nr data to display in the UI when the nrNumber is populated
   watch(
-    () => state.value.new.nrNumber,
+    () => state.value.new.nrNumber?.value,
     async (v) => {
       const nrNum = v?.trim()
       if (!nrNum) {
@@ -67,7 +100,7 @@ export const useManageYourCompany = (
     }
     return {
       meta: {
-        legalName: state.value.new.legalName,
+        legalName: state.value.new.nameRequest?.value!.legalName,
         nrNumber: state.value.new.nrNumber
       },
       info: [
@@ -83,8 +116,10 @@ export const useManageYourCompany = (
     state,
     nrData,
     nrDetails,
-    hasNameChange,
-    updateState,
-    undoState
+    hasChanges,
+    // updateState,
+    // undoState,
+    editSubject,
+    undoSubject
   }
 }

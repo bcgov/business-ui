@@ -7,14 +7,51 @@ definePageMeta({
 })
 
 const stateKey = 'playground-manage-company-name-editable'
-const nameTranslationsStateKey = `${stateKey}-name-translations`
+const nameTranslationsStateKey = `${stateKey}-nt`
 
-const { state } = useManageCompanyName(stateKey)
+const { state } = useManageYourCompany('manage-your-company')
 const { tableState: nameTranslationsTableState } = useManageNameTranslations(nameTranslationsStateKey)
 
+// state.value = {
+//   new: { legalName: mockBusiness.legalName, actions: [] },
+//   old: { legalName: mockBusiness.legalName, actions: [] }
+// }
+
 state.value = {
-  new: { legalName: mockBusiness.legalName, actions: [] },
-  old: { legalName: mockBusiness.legalName, actions: [] }
+  new: {
+    nameRequest: {
+      value: { legalName: mockBusiness.legalName, nrNumber: '', changeToNumbered: false },
+      actions: [],
+      isEditing: false
+    },
+    legalType: {
+      value: mockBusiness.legalType as CorpTypeCd,
+      actions: [],
+      isEditing: false
+    },
+    nameNewJurisdiction: {
+      value: '0887699 B.C. LTD.',
+      actions: [],
+      isEditing: false
+    }
+  },
+  old: {
+    nameRequest: {
+      value: { legalName: mockBusiness.legalName, nrNumber: '', changeToNumbered: false },
+      actions: [],
+      isEditing: false
+    },
+    legalType: {
+      value: mockBusiness.legalType as CorpTypeCd,
+      actions: [],
+      isEditing: false
+    },
+    nameNewJurisdiction: {
+      value: '0887699 B.C. LTD.',
+      actions: [],
+      isEditing: false
+    }
+  }
 }
 
 nameTranslationsTableState.value = [
@@ -35,7 +72,6 @@ const contact: ContactPoint = {
 const activeNameRequest = ref<ActiveNameRequestSchema | undefined>(undefined)
 const activeNameTranslation = ref<ActiveNameTranslationSchema | undefined>(undefined)
 const loading = ref(false)
-
 
 // onMounted(async () => {
 //   const data = await useBusinessService().getBusinessExtended(businessId, true)
