@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../app/utils/schemas/correction'
+import { isDirectorCeased } from '../../../app/stores/correction'
 
 /**
  * Unit tests for the correction store.
@@ -12,6 +13,7 @@ import { CORRECTION_DETAIL_COMMENT_MAX_LENGTH } from '../../../app/utils/schemas
  * These unit tests focus on:
  * - Schema defaults and validation (via getCorrectionSchema)
  * - Exported types and enums used by the store
+ * - Exported helpers (e.g. isDirectorCeased)
  */
 
 describe('Correction Store — Types & Enums', () => {
@@ -265,6 +267,7 @@ describe('Correction Schema', () => {
 
       expect(result.success).toBe(true)
       expect(result.data!.activeDirector).toBeUndefined()
+      expect(result.data!.ceasedDirector).toBeUndefined()
       expect(result.data!.activeReceiver).toBeUndefined()
       expect(result.data!.activeLiquidator).toBeUndefined()
       expect(result.data!.activeCustodian).toBeUndefined()
@@ -272,5 +275,29 @@ describe('Correction Schema', () => {
       expect(result.data!.activeClass).toBeUndefined()
       expect(result.data!.activeSeries).toBeUndefined()
     })
+  })
+})
+
+describe('isDirectorCeased', () => {
+  const party = (roles: { roleType: RoleTypeUi, cessationDate?: string | null }[]) =>
+    ({ new: { roles } }) as unknown as TableBusinessState<PartySchema>
+
+  it('should be true when the only director role has a cessation date', () => {
+    expect(isDirectorCeased(party([{ roleType: RoleTypeUi.DIRECTOR, cessationDate: '2024-01-01' }]))).toBe(true)
+  })
+
+  it('should be false for an active director', () => {
+    expect(isDirectorCeased(party([{ roleType: RoleTypeUi.DIRECTOR, cessationDate: null }]))).toBe(false)
+  })
+
+  it('should be false for a reappointed director (one ceased and one active director role)', () => {
+    expect(isDirectorCeased(party([
+      { roleType: RoleTypeUi.DIRECTOR, cessationDate: '2024-01-01' },
+      { roleType: RoleTypeUi.DIRECTOR }
+    ]))).toBe(false)
+  })
+
+  it('should be false when the party has no director role', () => {
+    expect(isDirectorCeased(party([{ roleType: RoleTypeUi.RECEIVER, cessationDate: '2024-01-01' }]))).toBe(false)
   })
 })

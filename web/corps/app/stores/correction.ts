@@ -1,9 +1,16 @@
 /* eslint-disable max-len */
 import { cloneDeep } from 'es-toolkit'
 
+/** Directors whose roles all have a cessation date are displayed in the Ceased Directors section. */
+export function isDirectorCeased(party: TableBusinessState<PartySchema>): boolean {
+  const directorRoles = party.new.roles.filter(r => r.roleType === RoleTypeUi.DIRECTOR)
+  return directorRoles.length > 0 && directorRoles.every(r => !!r.cessationDate)
+}
+
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
   const { tableState: tableDirectors } = useManageParties()
+  const { tableState: tableCeasedDirectors } = useManageParties('manage-ceased-directors')
   const { tableState: tableReceivers } = useManageParties('manage-receivers')
   const { tableState: tableLiquidators } = useManageParties('manage-liquidators')
   const { tableState: tableCustodians } = useManageParties('manage-custodians')
@@ -23,6 +30,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   const formState = reactive<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialFormState = shallowRef<CorrectionFormSchema>({} as CorrectionFormSchema)
   const initialDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
+  const initialCeasedDirectors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialReceivers = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialLiquidators = shallowRef<TableBusinessState<PartySchema>[]>([])
   const initialCustodians = shallowRef<TableBusinessState<PartySchema>[]>([])
@@ -47,6 +55,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     || !!formState.activeNameTranslation
     || !!formState.activeOffice
     || !!formState.activeDirector
+    || !!formState.ceasedDirector
     || !!formState.activeReceiver
     || !!formState.activeLiquidator
     || !!formState.activeCustodian
@@ -104,7 +113,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       FilingType.CORRECTION,
       undefined,
       draftId,
-      {}, // fetch all parties (no role filter) — 1 API call for directors, receivers, liquidators
+      { all: true }, // fetch all parties incl. ceased (no role filter) — 1 API call for directors, receivers, liquidators
       undefined,
       true // fetch share classes
     )
@@ -141,9 +150,12 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const parties = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
-    const receivers = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.RECEIVER))
-    const liquidators = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.LIQUIDATOR))
-    const custodians = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.CUSTODIAN))
+    // `all: true` also returns ceased parties — only ceased directors are shown (in their own section)
+    const hasActiveRole = (p: TableBusinessState<PartySchema>, roleType: RoleTypeUi) =>
+      p.new.roles.some(r => r.roleType === roleType && !r.cessationDate)
+    const receivers = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.RECEIVER))
+    const liquidators = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.LIQUIDATOR))
+    const custodians = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.CUSTODIAN))
 
     // Comment (may be empty on initial draft)
     formState.comment = { detail: draft.comment ?? '' }
@@ -196,9 +208,11 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       const draftDirectorEntries = draftRelationships?.filter(
         dp => dp.roles?.some(r => r.roleType === RoleType.DIRECTOR)
       )
-      tableDirectors.value = draftDirectorEntries?.length
+      const mergedDirectors = draftDirectorEntries?.length
         ? getPartiesMergedWithRelationships(parties, draftDirectorEntries)
         : parties
+      tableDirectors.value = mergedDirectors.filter(p => !isDirectorCeased(p))
+      tableCeasedDirectors.value = mergedDirectors.filter(p => isDirectorCeased(p))
     }
 
     // Offices (corrections may include address changes)
@@ -316,6 +330,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = cloneDeep(tableDirectors.value)
+    initialCeasedDirectors.value = cloneDeep(tableCeasedDirectors.value)
     initialReceivers.value = cloneDeep(tableReceivers.value)
     initialLiquidators.value = cloneDeep(tableLiquidators.value)
     initialCustodians.value = cloneDeep(tableCustodians.value)
@@ -357,6 +372,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // All party types (directors, receivers, liquidators, completing party) are combined in one array
       relationships: [
         ...tableDirectors.value,
+        ...tableCeasedDirectors.value,
         ...tableReceivers.value,
         ...tableLiquidators.value,
         ...tableCustodians.value
@@ -503,6 +519,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const defaults = getCorrectionSchema(isStaffCorrectionType.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
+    formState.ceasedDirector = undefined
     formState.activeReceiver = undefined
     formState.activeLiquidator = undefined
     formState.activeCustodian = undefined
@@ -519,6 +536,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     initialFormState.value = cloneDeep(formState)
     initialDirectors.value = []
+    initialCeasedDirectors.value = []
     initialReceivers.value = []
     initialLiquidators.value = []
     initialCustodians.value = []
@@ -546,6 +564,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     isStaffCorrectionType,
     courtOrders: tableCourtOrders,
     directors: tableDirectors,
+    ceasedDirectors: tableCeasedDirectors,
     receivers: tableReceivers,
     liquidators: tableLiquidators,
     custodians: tableCustodians,
@@ -557,6 +576,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     amalStmnt: statementState,
     initialFormState,
     initialDirectors,
+    initialCeasedDirectors,
     initialReceivers,
     initialLiquidators,
     initialCustodians,

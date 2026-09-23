@@ -4,11 +4,14 @@ export const useBusinessParty = () => {
   async function getBusinessParties(
     businessId: string,
     roleClass?: RoleClass,
-    roleType?: RoleType
+    roleType?: RoleType,
+    all?: boolean
   ): Promise<TableBusinessState<PartySchema>[] | undefined> {
     const resp = await service.getParties(businessId, {
       ...(roleClass ? { classType: roleClass } : {}),
-      ...(roleType ? { role: roleType } : {})
+      ...(roleType ? { role: roleType } : {}),
+      // include ceased parties (the API otherwise only returns active parties)
+      ...(all ? { all: true } : {})
     })
 
     return resp.map(p => ({
