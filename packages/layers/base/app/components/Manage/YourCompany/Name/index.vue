@@ -58,4 +58,17 @@ const model = defineModel<ActiveYourCompanySchema>()
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   />
+  
+  <ManageYourCompanyNamePreviousJurisdiction
+    v-model="model"
+    :field-state="fields.namePreviousJurisdiction"
+    :loading
+    :state-key
+    :is-read-only-variant
+    :label-overrides
+    @init-edit="$emit('init-edit', 'namePreviousJurisdiction')"
+    @undo="$emit('undo', 'namePreviousJurisdiction')"
+    @done="$emit('done')"
+    @cancel="$emit('cancel')"
+  />
 </template>

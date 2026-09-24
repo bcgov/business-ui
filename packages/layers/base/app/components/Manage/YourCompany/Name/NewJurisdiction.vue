@@ -22,7 +22,7 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-const alertTarget = 'new-juridiction-name'
+const alertTarget = 'new-jurisdiction-name'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
 </script>
@@ -50,7 +50,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         @cancel="$emit('cancel')"
       >
         <ConnectInput
-          id="new-juridiction-name"
+          id="new-jurisdiction-name"
           v-model="model.value"
           label="Enter name in new jurisdiction"
           @keydown.enter.stop="$emit('done')"
