@@ -28,7 +28,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 </script>
 
 <template>
-  <ConnectFieldset>
+  <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4 space-y-1">
         <div>Name in previous jurisdiction</div>
@@ -52,7 +52,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         <ConnectInput
           id="previous-jurisdiction-name"
           v-model="model.value"
-          label="Enter name in new jurisdiction"
+          label="Enter name in previous jurisdiction"
           @keydown.enter.stop="$emit('done')"
         />
       </SubFormFieldWrapper>

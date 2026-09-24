@@ -120,7 +120,7 @@ const displayValue = computed(() => {
 </script>
 
 <template>
-  <ConnectFieldset>
+  <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4 space-y-1">
         <div>Previous Jurisdiction</div>

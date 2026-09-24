@@ -30,7 +30,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 </script>
 
 <template>
-  <ConnectFieldset padding-class="py-4 sm:py-5 padding-x-default">
+  <ConnectFieldset padding-class="padding-x-default py-4 sm:py-5">
     <template #label>
       <div class="space-y-1">
         <div>Extraprovincial Registration Number in B.C.</div>
@@ -61,7 +61,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 
       <div
         v-else-if="fieldState?.value"
-        class="flex items-center justify-between"
+        class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
         <span>{{ fieldState.value }}</span>
         <ManageYourCompanyActions

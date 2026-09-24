@@ -28,7 +28,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 </script>
 
 <template>
-  <ConnectFieldset>
+  <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4 space-y-1">
         <div>Name in new Jurisdiction</div>

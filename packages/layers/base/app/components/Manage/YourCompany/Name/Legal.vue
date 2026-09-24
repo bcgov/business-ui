@@ -46,7 +46,7 @@ const nrTypes = computed(() => {
 </script>
 
 <template>
-  <ConnectFieldset padding-class="py-4 sm:py-5 padding-x-default">
+  <ConnectFieldset padding-class="padding-x-default py-4 sm:py-5">
     <template #label>
       <div class="space-y-1">
         <div>{{ $t('label.companyName') }}</div>
@@ -76,7 +76,7 @@ const nrTypes = computed(() => {
 
       <div
         v-else-if="fieldState?.value"
-        class="flex items-center justify-between"
+        class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
         <span>{{ fieldState.value.legalName }}</span>
         <ManageYourCompanyActions
