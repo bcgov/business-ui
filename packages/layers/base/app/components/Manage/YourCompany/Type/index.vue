@@ -22,7 +22,7 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-const alertTarget = 'out-date'
+const alertTarget = 'legal-type'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
 
@@ -44,7 +44,7 @@ const displayValue = computed(() => fieldState?.value ? getCorpFullDescription(f
       <USkeleton v-if="loading" class="h-6 w-2/3 sm:w-1/3" />
 
       <SubFormFieldWrapper
-        v-else-if="model && model.key === 'outDate'"
+        v-else-if="model && model.key === 'legalType'"
         name="value"
         :task-guard-config="{
           message: alerts[alertTarget],
@@ -54,9 +54,12 @@ const displayValue = computed(() => fieldState?.value ? getCorpFullDescription(f
         @done="$emit('done')"
         @cancel="$emit('cancel')"
       >
-        <ConnectInputDatePicker
+        <!-- TODO/FUTURE: configure options based on data resource, currently blocked by #35034 -->
+        <ConnectSelect
+          id="business-type-menu"
           v-model="model.value"
-          label="Enter or Select a Date"
+          label="Select Business Type"
+          :items="[CorpTypeCd.BC_COMPANY, CorpTypeCd.BENEFIT_COMPANY, CorpTypeCd.BC_ULC_COMPANY]"
           required
           class="w-full"
         />

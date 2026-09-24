@@ -21,35 +21,29 @@ state.value = {
   new: {
     nameRequest: {
       value: { legalName: mockBusiness.legalName, nrNumber: '', changeToNumbered: false },
-      actions: [],
-      isEditing: false
+      actions: []
     },
     legalType: {
       value: mockBusiness.legalType as CorpTypeCd,
-      actions: [],
-      isEditing: false
+      actions: []
     },
     nameNewJurisdiction: {
       value: '0887699 B.C. LTD.',
-      actions: [],
-      isEditing: false
+      actions: []
     }
   },
   old: {
     nameRequest: {
       value: { legalName: mockBusiness.legalName, nrNumber: '', changeToNumbered: false },
-      actions: [],
-      isEditing: false
+      actions: []
     },
     legalType: {
       value: mockBusiness.legalType as CorpTypeCd,
-      actions: [],
-      isEditing: false
+      actions: []
     },
     nameNewJurisdiction: {
       value: '0887699 B.C. LTD.',
-      actions: [],
-      isEditing: false
+      actions: []
     }
   }
 }

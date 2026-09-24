@@ -48,6 +48,12 @@ export function getActiveYourCompanySchema() {
     z.object({
       key: z.literal('nameRequest'),
       value: getNameRequestSchema()
+    }),
+    
+    // Legal Type (also known as entity type or corp type)
+    z.object({
+      key: z.literal('legalType'),
+      value: z.enum(CorpTypeCd)
     })
   ]).optional()
 }
