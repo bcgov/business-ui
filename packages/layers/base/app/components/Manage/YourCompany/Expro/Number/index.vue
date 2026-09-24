@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The legal company name in the new jurisdiction after an Amalgamation Out or Continuation Out filing
+// The company expro numbers after a Continuation Out filing
 const {
   stateKey,
   fields,
@@ -10,9 +10,9 @@ const {
   stateKey: string
   fields: ManageYourCompanyFields
   loading?: boolean
-  preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
+  previousJurisdiction?: { country: string, region: string | null }
 }>()
 
 const emit = defineEmits<{
@@ -26,38 +26,30 @@ const model = defineModel<ActiveYourCompanySchema>()
 </script>
 
 <template>
-  <ConnectFormFieldWrapper
-    padding-class="py-4 sm:py-5 padding-x-default"
-    :label="'Jurisdiction'"
-  >
-    <div class="-mt-2 sm:mt-0">
-      British Columbia
-    </div>
-  </ConnectFormFieldWrapper>
-
-  <ManageYourCompanyJurisdictionNew
+  <ManageYourCompanyExproNumberInBC
     v-model="model"
-    :field-state="fields.newJurisdiction"
+    :field-state="fields.numberExpro"
     :loading
     :state-key
     :is-read-only-variant
     :label-overrides
-    @init-edit="$emit('init-edit', 'newJurisdiction')"
-    @undo="$emit('undo', 'newJurisdiction')"
+    @init-edit="$emit('init-edit', 'numberExpro')"
+    @undo="$emit('undo', 'numberExpro')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   />
-
-  <!-- <ManageYourCompanyJurisdictionPrevious
+  
+  <ManageYourCompanyExproNumberPreviousJurisdiction
     v-model="model"
-    :field-state="fields.previousJurisdiction"
+    :field-state="fields.numberPreviousJurisdiction"
     :loading
     :state-key
     :is-read-only-variant
     :label-overrides
-    @init-edit="$emit('init-edit', 'previousJurisdiction')"
-    @undo="$emit('undo', 'previousJurisdiction')"
+    :previous-jurisdiction
+    @init-edit="$emit('init-edit', 'numberPreviousJurisdiction')"
+    @undo="$emit('undo', 'numberPreviousJurisdiction')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-  /> -->
+  />
 </template>

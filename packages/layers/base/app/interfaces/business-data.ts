@@ -67,6 +67,10 @@ export interface BusinessDataExtended {
     incorporationDate: IsoDatePacific // YYYY-MM-DD
     legalName: string
     region: string | null
+    expro?: {
+      identifier: string
+      legalName: string
+    }
   }
   continuationOut?: BusinessOutData
 }

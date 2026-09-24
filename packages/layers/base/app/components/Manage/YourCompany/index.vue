@@ -176,6 +176,21 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
       
+      <ManageYourCompanyExproNumber
+        v-model="activeSubject"
+        :fields="state.new"
+        :state-key
+        :is-read-only-variant
+        :loading
+        :previous-jurisdiction="state.new.previousJurisdiction?.value"
+        @done="onDone"
+        @cancel="cleanupForm"
+        @init-edit="onInitEdit"
+        @undo="onUndo"
+      />
+
+      <USeparator class="padding-x-default" />
+      
       <!-- Current legal type also known as entity type or corp type -->
       <ManageYourCompanyType
         v-model="activeSubject"

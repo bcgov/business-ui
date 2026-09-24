@@ -4,7 +4,6 @@ const {
   stateKey,
   fields,
   loading,
-  preventActions,
   labelOverrides,
   isReadOnlyVariant,
   correctNameOptions,
@@ -13,7 +12,6 @@ const {
   stateKey: string
   fields: ManageYourCompanyFields
   loading?: boolean
-  preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
   correctNameOptions?: CorrectNameOption[]
@@ -22,7 +20,6 @@ const {
 }>()
 
 const emit = defineEmits<{
-  'action-prevented': []
   'done': []
   'init-edit': [key: keyof ManageYourCompanyFields | 'nameRequest']
   'undo': [key: keyof ManageYourCompanyFields]

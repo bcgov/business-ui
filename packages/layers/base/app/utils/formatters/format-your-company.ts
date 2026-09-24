@@ -57,6 +57,10 @@ export function createDefaultYourCompany(
       country: contIn.country,
       region: contIn.region
     })
+
+    if (contIn.expro) {
+      fields.numberExpro = createDefaultField(contIn.expro.identifier)
+    }
   }
 
   // populate Continuation Out or Amalgamation Out data if provided
