@@ -48,7 +48,7 @@ const model = defineModel<ActiveYourCompanySchema>()
     @cancel="$emit('cancel')"
   />
 
-  <!-- <ManageYourCompanyJurisdictionPrevious
+  <ManageYourCompanyJurisdictionPrevious
     v-model="model"
     :field-state="fields.previousJurisdiction"
     :loading
@@ -59,5 +59,5 @@ const model = defineModel<ActiveYourCompanySchema>()
     @undo="$emit('undo', 'previousJurisdiction')"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-  /> -->
+  />
 </template>

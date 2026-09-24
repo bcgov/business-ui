@@ -9,7 +9,7 @@ const {
   labelOverrides
 } = defineProps<{
   stateKey: string
-  fieldState?: ManageYourCompanyFields['newJurisdiction']
+  fieldState?: ManageYourCompanyFields['previousJurisdiction']
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-const alertTarget = 'new-jurisdiction'
+const alertTarget = 'previous-jurisdiction'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
 
@@ -86,7 +86,7 @@ const jurisdictionOpts: InputMenuItem[][] = [
 // normalize jurisdiction to match InputMenuItem
 const selectedJurisdiction = computed({
   get() {
-    if (!model.value || model.value.key !== 'newJurisdiction' || !model.value.value) {
+    if (!model.value || model.value.key !== 'previousJurisdiction' || !model.value.value) {
       return undefined
     }
 
@@ -100,10 +100,10 @@ const selectedJurisdiction = computed({
     }
   },
   set(val: { label?: string, country: string, region: string | null } | undefined) {
-    if (!model.value || model.value.key !== 'newJurisdiction') { return }
+    if (!model.value || model.value.key !== 'previousJurisdiction') { return }
 
     model.value = {
-      key: 'newJurisdiction',
+      key: 'previousJurisdiction',
       value: {
         country: val?.country ?? '',
         region: val?.region ?? null
@@ -123,7 +123,7 @@ const displayValue = computed(() => {
   <ConnectFieldset>
     <template #label>
       <div class="ml-4 space-y-1">
-        <div>New Jurisdiction</div>
+        <div>Previous Jurisdiction</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
@@ -131,7 +131,7 @@ const displayValue = computed(() => {
       <USkeleton v-if="loading" class="h-6 w-2/3 sm:w-1/3" />
 
       <SubFormFieldWrapper
-        v-else-if="model && model.key === 'newJurisdiction'"
+        v-else-if="model && model.key === 'previousJurisdiction'"
         name="value"
         :task-guard-config="{
           message: alerts[alertTarget],
@@ -142,9 +142,9 @@ const displayValue = computed(() => {
         @cancel="$emit('cancel')"
       >
         <ConnectInputMenu
-          id="new-jurisdiction-menu"
+          id="previous-jurisdiction-menu"
           v-model="selectedJurisdiction"
-          :label="$t('label.selectNewJurisdiction')"
+          :label="$t('label.selectPreviousJurisdiction')"
           :items="jurisdictionOpts"
           open-on-focus
           :ui="{
