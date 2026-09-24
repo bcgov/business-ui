@@ -146,6 +146,7 @@ async function onDone() {
       @pointerdown="clearAllAlerts"
       @keydown="clearAllAlerts"
     >
+      <!-- Current legal name & name in new and/or previous jurisdiction -->
       <ManageYourCompanyName
         v-model="activeSubject"
         :fields="state.new"
@@ -174,6 +175,21 @@ async function onDone() {
       />
 
       <USeparator class="padding-x-default" />
+      
+      <!-- Current legal type also known as entity type or corp type -->
+      <ManageYourCompanyType
+        v-model="activeSubject"
+        :field-state="state.new.legalType"
+        :state-key
+        :is-read-only-variant
+        :loading
+        @done="onDone"
+        @cancel="cleanupForm"
+        @init-edit="onInitEdit"
+        @undo="onUndo"
+      />
+      
+      <USeparator class="padding-x-default" />
 
       <!-- Recognition Date - non-editable -->
       <ManageYourCompanyRecognitionDate
@@ -183,7 +199,7 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
 
-      <!-- Recognition Date - non-editable -->
+      <!-- Amalgamation Out or Continuation Out Date -->
       <ManageYourCompanyOutDate
         v-model="activeSubject"
         :field-state="state.new.outDate"
@@ -199,6 +215,7 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
 
+      <!-- Current jurisdiction & new and/or previous jurisdiction -->
       <ManageYourCompanyJurisdiction
         v-model="activeSubject"
         :fields="state.new"
