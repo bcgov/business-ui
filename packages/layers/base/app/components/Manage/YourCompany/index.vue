@@ -27,7 +27,6 @@ const emit = defineEmits<{
 }>()
 
 const activeSubject = defineModel<ActiveYourCompanySchema>('active-subject')
-const activeNameRequest = defineModel<ActiveNameRequestSchema | undefined>('active-name-request')
 const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt')
 
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
@@ -113,7 +112,6 @@ function onUndo<K extends keyof ManageYourCompanyFields>(key: K) {
 function cleanupForm() {
   formRef.value?.clear()
   activeSubject.value = undefined
-  activeNameRequest.value = undefined
   activeNt.value = undefined
 }
 
@@ -165,13 +163,15 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- need to add to nt :labelOverrides :allowedActions -->
-      <ManageYourCompanyNt
+      <ManageYourCompanyNameTranslations
         v-model="activeNt"
         :state-key="stateKey + '-nt'"
         :variant
         :loading
         :prevent-actions
         :action-prevented-signal
+        :allowed-actions="nameTranslationAllowedActions"
+        :label-overrides="tableLabels"
       />
 
       <USeparator class="padding-x-default" />

@@ -28,6 +28,15 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
+const query = useBusinessQuery()
+
+const { data: nrData } = query.linkedNameRequest(
+  fieldState?.value?.nrNumber || '',
+  {
+    enabled: !!fieldState?.value?.nrNumber && fieldState.value.changeOption === CorrectNameOption.CORRECT_NEW_NR
+  }
+)
+
 const filingName = computed(() => getFilingName(FilingType.CORRECTION)!)
 
 const nameOptions = computed(() => {
@@ -43,6 +52,8 @@ const nrTypes = computed(() => {
   }
   return nrAllowedActionsTypes
 })
+
+const showNrData = computed(() => nrData.value && fieldState?.value?.changeOption === CorrectNameOption.CORRECT_NEW_NR)
 </script>
 
 <template>
@@ -78,9 +89,16 @@ const nrTypes = computed(() => {
         v-else-if="fieldState?.value"
         class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
-        <span>{{ fieldState.value.legalName }}</span>
+        <ManageYourCompanyNameRequestDetails
+          class="mt-1.5"
+          v-if="showNrData"
+          :field-state
+          :nrData
+        />
+        <span v-else class="text-xl font-bold">{{ fieldState.value.legalName }}</span>
         <ManageYourCompanyActions
           v-if="!isReadOnlyVariant"
+          :class="{ 'self-start': showNrData }"
           :actions="fieldState.actions"
           @init-edit="$emit('init-edit')"
           @undo="$emit('undo')"
