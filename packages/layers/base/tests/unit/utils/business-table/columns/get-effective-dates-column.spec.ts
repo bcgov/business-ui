@@ -2,15 +2,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockGetColumnMeta, mockGetIsRowRemoved } from '../../../mocks/business-table-utils'
 
-function getMockRow(date: string | null = '2025-04-12') {
+function getMockRow(appointmentDate: string | null = '2025-04-12', cessationDate: string | null = null) {
   return {
     original: {
       new: {
         roles: [
           {
             roleType: 'Director',
-            appointmentDate: date,
-            cessationDate: null
+            appointmentDate,
+            cessationDate
           }
         ],
         actions: []
@@ -51,7 +51,7 @@ describe('getEffectiveDatesColumn', () => {
     expect(mockGetColumnMeta).toHaveBeenCalledTimes(2)
   })
 
-  it('cell should have correct properties for a valid date', () => {
+  it('cell should have correct properties for a still-active role', () => {
     const row = getMockRow()
     const column = getEffectiveDatesColumn() as any
 
@@ -63,10 +63,10 @@ describe('getEffectiveDatesColumn', () => {
 
     expect(cell.type).toBe('span')
     expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip')
-    expect(cell.children).toContain('April 12, 2025 to current')
+    expect(cell.children).toBe('April 12, 2025 to current')
   })
 
-  it('cell should render "Not Available" text if missing date', () => {
+  it('cell should render "Not Available" text if missing an appointment date', () => {
     const row = getMockRow(null)
     const column = getEffectiveDatesColumn() as any
 
@@ -83,5 +83,22 @@ describe('getEffectiveDatesColumn', () => {
     const cell = column.cell({ row })
 
     expect(cell.props.class).toContain('opacity-40')
+  })
+
+  it('cell should render a Start/End range once the role has a cessation date', () => {
+    const row = getMockRow('2023-08-16', '2025-04-12')
+    const column = getEffectiveDatesColumn() as any
+
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.type).toBe('div')
+    // ceased rows are shown in grey
+    expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip opacity-55 flex flex-col')
+    expect(cell.children).toHaveLength(3)
+    expect(cell.children[0].children).toBe('August 16, 2023')
+    expect(cell.children[1].children).toBe('to')
+    expect(cell.children[2].children).toBe('April 12, 2025')
   })
 })

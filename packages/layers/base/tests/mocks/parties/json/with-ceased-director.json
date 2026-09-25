@@ -1,0 +1,74 @@
+[
+    {
+        "deliveryAddress": {
+            "addressCity": "Pierrefonds",
+            "addressCountry": "CA",
+            "addressRegion": "QC",
+            "deliveryInstructions": "",
+            "id": 2736127,
+            "postalCode": "H9H 1Z2",
+            "streetAddress": "5-14505 Boul De Pierrefonds",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Pierrefonds",
+            "addressCountry": "CA",
+            "addressRegion": "QC",
+            "deliveryInstructions": "",
+            "id": 2736128,
+            "postalCode": "H9H 1Z2",
+            "streetAddress": "5-14505 Boul De Pierrefonds",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "",
+            "firstName": "Active",
+            "id": 575361,
+            "lastName": "Director",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-08-16",
+                "cessationDate": null,
+                "roleType": "Director"
+            }
+        ]
+    },
+    {
+        "deliveryAddress": {
+            "addressCity": "Brampton",
+            "addressCountry": "CA",
+            "addressRegion": "ON",
+            "deliveryInstructions": "",
+            "id": 2736129,
+            "postalCode": "L6R 3C7",
+            "streetAddress": "7 Wallaby Way",
+            "streetAddressAdditional": ""
+        },
+        "mailingAddress": {
+            "addressCity": "Brampton",
+            "addressCountry": "CA",
+            "addressRegion": "ON",
+            "deliveryInstructions": "",
+            "id": 2736130,
+            "postalCode": "L6R 3C7",
+            "streetAddress": "7 Wallaby Way",
+            "streetAddressAdditional": ""
+        },
+        "officer": {
+            "email": "",
+            "firstName": "Ceased",
+            "id": 575362,
+            "lastName": "Director",
+            "partyType": "person"
+        },
+        "roles": [
+            {
+                "appointmentDate": "2023-08-16",
+                "cessationDate": "2025-01-15",
+                "roleType": "Director"
+            }
+        ]
+    }
+]
