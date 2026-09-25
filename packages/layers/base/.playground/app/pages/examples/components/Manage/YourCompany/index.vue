@@ -66,11 +66,6 @@ const contact: ContactPoint = {
 const activeNameRequest = ref<ActiveNameRequestSchema | undefined>(undefined)
 const activeNameTranslation = ref<ActiveNameTranslationSchema | undefined>(undefined)
 const loading = ref(false)
-
-// onMounted(async () => {
-//   const data = await useBusinessService().getBusinessExtended(businessId, true)
-//   console.log('EXTENDED: ', data)
-// })
 </script>
 
 <template>

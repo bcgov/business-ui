@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Form, FormErrorEvent, InputMenuItem } from '@nuxt/ui'
+import type { Form, FormErrorEvent } from '@nuxt/ui'
 
 const {
   stateKey,
@@ -19,7 +19,6 @@ const emit = defineEmits<{
   remove: []
 }>()
 
-const { t } = useI18n()
 const formTarget = 'amalgamation-correct-form'
 
 const model = defineModel<AmalgamationCorrectSchema>({ required: true })

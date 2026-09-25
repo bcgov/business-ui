@@ -19,7 +19,6 @@ function normalizeParty<T extends ActivePartySchema>(party: T): T {
   const { mailingAddress, deliveryAddress } = normalized.address
 
   if (mailingAddress && deliveryAddress) {
-    // @ts-expect-error - id not in party schema currently, needs greater refactor
     normalized.address.sameAs = isEqualOmit(mailingAddress, deliveryAddress, ['id'])
   }
 

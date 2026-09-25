@@ -19,7 +19,7 @@ const {
   nrAllowedActionsTypes?: NrRequestActionCode[]
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   'init-edit': []
   'done': []
   'cancel': []
@@ -61,7 +61,7 @@ const showNrData = computed(() => nrData.value && fieldState?.value?.changeOptio
     <template #label>
       <div class="space-y-1">
         <div>{{ $t('label.companyName') }}</div>
-        <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
+        <ManageYourCompanyFieldBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
     <template #default>
@@ -89,17 +89,18 @@ const showNrData = computed(() => nrData.value && fieldState?.value?.changeOptio
         v-else-if="fieldState?.value"
         class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
-        <ManageYourCompanyNameRequestDetails
+        <ManageYourCompanySectionNameRequestDetails
           v-if="showNrData"
           class="mt-1.5"
           :field-state
           :nr-data
         />
         <span v-else class="text-xl font-bold">{{ fieldState.value.legalName }}</span>
-        <ManageYourCompanyActions
+        <ManageYourCompanyFieldActions
           v-if="!isReadOnlyVariant"
           :class="{ 'self-start': showNrData }"
           :actions="fieldState.actions"
+          :label-overrides
           @init-edit="$emit('init-edit')"
           @undo="$emit('undo')"
         />

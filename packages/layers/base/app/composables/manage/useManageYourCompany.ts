@@ -32,10 +32,10 @@ export const useManageYourCompany = (
     }
 
     const { key, value } = subject
-    const newSubject = state.value.new[key] as ManageYourCompanyFieldState<any> | undefined
-    const oldSubject = state.value.old[key] as ManageYourCompanyFieldState<any> | undefined
+    const newSubject = state.value.new[key] as ManageYourCompanyFields[K]
+    const oldSubject = state.value.old[key] as ManageYourCompanyFields[K]
 
-    if (!newSubject) {
+    if (!newSubject || !value) {
       return
     }
 

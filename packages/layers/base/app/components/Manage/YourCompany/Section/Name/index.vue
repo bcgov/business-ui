@@ -19,7 +19,7 @@ const {
   business?: BusinessData | BusinessDataPublic
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   'done': []
   'cancel': []
   'init-edit': [key: keyof ManageYourCompanyFields]
@@ -30,7 +30,7 @@ const model = defineModel<ActiveYourCompanySchema>()
 </script>
 
 <template>
-  <ManageYourCompanyNameLegal
+  <ManageYourCompanySectionNameLegal
     v-model="model"
     :field-state="fields.nameRequest"
     :loading
@@ -69,7 +69,7 @@ const model = defineModel<ActiveYourCompanySchema>()
       :label="$t('label.enterNameInNewJurisdiction')"
     />
   </ManageYourCompanyFieldRow>
-  
+
   <!-- The legal company name in the previous jurisdiction after a Continuation In filing -->
   <ManageYourCompanyFieldRow
     v-model="model"

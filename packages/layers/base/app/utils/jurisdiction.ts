@@ -1,6 +1,6 @@
 import type { InputMenuItem } from '@nuxt/ui'
 
-export function getJurisdictionLabel(j?: {country?: string, region?: string | null}): string {
+export function getJurisdictionLabel(j?: { country?: string, region?: string | null }): string {
   const t = useNuxtApp().$i18n.t
 
   if (!j || !j.country) {

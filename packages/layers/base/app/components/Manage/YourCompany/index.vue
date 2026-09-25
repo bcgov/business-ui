@@ -18,7 +18,6 @@ const {
 } = defineProps<ManageCompanyNameProps & {
   preventActions?: boolean
   actionPreventedSignal?: number
-  businessExtended?: BusinessDataExtended
   nested?: boolean
   correctedFilingType?: FilingType
   labelOverrides?: TableLabelOverrides
@@ -31,21 +30,10 @@ const emit = defineEmits<{
 const activeSubject = defineModel<ActiveYourCompanySchema>('active-subject')
 const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt')
 
-watchEffect(() => console.log('active subject: ', activeSubject.value))
-
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
-const alertTargets = [
-  'number-expro',
-  'number-prev-jurisdiction',
-  'new-jurisdiction',
-  'previous-jurisdiction',
-  'company-name-form',
-  'new-jurisdiction-name',
-  'previous-jurisdiction-name',
-  'legal-type',
-  'out-date'
-]
+const schema = getActiveYourCompanySchema()
+const fieldKeys = schema.unwrap().options.map(o => o.shape.key.value)
 
 const {
   state,
@@ -54,8 +42,6 @@ const {
 } = useManageYourCompany(stateKey, {
   cleanupFn: cleanupForm
 })
-
-const schema = getActiveYourCompanySchema()
 
 const {
   isReadOnlyVariant,
@@ -72,7 +58,7 @@ const {
   preventActions,
   actionPreventedSignal,
   activeSubjects: [
-    ...alertTargets.map(t => ({
+    ...fieldKeys.map(t => ({
       subject: activeSubject,
       alertTarget: t
     })),
@@ -90,14 +76,11 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
     return
   }
 
-  const subject = state.value.new[key] as ManageYourCompanyFieldState<any> | undefined
+  const subject = state.value.new[key]
 
   if (!subject) {
     return
   }
-
-  console.log('init-edit: ', key)
-  console.log('init-edit subject: ', subject)
 
   activeSubject.value = {
     key,
@@ -146,11 +129,11 @@ async function onDone() {
       :nested
       name="activeYourCompany"
       class="flex flex-col"
-      @pointerdown="clearAllAlerts"
-      @keydown="clearAllAlerts"
+      @pointerup="clearAllAlerts"
+      @keyup="clearAllAlerts"
     >
       <!-- Current legal name & name in new and/or previous jurisdiction -->
-      <ManageYourCompanyName
+      <ManageYourCompanySectionName
         v-model="activeSubject"
         :fields="state.new"
         :state-key
@@ -168,8 +151,8 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
 
-      <!-- need to add to nt :labelOverrides :allowedActions -->
-      <ManageYourCompanyNameTranslations
+      <!-- Company name translations -->
+      <ManageYourCompanySectionNameTranslations
         v-model="activeNt"
         :state-key="stateKey + '-nt'"
         :variant
@@ -183,13 +166,13 @@ async function onDone() {
 
       <USeparator class="padding-x-default" />
 
-      <ManageYourCompanyExproNumber
+      <!-- Company Extraprovincial number and the identifying number in the previous jurisdiction -->
+      <ManageYourCompanySectionExproNumber
         v-model="activeSubject"
         :fields="state.new"
         :state-key
         :is-read-only-variant
         :loading
-        :previous-jurisdiction="state.new.previousJurisdiction?.value"
         :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
@@ -200,7 +183,7 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- Current legal type also known as entity type or corp type -->
-      <ManageYourCompanyType
+      <ManageYourCompanySectionType
         v-model="activeSubject"
         :field-state="state.new.legalType"
         :state-key
@@ -216,7 +199,7 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- Recognition Date - non-editable -->
-      <ManageYourCompanyRecognitionDate
+      <ManageYourCompanySectionRecognitionDate
         :loading
         :founding-date="business?.foundingDate"
       />
@@ -224,7 +207,7 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- Amalgamation Out or Continuation Out Date -->
-      <ManageYourCompanyOutDate
+      <ManageYourCompanySectionOutDate
         v-model="activeSubject"
         :field-state="state.new.outDate"
         :state-key
@@ -241,7 +224,7 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- Current jurisdiction & new and/or previous jurisdiction -->
-      <ManageYourCompanyJurisdiction
+      <ManageYourCompanySectionJurisdiction
         v-model="activeSubject"
         :fields="state.new"
         :state-key
@@ -257,7 +240,7 @@ async function onDone() {
       <USeparator class="padding-x-default" />
 
       <!-- Contact Info - non-editable -->
-      <ManageYourCompanyContactInfo
+      <ManageYourCompanySectionContactInfo
         :loading
         :contact
       />

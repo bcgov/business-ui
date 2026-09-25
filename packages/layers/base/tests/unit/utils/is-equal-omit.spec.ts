@@ -42,9 +42,7 @@ describe('isEqualOmit', () => {
   })
 
   it('should return false when comparing an empty object to null or undefined', () => {
-    // @ts-expect-error null !== object
     expect(isEqualOmit({}, null, [])).toBe(false)
-    // @ts-expect-error undefined !== object
     expect(isEqualOmit({}, undefined, [])).toBe(false)
   })
 
@@ -58,26 +56,21 @@ describe('isEqualOmit', () => {
   })
 
   it('should return true if both args are null', () => {
-    // @ts-expect-error test null args
     expect(isEqualOmit(null, null, ['id'])).toBe(true)
   })
 
   it('should return false if both args are undefined', () => {
-    // @ts-expect-error undefined args
     expect(isEqualOmit(undefined, undefined, ['id'])).toBe(true)
   })
 
   it('should return false if one arg is null and the other is an object', () => {
     const obj = { id: 123, name: 'Test' }
 
-    // @ts-expect-error test null arg
     expect(isEqualOmit(null, obj, ['id'])).toBe(false)
-    // @ts-expect-error test null arg
     expect(isEqualOmit(obj, null, ['id'])).toBe(false)
   })
 
   it('should return false when comparing null and undefined', () => {
-    // @ts-expect-error null/undefined args
     expect(isEqualOmit(null, undefined, ['id'])).toBe(false)
   })
 })

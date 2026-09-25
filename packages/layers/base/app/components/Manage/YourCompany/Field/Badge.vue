@@ -11,7 +11,7 @@ const {
 const badge = computed(() => getTableBadges(
   // @ts-expect-error - first arg is typed as a tanstack table row
   { original: { new: { actions: actions } } },
-  labelOverrides
+  labelOverrides?.badges
 )[0])
 </script>
 

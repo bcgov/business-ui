@@ -14,7 +14,7 @@ const {
 } = defineProps<{
   stateKey: string
   fieldKey: keyof ManageYourCompanyFields
-  fieldState?: ManageYourCompanyFieldState<any>
+  fieldState?: ManageYourCompanyFields[keyof ManageYourCompanyFields]
   label: string
   subLabel?: string
   displayValue?: string
@@ -25,7 +25,7 @@ const {
   paddingClass?: string
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   'init-edit': [key: keyof ManageYourCompanyFields]
   'done': []
   'cancel': []
@@ -34,11 +34,9 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-// Attach filing alerts for validation errors (e.g., cross-field task guards)
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(fieldKey, model)
 
-// Determines whether the current field has a value to render in view mode
 const hasDisplayValue = computed(() => {
   if (displayValue !== undefined) {
     return Boolean(displayValue)
@@ -46,7 +44,6 @@ const hasDisplayValue = computed(() => {
   return fieldState?.value !== undefined && fieldState?.value !== null && fieldState?.value !== ''
 })
 
-// Whether this specific field is currently open in edit mode
 const isEditing = computed(() => Boolean(model.value && model.value.key === fieldKey))
 </script>
 
@@ -66,7 +63,7 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
             ({{ subLabel }})
           </div>
         </slot>
-        <ManageYourCompanyBadge
+        <ManageYourCompanyFieldBadge
           :actions="fieldState?.actions"
           :label-overrides="labelOverrides"
           :class="{ 'mt-1': subLabel }"
@@ -75,13 +72,11 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
     </template>
 
     <template #default>
-      <!-- Loading Skeleton -->
       <USkeleton
         v-if="loading"
         class="h-6 w-2/3 sm:w-1/3"
       />
 
-      <!-- Subform Edit Mode -->
       <SubFormFieldWrapper
         v-else-if="isEditing"
         name="value"
@@ -96,7 +91,6 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
         <slot :model="model" />
       </SubFormFieldWrapper>
 
-      <!-- Read-Only View Mode -->
       <div
         v-else-if="hasDisplayValue"
         :class="['flex items-center justify-between -mt-4 sm:-mt-1.5', { 'ml-4 sm:ml-0': indent }]"
@@ -105,9 +99,10 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
           <span>{{ displayValue ?? fieldState?.value }}</span>
         </slot>
 
-        <ManageYourCompanyActions
+        <ManageYourCompanyFieldActions
           v-if="!isReadOnlyVariant"
           :actions="fieldState?.actions"
+          :label-overrides
           @init-edit="$emit('init-edit', fieldKey)"
           @undo="$emit('undo', fieldKey)"
         />

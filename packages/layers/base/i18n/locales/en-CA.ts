@@ -498,6 +498,7 @@ export default {
     incorporationPending: 'Incorporation Pending',
     individualPerson: 'Individual Person',
     international: 'International',
+    jurisdiction: 'Jurisdiction',
     keepEditing: 'Keep Editing',
     lastName: 'Last Name',
     legalName: 'Legal Name',
