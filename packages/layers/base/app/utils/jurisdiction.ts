@@ -1,21 +1,21 @@
 import type { InputMenuItem } from '@nuxt/ui'
 
-export function getJurisdictionLabel(country?: string, region?: string | null): string {
+export function getJurisdictionLabel(j?: {country?: string, region?: string | null}): string {
   const t = useNuxtApp().$i18n.t
 
-  if (!country) {
+  if (!j || !j.country) {
     return ''
   }
 
-  if (country === 'CA') {
-    if (region === 'FEDERAL') {
+  if (j.country === 'CA') {
+    if (j.region === 'FEDERAL') {
       return t('label.federal')
     }
-    const provinceDisplay = countrySubdivisions.ca.find(p => p.code === region)?.name || region
+    const provinceDisplay = countrySubdivisions.ca.find(p => p.code === j.region)?.name || j.region
     return `${provinceDisplay}, Canada`
   }
 
-  const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === country)?.name || country
+  const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === j.country)?.name || j.country
   return countryDisplay
 }
 

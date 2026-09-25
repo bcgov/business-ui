@@ -21,7 +21,7 @@ const {
 
 const emit = defineEmits<{
   'done': []
-  'init-edit': [key: keyof ManageYourCompanyFields | 'nameRequest']
+  'init-edit': [key: keyof ManageYourCompanyFields]
   'undo': [key: keyof ManageYourCompanyFields]
   'cancel': []
 }>()
@@ -46,29 +46,51 @@ const model = defineModel<ActiveYourCompanySchema>()
     @cancel="$emit('cancel')"
   />
 
-  <ManageYourCompanyNameNewJurisdiction
+  <!-- The legal company name in the new jurisdiction after an Amalgamation Out or Continuation Out filing -->
+  <ManageYourCompanyFieldRow
     v-model="model"
+    :state-key
+    field-key="nameNewJurisdiction"
     :field-state="fields.nameNewJurisdiction"
+    :label="$t('label.nameInNewJurisdiction')"
     :loading
-    :state-key
-    :is-read-only-variant
     :label-overrides
-    @init-edit="$emit('init-edit', 'nameNewJurisdiction')"
-    @undo="$emit('undo', 'nameNewJurisdiction')"
+    :is-read-only-variant
+    indent
+    @init-edit="$emit('init-edit', $event)"
+    @undo="$emit('undo', $event)"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-  />
-
-  <ManageYourCompanyNamePreviousJurisdiction
+  >
+    <ConnectInput
+      v-if="model && model.key === 'nameNewJurisdiction'"
+      id="new-jurisdiction-name"
+      v-model="model.value"
+      :label="$t('label.enterNameInNewJurisdiction')"
+    />
+  </ManageYourCompanyFieldRow>
+  
+  <!-- The legal company name in the previous jurisdiction after a Continuation In filing -->
+  <ManageYourCompanyFieldRow
     v-model="model"
-    :field-state="fields.namePreviousJurisdiction"
-    :loading
     :state-key
-    :is-read-only-variant
+    field-key="namePreviousJurisdiction"
+    :field-state="fields.namePreviousJurisdiction"
+    :label="$t('label.nameInPreviousJurisdiction')"
+    :loading
     :label-overrides
-    @init-edit="$emit('init-edit', 'namePreviousJurisdiction')"
-    @undo="$emit('undo', 'namePreviousJurisdiction')"
+    :is-read-only-variant
+    indent
+    @init-edit="$emit('init-edit', $event)"
+    @undo="$emit('undo', $event)"
     @done="$emit('done')"
     @cancel="$emit('cancel')"
-  />
+  >
+    <ConnectInput
+      v-if="model && model.key === 'namePreviousJurisdiction'"
+      id="previous-jurisdiction-name"
+      v-model="model.value"
+      :label="$t('label.enterNameInPreviousJurisdiction')"
+    />
+  </ManageYourCompanyFieldRow>
 </template>

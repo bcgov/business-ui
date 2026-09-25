@@ -456,6 +456,7 @@ export default {
     emailAddressOpt: 'Email Address (Optional)',
     enterEmailAddress: 'Enter an Email Address',
     enterNameInNewJurisdiction: 'Enter name in new jurisdiction',
+    enterNameInPreviousJurisdiction: 'Enter name in previous jurisdiction',
     enterNumberInPreviousJurisdiction: 'Enter number in previous jurisdiction',
     enterOrSelectDate: 'Enter or Select Date',
     enterOrSelectEffectiveDate: 'Enter or Select an Effective Date',

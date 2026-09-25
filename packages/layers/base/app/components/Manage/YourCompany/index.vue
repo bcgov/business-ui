@@ -31,6 +31,8 @@ const emit = defineEmits<{
 const activeSubject = defineModel<ActiveYourCompanySchema>('active-subject')
 const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt')
 
+watchEffect(() => console.log('active subject: ', activeSubject.value))
+
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
 const alertTargets = [
@@ -93,6 +95,9 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
   if (!subject) {
     return
   }
+
+  console.log('init-edit: ', key)
+  console.log('init-edit subject: ', subject)
 
   activeSubject.value = {
     key,

@@ -41,7 +41,7 @@ const selectedJurisdiction = computed({
     }
 
     return {
-      label: getJurisdictionLabel(country, region),
+      label: getJurisdictionLabel(model.value.value),
       country,
       region
     }
@@ -60,6 +60,8 @@ const selectedJurisdiction = computed({
     }
   }
 })
+
+const displayValue = computed(() => getJurisdictionLabel(fieldState?.value))
 </script>
 
 <template>
@@ -101,7 +103,7 @@ const selectedJurisdiction = computed({
         v-else-if="fieldState?.value"
         class="flex items-center justify-between -mt-4 sm:-mt-1.5 ml-4 sm:ml-0"
       >
-        <span>{{ selectedJurisdiction?.label || '' }}</span>
+        <span>{{ displayValue }}</span>
         <ManageYourCompanyActions
           v-if="!isReadOnlyVariant"
           :actions="fieldState.actions"

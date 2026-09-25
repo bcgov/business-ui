@@ -52,7 +52,7 @@ const selectedJurisdiction = computed({
     const { country, region } = model.value.foreignJurisdiction
 
     return {
-      label: getJurisdictionLabel(country, region),
+      label: getJurisdictionLabel(model.value.foreignJurisdiction),
       country,
       region
     }
