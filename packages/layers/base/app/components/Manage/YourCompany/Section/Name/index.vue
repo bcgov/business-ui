@@ -27,6 +27,8 @@ defineEmits<{
 }>()
 
 const model = defineModel<ActiveYourCompanySchema>()
+
+watchEffect(() => console.log(isReadOnlyVariant))
 </script>
 
 <template>

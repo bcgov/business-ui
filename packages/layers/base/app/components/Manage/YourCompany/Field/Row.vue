@@ -93,7 +93,7 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
 
       <div
         v-else-if="hasDisplayValue"
-        :class="['flex items-center justify-between -mt-4 sm:-mt-1.5', { 'ml-4 sm:ml-0': indent }]"
+        :class="['flex items-center justify-between', { 'ml-4 sm:ml-0': indent }]"
       >
         <slot name="display">
           <span>{{ displayValue ?? fieldState?.value }}</span>

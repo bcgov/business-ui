@@ -87,7 +87,7 @@ const showNrData = computed(() => nrData.value && fieldState?.value?.changeOptio
 
       <div
         v-else-if="fieldState?.value"
-        class="flex items-center justify-between -mt-4 sm:-mt-1.5"
+        class="flex items-center justify-between"
       >
         <ManageYourCompanySectionNameRequestDetails
           v-if="showNrData"
