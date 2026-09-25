@@ -12,10 +12,10 @@ const details = computed(() => {
       return undefined
     }
     return [
-        { label: 'Business Type', value: getCorpFullDescription(data.legalType) },
-        { label: 'Request Type', value: t(`nameRequestAction.${data.request_action_cd}`) },
-        { label: 'Expiry Date', value: toReadableDate(data.expirationDate) },
-        { label: 'Status', value: t(`nameRequestState.${data.state}`) }
+        { label: t('label.businessType'), value: getCorpFullDescription(data.legalType) },
+        { label: t('label.requestType'), value: t(`nameRequestAction.${data.request_action_cd}`) },
+        { label: t('label.expiryDate'), value: toReadableDate(data.expirationDate) },
+        { label: t('label.status'), value: t(`nameRequestState.${data.state}`) }
       ]
   })
 </script>

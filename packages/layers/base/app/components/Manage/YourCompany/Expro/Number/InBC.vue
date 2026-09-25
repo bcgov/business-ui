@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The current company name
+// The extraprovincial identifier assigned to a company after a Coninuation In filing
 const {
   stateKey,
   fieldState,
@@ -33,7 +33,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
   <ConnectFieldset padding-class="padding-x-default py-4 sm:py-5">
     <template #label>
       <div class="space-y-1">
-        <div>Extraprovincial Registration Number in B.C.</div>
+        <div>{{ $t('label.exproNumberInBc') }}</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
@@ -54,7 +54,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         <ConnectInput
           id="number-expro-input"
           v-model="model.value"
-          label="Enter extraprovincial number"
+          :label="$t('label.enterTheExproNumber')"
           @keydown.enter.stop="$emit('done')"
         />
       </SubFormFieldWrapper>

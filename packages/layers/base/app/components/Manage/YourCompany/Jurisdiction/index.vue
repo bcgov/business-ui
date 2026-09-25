@@ -31,7 +31,7 @@ const model = defineModel<ActiveYourCompanySchema>()
     :label="'Jurisdiction'"
   >
     <div class="-mt-2 sm:mt-0">
-      British Columbia
+      {{ $t('label.britishColumbia') }}
     </div>
   </ConnectFormFieldWrapper>
 

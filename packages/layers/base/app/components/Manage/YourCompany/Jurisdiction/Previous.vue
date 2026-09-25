@@ -123,7 +123,7 @@ const displayValue = computed(() => {
   <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4 space-y-1">
-        <div>Previous Jurisdiction</div>
+        <div>{{ $t('label.previousJurisdiction') }}</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>

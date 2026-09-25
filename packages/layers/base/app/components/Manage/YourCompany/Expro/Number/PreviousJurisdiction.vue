@@ -54,7 +54,7 @@ const jurisdictionLabel = computed(() => {
   <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4">
-        <div>Identifying Number</div>
+        <div>{{ $t('label.identifyingNumber') }}</div>
         <div
           v-if="previousJurisdiction?.country"
           class="font-normal text-sm italic"
@@ -85,7 +85,7 @@ const jurisdictionLabel = computed(() => {
         <ConnectInput
           id="number-prev-jurisdiction"
           v-model="model.value"
-          label="Enter number in previous jurisdiction"
+          :label="$t('label.enterNumberInPreviousJurisdiction')"
           @keydown.enter.stop="$emit('done')"
         />
       </SubFormFieldWrapper>

@@ -31,7 +31,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
   <ConnectFieldset padding-class="padding-x-default pb-4 sm:pb-5">
     <template #label>
       <div class="ml-4 space-y-1">
-        <div>Name in new Jurisdiction</div>
+        <div>{{ $t('label.nameInNewJurisdiction') }}</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
@@ -52,7 +52,7 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
         <ConnectInput
           id="new-jurisdiction-name"
           v-model="model.value"
-          label="Enter name in new jurisdiction"
+          :label="$t('label.enterNameInNewJurisdiction')"
           @keydown.enter.stop="$emit('done')"
         />
       </SubFormFieldWrapper>

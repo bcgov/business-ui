@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The company expro numbers after a Continuation Out filing
+// The company expro numbers after a Continuation In filing
 const {
   stateKey,
   fields,

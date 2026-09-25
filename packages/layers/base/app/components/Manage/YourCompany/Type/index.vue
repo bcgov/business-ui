@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The company legalType also known as entity type or corp type
+// The company legalType also known as entity type or corp type - may be changed by a name request
 const {
   stateKey,
   fieldState,
@@ -36,7 +36,7 @@ const displayValue = computed(() => fieldState?.value ? getCorpFullDescription(f
   >
     <template #label>
       <div class="space-y-1">
-        <div>Business Type</div>
+        <div>{{ $t('label.businessType') }}</div>
         <ManageYourCompanyBadge :actions="fieldState?.actions" :label-overrides />
       </div>
     </template>
@@ -58,7 +58,7 @@ const displayValue = computed(() => fieldState?.value ? getCorpFullDescription(f
         <ConnectSelect
           id="business-type-menu"
           v-model="model.value"
-          label="Select Business Type"
+          :label="$t('label.selectBusinessType')"
           :items="[CorpTypeCd.BC_COMPANY, CorpTypeCd.BENEFIT_COMPANY, CorpTypeCd.BC_ULC_COMPANY]"
           required
           class="w-full"

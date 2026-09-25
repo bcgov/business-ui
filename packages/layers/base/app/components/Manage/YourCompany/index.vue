@@ -13,13 +13,15 @@ const {
   nameTranslationAllowedActions,
   preventActions = false,
   actionPreventedSignal = 0,
-  nested = true
+  nested = true,
+  labelOverrides
 } = defineProps<ManageCompanyNameProps & {
   preventActions?: boolean
   actionPreventedSignal?: number
   businessExtended?: BusinessDataExtended
   nested?: boolean
   correctedFilingType?: FilingType
+  labelOverrides?: TableLabelOverrides
 }>()
 
 const emit = defineEmits<{
@@ -31,9 +33,20 @@ const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt
 
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
+const alertTargets = [
+  'number-expro',
+  'number-prev-jurisdiction',
+  'new-jurisdiction',
+  'previous-jurisdiction',
+  'company-name-form',
+  'new-jurisdiction-name',
+  'previous-jurisdiction-name',
+  'legal-type',
+  'out-date'
+]
+
 const {
   state,
-  nrDetails,
   editSubject,
   undoSubject
 } = useManageYourCompany(stateKey, {
@@ -45,41 +58,31 @@ const schema = getActiveYourCompanySchema()
 const {
   isReadOnlyVariant,
   shouldPreventActions,
-  tableAllowedActions,
+  tableAllowedActions: ntAllowedActions,
   tableLabels,
   setActiveSubjectAlert,
   clearAllAlerts
 } = useManageCommon({
   stateKey,
   variant,
-  // allowedActions,
-  // labelOverrides,
+  allowedActions: nameTranslationAllowedActions,
+  labelOverrides,
   preventActions,
   actionPreventedSignal,
   activeSubjects: [
-    {
+    ...alertTargets.map(t => ({
       subject: activeSubject,
-      alertTarget: 'new-juridiction-name'
-    },
+      alertTarget: t
+    })),
     {
-      subject: activeSubject,
-      alertTarget: 'company-name-form'
-    },
-    {
-      subject: activeSubject,
-      alertTarget: 'out-date'
-    },
-    {
-      subject: activeSubject,
-      alertTarget: 'new-jurisdiction'
+      subject: activeNt,
+      alertTarget: 'name-translation-form'
     }
   ]
 })
 
 function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
-  console.log('init edit: ', key)
   if (shouldPreventActions.value) {
-    console.log('preventing actions')
     setActiveSubjectAlert()
     emit('action-prevented')
     return
@@ -88,11 +91,9 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
   const subject = state.value.new[key] as ManageYourCompanyFieldState<any> | undefined
 
   if (!subject) {
-    console.log('no subject found')
     return
   }
 
-  console.log('subject: ', subject)
 
   activeSubject.value = {
     key,
@@ -154,6 +155,7 @@ async function onDone() {
         :correct-name-options
         :business
         :loading
+        :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -170,8 +172,9 @@ async function onDone() {
         :loading
         :prevent-actions
         :action-prevented-signal
-        :allowed-actions="nameTranslationAllowedActions"
+        :allowed-actions="ntAllowedActions"
         :label-overrides="tableLabels"
+        @action-prevented="setActiveSubjectAlert"
       />
 
       <USeparator class="padding-x-default" />
@@ -183,6 +186,7 @@ async function onDone() {
         :is-read-only-variant
         :loading
         :previous-jurisdiction="state.new.previousJurisdiction?.value"
+        :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -198,6 +202,7 @@ async function onDone() {
         :state-key
         :is-read-only-variant
         :loading
+        :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -222,6 +227,7 @@ async function onDone() {
         :is-read-only-variant
         :loading
         :corrected-filing-type
+        :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -237,6 +243,7 @@ async function onDone() {
         :state-key
         :is-read-only-variant
         :loading
+        :label-overrides="tableLabels"
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"

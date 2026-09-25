@@ -24,6 +24,8 @@ const emit = defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
+const { t } = useI18n()
+
 const alertTarget = 'out-date'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
@@ -31,8 +33,8 @@ const { targetId, messageId } = attachAlerts(alertTarget, model)
 const displayValue = computed(() => fieldState?.value ? toReadableDate(fieldState.value) : '')
 const fieldsetLabel = computed(() =>
   correctedFilingType === FilingType.AMALGAMATION_OUT
-    ? 'Date of Amalgamation Out'
-    : 'Date of Continuation Out'
+    ? t('label.dateOfAmalgamationOut')
+    : t('label.dateOfContinuationOut')
 )
 </script>
 
@@ -63,7 +65,7 @@ const fieldsetLabel = computed(() =>
       >
         <ConnectInputDatePicker
           v-model="model.value"
-          label="Enter or Select a Date"
+          :label="$t('label.enterOrSelectDate')"
           required
           class="w-full"
         />
