@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { cloneDeep } from 'es-toolkit'
 import type { Form, FormErrorEvent } from '@nuxt/ui'
-import type { ManageCompanyNameProps } from '#business/app/interfaces'
+import type { ManageYourCompanyProps } from '#business/app/interfaces'
 
 const {
   stateKey = 'manage-your-company',
@@ -15,13 +15,7 @@ const {
   actionPreventedSignal = 0,
   nested = true,
   labelOverrides
-} = defineProps<ManageCompanyNameProps & {
-  preventActions?: boolean
-  actionPreventedSignal?: number
-  nested?: boolean
-  correctedFilingType?: FilingType
-  labelOverrides?: TableLabelOverrides
-}>()
+} = defineProps<ManageYourCompanyProps>()
 
 const emit = defineEmits<{
   'action-prevented': []

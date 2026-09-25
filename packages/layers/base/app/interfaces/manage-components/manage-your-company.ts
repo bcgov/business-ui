@@ -1,3 +1,5 @@
+import type { ManageBaseProps } from '#business/app/interfaces'
+
 export interface ManageYourCompanyFieldState<T> {
   value: T
   actions: ActionType[]
@@ -42,3 +44,31 @@ export interface ManageYourCompanyState {
   new: ManageYourCompanyFields
   old: ManageYourCompanyFields
 }
+
+export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
+  tableTitle?: string
+  business?: BusinessData | BusinessDataPublic
+  contact?: ContactPoint
+  labelOverrides?: TableLabelOverrides
+  correctedFilingType?: FilingType
+  nameTranslationLabelOverrides?: TableLabelOverrides
+} & (
+  | {
+    variant?: 'default' | 'correct'
+    correctNameOptions: CorrectNameOption[]
+    nrAllowedActionsTypes: NrRequestActionCode[]
+    nameTranslationAllowedActions?: ManageAllowedAction[]
+    preventActions?: boolean
+    actionPreventedSignal?: number
+    nested?: boolean
+  }
+  | {
+    variant: 'readonly' | 'correct-readonly'
+    correctNameOptions?: never
+    nrAllowedActionsTypes?: never
+    nameTranslationAllowedActions?: never
+    preventActions?: never
+    actionPreventedSignal?: never
+    nested?: never
+  }
+)

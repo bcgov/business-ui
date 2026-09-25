@@ -6,7 +6,7 @@ definePageMeta({
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Your Company' }, { label: 'Default' }]
 })
 
-const stateKey = 'playground-manage-company-name-editable'
+const stateKey = 'manage-your-company'
 const nameTranslationsStateKey = `${stateKey}-nt`
 
 const { state } = useManageYourCompany('manage-your-company')
@@ -63,21 +63,21 @@ const contact: ContactPoint = {
   phone: '250-555-1234'
 }
 
-const activeNameRequest = ref<ActiveNameRequestSchema | undefined>(undefined)
 const activeNameTranslation = ref<ActiveNameTranslationSchema | undefined>(undefined)
+const activeYourCompany = ref<ActiveYourCompanySchema>(undefined)
 const loading = ref(false)
 </script>
 
 <template>
   <UContainer>
     <ManageYourCompany
-      v-model:active-name-request="activeNameRequest"
+      v-model:active-subject="activeYourCompany"
       v-model:active-name-translation="activeNameTranslation"
-      :state-key="stateKey"
-      :business="business"
-      :contact="contact"
-      :loading="loading"
-      :readonly="false"
+      :state-key
+      :business
+      :contact
+      :loading
+      variant="correct"
       :correct-name-options="[CorrectNameOption.CORRECT_NAME]"
       :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]"
       :name-translation-allowed-actions="[

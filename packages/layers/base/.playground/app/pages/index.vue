@@ -45,19 +45,6 @@ const componentExamples: DropdownMenuItem[] = [
         ]
       },
       {
-        label: 'ManageCompanyName',
-        children: [
-          {
-            to: localePath('/examples/components/ManageCompanyName'),
-            label: 'Readonly'
-          },
-          {
-            to: localePath('/examples/components/ManageCompanyName/editable'),
-            label: 'Editable'
-          }
-        ]
-      },
-      {
         label: 'ManageCourtOrders',
         children: [
           {
@@ -156,7 +143,7 @@ const componentExamples: DropdownMenuItem[] = [
         children: [
           {
             to: localePath('/examples/components/Manage/YourCompany'),
-            label: 'Default'
+            label: 'Correct'
           }
         ]
       }

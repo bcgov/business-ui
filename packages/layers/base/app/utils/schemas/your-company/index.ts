@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+// TODO/FUTURE: refine validations + add i18n
 export function getActiveYourCompanySchema() {
   return z.discriminatedUnion('key', [
     // Continuation In / Out Names
