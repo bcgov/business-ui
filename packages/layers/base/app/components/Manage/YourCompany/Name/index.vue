@@ -21,9 +21,9 @@ const {
 
 const emit = defineEmits<{
   'done': []
+  'cancel': []
   'init-edit': [key: keyof ManageYourCompanyFields]
   'undo': [key: keyof ManageYourCompanyFields]
-  'cancel': []
 }>()
 
 const model = defineModel<ActiveYourCompanySchema>()
