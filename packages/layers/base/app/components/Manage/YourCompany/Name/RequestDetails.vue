@@ -7,17 +7,17 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const details = computed(() => {
-    const data = props.nrData
-    if (!data) {
-      return undefined
-    }
-    return [
-        { label: t('label.businessType'), value: getCorpFullDescription(data.legalType) },
-        { label: t('label.requestType'), value: t(`nameRequestAction.${data.request_action_cd}`) },
-        { label: t('label.expiryDate'), value: toReadableDate(data.expirationDate) },
-        { label: t('label.status'), value: t(`nameRequestState.${data.state}`) }
-      ]
-  })
+  const data = props.nrData
+  if (!data) {
+    return undefined
+  }
+  return [
+    { label: t('label.businessType'), value: getCorpFullDescription(data.legalType) },
+    { label: t('label.requestType'), value: t(`nameRequestAction.${data.request_action_cd}`) },
+    { label: t('label.expiryDate'), value: toReadableDate(data.expirationDate) },
+    { label: t('label.status'), value: t(`nameRequestState.${data.state}`) }
+  ]
+})
 </script>
 
 <template>

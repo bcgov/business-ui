@@ -12,11 +12,7 @@ export const useManageYourCompany = (
     cleanupFn?: () => void
   }
 ) => {
-  const service = useBusinessService()
-  const { t } = useNuxtApp().$i18n
-
   const state = useState<ManageYourCompanyState>(`${stateKey}-state`, () => defaultState)
-  const nrData = useState<NameRequest | undefined>(`${stateKey}-nrData`, () => undefined)
 
   const hasChanges = computed(() => {
     return Object.keys(state.value.new).some((k) => {
@@ -61,45 +57,9 @@ export const useManageYourCompany = (
     opts?.cleanupFn?.()
   }
 
-  // fetch the nr data to display in the UI when the nrNumber is populated
-  watch(
-    () => state.value.new.nrNumber?.value,
-    async (v) => {
-      const nrNum = v?.trim()
-      if (!nrNum) {
-        nrData.value = undefined
-      } else {
-        nrData.value = await service.getLinkedNameRequest(nrNum).catch(() => undefined)
-      }
-    }
-  )
-
-  const nrDetails = computed(() => {
-    const data = nrData.value
-    if (!data) {
-      return undefined
-    }
-    return {
-      meta: {
-        legalName: state.value.new.nameRequest?.value!.legalName,
-        nrNumber: state.value.new.nrNumber
-      },
-      info: [
-        { label: 'Business Type', value: getCorpFullDescription(data.legalType) },
-        { label: 'Request Type', value: t(`nameRequestAction.${data.request_action_cd}`) },
-        { label: 'Expiry Date', value: toReadableDate(data.expirationDate) },
-        { label: 'Status', value: t(`nameRequestState.${data.state}`) }
-      ]
-    }
-  })
-
   return {
     state,
-    nrData,
-    nrDetails,
     hasChanges,
-    // updateState,
-    // undoState,
     editSubject,
     undoSubject
   }

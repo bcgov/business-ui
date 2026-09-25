@@ -32,19 +32,19 @@ const isReadOnlyVariant = computed(() => variant.includes('readonly'))
     </template>
     <template #default>
       <div class="flex flex-col flex-1 gap-4">
-      <span v-if="!isReadOnlyVariant">{{ $t('text.addNameTranslation') }}</span>
-      <ManageNameTranslations
-        v-model:active-name-translation="model"
-        :state-key
-        :loading
-        :variant
-        :allowed-actions
-        :label-overrides
-        :prevent-actions
-        :action-prevented-signal
-        @action-prevented="$emit('action-prevented')"
-      />
-    </div>
-      </template>
-      </ConnectFieldset>
+        <span v-if="!isReadOnlyVariant">{{ $t('text.addNameTranslation') }}</span>
+        <ManageNameTranslations
+          v-model:active-name-translation="model"
+          :state-key
+          :loading
+          :variant
+          :allowed-actions
+          :label-overrides
+          :prevent-actions
+          :action-prevented-signal
+          @action-prevented="$emit('action-prevented')"
+        />
+      </div>
+    </template>
+  </ConnectFieldset>
 </template>

@@ -38,7 +38,7 @@ const model = defineModel<ActiveYourCompanySchema>()
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   />
-  
+
   <ManageYourCompanyExproNumberPreviousJurisdiction
     v-model="model"
     :field-state="fields.numberPreviousJurisdiction"

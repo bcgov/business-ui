@@ -90,10 +90,10 @@ const showNrData = computed(() => nrData.value && fieldState?.value?.changeOptio
         class="flex items-center justify-between -mt-4 sm:-mt-1.5"
       >
         <ManageYourCompanyNameRequestDetails
-          class="mt-1.5"
           v-if="showNrData"
+          class="mt-1.5"
           :field-state
-          :nrData
+          :nr-data
         />
         <span v-else class="text-xl font-bold">{{ fieldState.value.legalName }}</span>
         <ManageYourCompanyActions

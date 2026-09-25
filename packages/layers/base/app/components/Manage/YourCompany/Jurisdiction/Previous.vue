@@ -1,7 +1,5 @@
 <script setup lang="ts">
 // The new jurisdiction after an Amalgamation Out or Continuation Out filing
-import type { InputMenuItem } from '@nuxt/ui'
-
 const {
   stateKey,
   fieldState,
@@ -28,60 +26,7 @@ const alertTarget = 'previous-jurisdiction'
 const { alerts, attachAlerts } = useFilingAlerts(stateKey)
 const { targetId, messageId } = attachAlerts(alertTarget, model)
 
-const { t } = useI18n()
-
-function getJurisdictionLabel(country?: string, region?: string | null): string {
-  if (!country) { return '' }
-
-  if (country === 'CA') {
-    if (region === 'FEDERAL') {
-      return t('label.federal')
-    }
-    const provinceDisplay = countrySubdivisions.ca.find(p => p.code === region)?.name || region
-    return `${provinceDisplay}, Canada`
-  }
-
-  const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === country)?.name || country
-  return countryDisplay
-}
-
-const caOpts: InputMenuItem[] = [
-  { type: 'label', label: t('label.canadian') },
-  ...countrySubdivisions.ca
-    .filter(p => p.code !== 'BC')
-    .map(p => ({
-      label: `${p.name}, Canada`,
-      region: p.code,
-      country: 'CA'
-    })),
-  { type: 'separator' },
-  { region: 'FEDERAL', country: 'CA', label: t('label.federal') }
-]
-
-const internationalOpts: InputMenuItem[] = [
-  { type: 'label', label: t('label.international') },
-  ...isoCountriesListSortedByName
-    .filter(c => c.alpha_2 !== 'CA')
-    .sort((a, b) => {
-      if (a.alpha_2 === 'US') {
-        return -1
-      }
-      if (b.alpha_2 === 'US') {
-        return 1
-      }
-      return 0
-    })
-    .map(c => ({
-      label: c.name,
-      region: null,
-      country: c.alpha_2
-    }))
-]
-
-const jurisdictionOpts: InputMenuItem[][] = [
-  caOpts,
-  internationalOpts
-]
+const jurisdictionOpts = getJurisdictionMenuItems()
 
 // normalize jurisdiction to match InputMenuItem
 const selectedJurisdiction = computed({
@@ -110,12 +55,6 @@ const selectedJurisdiction = computed({
       }
     }
   }
-})
-
-const displayValue = computed(() => {
-  if (!fieldState?.value) { return '' }
-  const { country, region } = fieldState.value
-  return getJurisdictionLabel(country, region)
 })
 </script>
 
@@ -158,7 +97,7 @@ const displayValue = computed(() => {
         v-else-if="fieldState?.value"
         class="flex items-center justify-between -mt-4 sm:-mt-1.5 ml-4 sm:ml-0"
       >
-        <span>{{ displayValue }}</span>
+        <span>{{ selectedJurisdiction?.label || '' }}</span>
         <ManageYourCompanyActions
           v-if="!isReadOnlyVariant"
           :actions="fieldState.actions"

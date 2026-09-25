@@ -94,7 +94,6 @@ function onInitEdit<K extends keyof ManageYourCompanyFields>(key: K) {
     return
   }
 
-
   activeSubject.value = {
     key,
     value: cloneDeep(subject.value)
@@ -178,7 +177,7 @@ async function onDone() {
       />
 
       <USeparator class="padding-x-default" />
-      
+
       <ManageYourCompanyExproNumber
         v-model="activeSubject"
         :fields="state.new"
@@ -194,7 +193,7 @@ async function onDone() {
       />
 
       <USeparator class="padding-x-default" />
-      
+
       <!-- Current legal type also known as entity type or corp type -->
       <ManageYourCompanyType
         v-model="activeSubject"
@@ -208,7 +207,7 @@ async function onDone() {
         @init-edit="onInitEdit"
         @undo="onUndo"
       />
-      
+
       <USeparator class="padding-x-default" />
 
       <!-- Recognition Date - non-editable -->
