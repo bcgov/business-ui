@@ -94,7 +94,8 @@ describe('getEffectiveDatesColumn', () => {
     const cell = column.cell({ row })
 
     expect(cell.type).toBe('div')
-    expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip flex flex-col')
+    // ceased rows are shown in grey
+    expect(cell.props.class).toEqual('min-w-40 max-w-40 overflow-clip opacity-55 flex flex-col')
     expect(cell.children).toHaveLength(3)
     expect(cell.children[0].children).toBe('August 16, 2023')
     expect(cell.children[1].children).toBe('to')

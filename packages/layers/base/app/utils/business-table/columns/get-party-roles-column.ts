@@ -1,6 +1,6 @@
 import { TableColumnRoles } from '#components'
 import { h } from 'vue'
-import { DELETED_CLASS } from './constants'
+import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -21,7 +21,7 @@ export function getPartyRolesColumn<T extends { roles: PartyRoleSchema, actions:
         {
           roles: row.original.new.roles,
           includeCeasedRoles: true,
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '', getIsRowCeased(row) ? CEASED_CLASS : '']
         },
         () => []
       )

@@ -22,9 +22,9 @@
         },
         "officer": {
             "email": "",
-            "firstName": "ACTIVE",
+            "firstName": "Active",
             "id": 575361,
-            "lastName": "DIRECTOR",
+            "lastName": "Director",
             "partyType": "person"
         },
         "roles": [
@@ -58,9 +58,9 @@
         },
         "officer": {
             "email": "",
-            "firstName": "CEASED",
+            "firstName": "Ceased",
             "id": 575362,
-            "lastName": "DIRECTOR",
+            "lastName": "Director",
             "partyType": "person"
         },
         "roles": [

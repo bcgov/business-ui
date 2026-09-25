@@ -7,6 +7,7 @@ export default {
   badge: {
     added: 'ADDED',
     addressChanged: 'ADDRESS CHANGED',
+    ceased: 'CEASED',
     changed: 'CHANGED',
     corrected: 'CORRECTED',
     deleted: 'DELETED',
@@ -378,6 +379,7 @@ export default {
     cancel: 'Cancel',
     cancelUploadOfFilename: 'Cancel upload of {filename}',
     cashOrCheque: 'Cash or Cheque',
+    ceasedSubject: 'Ceased {subject}',
     ceasedDirectors: 'Ceased Directors',
     certify: 'Certify',
     change: 'Change',
@@ -523,6 +525,7 @@ export default {
     noticeOfWithdrawalForm: 'Notice of Withdrawal Form',
     noMaximum: 'No Maximum',
     noParValue: 'No Par Value',
+    noCeasedSubject: 'No Ceased {subject}',
     noSubjectAddedYet: 'No {subject} added yet.',
     numberedAmalgamatedCompany: 'Numbered Amalgamated Company',
     openCalendar: 'Open calendar',

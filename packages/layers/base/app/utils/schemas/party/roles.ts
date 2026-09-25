@@ -26,6 +26,17 @@ export const ROLE_FIELD_CONFIG: Partial<Record<RoleTypeUi, RoleFieldConfig>> = {
   // add other roles/fields as needed
 }
 
+/** A role type that can be ceased (has a cessationDate) shows its ceased parties in a separate tab. */
+export function hasCeasedTab(roleType?: RoleTypeUi): boolean {
+  return !!roleType && !!ROLE_FIELD_CONFIG[roleType]?.cessationDate
+}
+
+/** A party is ceased for a role type when all of its roles of that type have a cessation date. */
+export function isPartyCeased(party: { roles: PartyRoleSchema }, roleType: RoleTypeUi): boolean {
+  const roles = party.roles.filter(r => r.roleType === roleType)
+  return roles.length > 0 && roles.every(r => !!r.cessationDate)
+}
+
 export function getPartyRoleSchema(roleType?: RoleTypeUi) {
   const t = useNuxtApp().$i18n.t
 

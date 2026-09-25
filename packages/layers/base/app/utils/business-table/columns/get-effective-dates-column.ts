@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import { DateTime } from 'luxon'
-import { DELETED_CLASS } from './constants'
+import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 function formatDate(date: string): string | undefined {
   const dt = DateTime.fromISO(date, { zone: 'America/Vancouver' })
@@ -20,7 +20,8 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
-      const cellClass = [defaultClass, isRemoved ? DELETED_CLASS : '']
+      const isCeased = getIsRowCeased(row)
+      const cellClass = [defaultClass, isRemoved ? DELETED_CLASS : '', isCeased ? CEASED_CLASS : '']
 
       // FUTURE: handle multiple roles/dates?
       const role = row.original.new.roles.find(role => role.appointmentDate)
@@ -36,7 +37,7 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
       if (endDate) {
         return h('div', { class: [...cellClass, 'flex flex-col'] }, [
           h('span', startDate),
-          h('span', { class: 'text-neutral text-xs' }, t('label.to')),
+          h('span', { class: ['text-xs', isCeased ? '' : 'text-neutral'] }, t('label.to')),
           h('span', endDate)
         ])
       }
