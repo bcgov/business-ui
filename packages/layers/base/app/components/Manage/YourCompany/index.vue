@@ -49,13 +49,17 @@ const {
   variant,
   allowedActions: nameTranslationAllowedActions,
   labelOverrides,
-  preventActions,
-  actionPreventedSignal,
+  preventActions: () => preventActions,
+  actionPreventedSignal: () => actionPreventedSignal,
   activeSubjects: [
     ...fieldKeys.map(t => ({
       subject: activeSubject,
       alertTarget: t
     })),
+    {
+      subject: activeSubject,
+      alertTarget: 'company-name-form'
+    },
     {
       subject: activeNt,
       alertTarget: 'name-translation-form'
