@@ -52,6 +52,7 @@ export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   labelOverrides?: TableLabelOverrides
   correctedFilingType?: FilingType
   nameTranslationLabelOverrides?: TableLabelOverrides
+  variant?: 'default' | 'correct' | 'readonly' | 'correct-readonly'
 } & (
   | {
     variant?: 'default' | 'correct'
