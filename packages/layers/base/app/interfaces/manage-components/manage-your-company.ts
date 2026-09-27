@@ -6,9 +6,6 @@ export interface ManageYourCompanyFieldState<T> {
 }
 
 export interface ManageYourCompanyFields {
-  // Current business name
-  // legalName: ManageYourCompanyFieldState<string>
-
   // Current business legal type
   legalType: ManageYourCompanyFieldState<CorpTypeCd | undefined>
 
@@ -32,9 +29,6 @@ export interface ManageYourCompanyFields {
 
   // Continuation Out or Amalgamation Out - Jurisdiction after "out" (country/region)
   newJurisdiction?: ManageYourCompanyFieldState<{ country: string, region: string | null } | undefined>
-
-  // NR assigned by company name option
-  nrNumber?: ManageYourCompanyFieldState<string | undefined>
 
   // Name Request Data
   nameRequest?: ManageYourCompanyFieldState<NameRequestSchema | undefined>
