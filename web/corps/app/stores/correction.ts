@@ -116,7 +116,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       service.getAddresses(businessId).catch(() => undefined),
       service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
       service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
-      getCachedOrFetch<BusinessDataExtended>(useBusinessQuery().businessExtOptions(businessId, true), false).catch(() => undefined)
+      service.getBusinessExtended(businessId, true).catch(() => undefined)
     ])
 
     // The draft is always expected to exist (pre-created before page load)
@@ -411,13 +411,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
             action: nt.new.actions[0]
           }))
       }),
-
-      // ...(hasCompanyNameChange.value && {
-      //   nameRequest: {
-      //     legalName: companyName.value.new.legalName,
-      //     nrNumber: companyName.value.new.nrNumber
-      //   }
-      // }),
 
       courtOrders: formatCourtOrdersApi(courtOrders.value),
 

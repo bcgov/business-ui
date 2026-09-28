@@ -12,11 +12,6 @@ const nameTranslationsStateKey = `${stateKey}-nt`
 const { state } = useManageYourCompany('manage-your-company')
 const { tableState: nameTranslationsTableState } = useManageNameTranslations(nameTranslationsStateKey)
 
-// state.value = {
-//   new: { legalName: mockBusiness.legalName, actions: [] },
-//   old: { legalName: mockBusiness.legalName, actions: [] }
-// }
-
 state.value = {
   new: {
     nameRequest: {
