@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable max-len */
 const { t } = useI18n()
 const store = useCorrectionStore()
 const route = useRoute()

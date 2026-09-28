@@ -58,7 +58,9 @@ export function createDefaultYourCompany(
   }
 
   // populate Continuation Out or Amalgamation Out data if provided and matches filing type
-  const isOutFiling = !filingType || filingType === FilingType.CONTINUATION_OUT || filingType === FilingType.AMALGAMATION_OUT
+  const isOutFiling = !filingType
+    || filingType === FilingType.CONTINUATION_OUT
+    || filingType === FilingType.AMALGAMATION_OUT
   const outData = data.continuationOut ?? data.amalgamationOut
 
   if (outData && isOutFiling) {
@@ -135,11 +137,11 @@ export function formatCorrectYourCompanyApi(
   businessExtended?: BusinessDataExtended,
   filingType?: FilingType
 ): Partial<BusinessDataExtended & NrState> {
-  let result: Partial<BusinessDataExtended & NrState> = {}
+  const result: Partial<BusinessDataExtended & NrState> = {}
 
   if (hasChange(state.new.nameRequest)) {
     const nrValue = state.new.nameRequest?.value
-    
+
     result.nameRequest = {
       legalName: nrValue?.legalName ?? '',
       legalType: state.new.legalType.value, // required in json schema - TODO/FUTURE: update so this populates from the name request response
@@ -168,12 +170,12 @@ export function formatCorrectYourCompanyApi(
           identifier: state.new.numberPreviousJurisdiction?.value ?? '',
           legalName: state.new.namePreviousJurisdiction?.value ?? '',
           incorporationDate: businessExtended?.continuationIn?.incorporationDate ?? '', // not editable in UI - include from extended data
-          ...(exproNumber || exproName ? { // only include if in initial payload
+          ...((exproNumber || exproName) && {
             expro: {
               identifier: exproNumber ?? '',
               legalName: exproName ?? ''
             }
-          } : {})
+          })
         }
       }
       break
@@ -191,7 +193,7 @@ export function formatCorrectYourCompanyApi(
           country: state.new.newJurisdiction?.value?.country ?? '',
           region: state.new.newJurisdiction?.value?.region ?? null,
           date: state.new.outDate?.value ?? '',
-          legalName: state.new.nameNewJurisdiction?.value ?? '',
+          legalName: state.new.nameNewJurisdiction?.value ?? ''
         }
       }
       break

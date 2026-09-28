@@ -76,7 +76,7 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     manageYourCompany.hasChanges
   ]
 
-  const hasAnyChanges = computed(() => 
+  const hasAnyChanges = computed(() =>
     sectionChanges.some(hasChange => toValue(hasChange))
     || !!store.formState.resolutionDate?.date?.trim()
   )
@@ -133,15 +133,15 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     useManageCommon({
       stateKey: CorrectionManagerKey.YOUR_COMPANY,
       activeSubjects: [
-    ...fieldKeys.map(t => ({
-      subject: () => store.formState.activeYourCompany,
-      alertTarget: t
-    })),
-    {
-      subject: () => store.formState.activeYourCompany,
-      alertTarget: 'company-name-form'
-    }
-  ]
+        ...fieldKeys.map(t => ({
+          subject: () => store.formState.activeYourCompany,
+          alertTarget: t
+        })),
+        {
+          subject: () => store.formState.activeYourCompany,
+          alertTarget: 'company-name-form'
+        }
+      ]
     })
   ]
 
@@ -152,13 +152,13 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     if (!hasActiveSubForm.value) {
       return false
     }
-    
-    commonManagers.forEach(m => {
+
+    commonManagers.forEach((m) => {
       if (m.hasActiveSubject.value) {
         m.setActiveSubjectAlert()
       }
     })
-    
+
     return true
   }
 
@@ -180,7 +180,6 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     resolutionDates: manageShareStructure.resolutionDates,
     nameTranslations: manageNameTranslations.tableState,
     yourCompany: manageYourCompany.state,
-    
 
     // Track State Changes
     // Individual section change flags

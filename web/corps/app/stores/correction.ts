@@ -447,9 +447,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       delete header.authorizationReceived
     }
 
-    console.log('YOUR_COMPANY: ', yourCompany.value)
-    console.log('PAYLOAD: ', filingPayload)
-
     // Draft is always pre-created, so we always have a filingId to update
     const filingId = draftFilingState.value?.filing?.header?.filingId
     if (filingId) {
