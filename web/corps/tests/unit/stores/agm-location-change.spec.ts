@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -52,7 +53,7 @@ const mockIsStaff = ref(false)
 mockNuxtImport('useIsStaff', () => () => mockIsStaff)
 
 mockNuxtImport('useConnectAccountStore', () => () => ({
-  currentAccount: { id: 123, accountType: AccountType.USER }
+  currentAccount: { id: 123, accountType: AccountType.BASIC }
 }))
 
 /** An AGM location change draft filing as returned by legal-api. */

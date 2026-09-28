@@ -9,12 +9,13 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
 
   const isStaff = useIsStaff()
 
-  const formState = reactive<AgmLocationChangeFormSchema>(
-    getAgmLocationChangeSchema(isStaff.value).parse({})
-  )
+  const formState = reactive<AgmLocationChangeFormSchema>({} as AgmLocationChangeFormSchema)
   const initialFormState = shallowRef<AgmLocationChangeFormSchema>({} as AgmLocationChangeFormSchema)
   const initializing = ref<boolean>(false)
   const draftFilingState = shallowRef<AgmLocationChangeDraftState>({} as AgmLocationChangeDraftState)
+
+  // initialise defaults immediately so formState is never empty
+  Object.assign(formState, getAgmLocationChangeSchema(isStaff.value).parse({}))
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
@@ -52,9 +53,9 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
 
   async function submit(isSubmission: boolean) {
     const agmLocationChangePayload: AgmLocationChangePayload = {
-      year: formState.year,
-      reason: formState.reason,
-      agmLocation: formState.agmLocation
+      year: formState.year!,
+      reason: formState.reason!,
+      agmLocation: formState.agmLocation!
     }
 
     const filingPayload = createFilingPayload<AgmLocationChangeFiling>(

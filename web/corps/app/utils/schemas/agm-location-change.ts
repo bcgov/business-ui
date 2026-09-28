@@ -47,4 +47,7 @@ export function getAgmLocationChangeValidationSchema() {
   })
 }
 
-export type AgmLocationChangeFormSchema = z.output<ReturnType<typeof getAgmLocationChangeSchema>>
+export type AgmLocationChangeFormSchema = Partial<
+  z.output<ReturnType<typeof getAgmLocationChangeSchema>>
+  & { staffPayment: z.output<ReturnType<typeof getStaffPaymentSchema>> }
+>
