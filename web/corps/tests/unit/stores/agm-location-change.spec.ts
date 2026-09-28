@@ -125,31 +125,16 @@ describe('useAgmLocationChangeStore', () => {
       expect(store.initializing).toBe(false)
     })
 
-    it('should hydrate staff payment from the draft header for staff', async () => {
+    it('should have authorization in form state for staff', async () => {
       mockIsStaff.value = true
       store.$reset()
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock(
-          { year: '2025', reason: 'Reason', agmLocation: 'Location' },
-          {
-            staffPaymentOption: StaffPaymentOption.BCOL,
-            bcolAccountNumber: '123456',
-            datNumber: 'C1234567',
-            folioNumber: 'staff-folio',
-            priority: true
-          }
-        )
+        draftFiling: getDraftMock({ year: '2025', reason: 'Reason', agmLocation: 'Location' })
       })
 
       await store.init(identifier, String(draftFilingId))
 
-      expect((store.formState as any).staffPayment).toEqual(expect.objectContaining({
-        option: StaffPaymentOption.BCOL,
-        bcolAccountNumber: '123456',
-        datNumber: 'C1234567',
-        folioNumber: 'staff-folio',
-        isPriority: true
-      }))
+      expect((store.formState as any).authorization).toBeDefined()
     })
 
     it('should set the initial form state for change detection', async () => {
@@ -248,29 +233,14 @@ describe('useAgmLocationChangeStore', () => {
       expect(header.date).toBeTruthy()
     })
 
-    it('should include staff payment in the header for staff', async () => {
-      mockIsStaff.value = true
-      store.$reset()
-      mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Reason', agmLocation: 'Location' })
-      })
-      await store.init(identifier, String(draftFilingId))
-      ;(store.formState as any).staffPayment = {
-        option: StaffPaymentOption.FAS,
-        bcolAccountNumber: '',
-        datNumber: '',
-        routingSlipNumber: '123456789',
-        folioNumber: 'staff-folio',
-        isPriority: true
-      }
+    it('should not include staff payment fields in the header', async () => {
+      await initAndEdit()
 
       await store.submit(true)
 
-      expect(getPayload().filing.header).toEqual(expect.objectContaining({
-        staffPaymentOption: StaffPaymentOption.FAS,
-        routingSlipNumber: '123456789',
-        priority: true
-      }))
+      const header = getPayload().filing.header
+      expect(header.staffPaymentOption).toBeUndefined()
+      expect(header.waiveFees).toBeUndefined()
     })
 
     it('should build the business block from the business store', async () => {

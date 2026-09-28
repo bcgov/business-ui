@@ -15,11 +15,12 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
       expect((result.data as any).certify).toEqual({ isCertified: false })
     })
 
-    it('should not include staffPayment', () => {
+    it('should not include staffPayment or authorization', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
       expect((result.data as any).staffPayment).toBeUndefined()
+      expect((result.data as any).authorization).toBeUndefined()
     })
   })
 
@@ -31,29 +32,28 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
 
       expect(result.success).toBe(true)
       expect(result.data!.year).toBe('')
-      expect((result.data as any).staffPayment).toEqual(expect.objectContaining({
-        option: StaffPaymentOption.NONE,
-        isPriority: false
-      }))
+      expect((result.data as any).authorization).toBeDefined()
     })
 
-    it('should not include certify', () => {
+    it('should not include certify or staffPayment', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
       expect((result.data as any).certify).toBeUndefined()
+      expect((result.data as any).staffPayment).toBeUndefined()
     })
   })
 })
 
 describe('getAgmLocationChangeValidationSchema (validation)', () => {
+  const currentYear = new Date().getFullYear()
   const schema = getAgmLocationChangeValidationSchema()
 
   const getIssues = (result: ReturnType<typeof schema.safeParse>) => result.error?.issues ?? []
   const getPaths = (result: ReturnType<typeof schema.safeParse>) =>
     getIssues(result).map(i => i.path.join('.'))
 
-  const valid = { year: '2025', reason: 'Some reason', agmLocation: 'Calgary, Alberta, Canada' }
+  const valid = { year: String(currentYear), reason: 'Some reason', agmLocation: 'Calgary, Alberta, Canada' }
 
   describe('year', () => {
     it('should fail when empty', () => {
@@ -77,8 +77,28 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
       expect(getPaths(result)).toContain('year')
     })
 
-    it('should pass for a valid 4-digit year', () => {
-      const result = schema.safeParse({ ...valid, year: '2025' })
+    it('should fail when year is below the minimum', () => {
+      const result = schema.safeParse({ ...valid, year: String(currentYear - 3) })
+
+      expect(result.success).toBe(false)
+      expect(getPaths(result)).toContain('year')
+    })
+
+    it('should fail when year exceeds the maximum', () => {
+      const result = schema.safeParse({ ...valid, year: String(currentYear + 2) })
+
+      expect(result.success).toBe(false)
+      expect(getPaths(result)).toContain('year')
+    })
+
+    it('should pass for the current year', () => {
+      const result = schema.safeParse({ ...valid, year: String(currentYear) })
+
+      expect(result.success).toBe(true)
+    })
+
+    it('should pass for current year + 1', () => {
+      const result = schema.safeParse({ ...valid, year: String(currentYear + 1) })
 
       expect(result.success).toBe(true)
     })
@@ -133,7 +153,7 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
       const result = schema.safeParse(valid)
 
       expect(result.success).toBe(true)
-      expect(result.data!.year).toBe('2025')
+      expect(result.data!.year).toBe(String(currentYear))
       expect(result.data!.reason).toBe('Some reason')
       expect(result.data!.agmLocation).toBe('Calgary, Alberta, Canada')
     })

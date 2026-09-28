@@ -40,10 +40,6 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       formState.year = draft.year ?? ''
       formState.reason = draft.reason ?? ''
       formState.agmLocation = draft.agmLocation ?? ''
-
-      if (isStaff.value) {
-        formState.staffPayment = formatStaffPaymentUi(draftFiling.filing.header)
-      }
     }
 
     await nextTick()
@@ -62,9 +58,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       businessStore.business!,
       FilingType.AGM_LOCATION_CHANGE,
       { agmLocationChange: agmLocationChangePayload },
-      {
-        ...(isStaff.value ? formatStaffPaymentApi(formState.staffPayment!) : {})
-      }
+      {}
     )
 
     const draftId = draftFilingState.value?.filing?.header?.filingId

@@ -64,57 +64,28 @@ test.describe('AGM Location Change - Filing Submit', () => {
     await assertFinalRedirect(page)
   })
 
-  test.describe('Staff payment variants', () => {
-    test('No Fee - sets waiveFees on submit', async ({ page }) => {
-      await gotoAgmPage(page, 'STAFF')
+  test('submits a staff filing with authorization and no staff payment fields', async ({ page }) => {
+    await gotoAgmPage(page, 'STAFF')
 
-      await page.getByLabel('AGM Year').fill('2025')
-      await page.getByLabel('Reason').fill('Staff no-fee submission.')
-      await page.getByLabel('AGM Location', { exact: true }).fill('Seattle, Washington, USA')
-      await page.getByRole('radio', { name: 'No Fee' }).click()
+    await page.getByLabel('AGM Year').fill('2025')
+    await page.getByLabel('Reason').fill('Staff authorization submission.')
+    await page.getByLabel('AGM Location', { exact: true }).fill('Seattle, Washington, USA')
+    await page.getByRole('checkbox', { name: /i authorize/i }).check()
 
-      const submitRequest = waitForFilingPost(page)
-      await page.getByRole('button', { name: 'Submit' }).click()
-      const request = await submitRequest
-      const body = request.postDataJSON()
+    const submitRequest = waitForFilingPost(page)
+    await page.getByRole('button', { name: 'Submit' }).click()
+    const request = await submitRequest
+    const body = request.postDataJSON()
 
-      expect(body.filing.header).toMatchObject({
-        staffPaymentOption: 'NO_FEE',
-        waiveFees: true
-      })
-      expect(body.filing.agmLocationChange).toEqual({
-        year: '2025',
-        reason: 'Staff no-fee submission.',
-        agmLocation: 'Seattle, Washington, USA'
-      })
+    expect(body.filing.agmLocationChange).toEqual({
+      year: '2025',
+      reason: 'Staff authorization submission.',
+      agmLocation: 'Seattle, Washington, USA'
     })
+    expect(body.filing.header.staffPaymentOption).toBeUndefined()
+    expect(body.filing.header.waiveFees).toBeUndefined()
 
-    test('BC OnLine (BCOL) - with folio and priority', async ({ page }) => {
-      await gotoAgmPage(page, 'STAFF')
-
-      await page.getByLabel('AGM Year').fill('2025')
-      await page.getByLabel('Reason').fill('Staff BCOL submission.')
-      await page.getByLabel('AGM Location', { exact: true }).fill('Seattle, Washington, USA')
-      await page.getByRole('radio', { name: 'BC OnLine' }).click()
-      await page.getByTestId('bcolnumberinput').fill('123456')
-      await page.getByTestId('datnumberinput').fill('C1234567')
-      await page.getByTestId('folionumber').fill('folio-staff-123')
-      await page.getByRole('checkbox', { name: 'Priority (Add $100.00)' }).check()
-
-      const submitRequest = waitForFilingPost(page)
-      await page.getByRole('button', { name: 'Submit' }).click()
-      const request = await submitRequest
-      const body = request.postDataJSON()
-
-      expect(body.filing.header).toMatchObject({
-        staffPaymentOption: 'BCOL',
-        waiveFees: false,
-        bcolAccountNumber: '123456',
-        datNumber: 'C1234567',
-        folioNumber: 'folio-staff-123',
-        priority: true
-      })
-    })
+    await assertFinalRedirect(page)
   })
 
   test.describe('Save and resume', () => {

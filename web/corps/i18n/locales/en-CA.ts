@@ -120,6 +120,8 @@ export default {
     agmLocationChange: {
       yearRequired: 'AGM year is required.',
       yearInvalid: 'Please enter a valid 4-digit year.',
+      yearMin: 'Must be on or after {year}.',
+      yearMax: 'Must be on or before {year}.',
       reasonRequired: 'Reason is required.',
       reasonMax: 'Must be 2000 characters or less.',
       locationRequired: 'AGM location is required.',

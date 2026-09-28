@@ -57,7 +57,7 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('AGM Location', { exact: true })).toHaveValue('')
   })
 
-  test('should display staff payment section for staff', async ({ page }) => {
+  test('should display authorization section for staff (no staff payment — no-fee filing)', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'STAFF')
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
@@ -65,7 +65,7 @@ test.describe('AGM Location Change - Page init', () => {
     await assertCommonElements(page)
 
     await expect(page.getByTestId('form-section-location-change-detail')).toBeVisible()
-    await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+    await expect(page.getByTestId('form-section-authorization')).toBeVisible()
 
     // Certify not visible for staff
     await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
@@ -86,28 +86,6 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('AGM Year')).toHaveValue('2025')
     await expect(page.getByLabel('Reason')).toHaveValue('Shareholders are located outside BC.')
     await expect(page.getByLabel('AGM Location', { exact: true })).toHaveValue('Calgary, Alberta, Canada')
-  })
-
-  test('should hydrate staff payment from a resumed draft', async ({ page }) => {
-    await setupAgmLocationChangePageWithDraft(page, identifier, draftId, AGMLC, 'STAFF', {
-      agmLocationChange: { year: '2025', reason: 'Some reason', agmLocation: 'Calgary, Alberta, Canada' },
-      header: {
-        staffPaymentOption: 'BCOL',
-        bcolAccountNumber: '654321',
-        datNumber: 'C7654321',
-        folioNumber: 'staff-folio-789',
-        priority: true
-      }
-    })
-    await navigateToAgmLocationChangePage(page, identifier, draftId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-
-    await expect(page.getByRole('radio', { name: 'BC OnLine' })).toBeChecked()
-    await expect(page.getByTestId('bcolnumberinput')).toHaveValue('654321')
-    await expect(page.getByTestId('datnumberinput')).toHaveValue('C7654321')
-    await expect(page.getByTestId('folionumber')).toHaveValue('staff-folio-789')
-    await expect(page.getByRole('checkbox', { name: 'Priority (Add $100.00)' })).toBeChecked()
   })
 
   test('should show the not-allowed modal for a non-BC-corp legal type', async ({ page }) => {

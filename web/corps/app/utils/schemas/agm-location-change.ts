@@ -10,14 +10,7 @@ export function getAgmLocationChangeSchema(isStaff: boolean) {
 
   if (isStaff) {
     return base.extend({
-      staffPayment: getStaffPaymentSchema().default(() => ({
-        option: StaffPaymentOption.NONE,
-        bcolAccountNumber: '',
-        datNumber: '',
-        routingSlipNumber: '',
-        folioNumber: '',
-        isPriority: false
-      }))
+      authorization: getConfirmAuthorizationSchema().default(() => ({ isAuthorized: false as unknown as true }))
     })
   }
 
@@ -28,16 +21,22 @@ export function getAgmLocationChangeSchema(isStaff: boolean) {
 
 /**
  * Validation schema for the main filing fields (year, reason, agmLocation).
- * Certify and folio are validated by their own nested form components.
- * Requires Nuxt context for i18n error messages.
+ * Certify and authorization are validated by their own nested form components.
+ * Requires Nuxt context for i18n error messages and business context for year range.
  */
-export function getAgmLocationChangeValidationSchema() {
+export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
   const t = useNuxtApp().$i18n.t
+  const currentYear = new Date().getFullYear()
+  const maxYear = currentYear + 1
+  const foundingYear = foundingDate ? new Date(foundingDate).getFullYear() : currentYear - 2
+  const minYear = Math.max(currentYear - 2, foundingYear)
 
   return z.object({
     year: z.string()
       .min(1, t('validation.agmLocationChange.yearRequired'))
-      .regex(/^\d{4}$/, t('validation.agmLocationChange.yearInvalid')),
+      .regex(/^\d{4}$/, t('validation.agmLocationChange.yearInvalid'))
+      .refine(val => Number(val) >= minYear, t('validation.agmLocationChange.yearMin', { year: minYear }))
+      .refine(val => Number(val) <= maxYear, t('validation.agmLocationChange.yearMax', { year: maxYear })),
     reason: z.string()
       .min(1, t('validation.agmLocationChange.reasonRequired'))
       .max(2000, t('validation.agmLocationChange.reasonMax')),
@@ -49,5 +48,5 @@ export function getAgmLocationChangeValidationSchema() {
 
 export type AgmLocationChangeFormSchema = Partial<
   z.output<ReturnType<typeof getAgmLocationChangeSchema>>
-  & { staffPayment: z.output<ReturnType<typeof getStaffPaymentSchema>> }
+  & { authorization: z.output<ReturnType<typeof getConfirmAuthorizationSchema>> }
 >

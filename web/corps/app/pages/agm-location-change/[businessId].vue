@@ -8,6 +8,7 @@ const route = useRoute()
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const urlParams = useUrlSearchParams('history')
+const businessStore = useBusinessStore()
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.AGM_LOCATION_CHANGE
@@ -101,7 +102,7 @@ useFilingPageWatcher({
     <UForm
       id="agm-location-change-filing"
       :state="store.formState"
-      :schema="getAgmLocationChangeValidationSchema()"
+      :schema="getAgmLocationChangeValidationSchema(businessStore.business?.foundingDate)"
       novalidate
       class="py-6 space-y-6 sm:py-10 sm:space-y-10"
       :aria-label="filingText.h1"
@@ -129,61 +130,59 @@ useFilingPageWatcher({
         orientation="vertical"
         data-testid="form-section-location-change-detail"
       >
-        <!-- AGM Year -->
-        <ConnectFormFieldWrapper
-          :label="$t('label.agmYear')"
-          orientation="horizontal"
-          padding-class="xy-default"
-          required
-        >
-          <ConnectFormInput
-            v-model="store.formState.year"
-            name="year"
-            input-id="agm-year-input"
+        <div class="divide-y divide-line-muted">
+          <!-- AGM Year -->
+          <ConnectFormFieldWrapper
             :label="$t('label.agmYear')"
-            :disabled="initializing"
-          />
-        </ConnectFormFieldWrapper>
+            orientation="horizontal"
+            padding-class="xy-default"
+            required
+          >
+            <ConnectFormInput
+              v-model="store.formState.year"
+              name="year"
+              input-id="agm-year-input"
+              :label="$t('label.agmYear')"
+              :disabled="initializing"
+            />
+          </ConnectFormFieldWrapper>
 
-        <UDivider />
-
-        <!-- Reason -->
-        <ConnectFormFieldWrapper
-          :label="$t('label.reason')"
-          orientation="horizontal"
-          padding-class="xy-default"
-          required
-        >
-          <ConnectFormTextarea
-            v-model="store.formState.reason"
-            name="reason"
-            input-id="reason-input"
+          <!-- Reason -->
+          <ConnectFormFieldWrapper
             :label="$t('label.reason')"
-            :disabled="initializing"
-          />
-        </ConnectFormFieldWrapper>
+            orientation="horizontal"
+            padding-class="xy-default"
+            required
+          >
+            <ConnectFormTextarea
+              v-model="store.formState.reason"
+              name="reason"
+              input-id="reason-input"
+              :label="$t('label.reason')"
+              :disabled="initializing"
+            />
+          </ConnectFormFieldWrapper>
 
-        <UDivider />
-
-        <!-- AGM Location -->
-        <ConnectFormFieldWrapper
-          :label="$t('label.agmLocation')"
-          orientation="horizontal"
-          padding-class="xy-default"
-          required
-        >
-          <ConnectFormInput
-            v-model="store.formState.agmLocation"
-            name="agmLocation"
-            input-id="agm-location-input"
+          <!-- AGM Location -->
+          <ConnectFormFieldWrapper
             :label="$t('label.agmLocation')"
-            :disabled="initializing"
-            :help="$t('text.agmLocationHint')"
-          />
-        </ConnectFormFieldWrapper>
+            orientation="horizontal"
+            padding-class="xy-default"
+            required
+          >
+            <ConnectFormInput
+              v-model="store.formState.agmLocation"
+              name="agmLocation"
+              input-id="agm-location-input"
+              :label="$t('label.agmLocation')"
+              :disabled="initializing"
+              :help="$t('text.agmLocationHint')"
+            />
+          </ConnectFormFieldWrapper>
+        </div>
       </ConnectFieldset>
 
-      <!-- Certify (non-staff) / Staff Payment (staff) -->
+      <!-- Section 2: Certify (non-staff) / Authorization (staff) -->
       <FormCertify
         v-if="!store.isStaff"
         v-model="(store.formState as any).certify"
@@ -191,11 +190,12 @@ useFilingPageWatcher({
         name="certify"
         :order="2"
       />
-      <StaffPaymentFieldset
-        v-if="store.isStaff"
-        v-model="(store.formState as any).staffPayment"
+      <FormConfirmAuthorization
+        v-if="store.isStaff && store.formState.authorization"
+        v-model="(store.formState as any).authorization"
+        data-testid="form-section-authorization"
+        name="authorization"
         :order="2"
-        :initializing="initializing"
       />
     </UForm>
   </div>
