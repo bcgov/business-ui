@@ -49,6 +49,13 @@ export default {
       feeLabel: 'AGM Location Change',
       h1: 'AGM Location Change',
       helpLabel: 'Help with Annual General Meeting Location Change',
+      helpText: 'Generally, company meetings must be in British Columbia (BC). However, there are exceptions to this rule. A company must request a location change if the meeting will be fully or partially in-person and none of the exceptions listed below apply. Partially in-person meetings combine both in-person and online participation. The location change request only applies to the in-person participants.',
+      helpExceptionsTitle: 'Exceptions to the requirement for a location change request include the following:',
+      helpExceptions: [
+        'The meeting will be fully online;',
+        'The company\'s articles permit a location outside BC;',
+        'Nothing in the articles restrict a location change approved by resolution or by ordinary resolution, as the case may be.'
+      ],
       locationChangeDetail: 'Location Change Detail',
       locationChangeDetailDesc: 'Enter the calendar year the AGM is for and the AGM location outside B.C.',
       title: 'AGM Location Change - BC Registries and Online Services'

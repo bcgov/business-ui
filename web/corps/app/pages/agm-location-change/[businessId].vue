@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FetchError } from 'ofetch'
 
-const { t } = useI18n()
+const { t, tm } = useI18n()
 const store = useAgmLocationChangeStore()
 const { initializing } = storeToRefs(store)
 const route = useRoute()
@@ -111,20 +111,11 @@ useFilingPageWatcher({
       <div class="space-y-4">
         <h1>{{ filingText.h1 }}</h1>
         <HelpExpansion :label="$t('page.agmLocationChange.helpLabel')">
-          <p>
-            Generally, company meetings must be in British Columbia (BC). However, there are exceptions to
-            this rule. A company must request a location change if the meeting will be fully or partially
-            in-person and none of the exceptions listed below apply. Partially in-person meetings combine
-            both in-person and online participation. The location change request only applies to
-            the in-person participants.
-          </p>
-          <p>Exceptions to the requirement for a location change request include the following:</p>
+          <p>{{ $t('page.agmLocationChange.helpText') }}</p>
+          <p>{{ $t('page.agmLocationChange.helpExceptionsTitle') }}</p>
           <ul class="list-disc pl-6 space-y-1">
-            <li>The meeting will be fully online;</li>
-            <li>The company's articles permit a location outside BC;</li>
-            <li>
-              Nothing in the articles restrict a location change approved by resolution or by
-              ordinary resolution, as the case may be.
+            <li v-for="(item, i) in (tm('page.agmLocationChange.helpExceptions') as string[])" :key="i">
+              {{ item }}
             </li>
           </ul>
         </HelpExpansion>
