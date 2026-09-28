@@ -76,7 +76,10 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     manageYourCompany.hasChanges
   ]
 
-  const hasAnyChanges = computed(() => sectionChanges.some(hasChange => toValue(hasChange)))
+  const hasAnyChanges = computed(() => 
+    sectionChanges.some(hasChange => toValue(hasChange))
+    || !!store.formState.resolutionDate?.date?.trim()
+  )
 
   // Alert and Task Guard Managers (track active sub forms)
 
