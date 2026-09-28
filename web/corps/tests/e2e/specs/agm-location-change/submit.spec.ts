@@ -70,7 +70,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
     await page.getByLabel('AGM Year').fill('2025')
     await page.getByLabel('Reason').fill('Staff authorization submission.')
     await page.getByLabel('AGM Location', { exact: true }).fill('Seattle, Washington, USA')
-    await page.getByRole('checkbox', { name: /i authorize/i }).check()
+    await page.getByRole('checkbox', { name: /i confirm that the information/i }).check()
 
     const submitRequest = waitForFilingPost(page)
     await page.getByRole('button', { name: 'Submit' }).click()
