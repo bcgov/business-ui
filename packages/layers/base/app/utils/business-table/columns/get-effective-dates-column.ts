@@ -1,6 +1,11 @@
 import { h } from 'vue'
 import { DateTime } from 'luxon'
-import { DELETED_CLASS } from './constants'
+import { CEASED_CLASS, DELETED_CLASS } from './constants'
+
+function formatDate(date: string): string | undefined {
+  const dt = DateTime.fromISO(date, { zone: 'America/Vancouver' })
+  return dt.isValid ? dt.toFormat('DDD') : undefined
+}
 
 export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -15,27 +20,29 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
     cell: ({ row }) => {
       const isRemoved = getIsRowRemoved(row)
       const defaultClass = 'min-w-40 max-w-40 overflow-clip'
+      const isCeased = getIsRowCeased(row)
+      const cellClass = [defaultClass, isRemoved ? DELETED_CLASS : '', isCeased ? CEASED_CLASS : '']
 
       // FUTURE: handle multiple roles/dates?
-      const foundDate = row.original.new.roles.find(role => role.appointmentDate)?.appointmentDate
-      let displayDate: string | undefined
-      if (foundDate) {
-        const dt = DateTime.fromISO(foundDate, { zone: 'America/Vancouver' })
-        if (dt.isValid) {
-          displayDate = dt.toFormat('DDD')
-        }
-      }
-      const displayText = displayDate
-        ? t('text.dateToCurrent', { date: displayDate })
-        : t('label.notAvailable')
+      const role = row.original.new.roles.find(role => role.appointmentDate)
+      const startDate = role?.appointmentDate ? formatDate(role.appointmentDate) : undefined
 
-      return h(
-        'span',
-        {
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
-        },
-        displayText
-      )
+      if (!startDate) {
+        return h('span', { class: cellClass }, t('label.notAvailable'))
+      }
+
+      const endDate = role?.cessationDate ? formatDate(role.cessationDate) : undefined
+
+      // once ceased, show the effective date as a Start/End range; otherwise just the date
+      if (endDate) {
+        return h('div', { class: [...cellClass, 'flex flex-col'] }, [
+          h('span', startDate),
+          h('span', { class: ['text-xs', isCeased ? '' : 'text-neutral'] }, t('label.to')),
+          h('span', endDate)
+        ])
+      }
+
+      return h('span', { class: cellClass }, t('text.dateToCurrent', { date: startDate }))
     }
   }
 

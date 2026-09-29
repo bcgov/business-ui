@@ -1,6 +1,6 @@
 import { TableColumnMailingAddress } from '#components'
 import { h } from 'vue'
-import { DELETED_CLASS } from './constants'
+import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 export function getMailingAddressColumn<T extends { address: AddressSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -20,7 +20,7 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
         TableColumnMailingAddress,
         {
           data: row.original.new.address,
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '', getIsRowCeased(row) ? CEASED_CLASS : '']
         },
         () => []
       )

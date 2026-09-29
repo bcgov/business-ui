@@ -323,7 +323,7 @@ test.describe('Correction - Filing Submit', () => {
       }).toPass({ timeout: 15000 })
 
       // table should now show the new custodian with their email
-      await expect(custodians).toContainText('NEW CUSTODIAN')
+      await expect(custodians).toContainText('New Custodian')
       await expect(custodians).toContainText('new.custodian@example.com')
 
       // Navigate to review — custodians should appear since a change was made
