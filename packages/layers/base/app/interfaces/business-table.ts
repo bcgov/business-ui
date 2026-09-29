@@ -14,7 +14,8 @@ export type TableBusinessColumnMeta<T> = TableColumn<TableBusinessState<T>>['met
 
 export type TableColumnMetaOption = 'default' | 'first' | 'last'
 
-export type TablePartyColumnName = 'name' | 'roles' | 'delivery' | 'mailing' | 'effectiveDates' | 'email' | 'actions'
+export type TablePartyColumnName
+  = 'name' | 'roles' | 'delivery' | 'mailing' | 'effectiveDates' | 'email' | 'actions'
 
 /** Display-level label overrides for table action buttons and badges */
 export interface TableLabelOverrides {

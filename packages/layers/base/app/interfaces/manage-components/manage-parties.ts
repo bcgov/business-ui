@@ -28,7 +28,7 @@ export type ManagePartiesProps = ManageBaseProps & {
     variant: 'readonly' | 'correct-readonly'
     subject?: never
     modelName?: never
-    roleType?: never
+    roleType?: RoleTypeUi
     partyFormProps?: never
     allowedActions?: never
   }

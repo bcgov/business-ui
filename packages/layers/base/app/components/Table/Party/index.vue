@@ -19,7 +19,7 @@ const {
   }
 }>()
 
-const partyColumns = getPartyTableColumns<T>(columns, labelOverrides?.badges)
+const partyColumns = computed(() => getPartyTableColumns<T>(columns, labelOverrides?.badges))
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 </script>
 
