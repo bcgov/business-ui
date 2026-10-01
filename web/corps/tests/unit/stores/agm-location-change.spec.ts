@@ -251,7 +251,7 @@ describe('useAgmLocationChangeStore', () => {
 
       const header = mockSaveOrUpdateDraftFiling.mock.calls[0]![1].filing.header
       expect(header.authorizationReceived).toBeUndefined()
-      expect(header.certifiedBy).toBeUndefined()
+      expect(header.certifiedBy).toBeTruthy()
     })
 
     it('should not include staff payment fields in the header', async () => {

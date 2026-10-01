@@ -51,4 +51,5 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
 export type AgmLocationChangeFormSchema = Partial<
   z.output<ReturnType<typeof getAgmLocationChangeSchema>>
   & { authorization: z.output<ReturnType<typeof getConfirmAuthorizationSchema>> }
+  & { certify: z.output<ReturnType<typeof getCertifySchema>> }
 >

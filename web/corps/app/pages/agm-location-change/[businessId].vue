@@ -115,8 +115,8 @@ useFilingPageWatcher({
           <p>{{ $t('page.agmLocationChange.helpText') }}</p>
           <p>{{ $t('page.agmLocationChange.helpExceptionsTitle') }}</p>
           <ul class="list-disc pl-6 space-y-1">
-            <li v-for="(item, i) in tm('page.agmLocationChange.helpExceptions')" :key="i">
-              {{ rt(item) }}
+            <li v-for="(item, i) in (tm('page.agmLocationChange.helpExceptions') as unknown[])" :key="i">
+              {{ rt(item as string) }}
             </li>
           </ul>
         </HelpExpansion>
