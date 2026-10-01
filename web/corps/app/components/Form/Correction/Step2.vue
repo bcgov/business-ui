@@ -11,56 +11,16 @@ const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates']
 const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email']
 
-/**
- * Change detection for review sections.
- *
- * These check the `actions` array on each table entry rather than comparing
- * current vs initial snapshots. This is necessary because when resuming a
- * saved draft, the initial snapshot IS the merged (draft + original) state,
- * so initial === current. The `actions` array (e.g. ["ADDRESS_CHANGED"],
- * ["CORRECTED"]) is the reliable indicator that a correction change exists.
- */
-
-/** Whether any offices were changed */
-const hasOfficeChanges = computed(() => {
-  return store.offices.some(o => o.new.actions?.length > 0)
-})
-
-/** Whether any directors were changed */
-const hasDirectorChanges = computed(() => {
-  return store.directors.some(d => d.new.actions.length > 0)
-})
-
-/** Whether any share classes were changed */
-const hasShareStructureChanges = computed(() => {
-  return store.shareClasses.some(sc => sc.new.actions.length > 0)
-    || store.resolutionDates.some(rd => rd.new.actions.length > 0)
-})
-
-/** Whether any receivers were changed */
-const hasReceiverChanges = computed(() => {
-  return store.receivers.some(r => r.new.actions.length > 0)
-})
-
-/** Whether any liquidators were changed */
-const hasLiquidatorChanges = computed(() => {
-  return store.liquidators.some(l => l.new.actions.length > 0)
-})
-
-/** Whether any custodians were changed */
-const hasCustodianChanges = computed(() => {
-  return store.custodians.some(c => c.new.actions.length > 0)
-})
-
-const hasCourtOrderChanges = computed(() => {
-  return store.courtOrders.some(co => co.new.actions.length > 0)
-})
-
-const hasAmalgamationChanges = computed(() => {
-  return (store.amalgamation.some(a => a.new.actions.length > 0)
-    || store.amalStmnt.new.actions.length > 0)
-  && store.correctedFilingType === FilingType.AMALGAMATION_APPLICATION
-})
+const {
+  hasDirectorChange,
+  hasReceiverChange,
+  hasLiquidatorChange,
+  hasCustodianChange,
+  hasOfficeChange,
+  hasShareStructureChange,
+  hasCourtOrderChange,
+  hasAmalgamationChange
+} = useCorrectionHelper()
 
 const requiresAuthorization = computed(() => {
   const legalType = businessStore.business?.legalType as CorpTypeCd | undefined
@@ -96,8 +56,8 @@ function onError(event: FormErrorEvent) {
         <p>{{ $t('text.correctionReviewDescription') }}</p>
       </div>
 
-      <!-- Company Name (readonly, always displayed) -->
-      <ManageCompanyName
+      <!-- Your Company (readonly, always displayed) -->
+      <ManageYourCompany
         :loading="store.initializing"
         :business
         :contact="businessContact"
@@ -107,7 +67,7 @@ function onError(event: FormErrorEvent) {
       <!-- Office Addresses (readonly, only if changed) -->
       <!-- Section 2: Office Addresses -->
       <ManageOffices
-        v-if="hasOfficeChanges"
+        v-if="hasOfficeChange"
         data-testid="review-office-addresses-section"
         :loading="store.initializing"
         :empty-text="$t('label.noOffices')"
@@ -117,18 +77,19 @@ function onError(event: FormErrorEvent) {
 
       <!-- Directors (readonly, only if changed) -->
       <ManageParties
-        v-if="hasDirectorChanges"
+        v-if="hasDirectorChange"
         :loading="store.initializing"
         :empty-text="$t('label.noDirectors')"
         :table-title="$t('label.currentDirectors')"
         :columns-to-display="partyColumns"
         data-testid="review-current-directors-section"
         variant="correct-readonly"
+        state-key="manage-directors"
       />
 
       <!-- Receivers (readonly, only if changed) -->
       <ManageParties
-        v-if="hasReceiverChanges"
+        v-if="hasReceiverChange"
         :loading="store.initializing"
         :empty-text="$t('label.noReceivers')"
         :table-title="$t('label.currentReceivers')"
@@ -140,7 +101,7 @@ function onError(event: FormErrorEvent) {
 
       <!-- Liquidators (readonly, only if changed) -->
       <ManageParties
-        v-if="hasLiquidatorChanges"
+        v-if="hasLiquidatorChange"
         state-key="manage-liquidators"
         :loading="store.initializing"
         :empty-text="$t('label.noLiquidators')"
@@ -152,7 +113,7 @@ function onError(event: FormErrorEvent) {
 
       <!-- Custodians (readonly, only if changed) -->
       <ManageParties
-        v-if="hasCustodianChanges"
+        v-if="hasCustodianChange"
         state-key="manage-custodians"
         :loading="store.initializing"
         :empty-text="$t('label.noCustodians')"
@@ -164,7 +125,7 @@ function onError(event: FormErrorEvent) {
 
       <!-- Share Structure (readonly, only if changed) -->
       <ManageShareStructure
-        v-if="hasShareStructureChanges"
+        v-if="hasShareStructureChange"
         data-testid="review-share-structure-section"
         :loading="store.initializing"
         :empty-text="$t('label.noShareClasses')"
@@ -172,14 +133,14 @@ function onError(event: FormErrorEvent) {
       />
 
       <ManageCourtOrders
-        v-if="hasCourtOrderChanges"
+        v-if="hasCourtOrderChange"
         data-testid="review-court-orders-section"
         :loading="store.initializing"
         variant="correct-readonly"
       />
 
       <ManageAmalgamation
-        v-if="hasAmalgamationChanges"
+        v-if="hasAmalgamationChange && store.correctedFilingType === FilingType.AMALGAMATION_APPLICATION"
         data-testid="review-amalgamation-section"
         :loading="store.initializing"
         variant="correct-readonly"

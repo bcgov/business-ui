@@ -47,7 +47,7 @@ defineOptions({ inheritAttrs: false })
 </script>
 
 <template>
-  <div class="relative group">
+  <div class="relative group w-full">
     <span
       :id="labelId"
       :class="[
@@ -65,6 +65,7 @@ defineOptions({ inheritAttrs: false })
       :id
       v-model="model"
       :aria-labelledby="labelId"
+      class="w-full"
     />
   </div>
 </template>

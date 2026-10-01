@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { roles, isRemoved } = defineProps<{ roles: PartyRoleSchema, isRemoved: boolean }>()
+const { roles, includeCeasedRoles = false } = defineProps<{ roles: PartyRoleSchema, includeCeasedRoles?: boolean }>()
 const roleOrder = [
   // NOTE: other roles have no ordering use case yet
   RoleTypeUi.CEO,
@@ -16,7 +16,7 @@ const roleOrder = [
 const orderedRoles = computed(() => {
   const roleOrderMap = new Map(roleOrder.map((role, index) => [role, index]))
   const activeRoles = roles.filter(r => !r.cessationDate)
-  const displayRoles = isRemoved ? roles : activeRoles
+  const displayRoles = includeCeasedRoles ? roles : activeRoles
   return [...displayRoles].sort((a, b) => {
     const indexA = roleOrderMap.get(a.roleType) ?? Infinity
     const indexB = roleOrderMap.get(b.roleType) ?? Infinity

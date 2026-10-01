@@ -1,5 +1,5 @@
 import { h } from 'vue'
-import { DELETED_CLASS } from './constants'
+import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 export function getEmailColumn<T extends { email: string, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'default'
@@ -19,7 +19,7 @@ export function getEmailColumn<T extends { email: string, actions: ActionType[] 
       return h(
         'span',
         {
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
+          class: [defaultClass, isRemoved ? DELETED_CLASS : '', getIsRowCeased(row) ? CEASED_CLASS : '']
         },
         email
       )

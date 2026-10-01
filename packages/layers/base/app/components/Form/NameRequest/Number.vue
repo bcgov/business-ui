@@ -93,7 +93,9 @@ const getNrErrorMsg = (nameRequest: NameRequest) => {
   }
 
   // verify nr validity
-  if (isNrInvalid(nameRequest, nrAllowedActionTypes)) {
+  const nrInvalidReason = isNrInvalid(nameRequest, nrAllowedActionTypes)
+  if (nrInvalidReason) {
+    logDevOnly(nrInvalidReason)
     return t(`validation.nrNumber.errorState.${NameRequestState.INVALID}`)
   }
 }

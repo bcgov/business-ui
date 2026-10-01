@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Form, FormErrorEvent, InputMenuItem } from '@nuxt/ui'
+import type { Form, FormErrorEvent } from '@nuxt/ui'
 
 const {
   stateKey,
@@ -19,7 +19,6 @@ const emit = defineEmits<{
   remove: []
 }>()
 
-const { t } = useI18n()
 const formTarget = 'amalgamation-correct-form'
 
 const model = defineModel<AmalgamationCorrectSchema>({ required: true })
@@ -40,43 +39,7 @@ const formErrors = computed(() => {
   }
 })
 
-const caOpts: InputMenuItem[] = [
-  { type: 'label', label: t('label.canadian') },
-  ...countrySubdivisions.ca
-    .filter(p => p.code !== 'BC')
-    .map(p => ({
-      label: `${p.name}, Canada`,
-      region: p.code,
-      country: 'CA'
-    })),
-  { type: 'separator' },
-  { region: 'FEDERAL', country: 'CA', label: t('label.federal') }
-]
-
-const internationalOpts: InputMenuItem[] = [
-  { type: 'label', label: t('label.international') },
-  ...isoCountriesListSortedByName
-    .filter(c => c.alpha_2 !== 'CA')
-    .sort((a, b) => {
-      if (a.alpha_2 === 'US') {
-        return -1
-      }
-      if (b.alpha_2 === 'US') {
-        return 1
-      }
-      return 0
-    })
-    .map(c => ({
-      label: c.name,
-      region: null,
-      country: c.alpha_2
-    }))
-]
-
-const jurisdictionOpts: InputMenuItem[][] = [
-  caOpts,
-  internationalOpts
-]
+const jurisdictionOpts = getJurisdictionMenuItems()
 
 // normalize InputMenuItem to match form schema - no label in form schema
 const selectedJurisdiction = computed({
@@ -87,21 +50,8 @@ const selectedJurisdiction = computed({
 
     const { country, region } = model.value.foreignJurisdiction
 
-    if (country === 'CA') {
-      if (region === 'FEDERAL') {
-        return { label: t('label.federal'), country, region }
-      }
-      const provinceDisplay = countrySubdivisions.ca.find(p => p.code === region)?.name || region
-      return {
-        label: `${provinceDisplay}, Canada`,
-        country,
-        region
-      }
-    }
-
-    const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === country)?.name || country
     return {
-      label: countryDisplay,
+      label: getJurisdictionLabel(model.value.foreignJurisdiction),
       country,
       region
     }

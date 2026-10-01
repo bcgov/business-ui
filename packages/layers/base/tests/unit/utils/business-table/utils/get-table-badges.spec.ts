@@ -57,6 +57,20 @@ describe('getTableBadges', () => {
     expect(result).toHaveLength(1)
   })
 
+  it('should only show a label once when several actions share it', () => {
+    const actions = [ActionType.NAME_CHANGED, ActionType.ADDRESS_CHANGED, ActionType.ROLES_CHANGED]
+    const row = { original: { new: { actions } } } as any
+    const overrides = {
+      [ActionType.NAME_CHANGED]: 'CORRECTED',
+      [ActionType.ADDRESS_CHANGED]: 'CORRECTED',
+      [ActionType.ROLES_CHANGED]: 'CORRECTED'
+    }
+
+    const result = getTableBadges(row, overrides)
+
+    expect(result.map(b => b.label)).toEqual(['CORRECTED'])
+  })
+
   it('should filter out unknown action types', () => {
     const actions = ['UNKNOWN_ACTION' as ActionType, ActionType.NAME_CHANGED]
     const row = { original: { new: { actions } } } as any

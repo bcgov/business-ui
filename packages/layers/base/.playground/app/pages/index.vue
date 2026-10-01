@@ -45,19 +45,6 @@ const componentExamples: DropdownMenuItem[] = [
         ]
       },
       {
-        label: 'ManageCompanyName',
-        children: [
-          {
-            to: localePath('/examples/components/ManageCompanyName'),
-            label: 'Readonly'
-          },
-          {
-            to: localePath('/examples/components/ManageCompanyName/editable'),
-            label: 'Editable'
-          }
-        ]
-      },
-      {
         label: 'ManageCourtOrders',
         children: [
           {
@@ -112,6 +99,10 @@ const componentExamples: DropdownMenuItem[] = [
             label: 'With Configurable Fields'
           },
           {
+            to: localePath('/examples/components/ManageParties/with-ceased-director'),
+            label: 'With Ceased Director'
+          },
+          {
             label: 'Allowed Actions',
             children: [
               {
@@ -148,6 +139,15 @@ const componentExamples: DropdownMenuItem[] = [
           {
             to: localePath('/examples/components/ManageShareStructure/real-data'),
             label: 'Real Data'
+          }
+        ]
+      },
+      {
+        label: 'ManageYourCompany',
+        children: [
+          {
+            to: localePath('/examples/components/Manage/YourCompany'),
+            label: 'Correct'
           }
         ]
       }

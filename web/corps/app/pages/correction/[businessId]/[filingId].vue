@@ -1,16 +1,16 @@
 <script setup lang="ts">
-/* eslint-disable max-len */
 const { t } = useI18n()
 const store = useCorrectionStore()
 const route = useRoute()
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(t('page.correction.h1'))
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
-const { getFilingName } = useFiling()
 
 const businessId = route.params.businessId as string
 const filingId = route.params.filingId as string // the pre-created correction draft filing ID
 const FILING_TYPE = FilingType.CORRECTION
+
+const { hasAnyChanges, triggerActiveSubFormAlerts } = useCorrectionHelper()
 
 const {
   canSubmit,
@@ -28,28 +28,13 @@ const {
     [() => store.initialOffices, () => store.offices],
     [() => store.initialShareClasses, () => store.shareClasses],
     [() => store.initialNameTranslations, () => store.nameTranslations],
-    [() => store.companyName.old.legalName, () => store.companyName.new.legalName],
     [() => store.initialResolutionDates, () => store.resolutionDates],
     [() => store.initialCourtOrders, () => store.courtOrders],
     [() => store.initialAmalgamation, () => store.amalgamation],
     [() => store.initialAmalStmnt, () => store.amalStmnt]
   ],
   // At least one correctable section must have changes to allow submission
-  () => {
-    return store.directors.some(d => d.new.actions.length > 0)
-      || store.receivers.some(r => r.new.actions.length > 0)
-      || store.liquidators.some(l => l.new.actions.length > 0)
-      || store.custodians.some(c => c.new.actions.length > 0)
-      || store.offices.some(o => o.new.actions?.length > 0)
-      || store.shareClasses.some(sc => sc.new.actions.length > 0)
-      || store.resolutionDates.some(rd => rd.new.actions.length > 0)
-      || !!store.formState.resolutionDate?.date?.trim()
-      || store.nameTranslations.some(nt => nt.new.actions.length > 0)
-      || store.companyName.new.actions.length > 0
-      || store.courtOrders.some(co => co.new.actions.length > 0)
-      || store.amalgamation.some(a => a.new.actions.length > 0)
-      || store.amalStmnt.new.actions.length > 0
-  }
+  () => hasAnyChanges.value
 )
 
 definePageMeta({
@@ -69,29 +54,9 @@ const originalFilingName = computed(() => {
   return getFilingName(store.correctedFilingType) ?? store.correctedFilingType
 })
 
-function checkActiveSubForm() {
-  if (!store.hasActiveSubForm) {
-    return false
-  }
-  const alertMsg = t('text.finishTaskBeforeOtherChanges')
-  return (store.formState.activeOffice && useFilingAlerts('manage-offices').setAlert('office-address-form', alertMsg))
-    || (store.formState.activeDirector && useFilingAlerts('manage-parties').setAlert('party-details-form', alertMsg))
-    || (store.formState.activeReceiver && useFilingAlerts('manage-receivers').setAlert('party-details-form', alertMsg))
-    || (store.formState.activeLiquidator && useFilingAlerts('manage-liquidators').setAlert('party-details-form', alertMsg))
-    || (store.formState.activeCustodian && useFilingAlerts('manage-custodians').setAlert('party-details-form', alertMsg))
-    || (store.formState.activeClass && useFilingAlerts('manage-share-structure').setAlert('share-class-form', alertMsg))
-    || (store.formState.activeSeries && useFilingAlerts('manage-share-structure').setAlert('share-series-form', alertMsg))
-    || (store.formState.activeResolutionDate && useFilingAlerts('manage-share-structure').setAlert('resolution-date-form', alertMsg))
-    || (store.formState.activeNameTranslation && useFilingAlerts('manage-name-translations').setAlert('name-translation-form', alertMsg))
-    || (store.formState.activeNameRequest && useFilingAlerts('manage-company-name').setAlert('company-name-form', alertMsg))
-    || (store.formState.activeCourtOrder && useFilingAlerts('manage-court-orders').setAlert('court-order-poa-form', alertMsg))
-    || (store.formState.activeAmal && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-form', alertMsg))
-    || (store.formState.activeAmalStmnt && useFilingAlerts('manage-amalgamation').setAlert('amalgamation-correct-statement-form', alertMsg))
-}
-
 function reviewAndConfirm() {
   setBtnCtrlAlert(undefined)
-  if (checkActiveSubForm()) {
+  if (triggerActiveSubFormAlerts()) {
     return
   }
   if (!canSubmit()) {
@@ -103,7 +68,7 @@ function reviewAndConfirm() {
 async function submitFiling() {
   try {
     setBtnCtrlAlert(undefined)
-    if (checkActiveSubForm()) {
+    if (triggerActiveSubFormAlerts()) {
       return
     }
     if (!canSubmit()) {
@@ -125,7 +90,7 @@ async function saveFiling(resumeLater = false, enableUnsavedChangesBlock = true)
   try {
     if (enableUnsavedChangesBlock) {
       setBtnCtrlAlert(undefined)
-      if (checkActiveSubForm()) {
+      if (triggerActiveSubFormAlerts()) {
         return
       }
       if (!canSave()) {

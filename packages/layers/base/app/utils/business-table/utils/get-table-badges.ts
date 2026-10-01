@@ -30,5 +30,7 @@ export function getTableBadges<T extends { actions: ActionType[] }>(
     return [badgeMap.REMOVED]
   }
 
-  return rowActions.map(action => badgeMap[action]).filter(Boolean)
+  const badges = rowActions.map(action => badgeMap[action]).filter(Boolean)
+  // several actions can share a label (e.g. every change is CORRECTED in a correction) - only show each label once
+  return badges.filter((badge, i) => badges.findIndex(b => b.label === badge.label) === i)
 }

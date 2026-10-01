@@ -19,7 +19,6 @@ function normalizeParty<T extends ActivePartySchema>(party: T): T {
   const { mailingAddress, deliveryAddress } = normalized.address
 
   if (mailingAddress && deliveryAddress) {
-    // @ts-expect-error - id not in party schema currently, needs greater refactor
     normalized.address.sameAs = isEqualOmit(mailingAddress, deliveryAddress, ['id'])
   }
 
@@ -89,8 +88,10 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
     const oldState = row.original.old
 
     if (oldState) {
+      // clone so `new`/`old` aren't the same reference - cloneDeep dedupes shared references,
+      // so mutating one later (e.g. isEditing when re-entering edit) would corrupt the other
       const newState: TableBusinessState<PartySchema> = {
-        new: oldState,
+        new: cloneDeep(oldState),
         old: oldState
       }
 

@@ -3,6 +3,8 @@ import type { ManagePartiesProps } from '#business/app/interfaces'
 
 const {
   roleType,
+  subject,
+  tableTitle,
   stateKey = 'manage-parties',
   allowedActions,
   labelOverrides,
@@ -24,15 +26,40 @@ const shouldPreventActions = computed(() => {
   return !!activeParty.value || preventActions
 })
 
+type PartyTab = 'active' | 'ceased'
+
+// ceased parties only apply to corrections - show them in their own tab when correcting a role type that can be ceased
+const showCeasedTab = (variant === 'correct' || variant === 'correct-readonly') && hasCeasedTab(roleType)
+const selectedTab = ref<PartyTab>('active')
+const isCeasedTab = computed(() => selectedTab.value === 'ceased')
+
 const {
   addingParty,
   expandedState,
   tableState,
   addNewParty,
-  removeParty,
-  undoParty,
+  removeParty: removeTableParty,
+  undoParty: undoTableParty,
   applyTableEdits
 } = useManageParties(stateKey)
+
+// classify by the original state so a party doesn't jump tabs while it's being changed
+function isRowCeased(party: TableBusinessState<PartySchema>) {
+  return !!roleType && isPartyCeased(party.old ?? party.new, roleType)
+}
+
+const displayedTableState = computed(() => showCeasedTab
+  ? tableState.value.filter(party => isRowCeased(party) === isCeasedTab.value)
+  : tableState.value
+)
+
+// the table only receives the parties for the selected tab, so map the row back to its index in the full table state
+function toTableStateRow(row: TableBusinessRow<PartySchema>): TableBusinessRow<PartySchema> {
+  if (!showCeasedTab) {
+    return row
+  }
+  return { ...row, index: tableState.value.indexOf(row.original) } as TableBusinessRow<PartySchema>
+}
 
 const { t } = useI18n()
 const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
@@ -47,17 +74,16 @@ watch(() => actionPreventedSignal, (value) => {
   }
 })
 
-const tableLabels = computed(() => {
-  if (labelOverrides) {
-    return labelOverrides
-  }
-  if (variant === 'correct' || variant === 'correct-readonly') {
-    return getCorrectionLabelOverrides()
-  }
-  return undefined
-})
+// existing parties are always corrected (not changed), regardless of variant
+const tableLabels = computed(() => labelOverrides ?? getCorrectionLabelOverrides())
 
 const partyAllowedActions = computed(() => {
+  // a ceased party can only be corrected - it can't be removed or have its roles changed (which would un-cease it).
+  // ADD is dropped too since the party form treats it as "allow any edit"
+  if (isCeasedTab.value) {
+    const notAllowedWhenCeased = [ManageAllowedAction.ADD, ManageAllowedAction.REMOVE, ManageAllowedAction.ROLE_CHANGE]
+    return (allowedActions ?? Object.values(ManageAllowedAction)).filter(a => !notAllowedWhenCeased.includes(a))
+  }
   if (allowedActions) {
     return allowedActions
   }
@@ -68,8 +94,49 @@ const partyAllowedActions = computed(() => {
 })
 
 const showAddButton = computed(() => {
-  return !partyAllowedActions.value || partyAllowedActions.value.includes(ManageAllowedAction.ADD)
+  if (variant === 'readonly' || variant === 'correct-readonly') {
+    return false
+  }
+  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
 })
+
+const headerActions = computed(() => showAddButton.value
+  ? [
+    {
+      'label': t('label.addSubject', { subject }),
+      'variant': 'outline' as const,
+      'data-alert-focus-target': targetId,
+      'aria-describedby': messageId,
+      'onClick': initAddParty
+    }
+  ]
+  : undefined
+)
+
+const tabs = computed<{ value: PartyTab, label?: string, icon?: string }[]>(() => [
+  { value: 'active', label: tableTitle, icon: 'i-mdi-account-supervisor-circle-outline' },
+  { value: 'ceased', label: t('label.ceasedSubject', { subject: tableTitle }) }
+])
+
+function selectTab(tab: PartyTab) {
+  if (tab === selectedTab.value) {
+    return
+  }
+  if (shouldPreventActions.value) {
+    setActiveFormAlert()
+    emit('action-prevented')
+    return
+  }
+  selectedTab.value = tab
+}
+
+function onTabKeydown(event: KeyboardEvent) {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+    event.preventDefault()
+    selectTab(isCeasedTab.value ? 'active' : 'ceased')
+    document.getElementById(`${stateKey}-tab-${selectedTab.value}`)?.focus()
+  }
+}
 
 function setActiveFormAlert() {
   if (activeParty.value !== undefined) {
@@ -85,6 +152,7 @@ function initAddParty() {
   }
   activeParty.value = activePartySchema.parse({})
   addingParty.value = true
+  selectedTab.value = 'active'
 }
 
 function cleanupPartyForm() {
@@ -115,8 +183,8 @@ function initEditParty(row: TableBusinessRow<PartySchema>) {
   const nameProps = row.original.new.name
   if (nameProps) {
     const name = nameProps.partyType === PartyType.PERSON
-      ? `${nameProps.firstName} ${nameProps.middleName} ${nameProps.lastName}`.toUpperCase()
-      : nameProps.businessName?.toUpperCase() || ''
+      ? [nameProps.firstName, nameProps.middleName, nameProps.lastName].filter(Boolean).join(' ')
+      : nameProps.businessName || ''
 
     editSubject = name
   }
@@ -124,8 +192,16 @@ function initEditParty(row: TableBusinessRow<PartySchema>) {
 }
 
 function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>) {
-  applyTableEdits(party, row)
+  applyTableEdits(party, toTableStateRow(row))
   cleanupPartyForm()
+}
+
+function removeParty(row: TableBusinessRow<PartySchema>) {
+  removeTableParty(toTableStateRow(row))
+}
+
+function undoParty(row: TableBusinessRow<PartySchema>) {
+  undoTableParty(toTableStateRow(row))
 }
 
 function clearAllAlerts() {
@@ -136,13 +212,7 @@ function clearAllAlerts() {
 function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant {
   // old is always undefined for newly added parties
   const isAdded = row.original.old === undefined
-  if (isAdded) {
-    return 'edit'
-  }
-  if (variant === 'correct') {
-    return 'correct'
-  }
-  return 'change'
+  return isAdded ? 'edit' : 'correct'
 }
 </script>
 
@@ -166,24 +236,61 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
       :heading="{
         label: tableTitle,
         icon: 'i-mdi-account-supervisor',
-        ui: 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
+        ui: showCeasedTab
+          ? 'bg-shade-secondary pl-0 pr-4 pt-3 pb-0 sm:pl-0 sm:pr-6 rounded-t-md text-base'
+          : 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
         level: sectionTitle ? 'h3' : 'h2'
       }"
-      :actions="showAddButton
-        ? [
-          {
-            'label': $t('label.addSubject', { subject }),
-            'variant': 'outline',
-            'icon': 'i-mdi-plus',
-            // @ts-expect-error - data-alert-focus-target not valid attr on type ButtonProps
-            'data-alert-focus-target': targetId,
-            'aria-describedby': messageId,
-            'onClick': initAddParty
-          }
-        ]
-        : undefined
-      "
+      :actions="headerActions"
     >
+      <template v-if="showCeasedTab" #header>
+        <component :is="sectionTitle ? 'h3' : 'h2'" class="sr-only">
+          {{ tableTitle }}
+        </component>
+        <div class="flex items-end justify-between gap-2.5">
+          <div
+            role="tablist"
+            class="flex"
+            data-testid="parties-tabs"
+          >
+            <button
+              v-for="tab in tabs"
+              :id="`${stateKey}-tab-${tab.value}`"
+              :key="tab.value"
+              type="button"
+              role="tab"
+              :aria-selected="selectedTab === tab.value"
+              :aria-controls="`${stateKey}-tabpanel`"
+              :tabindex="selectedTab === tab.value ? 0 : -1"
+              :data-testid="`parties-tab-${tab.value}`"
+              class="flex items-center gap-2.5 px-4 py-3 text-base font-semibold text-neutral-highlighted"
+              :class="[
+                // the first tab sits against the card edge, so keep its outer corner square
+                'rounded-t-2xl first:rounded-tl-none',
+                selectedTab === tab.value
+                  ? 'bg-default border-b-3 border-primary'
+                  : 'bg-default/50 hover:bg-default/75 border-b-3 border-transparent'
+              ]"
+              @click="selectTab(tab.value)"
+              @keydown="onTabKeydown"
+            >
+              <UIcon
+                v-if="tab.icon"
+                :name="tab.icon"
+                class="size-6 shrink-0 text-primary"
+              />
+              {{ tab.label }}
+            </button>
+          </div>
+          <div class="flex items-center gap-2.5 pb-3">
+            <UButton
+              v-for="(action, i) in headerActions"
+              :key="i"
+              v-bind="action"
+            />
+          </div>
+        </div>
+      </template>
       <template #default>
         <FormPartyDetails
           v-if="addingParty && activeParty"
@@ -199,10 +306,13 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
         />
         <USeparator />
         <TableParty
+          :id="showCeasedTab ? `${stateKey}-tabpanel` : undefined"
           v-model:expanded="expandedState"
-          :data="tableState"
+          :role="showCeasedTab ? 'tabpanel' : undefined"
+          :aria-labelledby="showCeasedTab ? `${stateKey}-tab-${selectedTab}` : undefined"
+          :data="displayedTableState"
           :loading
-          :empty-text
+          :empty-text="isCeasedTab ? $t('label.noCeasedSubject', { subject: tableTitle }) : emptyText"
           :allowed-actions="partyAllowedActions"
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
@@ -222,7 +332,8 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
               v-if="activeParty"
               v-model="activeParty"
               v-bind="partyFormProps"
-              :allowed-actions="allowedActions"
+              :allowed-actions="partyAllowedActions"
+              :hide-remove="partyFormProps?.hideRemove || isCeasedTab"
               :name="modelName"
               :variant="getExpandedFormVariant(row)"
               :subject="editSubject"
