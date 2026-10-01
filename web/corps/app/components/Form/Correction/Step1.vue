@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const store = useCorrectionStore()
-const { hasActiveSubForm } = storeToRefs(store)
+const { hasActiveSubForm } = useCorrectionHelper()
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email', 'actions']
@@ -20,9 +20,9 @@ function onActionPrevented() {
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
-    <ManageCompanyName
-      v-model:active-name-request="store.formState.activeNameRequest"
-      v-model:active-name-translation="store.formState.activeNameTranslation"
+    <ManageYourCompany
+      v-model:active-subject="store.formState.activeYourCompany"
+      v-model:active-nt="store.formState.activeNameTranslation"
       :loading="store.initializing"
       :business
       :contact="businessContact"
@@ -50,6 +50,7 @@ function onActionPrevented() {
 
     <ManageParties
       v-model:active-party="store.formState.activeDirector"
+      state-key="manage-directors"
       :loading="store.initializing"
       :empty-text="$t('label.noDirectors')"
       :table-title="$t('label.currentDirectors')"

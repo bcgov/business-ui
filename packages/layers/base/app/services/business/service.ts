@@ -139,13 +139,12 @@ export const useBusinessService = () => {
 
   async function getBusinessExtended(
     businessId: string,
-    forCorrection: boolean = false,
-    filingType?: FilingType,
+    // forCorrection: boolean = false,
+    // filingType?: FilingType,
     force = false
-  ): Promise<Amalgamation> {
-    const options = query.businessExtOptions(businessId, forCorrection, filingType)
-    return await getCachedOrFetch<{ amalgamation: Amalgamation }>(options, force)
-      .then(res => res.amalgamation)
+  ): Promise<BusinessDataExtended> {
+    const options = query.businessExtOptions(businessId, true, undefined) // forCorrection, filingType - FUTURE: type properly with TS overloads
+    return await getCachedOrFetch<BusinessDataExtended>(options, force)
   }
 
   /**

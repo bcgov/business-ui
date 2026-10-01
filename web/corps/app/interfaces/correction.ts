@@ -82,6 +82,12 @@ export interface CorrectionPayload extends FilingPayloadData {
   // memorandum?: unknown
   // rules?: unknown
   // resolution?: unknown
+
+  continuationIn?: BusinessDataExtended['continuationIn']
+
+  continuationOut?: BusinessDataExtended['continuationOut']
+
+  amalgamationOut?: BusinessDataExtended['amalgamationOut']
 }
 
 export interface CorrectionFiling {

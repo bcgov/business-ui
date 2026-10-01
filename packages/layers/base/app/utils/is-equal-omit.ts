@@ -15,13 +15,13 @@ import { isEqual, omit } from 'es-toolkit'
  *
  * isEqualOmit(subjectA, subjectB, NON_EDITABLE_FIELDS) // returns true
 */
-export function isEqualOmit<T extends object>(
+export function isEqualOmit<T>(
   objA: T,
   objB: T,
-  keys: ReadonlyArray<keyof T>
+  keys: ReadonlyArray<keyof T | string>
 ): boolean {
-  // null/undefined check
-  if (!objA || !objB) {
+  // null/undefined/non object check
+  if (typeof objA !== 'object' || typeof objB !== 'object' || !objA || !objB) {
     return objA === objB
   }
 
@@ -30,5 +30,7 @@ export function isEqualOmit<T extends object>(
     return isEqual(objA, objB)
   }
 
-  return isEqual(omit(objA, keys), omit(objB, keys))
+  const ks = keys as ReadonlyArray<keyof T>
+
+  return isEqual(omit(objA, ks), omit(objB, ks))
 }

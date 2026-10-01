@@ -54,8 +54,8 @@ const {
   variant,
   allowedActions,
   labelOverrides,
-  preventActions,
-  actionPreventedSignal,
+  preventActions: () => preventActions,
+  actionPreventedSignal: () => actionPreventedSignal,
   activeSubjects: {
     subject: activeSubject,
     alertTarget: formTarget

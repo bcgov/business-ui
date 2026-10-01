@@ -149,7 +149,7 @@ export const useManageCommon = (opts: ManageCommonOptions) => {
   }
 
   function clearAllAlerts() {
-  // clear alerts in all sub forms
+    // clear alerts in all sub forms
     subjectGroups.value.forEach((sg) => {
       clearAlert(sg.alertTarget)
     })

@@ -2,7 +2,7 @@ interface AmalBusinessBase {
   id?: number // may be undefined when loading a draft
   identifier: string
   legalName: string
-  role: string // amalgamating | primary | ???
+  role: string // amalgamating | primary | holding ???
 }
 
 export interface AmalBusinessBC extends AmalBusinessBase {
