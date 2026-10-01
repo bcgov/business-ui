@@ -38,9 +38,11 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
       .refine(val => Number(val) >= minYear, t('validation.agmLocationChange.yearMin', { year: minYear }))
       .refine(val => Number(val) <= maxYear, t('validation.agmLocationChange.yearMax', { year: maxYear })),
     reason: z.string()
+      .trim()
       .min(1, t('validation.agmLocationChange.reasonRequired'))
       .max(2000, t('validation.agmLocationChange.reasonMax')),
     agmLocation: z.string()
+      .trim()
       .min(1, t('validation.agmLocationChange.locationRequired'))
       .max(400, t('validation.agmLocationChange.locationMax'))
   })

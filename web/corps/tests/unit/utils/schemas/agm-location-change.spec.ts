@@ -112,6 +112,13 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
       expect(getPaths(result)).toContain('reason')
     })
 
+    it('should fail when whitespace-only', () => {
+      const result = schema.safeParse({ ...valid, reason: '   ' })
+
+      expect(result.success).toBe(false)
+      expect(getPaths(result)).toContain('reason')
+    })
+
     it('should fail when over 2000 characters', () => {
       const result = schema.safeParse({ ...valid, reason: 'a'.repeat(2001) })
 
@@ -129,6 +136,13 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
   describe('agmLocation', () => {
     it('should fail when empty', () => {
       const result = schema.safeParse({ ...valid, agmLocation: '' })
+
+      expect(result.success).toBe(false)
+      expect(getPaths(result)).toContain('agmLocation')
+    })
+
+    it('should fail when whitespace-only', () => {
+      const result = schema.safeParse({ ...valid, agmLocation: '   ' })
 
       expect(result.success).toBe(false)
       expect(getPaths(result)).toContain('agmLocation')

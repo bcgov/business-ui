@@ -233,6 +233,27 @@ describe('useAgmLocationChangeStore', () => {
       expect(header.date).toBeTruthy()
     })
 
+    it('should include authorizationReceived: true in header when non-staff certify is checked', async () => {
+      await initAndEdit()
+      ;(store.formState as any).certify = { isCertified: true }
+
+      await store.submit(true)
+
+      const header = getPayload().filing.header
+      expect(header.authorizationReceived).toBe(true)
+    })
+
+    it('should omit authorizationReceived from header when saving a draft', async () => {
+      await initAndEdit()
+      ;(store.formState as any).certify = { isCertified: true }
+
+      await store.submit(false)
+
+      const header = mockSaveOrUpdateDraftFiling.mock.calls[0]![1].filing.header
+      expect(header.authorizationReceived).toBeUndefined()
+      expect(header.certifiedBy).toBeUndefined()
+    })
+
     it('should not include staff payment fields in the header', async () => {
       await initAndEdit()
 

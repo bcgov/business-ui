@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FetchError } from 'ofetch'
 
-const { t, tm } = useI18n()
+const { t, tm, rt } = useI18n()
 const store = useAgmLocationChangeStore()
 const { initializing } = storeToRefs(store)
 const route = useRoute()
@@ -115,8 +115,8 @@ useFilingPageWatcher({
           <p>{{ $t('page.agmLocationChange.helpText') }}</p>
           <p>{{ $t('page.agmLocationChange.helpExceptionsTitle') }}</p>
           <ul class="list-disc pl-6 space-y-1">
-            <li v-for="(item, i) in (tm('page.agmLocationChange.helpExceptions') as string[])" :key="i">
-              {{ item }}
+            <li v-for="(item, i) in tm('page.agmLocationChange.helpExceptions')" :key="i">
+              {{ rt(item) }}
             </li>
           </ul>
         </HelpExpansion>
