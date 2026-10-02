@@ -101,7 +101,7 @@ describe('FormEffectiveDateRange', () => {
 
     const startHint = wrapper.find('[id^="effective-date-hint-"]')
     expect(startHint.exists()).toBe(true)
-    expect(startHint.text()).toBe(t('validation.fieldRequired'))
+    expect(startHint.text()).toBe(t('validation.dateRequired'))
     // the shared format hint is still shown once below the fields
     expect(wrapper.text().split(t('text.effectiveDateFormat')).length - 1).toBe(1)
   })

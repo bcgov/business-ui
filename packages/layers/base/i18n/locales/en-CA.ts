@@ -870,6 +870,7 @@ export default {
     corpNumFormat: 'Corporate number may only contain letters, numbers, and hyphens',
     corruptFileNamed: '{filename} is corrupt.',
     dateFormat: 'Date must be a valid date in YYYY-MM-DD format',
+    dateRequired: 'Date is required',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
     duplicateDocId: 'A document record already exists with this document ID',

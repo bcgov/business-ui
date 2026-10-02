@@ -43,7 +43,7 @@ const dateSchema = computed(() => getDateSchema({
         maxDate: maxBoundary.value.toFormat(DATE_DISPLAY_FORMAT)
       })
       : undefined,
-    required: $t('validation.fieldRequired')
+    required: $t('validation.dateRequired')
   }
 }))
 
@@ -69,7 +69,7 @@ const hintText = computed(() => {
   if (!err) {
     return props.formatHintText
   }
-  if (err === $t('validation.fieldRequired') && props.formatHintText) {
+  if (err === $t('validation.dateRequired') && props.formatHintText) {
     return `${err}. ${props.formatHintText}`
   }
   return err
@@ -84,7 +84,7 @@ function buildAnnouncement(): string {
     const displayVal = (dateRef.value?.$el?.querySelector('input') as HTMLInputElement | null)?.value.trim()
     return displayVal || val
   }
-  if (err.message === $t('validation.fieldRequired')) {
+  if (err.message === $t('validation.dateRequired')) {
     return hintText.value
   }
   return `${val}, ${$t('validation.invalidDate')}, ${hintText.value}`
