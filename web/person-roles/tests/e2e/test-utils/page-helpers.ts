@@ -74,12 +74,12 @@ export function getTableRowForPerson(page: Page, lastName: string) {
 export async function openOfficerForm(page: Page, row?: Locator, isEdit = false) {
   if (row) { // pass a row to open the form in edit mode
     await expect(row).toBeVisible()
-    const changeButton = row.getByRole('button', { name: isEdit ? 'Edit' : 'Correct' })
-    if (await changeButton.isVisible()) { // if no edits or newly added, there will be a correct button
+    const changeButton = row.getByRole('button', { name: isEdit ? 'Edit' : 'Change' })
+    if (await changeButton.isVisible()) { // if no edits or newly added, there will be a change button
       await changeButton.click()
-    } else { // if edits to existing officer, need to access correct button in more actions menu
+    } else { // if edits to existing officer, need to access change button in more actions menu
       await row.getByRole('button', { name: 'More Actions' }).click()
-      await page.getByRole('menuitem', { name: 'Correct' }).click()
+      await page.getByRole('menuitem', { name: 'Change' }).click()
     }
   } else { // if no row, open new 'Add Officer' form
     await page.getByRole('button', { name: 'Add Officer' }).click()
@@ -94,20 +94,20 @@ export async function openOfficerForm(page: Page, row?: Locator, isEdit = false)
 export async function assertNameTableCell(
   page: Page,
   relationship: BusinessRelationship,
-  badges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED' | 'CORRECTED'>,
-  notBadges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED' | 'CORRECTED'>
+  badges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>,
+  notBadges?: Array<'ADDED' | 'REMOVED' | 'NAME CHANGED' | 'ROLES CHANGED' | 'ADDRESS CHANGED'>
 ) {
   const row = getTableRowForPerson(page, relationship.entity.familyName!)
   const tableCell = row.getByRole('cell').first()
   const person = relationship.entity
   if (person.givenName) {
-    await expect(tableCell).toContainText(person.givenName, { ignoreCase: true })
+    await expect(tableCell).toContainText(person.givenName.toUpperCase())
   }
   if (person.middleInitial) {
-    await expect(tableCell).toContainText(person.middleInitial, { ignoreCase: true })
+    await expect(tableCell).toContainText(person.middleInitial.toUpperCase())
   }
   if (person.familyName) {
-    await expect(tableCell).toContainText(person.familyName, { ignoreCase: true })
+    await expect(tableCell).toContainText(person.familyName.toUpperCase())
   }
   if (person.alternateName) {
     await expect(tableCell).toContainText('Preferred Name')

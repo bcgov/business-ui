@@ -47,12 +47,12 @@ test.describe('Task Guards', () => {
     const officeSection = page.getByTestId('records-office-section')
     const submitBtn = page.getByRole('button', { name: 'Submit' })
     const saveBtn = page.getByRole('button', { name: 'Save and Resume Later' })
-    const liqSubForm = page.getByRole('group', { name: 'Correcting Tester Testing' })
+    const liqSubForm = page.getByRole('group', { name: 'Changing TESTER TESTING' })
     const officeSubForm = page.getByRole('group', { name: 'Changing Liquidation Records Office' })
     const taskMessage = 'Finish this task before making other changes.'
 
     // open liquidator sub form
-    await liqSection.getByRole('button', { name: 'Correct' }).first().click()
+    await liqSection.getByRole('button', { name: 'Change' }).first().click()
     // try to submit
     await submitBtn.click()
     // assert task message
@@ -60,7 +60,7 @@ test.describe('Task Guards', () => {
     // close sub form
     await liqSubForm.getByRole('button', { name: 'Cancel' }).first().click()
     // reopen sub form
-    await liqSection.getByRole('button', { name: 'Correct' }).first().click()
+    await liqSection.getByRole('button', { name: 'Change' }).first().click()
     // try to save
     await saveBtn.click()
     // assert task message
@@ -94,7 +94,7 @@ test.describe('Task Guards', () => {
   })
 
   test('should display modal on cancel when changes have been made', async ({ page }) => {
-    await expect(page.getByTestId('liquidator-info-section')).toContainText('Tester Testing')
+    await expect(page.getByTestId('liquidator-info-section')).toContainText('TESTER TESTING')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
     expect(staffNoFeeRadio).toBeVisible()
@@ -113,7 +113,7 @@ test.describe('Task Guards', () => {
   })
 
   test('should prevent navigation with browser popup if changes have been made', async ({ page }) => {
-    await expect(page.getByTestId('liquidator-info-section')).toContainText('Tester Testing')
+    await expect(page.getByTestId('liquidator-info-section')).toContainText('TESTER TESTING')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
     expect(staffNoFeeRadio).toBeVisible()

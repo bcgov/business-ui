@@ -53,7 +53,7 @@ test.describe('Page init errors', () => {
 
     testCases.forEach(({ status, expectedText }) => {
       test(`should display "${expectedText}" modal if the parties fetch fails with ${status}`, async ({ page }) => {
-        await page.route(`*/**/businesses/${identifier}/parties?classType=officer`, async (route) => {
+        await page.route(`*/**/businesses/${identifier}/parties?classType=OFFICER`, async (route) => {
           await route.fulfill({ status })
         })
 

@@ -46,7 +46,7 @@ test.describe('Editing Officers', () => {
 
     const updatedRow = getTableRowForPerson(page, updatedRelationship.entity.familyName!)
     await expect(updatedRow).toBeVisible()
-    await assertNameTableCell(page, updatedRelationship, ['CORRECTED'])
+    await assertNameTableCell(page, updatedRelationship, ['ADDRESS CHANGED', 'NAME CHANGED', 'ROLES CHANGED'])
 
     // delivery should be updated
     await assertAddress(page, updatedRelationship, 1, updatedRelationship.mailingAddress!)
@@ -85,13 +85,13 @@ test.describe('Editing Officers', () => {
     const row = getTableRowForPerson(page, initialOfficer.officer.lastName)
 
     // edit name only
-    await row.getByRole('button', { name: 'Correct' }).click()
+    await row.getByRole('button', { name: 'Change' }).click()
     const form = page.getByTestId('party-details-form')
     await page.getByTestId('first-name-input').fill('Edited Name')
     await form.getByRole('button', { name: 'Done' }).click()
 
-    // should have corrected badge
-    await expect(row.getByRole('cell').first()).toContainText('CORRECTED')
+    // should have name changed badge
+    await expect(row.getByRole('cell').first()).toContainText('NAME CHANGED')
 
     // remove row
     await row.getByRole('button', { name: 'More Actions' }).click()
@@ -100,7 +100,7 @@ test.describe('Editing Officers', () => {
     // deleting an existing officer shouldnt remove it from the table but add a DELETED badge instead
     await expect(row).toContainText('DELETED')
     // removed badge overwrites all other badges
-    await expect(row).not.toContainText('CORRECTED')
+    await expect(row).not.toContainText('NAME CHANGED')
 
     // should be able to submit a removed officer
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -119,7 +119,7 @@ test.describe('Editing Officers', () => {
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, initialRelationship, 1, newAddress1)
     await assertAddress(page, initialRelationship, 2, 'same')
-    await assertNameTableCell(page, initialRelationship, ['CORRECTED'])
+    await assertNameTableCell(page, initialRelationship, ['ADDRESS CHANGED'])
     // edit/assert address a second time
     const newAddress2 = getFakeAddress()
     await openOfficerForm(page, row)
@@ -127,7 +127,7 @@ test.describe('Editing Officers', () => {
     await page.getByRole('button', { name: 'Done' }).click()
     await assertAddress(page, initialRelationship, 1, newAddress2)
     await assertAddress(page, initialRelationship, 2, 'same')
-    await assertNameTableCell(page, initialRelationship, ['CORRECTED'])
+    await assertNameTableCell(page, initialRelationship, ['ADDRESS CHANGED'])
 
     // undo changes
     await row.getByRole('button', { name: 'Undo' }).click()
@@ -136,8 +136,8 @@ test.describe('Editing Officers', () => {
     await expect(row.getByRole('cell').nth(1)).not.toContainText(newAddress1.streetAddress)
     await expect(row.getByRole('cell').nth(1)).not.toContainText(newAddress2.streetAddress)
     await expect(row.getByRole('cell').nth(1)).toContainText(initialOfficer.deliveryAddress.streetAddress)
-    // name column shouldnt have CORRECTED badge anymore
-    await expect(row.getByRole('cell').nth(0)).not.toContainText('CORRECTED')
+    // name column shouldnt have ADDRESS CHANGED badge anymore
+    await expect(row.getByRole('cell').nth(0)).not.toContainText('ADDRESS CHANGED')
   })
 
   test('should only have "ADDED" badge when editing a new officer', async ({ page }) => {
@@ -175,7 +175,7 @@ test.describe('Editing Officers', () => {
     await assertAddress(page, newRelationship, 1, newAddress)
     // should still only have ADDED badge
     await expect(row.getByRole('cell').nth(0)).toContainText('ADDED')
-    await expect(row.getByRole('cell').nth(0)).not.toContainText('CORRECTED')
+    await expect(row.getByRole('cell').nth(0)).not.toContainText('ADDRESS CHANGED')
 
     // edit/assert name
     const newPerson = getFakePerson()
@@ -187,7 +187,7 @@ test.describe('Editing Officers', () => {
     updatedRelationship.entity.givenName = newPerson.givenName
     await assertNameTableCell(page, updatedRelationship, ['ADDED'])
     // should only have ADDED badge
-    await expect(row.getByRole('cell').nth(0)).not.toContainText('CORRECTED')
+    await expect(row.getByRole('cell').nth(0)).not.toContainText('NAME CHANGED')
 
     // edit/assert roles
     const newRoles = getRandomRoles()
@@ -196,6 +196,6 @@ test.describe('Editing Officers', () => {
     await page.getByRole('button', { name: 'Done' }).click()
     await expect(row.getByRole('cell').nth(0)).toContainText('ADDED')
     // should only have ADDED badge
-    await expect(row.getByRole('cell').nth(0)).not.toContainText('CORRECTED')
+    await expect(row.getByRole('cell').nth(0)).not.toContainText('ROLES CHANGED')
   })
 })

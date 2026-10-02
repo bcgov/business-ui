@@ -58,7 +58,7 @@ test.describe('Draft Officers', () => {
     await fillOutFolio(page, testFolio)
 
     // assert updated table data
-    await assertNameTableCell(page, newRelationship, ['CORRECTED'])
+    await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     const expectedRoles = ['Vice President', 'Chair']
     await assertRoles(page, newRelationship, expectedRoles)
     await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
@@ -80,7 +80,7 @@ test.describe('Draft Officers', () => {
     // await page.waitForTimeout(5000)
 
     // page should reload with saved draft data
-    await assertNameTableCell(page, newRelationship, ['CORRECTED'])
+    await assertNameTableCell(page, newRelationship, ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED'])
     await assertRoles(page, newRelationship, expectedRoles)
     await assertAddress(page, newRelationship, 1, newRelationship.mailingAddress!)
     await assertAddress(page, newRelationship, 2, 'same')
@@ -97,7 +97,7 @@ test.describe('Draft Officers', () => {
       page,
       initialRelationship,
       undefined,
-      ['CORRECTED']
+      ['NAME CHANGED', 'ROLES CHANGED', 'ADDRESS CHANGED']
     )
     await assertRoles(page, initialRelationship, ['Chief Executive Officer'])
     await assertAddress(page, initialRelationship, 1, initialRelationship.deliveryAddress!)
