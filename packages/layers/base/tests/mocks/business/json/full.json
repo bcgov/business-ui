@@ -135,6 +135,11 @@
                   "feeCode": "DISDE",
                   "name": "dissolution",
                   "type": "delay"
+                },
+                {
+                  "displayName": "AGM Location Change",
+                  "feeCode": "AGMLC",
+                  "name": "agmLocationChange"
                 }
             ]
         },
