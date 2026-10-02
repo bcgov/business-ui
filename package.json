@@ -18,8 +18,8 @@
     "reset:hard": "find . -name node_modules -exec rm -rf {} + && find . -name .nuxt -exec rm -rf {} + && pnpm i"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "0.7.0",
-    "@changesets/cli": "2.31.0",
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
     "@nuxt/eslint-config": "1.17.0",
     "dotenv": "catalog:",
     "eslint": "10.11.0"
