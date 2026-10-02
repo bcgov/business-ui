@@ -44,7 +44,7 @@ export function formatAmalCorrectSection(
   const originalBusinesses = originalData.amalgamatingBusinesses || []
   const draftBusinesses = draftData?.amalgamatingBusinesses
 
-  let tableState: TableBusinessState<AmalgamationTableRow>[] = []
+  let tableState: TableBusinessState<AmalgamationTableRow>[]
 
   // if no draft businesses, return formatted API response
   if (!draftBusinesses) {

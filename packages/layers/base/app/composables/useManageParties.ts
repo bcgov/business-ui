@@ -106,7 +106,7 @@ export const useManageParties = (stateKey: string = 'manage-parties') => {
 
     const normalizedParty = normalizeParty(party)
     const originalPartyState = row.original.old
-    let newActions: ActionType[] = []
+    let newActions: ActionType[]
 
     if (originalPartyState === undefined) {
       newActions = [ActionType.ADDED]

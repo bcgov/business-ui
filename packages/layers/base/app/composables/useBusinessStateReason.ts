@@ -80,7 +80,7 @@ export const useBusinessStateReason = () => {
     // reason for continuation out and default 'reason'
     const effectiveDate = toDate(stateFiling.header.effectiveDate || '')
     const date = (effectiveDate && toPacificDateTime(effectiveDate)) || `[${t('text.unknown')}]`
-    let reason = ''
+    let reason: string
     if (filingType === FilingType.CONTINUATION_OUT) {
       reason = t('stateReason.continuationOut')
     } else {

@@ -98,7 +98,7 @@ export const useManageNameTranslations = (stateKey: string = 'manage-name-transl
     }
 
     const originalState = row.original.old
-    let newActions: ActionType[] = []
+    let newActions: ActionType[]
 
     if (originalState === undefined) {
       newActions = [ActionType.ADDED]

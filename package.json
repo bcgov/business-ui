@@ -14,14 +14,15 @@
     "lint:fix": "eslint --fix .",
     "test:unit": "pnpm -r test:unit",
     "test:e2e": "pnpm -r test:e2e",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "reset:hard": "find . -name node_modules -exec rm -rf {} + && find . -name .nuxt -exec rm -rf {} + && pnpm i"
   },
   "devDependencies": {
     "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.0",
-    "@nuxt/eslint-config": "1.15.2",
+    "@nuxt/eslint-config": "1.17.0",
     "dotenv": "catalog:",
-    "eslint": "10.4.0"
+    "eslint": "10.11.0"
   },
   "engines": {
     "node": ">=24"
