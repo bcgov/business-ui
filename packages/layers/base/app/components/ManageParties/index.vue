@@ -28,8 +28,10 @@ const shouldPreventActions = computed(() => {
 
 type PartyTab = 'active' | 'ceased'
 
+const isCorrectVariant = variant === 'correct' || variant === 'correct-readonly'
+
 // ceased parties only apply to corrections - show them in their own tab when correcting a role type that can be ceased
-const showCeasedTab = (variant === 'correct' || variant === 'correct-readonly') && hasCeasedTab(roleType)
+const showCeasedTab = isCorrectVariant && hasCeasedTab(roleType)
 const selectedTab = ref<PartyTab>('active')
 const isCeasedTab = computed(() => selectedTab.value === 'ceased')
 
@@ -74,8 +76,15 @@ watch(() => actionPreventedSignal, (value) => {
   }
 })
 
-// existing parties are always corrected (not changed), regardless of variant
-const tableLabels = computed(() => labelOverrides ?? getCorrectionLabelOverrides())
+const tableLabels = computed(() => {
+  if (labelOverrides) {
+    return labelOverrides
+  }
+  if (isCorrectVariant) {
+    return getCorrectionLabelOverrides()
+  }
+  return undefined
+})
 
 const partyAllowedActions = computed(() => {
   // a ceased party can only be corrected - it can't be removed or have its roles changed (which would un-cease it).
@@ -105,6 +114,7 @@ const headerActions = computed(() => showAddButton.value
     {
       'label': t('label.addSubject', { subject }),
       'variant': 'outline' as const,
+      'icon': 'i-mdi-plus',
       'data-alert-focus-target': targetId,
       'aria-describedby': messageId,
       'onClick': initAddParty
@@ -186,7 +196,7 @@ function initEditParty(row: TableBusinessRow<PartySchema>) {
       ? [nameProps.firstName, nameProps.middleName, nameProps.lastName].filter(Boolean).join(' ')
       : nameProps.businessName || ''
 
-    editSubject = name
+    editSubject = name.toUpperCase()
   }
   expandedState.value = { [row.index]: true }
 }
@@ -212,7 +222,10 @@ function clearAllAlerts() {
 function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant {
   // old is always undefined for newly added parties
   const isAdded = row.original.old === undefined
-  return isAdded ? 'edit' : 'correct'
+  if (isAdded) {
+    return 'edit'
+  }
+  return isCorrectVariant ? 'correct' : 'change'
 }
 </script>
 

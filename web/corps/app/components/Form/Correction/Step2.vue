@@ -80,9 +80,10 @@ function onError(event: FormErrorEvent) {
         v-if="hasDirectorChange"
         :loading="store.initializing"
         :empty-text="$t('label.noDirectors')"
-        :table-title="$t('label.currentDirectors')"
+        :table-title="$t('label.directors')"
         :columns-to-display="partyColumns"
         data-testid="review-current-directors-section"
+        :role-type="RoleTypeUi.DIRECTOR"
         variant="correct-readonly"
         state-key="manage-directors"
       />
@@ -92,9 +93,10 @@ function onError(event: FormErrorEvent) {
         v-if="hasReceiverChange"
         :loading="store.initializing"
         :empty-text="$t('label.noReceivers')"
-        :table-title="$t('label.currentReceivers')"
+        :table-title="$t('label.receivers')"
         :columns-to-display="partyColumns"
         data-testid="review-receivers-section"
+        :role-type="RoleTypeUi.RECEIVER"
         variant="correct-readonly"
         state-key="manage-receivers"
       />
@@ -105,9 +107,10 @@ function onError(event: FormErrorEvent) {
         state-key="manage-liquidators"
         :loading="store.initializing"
         :empty-text="$t('label.noLiquidators')"
-        :table-title="$t('label.currentLiquidators')"
+        :table-title="$t('label.liquidators')"
         :columns-to-display="partyColumns"
         data-testid="review-liquidators-section"
+        :role-type="RoleTypeUi.LIQUIDATOR"
         variant="correct-readonly"
       />
 
@@ -117,9 +120,10 @@ function onError(event: FormErrorEvent) {
         state-key="manage-custodians"
         :loading="store.initializing"
         :empty-text="$t('label.noCustodians')"
-        :table-title="$t('label.currentCustodians')"
+        :table-title="$t('label.custodians')"
         :columns-to-display="custodianColumns"
         data-testid="review-custodians-section"
+        :role-type="RoleTypeUi.CUSTODIAN"
         variant="correct-readonly"
       />
 
