@@ -122,8 +122,9 @@ const isEffectiveDateRequiredForRole = computed(() =>
 )
 const isCessationDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.CESSATION_DATE_CHANGE))
 // this form never creates a cessation date from scratch - it's set by ceasing the role
-// (unchecking it) elsewhere, so the section only needs to track the role's current value
-const isCessationDateVisibleForRole = computed(() => rolesWithCessationDate.value.length > 0)
+// (unchecking it) elsewhere. Checked once when the form opens, so clearing the date keeps
+// the section visible and shows its required error instead of the section disappearing
+const isCessationDateVisibleForRole = rolesWithCessationDate.value.length > 0
 const isCessationDateRequiredForRole = computed(() =>
   rolesEligibleForCessationDate.value.some(
     role => ROLE_FIELD_CONFIG[role.roleType]?.cessationDate === RoleFieldRequirement.REQUIRED
@@ -134,7 +135,7 @@ const isCessationDateRequiredForRole = computed(() =>
 // as a single Start Date/End Date range instead of two separately-labelled sections
 const useEffectiveDateRange = computed(() =>
   isEffectiveDateVisibleForRole.value
-  && isCessationDateVisibleForRole.value
+  && isCessationDateVisibleForRole
   && isEffectiveDateChangeAllowed.value
   && isCessationDateChangeAllowed.value
 )
