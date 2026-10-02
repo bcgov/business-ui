@@ -121,37 +121,22 @@ test.describe('ManageParties', () => {
     await selectCancel(page)
   })
 
-  test('Should show cessation date field once a Director role is ceased, per config', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageParties')
+  test('Should show cessation date field and hide roles for a ceased Director', async ({ page }) => {
+    await page.goto('./en-CA/examples/components/ManageParties/with-ceased-director')
     await page.waitForLoadState('networkidle')
 
-    const manageParties = page.getByTestId('manage-parties')
-    const tbody = manageParties.getByRole('table').locator('tbody')
-
-    // find first row that contains a Director role
-    const directorRow = tbody.getByRole('row').filter({ hasText: RoleType.DIRECTOR }).first()
-    await directorRow.getByRole('button', { name: 'change' }).click()
+    // the store has a Director with a cessation date, shown in the ceased tab of the correction
+    const manageParties = page.getByTestId('manage-parties').first()
+    await manageParties.getByTestId('parties-tab-ceased').click()
+    const ceasedRow = manageParties.getByRole('table').locator('tbody').getByRole('row')
+      .filter({ hasText: 'Ceased Director' }).first()
+    await ceasedRow.getByRole('button', { name: 'correct' }).click()
 
     const partyDetailsForm = page.getByTestId('party-details-form')
-    // once ceased, the cessation date is shown together with the effective date as a
-    // Start Date/End Date range rather than its own separately-labelled section
-    const cessationDateInput = partyDetailsForm.getByLabel('End Date')
-
-    // not ceased yet, so the field is hidden regardless of config
-    await expect(cessationDateInput).not.toBeVisible()
-
-    // uncheck the Director role to cease it
-    const directorCheckbox = partyDetailsForm
-      .getByTestId('party-role-options')
-      .getByRole('checkbox', { name: RoleType.DIRECTOR, exact: true })
-    await directorCheckbox.setChecked(false)
-
-    const shouldShowCessationDate = !!ROLE_FIELD_CONFIG[RoleTypeUi.DIRECTOR]?.cessationDate
-    if (shouldShowCessationDate) {
-      await expect(cessationDateInput).toBeVisible()
-    } else {
-      await expect(cessationDateInput).not.toBeVisible()
-    }
+    // the cessation date is shown together with the effective date as a Start Date/End Date range
+    await expect(partyDetailsForm.getByLabel('End Date')).toBeVisible()
+    // a ceased party's roles can't be changed
+    await expect(partyDetailsForm.getByTestId('party-role-options')).not.toBeVisible()
 
     await selectCancel(page)
   })
