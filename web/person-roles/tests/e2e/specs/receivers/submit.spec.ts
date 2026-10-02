@@ -113,7 +113,7 @@ test.describe('Manage Receivers - Submission', () => {
       }
       const existingReceiver = page.getByRole('table').locator('tbody').getByRole('row').first()
       expect(existingReceiver).toBeVisible()
-      const changeBtn = existingReceiver.getByRole('button', { name: 'Change' })
+      const changeBtn = existingReceiver.getByRole('button', { name: 'Correct' })
       expect(changeBtn).toBeVisible()
       await changeBtn.click()
       await fillOutAddress(page, newAddress, 'mailing')
@@ -178,14 +178,14 @@ test.describe('Manage Receivers - Submission', () => {
       const ceaseReceiver = existingReceivers[2]!
       // change address
       expect(changeAddressReceiver).toBeVisible()
-      const changeBtn1 = changeAddressReceiver.getByRole('button', { name: 'Change' })
+      const changeBtn1 = changeAddressReceiver.getByRole('button', { name: 'Correct' })
       expect(changeBtn1).toBeVisible()
       await changeBtn1.click()
       await fillOutAddress(page, changeAddress, 'mailing')
       await selectDone(page)
       // change name
       expect(changeNameReceiver).toBeVisible()
-      const changeBtn2 = changeNameReceiver.getByRole('button', { name: 'Change' })
+      const changeBtn2 = changeNameReceiver.getByRole('button', { name: 'Correct' })
       expect(changeBtn2).toBeVisible()
       await changeBtn2.click()
       await fillOutName(page, changeName)

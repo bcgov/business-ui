@@ -46,10 +46,10 @@ test.describe('Task Guards', () => {
     const partySection = page.getByTestId('manage-parties')
     const submitBtn = page.getByRole('button', { name: 'Submit' })
     const saveBtn = page.getByRole('button', { name: 'Save and Resume Later' })
-    const partySubForm = page.getByRole('group', { name: 'Changing TESTER TESTING' })
+    const partySubForm = page.getByRole('group', { name: 'Correcting Tester Testing' })
 
     // open party sub form
-    await partySection.getByRole('button', { name: 'Change' }).first().click()
+    await partySection.getByRole('button', { name: 'Correct' }).first().click()
     // try to submit
     await submitBtn.click()
     // assert task message
@@ -57,7 +57,7 @@ test.describe('Task Guards', () => {
     // close sub form
     await partySubForm.getByRole('button', { name: 'Cancel' }).first().click()
     // reopen sub form
-    await partySection.getByRole('button', { name: 'Change' }).first().click()
+    await partySection.getByRole('button', { name: 'Correct' }).first().click()
     // try to save
     await saveBtn.click()
     // assert task message
@@ -74,7 +74,7 @@ test.describe('Task Guards', () => {
   })
 
   test('should display modal on cancel when changes have been made', async ({ page }) => {
-    await expect(page.getByTestId('manage-parties')).toContainText('TESTER TESTING')
+    await expect(page.getByTestId('manage-parties')).toContainText('Tester Testing')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
     expect(staffNoFeeRadio).toBeVisible()
@@ -93,7 +93,7 @@ test.describe('Task Guards', () => {
   })
 
   test('should prevent navigation with browser popup if changes have been made', async ({ page }) => {
-    await expect(page.getByTestId('manage-parties')).toContainText('TESTER TESTING')
+    await expect(page.getByTestId('manage-parties')).toContainText('Tester Testing')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
     expect(staffNoFeeRadio).toBeVisible()

@@ -195,7 +195,7 @@ test.describe('Manage Liquidators - Submission', () => {
         }
         const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
         expect(existingLiquidator).toBeVisible()
-        const changeBtn = existingLiquidator.getByRole('button', { name: 'Change' })
+        const changeBtn = existingLiquidator.getByRole('button', { name: 'Correct' })
         expect(changeBtn).toBeVisible()
         await changeBtn.click()
         const parentLocator = page.getByTestId('party-details-form')
@@ -231,7 +231,7 @@ test.describe('Manage Liquidators - Submission', () => {
         }
 
         const existingLiquidator = page.getByRole('table').locator('tbody').getByRole('row').first()
-        await expect(existingLiquidator).toContainText('TESTER TESTING', { timeout: 10000 })
+        await expect(existingLiquidator).toContainText('Tester Testing', { timeout: 10000 })
 
         const officeParent = page.getByTestId('records-office-section')
         await officeParent.getByRole('button', { name: 'Change' }).click()
