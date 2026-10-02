@@ -1,7 +1,7 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, it, expect, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
-import { FormEffectiveDate } from '#components'
+import { FormEffectiveDate, FormEffectiveDateRange } from '#components'
 import type { EffectiveDateSchema } from '#business/app/utils/schemas/effective-date'
 import { DATE_API_INPUT_FORMAT, DATE_DISPLAY_FORMAT } from '#base/app/utils/schemas/date'
 import { DateTime } from 'luxon'
@@ -71,5 +71,38 @@ describe('FormEffectiveDate', () => {
     await flushPromises()
 
     expect(model.dateInput).toBe('not a date')
+  })
+})
+
+describe('FormEffectiveDateRange', () => {
+  const mountRange = (start: EffectiveDateSchema = { dateInput: '' }, end: EffectiveDateSchema = { dateInput: '' }) => {
+    return mountSuspended(FormEffectiveDateRange, {
+      props: {
+        start,
+        end,
+        description: 'Range description',
+        startRequired: true
+      }
+    })
+  }
+
+  it('should show the format hint once for both date fields', async () => {
+    const wrapper = await mountRange()
+    const formatHint = useNuxtApp().$i18n.t('text.effectiveDateFormat')
+    expect(wrapper.text().split(formatHint).length - 1).toBe(1)
+  })
+
+  it('should show a field\'s error without the format hint', async () => {
+    const wrapper = await mountRange()
+    const { t } = useNuxtApp().$i18n
+
+    await wrapper.vm.startFormRef?.validate().catch(() => {})
+    await flushPromises()
+
+    const startHint = wrapper.find('[id^="effective-date-hint-"]')
+    expect(startHint.exists()).toBe(true)
+    expect(startHint.text()).toBe(t('validation.fieldRequired'))
+    // the shared format hint is still shown once below the fields
+    expect(wrapper.text().split(t('text.effectiveDateFormat')).length - 1).toBe(1)
   })
 })

@@ -29,7 +29,8 @@ const dateSchema = computed(() => getDateSchema({
   minDate: props.minDate,
   maxDate: props.maxDate,
   messages: {
-    invalidDate: props.formatHintText,
+    // formatHintText may be empty when a parent renders the hint itself (e.g. FormEffectiveDateRange)
+    invalidDate: props.formatHintText || $t('validation.invalidDate'),
     minDate: minBoundary.value?.isValid
       ? $t('validation.dateNotBeforeMin', { date: minBoundary.value.toFormat(DATE_DISPLAY_FORMAT) })
       : undefined,
@@ -68,7 +69,7 @@ const hintText = computed(() => {
   if (!err) {
     return props.formatHintText
   }
-  if (err === $t('validation.fieldRequired')) {
+  if (err === $t('validation.fieldRequired') && props.formatHintText) {
     return `${err}. ${props.formatHintText}`
   }
   return err
@@ -123,6 +124,7 @@ defineOptions({ inheritAttrs: false })
           :disabled="props.disabled"
         />
         <p
+          v-if="hintText"
           :id="hintId"
           :class="['mt-1 text-sm flex items-start gap-1', error ? 'text-error' : 'text-neutral']"
         >
