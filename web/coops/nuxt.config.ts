@@ -1,9 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-// import { createResolver } from 'nuxt/kit'
-
-// const { resolve } = createResolver(import.meta.url)
-
 export default defineNuxtConfig({
   ssr: false,
 
@@ -63,8 +59,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      version: `Corps UI v${process.env.npm_package_version || ''}`,
-      disStageDelay: '',
+      version: `Coops UI v${process.env.npm_package_version || ''}`,
       playwright: process.env.playwright === 'true'
     }
   },
@@ -73,7 +68,7 @@ export default defineNuxtConfig({
     tsConfig: {
       exclude: [
         '../../business-registry-dashboard/**',
-        '../../coops/**',
+        '../../corps/**',
         '../../person-roles/**',
         '../../registry-home/**',
         '../../../packages/layers/base/tests/**'

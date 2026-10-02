@@ -72,6 +72,7 @@ export default defineNuxtConfig({
     tsConfig: {
       exclude: [
         '../../business-registry-dashboard/**',
+        '../../coops/**',
         '../../corps/**',
         '../../person-roles/**',
         '../../../packages/layers/base/tests/**'
