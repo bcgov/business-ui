@@ -24,9 +24,10 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
       const defaultClass = 'min-w-36 max-w-36 font-bold flex flex-col gap-2 break-words'
       const nameProps = row.original.new.name
 
-      const label = nameProps.partyType === PartyType.PERSON
+      const label = (nameProps.partyType === PartyType.PERSON
         ? [nameProps.firstName, nameProps.middleName, nameProps.lastName].filter(Boolean).join(' ')
         : nameProps.businessName || ''
+      ).toUpperCase()
 
       const preferredName = row.original.new.name.preferredName
 

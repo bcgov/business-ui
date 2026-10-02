@@ -96,7 +96,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       FilingType.CORRECTION,
       undefined,
       draftId,
-      {}, // fetch all parties (no role filter) — 1 API call for directors, receivers, liquidators
+      { all: true }, // fetch all parties incl. ceased (no role filter) — 1 API call for directors, receivers, liquidators
       undefined,
       true // fetch share classes
     )
@@ -133,9 +133,12 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     // Filter the single parties response by role type (UI enum — data is already formatted)
     const directorData = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
-    const receiverData = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.RECEIVER))
-    const liquidatorData = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.LIQUIDATOR))
-    const custodianData = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.CUSTODIAN))
+    // `all: true` also returns ceased parties — only directors keep their ceased parties (ManageParties shows them in a ceased tab)
+    const hasActiveRole = (p: TableBusinessState<PartySchema>, roleType: RoleTypeUi) =>
+      p.new.roles.some(r => r.roleType === roleType && !r.cessationDate)
+    const receiverData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.RECEIVER))
+    const liquidatorData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.LIQUIDATOR))
+    const custodianData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.CUSTODIAN))
 
     // Comment (may be empty on initial draft)
     formState.comment = { detail: draft.comment ?? '' }
