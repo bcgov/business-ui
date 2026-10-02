@@ -193,6 +193,7 @@ useFilingPageWatcher({
       <FormConfirmAuthorization
         v-if="store.isStaff && store.formState.authorization"
         v-model="(store.formState as any).authorization"
+        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
         data-testid="form-section-authorization"
         name="authorization"
         :order="2"
