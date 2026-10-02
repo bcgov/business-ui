@@ -1,0 +1,119 @@
+name: Coops UI CI
+
+on:
+  pull_request:
+    paths:
+      - "web/coops/**"
+      - "packages/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: "./web/coops"
+
+jobs:
+  coops-ui-ci:
+    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
+    with:
+      app_name: "business-coops"
+      working_directory: "./web/coops"
+      codecov_flag: "businesscoops"
+      node_version: 24
+      pnpm_version: 11.9.0
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 11.9.0
+        run_install: false
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Run Typecheck
+      run: pnpm typecheck
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ["coops"]
+        shardIndex: [1]
+        shardTotal: [1]
+        # shardIndex: [1, 2, 3, 4]
+        # shardTotal: [4]
+    defaults:
+      run:
+        working-directory: ./web/${{ matrix.project }}
+    env:
+      CI: true
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+    steps:
+    - uses: actions/checkout@v6
+    - uses: pnpm/action-setup@v6
+      with:
+        version: 11.9.0
+        run_install: false
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Generate Types
+      run: pnpm postinstall
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    - name: Set basic env
+      run: |
+        cp .env.example .env
+    - name: Run Playwright tests
+      run: HOME=/root pnpm test:e2e --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --pass-with-no-tests
+    - name: Upload blob report to GitHub Actions Artifacts
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: blob-report-${{ matrix.shardIndex }}
+        path: web/${{ matrix.project }}/blob-report
+        retention-days: 1
+
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs: [e2e-tests]
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ["coops"]
+    defaults:
+      run:
+        working-directory: ./web/${{ matrix.project }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
+      with:
+        node-version: 24
+    - name: Download blob reports from GitHub Actions Artifacts
+      uses: actions/download-artifact@v8
+      with:
+        path: web/${{ matrix.project }}/all-blob-reports
+        pattern: blob-report-*
+        merge-multiple: true
+
+    - name: Merge into HTML Report
+      run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+    - name: Upload HTML report
+      uses: actions/upload-artifact@v7
+      with:
+        name: html-report--attempt-${{ github.run_attempt }}
+        path: web/${{ matrix.project }}/playwright-report
+        retention-days: 2

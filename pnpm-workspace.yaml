@@ -1,4 +1,5 @@
 packages:
+  - web/coops
   - web/corps
   - web/person-roles
   - web/registry-home
