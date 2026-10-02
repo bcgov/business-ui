@@ -10,6 +10,9 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   label: string
   formatHintText: string
+  // not shown, but linked to the input via aria-describedby so screen readers read it - for
+  // when a parent shows the hint once for several fields (e.g. FormEffectiveDateRange)
+  srHintText?: string
 }>(), {
   required: true,
   disabled: false
@@ -29,7 +32,8 @@ const dateSchema = computed(() => getDateSchema({
   minDate: props.minDate,
   maxDate: props.maxDate,
   messages: {
-    invalidDate: props.formatHintText,
+    // formatHintText may be empty when a parent renders the hint itself (e.g. FormEffectiveDateRange)
+    invalidDate: props.formatHintText || $t('validation.invalidDate'),
     minDate: minBoundary.value?.isValid
       ? $t('validation.dateNotBeforeMin', { date: minBoundary.value.toFormat(DATE_DISPLAY_FORMAT) })
       : undefined,
@@ -42,7 +46,7 @@ const dateSchema = computed(() => getDateSchema({
         maxDate: maxBoundary.value.toFormat(DATE_DISPLAY_FORMAT)
       })
       : undefined,
-    required: $t('validation.fieldRequired')
+    required: $t('validation.dateRequired')
   }
 }))
 
@@ -68,7 +72,7 @@ const hintText = computed(() => {
   if (!err) {
     return props.formatHintText
   }
-  if (err === $t('validation.fieldRequired')) {
+  if (err === $t('validation.dateRequired') && props.formatHintText) {
     return `${err}. ${props.formatHintText}`
   }
   return err
@@ -83,7 +87,7 @@ function buildAnnouncement(): string {
     const displayVal = (dateRef.value?.$el?.querySelector('input') as HTMLInputElement | null)?.value.trim()
     return displayVal || val
   }
-  if (err.message === $t('validation.fieldRequired')) {
+  if (err.message === $t('validation.dateRequired')) {
     return hintText.value
   }
   return `${val}, ${$t('validation.invalidDate')}, ${hintText.value}`
@@ -108,7 +112,8 @@ defineOptions({ inheritAttrs: false })
   >
     <UFormField
       name="dateInput"
-      :ui="{ error: 'sr-only' }"
+      :description="srHintText"
+      :ui="{ error: 'sr-only', description: 'sr-only', container: 'mt-0' }"
     >
       <template #default="{ error }">
         <ConnectInputDatePicker
@@ -123,6 +128,7 @@ defineOptions({ inheritAttrs: false })
           :disabled="props.disabled"
         />
         <p
+          v-if="hintText"
           :id="hintId"
           :class="['mt-1 text-sm flex items-start gap-1', error ? 'text-error' : 'text-neutral']"
         >
