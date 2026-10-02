@@ -92,6 +92,27 @@ export async function setupCorrectionPage(
   await page.route(`**/api/v2/businesses/${identifier}/parties?role=liquidator`, async (route) => {
     await route.fulfill({ json: { parties: [] } })
   })
+
+  // 4. Mock correction-store-specific endpoints not covered by mockCommonApiCallsForFiling.
+  //    Without these, the store's init makes real API calls in CI that hang before their
+  //    .catch() fallbacks fire, keeping store.initializing=true past the 15s assertion timeout.
+  await page.route(`**/api/v2/businesses/${identifier}/aliases`, async (route) => {
+    await route.fulfill({ json: { aliases: [] } })
+  })
+  await page.route(`**/api/v2/businesses/${identifier}/court-orders`, async (route) => {
+    await route.fulfill({ json: { courtOrders: [] } })
+  })
+  await page.route(`**/api/v2/businesses/${identifier}/extended**`, async (route) => {
+    await route.fulfill({ status: 404 })
+  })
+  await page.route(`**/api/v2/businesses/${identifier}/resolutions`, async (route) => {
+    await route.fulfill({ json: { resolutions: [] } })
+  })
+  // The draft mock's correctedFilingId is 111554 — mock it so the store's getFiling call
+  // doesn't escape to the real API. The store wraps this in try/catch so a 404 is fine.
+  await page.route(`**/api/v2/businesses/${identifier}/filings/111554`, async (route) => {
+    await route.fulfill({ status: 404 })
+  })
 }
 
 export async function navigateToCorrectionPage(page: Page, identifier: string, filingId: string) {
