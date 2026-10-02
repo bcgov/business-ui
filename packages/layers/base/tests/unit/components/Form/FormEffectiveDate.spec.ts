@@ -75,6 +75,10 @@ describe('FormEffectiveDate', () => {
 })
 
 describe('FormEffectiveDateRange', () => {
+  // hint text that is shown on screen (each input also has a screen-reader-only copy)
+  const visibleHintCount = (wrapper: { findAll: (selector: string) => { text: () => string }[] }, text: string) =>
+    wrapper.findAll('p:not(.sr-only)').filter(p => p.text() === text).length
+
   const mountRange = (start: EffectiveDateSchema = { dateInput: '' }, end: EffectiveDateSchema = { dateInput: '' }) => {
     return mountSuspended(FormEffectiveDateRange, {
       props: {
@@ -89,7 +93,20 @@ describe('FormEffectiveDateRange', () => {
   it('should show the format hint once for both date fields', async () => {
     const wrapper = await mountRange()
     const formatHint = useNuxtApp().$i18n.t('text.effectiveDateFormat')
-    expect(wrapper.text().split(formatHint).length - 1).toBe(1)
+    expect(visibleHintCount(wrapper, formatHint)).toBe(1)
+  })
+
+  it('should link the format hint to each date input via aria-describedby', async () => {
+    const wrapper = await mountRange()
+    const formatHint = useNuxtApp().$i18n.t('text.effectiveDateFormat')
+
+    const inputs = wrapper.findAll('input')
+    expect(inputs).toHaveLength(2)
+    for (const input of inputs) {
+      const describedByIds = input.attributes('aria-describedby')?.split(' ') ?? []
+      const descriptions = describedByIds.map(id => wrapper.find(`[id="${id}"]`).text())
+      expect(descriptions).toContain(formatHint)
+    }
   })
 
   it('should show a field\'s error without the format hint', async () => {
@@ -103,6 +120,6 @@ describe('FormEffectiveDateRange', () => {
     expect(startHint.exists()).toBe(true)
     expect(startHint.text()).toBe(t('validation.dateRequired'))
     // the shared format hint is still shown once below the fields
-    expect(wrapper.text().split(t('text.effectiveDateFormat')).length - 1).toBe(1)
+    expect(visibleHintCount(wrapper, t('text.effectiveDateFormat'))).toBe(1)
   })
 })

@@ -69,6 +69,7 @@ defineOptions({ inheritAttrs: false })
           v-model="startModel"
           :label="startLabel"
           format-hint-text=""
+          :sr-hint-text="formatHintText"
           :max-date="props.maxDate"
           :min-date="props.minDate"
           :required="props.startRequired"
@@ -82,6 +83,7 @@ defineOptions({ inheritAttrs: false })
           v-model="endModel"
           :label="endLabel"
           format-hint-text=""
+          :sr-hint-text="formatHintText"
           :max-date="props.maxDate"
           :min-date="endMinDate"
           :required="props.endRequired"
@@ -89,7 +91,8 @@ defineOptions({ inheritAttrs: false })
         />
       </div>
     </div>
-    <p class="mt-3 text-sm text-neutral">
+    <!-- shown once for both fields; each input also reads it via srHintText -->
+    <p class="mt-3 text-sm text-neutral" aria-hidden="true">
       {{ formatHintText }}
     </p>
   </ConnectFormFieldWrapper>

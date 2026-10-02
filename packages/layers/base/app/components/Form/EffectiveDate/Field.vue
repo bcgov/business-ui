@@ -10,6 +10,9 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   label: string
   formatHintText: string
+  // not shown, but linked to the input via aria-describedby so screen readers read it - for
+  // when a parent shows the hint once for several fields (e.g. FormEffectiveDateRange)
+  srHintText?: string
 }>(), {
   required: true,
   disabled: false
@@ -109,7 +112,8 @@ defineOptions({ inheritAttrs: false })
   >
     <UFormField
       name="dateInput"
-      :ui="{ error: 'sr-only' }"
+      :description="srHintText"
+      :ui="{ error: 'sr-only', description: 'sr-only', container: 'mt-0' }"
     >
       <template #default="{ error }">
         <ConnectInputDatePicker
