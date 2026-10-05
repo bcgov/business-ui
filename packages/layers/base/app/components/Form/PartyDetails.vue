@@ -44,6 +44,10 @@ const rolesWithEffectiveDate = computed(() => rolesWithField('effectiveDate'))
 const rolesWithEmail = computed(() => rolesWithField('email'))
 const rolesEligibleForCessationDate = computed(() => rolesWithField('cessationDate'))
 const rolesWithCessationDate = computed(() => rolesEligibleForCessationDate.value.filter(role => !!role.cessationDate))
+// this form never creates a cessation date from scratch - it's set by ceasing the role
+// (unchecking it) elsewhere. Checked once when the form opens, so clearing the date keeps
+// the section visible and shows its required error instead of the section disappearing
+const isCessationDateVisible = rolesWithCessationDate.value.length > 0
 
 const effectiveDateModel = computed({
   get: (): EffectiveDateSchema => ({ dateInput: rolesWithEffectiveDate.value[0]?.appointmentDate ?? '' }),
@@ -76,7 +80,7 @@ async function onDone() {
     partyEmailFormRef.value?.formRef?.validate(),
     useEffectiveDateRange.value
       ? effectiveDateRangeFormRef.value?.startFormRef?.validate()
-      : isEffectiveDateVisibleForRole.value && isEffectiveDateChangeAllowed.value
+      : isEffectiveDateVisible.value && isEffectiveDateChangeAllowed.value
         ? effectiveDateFormRef.value?.formRef?.validate()
         : undefined,
     useEffectiveDateRange.value
@@ -110,21 +114,21 @@ function isAllowedAction(action: ManageAllowedAction) {
 }
 
 const isNameChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.NAME_CHANGE))
-const isRoleChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ROLE_CHANGE))
+// a ceased party's roles can't be changed
+const isRoleChangeAllowed = computed(() =>
+  isAllowedAction(ManageAllowedAction.ROLE_CHANGE) && !isCessationDateVisible
+)
 const isAddressChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.ADDRESS_CHANGE))
 const isEmailChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EMAIL_CHANGE))
 const isEffectiveDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.EFFECTIVE_DATE_CHANGE))
-const isEffectiveDateVisibleForRole = computed(() => rolesWithEffectiveDate.value.length > 0)
-const isEffectiveDateRequiredForRole = computed(() =>
+const isEffectiveDateVisible = computed(() => rolesWithEffectiveDate.value.length > 0)
+const isEffectiveDateRequired = computed(() =>
   rolesWithEffectiveDate.value.some(
     role => ROLE_FIELD_CONFIG[role.roleType]?.effectiveDate === RoleFieldRequirement.REQUIRED
   )
 )
 const isCessationDateChangeAllowed = computed(() => isAllowedAction(ManageAllowedAction.CESSATION_DATE_CHANGE))
-// this form never creates a cessation date from scratch - it's set by ceasing the role
-// (unchecking it) elsewhere, so the section only needs to track the role's current value
-const isCessationDateVisibleForRole = computed(() => rolesWithCessationDate.value.length > 0)
-const isCessationDateRequiredForRole = computed(() =>
+const isCessationDateRequired = computed(() =>
   rolesEligibleForCessationDate.value.some(
     role => ROLE_FIELD_CONFIG[role.roleType]?.cessationDate === RoleFieldRequirement.REQUIRED
   )
@@ -133,8 +137,8 @@ const isCessationDateRequiredForRole = computed(() =>
 // once a role has both an effective date and a cessation date section, show them together
 // as a single Start Date/End Date range instead of two separately-labelled sections
 const useEffectiveDateRange = computed(() =>
-  isEffectiveDateVisibleForRole.value
-  && isCessationDateVisibleForRole.value
+  isEffectiveDateVisible.value
+  && isCessationDateVisible
   && isEffectiveDateChangeAllowed.value
   && isCessationDateChangeAllowed.value
 )
@@ -143,8 +147,8 @@ const effectiveDateRangeDescription = computed(() => {
   const roleLabel = roleType ? $t(`roleType.${roleType}`).toLowerCase() : ''
   return $t('text.effectiveDateRangeDescription', { role: roleLabel, boldStart: '<strong>', boldEnd: '</strong>' })
 })
-const isEmailVisibleForRole = computed(() => rolesWithEmail.value.length > 0)
-const isEmailRequiredForRole = computed(() =>
+const isEmailVisible = computed(() => rolesWithEmail.value.length > 0)
+const isEmailRequired = computed(() =>
   rolesWithEmail.value.some(
     role => ROLE_FIELD_CONFIG[role.roleType]?.email === RoleFieldRequirement.REQUIRED
   )
@@ -201,12 +205,12 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           nested
           name="address"
         />
-        <template v-if="isEmailVisibleForRole && isEmailChangeAllowed">
+        <template v-if="isEmailVisible && isEmailChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormPartyEmail
             ref="party-email-form"
             v-model="model.email"
-            :required="isEmailRequiredForRole"
+            :required="isEmailRequired"
           />
         </template>
         <template v-if="useEffectiveDateRange">
@@ -215,17 +219,17 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             ref="effective-date-range-form"
             v-model:start="effectiveDateModel"
             v-model:end="cessationDateModel"
-            :start-required="isEffectiveDateRequiredForRole"
-            :end-required="isCessationDateRequiredForRole"
+            :start-required="isEffectiveDateRequired"
+            :end-required="isCessationDateRequired"
             :description="effectiveDateRangeDescription"
           />
         </template>
-        <template v-else-if="isEffectiveDateVisibleForRole && isEffectiveDateChangeAllowed">
+        <template v-else-if="isEffectiveDateVisible && isEffectiveDateChangeAllowed">
           <USeparator class="padding-x-default" />
           <FormEffectiveDate
             ref="effective-date-form"
             v-model="effectiveDateModel"
-            :required="isEffectiveDateRequiredForRole"
+            :required="isEffectiveDateRequired"
           />
         </template>
       </template>
