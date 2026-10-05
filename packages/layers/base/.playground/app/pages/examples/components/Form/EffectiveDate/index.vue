@@ -85,7 +85,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             ref="restricted-date-ref"
             v-model="state.restrictedDate"
             name="restrictedDate"
-            :bounds="{ min: [{ date: '2026-06-01' }], max: [{ date: '2026-07-30' }] }"
+            :bounds="{ min: { date: '2026-06-01' }, max: { date: '2026-07-30' } }"
           />
         </ConnectPageSection>
 
@@ -99,7 +99,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             ref="restricted-min-date-ref"
             v-model="state.restrictedMinDate"
             name="restrictedMinDate"
-            :bounds="{ min: [{ date: '2026-06-01' }] }"
+            :bounds="{ min: { date: '2026-06-01' } }"
           />
         </ConnectPageSection>
 
@@ -113,7 +113,7 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
             ref="restricted-max-date-ref"
             v-model="state.restrictedMaxDate"
             name="restrictedMaxDate"
-            :bounds="{ max: [{ date: '2026-07-30' }] }"
+            :bounds="{ max: { date: '2026-07-30' } }"
           />
         </ConnectPageSection>
 

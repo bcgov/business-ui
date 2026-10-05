@@ -22,34 +22,23 @@ const props = withDefaults(defineProps<{
 
 type ResolvedBound = { boundary: DateTime, message: string }
 
-// parse each bound and fill in the default message - empty/invalid dates are dropped so consumers
-// can pass optional values (e.g. a start date that hasn't been entered yet) without filtering them first
-function resolveBounds(bounds: DateBound[] | undefined, defaultKey: string): ResolvedBound[] {
-  return (bounds ?? []).flatMap(({ date, message }) => {
-    const boundary = date ? DateTime.fromFormat(date, DATE_API_INPUT_FORMAT) : undefined
-    if (!boundary?.isValid) {
-      return []
-    }
-    return [{ boundary, message: message || $t(defaultKey, { date: boundary.toFormat(DATE_DISPLAY_FORMAT) }) }]
-  })
+// parse the bound and fill in the default message - an empty/invalid date means no bound
+function resolveBound(bound: DateBound | undefined, defaultKey: string): ResolvedBound | undefined {
+  const boundary = bound?.date ? DateTime.fromFormat(bound.date, DATE_API_INPUT_FORMAT) : undefined
+  if (!boundary?.isValid) {
+    return undefined
+  }
+  return {
+    boundary,
+    message: bound?.message || $t(defaultKey, { date: boundary.toFormat(DATE_DISPLAY_FORMAT) })
+  }
 }
 
-// computed (not plain consts) since bounds can change reactively - e.g. the cessation date
-// field's min bounds include the live effective date value in FormEffectiveDateRange
-const minBounds = computed(() => resolveBounds(props.bounds?.min, 'validation.dateNotBeforeMin'))
-const maxBounds = computed(() => resolveBounds(props.bounds?.max, 'validation.dateNotAfterMax'))
+const minBound = computed(() => resolveBound(props.bounds?.min, 'validation.dateNotBeforeMin'))
+const maxBound = computed(() => resolveBound(props.bounds?.max, 'validation.dateNotAfterMax'))
 
-// the date picker takes a single limit per side, so give it the tightest one
-const pickerMinDate = computed(() =>
-  DateTime.max(...minBounds.value.map(b => b.boundary))?.toFormat(DATE_API_INPUT_FORMAT)
-)
-const pickerMaxDate = computed(() =>
-  DateTime.min(...maxBounds.value.map(b => b.boundary))?.toFormat(DATE_API_INPUT_FORMAT)
-)
-
-// getDateSchema handles required + format; bounds are checked here instead since getDateSchema only
-// supports one limit per side and collapses min + max into a single 'not in range' message.
-// Each bound is its own refinement so the error shown is the message of the first bound that fails
+// getDateSchema handles required + format; bounds are checked here instead since getDateSchema
+// collapses min + max into a single 'not in range' message, which would drop the custom messages
 const dateSchema = computed(() => {
   const schema = getDateSchema({
     required: props.required,
@@ -64,12 +53,14 @@ const dateSchema = computed(() => {
     const entered = parseInputDate(val)
     return !entered || compare(entered)
   }
+  const min = minBound.value
+  const max = maxBound.value
   let dateInput = schema.shape.dateInput
-  for (const { boundary, message } of minBounds.value) {
-    dateInput = dateInput.refine(val => isValidOrEmpty(val, entered => entered >= boundary), message)
+  if (min) {
+    dateInput = dateInput.refine(val => isValidOrEmpty(val, entered => entered >= min.boundary), min.message)
   }
-  for (const { boundary, message } of maxBounds.value) {
-    dateInput = dateInput.refine(val => isValidOrEmpty(val, entered => entered <= boundary), message)
+  if (max) {
+    dateInput = dateInput.refine(val => isValidOrEmpty(val, entered => entered <= max.boundary), max.message)
   }
   return z.object({ dateInput })
 })
@@ -146,8 +137,8 @@ defineOptions({ inheritAttrs: false })
           :label="label"
           :error="!!error || props.invalid"
           :help="hintText"
-          :max-date="pickerMaxDate"
-          :min-date="pickerMinDate"
+          :max-date="maxBound ? props.bounds?.max?.date : undefined"
+          :min-date="minBound ? props.bounds?.min?.date : undefined"
           :required="props.required"
           :disabled="props.disabled"
         />

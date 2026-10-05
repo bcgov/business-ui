@@ -95,35 +95,37 @@ describe('FormEffectiveDate', () => {
   }
 
   it('should show the default message when the date is outside a bound without a message', async () => {
-    const wrapper = await mountWithBounds({ min: [{ date: VALID_API_DATE }] })
+    const wrapper = await mountWithBounds({ min: { date: VALID_API_DATE } })
     await setDate(wrapper, 'Mar 1, 2024')
     expect(wrapper.text()).toContain(`Date must be on or after ${VALID_DISPLAY_DATE}`)
   })
 
   it.each([
-    ['before the earlier min bound', 'Mar 1, 2024', 'Before founding.'],
-    ['between the min bounds', 'Mar 17, 2024', 'Before last change.'],
+    ['before the min bound', 'Mar 1, 2024', 'Before founding.'],
     ['after the max bound', 'Mar 30, 2024', 'Too late.']
-  ])('should show the message of the failing bound when the date is %s', async (_, input, expected) => {
+  ])('should show the bound\'s custom message when the date is %s', async (_, input, expected) => {
     const wrapper = await mountWithBounds({
-      min: [
-        { date: VALID_API_DATE, message: 'Before founding.' },
-        { date: '2024-03-18', message: 'Before last change.' }
-      ],
-      max: [{ date: '2024-03-20', message: 'Too late.' }]
+      min: { date: VALID_API_DATE, message: 'Before founding.' },
+      max: { date: '2024-03-20', message: 'Too late.' }
     })
     await setDate(wrapper, input)
     expect(wrapper.text()).toContain(expected)
   })
 
-  it('should not show a bound error when the date is within all bounds', async () => {
+  it('should not show a bound error when the date is within the bounds', async () => {
     const wrapper = await mountWithBounds({
-      min: [{ date: VALID_API_DATE, message: 'Before founding.' }, { date: undefined }],
-      max: [{ date: '2024-03-20', message: 'Too late.' }]
+      min: { date: VALID_API_DATE, message: 'Before founding.' },
+      max: { date: '2024-03-20', message: 'Too late.' }
     })
     await setDate(wrapper, 'Mar 19, 2024')
     expect(wrapper.text()).not.toContain('Before founding.')
     expect(wrapper.text()).not.toContain('Too late.')
+  })
+
+  it('should ignore a bound without a date', async () => {
+    const wrapper = await mountWithBounds({ min: { date: undefined, message: 'Before founding.' } })
+    await setDate(wrapper, 'Mar 1, 2024')
+    expect(wrapper.text()).not.toContain('Before founding.')
   })
 })
 
@@ -234,7 +236,7 @@ describe('FormEffectiveDateRange', () => {
           start: { dateInput: '2024-03-10' },
           end: { dateInput: '' },
           description: 'Range description',
-          endBounds: { max: [{ date: '2024-03-31', message: 'Too late.' }] }
+          endBounds: { max: { date: '2024-03-31', message: 'Too late.' } }
         }
       })
       await setInput(wrapper, 1, 'Apr 5, 2024')

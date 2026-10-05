@@ -12,16 +12,16 @@ const directorFormProps = computed(() => {
   const foundingDate = business.value?.foundingDate ? toDate(business.value.foundingDate) : undefined
   return {
     effectiveDateBounds: {
-      min: [{
+      min: {
         date: foundingDate ? toDateStr(foundingDate) : undefined,
         message: t('validation.appointmentDateBeforeFounding')
-      }]
+      }
     },
     cessationDateBounds: {
-      max: [{
+      max: {
         date: getToday('America/Vancouver'),
         message: t('validation.cessationDateInFuture')
-      }]
+      }
     }
   }
 })
