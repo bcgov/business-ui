@@ -249,16 +249,16 @@ describe('FormEffectiveDateRange', () => {
     })
 
     it.each([
-      ['start', { start: '', end: '2024-03-10', startRequired: false }],
-      ['end', { start: '2024-03-10', end: '', endRequired: false }]
+      ['start', { start: '', end: '2024-03-10', startRequired: false, endRequired: true }],
+      ['end', { start: '2024-03-10', end: '', startRequired: true, endRequired: false }]
     ])('should not show an order error or reject validate() when the optional %s date is empty', async (_, opts) => {
       const wrapper = await mountSuspended(FormEffectiveDateRange, {
         props: {
           start: { dateInput: opts.start },
           end: { dateInput: opts.end },
           description: 'Range description',
-          startRequired: opts.startRequired ?? true,
-          endRequired: opts.endRequired ?? false
+          startRequired: opts.startRequired,
+          endRequired: opts.endRequired
         }
       })
 
