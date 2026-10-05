@@ -4,9 +4,16 @@ const { $searchAPI } = useNuxtApp()
 
 const searchType = ref<'reg' | 'namex'>('reg')
 
-const selectedSearchFn = computed(() =>
-  searchType.value === 'reg' ? $searchAPI.regSearch : $searchAPI.namexSearch
-)
+const selectedSearchFn = computed(() => {
+  const searchFn: (query: string) => Promise<any[]> = searchType.value === 'reg' ? $searchAPI.regSearch : $searchAPI.namexSearch
+
+  return async (query: string) => {
+    // the affiliations table may be paginated or filtered, so every affiliated identifier is needed to flag added results
+    const [results] = await Promise.all([searchFn(query), affStore.loadAffiliatedIdentifiers()])
+    await nextTick() // wait for the disabled config to be updated with the affiliated identifiers
+    return results
+  }
+})
 
 </script>
 <template>
@@ -28,7 +35,7 @@ const selectedSearchFn = computed(() =>
         :value-attr="searchType === 'reg' ? 'name' : 'nrNum'"
         :text="{ placeholder: $t(`search.${searchType}.placeholder`), arialabel: $t(`search.${searchType}.arialabel`)}"
         :disabled-config="{
-          items: affStore.affiliations.results,
+          items: [...affStore.affiliations.results, ...affStore.affiliatedIdentifiers],
           comparisonAttrs: ['nrNum', 'businessIdentifier', 'identifier', 'nrNumber']
         }"
         @select="affStore.handleManageBusinessOrNameRequest(searchType, $event)"
