@@ -127,6 +127,8 @@ export default {
       locationRequired: 'AGM location is required.',
       locationMax: 'Must be 400 characters or less.'
     },
+    appointmentDateBeforeFounding: 'Appointment date cannot be before the business founding date.',
+    cessationDateInFuture: 'Cessation date cannot be in the future.',
     date: {
       invalid: 'Please enter a valid date.',
       invalidFormat: 'Date must be in YYYY-MM-DD format.',

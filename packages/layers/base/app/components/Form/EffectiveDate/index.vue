@@ -2,8 +2,7 @@
 import type { Form } from '@nuxt/ui'
 
 const props = withDefaults(defineProps<{
-  minDate?: string
-  maxDate?: string
+  bounds?: DateBounds
   required?: boolean
   disabled?: boolean
   label?: string
@@ -41,8 +40,7 @@ defineOptions({ inheritAttrs: false })
       v-model="model"
       :label="inputLabel"
       :format-hint-text="formatHintText"
-      :max-date="props.maxDate"
-      :min-date="props.minDate"
+      :bounds="props.bounds"
       :required="props.required"
       :disabled="props.disabled"
     />

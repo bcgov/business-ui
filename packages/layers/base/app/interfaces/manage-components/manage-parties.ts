@@ -10,6 +10,10 @@ interface PartyFormProps {
     allowedRoles: RoleTypeUi[]
     roleClass?: RoleClass
   }
+  // limits on the party's effective (start) and cessation (end) dates, e.g. a director can't be
+  // appointed before founding - the cessation date is always also bounded by the effective date
+  effectiveDateBounds?: DateBounds
+  cessationDateBounds?: DateBounds
 }
 
 export type ManagePartiesProps = ManageBaseProps & {

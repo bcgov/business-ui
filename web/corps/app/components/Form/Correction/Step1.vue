@@ -1,9 +1,30 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const store = useCorrectionStore()
 const { hasActiveSubForm } = useCorrectionHelper()
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email', 'actions']
+
+// a director can't be appointed before the business existed, or ceased in the future - founding date
+// is a UTC datetime, so convert to the Pacific calendar date shown to users before using it as a bound
+const directorFormProps = computed(() => {
+  const foundingDate = business.value?.foundingDate ? toDate(business.value.foundingDate) : undefined
+  return {
+    effectiveDateBounds: {
+      min: [{
+        date: foundingDate ? toDateStr(foundingDate) : undefined,
+        message: t('validation.appointmentDateBeforeFounding')
+      }]
+    },
+    cessationDateBounds: {
+      max: [{
+        date: getToday('America/Vancouver'),
+        message: t('validation.cessationDateInFuture')
+      }]
+    }
+  }
+})
 
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
@@ -61,6 +82,7 @@ function onActionPrevented() {
       model-name="activeDirector"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
+      :party-form-props="directorFormProps"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
     />

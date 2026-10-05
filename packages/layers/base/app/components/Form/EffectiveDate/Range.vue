@@ -2,8 +2,8 @@
 import type { Form } from '@nuxt/ui'
 
 const props = withDefaults(defineProps<{
-  minDate?: string
-  maxDate?: string
+  startBounds?: DateBounds
+  endBounds?: DateBounds
   startRequired?: boolean
   endRequired?: boolean
   disabled?: boolean
@@ -32,17 +32,20 @@ const startFormRef = computed<Form<EffectiveDateSchema> | undefined>(() => start
 const endFormRef = computed<Form<EffectiveDateSchema> | undefined>(() => endFieldRef.value?.formRef ?? undefined)
 const rangeError = computed(() => startFieldRef.value?.formError ?? endFieldRef.value?.formError)
 
-// end (cessation) date can never be before start (effective) date - bind its lower bound to
-// the live start value rather than a static prop
-const endMinDate = computed(() => startModel.value.dateInput || props.minDate)
+// end (cessation) date can never be before start (effective) date - always add the live start
+// value as a lower bound, on top of any consumer bounds (ignored by the field while start is empty)
+const endBounds = computed<DateBounds>(() => ({
+  ...props.endBounds,
+  min: [{ date: startModel.value.dateInput }, ...(props.endBounds?.min ?? [])]
+}))
 
-// End's own schema picks up the new minDate reactively, but nothing re-runs its validation
+// End's own schema picks up the new bounds reactively, but nothing re-runs its validation
 // when start changes rather than end itself - only refresh if end already has a value or a
 // visible error, so we don't manufacture a "required" error on an end date the user hasn't
 // touched yet just because they edited the start date
 watch(() => startModel.value.dateInput, async () => {
   if (endModel.value.dateInput || endFieldRef.value?.formError) {
-    // wait for the end field to re-render with its updated (reactive) minDate prop before
+    // wait for the end field to re-render with its updated (reactive) bounds prop before
     // validating, otherwise it would still validate against the stale bound
     await nextTick()
     await endFieldRef.value?.formRef?.validate().catch(() => {})
@@ -70,8 +73,7 @@ defineOptions({ inheritAttrs: false })
           :label="startLabel"
           format-hint-text=""
           :sr-hint-text="formatHintText"
-          :max-date="props.maxDate"
-          :min-date="props.minDate"
+          :bounds="props.startBounds"
           :required="props.startRequired"
           :disabled="props.disabled"
         />
@@ -84,8 +86,7 @@ defineOptions({ inheritAttrs: false })
           :label="endLabel"
           format-hint-text=""
           :sr-hint-text="formatHintText"
-          :max-date="props.maxDate"
-          :min-date="endMinDate"
+          :bounds="endBounds"
           :required="props.endRequired"
           :disabled="props.disabled"
         />

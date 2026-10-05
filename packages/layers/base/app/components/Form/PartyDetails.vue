@@ -14,6 +14,8 @@ const props = defineProps<{
     allowedRoles: RoleTypeUi[]
     roleClass?: RoleClass
   }
+  effectiveDateBounds?: DateBounds
+  cessationDateBounds?: DateBounds
 }>()
 
 const emit = defineEmits<{
@@ -221,6 +223,8 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             v-model:end="cessationDateModel"
             :start-required="isEffectiveDateRequired"
             :end-required="isCessationDateRequired"
+            :start-bounds="effectiveDateBounds"
+            :end-bounds="cessationDateBounds"
             :description="effectiveDateRangeDescription"
           />
         </template>
@@ -230,6 +234,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             ref="effective-date-form"
             v-model="effectiveDateModel"
             :required="isEffectiveDateRequired"
+            :bounds="effectiveDateBounds"
           />
         </template>
       </template>
