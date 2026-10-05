@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { Form } from '@nuxt/ui'
+import { DateTime } from 'luxon'
+import { DATE_API_INPUT_FORMAT } from '#base/app/utils/schemas/date'
 
 const props = withDefaults(defineProps<{
   startBounds?: DateBounds
@@ -30,29 +32,36 @@ const startFieldRef = useTemplateRef<FormEffectiveDateFieldRef>('start-date-fiel
 const endFieldRef = useTemplateRef<FormEffectiveDateFieldRef>('end-date-field')
 const startFormRef = computed<Form<EffectiveDateSchema> | undefined>(() => startFieldRef.value?.formRef ?? undefined)
 const endFormRef = computed<Form<EffectiveDateSchema> | undefined>(() => endFieldRef.value?.formRef ?? undefined)
-const rangeError = computed(() => startFieldRef.value?.formError ?? endFieldRef.value?.formError)
 
-// end (cessation) date can never be before start (effective) date - always add the live start
-// value as a lower bound, on top of any consumer bounds (ignored by the field while start is empty)
-const endBounds = computed<DateBounds>(() => ({
-  ...props.endBounds,
-  min: [{ date: startModel.value.dateInput }, ...(props.endBounds?.min ?? [])]
-}))
-
-// End's own schema picks up the new bounds reactively, but nothing re-runs its validation
-// when start changes rather than end itself - only refresh if end already has a value or a
-// visible error, so we don't manufacture a "required" error on an end date the user hasn't
-// touched yet just because they edited the start date
-watch(() => startModel.value.dateInput, async () => {
-  if (endModel.value.dateInput || endFieldRef.value?.formError) {
-    // wait for the end field to re-render with its updated (reactive) bounds prop before
-    // validating, otherwise it would still validate against the stale bound
-    await nextTick()
-    await endFieldRef.value?.formRef?.validate().catch(() => {})
-  }
+// start must be on or before end - shown once below both fields since it involves both dates.
+// Skipped until both dates are valid; each field reports its own missing/invalid date
+const orderError = computed(() => {
+  const start = DateTime.fromFormat(startModel.value.dateInput, DATE_API_INPUT_FORMAT)
+  const end = DateTime.fromFormat(endModel.value.dateInput, DATE_API_INPUT_FORMAT)
+  return start.isValid && end.isValid && end < start ? $t('validation.dateRangeOutOfOrder') : undefined
 })
 
-defineExpose({ startFormRef, endFormRef })
+const rangeError = computed(() =>
+  startFieldRef.value?.formError ?? endFieldRef.value?.formError ?? !!orderError.value
+)
+
+const rangeRef = useTemplateRef<HTMLElement>('range')
+
+// validates both fields and the start/end order - rejects in the same shape as a UForm validation
+// error ({ errors: [{ id }] }) so a parent can focus the first invalid input
+async function validate() {
+  const results = await Promise.allSettled([startFormRef.value?.validate(), endFormRef.value?.validate()])
+  const rejected = results.find(r => r.status === 'rejected')
+  if (rejected) {
+    throw rejected.reason
+  }
+  if (orderError.value) {
+    const id = rangeRef.value?.querySelectorAll('input')[1]?.id
+    throw { errors: [{ id, name: 'dateInput', message: orderError.value }] }
+  }
+}
+
+defineExpose({ startFormRef, endFormRef, validate })
 defineOptions({ inheritAttrs: false })
 </script>
 
@@ -65,15 +74,16 @@ defineOptions({ inheritAttrs: false })
   >
     <!-- eslint-disable-next-line vue/no-v-html -->
     <p class="text-sm text-neutral mb-4" v-html="description" />
-    <div class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
+    <div ref="range" class="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
       <div class="flex-1">
         <FormEffectiveDateField
           ref="start-date-field"
           v-model="startModel"
           :label="startLabel"
           format-hint-text=""
-          :sr-hint-text="formatHintText"
+          :sr-hint-text="orderError || formatHintText"
           :bounds="props.startBounds"
+          :invalid="!!orderError"
           :required="props.startRequired"
           :disabled="props.disabled"
         />
@@ -85,15 +95,30 @@ defineOptions({ inheritAttrs: false })
           v-model="endModel"
           :label="endLabel"
           format-hint-text=""
-          :sr-hint-text="formatHintText"
-          :bounds="endBounds"
+          :sr-hint-text="orderError || formatHintText"
+          :bounds="props.endBounds"
+          :invalid="!!orderError"
           :required="props.endRequired"
           :disabled="props.disabled"
         />
       </div>
     </div>
-    <!-- shown once for both fields; each input also reads it via srHintText -->
-    <p class="mt-3 text-sm text-neutral" aria-hidden="true">
+    <!-- shown once for both fields; each input also reads it via srHintText. The order error takes the
+      format hint's place, and is announced when it appears -->
+    <p
+      v-if="orderError"
+      role="alert"
+      data-testid="effective-date-range-error"
+      class="mt-3 text-sm text-error flex items-start gap-1"
+    >
+      <UIcon name="i-mdi-alert" class="size-4 shrink-0 mt-0.5" />
+      {{ orderError }}
+    </p>
+    <p
+      v-else
+      class="mt-3 text-sm text-neutral"
+      aria-hidden="true"
+    >
       {{ formatHintText }}
     </p>
   </ConnectFormFieldWrapper>

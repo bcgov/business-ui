@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<{
   // not shown, but linked to the input via aria-describedby so screen readers read it - for
   // when a parent shows the hint once for several fields (e.g. FormEffectiveDateRange)
   srHintText?: string
+  // highlights the input for a date range error, which is shown once below the start and end dates
+  invalid?: boolean
 }>(), {
   required: true,
   disabled: false
@@ -142,7 +144,7 @@ defineOptions({ inheritAttrs: false })
           ref="date-input"
           v-model="localState.dateInput"
           :label="label"
-          :error="!!error"
+          :error="!!error || props.invalid"
           :help="hintText"
           :max-date="pickerMaxDate"
           :min-date="pickerMinDate"

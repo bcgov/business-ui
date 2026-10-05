@@ -81,13 +81,10 @@ async function onDone() {
     addressFormRef.value?.formRef?.validate(),
     partyEmailFormRef.value?.formRef?.validate(),
     useEffectiveDateRange.value
-      ? effectiveDateRangeFormRef.value?.startFormRef?.validate()
+      ? effectiveDateRangeFormRef.value?.validate()
       : isEffectiveDateVisible.value && isEffectiveDateChangeAllowed.value
         ? effectiveDateFormRef.value?.formRef?.validate()
-        : undefined,
-    useEffectiveDateRange.value
-      ? effectiveDateRangeFormRef.value?.endFormRef?.validate()
-      : undefined
+        : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')

@@ -175,4 +175,100 @@ describe('FormEffectiveDateRange', () => {
     // the shared format hint is still shown once below the fields
     expect(visibleHintCount(wrapper, t('text.effectiveDateFormat'))).toBe(1)
   })
+
+  describe('start/end order', () => {
+    // keeps the v-models in sync like a parent would, so each field sees the other's new value
+    const mountSyncedRange = async (start: string, end: string) => {
+      const wrapper = await mountSuspended(FormEffectiveDateRange, {
+        props: {
+          'start': { dateInput: start },
+          'end': { dateInput: end },
+          'description': 'Range description',
+          'onUpdate:start': (val: EffectiveDateSchema) => wrapper.setProps({ start: val }),
+          'onUpdate:end': (val: EffectiveDateSchema) => wrapper.setProps({ end: val })
+        }
+      })
+      return wrapper
+    }
+
+    const setInput = async (wrapper: Awaited<ReturnType<typeof mountSyncedRange>>, index: number, value: string) => {
+      vi.useFakeTimers()
+      await wrapper.findAll<HTMLInputElement>('input')[index]!.setValue(value)
+      await vi.runAllTimersAsync()
+      await flushPromises()
+      vi.useRealTimers()
+    }
+
+    // only fields with an error render a hint (the format hint is shown once by the range)
+    const fieldErrors = (wrapper: Awaited<ReturnType<typeof mountSyncedRange>>) =>
+      wrapper.findAll('[id^="effective-date-hint-"]').map(hint => hint.text())
+    const rangeError = (wrapper: Awaited<ReturnType<typeof mountSyncedRange>>) =>
+      wrapper.find('[data-testid="effective-date-range-error"]')
+    const ORDER_ERROR = 'The start date must be on or before the end date'
+
+    it.each([
+      ['start date is moved after the end date', 0, 'Mar 20, 2024'],
+      ['end date is moved before the start date', 1, 'Mar 5, 2024']
+    ])('should show the order error once below both fields when the %s', async (_, index, value) => {
+      const wrapper = await mountSyncedRange('2024-03-10', '2024-03-15')
+      await setInput(wrapper, index, value)
+
+      expect(rangeError(wrapper).text()).toBe(ORDER_ERROR)
+      expect(fieldErrors(wrapper)).toEqual([])
+      // replaces the shared format hint
+      expect(wrapper.text()).not.toContain(useNuxtApp().$i18n.t('text.effectiveDateFormat'))
+    })
+
+    it('should clear the order error and show the format hint once the dates are back in order', async () => {
+      const wrapper = await mountSyncedRange('2024-03-10', '2024-03-15')
+      await setInput(wrapper, 0, 'Mar 20, 2024')
+      await setInput(wrapper, 1, 'Mar 25, 2024')
+
+      expect(rangeError(wrapper).exists()).toBe(false)
+      expect(wrapper.text()).toContain(useNuxtApp().$i18n.t('text.effectiveDateFormat'))
+    })
+
+    it('should keep a single-date error under its field', async () => {
+      const wrapper = await mountSuspended(FormEffectiveDateRange, {
+        props: {
+          start: { dateInput: '2024-03-10' },
+          end: { dateInput: '' },
+          description: 'Range description',
+          endBounds: { max: [{ date: '2024-03-31', message: 'Too late.' }] }
+        }
+      })
+      await setInput(wrapper, 1, 'Apr 5, 2024')
+
+      expect(fieldErrors(wrapper)).toEqual(['Too late.'])
+      expect(rangeError(wrapper).exists()).toBe(false)
+    })
+
+    it('should reject validate() while the dates are out of order', async () => {
+      const wrapper = await mountSyncedRange('2024-03-15', '2024-03-10')
+      await expect(wrapper.vm.validate()).rejects.toMatchObject({ errors: [{ message: ORDER_ERROR }] })
+    })
+
+    it.each([
+      ['start', { start: '', end: '2024-03-10', startRequired: false }],
+      ['end', { start: '2024-03-10', end: '', endRequired: false }]
+    ])('should not show an order error or reject validate() when the optional %s date is empty', async (_, opts) => {
+      const wrapper = await mountSuspended(FormEffectiveDateRange, {
+        props: {
+          start: { dateInput: opts.start },
+          end: { dateInput: opts.end },
+          description: 'Range description',
+          startRequired: opts.startRequired ?? true,
+          endRequired: opts.endRequired ?? false
+        }
+      })
+
+      await expect(wrapper.vm.validate()).resolves.toBeUndefined()
+      expect(rangeError(wrapper).exists()).toBe(false)
+    })
+
+    it('should resolve validate() when the dates are in order', async () => {
+      const wrapper = await mountSyncedRange('2024-03-10', '2024-03-15')
+      await expect(wrapper.vm.validate()).resolves.toBeUndefined()
+    })
+  })
 })
