@@ -74,6 +74,10 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
 
   const newlyAddedIdentifier = ref<string>('')
 
+  // Every identifier affiliated to the account, as affiliations.results only holds the current page / filtered results
+  const affiliatedIdentifiers = ref<{ businessIdentifier: string, nrNumber?: string }[]>([])
+  const affiliatedIdentifiersLoaded = ref(false)
+
   function removeAffiliation (orgIdentifier: number, incorporationNumber: string, passcodeResetEmail?: string, resetPasscode?: boolean) {
     return $authApi(`/orgs/${orgIdentifier}/affiliations/${incorporationNumber}`, {
       method: 'DELETE',
@@ -210,12 +214,37 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     return sortEntitiesByInvites(affiliatedEntities)
   }
 
+  /**
+   * Loads every identifier affiliated to the account, this is only needed when the server is
+   * filtering or paginating as affiliations.results holds all of the affiliations otherwise.
+   */
+  async function loadAffiliatedIdentifiers (): Promise<void> {
+    if (affiliatedIdentifiersLoaded.value || !(enableServerFiltering.value || enablePagination.value)) { return }
+
+    // Use route param if authorized (staff), otherwise use current account
+    const orgId = (IsAuthorized(AuthorizedActions.MANAGE_OTHER_ORGANIZATION) && route.params.orgId)
+      ? route.params.orgId
+      : accountStore.currentAccount.id
+
+    if (!orgId) { return }
+
+    try {
+      const response = await $authApi<{ entities: { businessIdentifier: string, nrNumber?: string }[] }>(`/orgs/${orgId}/affiliations`)
+      affiliatedIdentifiers.value = response.entities.map(({ businessIdentifier, nrNumber }) => ({ businessIdentifier, nrNumber }))
+      affiliatedIdentifiersLoaded.value = true
+    } catch (error) {
+      logFetchError(error, 'Error retrieving affiliated identifiers')
+    }
+  }
+
   async function loadAffiliations (): Promise<void> {
     // Only reset if neither server-side filtering nor pagination are enabled
     const shouldUseServerFeatures = enableServerFiltering.value || enablePagination.value
     if (!shouldUseServerFeatures) {
       resetAffiliations()
     }
+    // the affiliations may have changed, so the identifiers are reloaded on the next lookup
+    affiliatedIdentifiersLoaded.value = false
     affiliations.results = []
     affiliations.count = 0
 
@@ -903,6 +932,8 @@ export const useAffiliationsStore = defineStore('brd-affiliations-store', () => 
     removeInvite,
     removeAcceptedAffiliationInvitations,
     loadAffiliations,
+    loadAffiliatedIdentifiers,
+    affiliatedIdentifiers,
     affiliations,
     resetAffiliations,
     visibleColumns,

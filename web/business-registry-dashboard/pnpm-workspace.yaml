@@ -1,1 +1,9 @@
 shamefullyHoist: true
+
+# pnpm v11 fails the install on unapproved build scripts. true = run install scripts, false = skip them.
+allowBuilds:
+  "@parcel/watcher": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  vue-demi: true
