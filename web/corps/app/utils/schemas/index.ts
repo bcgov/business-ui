@@ -1,3 +1,4 @@
+export * from './agm-location-change'
 export * from './correction'
 export * from './court-order'
 export * from './delay-date'
