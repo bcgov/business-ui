@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mockGetColumnMeta, mockGetIsRowRemoved } from '#business/tests/unit/mocks/business-table-utils'
 import { getHasPoaColumn } from '#business/app/utils/business-table/court-order-table/get-has-poa-column'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+
+const { mockGetColumnMeta } = vi.hoisted(() => ({ mockGetColumnMeta: vi.fn() }))
+mockNuxtImport('getColumnMeta', () => mockGetColumnMeta)
+
+const { mockGetIsRowRemoved } = vi.hoisted(() => ({ mockGetIsRowRemoved: vi.fn() }))
+mockNuxtImport('getIsRowRemoved', () => mockGetIsRowRemoved)
 
 describe('getHasPoaColumn', () => {
   beforeEach(() => {

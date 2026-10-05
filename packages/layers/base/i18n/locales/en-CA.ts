@@ -691,7 +691,8 @@ export default {
       undefined: 'Restoration Application'
     },
     specialResolution: 'Special Resolution',
-    transition: 'Transition Application'
+    transition: 'Transition Application',
+    undefined: 'Unknown'
   },
   /* Mappings here are based from the FilingType enum */
   filingText: {
@@ -761,7 +762,8 @@ export default {
     dissolutionFirm: 'Dissolution',
     dissolutionInvoluntary: 'Dissolved for Failure to File',
     dissolutionVoluntary: 'Voluntary Dissolution',
-    unknown: 'Unknown'
+    unknown: 'Unknown',
+    undefined: 'Unknown'
   },
   text: {
     addressChange: 'address change',

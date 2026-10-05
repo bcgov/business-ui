@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { merge, cloneDeep } from 'es-toolkit'
 

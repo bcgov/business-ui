@@ -1,8 +1,12 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getDocumentIdSchema', () => {
   describe('documentIdNumber basic validation', () => {
-    const schema = getDocumentIdSchema()
+    let schema: ReturnType<typeof getDocumentIdSchema>
+
+    beforeEach(() => {
+      schema = getDocumentIdSchema()
+    })
 
     it('should pass when undefined', () => {
       const result = schema.safeParse({ documentIdNumber: undefined })

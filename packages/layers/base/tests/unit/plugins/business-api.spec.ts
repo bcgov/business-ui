@@ -1,3 +1,4 @@
+// @vitest-environment node
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -15,11 +16,10 @@ mockNuxtImport('useConnectAccountStore', () => {
   })
 })
 
-const mockFetchCreate = vi.fn(() => ({}))
-
-global.$fetch = {
-  create: mockFetchCreate
-} as any
+const { mockFetchCreate } = vi.hoisted(() => ({
+  mockFetchCreate: vi.fn()
+}))
+mockNuxtImport('$fetch', () => Object.assign(vi.fn(), { create: mockFetchCreate }))
 
 describe('businessApi Nuxt Plugin', () => {
   beforeEach(() => {
@@ -44,7 +44,6 @@ describe('businessApi Nuxt Plugin', () => {
     expect(mockFetchCreate).toHaveBeenCalledOnce()
     // @ts-expect-error - complex type not resolved
     const createOptions = mockFetchCreate.mock.calls[0][0]
-    // @ts-expect-error - complex type not resolved
     expect(createOptions.baseURL).toBe('http://api.local/v1')
   })
 

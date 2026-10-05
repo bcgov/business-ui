@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import {
-  mockGetColumnMeta,
-  mockGetIsRowRemoved
-} from '#business/tests/unit/mocks/business-table-utils'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getBusinessTypeColumn } from '#business/app/utils/business-table/amalgamation-table/get-business-type-column'
 import { DELETED_CLASS } from '#business/app/utils/business-table/columns/constants'
 import { isBCBusiness } from '#business/app/utils/business-table/amalgamation-table/utils'
@@ -11,6 +8,12 @@ import { isBCBusiness } from '#business/app/utils/business-table/amalgamation-ta
 vi.mock('#business/app/utils/business-table/amalgamation-table/utils', () => ({
   isBCBusiness: vi.fn()
 }))
+
+const { mockGetColumnMeta } = vi.hoisted(() => ({ mockGetColumnMeta: vi.fn() }))
+mockNuxtImport('getColumnMeta', () => mockGetColumnMeta)
+
+const { mockGetIsRowRemoved } = vi.hoisted(() => ({ mockGetIsRowRemoved: vi.fn() }))
+mockNuxtImport('getIsRowRemoved', () => mockGetIsRowRemoved)
 
 describe('getBusinessTypeColumn', () => {
   const mockIsBCBusiness = vi.mocked(isBCBusiness)

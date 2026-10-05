@@ -38,7 +38,8 @@ export function formatAmalCorrectSection(
     }
 
     const parsed = schema.parse(cloned)
-    return merge(cloned, parsed)
+
+    return merge(cloned, parsed) as ExBCBusinessTableRow
   }
 
   const originalBusinesses = originalData.amalgamatingBusinesses || []

@@ -45,7 +45,7 @@ mockNuxtImport('useBusinessService', () => {
   })
 })
 
-describe('useFilingTombstone', () => {
+describe('useBusinessTombstone', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

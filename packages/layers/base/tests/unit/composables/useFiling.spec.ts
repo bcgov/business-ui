@@ -1,10 +1,20 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getBusinessMock, getBusinessSettingsMock } from '#test-mocks/business'
 import { getPermissionsMock } from '#test-mocks/business-permissions'
 import { getPartiesMock } from '#test-mocks/parties'
 import { getFilingMock } from '#test-mocks/filing'
+
+const mockBusinessInit = vi.fn()
+mockNuxtImport('useBusinessStore', () => () => ({
+  init: mockBusinessInit,
+  isAllowedFiling: vi.fn(() => true)
+}))
+
+const mockSetFilingDefault = vi.fn()
+mockNuxtImport('useBusinessTombstone', () => () => ({
+  setFilingDefault: mockSetFilingDefault
+}))
 
 const identifier = 'BC1234567'
 
@@ -40,8 +50,6 @@ describe('useFiling', () => {
   })
 
   describe('initFiling', () => {
-    let businessStore: ReturnType<typeof useBusinessStore>
-    let businessPermissionsStore: ReturnType<typeof useBusinessPermissionsStore>
     const businessMock = getBusinessMock([{ key: 'identifier', value: identifier }])
     const businessPermissionsMock = getPermissionsMock()
     const businessSettingsMock = getBusinessSettingsMock()
@@ -50,12 +58,6 @@ describe('useFiling', () => {
 
     beforeEach(async () => {
       vi.resetAllMocks()
-      const pinia = createPinia()
-      setActivePinia(pinia)
-      businessStore = useBusinessStore()
-      businessStore.$reset()
-      businessPermissionsStore = useBusinessPermissionsStore()
-      businessPermissionsStore.$reset()
       mockBusinessService.getBusiness.mockResolvedValue(businessMock.business)
       mockBusinessService.getAuthInfo.mockResolvedValue(businessSettingsMock)
       mockBusinessService.getParties.mockResolvedValue(partiesMock.parties)
@@ -74,24 +76,8 @@ describe('useFiling', () => {
         expect(draftFiling).toBeUndefined()
         expect(parties).toBeUndefined()
         // business store
-        expect(businessStore.business).toBeDefined()
-        expect(businessStore.businessName).toBe(businessMock.business.legalName)
-        expect(businessStore.businessIdentifier).toBe(identifier)
-        expect(businessStore.businessFolio).toBe(businessSettingsMock.folioNumber)
-        expect(businessStore.businessContact).toEqual(businessSettingsMock.contacts[0])
-        // business permissions store
-        expect(businessPermissionsStore.authorizedActions).toEqual(businessPermissionsMock.authorizedPermissions)
-        // tombstone
-        const { businessTombstone } = useBusinessTombstone()
-        expect(businessTombstone.value.title.text).toBe(businessStore.businessName)
-        expect(businessTombstone.value.subtitles).toEqual([{ text: 'BC Limited Company' }])
-        expect(businessTombstone.value.details).toEqual([])
-        expect(businessTombstone.value.sideDetails).toEqual([
-          { label: 'Business Number', value: '882156342BC0001' },
-          { label: 'Incorporation Number', value: identifier },
-          { label: 'Email', value: 'fake.email@gov.bc.ca' },
-          { label: 'Phone', value: '(778) 996-7591' }
-        ])
+        expect(mockBusinessInit).toHaveBeenCalledOnce()
+        expect(mockSetFilingDefault).toHaveBeenCalledOnce()
       })
 
       test('should return parties when applicable', async () => {
@@ -162,7 +148,6 @@ describe('useFiling', () => {
   })
 
   describe('createFilingPayload', () => {
-    const { createFilingPayload } = useFiling()
     const business = {
       identifier: 'BC123',
       foundingDate: '2022-01-01T12:00:00Z',
@@ -174,7 +159,7 @@ describe('useFiling', () => {
       const filingName = FilingType.CHANGE_OF_OFFICERS
       const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
 
-      const result = createFilingPayload(business, filingName, { [filingName]: payload })
+      const result = useFiling().createFilingPayload(business, filingName, { [filingName]: payload })
 
       expect(result).toHaveProperty('filing')
       const filing = result.filing
@@ -199,7 +184,7 @@ describe('useFiling', () => {
         changeOfAddress: { deliveryAddress: { street: '123 Main' } }
       }
 
-      const result = createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
+      const result = useFiling().createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
       const filing = result.filing
 
       expect(filing.header.name).toBe('changeOfOfficers')

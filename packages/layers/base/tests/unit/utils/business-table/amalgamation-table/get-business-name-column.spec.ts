@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import {
-  mockGetColumnMeta,
-  mockGetIsRowRemoved,
-  mockGetTableBadges
-} from '#business/tests/unit/mocks/business-table-utils'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getBusinessNameColumn } from '#business/app/utils/business-table/amalgamation-table/get-business-name-column'
 import { TableColumnIdentity } from '#components'
 import { DELETED_CLASS } from '#business/app/utils/business-table/columns/constants'
+
+const { mockGetColumnMeta } = vi.hoisted(() => ({ mockGetColumnMeta: vi.fn() }))
+mockNuxtImport('getColumnMeta', () => mockGetColumnMeta)
+
+const { mockGetIsRowRemoved } = vi.hoisted(() => ({ mockGetIsRowRemoved: vi.fn() }))
+mockNuxtImport('getIsRowRemoved', () => mockGetIsRowRemoved)
+
+const { mockGetTableBadges } = vi.hoisted(() => ({ mockGetTableBadges: vi.fn() }))
+mockNuxtImport('getTableBadges', () => mockGetTableBadges)
 
 describe('getBusinessNameColumn', () => {
   beforeEach(() => {

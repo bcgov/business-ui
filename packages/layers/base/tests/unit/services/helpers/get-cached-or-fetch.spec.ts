@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getCachedOrFetch } from '../../../../app/services/helpers'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'

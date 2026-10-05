@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 const mockOffice = {
   id: '15f88a9b-25c4-47be-93d2-04eb2db31cec',
@@ -31,7 +31,11 @@ const mockOffice = {
 }
 
 describe('getOfficesSchema', () => {
-  const schema = getOfficesSchema()
+  let schema: ReturnType<typeof getOfficesSchema>
+
+  beforeEach(() => {
+    schema = getOfficesSchema()
+  })
 
   describe('actions', () => {
     it('should pass when actions is an empty array', () => {
@@ -66,7 +70,11 @@ describe('getOfficesSchema', () => {
 })
 
 describe('getActiveOfficesSchema', () => {
-  const activeSchema = getActiveOfficesSchema()
+  let activeSchema: ReturnType<typeof getActiveOfficesSchema>
+
+  beforeEach(() => {
+    activeSchema = getActiveOfficesSchema()
+  })
 
   it('should pass when null', () => {
     const result = activeSchema.safeParse(null)

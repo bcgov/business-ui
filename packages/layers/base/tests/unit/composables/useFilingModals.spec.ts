@@ -21,13 +21,17 @@ const mockRoute = reactive({
 })
 mockNuxtImport('useRoute', () => () => mockRoute)
 
-mockNuxtImport('useRuntimeConfig', () => () => ({
-  public: {
-    businessDashboardUrl: 'http://business-dashboard-example/',
-    brdUrl: 'http://brd-example/',
-    businessEditUrl: 'http://business-edit/'
+mockNuxtImport('useRuntimeConfig', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
+  return {
+    ...orig,
+    public: {
+      businessDashboardUrl: 'http://business-dashboard-example/',
+      brdUrl: 'http://brd-example/',
+      businessEditUrl: 'http://business-edit/'
+    }
   }
-}))
+})
 
 mockNuxtImport('useConnectAccountStore', () => () => ({
   currentAccount: { id: 'test-account-id' }

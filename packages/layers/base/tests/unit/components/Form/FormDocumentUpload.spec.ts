@@ -3,6 +3,13 @@ import { describe, it, expect, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { FormDocumentUpload } from '#components'
 
+const mockT = vi.fn((key: string) => key)
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: mockT
+  })
+}))
+
 describe('FormDocumentUpload Component', () => {
   describe('Props', () => {
     it('should render with default props', async () => {

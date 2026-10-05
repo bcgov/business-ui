@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getAmalgamationCorrectSchema', () => {
-  const schema = getAmalgamationCorrectSchema()
+  let schema: ReturnType<typeof getAmalgamationCorrectSchema>
+
+  beforeEach(() => {
+    schema = getAmalgamationCorrectSchema()
+  })
 
   describe('schema defaults', () => {
     it('should generate expected default state via parse({})', () => {
@@ -173,7 +177,11 @@ describe('getAmalgamationCorrectSchema', () => {
 })
 
 describe('getAmalgamationCorrectStatementSchema', () => {
-  const schema = getAmalgamationCorrectStatementSchema()
+  let schema: ReturnType<typeof getAmalgamationCorrectStatementSchema>
+
+  beforeEach(() => {
+    schema = getAmalgamationCorrectStatementSchema()
+  })
 
   it('defaults courtApproval to false when empty', () => {
     const result = schema.parse({})
