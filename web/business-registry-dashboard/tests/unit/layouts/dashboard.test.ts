@@ -213,6 +213,35 @@ describe('Dashboard Layout', () => {
     })
   })
 
+  describe('Get Started button — Name Request URL', () => {
+    // nrURL is empty in the test runtime config, so only assert on the org id path segment + query param
+    it('passes current account id as path segment and accountid query param', async () => {
+      mockState.isAuthorizedResult = false
+      mockState.currentAccountId = 123
+      mockState.orgIdParam = '999' // ignored when not staff authorized
+      const wrapper = await mountComponent()
+      const link = wrapper.find('a')
+      expect(link.exists()).toBe(true)
+      expect(link.attributes('href')).toMatch(/123\?accountid=123$/)
+    })
+
+    it('uses orgId route param when staff authorized', async () => {
+      mockState.isAuthorizedResult = true
+      mockState.currentAccountId = 123
+      mockState.orgIdParam = '999'
+      const wrapper = await mountComponent()
+      expect(wrapper.find('a').attributes('href')).toMatch(/999\?accountid=999$/)
+    })
+
+    it('falls back to current account id when staff authorized without orgId param', async () => {
+      mockState.isAuthorizedResult = true
+      mockState.currentAccountId = 456
+      mockState.orgIdParam = undefined
+      const wrapper = await mountComponent()
+      expect(wrapper.find('a').attributes('href')).toMatch(/456\?accountid=456$/)
+    })
+  })
+
   describe('watch orgId param — account switching', () => {
     it('switches currentAccount when orgId matches a user account', async () => {
       mockState.userAccounts = [{ id: 123 }, { id: 555 }]
