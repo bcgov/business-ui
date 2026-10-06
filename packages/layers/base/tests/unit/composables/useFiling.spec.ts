@@ -4,6 +4,7 @@ import { getBusinessMock, getBusinessSettingsMock } from '#test-mocks/business'
 import { getPermissionsMock } from '#test-mocks/business-permissions'
 import { getPartiesMock } from '#test-mocks/parties'
 import { getFilingMock } from '#test-mocks/filing'
+import { setActivePinia, createPinia } from 'pinia'
 
 const mockBusinessInit = vi.fn()
 mockNuxtImport('useBusinessStore', () => () => ({
@@ -45,8 +46,9 @@ mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 12
 mockNuxtImport('useConnectAuth', () => () => ({ authUser: { value: { fullName: 'Test User' } } }))
 
 describe('useFiling', () => {
-  beforeEach(async () => {
-    vi.resetAllMocks()
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setActivePinia(createPinia())
   })
 
   describe('initFiling', () => {
@@ -64,6 +66,7 @@ describe('useFiling', () => {
       mockBusinessService.getAndValidateDraftFiling.mockResolvedValue(draftFilingMock)
       mockBusinessService.getAuthorizedActions.mockResolvedValue(businessPermissionsMock.authorizedPermissions)
     })
+
     describe('when initializing a filing (non draft)', () => {
       test('should initialize business, permissions, fee, and filing tombstone data', async () => {
         // init

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getFakePerson, getFakeAddress } from '#e2e-utils'
+import { setActivePinia, createPinia } from 'pinia'
 
 const identifier = 'BC1234567'
 
@@ -69,6 +70,7 @@ describe('useLiquidatorStore', () => {
   let schemaDefault: LiquidatorFormSchema
 
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
 
     const parties = useManageParties()

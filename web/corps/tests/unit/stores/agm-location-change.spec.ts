@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 
 const identifier = 'BC1234567'
 const draftFilingId = 987654
@@ -80,6 +81,7 @@ describe('useAgmLocationChangeStore', () => {
   let store: ReturnType<typeof useAgmLocationChangeStore>
 
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     mockIsStaff.value = false
     store = useAgmLocationChangeStore()

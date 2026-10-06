@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { vi } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
-import { createPinia } from 'pinia'
-import { createApp } from 'vue'
-import type { App } from 'vue'
 import { config } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { loadNuxt, getLayerDirectories } from '@nuxt/kit'
@@ -85,12 +82,6 @@ export const mockBusinessApi = vi.fn() as any
 // Default useNuxtApp mock - may still need to overwrite in test file if extra mocks are needed (eg: $authApi)
 mockNuxtImport('useNuxtApp', original => () => {
   const orig = typeof original === 'function' ? original() : {}
-
-  // Apply pinia context to app
-  // This replaces setActivePinia(createPinia()) in the test files
-  const vueApp: App = createApp({})
-  const pinia = createPinia()
-  vueApp.use(pinia)
 
   return {
     ...orig,

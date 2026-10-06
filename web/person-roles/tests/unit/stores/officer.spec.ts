@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getFakePerson, getFakeAddress } from '#e2e-utils'
+import { setActivePinia, createPinia } from 'pinia'
 
 const identifier = 'BC1234567'
 
@@ -71,6 +72,7 @@ describe('useOfficerStore', () => {
   let schemaDefault: OfficersFormSchema
 
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
 
     store = useOfficerStore()

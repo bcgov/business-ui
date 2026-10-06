@@ -1,25 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 
-const baseData = {
+const baseBusiness = {
   legalName: 'Test Business Inc.',
   legalType: 'BC',
   identifier: 'BC1234567',
   state: EntityState.HISTORICAL,
   stateFiling: 'https://legal-api.test/api/v2/businesses/BC1234567/filings/12345'
-}
-
-const baseBusiness = ref(baseData) as any
-
-mockNuxtImport('useBusinessStore', original => () => {
-  const orig = typeof original === 'function' ? original() : {}
-
-  return {
-    ...orig,
-    business: baseBusiness
-  }
-})
+} as BusinessDataPublic
 
 const mockGetFiling = vi.fn()
 
@@ -33,21 +22,21 @@ mockNuxtImport('useBusinessService', () => {
 
 describe('useBusinessStateReason', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     useBusinessStore().$reset()
-    baseBusiness.value = { ...baseData }
   })
 
   it('returns empty string when the business is not historical', async () => {
-    baseBusiness.value = { ...baseBusiness.value, state: EntityState.ACTIVE }
+    useBusinessStore().business = { ...baseBusiness, state: EntityState.ACTIVE }
     const { getStateReason } = useBusinessStateReason()
     expect(await getStateReason()).toBe('')
     expect(mockGetFiling).not.toHaveBeenCalled()
   })
 
   it('returns the amalgamation reason without fetching the state filing', async () => {
-    baseBusiness.value = {
-      ...baseBusiness.value,
+    useBusinessStore().business = {
+      ...baseBusiness,
       stateFiling: undefined,
       amalgamatedInto: {
         amalgamationDate: '2026-08-13T07:00:00+00:00',
@@ -60,8 +49,8 @@ describe('useBusinessStateReason', () => {
   })
 
   it('falls back to Unknown Company when the amalgamated identifier is missing', async () => {
-    baseBusiness.value = {
-      ...baseBusiness.value,
+    useBusinessStore().business = {
+      ...baseBusiness,
       stateFiling: undefined,
       amalgamatedInto: { amalgamationDate: '2026-08-13T07:00:00+00:00' }
     }
@@ -74,6 +63,7 @@ describe('useBusinessStateReason', () => {
     ['involuntary', 'Dissolved for Failure to File'],
     ['voluntary', 'Voluntary Dissolution']
   ])('returns the %s dissolution reason', async (subType, expected) => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'dissolution', effectiveDate: '2026-01-16T04:22:50+00:00' },
@@ -86,11 +76,7 @@ describe('useBusinessStateReason', () => {
   })
 
   it('uses the firm dissolution reason for firms', async () => {
-    baseBusiness.value = {
-      ...baseBusiness.value,
-      identifier: 'FM1234567',
-      legalType: 'SP'
-    }
+    useBusinessStore().business = { ...baseBusiness, identifier: 'FM1234567', legalType: 'SP' } as BusinessDataPublic
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'dissolution', effectiveDate: '2026-01-16T04:22:50+00:00' },
@@ -98,10 +84,11 @@ describe('useBusinessStateReason', () => {
       }
     })
     const { getStateReason } = useBusinessStateReason()
-    expect(await getStateReason()).toBe('Voluntary Dissolution – January 15, 2026')
+    expect(await getStateReason()).toBe('Dissolution – January 15, 2026')
   })
 
   it('falls back to the effective date when dissolutionDate is missing', async () => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'dissolution', effectiveDate: '2026-01-16T04:22:50+00:00' },
@@ -113,6 +100,7 @@ describe('useBusinessStateReason', () => {
   })
 
   it('returns the put back off reason with its expiry date', async () => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'putBackOff', effectiveDate: '2026-01-16T04:22:50+00:00' },
@@ -124,6 +112,7 @@ describe('useBusinessStateReason', () => {
   })
 
   it('returns the continuation out reason with a date time', async () => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'continuationOut', effectiveDate: '2026-01-16T04:22:50+00:00' }
@@ -134,6 +123,7 @@ describe('useBusinessStateReason', () => {
   })
 
   it('falls back to the filing name for other state filing types', async () => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockResolvedValue({
       filing: {
         header: { name: 'amalgamationOut', effectiveDate: '2026-01-16T04:22:50+00:00' }
@@ -144,14 +134,15 @@ describe('useBusinessStateReason', () => {
   })
 
   it('returns empty string when the state filing fetch fails', async () => {
+    useBusinessStore().business = { ...baseBusiness }
     mockGetFiling.mockRejectedValue(new Error('nope'))
     const { getStateReason } = useBusinessStateReason()
     expect(await getStateReason()).toBe('')
   })
 
   it('setTombstoneStateReason appends the reason to the tombstone details', async () => {
-    baseBusiness.value = {
-      ...baseBusiness.value,
+    useBusinessStore().business = {
+      ...baseBusiness,
       stateFiling: undefined,
       amalgamatedInto: {
         amalgamationDate: '2026-08-13T07:00:00+00:00',
