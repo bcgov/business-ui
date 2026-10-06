@@ -1,10 +1,6 @@
 import { createResolver } from 'nuxt/kit'
 import { defineConfig, devices } from '@playwright/test'
 import type { ConfigOptions } from '@nuxt/test-utils/playwright'
-import { config as dotenvConfig } from 'dotenv'
-
-// load default env
-dotenvConfig()
 
 const { resolve } = createResolver(import.meta.url)
 

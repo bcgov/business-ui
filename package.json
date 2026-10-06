@@ -15,14 +15,14 @@
     "test:unit": "pnpm -r test:unit",
     "test:e2e": "pnpm -r test:e2e",
     "typecheck": "pnpm -r typecheck",
-    "reset:hard": "find . -name node_modules -exec rm -rf {} + && find . -name .nuxt -exec rm -rf {} + && pnpm i"
+    "reset:hard": "find . -type d \\( -name node_modules -o -name .nuxt -o -name .output -o -name dist -o -name test-results -o -name playwright-report \\) -prune -exec rm -rf {} + && pnpm install"
   },
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
     "@nuxt/eslint-config": "1.17.0",
     "dotenv": "catalog:",
-    "eslint": "10.11.0"
+    "eslint": "10.12.0"
   },
   "engines": {
     "node": ">=24"
