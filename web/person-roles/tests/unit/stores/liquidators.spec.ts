@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getFakePerson, getFakeAddress } from '#e2e-utils'
 
@@ -15,15 +14,12 @@ const mockBusinessService = {
 mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 const mockInitFiling = vi.fn()
-vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('#business/app/composables/useFiling')>()
+mockNuxtImport('useFiling', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
   return {
-    ...actual,
-    useFiling: () => ({
-      ...actual.useFiling(),
-      initFiling: mockInitFiling,
-      createFilingPayload: mockCreateFilingPayload
-    })
+    ...orig,
+    initFiling: mockInitFiling,
+    createFilingPayload: mockCreateFilingPayload
   }
 })
 
@@ -67,18 +63,26 @@ const mailing = getFakeAddress()
 const delivery = getFakeAddress()
 
 describe('useLiquidatorStore', () => {
-  const store = useLiquidatorStore()
-  const { tableState } = useManageParties()
-  const { tableState: tableOffices } = useManageOffices()
-  const schemaDefault = getLiquidatorsSchema().parse({})
+  let store: ReturnType<typeof useLiquidatorStore>
+  let tableState: ReturnType<typeof useManageParties>['tableState']
+  let tableOffices: ReturnType<typeof useManageOffices>['tableState']
+  let schemaDefault: LiquidatorFormSchema
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    store.$reset()
+    vi.clearAllMocks()
+
+    const parties = useManageParties()
+    const offices = useManageOffices()
+
+    tableState = parties.tableState
+    tableOffices = offices.tableState
+
     tableState.value = []
     tableOffices.value = []
+
+    store = useLiquidatorStore()
+
+    schemaDefault = getLiquidatorsSchema().parse({})
   })
 
   it('initializes with the correct default state', () => {

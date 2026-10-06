@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getFakePerson, getFakeAddress } from '#e2e-utils'
 
@@ -15,15 +14,12 @@ const mockBusinessService = {
 mockNuxtImport('useBusinessService', () => () => mockBusinessService)
 
 const mockInitFiling = vi.fn()
-vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('#business/app/composables/useFiling')>()
+mockNuxtImport('useFiling', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
   return {
-    ...actual,
-    useFiling: () => ({
-      ...actual.useFiling(),
-      initFiling: mockInitFiling,
-      createFilingPayload: mockCreateFilingPayload
-    })
+    ...orig,
+    initFiling: mockInitFiling,
+    createFilingPayload: mockCreateFilingPayload
   }
 })
 
@@ -70,16 +66,20 @@ const mailing = getFakeAddress()
 const delivery = getFakeAddress()
 
 describe('useOfficerStore', () => {
-  const store = useOfficerStore()
-  const { tableState } = useManageParties()
-  const schemaDefault = getOfficersSchema().parse({})
+  let store: ReturnType<typeof useOfficerStore>
+  let tableState: ReturnType<typeof useManageParties>['tableState']
+  let schemaDefault: OfficersFormSchema
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    const pinia = createPinia()
-    setActivePinia(pinia)
-    store.$reset()
+    vi.clearAllMocks()
+
+    store = useOfficerStore()
+
+    const parties = useManageParties()
+    tableState = parties.tableState
     tableState.value = []
+
+    schemaDefault = getOfficersSchema().parse({})
     mockGetFeatureFlag.mockResolvedValue('BC')
   })
 
