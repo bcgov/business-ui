@@ -912,7 +912,7 @@ export default {
     },
     dateNotAfterMax: 'Date must be on or before {date}',
     dateNotBeforeMin: 'Date must be on or after {date}',
-    dateNotInRange: 'Date must be between {minDate} and {maxDate}',
+    dateRangeOutOfOrder: 'The start date must be on or before the end date',
     futureDateRequired: 'Effective date must be in the future',
     onlyNumbers: 'Only enter numbers',
     onlyOneCourtOrderPerFiling: 'Only one court order per filing.',

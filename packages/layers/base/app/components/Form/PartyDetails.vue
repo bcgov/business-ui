@@ -14,6 +14,8 @@ const props = defineProps<{
     allowedRoles: RoleTypeUi[]
     roleClass?: RoleClass
   }
+  effectiveDateBounds?: DateBounds
+  cessationDateBounds?: DateBounds
 }>()
 
 const emit = defineEmits<{
@@ -79,13 +81,10 @@ async function onDone() {
     addressFormRef.value?.formRef?.validate(),
     partyEmailFormRef.value?.formRef?.validate(),
     useEffectiveDateRange.value
-      ? effectiveDateRangeFormRef.value?.startFormRef?.validate()
+      ? effectiveDateRangeFormRef.value?.validate()
       : isEffectiveDateVisible.value && isEffectiveDateChangeAllowed.value
         ? effectiveDateFormRef.value?.formRef?.validate()
-        : undefined,
-    useEffectiveDateRange.value
-      ? effectiveDateRangeFormRef.value?.endFormRef?.validate()
-      : undefined
+        : undefined
   ])
 
   const rejections = result.filter(r => r.status === 'rejected')
@@ -221,6 +220,8 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             v-model:end="cessationDateModel"
             :start-required="isEffectiveDateRequired"
             :end-required="isCessationDateRequired"
+            :start-bounds="effectiveDateBounds"
+            :end-bounds="cessationDateBounds"
             :description="effectiveDateRangeDescription"
           />
         </template>
@@ -230,6 +231,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
             ref="effective-date-form"
             v-model="effectiveDateModel"
             :required="isEffectiveDateRequired"
+            :bounds="effectiveDateBounds"
           />
         </template>
       </template>
