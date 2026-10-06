@@ -15,7 +15,7 @@ describe('useBusinessAddresses', () => {
   const addressesMock = getBusinessAddressesMock()
 
   beforeEach(async () => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     mockGetAddresses.mockResolvedValue(addressesMock)
   })
 

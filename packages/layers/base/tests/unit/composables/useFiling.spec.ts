@@ -59,7 +59,7 @@ describe('useFiling', () => {
     const draftFilingMock = getFilingMock('changeOfOfficers', 'DRAFT')
 
     beforeEach(async () => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
       mockBusinessService.getBusiness.mockResolvedValue(businessMock.business)
       mockBusinessService.getAuthInfo.mockResolvedValue(businessSettingsMock)
       mockBusinessService.getParties.mockResolvedValue(partiesMock.parties)

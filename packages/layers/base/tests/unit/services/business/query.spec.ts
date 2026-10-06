@@ -32,7 +32,7 @@ mockNuxtImport('useBusinessQueryKeys', () => {
 
 describe('useBusinessQuery', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   const businessId = 'BC123'
