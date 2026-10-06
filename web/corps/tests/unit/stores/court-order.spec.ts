@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 
 const identifier = 'BC1234567'
@@ -16,14 +15,11 @@ mockNuxtImport('useBusinessService', () => () => ({
 // NB: only initFiling is mocked - createFilingPayload runs for real so the submitted
 // payload shape (including the filing header) is asserted end to end
 const mockInitFiling = vi.fn()
-vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('#business/app/composables/useFiling')>()
+mockNuxtImport('useFiling', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
   return {
-    ...actual,
-    useFiling: () => ({
-      ...actual.useFiling(),
-      initFiling: mockInitFiling
-    })
+    ...orig,
+    initFiling: mockInitFiling
   }
 })
 
@@ -93,20 +89,21 @@ function getCourtOrderFileMock(overrides: Partial<CourtOrderFileUi> = {}): Court
 }
 
 /** The court order schema generates a random `id` for UI diff'ing - ignore it when comparing. */
-function withoutId(courtOrder: CourtOrderPoaFullSchema) {
+function withoutId(courtOrder: CourtOrderPoaFullSchema): Omit<CourtOrderPoaFullSchema, 'id'> {
   const { id: _id, ...rest } = courtOrder
   return rest
 }
 
 describe('useCourtOrderStore', () => {
-  const store = useCourtOrderStore()
-  const schemaDefault = getCourtOrderFormSchema().parse({})
-  const defaultCourtOrder = withoutId(schemaDefault.courtOrder)
+  let store: ReturnType<typeof useCourtOrderStore>
+  let schemaDefault: CourtOrderFormSchema
+  let defaultCourtOrder: ReturnType<typeof withoutId>
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    setActivePinia(createPinia())
-    store.$reset()
+    vi.clearAllMocks()
+    store = useCourtOrderStore()
+    schemaDefault = getCourtOrderFormSchema().parse({})
+    defaultCourtOrder = withoutId(schemaDefault.courtOrder)
     mockIsBaseCompany.mockReturnValue(true)
     mockSaveOrUpdateDraftFiling.mockResolvedValue(getDraftMock())
   })
