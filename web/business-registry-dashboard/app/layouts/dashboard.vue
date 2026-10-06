@@ -17,6 +17,16 @@ const showStaffBreadcrumb = computed(() => {
   return IsAuthorized(AuthorizedActions.STAFF_BREADCRUMBS)
 })
 
+// Name Request UI link for the "Get Started" button.
+// The org id is passed as both a path segment (used by the NR staff flow) and an `accountid`
+// query param (read by SbcHeader to sync CURRENT_ACCOUNT on the NR origin for client users).
+const getStartedUrl = computed(() => {
+  const orgId = (IsAuthorized(AuthorizedActions.STAFF_DASHBOARD) && route.params.orgId)
+    ? String(route.params.orgId)
+    : accountStore.currentAccount.id.toString()
+  return appendUrlParam(`${config.nrURL}${orgId}`, 'accountid', orgId)
+})
+
 useHead({
   title: showStaffText.value ? t('page.home.titleStaff') : t('page.home.title')
 })
@@ -108,9 +118,7 @@ onMounted(async () => {
                 icon="i-mdi-domain"
                 size="bcGov"
                 class="w-full"
-                :to="`${config.nrURL}${(IsAuthorized(AuthorizedActions.STAFF_DASHBOARD) && route.params.orgId)
-                  ? route.params.orgId
-                  : accountStore.currentAccount.id.toString()}`"
+                :to="getStartedUrl"
               />
             </UTooltip>
           </div>
