@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockAuthApi, mockBusinessApi } from '../../setup'
 
 const mockKeys = {
   addresses: vi.fn(),
@@ -29,18 +30,9 @@ mockNuxtImport('useBusinessQueryKeys', () => {
   })
 })
 
-const mockBusinessApi = vi.fn()
-const mockAuthApi = vi.fn()
-mockNuxtImport('useNuxtApp', () => {
-  return () => ({
-    $businessApi: mockBusinessApi,
-    $authApi: mockAuthApi
-  })
-})
-
 describe('useBusinessQuery', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   const businessId = 'BC123'

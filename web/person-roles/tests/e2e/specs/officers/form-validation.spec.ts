@@ -38,8 +38,9 @@ test.describe('Form Validation', () => {
 
       const countrySelect = page.getByTestId('delivery-address-input-country')
       await countrySelect.scrollIntoViewIfNeeded()
-      await page.getByTestId('delivery-address-input-country').focus()
-      await page.getByTestId('delivery-address-input-country').click()
+      await countrySelect.focus()
+      await countrySelect.click()
+      await countrySelect.fill('')
       const optionsList = page.getByRole('listbox') // listbox is a teleport on the page body
       await optionsList.scrollIntoViewIfNeeded()
       await expect(optionsList).toBeVisible()

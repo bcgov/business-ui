@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getCachedOrFetch } from '../../../../app/services/helpers'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -24,7 +25,7 @@ describe('getCachedOrFetch', () => {
   const mockEntry = { key: ['test'], status: 'pending', meta: {} }
 
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
     mocks.ensure.mockReturnValue(mockEntry)
   })
 

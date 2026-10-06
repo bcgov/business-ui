@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { FormCourtOrderPoaFields } from '#components'
 import type { CourtOrderPoaFullSchema } from '#business/app/utils/schemas/court-order-poa'
+import { setActivePinia, createPinia } from 'pinia'
 
 const getModel = (overrides: Partial<CourtOrderPoaFullSchema> = {}): CourtOrderPoaFullSchema => ({
   isEditing: false,
@@ -30,6 +31,10 @@ const mountFields = (props: Record<string, unknown> = {}, modelValue = getModel(
 }
 
 describe('FormCourtOrderPoaFields', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('should always render the plan of arrangement checkbox and the court order number', async () => {
     const wrapper = await mountFields({ isCourtOrder: false })
 

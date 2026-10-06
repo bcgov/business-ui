@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 /**
  * Unit tests for the standalone court order filing form schema.
@@ -10,7 +10,11 @@ import { describe, it, expect } from 'vitest'
  * assert the composition (defaults, nested paths, staff payment) the corps page relies on.
  */
 describe('getCourtOrderFormSchema', () => {
-  const schema = getCourtOrderFormSchema()
+  let schema: ReturnType<typeof getCourtOrderFormSchema>
+
+  beforeEach(() => {
+    schema = getCourtOrderFormSchema()
+  })
 
   const getFile = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
     id: 'file-1',

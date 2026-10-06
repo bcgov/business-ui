@@ -16,6 +16,7 @@ export const useBusinessStateReason = () => {
   /** Return the reason text for the business state (empty when not historical). */
   const getStateReason = async (): Promise<string> => {
     const biz = business.value
+
     if (!biz || biz.state !== EntityState.HISTORICAL) {
       return ''
     }
@@ -42,6 +43,7 @@ export const useBusinessStateReason = () => {
       .then(resp => resp?.filing)
       .catch(() => undefined)
     const filingType = stateFiling?.header.name
+
     if (!filingType) {
       return ''
     }
@@ -80,14 +82,11 @@ export const useBusinessStateReason = () => {
     // reason for continuation out and default 'reason'
     const effectiveDate = toDate(stateFiling.header.effectiveDate || '')
     const date = (effectiveDate && toPacificDateTime(effectiveDate)) || `[${t('text.unknown')}]`
-    let reason = ''
+    let reason: string
     if (filingType === FilingType.CONTINUATION_OUT) {
       reason = t('stateReason.continuationOut')
     } else {
       reason = t(`filingName.${filingType}`)
-      if (reason === `filingName.${filingType}`) {
-        reason = t('stateReason.unknown')
-      }
     }
     return `${reason} ${enDash} ${date}`
   }

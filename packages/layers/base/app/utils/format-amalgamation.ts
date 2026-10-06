@@ -38,13 +38,14 @@ export function formatAmalCorrectSection(
     }
 
     const parsed = schema.parse(cloned)
-    return merge(cloned, parsed)
+
+    return merge(cloned, parsed) as ExBCBusinessTableRow
   }
 
   const originalBusinesses = originalData.amalgamatingBusinesses || []
   const draftBusinesses = draftData?.amalgamatingBusinesses
 
-  let tableState: TableBusinessState<AmalgamationTableRow>[] = []
+  let tableState: TableBusinessState<AmalgamationTableRow>[]
 
   // if no draft businesses, return formatted API response
   if (!draftBusinesses) {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 
 const identifier = 'BC1234567'
 const draftFilingId = 987654
@@ -17,14 +17,11 @@ mockNuxtImport('useBusinessService', () => () => ({
 // NB: only initFiling is mocked - createFilingPayload runs for real so the submitted
 // payload shape (including the filing header) is asserted end to end
 const mockInitFiling = vi.fn()
-vi.mock('#business/app/composables/useFiling', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('#business/app/composables/useFiling')>()
+mockNuxtImport('useFiling', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
   return {
-    ...actual,
-    useFiling: () => ({
-      ...actual.useFiling(),
-      initFiling: mockInitFiling
-    })
+    ...orig,
+    initFiling: mockInitFiling
   }
 })
 
@@ -34,11 +31,16 @@ const mockBusiness = {
   legalType: 'BC',
   foundingDate: '2022-01-01T12:00:00+00:00'
 }
-mockNuxtImport('useBusinessStore', () => () => ({
-  business: mockBusiness,
-  businessIdentifier: identifier,
-  isBaseCompany: vi.fn().mockReturnValue(true)
-}))
+
+mockNuxtImport('useBusinessStore', original => () => {
+  const orig = typeof original === 'function' ? original() : {}
+  return {
+    ...orig,
+    business: mockBusiness,
+    businessIdentifier: identifier,
+    isBaseCompany: vi.fn().mockReturnValue(true)
+  }
+})
 
 mockNuxtImport('useFilingModals', () => () => ({
   openGetDraftFilingErrorModal: vi.fn(),
@@ -79,8 +81,8 @@ describe('useAgmLocationChangeStore', () => {
   let store: ReturnType<typeof useAgmLocationChangeStore>
 
   beforeEach(() => {
-    vi.resetAllMocks()
     setActivePinia(createPinia())
+    vi.clearAllMocks()
     mockIsStaff.value = false
     store = useAgmLocationChangeStore()
     mockSaveOrUpdateDraftFiling.mockResolvedValue(getDraftMock())

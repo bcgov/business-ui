@@ -37,19 +37,19 @@ const {
   refetch: refetchAddresses
 } = query.addresses(businessId, { enabled })
 
-function invalidateBCache(id: string) {
+function invalidateBCache(id: string): void {
   const key = keys.business(id, false, false)
   console.info('Invalidating key: ', key)
   cache.invalidateQueries({ key })
 }
 
-function invalidateACache(id: string) {
+function invalidateACache(id: string): void {
   const key = keys.addresses(id)
   console.info('Invalidating key: ', key)
   cache.invalidateQueries({ key })
 }
 
-async function triggerBService(force: boolean) {
+async function triggerBService(force: boolean): Promise<void> {
   try {
     await service.getBusiness(businessId.value, false, force)
   } catch (e) {
@@ -57,7 +57,7 @@ async function triggerBService(force: boolean) {
   }
 }
 
-async function triggerAService(force: boolean) {
+async function triggerAService(force: boolean): Promise<void> {
   try {
     await service.getAddresses(businessId.value, force)
   } catch (e) {
@@ -84,7 +84,7 @@ async function triggerAService(force: boolean) {
         {
           label: 'Invalidate all via partial match',
           onClick: () => {
-            cache.invalidateQueries({ key: base, active: true })
+            cache.invalidateQueries({ key: base, active: true });
           }
         }
       ]"
@@ -99,13 +99,13 @@ async function triggerAService(force: boolean) {
               label="Refresh"
               size="xs"
               variant="ghost"
-              @click="refreshBusiness()"
+              @click="() => { refreshBusiness() }"
             />
             <UButton
               label="Refetch"
               size="xs"
               variant="ghost"
-              @click="refetchBusiness()"
+              @click="() => { refetchBusiness() }"
             />
             <UButton
               label="Invalidate"
@@ -162,13 +162,13 @@ async function triggerAService(force: boolean) {
               label="Refresh"
               size="xs"
               variant="ghost"
-              @click="refreshAddresses()"
+              @click="() => { refreshAddresses() }"
             />
             <UButton
               label="Refetch"
               size="xs"
               variant="ghost"
-              @click="refetchAddresses()"
+              @click="() => { refetchAddresses() }"
             />
             <UButton
               label="Invalidate"

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { mockBusinessApi } from '../../setup'
 
 const mockQuery = {
   addressesOptions: vi.fn(),
@@ -31,18 +32,15 @@ vi.mock('~/services/helpers', () => ({
 }))
 mockNuxtImport('isValidDraft', () => mockIsValidDraft)
 
-const mockBusinessApi = vi.fn()
-mockNuxtImport('useNuxtApp', () => () => ({
-  $businessApi: mockBusinessApi,
-  $i18n: { t: (k: string) => k }
-}))
+mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 123456 } }))
 
 describe('useBusinessService', () => {
-  const service = useBusinessService()
+  let service: ReturnType<typeof useBusinessService>
   const businessId = 'BC1234567'
 
   beforeEach(() => {
     vi.clearAllMocks()
+    service = useBusinessService()
   })
 
   it('getAddresses should fetch options and call the cache helper', async () => {
@@ -367,7 +365,6 @@ describe('useBusinessService', () => {
         })
       )
 
-      // @ts-expect-error - mockBusinessApi.mock.calls may be undefined
       const sentBody = mockBusinessApi.mock.calls[0][1].body
       expect(sentBody.filing.header.name).toBe('changeOfOfficers')
       expect(sentBody.filing.business.identifier).toBe('BC123')
@@ -449,7 +446,6 @@ describe('useBusinessService', () => {
 
       await service.saveOrUpdateDraftFiling(business.identifier, payload, false)
 
-      // @ts-expect-error - mockBusinessApi.mock.calls may be undefined
       const sentBody = mockBusinessApi.mock.calls[0][1].body
       expect(sentBody.filing.header.name).toBe('changeOfOfficers')
       expect(sentBody.filing.business.identifier).toBe('BC123')

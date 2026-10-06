@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mockGetColumnMeta } from '../../../mocks/business-table-utils'
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+
+const { mockGetColumnMeta } = vi.hoisted(() => ({ mockGetColumnMeta: vi.fn() }))
+mockNuxtImport('getColumnMeta', () => mockGetColumnMeta)
 
 describe('getActionsColumn', () => {
   beforeEach(() => {

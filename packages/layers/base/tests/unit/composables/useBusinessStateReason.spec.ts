@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { setActivePinia, createPinia } from 'pinia'
 
 const baseBusiness = {
   legalName: 'Test Business Inc.',
@@ -21,6 +22,7 @@ mockNuxtImport('useBusinessService', () => {
 
 describe('useBusinessStateReason', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
     useBusinessStore().$reset()
   })

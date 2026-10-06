@@ -22,7 +22,7 @@ const buildFiling = (filingId: number, comments: Array<ReturnType<typeof buildCo
 
 describe('useBusinessLedger - filing detail comments', () => {
   beforeEach(() => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   test('splits FILING comments out of the detail comments', () => {

@@ -14,7 +14,7 @@ mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 12
 
 describe('useBusinessParty', () => {
   beforeEach(async () => {
-    vi.resetAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('initFiling', () => {
@@ -22,7 +22,7 @@ describe('useBusinessParty', () => {
     const partiesMock = getPartiesMock()
 
     beforeEach(async () => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
       const pinia = createPinia()
       setActivePinia(pinia)
       store = useBusinessStore()

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { delay } from 'es-toolkit'
+import { setActivePinia, createPinia } from 'pinia'
 
 const mockBusiness = {
   legalName: 'Test Business Inc.',
@@ -45,8 +46,9 @@ mockNuxtImport('useBusinessService', () => {
   })
 })
 
-describe('useFilingTombstone', () => {
+describe('useBusinessTombstone', () => {
   beforeEach(() => {
+    setActivePinia(createPinia())
     vi.clearAllMocks()
   })
 

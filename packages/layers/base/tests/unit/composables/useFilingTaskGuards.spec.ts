@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useFilingTaskGuards } from '#business/app/composables/useFilingTaskGuards'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { mount } from '@vue/test-utils'
@@ -14,11 +14,8 @@ mockNuxtImport('useRoute', () => () => mockRoute)
 
 describe('useFilingTaskGuards', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
     vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
   })
 
   describe('hasChanges', () => {

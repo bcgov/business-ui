@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getDocumentDeliverySchema', () => {
-  const schema = getDocumentDeliverySchema()
+  let schema: ReturnType<typeof getDocumentDeliverySchema>
+
+  beforeEach(() => {
+    schema = getDocumentDeliverySchema()
+  })
 
   describe('completingPartyEmail', () => {
     it('should pass when undefined', () => {

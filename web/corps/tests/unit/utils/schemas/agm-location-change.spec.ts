@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getAgmLocationChangeSchema (defaults)', () => {
   describe('non-staff', () => {
-    const schema = getAgmLocationChangeSchema(false)
+    let schema: ReturnType<typeof getAgmLocationChangeSchema>
+
+    beforeEach(() => {
+      schema = getAgmLocationChangeSchema(false)
+    })
 
     it('should parse empty input to defaults', () => {
       const result = schema.safeParse({})
@@ -25,7 +29,11 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
   })
 
   describe('staff', () => {
-    const schema = getAgmLocationChangeSchema(true)
+    let schema: ReturnType<typeof getAgmLocationChangeSchema>
+
+    beforeEach(() => {
+      schema = getAgmLocationChangeSchema(true)
+    })
 
     it('should parse empty input to defaults', () => {
       const result = schema.safeParse({})
@@ -47,7 +55,11 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
 
 describe('getAgmLocationChangeValidationSchema (validation)', () => {
   const currentYear = new Date().getFullYear()
-  const schema = getAgmLocationChangeValidationSchema()
+  let schema: ReturnType<typeof getAgmLocationChangeValidationSchema>
+
+  beforeEach(() => {
+    schema = getAgmLocationChangeValidationSchema()
+  })
 
   const getIssues = (result: ReturnType<typeof schema.safeParse>) => result.error?.issues ?? []
   const getPaths = (result: ReturnType<typeof schema.safeParse>) =>

@@ -9,16 +9,6 @@ const mockRoute = reactive({
 })
 mockNuxtImport('useRoute', () => () => mockRoute)
 
-mockNuxtImport('useRuntimeConfig', () => () => ({
-  public: {
-    businessDashboardUrl: 'http://dashboard/',
-    businessEditUrl: 'http://edit/',
-    authWebUrl: 'http://auth/',
-    registryHomeUrl: 'http://registry-home/',
-    brdUrl: 'http://brd/'
-  }
-}))
-
 const testAccountId = 'test-account-id'
 mockNuxtImport('useConnectAccountStore', () => () => ({
   currentAccount: { id: testAccountId, accountType: 'Basic' }
@@ -106,7 +96,7 @@ describe('useFilingNavigation', () => {
         appendAccountId: true,
         external: true,
         label: 'Staff Dashboard',
-        to: 'http://auth/staff/dashboard/active'
+        to: 'https://auth.example.com/staff/dashboard/active'
       })
 
       const bc2 = breadcrumbs.value[1]

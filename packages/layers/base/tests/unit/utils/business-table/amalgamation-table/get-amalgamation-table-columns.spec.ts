@@ -1,3 +1,4 @@
+// @vitest-environment node
 /* eslint-disable max-len */
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 

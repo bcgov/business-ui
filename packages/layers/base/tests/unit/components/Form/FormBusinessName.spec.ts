@@ -1,7 +1,8 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { FormBusinessName, ConnectI18nHelper } from '#components'
+import { setActivePinia, createPinia } from 'pinia'
 
 const mountComponent = (props = {}) => {
   return mountSuspended(FormBusinessName, {
@@ -25,6 +26,10 @@ const mountComponent = (props = {}) => {
 }
 
 describe('FormBusinessName', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('should render the correct radio group items based on the correctNameOptions prop', async () => {
     let wrapper = await mountComponent({
       correctNameOptions: [

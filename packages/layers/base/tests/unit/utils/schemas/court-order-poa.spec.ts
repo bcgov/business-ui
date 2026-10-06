@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getCourtOrderPoaSchema', () => {
-  const schema = getCourtOrderPoaSchema()
+  let schema: ReturnType<typeof getCourtOrderPoaSchema>
+
+  beforeEach(() => {
+    schema = getCourtOrderPoaSchema()
+  })
 
   describe('courtOrderNumber', () => {
     it('should pass when undefined', () => {
@@ -110,7 +114,11 @@ describe('getCourtOrderPoaSchema', () => {
 })
 
 describe('getCourtOrderPoaFullSchema', () => {
-  const schema = getCourtOrderPoaFullSchema()
+  let schema: ReturnType<typeof getCourtOrderPoaFullSchema>
+
+  beforeEach(() => {
+    schema = getCourtOrderPoaFullSchema()
+  })
 
   it('should not apply the standalone filing cross field rules without the context option', () => {
     // no court order number, no order details and no files
@@ -134,7 +142,11 @@ describe('getCourtOrderPoaFullSchema', () => {
 })
 
 describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
-  const schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
+  let schema: ReturnType<typeof getCourtOrderPoaFullSchema>
+
+  beforeEach(() => {
+    schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
+  })
 
   const getFile = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
     id: 'file-1',

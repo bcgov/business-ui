@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getStaffPaymentSchema', () => {
-  const schema = getStaffPaymentSchema()
+  let schema: ReturnType<typeof getStaffPaymentSchema>
+
+  beforeEach(() => {
+    schema = getStaffPaymentSchema()
+  })
 
   const base = {
     bcolAccountNumber: '',

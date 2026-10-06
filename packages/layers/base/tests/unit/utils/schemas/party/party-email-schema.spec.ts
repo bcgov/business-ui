@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getPartyEmailSchema', () => {
-  const schema = getPartyEmailSchema()
+  let schema: ReturnType<typeof getPartyEmailSchema>
+
+  beforeEach(() => {
+    schema = getPartyEmailSchema()
+  })
 
   it('should pass with a valid email address', () => {
     const result = schema.safeParse({ email: 'name@gov.bc.ca' })
@@ -59,7 +63,11 @@ describe('getPartyEmailSchema', () => {
   })
 
   describe('when required is false', () => {
-    const optionalSchema = getPartyEmailSchema(false)
+    let optionalSchema: ReturnType<typeof getPartyEmailSchema>
+
+    beforeEach(() => {
+      optionalSchema = getPartyEmailSchema(false)
+    })
 
     it('should pass when empty', () => {
       const result = optionalSchema.safeParse({ email: '' })

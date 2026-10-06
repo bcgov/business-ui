@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-extraneous-class */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import type { ModelRef } from 'vue'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import * as pdfjs from 'pdfjs-dist'
+import { mockBusinessApi } from './setup'
 
 import {
   formatBytes,
@@ -11,8 +13,6 @@ import {
   maxFileSize,
   acceptedFileTypes
 } from '../../app/components/Form/CourtOrderPoa/Full/FileUpload/utils'
-
-const mockBusinessApi = vi.fn()
 
 const mockBusinessService = {
   deleteDocument: vi.fn()
@@ -25,32 +25,8 @@ const mockAccountStore = { currentAccount: { id: '123' } }
 
 mockNuxtImport('useConnectAuth', () => () => mockAuth)
 mockNuxtImport('useConnectAccountStore', () => () => mockAccountStore)
-mockNuxtImport('useRuntimeConfig', () => () => ({
-  public: {
-    appName: 'test-app',
-    xApiKey: 'test-key',
-    businessApiUrl: 'https://test-api.gov.bc.ca',
-    businessApiVersion: '/v1'
-  }
-}))
 const mockMediaQuery = ref(false)
 mockNuxtImport('useMediaQuery', () => () => mockMediaQuery)
-
-vi.mock('#app', async (importOriginal) => {
-  const original = await importOriginal<typeof import('#app')>()
-
-  return {
-    ...original,
-    useNuxtApp: () => ({
-      ...original.useNuxtApp?.(),
-      $businessApi: mockBusinessApi,
-      $i18n: {
-        te: () => false,
-        t: (key: string) => key
-      }
-    })
-  }
-})
 
 vi.mock('pdfjs-dist', () => ({
   GlobalWorkerOptions: { workerSrc: '' },
@@ -73,6 +49,18 @@ const getXhrMock = (sendMock?: any, abortMock?: any) => ({
   abort: abortMock || vi.fn(),
   upload: {}
 })
+
+function stubGlobalXhr(xhrInstance: any) {
+  class MockXHR {
+    constructor() {
+      return xhrInstance
+    }
+  }
+  const xhr = vi.fn(MockXHR) as any
+  vi.stubGlobal('XMLHttpRequest', xhr)
+
+  return xhr
+}
 
 describe('court order file constraints', () => {
   it('should default to the limits enforced by the api', () => {
@@ -97,6 +85,8 @@ describe('formatBytes', () => {
 
 describe('useCourtOrderDocs', () => {
   let model: ModelRef<CourtOrderFileUi[]>
+  let xhrMock: ReturnType<typeof getXhrMock>
+
   const defaultProps = {
     identifier: 'BC1234567',
     filingId: 9876543,
@@ -109,6 +99,9 @@ describe('useCourtOrderDocs', () => {
     model = ref<CourtOrderFileUi[]>([]) as ModelRef<CourtOrderFileUi[]>
     mockBusinessApi.mockResolvedValue({})
     mockMediaQuery.value = false
+
+    xhrMock = getXhrMock()
+    stubGlobalXhr(xhrMock)
 
     // default to letter size
     vi.mocked(pdfjs.getDocument).mockReturnValue({
@@ -204,8 +197,6 @@ describe('useCourtOrderDocs', () => {
 
   describe('processFiles', () => {
     it('should upload files successfully', async () => {
-      const xhrMock = getXhrMock()
-      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
       const { courtOrderFile, courtOrderDocs } = useCourtOrderDocs(model, defaultProps)
       courtOrderFile.value = new File(['pdf data'], 'valid_order.pdf', { type: 'application/pdf' })
 
@@ -216,7 +207,7 @@ describe('useCourtOrderDocs', () => {
         'POST',
         expect.stringContaining('/documents/client/courtOrder/BC/court_order?filename=valid_order.pdf')
       )
-      expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('Authorization', expect.stringMatching(/^Bearer/))
+      expect(xhrMock.setRequestHeader).toHaveBeenCalledWith('authorization', expect.stringMatching(/^Bearer/))
       expect(xhrMock.send).toHaveBeenCalledOnce()
 
       expect(courtOrderDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
@@ -224,9 +215,6 @@ describe('useCourtOrderDocs', () => {
     })
 
     it('should use the current prop values on each upload (reactive props)', async () => {
-      const xhrMock = getXhrMock()
-      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
-
       const filingId = ref<string | number>(9876543)
       const entityType = ref(CorpTypeCd.BC_COMPANY)
 
@@ -368,7 +356,7 @@ describe('useCourtOrderDocs', () => {
       })
 
       const xhrMock = getXhrMock(sendMock)
-      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+      stubGlobalXhr(xhrMock)
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
@@ -432,9 +420,6 @@ describe('useCourtOrderDocs', () => {
         status: CourtOrderFileStatus.SUCCESS
       }
       model.value = [mockDoc]
-
-      const xhrMock = getXhrMock()
-      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
 
       const { supportingFiles, supportingDocs, onFileAction } = useCourtOrderDocs(model, defaultProps)
       await nextTick()
@@ -527,7 +512,7 @@ describe('useCourtOrderDocs', () => {
           this.onloadend?.()
         })
       )
-      vi.stubGlobal('XMLHttpRequest', vi.fn(() => xhrMock))
+      stubGlobalXhr(xhrMock)
 
       const { onFileAction, supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
 

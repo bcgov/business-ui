@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -76,7 +77,7 @@ async function emitInitEdit(
 ) {
   // eslint-disable-next-line
   // @ts-ignore - test helper accepts loosely typed props for different component types
-  const wrapper = await mountSuspended(component, { props, global: { stubs } })
+  const wrapper = await mountSuspended(component, { props, global: { stubs } }) as any
   wrapper.findComponent(tableStub).vm.$emit('init-edit', row)
   await wrapper.vm.$nextTick()
   return wrapper
