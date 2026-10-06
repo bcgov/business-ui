@@ -217,6 +217,10 @@ const componentExamples: DropdownMenuItem[] = [
         to: localePath('/examples/components/Form/EffectiveDate')
       },
       {
+        label: 'FormEffectiveDateRange',
+        to: localePath('/examples/components/Form/EffectiveDate/Range')
+      },
+      {
         label: 'FormNameRequestNumber',
         to: localePath('/examples/components/Form/NameRequest/Number')
       },

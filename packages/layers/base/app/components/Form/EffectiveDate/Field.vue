@@ -139,8 +139,8 @@ defineOptions({ inheritAttrs: false })
           :help="hintText"
           :max-date="maxBound ? props.bounds?.max?.date : undefined"
           :min-date="minBound ? props.bounds?.min?.date : undefined"
-          :required="props.required"
-          :disabled="props.disabled"
+          :required
+          :disabled
         />
         <p
           v-if="hintText"

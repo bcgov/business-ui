@@ -85,7 +85,7 @@ defineOptions({ inheritAttrs: false })
           :bounds="props.startBounds"
           :invalid="!!orderError"
           :required="props.startRequired"
-          :disabled="props.disabled"
+          :disabled
         />
       </div>
       <span class="hidden sm:block text-sm text-neutral pt-3">{{ $t('label.to') }}</span>
@@ -99,7 +99,7 @@ defineOptions({ inheritAttrs: false })
           :bounds="props.endBounds"
           :invalid="!!orderError"
           :required="props.endRequired"
-          :disabled="props.disabled"
+          :disabled
         />
       </div>
     </div>

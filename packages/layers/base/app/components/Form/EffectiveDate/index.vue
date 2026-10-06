@@ -40,9 +40,9 @@ defineOptions({ inheritAttrs: false })
       v-model="model"
       :label="inputLabel"
       :format-hint-text="formatHintText"
-      :bounds="props.bounds"
-      :required="props.required"
-      :disabled="props.disabled"
+      :bounds
+      :required
+      :disabled
     />
   </ConnectFormFieldWrapper>
 </template>
