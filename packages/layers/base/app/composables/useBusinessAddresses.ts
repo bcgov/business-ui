@@ -7,19 +7,23 @@ export const useBusinessAddresses = () => {
   async function getBusinessAddresses(
     businessId: string,
     config?: 'default',
-    officeTypes?: OfficeType[]
+    officeTypes?: OfficeType[],
+    date?: string
   ): Promise<UiEntityOfficeAddress>
   async function getBusinessAddresses(
     businessId: string,
     config: 'table',
-    officeTypes?: OfficeType[]
+    officeTypes?: OfficeType[],
+    date?: string
   ): Promise<TableBusinessState<OfficesSchema>[]>
   async function getBusinessAddresses(
     businessId: string,
     config: 'default' | 'table' = 'default',
-    officeTypes?: OfficeType[]
+    officeTypes?: OfficeType[],
+    date?: string
   ): Promise<UiEntityOfficeAddress | TableBusinessState<OfficesSchema>[]> {
-    const res = await service.getAddresses(businessId)
+    // addresses as of a specific date (YYYY-MM-DD), e.g. a coop annual report's AGM date
+    const res = await service.getAddresses(businessId, date ? { date } : undefined)
 
     const filteredTypes = allOfficeTypes.filter(type =>
       res[type as keyof ApiEntityOfficeAddress] && (!officeTypes || officeTypes.includes(type))

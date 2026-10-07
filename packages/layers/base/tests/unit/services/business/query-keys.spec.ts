@@ -27,12 +27,12 @@ describe('useBusinessQueryKeys', () => {
   it('should be reactive when the account ID changes', async () => {
     const { base, keys } = useBusinessQueryKeys()
     expect(base.value).toEqual(['business', 'ACC123'])
-    expect(keys.addresses('BC111')).toEqual(['business', 'ACC123', 'BC111', 'addresses'])
+    expect(keys.addresses('BC111')).toEqual(['business', 'ACC123', 'BC111', 'addresses', {}])
 
     mockCurrentAccount.value = { id: 'ACC-NEW' }
 
     expect(base.value).toEqual(['business', 'ACC-NEW'])
-    expect(keys.addresses('BC111')).toEqual(['business', 'ACC-NEW', 'BC111', 'addresses'])
+    expect(keys.addresses('BC111')).toEqual(['business', 'ACC-NEW', 'BC111', 'addresses', {}])
   })
 
   describe('Key Structure', () => {
@@ -41,7 +41,8 @@ describe('useBusinessQueryKeys', () => {
     const accountId = 'ACC123'
 
     it.each([
-      ['addresses', [businessId], ['business', accountId, businessId, 'addresses']],
+      ['addresses', [businessId], ['business', accountId, businessId, 'addresses', {}]],
+      ['addresses', [businessId, { date: '2026-01-13' }], ['business', accountId, businessId, 'addresses', { date: '2026-01-13' }]],
       ['authInfo', [businessId], ['business', accountId, businessId, 'auth-info']],
       ['authorizedActions', [businessId], ['business', accountId, businessId, 'authorized-actions']],
       ['business', [businessId, true], ['business', accountId, businessId, 'information', { slim: true, publicData: undefined }]],

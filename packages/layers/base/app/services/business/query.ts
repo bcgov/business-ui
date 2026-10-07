@@ -19,21 +19,25 @@ export const useBusinessQuery = () => {
 
   function addressesOptions(
     businessId: MaybeRefOrGetter<string>,
+    query?: Record<string, unknown>,
     options?: DefineOptions<ApiEntityOfficeAddress>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${toValue(businessId)}/addresses`),
+      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${toValue(businessId)}/addresses`, {
+        query
+      }),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.addresses(toValue(businessId))
+      key: keys.addresses(toValue(businessId), query)
     })
   }
 
   function addresses(
     businessId: MaybeRefOrGetter<string>,
+    query?: Record<string, unknown>,
     options?: QueryOptions<ApiEntityOfficeAddress>
   ) {
-    return useQuery(() => addressesOptions(businessId, options as DefineOptions<ApiEntityOfficeAddress>))
+    return useQuery(() => addressesOptions(businessId, query, options as DefineOptions<ApiEntityOfficeAddress>))
   }
 
   function aliasesOptions(

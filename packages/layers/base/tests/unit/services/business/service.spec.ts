@@ -47,9 +47,9 @@ describe('useBusinessService', () => {
     const mockData = { street: '123 Main' }
     mockGetCachedOrFetch.mockResolvedValue(mockData)
 
-    const result = await service.getAddresses(businessId, true)
+    const result = await service.getAddresses(businessId, undefined, true)
     const opts = mockQuery.addressesOptions
-    expect(opts).toHaveBeenCalledWith(businessId)
+    expect(opts).toHaveBeenCalledWith(businessId, undefined)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
     expect(result).toEqual(mockData)
   })

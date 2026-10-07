@@ -52,6 +52,24 @@ describe('useBusinessParty', () => {
         expect(resp![0]!.old!.address.mailingAddress.street)
           .toBe(partiesMock.parties[0]!.mailingAddress?.streetAddress)
       })
+
+      test('should build the party query from the provided params', async () => {
+        await useBusinessParty().getBusinessParties(
+          identifier, RoleClass.DIRECTOR, RoleType.DIRECTOR, true, '2026-01-01')
+
+        expect(mockGetParties).toHaveBeenCalledWith(identifier, {
+          classType: RoleClass.DIRECTOR,
+          role: RoleType.DIRECTOR,
+          all: true,
+          date: '2026-01-01'
+        })
+      })
+
+      test('should omit the date key when no date is provided', async () => {
+        await useBusinessParty().getBusinessParties(identifier, undefined, RoleType.DIRECTOR)
+
+        expect(mockGetParties).toHaveBeenCalledWith(identifier, { role: RoleType.DIRECTOR })
+      })
     })
   })
 })

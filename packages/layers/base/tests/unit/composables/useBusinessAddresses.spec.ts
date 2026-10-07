@@ -52,7 +52,7 @@ describe('useBusinessAddresses', () => {
       test('should format the reponse to match TableBusinessState<OfficesSchema>[] state', async () => {
         const resp = await useBusinessAddresses().getBusinessAddresses(identifier, 'table')
 
-        expect(mockGetAddresses).toHaveBeenCalledWith(identifier)
+        expect(mockGetAddresses).toHaveBeenCalledWith(identifier, undefined)
 
         expect(Array.isArray(resp)).toBe(true)
 
@@ -103,6 +103,12 @@ describe('useBusinessAddresses', () => {
 
         expect(res).toHaveLength(1)
         expect(res[0]!.new.type).toBe(OfficeType.REGISTERED)
+      })
+
+      test('should pass the date through as an address query when provided', async () => {
+        await useBusinessAddresses().getBusinessAddresses(identifier, 'table', undefined, '2026-01-01')
+
+        expect(mockGetAddresses).toHaveBeenCalledWith(identifier, { date: '2026-01-01' })
       })
 
       test('should return all addresses if no officeTypes param given', async () => {

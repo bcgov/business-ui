@@ -9,6 +9,7 @@ const props = defineProps<{
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean
+    requireNameChangeConfirmation?: boolean
   }
   partyRoleProps?: {
     allowedRoles: RoleTypeUi[]
@@ -16,6 +17,7 @@ const props = defineProps<{
   }
   effectiveDateBounds?: DateBounds
   cessationDateBounds?: DateBounds
+  originalName?: PartyNameSchema
 }>()
 
 const emit = defineEmits<{
@@ -107,8 +109,12 @@ async function onDone() {
 }
 
 function isAllowedAction(action: ManageAllowedAction) {
+  // newly added parties allow any edits
+  //   - the form opens with variant 'add' (adding) or 'edit' (re-opening an added row)
+  // existing parties use 'change'/'correct' and are restricted to the listed actions
   return !props.allowedActions
-    || props.allowedActions.includes(ManageAllowedAction.ADD) // allow any edits if newly added party
+    || props.variant === 'add'
+    || props.variant === 'edit'
     || props.allowedActions.includes(action)
 }
 
@@ -182,6 +188,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           ref="party-name-form"
           v-model="model.name"
           v-bind="partyNameProps"
+          :original-name="originalName"
           :state="model.name"
           name="name"
         />

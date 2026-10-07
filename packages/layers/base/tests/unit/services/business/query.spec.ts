@@ -43,11 +43,19 @@ describe('useBusinessQuery', () => {
 
     const options = addressesOptions(businessId)
     options.query({} as any)
-    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/addresses`)
-    expect(mockKeys.addresses).toHaveBeenCalledWith(businessId)
+    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/addresses`, { query: undefined })
+    expect(mockKeys.addresses).toHaveBeenCalledWith(businessId, undefined)
     expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
 
-    const custom = addressesOptions(businessId, {
+    const withQuery = addressesOptions(businessId, { date: '2026-01-01' })
+    withQuery.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(
+      `businesses/${businessId}/addresses`,
+      { query: { date: '2026-01-01' } }
+    )
+    expect(mockKeys.addresses).toHaveBeenCalledWith(businessId, { date: '2026-01-01' })
+
+    const custom = addressesOptions(businessId, undefined, {
       enabled: false,
       staleTime: 30000
     })

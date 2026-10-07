@@ -18,7 +18,8 @@ export const useBusinessQueryKeys = () => {
   const base = computed(() => ['business', currentAccount.value.id] as const)
 
   const keys = {
-    addresses: (businessId: string) => [...base.value, businessId, 'addresses'] as const,
+    addresses: (businessId: string, query?: Record<string, unknown>) =>
+      [...base.value, businessId, 'addresses', { ...query }] as const,
     aliases: (businessId: string) => [...base.value, businessId, 'aliases'] as const,
     authInfo: (businessId: string) => [...base.value, businessId, 'auth-info'] as const,
     authorizedActions: (businessId: string) => [...base.value, businessId, 'authorized-actions'] as const,

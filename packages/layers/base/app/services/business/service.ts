@@ -49,10 +49,11 @@ export const useBusinessService = () => {
   /**
    * Fetches business addresses by its business identifier.
    * @param businessId the identifier of the business
+   * @param addressQuery the query to add to the request (e.g., { date: '2026-01-01' } for as-of-date addresses)
    * @returns a promise to return the addresses for this business
    */
-  async function getAddresses(businessId: string, force = false) {
-    const options = query.addressesOptions(businessId)
+  async function getAddresses(businessId: string, addressQuery?: Record<string, unknown>, force = false) {
+    const options = query.addressesOptions(businessId, addressQuery)
     return await getCachedOrFetch<ApiEntityOfficeAddress>(options, force)
   }
 

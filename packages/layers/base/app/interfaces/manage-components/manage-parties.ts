@@ -5,6 +5,7 @@ interface PartyFormProps {
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean
+    requireNameChangeConfirmation?: boolean
   }
   partyRoleProps?: {
     allowedRoles: RoleTypeUi[]

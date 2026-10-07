@@ -32,7 +32,7 @@ const {
   data,
   asyncStatus,
   error
-} = query.addresses(identifier, {
+} = query.addresses(identifier, undefined, {
   enabled: () => identifier.value.length === 9,
   staleTime: 5 * 60000
 })

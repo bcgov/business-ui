@@ -346,6 +346,7 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
               v-model="activeParty"
               v-bind="partyFormProps"
               :allowed-actions="partyAllowedActions"
+              :original-name="row.original.old?.name"
               :hide-remove="partyFormProps?.hideRemove || isCeasedTab"
               :name="modelName"
               :variant="getExpandedFormVariant(row)"

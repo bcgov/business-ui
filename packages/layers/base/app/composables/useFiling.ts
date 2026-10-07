@@ -17,7 +17,7 @@ export const useFiling = () => {
     filingName: FilingType,
     filingSubType?: string,
     draftId?: string,
-    partiesParams?: { roleClass?: RoleClass, roleType?: RoleType, all?: boolean },
+    partiesParams?: { roleClass?: RoleClass, roleType?: RoleType, all?: boolean, date?: string },
     officeTypes?: OfficeType[],
     fetchShareClasses?: boolean
   ) {
@@ -33,7 +33,13 @@ export const useFiling = () => {
         : undefined
 
       const partiesPromise = partiesParams
-        ? getBusinessParties(businessId, partiesParams.roleClass, partiesParams.roleType, partiesParams.all)
+        ? getBusinessParties(
+          businessId,
+          partiesParams.roleClass,
+          partiesParams.roleType,
+          partiesParams.all,
+          partiesParams.date
+        )
         : undefined
 
       const addressesPromise = officeTypes
