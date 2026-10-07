@@ -136,7 +136,7 @@ function onActionPrevented() {
     />
 
     <ManageParties
-      v-if="store.showCustodians"
+      v-if="store.isCorrectable(CorrectionSection.CUSTODIANS)"
       v-model:active-party="store.formState.activeCustodian"
       state-key="manage-custodians"
       :loading="store.initializing"

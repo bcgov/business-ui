@@ -91,14 +91,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
   }
 
   /**
-   * Whether the Custodian of Records section should be displayed.
-   * Shown when custodians are correctable (voluntary dissolution), otherwise only when the business is in dissolution.
-   */
-  const showCustodians = computed(() =>
-    isCorrectable(CorrectionSection.CUSTODIANS) || !!businessStore.business?.inDissolution
-  )
-
-  /**
    * Initialize the correction store.
    *
    * A correction draft is pre-created before navigating to this page.
@@ -565,7 +557,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingSubType,
     correctableSections,
     isCorrectable,
-    showCustodians,
     courtOrders,
     directors,
     receivers,

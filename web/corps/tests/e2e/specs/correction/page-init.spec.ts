@@ -64,8 +64,8 @@ async function assertStep1Sections(page: Page) {
   // no receivers or liquidators section - not on the corrected incorporation application
   await expect(page.getByTestId('receivers-section')).not.toBeVisible()
   await expect(page.getByTestId('liquidators-section')).not.toBeVisible()
-  // has custodians section - the business is in dissolution
-  await expect(page.getByTestId('custodians-section')).toBeVisible()
+  // no custodians section - not on the corrected incorporation application
+  await expect(page.getByTestId('custodians-section')).not.toBeVisible()
   // correction comment section should NOT be on step 1 (it's on step 2)
   await expect(page.getByTestId('correction-comment-section')).not.toBeVisible()
 }
@@ -302,19 +302,8 @@ test.describe('Correction - Page init', () => {
 })
 
 test.describe('Correction - Custodians section visibility', () => {
-  test('should show custodians when the business is in dissolution', async ({ page }) => {
-    await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-      businessOverrides: [{ key: 'inDissolution', value: true }]
-    })
-    await navigateToCorrectionPage(page, identifier, filingId)
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-    await expect(page.getByTestId('custodians-section')).toBeVisible()
-  })
-
-  test('should hide custodians when the business is not in dissolution', async ({ page }) => {
-    await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-      businessOverrides: [{ key: 'inDissolution', value: false }]
-    })
+  test('should hide custodians when not correcting a voluntary dissolution', async ({ page }) => {
+    await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
     await navigateToCorrectionPage(page, identifier, filingId)
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('current-directors-section')).toBeVisible()
@@ -323,7 +312,6 @@ test.describe('Correction - Custodians section visibility', () => {
 
   test('should only show custodians and court orders when correcting a voluntary dissolution', async ({ page }) => {
     await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-      businessOverrides: [{ key: 'inDissolution', value: false }],
       correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
     })
     await navigateToCorrectionPage(page, identifier, filingId)

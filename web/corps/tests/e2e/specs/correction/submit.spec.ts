@@ -285,7 +285,8 @@ test.describe('Correction - Filing Submit', () => {
   test.describe('Custodians', () => {
     test('should allow correcting and removing an existing custodian', async ({ page }) => {
       await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-        partyRoleTypes: ['Director', 'Director', 'Custodian']
+        partyRoleTypes: ['Director', 'Director', 'Custodian'],
+        correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
       })
       await navigateToCorrectionPage(page, identifier, filingId)
       await page.waitForLoadState('networkidle')
@@ -309,7 +310,8 @@ test.describe('Correction - Filing Submit', () => {
 
     test('should allow adding a custodian only after the existing custodian is removed', async ({ page }) => {
       await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-        partyRoleTypes: ['Director', 'Director', 'Custodian']
+        partyRoleTypes: ['Director', 'Director', 'Custodian'],
+        correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
       })
       await navigateToCorrectionPage(page, identifier, filingId)
       await page.waitForLoadState('networkidle')
