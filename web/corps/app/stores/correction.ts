@@ -75,9 +75,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
   /** Subtype of the filing being corrected (e.g. the type of dissolution, amalgamation or change of liquidators) */
   const correctedFilingSubType = computed(() => {
-    const filingData = (correctedFiling.value?.filing as Record<string, { type?: string, dissolutionType?: string }>)
-      ?.[correctedFilingType.value]
-    return filingData?.type ?? filingData?.dissolutionType
+    const filingData = correctedFiling.value?.filing[correctedFilingType.value]
+    return (filingData?.type ?? filingData?.dissolutionType) as string | undefined
   })
 
   /** Sections that can be corrected for the filing being corrected */
