@@ -12,6 +12,7 @@ export function getCorrectionLabelOverrides(): TableLabelOverrides {
     badges: {
       [ActionType.ADDRESS_CHANGED]: t('badge.corrected'),
       [ActionType.NAME_CHANGED]: t('badge.corrected'),
+      [ActionType.EMAIL_CHANGED]: t('badge.corrected'),
       [ActionType.ROLES_CHANGED]: t('badge.corrected'),
       [ActionType.CHANGED]: t('badge.corrected'),
       [ActionType.CORRECTED]: t('badge.corrected')

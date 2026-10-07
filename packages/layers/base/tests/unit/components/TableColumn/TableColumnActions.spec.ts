@@ -103,6 +103,26 @@ describe('TableColumnActions', () => {
     })
   })
 
+  describe('Hide Undo Remove', () => {
+    it('should not render "Undo" when removed and hideUndoRemove is true', async () => {
+      mockGetIsRowRemoved.mockReturnValue(true)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({ hideUndoRemove: true })
+
+      expect(wrapper.findComponent(UButton).exists()).toBe(false)
+    })
+
+    it('should still render "Undo" when edited and hideUndoRemove is true', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent({ hideUndoRemove: true })
+      const mainButton = wrapper.findComponent(UButton)
+
+      expect(mainButton.exists()).toBe(true)
+      expect(mainButton.props('label')).toBe('label.undo')
+    })
+  })
+
   describe('Dropdown Menu', () => {
     it('should render the dropdown menu when not removed or edited', async () => {
       mockGetIsRowRemoved.mockReturnValue(false)

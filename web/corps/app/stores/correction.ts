@@ -73,6 +73,31 @@ export const useCorrectionStore = defineStore('correction-store', () => {
    */
   const isStaffCorrectionType = computed(() => correctionType.value === CorrectionType.STAFF)
 
+  /** Subtype of the filing being corrected (e.g. the type of dissolution, amalgamation or change of liquidators) */
+  const correctedFilingSubType = computed(() => {
+    const filingData = (correctedFiling.value?.filing as Record<string, { type?: string, dissolutionType?: string }>)
+      ?.[correctedFilingType.value]
+    return filingData?.type ?? filingData?.dissolutionType
+  })
+
+  /** Sections that can be corrected for the filing being corrected */
+  const correctableSections = computed(() =>
+    getCorrectableSections(correctedFilingType.value, correctedFilingSubType.value)
+  )
+
+  /** Whether the given section can be corrected for the filing being corrected */
+  function isCorrectable(section: CorrectionSection): boolean {
+    return correctableSections.value.includes(section)
+  }
+
+  /**
+   * Whether the Custodian of Records section should be displayed.
+   * Shown when custodians are correctable (voluntary dissolution), otherwise only when the business is in dissolution.
+   */
+  const showCustodians = computed(() =>
+    isCorrectable(CorrectionSection.CUSTODIANS) || !!businessStore.business?.inDissolution
+  )
+
   /**
    * Initialize the correction store.
    *
@@ -537,6 +562,10 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDateDisplay,
     correctionType,
     isStaffCorrectionType,
+    correctedFilingSubType,
+    correctableSections,
+    isCorrectable,
+    showCustodians,
     courtOrders,
     directors,
     receivers,
