@@ -24,7 +24,7 @@ export function getAgmLocationChangeSchema(isStaff: boolean) {
  * Certify and authorization are validated by their own nested form components.
  * Requires Nuxt context for i18n error messages and business context for year range.
  */
-export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
+export function getAgmLocationChangeValidationSchema() {
   const t = useNuxtApp().$i18n.t
   const currentYear = new Date().getFullYear()
   const maxYear = currentYear + 1
