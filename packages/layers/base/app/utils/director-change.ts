@@ -100,7 +100,7 @@ export function getDirectorWarning(
     return { type: 'bcResidency', message: t('text.directorWarningBcResidency') }
   }
 
-  if (config.canadianResidency) {
+  if (config.canadianResidency && activeDirectors.length > 0) {
     const notCanadian = activeDirectors.filter(d => directorCountry(d) !== 'CA').length
     if (notCanadian / activeDirectors.length > 0.5) {
       return { type: 'canadianResidency', message: t('text.directorWarningCanadianResidency') }

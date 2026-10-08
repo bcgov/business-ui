@@ -37,7 +37,6 @@ const relationships = computed(() => buildChangeOfDirectorsRelationships(tableSt
     <h1>ManageParties - Director Change</h1>
     <UAlert
       v-if="warning"
-      type="info"
       color="warning"
       variant="subtle"
       icon="i-mdi-alert"
