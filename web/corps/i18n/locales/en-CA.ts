@@ -125,7 +125,7 @@ export default {
       reasonRequired: 'Reason is required.',
       reasonMax: 'Must be 2000 characters or less.',
       locationRequired: 'AGM location is required.',
-      locationMax: 'Must be 400 characters or less.'
+      locationMax: 'Must be 100 characters or less.'
     },
     appointmentDateBeforeFounding: 'Appointment date cannot be before the business founding date.',
     cessationDateInFuture: 'Cessation date cannot be in the future.',

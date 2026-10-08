@@ -28,8 +28,7 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
   const t = useNuxtApp().$i18n.t
   const currentYear = new Date().getFullYear()
   const maxYear = currentYear + 1
-  const foundingYear = foundingDate ? new Date(foundingDate).getFullYear() : currentYear - 2
-  const minYear = Math.max(currentYear - 2, foundingYear)
+  const minYear = currentYear - 2
 
   return z.object({
     year: z.string()
@@ -44,7 +43,7 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
     agmLocation: z.string()
       .trim()
       .min(1, t('validation.agmLocationChange.locationRequired'))
-      .max(400, t('validation.agmLocationChange.locationMax'))
+      .max(100, t('validation.agmLocationChange.locationMax'))
   })
 }
 

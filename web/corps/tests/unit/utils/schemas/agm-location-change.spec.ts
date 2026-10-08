@@ -160,15 +160,15 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
       expect(getPaths(result)).toContain('agmLocation')
     })
 
-    it('should fail when over 400 characters', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(401) })
+    it('should fail when over 100 characters', () => {
+      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(101) })
 
       expect(result.success).toBe(false)
       expect(getPaths(result)).toContain('agmLocation')
     })
 
-    it('should pass at exactly 400 characters', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(400) })
+    it('should pass at exactly 100 characters', () => {
+      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(100) })
 
       expect(result.success).toBe(true)
     })
