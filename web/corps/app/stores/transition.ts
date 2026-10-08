@@ -61,26 +61,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       tableOffices.value = addresses
     }
 
-    if (shareClasses) {
-      const originalClasses = formatShareClassesUi(shareClasses)
-      const draftClasses = draft?.shareStructure.shareClasses
-        ? formatShareClassesUi(draft.shareStructure.shareClasses as unknown as ShareClass[])
-        : undefined
-
-      if (draftClasses) {
-        for (const shareClass of draftClasses) {
-          const classId = shareClass.new.id
-          const existingClass = classId ? originalClasses.find(c => c.new.id === classId) : undefined
-          if (existingClass) {
-            shareClass.old = existingClass.new
-          } else {
-            shareClass.old = undefined
-          }
-        }
-      }
-
-      tableShareClasses.value = draftClasses || originalClasses
-    }
+    tableShareClasses.value = formatShareClassesSection(shareClasses, draft?.shareStructure?.shareClasses)
 
     await nextTick()
     initialFormState.value = cloneDeep(formState)
@@ -101,7 +82,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       },
       hasProvisions: true,
       shareStructure: {
-        shareClasses: formatShareClassesApi(tableShareClasses.value, isSubmission)
+        shareClasses: formatShareClassesApi(tableShareClasses.value)
       },
       ...(formState.documentDelivery?.completingPartyEmail && {
         contactPoint: { email: formState.documentDelivery.completingPartyEmail }

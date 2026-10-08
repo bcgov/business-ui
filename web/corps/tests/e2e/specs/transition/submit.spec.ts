@@ -186,9 +186,6 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
   expect(classes).toHaveLength(9)
 
   const getByName = (name: string) => classes.find(c => c.name === name) as any
-  expect(getByName('New Class Shares')!.actions).toContain('ADDED')
-  expect(getByName('Class F Non-Voting Preferred Shares')!.actions).toContain('CHANGED')
-  expect(getByName('Class A Voting Common Shares')!.actions).toEqual([])
   expect(getByName('Class I Non-Voting Preferred Shares')).toBeUndefined()
 
   const order = classes.map(c => ({ name: c.name, priority: c.priority }))
@@ -204,7 +201,6 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
 
   const newClass = getByName('New Class Shares')
   expect(newClass).toMatchObject({
-    actions: ['ADDED'],
     hasParValue: true,
     hasMaximumShares: true,
     hasRightsOrRestrictions: true
@@ -212,7 +208,6 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
 
   const newClassSeries = newClass!.series
   expect(newClassSeries).toHaveLength(2)
-  expect(newClassSeries[0]!.actions).toContain('ADDED')
 
   expect(newClassSeries).toContainEqual(expect.objectContaining({
     name: 'New Series 1 Shares',
@@ -225,8 +220,6 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
 
   const classB = getByName('Class B Voting Common Shares')!
   expect(classB.series).toHaveLength(2)
-  expect(classB.series[0]!.actions).toEqual([])
-  expect(classB.series[1]!.actions).toEqual([])
 
   const classF = getByName('Class F Non-Voting Preferred Shares')!
   expect(classF).toMatchObject({
@@ -247,7 +240,7 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
 
   for (const className of unchangedClasses) {
     const cls = getByName(className)
-    expect(cls!.actions).toEqual([])
+    expect(cls).toBeDefined()
   }
 }
 
@@ -353,7 +346,6 @@ test.describe('Transition - Filing Submit', () => {
 
     const classAPayload = getByName('Class A - Common Stock Shares')
 
-    expect(classAPayload!.actions).toContain('CHANGED')
     expect(classAPayload!.currencyAdditional).toBeNull()
 
     expect(getByName('Class B - Preferred Stock Shares')!.currencyAdditional).toBe('Percent of Company’s Net')

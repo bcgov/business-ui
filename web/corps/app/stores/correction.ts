@@ -200,41 +200,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     offices.value = formatOfficesSection(addressData, draft?.offices)
 
     // Share structure
-    if (shareClassData) {
-      const originalClasses = formatShareClassesUi(shareClassData)
-
-      if (draft?.shareStructure?.shareClasses?.length) {
-        // Draft share classes may use singular `action` (e.g. "EDITED") from the API —
-        // normalize to plural `actions` array with valid ActionType values before formatting.
-        const normalizedClasses = draft.shareStructure.shareClasses.map((sc) => {
-          const rawActions: string[] = (sc.actions as string[]) ?? (sc.action ? [sc.action as string] : [])
-          const actions = rawActions.map(a =>
-            Object.values(ActionType).includes(a as ActionType) ? a as ActionType : ActionType.CHANGED
-          )
-          return { ...sc, actions }
-        })
-
-        const draftClasses = formatShareClassesUi(normalizedClasses)
-
-        // Merge draft share classes with originals to preserve old/new state for diffing
-        for (const shareClass of draftClasses) {
-          const classId = shareClass.new.id
-          const existingClass = classId
-            ? originalClasses.find(c => c.new.id === classId)
-            : undefined
-
-          if (existingClass) {
-            shareClass.old = existingClass.new
-          } else {
-            shareClass.old = undefined
-          }
-        }
-
-        shareClasses.value = draftClasses
-      } else {
-        shareClasses.value = originalClasses
-      }
-    }
+    shareClasses.value = formatShareClassesSection(shareClassData, draft.shareStructure?.shareClasses)
 
     const originalResolutions = await service.getResolutions(businessId).catch(() => [])
     const draftResolutions = draft.shareStructure?.resolutionDates
@@ -377,7 +343,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Share structure
       ...(hasShareStructureChange.value && {
         shareStructure: {
-          shareClasses: formatShareClassesApi(shareClasses.value, isSubmission),
+          shareClasses: formatShareClassesApi(shareClasses.value),
           resolutionDates: formatResolutionDatesApi(resolutionDates.value)
         }
       }),
