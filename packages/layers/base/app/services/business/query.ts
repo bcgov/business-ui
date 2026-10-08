@@ -19,21 +19,25 @@ export const useBusinessQuery = () => {
 
   function addressesOptions(
     businessId: MaybeRefOrGetter<string>,
+    query?: BusinessAddressesQuery,
     options?: DefineOptions<ApiEntityOfficeAddress>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${toValue(businessId)}/addresses`),
+      query: () => $businessApi<ApiEntityOfficeAddress>(`businesses/${toValue(businessId)}/addresses`, {
+        query
+      }),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
-      key: keys.addresses(toValue(businessId))
+      key: keys.addresses(toValue(businessId), query)
     })
   }
 
   function addresses(
     businessId: MaybeRefOrGetter<string>,
+    query?: BusinessAddressesQuery,
     options?: QueryOptions<ApiEntityOfficeAddress>
   ) {
-    return useQuery(() => addressesOptions(businessId, options as DefineOptions<ApiEntityOfficeAddress>))
+    return useQuery(() => addressesOptions(businessId, query, options as DefineOptions<ApiEntityOfficeAddress>))
   }
 
   function aliasesOptions(
@@ -320,7 +324,7 @@ export const useBusinessQuery = () => {
 
   function partiesOptions(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessPartiesQuery,
     options?: DefineOptions<{ parties: OrgPerson[] }>
   ) {
     return defineQueryOptions({
@@ -335,7 +339,7 @@ export const useBusinessQuery = () => {
 
   function parties(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessPartiesQuery,
     options?: QueryOptions<{ parties: OrgPerson[] }>
   ) {
     return useQuery(() => partiesOptions(businessId, query, options as DefineOptions<{ parties: OrgPerson[] }>))

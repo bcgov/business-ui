@@ -9,6 +9,7 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: string
     allowedActions?: ManageAllowedAction[]
     allowAddOfficeType?: OfficeType
+    bcCanadaOnly?: boolean
   }
   | {
     variant: 'readonly' | 'correct-readonly'
@@ -16,5 +17,6 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: never
     allowedActions?: never
     allowAddOfficeType?: never
+    bcCanadaOnly?: never
   }
 )

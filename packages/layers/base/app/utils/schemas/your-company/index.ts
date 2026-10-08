@@ -2,6 +2,8 @@ import { z } from 'zod'
 
 // TODO/FUTURE: refine validations + add i18n
 export function getActiveYourCompanySchema() {
+  const t = useNuxtApp().$i18n.t
+
   return z.discriminatedUnion('key', [
     // Continuation In / Out Names
     z.object({
@@ -33,14 +35,14 @@ export function getActiveYourCompanySchema() {
     z.object({
       key: z.literal('previousJurisdiction'),
       value: z.object({
-        country: z.string().min(1, 'Country is required'),
+        country: z.string().min(1, t('validation.jurisdictionRequired')),
         region: z.string().nullable()
       })
     }),
     z.object({
       key: z.literal('newJurisdiction'),
       value: z.object({
-        country: z.string().min(1, 'Country is required'),
+        country: z.string().min(1, t('validation.jurisdictionRequired')),
         region: z.string().nullable()
       })
     }),

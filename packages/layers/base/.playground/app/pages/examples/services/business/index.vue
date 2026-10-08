@@ -35,7 +35,7 @@ const {
   error: aError,
   refresh: refreshAddresses,
   refetch: refetchAddresses
-} = query.addresses(businessId, { enabled })
+} = query.addresses(businessId, undefined, { enabled })
 
 function invalidateBCache(id: string): void {
   const key = keys.business(id, false, false)
@@ -59,7 +59,7 @@ async function triggerBService(force: boolean): Promise<void> {
 
 async function triggerAService(force: boolean): Promise<void> {
   try {
-    await service.getAddresses(businessId.value, force)
+    await service.getAddresses(businessId.value, undefined, force)
   } catch (e) {
     console.error('Caught error: ', e)
   }

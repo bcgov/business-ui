@@ -23,50 +23,35 @@ defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-const jurisdictionOpts = getJurisdictionMenuItems()
-
 const newJurisdictionDisplayValue = computed(() => getJurisdictionLabel(fields.newJurisdiction?.value))
 const previousJurisdictionDisplayValue = computed(() => getJurisdictionLabel(fields.previousJurisdiction?.value))
 
-// normalize jurisdiction to match InputMenuItem
-const selectedJurisdiction = computed({
-  get() {
-    if (
-      !model.value
-      || !model.value.value
-      || (model.value.key !== 'newJurisdiction' && model.value.key !== 'previousJurisdiction')
-    ) {
-      return undefined
-    }
-
-    const { country, region } = model.value.value
-    if (!country) {
-      return undefined
-    }
-
-    return {
-      label: getJurisdictionLabel(model.value.value),
-      country,
-      region
-    }
-  },
-  set(val: { label?: string, country: string, region: string | null } | undefined) {
-    if (
-      !model.value
-      || (model.value.key !== 'newJurisdiction' && model.value.key !== 'previousJurisdiction')
-    ) {
-      return
-    }
-
-    model.value = {
-      key: model.value.key,
-      value: {
-        country: val?.country ?? '',
-        region: val?.region ?? null
+// bridges the active discriminated-union member's value to the jurisdiction field
+function jurisdictionValueModel(key: 'newJurisdiction' | 'previousJurisdiction') {
+  return computed({
+    get(): { country: string, region?: string | null } | undefined {
+      if (!model.value || model.value.key !== key) {
+        return undefined
+      }
+      return model.value.value
+    },
+    set(val: { country: string, region?: string | null } | undefined) {
+      if (!model.value || model.value.key !== key) {
+        return
+      }
+      model.value = {
+        key,
+        value: {
+          country: val?.country ?? '',
+          region: val?.region ?? null
+        }
       }
     }
-  }
-})
+  })
+}
+
+const newJurisdictionValue = jurisdictionValueModel('newJurisdiction')
+const previousJurisdictionValue = jurisdictionValueModel('previousJurisdiction')
 </script>
 
 <template>
@@ -96,16 +81,11 @@ const selectedJurisdiction = computed({
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   >
-    <ConnectInputMenu
+    <FormForeignJurisdictionField
+      v-if="model && model.key === 'newJurisdiction'"
       id="new-jurisdiction-menu"
-      v-model="selectedJurisdiction"
-      :label="$t('label.selectNewJurisdiction')"
-      :items="jurisdictionOpts"
-      open-on-focus
-      :ui="{
-        label: 'font-bold px-4 pb-2 pt-3',
-        separator: 'mx-0'
-      }"
+      v-model="newJurisdictionValue"
+      name="value.country"
     />
   </ManageYourCompanyFieldRow>
 
@@ -126,16 +106,12 @@ const selectedJurisdiction = computed({
     @done="$emit('done')"
     @cancel="$emit('cancel')"
   >
-    <ConnectInputMenu
+    <FormForeignJurisdictionField
+      v-if="model && model.key === 'previousJurisdiction'"
       id="previous-jurisdiction-menu"
-      v-model="selectedJurisdiction"
-      :label="$t('label.selectPreviousJurisdiction')"
-      :items="jurisdictionOpts"
-      open-on-focus
-      :ui="{
-        label: 'font-bold px-4 pb-2 pt-3',
-        separator: 'mx-0'
-      }"
+      v-model="previousJurisdictionValue"
+      :select-label="$t('label.selectPreviousJurisdiction')"
+      name="value.country"
     />
   </ManageYourCompanyFieldRow>
 </template>

@@ -32,12 +32,7 @@ export function getAddressOrJurisdictionColumn<T extends AmalgamationTableRow>(
         )
       }
 
-      const { region, country } = business.foreignJurisdiction
-
-      const countryDisplay = isoCountriesList.find(c => c.alpha_2 === country)?.name || country
-      const regionDisplay = countrySubdivisions.ca.find(r => r.code === region)?.name || region
-
-      const display = country === 'CA' ? `${regionDisplay}, Canada` : countryDisplay
+      const display = getJurisdictionLabel(business.foreignJurisdiction)
 
       return h(
         'span',

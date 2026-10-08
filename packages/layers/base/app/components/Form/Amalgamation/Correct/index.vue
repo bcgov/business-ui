@@ -39,36 +39,6 @@ const formErrors = computed(() => {
   }
 })
 
-const jurisdictionOpts = getJurisdictionMenuItems()
-
-// normalize InputMenuItem to match form schema - no label in form schema
-const selectedJurisdiction = computed({
-  get() {
-    if (!model.value.foreignJurisdiction?.country) {
-      return undefined
-    }
-
-    const { country, region } = model.value.foreignJurisdiction
-
-    return {
-      label: getJurisdictionLabel(model.value.foreignJurisdiction),
-      country,
-      region
-    }
-  },
-  set(val: { label?: string, country: string, region: string | null } | undefined) {
-    if (!val) {
-      model.value.foreignJurisdiction = { country: '', region: null }
-      return
-    }
-
-    model.value.foreignJurisdiction = {
-      country: val.country,
-      region: val.region ?? null
-    }
-  }
-})
-
 async function onDone() {
   try {
     await formRef.value?.validate()
@@ -147,20 +117,12 @@ defineExpose({
           class="padding-xy-default"
           :error="formErrors.foreignJurisdiction"
         >
-          <UFormField name="foreignJurisdiction.country">
-            <ConnectInputMenu
-              id="foreign-jurisdiction-menu"
-              v-model="selectedJurisdiction"
-              :label="$t('label.selectHomeJurisdiction')"
-              :items="jurisdictionOpts"
-              open-on-focus
-              class="w-full"
-              :ui="{
-                label: 'font-bold px-4 pb-2 pt-3',
-                separator: 'mx-0'
-              }"
-            />
-          </UFormField>
+          <FormForeignJurisdictionField
+            id="foreign-jurisdiction-menu"
+            v-model="model.foreignJurisdiction"
+            :select-label="$t('label.selectHomeJurisdiction')"
+            name="foreignJurisdiction.country"
+          />
         </ConnectFormFieldWrapper>
       </template>
     </SubFormWrapper>

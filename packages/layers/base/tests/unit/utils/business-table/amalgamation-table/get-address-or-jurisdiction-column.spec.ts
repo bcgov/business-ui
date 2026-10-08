@@ -84,6 +84,28 @@ describe('getAddressOrJurisdictionColumn', () => {
     expect(cell.children).toBe('New Brunswick, Canada')
   })
 
+  it('should render the Federal label for the federal Canadian jurisdiction', () => {
+    const row = {
+      original: {
+        new: {
+          foreignJurisdiction: {
+            country: 'CA',
+            region: 'FEDERAL'
+          }
+        }
+      }
+    }
+
+    mockIsBCBusiness.mockReturnValue(false)
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const column = getAddressOrJurisdictionColumn() as any
+    const cell = column.cell({ row })
+
+    expect(cell.type).toBe('span')
+    expect(cell.children).toBe('Federal')
+  })
+
   it('should render country name for non-Canadian foreign jurisdiction', () => {
     const row = {
       original: {

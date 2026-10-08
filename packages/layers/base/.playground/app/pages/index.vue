@@ -82,6 +82,10 @@ const componentExamples: DropdownMenuItem[] = [
             ]
           },
           {
+            to: localePath('/examples/components/ManageOffices/bc-canada-only'),
+            label: 'BC/Canada Only'
+          },
+          {
             to: localePath('/examples/components/ManageOffices/live-data'),
             label: 'Live Data'
           }
@@ -101,6 +105,10 @@ const componentExamples: DropdownMenuItem[] = [
           {
             to: localePath('/examples/components/ManageParties/with-ceased-director'),
             label: 'With Ceased Director'
+          },
+          {
+            to: localePath('/examples/components/ManageParties/director-change'),
+            label: 'Director Change'
           },
           {
             label: 'Allowed Actions',
@@ -181,6 +189,10 @@ const componentExamples: DropdownMenuItem[] = [
         to: localePath('/examples/components/Form/ConfirmAuthorization/default')
       },
       {
+        label: 'FormConfirmCompletingParty',
+        to: localePath('/examples/components/Form/ConfirmCompletingParty')
+      },
+      {
         label: 'FormCourtOrderPoa',
         children: [
           { label: 'Default', to: localePath('/examples/components/Form/CourtOrderPoa/default') },
@@ -219,6 +231,10 @@ const componentExamples: DropdownMenuItem[] = [
       {
         label: 'FormEffectiveDateRange',
         to: localePath('/examples/components/Form/EffectiveDate/Range')
+      },
+      {
+        label: 'FormForeignJurisdiction',
+        to: localePath('/examples/components/Form/ForeignJurisdiction')
       },
       {
         label: 'FormNameRequestNumber',

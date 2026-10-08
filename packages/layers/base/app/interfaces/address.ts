@@ -50,6 +50,10 @@ export interface IncorporationAddress {
   recordsOffice?: ApiBaseAddressObj
 }
 
+export interface BusinessAddressesQuery {
+  date?: string // addresses as of a specific date (YYYY-MM-DD)
+}
+
 export interface ApiEntityOfficeAddress {
   registeredOffice?: ApiBaseAddressObj
   recordsOffice?: ApiBaseAddressObj

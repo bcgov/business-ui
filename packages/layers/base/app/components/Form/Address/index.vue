@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { FormError, Form } from '@nuxt/ui'
 
-defineProps<{
+const props = defineProps<{
   nested?: boolean
   name?: string
+  bcCanadaOnly?: boolean
 }>()
 
 defineEmits<{
@@ -11,7 +12,7 @@ defineEmits<{
   'should-validate': []
 }>()
 
-const schema = getAddressWithIdSchema()
+const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly })
 
 const model = defineModel<AddressWithIdSchema>({ required: true })
 
