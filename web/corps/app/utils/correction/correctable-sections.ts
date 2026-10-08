@@ -15,7 +15,7 @@ export enum CorrectionSection {
   YOUR_COMPANY = 'yourCompany'
 }
 
-/** Correctable sections for filing types (or subtypes) that are not configured below. */
+/** Correctable sections for filing types that are not configured below. */
 const DEFAULT_SECTIONS: CorrectionSection[] = [
   CorrectionSection.YOUR_COMPANY,
   CorrectionSection.OFFICES,
@@ -26,8 +26,15 @@ const DEFAULT_SECTIONS: CorrectionSection[] = [
   CorrectionSection.COURT_ORDERS
 ]
 
-/** A list of sections for the whole filing type, or a map of subtype to list of sections when the subtype matters. */
-type SectionsConfig = CorrectionSection[] | Partial<Record<string, CorrectionSection[]>>
+/** Key of the sections used when the filing has no subtype, or a subtype that is not configured. */
+const DEFAULT_SUBTYPE = 'default'
+
+/**
+ * A list of sections for the whole filing type, or a map of subtype to list of sections when the subtype matters.
+ * A subtype map must have a DEFAULT_SUBTYPE entry, used when the subtype is missing, empty or not configured.
+ */
+type SectionsConfig = CorrectionSection[]
+  | (Partial<Record<string, CorrectionSection[]>> & Record<typeof DEFAULT_SUBTYPE, CorrectionSection[]>)
 
 const LIQUIDATOR_SECTIONS = [
   CorrectionSection.LIQUIDATORS,
@@ -35,6 +42,14 @@ const LIQUIDATOR_SECTIONS = [
   CorrectionSection.COURT_ORDERS
 ]
 const RECEIVER_SECTIONS = [CorrectionSection.RECEIVERS, CorrectionSection.COURT_ORDERS]
+const AMALGAMATION_REGULAR_SECTIONS = [
+  CorrectionSection.YOUR_COMPANY,
+  CorrectionSection.OFFICES,
+  CorrectionSection.DIRECTORS,
+  CorrectionSection.SHARE_STRUCTURE,
+  CorrectionSection.AMALGAMATION, // foreign amalgamating businesses (modify only) and amalgamation statement
+  CorrectionSection.COURT_ORDERS
+]
 const AMALGAMATION_SHORT_FORM_SECTIONS = [
   CorrectionSection.OFFICES,
   CorrectionSection.AMALGAMATION, // foreign amalgamating businesses (modify only) and amalgamation statement
@@ -49,16 +64,10 @@ const CORRECTABLE_SECTIONS: Partial<Record<FilingType, SectionsConfig>> = {
   [FilingType.AGM_EXTENSION]: [],
   [FilingType.AGM_LOCATION_CHANGE]: [],
   [FilingType.AMALGAMATION_APPLICATION]: {
-    [FilingSubType.AMALGAMATION_REGULAR]: [
-      CorrectionSection.YOUR_COMPANY,
-      CorrectionSection.OFFICES,
-      CorrectionSection.DIRECTORS,
-      CorrectionSection.SHARE_STRUCTURE,
-      CorrectionSection.AMALGAMATION, // foreign amalgamating businesses (modify only) and amalgamation statement
-      CorrectionSection.COURT_ORDERS
-    ],
+    [FilingSubType.AMALGAMATION_REGULAR]: AMALGAMATION_REGULAR_SECTIONS,
     [FilingSubType.AMALGAMATION_HORIZONTAL]: AMALGAMATION_SHORT_FORM_SECTIONS,
-    [FilingSubType.AMALGAMATION_VERTICAL]: AMALGAMATION_SHORT_FORM_SECTIONS
+    [FilingSubType.AMALGAMATION_VERTICAL]: AMALGAMATION_SHORT_FORM_SECTIONS,
+    [DEFAULT_SUBTYPE]: AMALGAMATION_REGULAR_SECTIONS // an amalgamation with no subtype is a regular amalgamation
   },
   [FilingType.AMALGAMATION_OUT]: [
     CorrectionSection.YOUR_COMPANY, // effective date, jurisdiction and name in foreign jurisdiction
@@ -75,14 +84,16 @@ const CORRECTABLE_SECTIONS: Partial<Record<FilingType, SectionsConfig>> = {
     [FilingSubType.APPOINT_LIQUIDATOR]: LIQUIDATOR_SECTIONS,
     [FilingSubType.CEASE_LIQUIDATOR]: LIQUIDATOR_SECTIONS,
     [FilingSubType.CHANGE_ADDRESS_LIQUIDATOR]: LIQUIDATOR_SECTIONS,
-    [FilingSubType.LIQUIDATION_REPORT]: []
+    [FilingSubType.LIQUIDATION_REPORT]: [],
+    [DEFAULT_SUBTYPE]: LIQUIDATOR_SECTIONS
   },
   // FUTURE: confirm per receiver filing - one receiver table in the spreadsheet also includes liquidators
   [FilingType.CHANGE_OF_RECEIVERS]: {
     [FilingSubType.APPOINT_RECEIVER]: RECEIVER_SECTIONS,
     [FilingSubType.AMEND_RECEIVER]: RECEIVER_SECTIONS,
     [FilingSubType.CEASE_RECEIVER]: RECEIVER_SECTIONS,
-    [FilingSubType.CHANGE_ADDRESS_RECEIVER]: RECEIVER_SECTIONS
+    [FilingSubType.CHANGE_ADDRESS_RECEIVER]: RECEIVER_SECTIONS,
+    [DEFAULT_SUBTYPE]: RECEIVER_SECTIONS
   },
   [FilingType.CONSENT_AMALGAMATION_OUT]: [CorrectionSection.COURT_ORDERS],
   [FilingType.CONSENT_CONTINUATION_OUT]: [CorrectionSection.COURT_ORDERS],
@@ -102,7 +113,8 @@ const CORRECTABLE_SECTIONS: Partial<Record<FilingType, SectionsConfig>> = {
     [FilingSubType.DISSOLUTION_VOLUNTARY]: [
       CorrectionSection.CUSTODIANS,
       CorrectionSection.COURT_ORDERS
-    ]
+    ],
+    [DEFAULT_SUBTYPE]: DEFAULT_SECTIONS // FUTURE: configure the other dissolution types
   },
   [FilingType.INCORPORATION_APPLICATION]: [
     CorrectionSection.YOUR_COMPANY,
@@ -119,8 +131,11 @@ const CORRECTABLE_SECTIONS: Partial<Record<FilingType, SectionsConfig>> = {
 /** Get the correctable sections for a corrected filing type (and subtype, if any). */
 export function getCorrectableSections(filingType: FilingType, subType?: string): CorrectionSection[] {
   const sections = CORRECTABLE_SECTIONS[filingType]
+  if (!sections) {
+    return DEFAULT_SECTIONS
+  }
   if (Array.isArray(sections)) {
     return sections
   }
-  return (subType && sections?.[subType]) || DEFAULT_SECTIONS
+  return (subType && sections[subType]) || sections[DEFAULT_SUBTYPE]
 }
