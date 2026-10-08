@@ -309,7 +309,7 @@ describe('useBusinessQuery', () => {
 
   it('partiesOptions should have correct config', () => {
     const { partiesOptions } = useBusinessQuery()
-    const query = { role: 'director', status: 'active' }
+    const query = { role: RoleType.DIRECTOR, all: true }
 
     const options = partiesOptions(businessId, query)
     options.query({} as any)

@@ -19,7 +19,7 @@ export const useBusinessQuery = () => {
 
   function addressesOptions(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessAddressesQuery,
     options?: DefineOptions<ApiEntityOfficeAddress>
   ) {
     return defineQueryOptions({
@@ -34,7 +34,7 @@ export const useBusinessQuery = () => {
 
   function addresses(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessAddressesQuery,
     options?: QueryOptions<ApiEntityOfficeAddress>
   ) {
     return useQuery(() => addressesOptions(businessId, query, options as DefineOptions<ApiEntityOfficeAddress>))
@@ -324,7 +324,7 @@ export const useBusinessQuery = () => {
 
   function partiesOptions(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessPartiesQuery,
     options?: DefineOptions<{ parties: OrgPerson[] }>
   ) {
     return defineQueryOptions({
@@ -339,7 +339,7 @@ export const useBusinessQuery = () => {
 
   function parties(
     businessId: MaybeRefOrGetter<string>,
-    query?: Record<string, unknown>,
+    query?: BusinessPartiesQuery,
     options?: QueryOptions<{ parties: OrgPerson[] }>
   ) {
     return useQuery(() => partiesOptions(businessId, query, options as DefineOptions<{ parties: OrgPerson[] }>))

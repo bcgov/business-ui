@@ -15,6 +15,13 @@ export interface ApiPerson {
   taxId?: string
 }
 
+export interface BusinessPartiesQuery {
+  classType?: RoleClass
+  role?: RoleType
+  all?: boolean // include ceased parties (the API otherwise only returns active parties)
+  date?: string // parties as of a specific date (YYYY-MM-DD)
+}
+
 export interface OrgPerson {
   officer: ApiPerson
   roles: Role[]

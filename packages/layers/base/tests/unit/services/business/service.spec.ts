@@ -270,7 +270,7 @@ describe('useBusinessService', () => {
     const mockData = { parties: ['party1', 'party2', 'party3'] }
     mockGetCachedOrFetch.mockResolvedValue(mockData)
 
-    const query = { role: 'director' }
+    const query = { role: RoleType.DIRECTOR }
     const result = await service.getParties(businessId, query, true)
     const opts = mockQuery.partiesOptions
     expect(opts).toHaveBeenCalledWith(businessId, query)

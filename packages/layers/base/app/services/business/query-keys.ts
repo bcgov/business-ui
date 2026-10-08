@@ -18,7 +18,7 @@ export const useBusinessQueryKeys = () => {
   const base = computed(() => ['business', currentAccount.value.id] as const)
 
   const keys = {
-    addresses: (businessId: string, query?: Record<string, unknown>) =>
+    addresses: (businessId: string, query?: BusinessAddressesQuery) =>
       [...base.value, businessId, 'addresses', { ...query }] as const,
     aliases: (businessId: string) => [...base.value, businessId, 'aliases'] as const,
     authInfo: (businessId: string) => [...base.value, businessId, 'auth-info'] as const,
@@ -37,7 +37,7 @@ export const useBusinessQueryKeys = () => {
       [...base.value, businessId, 'filing', filingId, 'document-urls'] as const,
     ledger: (businessId: string, date: string) => [...base.value, businessId, 'ledger', { date }] as const,
     linkedNameRequest: (nrNumber: string) => [...base.value, 'linked-name-request', nrNumber] as const,
-    parties: (businessId: string, query?: Record<string, unknown>) =>
+    parties: (businessId: string, query?: BusinessPartiesQuery) =>
       [...base.value, businessId, 'parties', { ...query }] as const,
     resolutions: (businessId: string, isSpecial: boolean) =>
       [...base.value, businessId, 'resolutions', { isSpecial }] as const,
