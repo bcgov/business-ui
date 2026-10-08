@@ -2,6 +2,7 @@
     "shareClasses": [
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": false,
             "hasRightsOrRestrictions": true,
@@ -14,6 +15,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": false,
             "hasRightsOrRestrictions": true,
@@ -43,6 +45,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": false,
             "hasRightsOrRestrictions": false,
@@ -55,6 +58,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": true,
             "hasRightsOrRestrictions": true,
@@ -67,6 +71,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": false,
             "hasRightsOrRestrictions": true,
@@ -96,6 +101,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": false,
             "hasRightsOrRestrictions": true,
@@ -108,6 +114,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": false,
             "hasParValue": true,
             "hasRightsOrRestrictions": false,
@@ -120,6 +127,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": true,
             "hasParValue": true,
             "hasRightsOrRestrictions": true,
@@ -132,6 +140,7 @@
         },
         {
             "currency": "CAD",
+            "currencyAdditional": null,
             "hasMaximumShares": true,
             "hasParValue": true,
             "hasRightsOrRestrictions": true,

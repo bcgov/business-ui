@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 const { shareClasses } = useManageShareStructure()
-shareClasses.value = formatShareClassesUi(mockClasses.shareClasses)
+shareClasses.value = formatShareClassesSection(mockClasses.shareClasses)
 
 const loading = ref(false)
 

@@ -3,7 +3,7 @@
  * https://github.com/bcgov/business-schemas/blob/master/src/registry_schemas/schemas/share_structure.json
 */
 export interface ShareSeries {
-  id: number
+  id?: number // id may be undefined in a draft
   name: string
   priority: number
   hasMaximumShares: boolean

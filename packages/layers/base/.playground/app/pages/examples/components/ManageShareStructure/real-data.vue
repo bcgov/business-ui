@@ -17,7 +17,7 @@ async function initData() {
     loading.value = true
     const sc = await service.getShareClasses(identifier.value)
     const rd = await service.getResolutions(identifier.value)
-    shareClasses.value = formatShareClassesUi(sc)
+    shareClasses.value = formatShareClassesSection(sc)
 
     const rdMapped = rd.map((d) => {
       const data = rdSchema.parse(d)
