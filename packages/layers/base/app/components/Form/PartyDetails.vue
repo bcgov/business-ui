@@ -188,7 +188,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           ref="party-name-form"
           v-model="model.name"
           v-bind="partyNameProps"
-          :original-name="originalName"
+          :original-name
           :state="model.name"
           name="name"
         />

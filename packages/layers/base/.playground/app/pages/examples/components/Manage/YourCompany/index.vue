@@ -25,6 +25,14 @@ state.value = {
     nameNewJurisdiction: {
       value: '0887699 B.C. LTD.',
       actions: []
+    },
+    newJurisdiction: {
+      value: { country: 'CA', region: 'AB' },
+      actions: []
+    },
+    previousJurisdiction: {
+      value: { country: 'US', region: null },
+      actions: []
     }
   },
   old: {
@@ -38,6 +46,14 @@ state.value = {
     },
     nameNewJurisdiction: {
       value: '0887699 B.C. LTD.',
+      actions: []
+    },
+    newJurisdiction: {
+      value: { country: 'CA', region: 'AB' },
+      actions: []
+    },
+    previousJurisdiction: {
+      value: { country: 'US', region: null },
       actions: []
     }
   }

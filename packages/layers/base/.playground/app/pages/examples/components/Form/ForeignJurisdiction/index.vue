@@ -7,7 +7,7 @@ definePageMeta({
 const state = reactive<{ foreignJurisdiction: ForeignJurisdictionSchema }>({
   foreignJurisdiction: {
     country: '',
-    region: ''
+    region: null
   }
 })
 

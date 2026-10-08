@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test'
 
+import { mockApiCallsForSetAccount } from '#test-mocks/mock-helpers'
+
 test.describe('FormConfirmCompletingParty', () => {
   test.beforeEach(async ({ page }) => {
+    await mockApiCallsForSetAccount(page)
     await page.goto('./en-CA/examples/components/Form/ConfirmCompletingParty')
     await page.waitForLoadState('networkidle')
   })
@@ -15,6 +18,8 @@ test.describe('FormConfirmCompletingParty', () => {
     // the Confirm side label renders in every variant
     await expect(section.getByText('Confirm', { exact: true })).toBeVisible()
     await expect(section.getByText('confirm that the laws of the foreign jurisdiction')).toBeVisible()
+    // non-staff variant seeds the name from the mocked authenticated user
+    await expect(section.getByText('TestFirst TestLast')).toBeVisible()
     const bullets = section.locator('ul > li')
     await expect(bullets).toHaveCount(5)
     await expect(bullets.first()).toContainText('the property, rights and interest of the company')
@@ -24,15 +29,17 @@ test.describe('FormConfirmCompletingParty', () => {
 
   test('Should require the checkbox on submit', async ({ page }) => {
     await page.getByRole('button', { name: 'Submit' }).click()
-    await expect(page.getByText('Check this box to continue')).toBeVisible()
+    await expect(page.getByText('Check this box to continue').first()).toBeVisible()
   })
 
   test('Should submit when confirmed', async ({ page }) => {
-    await page.getByTestId('confirm-completing-party-checkbox').locator('input[type="checkbox"]').check()
+    // the checkbox's accessible name is its long label text - match on the distinctive phrase
+    await page.getByRole('checkbox', { name: /confirm that the laws of the foreign jurisdiction/ }).check()
     await page.getByRole('button', { name: 'Submit' }).click()
 
     const submitted = page.getByTestId('submitted-data')
     await expect(submitted).toContainText('"confirmed": true')
+    await expect(submitted).toContainText('"completingPartyName": "TestFirst TestLast"')
   })
 
   test('Should require and interpolate the legal name in the staff variant', async ({ page }) => {
@@ -48,7 +55,7 @@ test.describe('FormConfirmCompletingParty', () => {
     await section.locator('#completing-party-name-input').fill('Jane Smith')
     await expect(section.getByText('Jane Smith', { exact: false })).toBeVisible()
 
-    await section.getByTestId('confirm-completing-party-checkbox').locator('input[type="checkbox"]').check()
+    await page.getByRole('checkbox', { name: /confirm that the laws of the foreign jurisdiction/ }).check()
     await page.getByRole('button', { name: 'Submit' }).click()
 
     const submitted = page.getByTestId('submitted-data')

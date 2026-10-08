@@ -10,9 +10,8 @@ test.describe('ManageParties - director change preset', () => {
     const manageParties = page.getByTestId('manage-parties')
     await expect(manageParties).toBeVisible()
 
-    const rows = await manageParties.getByRole('table').locator('tbody').getByRole('row').all()
-    const columns = await rows[0]!.locator('td').all()
-    await columns[5]!.getByRole('button', { name: 'Change' }).click()
+    const firstRow = manageParties.getByRole('table').locator('tbody').getByRole('row').first()
+    await firstRow.getByRole('button', { name: 'Change' }).click()
 
     const subForm = page.getByTestId('party-details-form')
     await expect(subForm).toBeVisible()
@@ -24,9 +23,8 @@ test.describe('ManageParties - director change preset', () => {
 
   test('Should require the confirmation checkbox to change an existing director name', async ({ page }) => {
     const manageParties = page.getByTestId('manage-parties')
-    const rows = await manageParties.getByRole('table').locator('tbody').getByRole('row').all()
-    const columns = await rows[0]!.locator('td').all()
-    await columns[5]!.getByRole('button', { name: 'Change' }).click()
+    const firstRow = manageParties.getByRole('table').locator('tbody').getByRole('row').first()
+    await firstRow.getByRole('button', { name: 'Change' }).click()
 
     const subForm = page.getByTestId('party-details-form')
     // no checkbox until the name differs from the original
@@ -42,7 +40,8 @@ test.describe('ManageParties - director change preset', () => {
     await expect(subForm.getByText('Confirm the legal name change to continue').first()).toBeVisible()
     await expect(subForm).toBeVisible()
 
-    await subForm.locator('#name-change-confirm-checkbox').check()
+    // the id lands on the hidden input - target the checkbox by its accessible label instead
+    await subForm.getByRole('checkbox', { name: /confirm this person legally changed their name/ }).check()
     await expect(subForm.getByText('Confirm the legal name change to continue')).toHaveCount(0)
     await subForm.getByRole('button', { name: 'Done' }).click()
     await expect(page.getByTestId('party-details-form')).toHaveCount(0)
@@ -55,9 +54,8 @@ test.describe('ManageParties - director change preset', () => {
 
   test('Should clear the confirmation checkbox when the name is reverted', async ({ page }) => {
     const manageParties = page.getByTestId('manage-parties')
-    const rows = await manageParties.getByRole('table').locator('tbody').getByRole('row').all()
-    const columns = await rows[0]!.locator('td').all()
-    await columns[5]!.getByRole('button', { name: 'Change' }).click()
+    const firstRow = manageParties.getByRole('table').locator('tbody').getByRole('row').first()
+    await firstRow.getByRole('button', { name: 'Change' }).click()
 
     const subForm = page.getByTestId('party-details-form')
     const lastName = subForm.getByTestId('form-group-last-name').locator('input')
@@ -75,18 +73,31 @@ test.describe('ManageParties - director change preset', () => {
     const subForm = page.getByTestId('party-details-form')
     await expect(subForm).toBeVisible()
     // added directors get the (required) appointment date field
-    await expect(subForm.getByText('Effective Date')).toBeVisible()
+    await expect(subForm.getByText('Effective Date').first()).toBeVisible()
     // and never the name-change confirmation
     const lastName = subForm.getByTestId('form-group-last-name').locator('input')
     await lastName.fill('Director')
     await expect(subForm.getByTestId('name-change-confirmation')).toHaveCount(0)
   })
 
-  test('Should show the statutory director warning without blocking', async ({ page }) => {
-    // the mock directors are all in QC, so the BC residency warning fires (min count of 3 is met)
+  test('Should show the minimum director count warning without blocking', async ({ page }) => {
+    // the 3 mock directors include a BC resident and are all Canadian, so with the min
+    // count (3) met, no warning renders initially
+    await expect(page.getByTestId('director-warning')).toHaveCount(0)
+
+    const manageParties = page.getByTestId('manage-parties')
+    const firstRow = manageParties.getByRole('table').locator('tbody').getByRole('row').first()
+    // Delete sits in the row's dropdown menu (the main action is Change)
+    await firstRow.getByRole('button', { name: 'More Actions' }).click()
+    await page.getByRole('menuitem', { name: 'Delete' }).click()
+
+    // only 2 active directors remain - the min-count (3) warning fires reactively
     const warning = page.getByTestId('director-warning')
     await expect(warning).toBeVisible()
-    await expect(warning).toContainText('resident of British Columbia')
+    await expect(warning).toContainText('at least 3 directors')
+
+    // the warning is informational only - it does not block further edits
+    await expect(page.getByRole('button', { name: 'Add Director' })).toBeEnabled()
   })
 
   test('Should only include changed rows in the relationships payload', async ({ page }) => {
@@ -94,10 +105,9 @@ test.describe('ManageParties - director change preset', () => {
     await expect(payload).toHaveText('[]')
 
     const manageParties = page.getByTestId('manage-parties')
-    const rows = await manageParties.getByRole('table').locator('tbody').getByRole('row').all()
-    const columns = await rows[0]!.locator('td').all()
+    const firstRow = manageParties.getByRole('table').locator('tbody').getByRole('row').first()
     // Delete sits in the row's dropdown menu (the main action is Change)
-    await columns[5]!.getByRole('button', { name: 'More Actions' }).click()
+    await firstRow.getByRole('button', { name: 'More Actions' }).click()
     await page.getByRole('menuitem', { name: 'Delete' }).click()
 
     await expect(payload).toContainText('REMOVED')

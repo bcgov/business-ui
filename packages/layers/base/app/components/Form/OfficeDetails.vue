@@ -62,7 +62,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         v-model="model.address"
         nested
         name="address"
-        :bc-canada-only="bcCanadaOnly"
+        :bc-canada-only
       />
     </SubFormWrapper>
   </UForm>

@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 
+import { fillOutAddress } from '#business/tests/e2e/test-utils'
+
 test.describe('ManageOffices - bcCanadaOnly', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('./en-CA/examples/components/ManageOffices/bc-canada-only')
@@ -8,8 +10,8 @@ test.describe('ManageOffices - bcCanadaOnly', () => {
 
   async function openFirstOfficeEdit(page: import('@playwright/test').Page) {
     const table = page.getByRole('table')
-    const rows = await table.locator('tbody').getByRole('row').all()
-    await rows[0]!.getByRole('button', { name: 'Change' }).click()
+    const firstRow = table.locator('tbody').getByRole('row').first()
+    await firstRow.getByRole('button', { name: 'Change' }).click()
     const subForm = page.getByTestId('office-address-form')
     await expect(subForm).toBeVisible()
     return subForm
@@ -29,7 +31,7 @@ test.describe('ManageOffices - bcCanadaOnly', () => {
 
     await subForm.getByRole('button', { name: 'Done' }).click()
 
-    await expect(subForm.getByText('Address must be in British Columbia')).toBeVisible()
+    await expect(subForm.getByText('Address must be in British Columbia').first()).toBeVisible()
     // the form stays open (done blocked by validation)
     await expect(page.getByTestId('office-address-form')).toBeVisible()
   })
@@ -37,8 +39,15 @@ test.describe('ManageOffices - bcCanadaOnly', () => {
   test('Should accept a BC, Canada address', async ({ page }) => {
     const subForm = await openFirstOfficeEdit(page)
 
-    const streetInput = subForm.getByTestId('mailing-address-input-street')
-    await streetInput.fill('456 New St')
+    await fillOutAddress(page, {
+      streetAddress: '456 New St',
+      addressCity: 'Victoria',
+      addressRegion: 'British Columbia',
+      addressCountry: 'CA',
+      postalCode: 'V8V 1V1',
+      deliveryInstructions: ''
+    }, 'mailing', true, subForm)
+
     await subForm.getByRole('button', { name: 'Done' }).click()
 
     await expect(page.getByTestId('office-address-form')).toHaveCount(0)

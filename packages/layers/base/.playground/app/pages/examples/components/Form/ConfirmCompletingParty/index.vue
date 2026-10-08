@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'connect-auth',
+  middleware: ['connect-auth'],
   breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Form Confirm Completing Party' }]
 })
 
@@ -14,6 +15,13 @@ const state = reactive<{ confirmCompletingParty: ConfirmCompletingPartySchema }>
 })
 
 const submittedData = ref<ConfirmCompletingPartySchema | undefined>(undefined)
+
+// reset on variant toggle so the remounted component re-seeds (non-staff) or starts blank (staff)
+watch(editableName, () => {
+  state.confirmCompletingParty.completingPartyName = ''
+  state.confirmCompletingParty.confirmed = false
+  submittedData.value = undefined
+})
 
 function onSubmit() {
   submittedData.value = { ...state.confirmCompletingParty }
@@ -40,7 +48,7 @@ function onSubmit() {
         v-model="state.confirmCompletingParty"
         name="confirmCompletingParty"
         order="1"
-        :editable-name="editableName"
+        :editable-name
       />
       <UButton type="submit" label="Submit" />
     </UForm>

@@ -52,7 +52,7 @@ const relationships = computed(() => buildChangeOfDirectorsRelationships(tableSt
       <ManageParties
         v-model:active-party="activeParty"
         v-bind="directorChangeProps"
-        :loading="loading"
+        :loading
         :empty-text="loading ? `Loading...` : 'No directors'"
         table-title="Directors"
         subject="Director"

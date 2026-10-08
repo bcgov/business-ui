@@ -25,7 +25,7 @@ const offices = computed(() => buildChangeOfAddressOffices(tableState.value))
     >
       <ManageOffices
         v-model:active-office="activeOffice"
-        :loading="loading"
+        :loading
         :empty-text="loading ? `Loading...` : 'No offices'"
         subject="Office"
         table-title="Offices"

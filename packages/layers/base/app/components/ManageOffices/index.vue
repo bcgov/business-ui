@@ -163,7 +163,7 @@ function onActionPrevented() {
           :name="modelName"
           :subject="subject!"
           :state-key
-          :bc-canada-only="bcCanadaOnly"
+          :bc-canada-only
           class="p-6"
           @done="() => addSubject(activeSubject)"
           @cancel="cleanupForm"
@@ -198,7 +198,7 @@ function onActionPrevented() {
                 :subject="editSubjectLabel"
                 :state-key
                 :hide-remove="variant === 'correct'"
-                :bc-canada-only="bcCanadaOnly"
+                :bc-canada-only
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"
                 @remove="removeSubject(row)"

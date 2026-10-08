@@ -1,27 +1,21 @@
 import { describe, it, expect } from 'vitest'
 
 describe('getForeignJurisdictionSchema', () => {
-  it('should fail when no country is selected', () => {
+  it('should fail when no jurisdiction is selected', () => {
     const result = getForeignJurisdictionSchema().safeParse({ country: '', region: '' })
     expect(result.success).toBe(false)
-    expect(result.error!.issues[0]!.message).toBe('Jurisdiction Country is required')
+    expect(result.error!.issues[0]!.message).toBe('Jurisdiction is required')
     expect(result.error!.issues[0]!.path).toEqual(['country'])
   })
 
-  it('should require a region for Canada', () => {
+  it('should require a region for Canada (draft-resume guard)', () => {
     const result = getForeignJurisdictionSchema().safeParse({ country: 'CA', region: '' })
     expect(result.success).toBe(false)
     expect(result.error!.issues[0]!.message).toBe('Jurisdiction Region is required')
     expect(result.error!.issues[0]!.path).toEqual(['region'])
   })
 
-  it('should require a region for the US', () => {
-    const result = getForeignJurisdictionSchema().safeParse({ country: 'US', region: '' })
-    expect(result.success).toBe(false)
-    expect(result.error!.issues[0]!.message).toBe('Jurisdiction Region is required')
-  })
-
-  it('should reject BC as a Canadian region', () => {
+  it('should reject BC as a Canadian region (draft-resume guard)', () => {
     const result = getForeignJurisdictionSchema().safeParse({ country: 'CA', region: 'BC' })
     expect(result.success).toBe(false)
     expect(result.error!.issues[0]!.message).toBe('Jurisdiction Region cannot be British Columbia')
@@ -35,12 +29,10 @@ describe('getForeignJurisdictionSchema', () => {
     expect(getForeignJurisdictionSchema().safeParse({ country: 'CA', region: 'FEDERAL' }).success).toBe(true)
   })
 
-  it('should pass for a US state', () => {
-    expect(getForeignJurisdictionSchema().safeParse({ country: 'US', region: 'WA' }).success).toBe(true)
-  })
-
-  it('should pass for any other country without a region', () => {
-    expect(getForeignJurisdictionSchema().safeParse({ country: 'AU', region: '' }).success).toBe(true)
+  it('should pass for an international country without a region', () => {
+    // the combined jurisdiction menu emits international selections with region null (incl. the US)
+    expect(getForeignJurisdictionSchema().safeParse({ country: 'US', region: null }).success).toBe(true)
+    expect(getForeignJurisdictionSchema().safeParse({ country: 'US', region: '' }).success).toBe(true)
     expect(getForeignJurisdictionSchema().safeParse({ country: 'AU' }).success).toBe(true)
   })
 })

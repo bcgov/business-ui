@@ -2,4 +2,4 @@
 "@sbc-connect/nuxt-business-base": minor
 ---
 
-New FormForeignJurisdiction section form + getForeignJurisdictionSchema for the consent/continuation-out filings: country select (Canada/US pinned first) with a region select for CA/US only — Canadian regions exclude BC and include Federal, US regions are states — matching legal-api's validate_foreign_jurisdiction rules; region clears on country change.
+New FormForeignJurisdiction section form, bare FormForeignJurisdictionField, and getForeignJurisdictionSchema (combined jurisdiction menu, empty region = null); correction filing jurisdiction menus (Amalgamation Correct, Your Company) now use the shared field; amalgamation table jurisdiction column uses getJurisdictionLabel.
