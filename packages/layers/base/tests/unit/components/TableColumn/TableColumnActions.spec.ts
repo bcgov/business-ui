@@ -119,7 +119,7 @@ describe('TableColumnActions', () => {
       const mainButton = wrapper.findComponent(UButton)
 
       expect(mainButton.exists()).toBe(true)
-      expect(mainButton.props('label')).toBe('label.undo')
+      expect(mainButton.props('label')).toBe('Undo')
     })
   })
 

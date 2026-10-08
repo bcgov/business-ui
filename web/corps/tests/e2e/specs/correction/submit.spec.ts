@@ -305,7 +305,7 @@ test.describe('Correction - Filing Submit', () => {
       await expect(form.getByTestId('first-name-input')).toBeVisible()
       await expect(form.getByTestId('mailing-address-input-street')).toBeVisible()
       await expect(form.getByTestId('party-email-input')).toBeVisible()
-      await expect(form.getByRole('button', { name: /remove/i })).toBeVisible()
+      await expect(form.getByRole('button', { name: 'Delete' })).toBeVisible()
     })
 
     test('should allow adding a custodian only after the existing custodian is removed', async ({ page }) => {
@@ -325,7 +325,7 @@ test.describe('Correction - Filing Submit', () => {
       await custodians.locator('tbody tr').first().getByRole('button', { name: 'Correct' }).click()
       const form = custodians.getByTestId('party-details-form')
       await expect(form).toBeVisible()
-      await form.getByRole('button', { name: /remove/i }).click()
+      await form.getByRole('button', { name: 'Delete' }).click()
       await expect(form).not.toBeVisible()
 
       await expect(addButton).toBeVisible()

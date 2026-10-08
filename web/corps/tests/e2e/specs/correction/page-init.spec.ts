@@ -305,6 +305,7 @@ test.describe('Correction - Custodians section visibility', () => {
   test('should hide custodians when not correcting a voluntary dissolution', async ({ page }) => {
     await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
     await navigateToCorrectionPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('current-directors-section')).toBeVisible()
     await expect(page.getByTestId('custodians-section')).not.toBeVisible()
@@ -315,6 +316,7 @@ test.describe('Correction - Custodians section visibility', () => {
       correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
     })
     await navigateToCorrectionPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('custodians-section')).toBeVisible()
     await expect(page.getByTestId('court-orders-section')).toBeVisible()
