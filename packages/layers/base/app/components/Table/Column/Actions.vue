@@ -6,13 +6,16 @@ const {
   allowedActions,
   preventActions,
   labelOverrides,
-  getCustomDropdownItems
+  getCustomDropdownItems,
+  hideUndoRemove = false
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
+  // hide the undo action on removed rows (e.g. when restoring the row would break a limit)
+  hideUndoRemove?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -58,7 +61,7 @@ const canChange = computed(() => {
 const availableActions = computed(() => {
   const actions = []
 
-  if (isRemovedOrEdited.value) {
+  if (isRemovedOrEdited.value && !(isRemoved.value && hideUndoRemove)) {
     actions.push({
       label: t('label.undo'),
       icon: 'i-mdi-undo',

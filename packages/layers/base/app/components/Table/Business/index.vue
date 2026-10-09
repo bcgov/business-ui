@@ -20,6 +20,7 @@ const props = defineProps<{
   }
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
+  hideUndoRemove?: boolean
 }>()
 
 defineEmits<{
@@ -91,6 +92,7 @@ const tableUi = computed(() => {
         :prevent-actions="preventActions"
         :label-overrides="labelOverrides"
         :get-custom-dropdown-items="getCustomDropdownItems"
+        :hide-undo-remove="hideUndoRemove"
         @init-edit="$emit('init-edit', row)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"

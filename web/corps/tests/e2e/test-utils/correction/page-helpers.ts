@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test'
+import type { BusinessOverride } from '#test-mocks'
 import {
   mockCommonApiCallsForFiling,
   getBusinessAddressesMock,
@@ -7,7 +8,9 @@ import {
 } from '#test-mocks'
 
 /** Mock correction draft response returned by GET /businesses/:id/filings/:filingId */
-export function getCorrectionDraftMock(overrides: { type?: 'CLIENT' | 'STAFF' } = {}) {
+export function getCorrectionDraftMock(
+  overrides: { type?: 'CLIENT' | 'STAFF', correctedFilingType?: string } = {}
+) {
   return {
     filing: {
       business: {
@@ -20,7 +23,7 @@ export function getCorrectionDraftMock(overrides: { type?: 'CLIENT' | 'STAFF' } 
         comment: '',
         correctedFilingDate: '2021-02-23',
         correctedFilingId: 111554,
-        correctedFilingType: 'incorporationApplication',
+        correctedFilingType: overrides.correctedFilingType ?? 'incorporationApplication',
         type: overrides.type ?? 'STAFF'
       },
       header: {
@@ -56,31 +59,41 @@ export async function setupCorrectionPage(
   filingId: string,
   feesJSON: object,
   accountType: 'STAFF' | 'PREMIUM',
-  correctionType: 'CLIENT' | 'STAFF' = 'STAFF'
+  correctionType: 'CLIENT' | 'STAFF' = 'STAFF',
+  options: {
+    /** business fields to override, e.g. [{ key: 'inDissolution', value: false }] */
+    businessOverrides?: BusinessOverride[]
+    /** role type for each mocked party (defaults to 3 directors) */
+    partyRoleTypes?: string[]
+    /** the original filing being corrected (defaults to a 404) */
+    correctedFiling?: { filingType: string, data?: object }
+  } = {}
 ) {
+  const partyRoleTypes = options.partyRoleTypes ?? ['Director', 'Director', 'Director']
   // 1. Register common API calls first (business, parties, addresses, fees, share classes)
   await mockCommonApiCallsForFiling(
     page,
     identifier,
-    getPartiesMock([
-      { index: 0, key: 'roleType', value: 'Director' },
-      { index: 1, key: 'roleType', value: 'Director' },
-      { index: 2, key: 'roleType', value: 'Director' }
-    ]),
+    getPartiesMock(partyRoleTypes.map((value, index) => ({ index, key: 'roleType', value }))),
     feesJSON,
     getBusinessAddressesMock(),
     accountType,
-    getShareClassesMock()
+    getShareClassesMock(),
+    options.businessOverrides
   )
 
   // 2. Override the draft filing endpoint — the specific filingId route takes precedence
   //    over the generic /filings route from mockCommonApiCallsForFiling
+  const draftMock = getCorrectionDraftMock({
+    type: correctionType,
+    correctedFilingType: options.correctedFiling?.filingType
+  })
   await page.route(`**/api/v2/businesses/${identifier}/filings/${filingId}`, async (route) => {
     if (route.request().method() === 'GET') {
-      await route.fulfill({ json: getCorrectionDraftMock({ type: correctionType }) })
+      await route.fulfill({ json: draftMock })
     } else {
       // PUT for saving/updating the draft
-      await route.fulfill({ status: 200, json: getCorrectionDraftMock({ type: correctionType }) })
+      await route.fulfill({ status: 200, json: draftMock })
     }
   })
 
@@ -111,7 +124,19 @@ export async function setupCorrectionPage(
   // The draft mock's correctedFilingId is 111554 — mock it so the store's getFiling call
   // doesn't escape to the real API. The store wraps this in try/catch so a 404 is fine.
   await page.route(`**/api/v2/businesses/${identifier}/filings/111554`, async (route) => {
-    await route.fulfill({ status: 404 })
+    const corrected = options.correctedFiling
+    if (corrected) {
+      await route.fulfill({
+        json: {
+          filing: {
+            header: { name: corrected.filingType, filingId: 111554 },
+            [corrected.filingType]: corrected.data ?? {}
+          }
+        }
+      })
+    } else {
+      await route.fulfill({ status: 404 })
+    }
   })
 }
 
