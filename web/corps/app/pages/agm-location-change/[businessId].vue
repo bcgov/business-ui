@@ -102,7 +102,7 @@ useFilingPageWatcher({
     <UForm
       id="agm-location-change-filing"
       :state="store.formState"
-      :schema="getAgmLocationChangeValidationSchema(businessStore.business?.foundingDate)"
+      :schema="getAgmLocationChangeValidationSchema()"
       novalidate
       class="py-6 space-y-6 sm:py-10 sm:space-y-10"
       :aria-label="filingText.h1"
