@@ -370,11 +370,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
       // Parties — formatted as relationships (with `entity`), matching transition store pattern
       // All party types (directors, receivers, liquidators, completing party) are combined in one array
+      // Only parties in sections correctable for the corrected filing are included
+      // (e.g. a voluntary dissolution correction sends custodians but not directors)
       relationships: [
-        ...directors.value,
-        ...receivers.value,
-        ...liquidators.value,
-        ...custodians.value
+        ...(isCorrectable(CorrectionSection.DIRECTORS) ? directors.value : []),
+        ...(isCorrectable(CorrectionSection.RECEIVERS) ? receivers.value : []),
+        ...(isCorrectable(CorrectionSection.LIQUIDATORS) ? liquidators.value : []),
+        ...(isCorrectable(CorrectionSection.CUSTODIANS) ? custodians.value : [])
       ].map(entry => formatRelationshipApi(entry.new)).concat(
         // Completing party (client corrections) — submitted as a relationship
         formState.completingParty?.lastName
@@ -383,7 +385,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       ),
 
       // Offices
-      ...(hasOfficeChange.value && {
+      ...(isCorrectable(CorrectionSection.OFFICES) && hasOfficeChange.value && {
         offices: {
           registeredOffice: formatOfficeApi(regOffice),
           recordsOffice: formatOfficeApi(recOffice)
@@ -391,7 +393,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }),
 
       // Share structure
-      ...(hasShareStructureChange.value && {
+      ...(isCorrectable(CorrectionSection.SHARE_STRUCTURE) && hasShareStructureChange.value && {
         shareStructure: {
           shareClasses: formatShareClassesApi(shareClasses.value, isSubmission),
           resolutionDates: formatResolutionDatesApi(resolutionDates.value)
@@ -419,7 +421,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // - name: the corrected/effective name
       // - oldName: only when the name was actually changed
       // - action: the correction action
-      ...(hasNameTranslationChange.value && {
+      ...(isCorrectable(CorrectionSection.YOUR_COMPANY) && hasNameTranslationChange.value && {
         nameTranslations: nameTranslations.value
           .filter(nt => nt.new.actions.length > 0)
           .map(nt => ({
@@ -430,11 +432,16 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           }))
       }),
 
-      courtOrders: formatCourtOrdersApi(courtOrders.value),
+      ...(isCorrectable(CorrectionSection.COURT_ORDERS) && {
+        courtOrders: formatCourtOrdersApi(courtOrders.value)
+      }),
 
-      amalgamation: formatAmalCorrectApi(amalgamation.value, amalStmnt.value),
+      ...(isCorrectable(CorrectionSection.AMALGAMATION) && {
+        amalgamation: formatAmalCorrectApi(amalgamation.value, amalStmnt.value)
+      }),
 
-      ...formatCorrectYourCompanyApi(yourCompany.value, businessExtended.value, correctedFilingType.value)
+      ...(isCorrectable(CorrectionSection.YOUR_COMPANY)
+        && formatCorrectYourCompanyApi(yourCompany.value, businessExtended.value, correctedFilingType.value))
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
     }
