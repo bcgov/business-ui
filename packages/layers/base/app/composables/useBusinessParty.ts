@@ -12,6 +12,7 @@ export const useBusinessParty = () => {
       ...(roleClass ? { classType: roleClass } : {}),
       ...(roleType ? { role: roleType } : {}),
       // include ceased parties (the API otherwise only returns active parties)
+      // NB: the api applies `all` after parsing `date`, so passing both discards the as-of date
       ...(all ? { all: true } : {}),
       // parties as of a specific date (YYYY-MM-DD), e.g. a backdated change of directors
       ...(date ? { date } : {})

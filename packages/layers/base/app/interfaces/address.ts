@@ -51,7 +51,8 @@ export interface IncorporationAddress {
 }
 
 export interface BusinessAddressesQuery {
-  date?: string // addresses as of a specific date (YYYY-MM-DD)
+  // addresses as of a specific date (YYYY-MM-DD)
+  date?: string
 }
 
 export interface ApiEntityOfficeAddress {

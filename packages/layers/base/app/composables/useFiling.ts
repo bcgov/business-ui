@@ -157,10 +157,88 @@ export const useFiling = () => {
     }
   }
 
+  /**
+   * The payment fragment of a filing header: the staff payment for staff, the folio number
+   * for a client account.
+   */
+  function getPaymentHeaderApi(
+    formState: { staffPayment?: StaffPaymentSchema, folio?: FolioSchema },
+    isStaff: boolean
+  ): Partial<FilingHeaderSubmission> {
+    return isStaff
+      ? formatStaffPaymentApi(formState.staffPayment!)
+      : { folioNumber: formState.folio?.folioNumber }
+  }
+
+  /**
+   * Restores the payment section of a form state from a saved draft header
+   * @param opts `isStaff` defaults to the account type, `syncFees` to true
+   */
+  function hydratePaymentState(
+    draftHeader: Partial<FilingHeaderResponse>,
+    formState: { staffPayment?: StaffPaymentSchema, folio?: FolioSchema },
+    opts: { syncFees?: boolean, isStaff?: boolean } = {}
+  ) {
+    const { syncFees = true, isStaff = useIsStaff().value } = opts
+    if (isStaff) {
+      formState.staffPayment = formatStaffPaymentUi(draftHeader as FilingHeaderResponse)
+      if (syncFees) {
+        feeStore.updateAllFees(
+          !!formState.staffPayment.isPriority,
+          formState.staffPayment.option === StaffPaymentOption.NO_FEE
+        )
+      }
+    } else if (draftHeader.folioNumber) {
+      formState.folio!.folioNumber = draftHeader.folioNumber
+    }
+  }
+
+  /**
+   * Saves a draft (POST or PUT) or submits a new filing (POST).
+   * A draft is written whenever a draft already exists or the user is saving rather than
+   * submitting - its id is recorded in the url so a reload resumes the same draft.
+   * @returns the draft response when a draft was written, undefined when the filing was submitted
+   */
+  async function saveOrSubmitFiling<F extends FilingRecord>(
+    businessId: string,
+    payload: FilingSubmissionBody<F>,
+    opts: { isSubmission: boolean, draftId?: string | number }
+  ): Promise<FilingPutResponse<F> | FilingPostResponse<F> | undefined> {
+    const { isSubmission, draftId } = opts
+    if (draftId || !isSubmission) {
+      const filingResp = await service.saveOrUpdateDraftFiling<F>(
+        businessId,
+        payload,
+        isSubmission,
+        draftId as string | number
+      )
+      const urlParams = useUrlSearchParams()
+      urlParams.draft = String(filingResp.filing.header.filingId)
+      return filingResp
+    }
+
+    await service.postFiling(businessId, payload)
+    return undefined
+  }
+
+  /**
+   * Applies the authorization certify to the filing header.
+   */
+  function applyAuthorizationCertify(header: Record<string, unknown>, isSubmission: boolean) {
+    delete header.certifiedBy
+    if (!isSubmission) {
+      delete header.authorizationReceived
+    }
+  }
+
   return {
+    applyAuthorizationCertify,
     getCommonFilingPayloadData,
     createFilingPayload,
     getFilingName,
-    initFiling
+    getPaymentHeaderApi,
+    hydratePaymentState,
+    initFiling,
+    saveOrSubmitFiling
   }
 }

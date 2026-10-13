@@ -31,15 +31,26 @@ function makeFeeItem(code: string): ConnectFeeItem {
   }
 }
 
+// `region`/`country` set both addresses - the delivery*/mailing* overrides let them differ
 function makeRow(overrides: {
   actions?: ActionType[]
   region?: string
   country?: string
+  deliveryRegion?: string
+  mailingRegion?: string
+  deliveryCountry?: string
+  mailingCountry?: string
   old?: undefined
 }): TableBusinessState<PartySchema> {
   const address = {
-    deliveryAddress: { region: overrides.region ?? 'BC', country: overrides.country ?? 'CA' },
-    mailingAddress: { region: overrides.region ?? 'BC', country: overrides.country ?? 'CA' },
+    deliveryAddress: {
+      region: overrides.deliveryRegion ?? overrides.region ?? 'BC',
+      country: overrides.deliveryCountry ?? overrides.country ?? 'CA'
+    },
+    mailingAddress: {
+      region: overrides.mailingRegion ?? overrides.region ?? 'BC',
+      country: overrides.mailingCountry ?? overrides.country ?? 'CA'
+    },
     sameAs: true
   }
   const party = {
@@ -155,8 +166,42 @@ describe('director-change utils', () => {
       expect(warning).toBeUndefined()
     })
 
+    it('should ignore the mailing address when assessing BC residency', () => {
+      const table = [makeRow({ deliveryRegion: 'BC', mailingRegion: 'AB' })]
+      const warning = getDirectorWarning(table, { minCount: 1, bcResidency: true })
+      expect(warning).toBeUndefined()
+    })
+
+    it('should treat a BC director with no mailing region as a BC resident', () => {
+      const table = [makeRow({ deliveryRegion: 'BC', mailingRegion: '' }), makeRow({ region: 'ON' })]
+      const warning = getDirectorWarning(table, { minCount: 1, bcResidency: true })
+      expect(warning).toBeUndefined()
+    })
+
+    it('should count removed directors toward BC residency', () => {
+      const table = [makeRow({ region: 'BC', actions: [ActionType.REMOVED] }), makeRow({ region: 'AB' })]
+      const warning = getDirectorWarning(table, { minCount: 1, bcResidency: true })
+      expect(warning).toBeUndefined()
+    })
+
     it('should warn when the majority of directors are not Canadian residents', () => {
       const table = [makeRow({ country: 'US' }), makeRow({ country: 'US' }), makeRow({})]
+      const warning = getDirectorWarning(table, { minCount: 1, canadianResidency: true })
+      expect(warning?.type).toBe('canadianResidency')
+    })
+
+    it('should ignore the mailing address when assessing Canadian residency', () => {
+      const table = [makeRow({ deliveryCountry: 'CA', mailingCountry: 'US' })]
+      const warning = getDirectorWarning(table, { minCount: 1, canadianResidency: true })
+      expect(warning).toBeUndefined()
+    })
+
+    it('should count removed directors toward Canadian residency', () => {
+      const table = [
+        makeRow({ country: 'US', actions: [ActionType.REMOVED] }),
+        makeRow({ country: 'US', actions: [ActionType.REMOVED] }),
+        makeRow({})
+      ]
       const warning = getDirectorWarning(table, { minCount: 1, canadianResidency: true })
       expect(warning?.type).toBe('canadianResidency')
     })
@@ -167,9 +212,20 @@ describe('director-change utils', () => {
       expect(warning).toBeUndefined()
     })
 
-    it('should report the minimum count warning first', () => {
+    it('should report the BC residency warning ahead of the minimum count', () => {
       const table = [makeRow({ region: 'AB', country: 'US' })]
       const warning = getDirectorWarning(table, { minCount: 3, bcResidency: true, canadianResidency: true })
+      expect(warning?.type).toBe('bcResidency')
+    })
+
+    it('should report the Canadian residency warning ahead of the minimum count', () => {
+      const table = [makeRow({ country: 'US' })]
+      const warning = getDirectorWarning(table, { minCount: 3, canadianResidency: true })
+      expect(warning?.type).toBe('canadianResidency')
+    })
+
+    it('should report the minimum count warning on an empty table', () => {
+      const warning = getDirectorWarning([], { minCount: 1, bcResidency: true, canadianResidency: true })
       expect(warning?.type).toBe('minCount')
     })
   })
@@ -227,6 +283,18 @@ describe('director-change utils', () => {
       expect(feeStore.feesCached[codes.freeCode]?.label).toBe('Director Change')
       expect(feeStore.fees[codes.freeCode]).toBeDefined()
       expect(feeStore.fees[codes.paidCode]).toBeUndefined()
+    })
+
+    it('should keep the existing fee when the active code cannot be fetched', async () => {
+      // pay api failure - getFee resolves undefined so initFees cannot cache the free code
+      mockGetFee.mockResolvedValue(undefined)
+      const table = [makeRow({ actions: [ActionType.NAME_CHANGED] })]
+
+      await syncDirectorChangeFee(table, codes)
+
+      expect(feeStore.feesCached[codes.freeCode]).toBeUndefined()
+      expect(feeStore.fees[codes.freeCode]).toBeUndefined()
+      expect(feeStore.fees[codes.paidCode]).toBeDefined()
     })
 
     it('should not refetch fee info when the code is already cached', async () => {

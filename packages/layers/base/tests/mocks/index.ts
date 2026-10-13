@@ -7,7 +7,11 @@ export * from './business-comments'
 export * from './business-ledger'
 export * from './business-permissions'
 export * from './business-share-classes'
+export * from './fees'
 export * from './filing'
+export * from './filing-page-helpers'
+// NB: './filing-store' is deliberately not re-exported - it imports vitest and relies on the nuxt
+// auto imports, so it is unit test only (import it from '#test-mocks/filing-store')
 export * from './ldarkly'
 export * from './name-request'
 export * from './parties'
