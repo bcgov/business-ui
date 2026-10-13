@@ -39,6 +39,10 @@ export const mockSaveOrUpdateDraftFiling = vi.fn()
 export const mockPostFiling = vi.fn()
 export const mockInitFiling = vi.fn()
 export const mockUpdateAllFees = vi.fn()
+export const mockInitFees = vi.fn()
+export const mockAddReplaceFee = vi.fn()
+export const mockRemoveFee = vi.fn()
+export const mockOpenFilingNotAvailableModal = vi.fn()
 export const mockIsStaff = ref(false)
 export const mockAccountType = ref<AccountType>(AccountType.PREMIUM)
 export const mockFullName = ref(DEFAULT_FULL_NAME)
@@ -65,12 +69,15 @@ export const makeFilingModalsMock = () => ({
   openGetDraftFilingErrorModal: vi.fn(),
   openInitFilingErrorModal: vi.fn(),
   openSaveFilingErrorModal: vi.fn(),
-  openFilingNotAllowedErrorModal: vi.fn()
+  openFilingNotAllowedErrorModal: vi.fn(),
+  openFilingNotAvailableModal: mockOpenFilingNotAvailableModal
 })
 
 export const makeFeeStoreMock = () => ({
-  initFees: vi.fn(),
-  addReplaceFee: vi.fn(),
+  feesCached: {},
+  initFees: mockInitFees,
+  addReplaceFee: mockAddReplaceFee,
+  removeFee: mockRemoveFee,
   updateAllFees: mockUpdateAllFees
 })
 
@@ -102,6 +109,10 @@ export function resetFilingStoreMocks() {
   mockPostFiling.mockReset()
   mockInitFiling.mockReset()
   mockUpdateAllFees.mockReset()
+  mockInitFees.mockReset()
+  mockAddReplaceFee.mockReset()
+  mockRemoveFee.mockReset()
+  mockOpenFilingNotAvailableModal.mockReset()
   mockIsStaff.value = false
   mockAccountType.value = AccountType.PREMIUM
   mockFullName.value = DEFAULT_FULL_NAME

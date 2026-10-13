@@ -2,8 +2,9 @@
 import { z } from 'zod'
 
 const { t } = useI18n()
-const store = useDirectorChangeStore()
+const store = useDirectorsStore()
 const { initializing } = storeToRefs(store)
+const businessStore = useBusinessStore()
 const { setAlert: setSubFormAlert } = useFilingAlerts('manage-parties')
 const { hasChanges: hasDirectorChanges } = useManageParties()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
@@ -28,7 +29,7 @@ function checkActiveSubForm(action: 'submit' | 'save') {
 const { filingText, onError, submitFiling } = useFilingPage({
   store,
   filingType: FilingType.CHANGE_OF_DIRECTORS,
-  formId: 'director-change-filing',
+  formId: 'manage-directors-filing',
   i18nPrefix: 'page.changeOfDirectors',
   watchers: [
     [() => store.initialFormState, () => store.formState],
@@ -45,9 +46,9 @@ const { filingText, onError, submitFiling } = useFilingPage({
   <div>
     <ConnectSpinner v-if="initializing" fullscreen />
     <UForm
-      id="director-change-filing"
-      ref="director-change-filing"
-      data-testid="director-change-form"
+      id="manage-directors-filing"
+      ref="manage-directors-filing"
+      data-testid="manage-directors-form"
       :state="store.formState"
       :schema="z.any()"
       novalidate
@@ -58,21 +59,21 @@ const { filingText, onError, submitFiling } = useFilingPage({
     >
       <div class="space-y-4">
         <h1>{{ filingText.h1 }}</h1>
-        <p>{{ $t('page.changeOfDirectors.desc') }}</p>
+        <p>{{ filingText.desc }}</p>
       </div>
 
-      <!-- FUTURE: Replaces this placeholder with the effective date picker and the directors table -->
-      <ConnectFieldset
-        :label="`1. ${$t('label.effectiveDate')}`"
-        :description="$t('page.changeOfDirectors.effectiveDateDesc')"
-        body-variant="card"
-        orientation="vertical"
-        data-testid="form-section-effective-date"
+      <!-- FUTURE: replace with FormEffectiveDate (bounds per store.config.minDateSource, max = today) -->
+      <ConnectPageSection
+        :heading="{ label: `1. ${$t('label.effectiveDate')}` }"
+        ui-body="px-4 py-4 sm:px-6"
+        data-testid="effective-date-section"
       >
-        <p class="p-6">
-          {{ $t('text.directorChangeNotAvailable') }}
+        <p data-testid="effective-date-value">
+          {{ toReadableDate(store.effectiveDate) }}
         </p>
-      </ConnectFieldset>
+      </ConnectPageSection>
+
+      <!-- FUTURE: the directors table (ManageParties with the director change preset + config warnings) -->
 
       <FormFolio
         v-if="!store.isStaff && store.formState.folio"
@@ -80,18 +81,26 @@ const { filingText, onError, submitFiling } = useFilingPage({
         data-testid="form-section-folio-number"
         :disabled="initializing"
         name="folio"
-        order="2"
+        :order="2"
       />
 
-      <!-- FUTURE: add the certify section (base FormCertify needs coop support) -->
+      <!-- corps convention only - coops certify with a legal name (FUTURE: base FormCertify) -->
+      <FormConfirmAuthorization
+        v-if="store.formState.authorization"
+        v-model="store.formState.authorization"
+        data-testid="form-section-authorization"
+        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+        name="authorization"
+        :order="store.isStaff ? 2 : 3"
+      />
 
       <StaffPaymentFieldset
         v-if="store.isStaff && store.formState.staffPayment"
         ref="staff-pay-ref"
         v-model="store.formState.staffPayment"
         data-testid="form-section-staff-payment"
+        :order="store.formState.authorization ? 3 : 2"
         :initializing
-        order="2"
       />
     </UForm>
   </div>

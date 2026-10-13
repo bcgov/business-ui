@@ -75,13 +75,6 @@ export default {
       h1: 'Address Change',
       title: 'Address Change - BC Registries and Online Services'
     },
-    changeOfDirectors: {
-      desc: 'Add, remove or update the directors of this business. Director changes are effective as of the date selected below.',
-      feeCode: 'BCCDR',
-      feeLabel: 'Director Change',
-      h1: 'Director Change',
-      title: 'Director Change - BC Registries and Online Services'
-    },
     consentAmalgamationOut: {
       desc: 'Request the Registrar’s consent to amalgamate this business out of British Columbia into a corporation in another jurisdiction. The consent is valid for six months.',
       feeCode: 'IAMGO',

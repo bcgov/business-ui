@@ -350,6 +350,19 @@ export function getCorpFullDescription(cd: CorpTypeCd): string {
 }
 
 /**
+ * Given a legal type, returns the corp full description, falling back to the
+ * legal type itself when unknown (or '' when missing).
+ */
+export function getLegalTypeDescription(legalType?: string | null): string {
+  if (!legalType) {
+    return ''
+  }
+
+  const fullDescription = getCorpFullDescription(legalType as CorpTypeCd)
+  return fullDescription ? fullDescription : legalType
+}
+
+/**
  * Given corp type code, returns corp "numbered" description.
  * @param cd the corp type code to get
  * @returns the description (or '' if not found)
