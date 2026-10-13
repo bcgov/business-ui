@@ -226,7 +226,8 @@ describe('useAnnualReportStore', () => {
         arMinDate: coopBusiness.arMinDate,
         arMaxDate: coopBusiness.arMaxDate,
         // pacific midnight of the as-of date (the dashboard todo + bundled COD depend on it)
-        effectiveDate: `${arYear}-12-31T08:00:00+00:00`
+        // the UTC offset is tzdata-dependent (BC permanent DST, 2026) so derive it rather than pin it
+        effectiveDate: toApiDateTime(`${arYear}-12-31`)
       }))
     })
 
