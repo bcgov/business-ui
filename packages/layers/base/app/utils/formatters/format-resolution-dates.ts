@@ -28,8 +28,8 @@ export function formatResolutionDatesSection(
     const tableState: TableBusinessState<ResolutionDateSchema>[] = originalDates.map((date) => {
       const parsed = schema.parse(date)
       return {
-        old: structuredClone(parsed),
-        new: structuredClone(parsed)
+        old: cloneDeep(parsed),
+        new: cloneDeep(parsed)
       }
     })
 

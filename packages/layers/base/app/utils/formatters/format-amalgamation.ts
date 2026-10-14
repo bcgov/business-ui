@@ -1,6 +1,6 @@
 // https://github.com/bcgov/business-schemas/blob/main/src/registry_schemas/schemas/correction_amalgamation.json
 // temp formatter only, changes tbd in correction implementation ticket
-import { cloneDeep, merge } from 'es-toolkit'
+import { merge } from 'es-toolkit'
 import type { z } from 'zod'
 
 const NON_EDITABLE_FIELDS = ['isEditing', 'actions', 'id'] as const

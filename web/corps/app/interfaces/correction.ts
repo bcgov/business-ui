@@ -55,12 +55,7 @@ export interface CorrectionPayload extends FilingPayloadData {
     nrNumber?: string
   }
 
-  nameTranslations?: Array<{
-    id?: string
-    name: string
-    oldName?: string
-    action?: string
-  }>
+  nameTranslations?: NameTranslation[]
 
   // Office corrections
   offices?: ApiEntityOfficeAddress

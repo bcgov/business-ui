@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual } from 'es-toolkit'
+import { isEqual } from 'es-toolkit'
 
 function createDefaultField<T>(val: T): ManageYourCompanyFieldState<T> {
   return {
@@ -127,7 +127,7 @@ export function formatYourCompanySection(
   }
 }
 
-// helper to determin if a 'Your Company' field has any changes
+// helper to determine if a 'Your Company' field has any changes
 function hasChange(field?: { actions?: string[] }): boolean {
   return (field?.actions?.length ?? 0) > 0
 }

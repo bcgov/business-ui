@@ -20,7 +20,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     resolutionDates,
     nameTranslations,
     yourCompany,
-    hasNameTranslationChange,
     hasOfficeChange,
     hasShareStructureChange
   } = useCorrectionHelper()
@@ -124,7 +123,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     const [
       addressData,
-      aliasesNameTranslations,
+      nameTranslationData,
       courtOrderData,
       businessExtendedData
     ] = await Promise.all([
@@ -215,7 +214,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     // Offices (corrections may include address changes)
     offices.value = formatOfficesSection(addressData, draft?.offices)
 
-    // Share structure
     shareClasses.value = formatShareClassesSection(shareClassData, draft.shareStructure?.shareClasses)
 
     const originalResolutions = await service.getResolutions(businessId).catch(() => [])
@@ -256,19 +254,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         : custodianData
     }
 
-    // Name translations — convert API format to table state, merge with draft if applicable
-    if (aliasesNameTranslations.length) {
-      const originalTableState = mapOriginalNameTranslations(aliasesNameTranslations)
-
-      if (draft?.nameTranslations?.length) {
-        nameTranslations.value = mergeDraftNameTranslations(originalTableState, draft.nameTranslations)
-      } else {
-        nameTranslations.value = originalTableState
-      }
-    } else if (draft?.nameTranslations?.length) {
-      // No existing translations, but draft has new ones
-      nameTranslations.value = mapDraftOnlyNameTranslations(draft.nameTranslations)
-    }
+    nameTranslations.value = formatNameTranslationsSection(nameTranslationData, draft.nameTranslations)
 
     // set `Your Company` data
     const draftYourCompanyData = {
@@ -285,8 +271,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       correctedFilingType.value
     )
 
-    const formattedCourtOrders = formatCourtOrdersSection(courtOrderData, draft.courtOrders)
-    courtOrders.value = formattedCourtOrders
+    courtOrders.value = formatCourtOrdersSection(courtOrderData, draft.courtOrders)
 
     if (businessExtendedData?.amalgamation) {
       const formattedAmalgamation = formatAmalCorrectSection(businessExtendedData.amalgamation, draft.amalgamation)
@@ -388,21 +373,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         )
       },
 
-      // Name translations — match CorrectionPayload interface:
-      // - id: only for existing entries (real API id); omitted for new entries (avoids sending temp UUIDs)
-      // - name: the corrected/effective name
-      // - oldName: only when the name was actually changed
-      // - action: the correction action
-      ...(hasNameTranslationChange.value && {
-        nameTranslations: nameTranslations.value
-          .filter(nt => nt.new.actions.length > 0)
-          .map(nt => ({
-            ...(nt.old ? { id: nt.new.id } : {}),
-            name: nt.new.name,
-            ...(nt.old && nt.old.name !== nt.new.name ? { oldName: nt.old.name } : {}),
-            action: nt.new.actions[0]
-          }))
-      }),
+      nameTranslations: formatNameTranslationsApi(nameTranslations.value),
 
       courtOrders: formatCourtOrdersApi(courtOrders.value),
 

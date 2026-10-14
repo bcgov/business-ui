@@ -1,7 +1,7 @@
 // NB: direct imports needed so that this util can be used in e2e tests
 import { ActionType } from '#business/app/enums/action-type'
 import { RoleType, RoleTypeUi } from '#business/app/enums/role-type'
-import { formatAddressApi, formatAddressUi, formatBaseAddressUi } from '#business/app/utils/format-address'
+import { formatAddressApi, formatAddressUi, formatBaseAddressUi } from '#business/app/utils/formatters/format-address'
 
 const ROLE_RELATIONSHIPS: [RoleTypeUi, RoleType][] = [
   [RoleTypeUi.APPLICANT, RoleType.APPLICANT],

@@ -42,10 +42,10 @@ export const useBusinessQuery = () => {
 
   function aliasesOptions(
     businessId: MaybeRefOrGetter<string>,
-    options?: DefineOptions<{ aliases: Alias[] }>
+    options?: DefineOptions<{ aliases: NameTranslation[] }>
   ) {
     return defineQueryOptions({
-      query: () => $businessApi<{ aliases: Alias[] }>(`businesses/${toValue(businessId)}/aliases`),
+      query: () => $businessApi<{ aliases: NameTranslation[] }>(`businesses/${toValue(businessId)}/aliases`),
       staleTime: DEFAULT_STALE_TIME,
       ...options,
       key: keys.aliases(toValue(businessId))
@@ -54,9 +54,9 @@ export const useBusinessQuery = () => {
 
   function aliases(
     businessId: MaybeRefOrGetter<string>,
-    options?: QueryOptions<{ aliases: Alias[] }>
+    options?: QueryOptions<{ aliases: NameTranslation[] }>
   ) {
-    return useQuery(() => aliasesOptions(businessId, options as DefineOptions<{ aliases: Alias[] }>))
+    return useQuery(() => aliasesOptions(businessId, options as DefineOptions<{ aliases: NameTranslation[] }>))
   }
 
   function authorizedActionsOptions(

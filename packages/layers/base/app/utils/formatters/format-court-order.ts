@@ -69,8 +69,8 @@ export function formatCourtOrdersSection(
     return originalCourtOrders.map((co) => {
       const parsed = schema.parse(co)
       return {
-        old: structuredClone(parsed),
-        new: structuredClone(parsed)
+        old: cloneDeep(parsed),
+        new: cloneDeep(parsed)
       }
     })
   }
@@ -97,8 +97,8 @@ export function formatCourtOrdersSection(
 
     // if no matching id is found, item is an existing record
     return {
-      old: structuredClone(oldParsed),
-      new: structuredClone(oldParsed)
+      old: cloneDeep(oldParsed),
+      new: cloneDeep(oldParsed)
     }
 
     // API currently does not support removing court orders

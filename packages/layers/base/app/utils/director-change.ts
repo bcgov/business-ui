@@ -3,7 +3,7 @@ import { ActionType } from '#business/app/enums/action-type'
 import { ManageAllowedAction } from '#business/app/enums/manage-allowed-action'
 import { RoleClass } from '#business/app/enums/role-class'
 import { RoleTypeUi } from '#business/app/enums/role-type'
-import { formatRelationshipApi } from '#business/app/utils/format-party'
+import { formatRelationshipApi } from '#business/app/utils/formatters/format-party'
 
 /**
  * Structural ManageParties props shared by director-change filings.

@@ -10,7 +10,13 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-08-25',
 
   imports: {
-    dirs: ['interfaces', 'types', 'enums', 'stores', 'services']
+    dirs: ['interfaces', 'types', 'enums', 'stores', 'services'],
+    presets: [
+      {
+        from: 'es-toolkit',
+        imports: ['cloneDeep']
+      }
+    ]
   },
 
   typescript: {
