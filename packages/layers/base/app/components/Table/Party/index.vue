@@ -12,7 +12,6 @@ const {
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   columns?: TablePartyColumnName[]
-  hideUndoRemove?: boolean
   taskGuardConfig?: {
     message?: string
     messageId: string
@@ -34,7 +33,6 @@ const expanded = defineModel<ExpandedState | undefined>('expanded', { required: 
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
-    :hide-undo-remove="hideUndoRemove"
     :task-guard-config
   >
     <template #expanded="{ row }">

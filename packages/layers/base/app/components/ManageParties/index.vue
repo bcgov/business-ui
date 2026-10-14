@@ -11,16 +11,8 @@ const {
   variant = 'default',
   modelName = 'activeParty',
   preventActions = false,
-  actionPreventedSignal = 0,
-  maxParties
-} = defineProps<ManagePartiesProps & {
-  preventActions?: boolean
-  actionPreventedSignal?: number
-  // max number of parties (no limit when not set; must be 1 or more) - adding is blocked while the table
-  // has that many parties (removed ones included, so they can be undone instead), and undoing a removal is
-  // blocked once that many parties are active
-  maxParties?: number
-}>()
+  actionPreventedSignal = 0
+} = defineProps<ManagePartiesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
 
 const emit = defineEmits<{
   'action-prevented': []
@@ -94,15 +86,6 @@ const tableLabels = computed(() => {
   return undefined
 })
 
-const nonCeasedParties = computed(() => tableState.value.filter(party => !isRowCeased(party)))
-const activePartyCount = computed(() => nonCeasedParties.value.filter(
-  party => !party.new.actions.includes(ActionType.REMOVED)
-).length)
-// a removed party still counts towards the max for adding, so it can only be undone - not replaced
-const isAddBlocked = computed(() => maxParties !== undefined && nonCeasedParties.value.length >= maxParties)
-// block undoing a removal once the max number of active parties is reached
-const isMaxPartiesReached = computed(() => maxParties !== undefined && activePartyCount.value >= maxParties)
-
 const partyAllowedActions = computed(() => {
   // a ceased party can only be corrected - it can't be removed or have its roles changed (which would un-cease it).
   // ADD is dropped too since the party form treats it as "allow any edit"
@@ -110,20 +93,17 @@ const partyAllowedActions = computed(() => {
     const notAllowedWhenCeased = [ManageAllowedAction.ADD, ManageAllowedAction.REMOVE, ManageAllowedAction.ROLE_CHANGE]
     return (allowedActions ?? Object.values(ManageAllowedAction)).filter(a => !notAllowedWhenCeased.includes(a))
   }
+  if (allowedActions) {
+    return allowedActions
+  }
   if (variant === 'readonly' || variant === 'correct-readonly') {
-    return allowedActions ?? []
+    return []
   }
-  if (isAddBlocked.value) {
-    return (allowedActions ?? Object.values(ManageAllowedAction)).filter(a => a !== ManageAllowedAction.ADD)
-  }
-  return allowedActions
+  return undefined
 })
 
 const showAddButton = computed(() => {
   if (variant === 'readonly' || variant === 'correct-readonly') {
-    return false
-  }
-  if (isAddBlocked.value) {
     return false
   }
   return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
@@ -350,7 +330,6 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :columns="columnsToDisplay"
-          :hide-undo-remove="isMaxPartiesReached"
           :task-guard-config="{
             messageId,
             targetId,

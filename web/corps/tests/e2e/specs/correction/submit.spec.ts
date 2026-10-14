@@ -295,7 +295,7 @@ test.describe('Correction - Filing Submit', () => {
 
       const custodians = page.getByTestId('custodians-section')
       await expect(custodians).toContainText('MIHAI DINU TEST')
-      // only 1 custodian allowed, so can't add while one exists
+      // adding a custodian is not part of a custodian correction
       await expect(custodians.getByRole('button', { name: 'Add Custodian' })).not.toBeVisible()
 
       const row = custodians.locator('tbody tr').first()
@@ -329,7 +329,7 @@ test.describe('Correction - Filing Submit', () => {
       await form.getByRole('button', { name: 'Delete' }).click()
       await expect(form).not.toBeVisible()
 
-      // the removed custodian can only be undone, not replaced
+      // the removed custodian can be undone, but not replaced
       await expect(addButton).not.toBeVisible()
       const undoButton = custodians.getByRole('row', { name: /MIHAI DINU TEST/ }).getByRole('button', { name: 'Undo' })
       await expect(undoButton).toBeVisible()
