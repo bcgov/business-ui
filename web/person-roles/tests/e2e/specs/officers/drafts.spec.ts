@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import type { BusinessRelationship } from '#business/app/interfaces/business-relationship'
 import type { OrgPerson } from '#business/app/interfaces/org-person'
 import { fillOutFolio, fillOutNewRelationship } from '#business/tests/e2e/test-utils'
-import { formatPartyUi, formatRelationshipApi } from '#business/app/utils/format-party'
+import { formatPartyUi, formatRelationshipApi } from '#business/app/utils/formatters/format-party'
 import { getFilingMock } from '#test-mocks'
 import {
   setupOfficerChangePage,

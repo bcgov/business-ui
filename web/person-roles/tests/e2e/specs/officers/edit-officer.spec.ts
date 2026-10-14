@@ -8,7 +8,7 @@ import {
   assertAddress,
   getTableRowForPerson
 } from '../../test-utils'
-import { formatPartyUi, formatRelationshipApi } from '#business/app/utils/format-party'
+import { formatPartyUi, formatRelationshipApi } from '#business/app/utils/formatters/format-party'
 import {
   getFakeAddress,
   getFakePerson,
