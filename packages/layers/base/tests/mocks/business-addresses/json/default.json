@@ -3,7 +3,7 @@
         "deliveryAddress": {
             "addressCity": "Calgary",
             "addressCountry": "CA",
-            "addressRegion": "AB",
+            "addressRegion": "BC",
             "addressType": "delivery",
             "deliveryInstructions": "",
             "id": 3324735,
@@ -14,7 +14,7 @@
         "mailingAddress": {
             "addressCity": "Calgary",
             "addressCountry": "CA",
-            "addressRegion": "AB",
+            "addressRegion": "BC",
             "addressType": "mailing",
             "deliveryInstructions": "",
             "id": 3324734,

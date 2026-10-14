@@ -3,6 +3,22 @@ import { nextTick } from 'vue'
 import type { Locator, Page } from '@playwright/test'
 import type { ApiAddress } from '#business/app/interfaces/address'
 
+const provinceNameMap: Record<string, string> = {
+  BC: 'British Columbia',
+  AB: 'Alberta',
+  ON: 'Ontario',
+  QC: 'Quebec',
+  MB: 'Manitoba',
+  SK: 'Saskatchewan',
+  NS: 'Nova Scotia',
+  NB: 'New Brunswick',
+  NL: 'Newfoundland and Labrador',
+  PE: 'Prince Edward Island',
+  YT: 'Yukon',
+  NT: 'Northwest Territories',
+  NU: 'Nunavut'
+}
+
 // FUTURE: consolidate with fill-address-fields once officers is consolidated
 export async function fillOutAddress(
   page: Page,
@@ -27,10 +43,8 @@ export async function fillOutAddress(
     await provinceSelect.click()
     const optionsList = page.getByRole('listbox') // listbox is a teleport on the page body
     await expect(optionsList).toBeVisible()
-    // use keyboard instead of click actions
-    // element out of viewport bug on firefox (works fine when manually testing but failing in pw browser)
-    await page.keyboard.type(address.addressRegion!)
-    await page.keyboard.press('Enter')
+    const provinceToSelect = provinceNameMap[address.addressRegion!] || address.addressRegion!
+    await optionsList.getByRole('option', { name: provinceToSelect }).click()
     await expect(optionsList).not.toBeVisible()
     await expect(postalCodeInput).toBeVisible()
     await postalCodeInput.fill(address.postalCode)

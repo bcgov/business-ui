@@ -14,7 +14,7 @@ const address = {
   streetAddressAdditional: '',
   addressCity: 'city',
   addressCountry: 'CA',
-  addressRegion: 'AB',
+  addressRegion: 'BC',
   deliveryInstructions: '',
   postalCode: 'V1N 4H8'
 }
@@ -225,7 +225,7 @@ test.describe('Manage Liquidators - Submission', () => {
           streetAddressAdditional: '',
           addressCity: 'newCity',
           addressCountry: 'CA',
-          addressRegion: 'AB',
+          addressRegion: 'BC',
           deliveryInstructions: '',
           postalCode: 'V1N 4H8'
         }

@@ -288,6 +288,7 @@ onMounted(() => {
           :table-title="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
+          bc-canada-only
         />
 
         <ConnectFormFieldWrapper
