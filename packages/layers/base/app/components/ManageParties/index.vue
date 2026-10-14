@@ -16,8 +16,9 @@ const {
 } = defineProps<ManagePartiesProps & {
   preventActions?: boolean
   actionPreventedSignal?: number
-  // max number of active parties (no limit when not set; must be 1 or more) - adding (or undoing
-  // a removal) is blocked once it is reached
+  // max number of parties (no limit when not set; must be 1 or more) - adding is blocked while the table
+  // has that many parties (removed ones included, so they can be undone instead), and undoing a removal is
+  // blocked once that many parties are active
   maxParties?: number
 }>()
 
@@ -93,10 +94,13 @@ const tableLabels = computed(() => {
   return undefined
 })
 
-const activePartyCount = computed(() => tableState.value.filter(
-  party => !party.new.actions.includes(ActionType.REMOVED) && !isRowCeased(party)
+const nonCeasedParties = computed(() => tableState.value.filter(party => !isRowCeased(party)))
+const activePartyCount = computed(() => nonCeasedParties.value.filter(
+  party => !party.new.actions.includes(ActionType.REMOVED)
 ).length)
-// block adding (and undoing a removal) once the max number of active parties is reached
+// a removed party still counts towards the max for adding, so it can only be undone - not replaced
+const isAddBlocked = computed(() => maxParties !== undefined && nonCeasedParties.value.length >= maxParties)
+// block undoing a removal once the max number of active parties is reached
 const isMaxPartiesReached = computed(() => maxParties !== undefined && activePartyCount.value >= maxParties)
 
 const partyAllowedActions = computed(() => {
@@ -109,7 +113,7 @@ const partyAllowedActions = computed(() => {
   if (variant === 'readonly' || variant === 'correct-readonly') {
     return allowedActions ?? []
   }
-  if (isMaxPartiesReached.value) {
+  if (isAddBlocked.value) {
     return (allowedActions ?? Object.values(ManageAllowedAction)).filter(a => a !== ManageAllowedAction.ADD)
   }
   return allowedActions
@@ -119,7 +123,7 @@ const showAddButton = computed(() => {
   if (variant === 'readonly' || variant === 'correct-readonly') {
     return false
   }
-  if (isMaxPartiesReached.value) {
+  if (isAddBlocked.value) {
     return false
   }
   return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)

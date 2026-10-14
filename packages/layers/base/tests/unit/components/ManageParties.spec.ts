@@ -217,12 +217,12 @@ describe('ManageParties', () => {
         )
       })
 
-      it('allows adding and undoing a removal once the active party is removed', async () => {
+      it('allows undoing but not adding once the active party is removed', async () => {
         tableState.value = [custodian('EXISTING', [ActionType.REMOVED])]
         const wrapper = await mountCustodians({ maxParties })
 
-        expect(hasAddButton(wrapper)).toBe(true)
-        expect(getTable(wrapper).props('allowedActions')).toEqual(allowedActions)
+        expect(hasAddButton(wrapper)).toBe(false)
+        expect(getTable(wrapper).props('allowedActions')).not.toContain(ManageAllowedAction.ADD)
         expect(getTable(wrapper).props('hideUndoRemove')).toBe(false)
       })
 

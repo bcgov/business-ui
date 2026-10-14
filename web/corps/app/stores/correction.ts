@@ -360,6 +360,25 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const regOffice = offices.value.find(o => o.new.type === OfficeType.REGISTERED)?.new.address
     const recOffice = offices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
 
+    // Parties — formatted as relationships (with `entity`), matching transition store pattern
+    // All party types (directors, receivers, liquidators, custodians, completing party) are combined in one array
+    // Only parties with changes are included - the API expects only what was corrected
+    // (e.g. a voluntary dissolution correction must not send the unchanged directors)
+    const relationships = [
+      ...directors.value,
+      ...receivers.value,
+      ...liquidators.value,
+      ...custodians.value
+    ]
+      .filter(entry => entry.new.actions.length > 0)
+      .map(entry => formatRelationshipApi(entry.new))
+      .concat(
+        // Completing party (client corrections) — submitted as a relationship
+        formState.completingParty?.lastName
+          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
+          : []
+      )
+
     const correctionPayload: CorrectionPayload = {
       comment: formState.comment?.detail ?? '',
       correctedFilingId: correctedFilingId.value!,
@@ -368,24 +387,11 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       type: correctionType.value,
       legalType: businessStore.business?.legalType as CorpTypeCd,
 
-      // Parties — formatted as relationships (with `entity`), matching transition store pattern
-      // All party types (directors, receivers, liquidators, completing party) are combined in one array
-      // Only parties in sections correctable for the corrected filing are included
-      // (e.g. a voluntary dissolution correction sends custodians but not directors)
-      relationships: [
-        ...(isCorrectable(CorrectionSection.DIRECTORS) ? directors.value : []),
-        ...(isCorrectable(CorrectionSection.RECEIVERS) ? receivers.value : []),
-        ...(isCorrectable(CorrectionSection.LIQUIDATORS) ? liquidators.value : []),
-        ...(isCorrectable(CorrectionSection.CUSTODIANS) ? custodians.value : [])
-      ].map(entry => formatRelationshipApi(entry.new)).concat(
-        // Completing party (client corrections) — submitted as a relationship
-        formState.completingParty?.lastName
-          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
-          : []
-      ),
+      // Parties
+      ...(relationships.length > 0 && { relationships }),
 
       // Offices
-      ...(isCorrectable(CorrectionSection.OFFICES) && hasOfficeChange.value && {
+      ...(hasOfficeChange.value && {
         offices: {
           registeredOffice: formatOfficeApi(regOffice),
           recordsOffice: formatOfficeApi(recOffice)
@@ -393,7 +399,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }),
 
       // Share structure
-      ...(isCorrectable(CorrectionSection.SHARE_STRUCTURE) && hasShareStructureChange.value && {
+      ...(hasShareStructureChange.value && {
         shareStructure: {
           shareClasses: formatShareClassesApi(shareClasses.value, isSubmission),
           resolutionDates: formatResolutionDatesApi(resolutionDates.value)
@@ -421,7 +427,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // - name: the corrected/effective name
       // - oldName: only when the name was actually changed
       // - action: the correction action
-      ...(isCorrectable(CorrectionSection.YOUR_COMPANY) && hasNameTranslationChange.value && {
+      ...(hasNameTranslationChange.value && {
         nameTranslations: nameTranslations.value
           .filter(nt => nt.new.actions.length > 0)
           .map(nt => ({
@@ -432,16 +438,11 @@ export const useCorrectionStore = defineStore('correction-store', () => {
           }))
       }),
 
-      ...(isCorrectable(CorrectionSection.COURT_ORDERS) && {
-        courtOrders: formatCourtOrdersApi(courtOrders.value)
-      }),
+      courtOrders: formatCourtOrdersApi(courtOrders.value),
 
-      ...(isCorrectable(CorrectionSection.AMALGAMATION) && {
-        amalgamation: formatAmalCorrectApi(amalgamation.value, amalStmnt.value)
-      }),
+      amalgamation: formatAmalCorrectApi(amalgamation.value, amalStmnt.value),
 
-      ...(isCorrectable(CorrectionSection.YOUR_COMPANY)
-        && formatCorrectYourCompanyApi(yourCompany.value, businessExtended.value, correctedFilingType.value))
+      ...formatCorrectYourCompanyApi(yourCompany.value, businessExtended.value, correctedFilingType.value)
       // TODO: startDate, provisionsRemoved
       // as correction sections are implemented in the UI
     }

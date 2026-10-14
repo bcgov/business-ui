@@ -103,9 +103,10 @@ test.describe('Correction - Filing Submit', () => {
       expect(correction.comment).toBe('Correcting director address from original incorporation')
       expect(correction.contactPoint).toHaveProperty('email', 'correction-test@example.com')
 
-      // Verify relationships are included (party data formatted as relationships)
-      expect(correction.relationships).toBeDefined()
-      expect(correction.relationships.length).toBeGreaterThan(0)
+      // Verify only the corrected party is sent as a relationship (unchanged parties are excluded)
+      expect(correction.relationships).toHaveLength(1)
+      expect(correction.relationships[0].entity).toMatchObject({ givenName: 'Tester', familyName: 'Testing' })
+      expect(correction.relationships[0].actions.length).toBeGreaterThan(0)
 
       // Should redirect to dashboard
       await page.waitForURL(
@@ -308,7 +309,7 @@ test.describe('Correction - Filing Submit', () => {
       await expect(form.getByRole('button', { name: 'Delete' })).toBeVisible()
     })
 
-    test('should allow adding a custodian only after the existing custodian is removed', async ({ page }) => {
+    test('should allow undoing but not adding after the existing custodian is removed', async ({ page }) => {
       await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
         partyRoleTypes: ['Director', 'Director', 'Custodian'],
         correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
@@ -328,7 +329,13 @@ test.describe('Correction - Filing Submit', () => {
       await form.getByRole('button', { name: 'Delete' }).click()
       await expect(form).not.toBeVisible()
 
-      await expect(addButton).toBeVisible()
+      // the removed custodian can only be undone, not replaced
+      await expect(addButton).not.toBeVisible()
+      const undoButton = custodians.getByRole('row', { name: /MIHAI DINU TEST/ }).getByRole('button', { name: 'Undo' })
+      await expect(undoButton).toBeVisible()
+      await undoButton.click()
+      await expect(custodians).toContainText('MIHAI DINU TEST')
+      await expect(addButton).not.toBeVisible()
     })
   })
 
