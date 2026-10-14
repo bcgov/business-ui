@@ -1,4 +1,6 @@
 // Correctable sections by corrected filing type, from the corrections design spreadsheet.
+// eslint-disable-next-line max-len
+// https://bcgov-my.sharepoint.com/:x:/r/personal/thayne_werdal_gov_bc_ca/Documents/Attachments/Requirements%20-%20Filings%20vs%20Corrections%20Fields.xlsx?d=w8812eaf09920404ca709eb17fc5a78c1
 // Corrections should only show the data elements present on the filing being corrected.
 
 /** A section of the correction filing that can be corrected. */
