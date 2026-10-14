@@ -284,7 +284,7 @@ test.describe('Correction - Filing Submit', () => {
   })
 
   test.describe('Custodians', () => {
-    test('should allow correcting and removing an existing custodian', async ({ page }) => {
+    test('should only allow correcting an existing custodian', async ({ page }) => {
       await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
         partyRoleTypes: ['Director', 'Director', 'Custodian'],
         correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
@@ -295,10 +295,14 @@ test.describe('Correction - Filing Submit', () => {
 
       const custodians = page.getByTestId('custodians-section')
       await expect(custodians).toContainText('MIHAI DINU TEST')
-      // adding a custodian is not part of a custodian correction
+      // adding or removing a custodian is not part of a custodian correction
       await expect(custodians.getByRole('button', { name: 'Add Custodian' })).not.toBeVisible()
 
       const row = custodians.locator('tbody tr').first()
+      await expect(row.getByRole('button', { name: 'Correct' })).toBeVisible()
+      // no actions dropdown (remove) next to the correct button
+      await expect(row.getByRole('button')).toHaveCount(1)
+
       await row.getByRole('button', { name: 'Correct' }).click()
       const form = custodians.getByTestId('party-details-form')
       await expect(form).toBeVisible()
@@ -306,36 +310,7 @@ test.describe('Correction - Filing Submit', () => {
       await expect(form.getByTestId('first-name-input')).toBeVisible()
       await expect(form.getByTestId('mailing-address-input-street')).toBeVisible()
       await expect(form.getByTestId('party-email-input')).toBeVisible()
-      await expect(form.getByRole('button', { name: 'Delete' })).toBeVisible()
-    })
-
-    test('should allow undoing but not adding after the existing custodian is removed', async ({ page }) => {
-      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
-        partyRoleTypes: ['Director', 'Director', 'Custodian'],
-        correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
-      })
-      await navigateToCorrectionPage(page, identifier, filingId)
-      await page.waitForLoadState('networkidle')
-      await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-
-      const custodians = page.getByTestId('custodians-section')
-      const addButton = custodians.getByRole('button', { name: 'Add Custodian' })
-      await expect(addButton).not.toBeVisible()
-
-      // remove the existing custodian from its edit form
-      await custodians.locator('tbody tr').first().getByRole('button', { name: 'Correct' }).click()
-      const form = custodians.getByTestId('party-details-form')
-      await expect(form).toBeVisible()
-      await form.getByRole('button', { name: 'Delete' }).click()
-      await expect(form).not.toBeVisible()
-
-      // the removed custodian can be undone, but not replaced
-      await expect(addButton).not.toBeVisible()
-      const undoButton = custodians.getByRole('row', { name: /MIHAI DINU TEST/ }).getByRole('button', { name: 'Undo' })
-      await expect(undoButton).toBeVisible()
-      await undoButton.click()
-      await expect(custodians).toContainText('MIHAI DINU TEST')
-      await expect(addButton).not.toBeVisible()
+      await expect(form.getByRole('button', { name: 'Delete' })).not.toBeVisible()
     })
   })
 

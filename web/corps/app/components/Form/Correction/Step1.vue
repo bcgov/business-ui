@@ -5,12 +5,11 @@ const { hasActiveSubForm } = useCorrectionHelper()
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email', 'actions']
-// a custodian can only be corrected or removed - adding one is not part of a custodian correction
+// a custodian can only be corrected - adding or removing (ceasing) one is not part of a custodian correction
 const custodianAllowedActions = [
   ManageAllowedAction.NAME_CHANGE,
   ManageAllowedAction.ADDRESS_CHANGE,
-  ManageAllowedAction.EMAIL_CHANGE,
-  ManageAllowedAction.REMOVE
+  ManageAllowedAction.EMAIL_CHANGE
 ]
 
 // a director can't be appointed before the business existed, or ceased in the future - founding date
@@ -158,7 +157,8 @@ function onActionPrevented() {
       variant="correct"
       :allowed-actions="custodianAllowedActions"
       :party-form-props="{
-        partyNameProps: { allowBusinessName: false, allowPreferredName: false }
+        partyNameProps: { allowBusinessName: false, allowPreferredName: false },
+        hideRemove: true
       }"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
