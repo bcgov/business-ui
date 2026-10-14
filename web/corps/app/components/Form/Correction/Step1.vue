@@ -5,6 +5,12 @@ const { hasActiveSubForm } = useCorrectionHelper()
 const { business, businessContact } = storeToRefs(useBusinessStore())
 const partyColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'effectiveDates', 'actions']
 const custodianColumns: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'email', 'actions']
+// a custodian can only be corrected - adding or removing (ceasing) one is not part of a custodian correction
+const custodianAllowedActions = [
+  ManageAllowedAction.NAME_CHANGE,
+  ManageAllowedAction.ADDRESS_CHANGE,
+  ManageAllowedAction.EMAIL_CHANGE
+]
 
 // a director can't be appointed before the business existed, or ceased in the future - founding date
 // is a UTC datetime, so convert to the Pacific calendar date shown to users before using it as a bound
@@ -41,7 +47,9 @@ function onActionPrevented() {
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
+    <!-- sections are shown based on the fields correctable for the corrected filing (see getCorrectableSections) -->
     <ManageYourCompany
+      v-if="store.isCorrectable(CorrectionSection.YOUR_COMPANY)"
       v-model:active-subject="store.formState.activeYourCompany"
       v-model:active-nt="store.formState.activeNameTranslation"
       :loading="store.initializing"
@@ -56,6 +64,7 @@ function onActionPrevented() {
     />
 
     <ManageOffices
+      v-if="store.isCorrectable(CorrectionSection.OFFICES)"
       v-model:active-office="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
@@ -70,6 +79,7 @@ function onActionPrevented() {
     />
 
     <ManageParties
+      v-if="store.isCorrectable(CorrectionSection.DIRECTORS)"
       v-model:active-party="store.formState.activeDirector"
       state-key="manage-directors"
       :loading="store.initializing"
@@ -89,6 +99,7 @@ function onActionPrevented() {
 
     <!-- FUTURE: conditionally show receivers? -->
     <ManageParties
+      v-if="store.isCorrectable(CorrectionSection.RECEIVERS)"
       v-model:active-party="store.formState.activeReceiver"
       state-key="manage-receivers"
       :loading="store.initializing"
@@ -110,6 +121,7 @@ function onActionPrevented() {
 
     <!-- FUTURE: conditionally show liquidators? -->
     <ManageParties
+      v-if="store.isCorrectable(CorrectionSection.LIQUIDATORS)"
       v-model:active-party="store.formState.activeLiquidator"
       state-key="manage-liquidators"
       :loading="store.initializing"
@@ -129,8 +141,8 @@ function onActionPrevented() {
       @action-prevented="onActionPrevented"
     />
 
-    <!-- FUTURE: conditionally show custodians? -->
     <ManageParties
+      v-if="store.isCorrectable(CorrectionSection.CUSTODIANS)"
       v-model:active-party="store.formState.activeCustodian"
       state-key="manage-custodians"
       :loading="store.initializing"
@@ -143,14 +155,17 @@ function onActionPrevented() {
       model-name="activeCustodian"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
+      :allowed-actions="custodianAllowedActions"
       :party-form-props="{
-        partyNameProps: { allowBusinessName: false, allowPreferredName: false }
+        partyNameProps: { allowBusinessName: false, allowPreferredName: false },
+        hideRemove: true
       }"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
     />
 
     <ManageShareStructure
+      v-if="store.isCorrectable(CorrectionSection.SHARE_STRUCTURE)"
       v-model:active-class="store.formState.activeClass"
       v-model:active-series="store.formState.activeSeries"
       v-model:active-rd="store.formState.activeResolutionDate"
@@ -165,6 +180,7 @@ function onActionPrevented() {
     />
 
     <ManageCourtOrders
+      v-if="store.isCorrectable(CorrectionSection.COURT_ORDERS)"
       v-model:active-co="store.formState.activeCourtOrder"
       data-testid="court-orders-section"
       variant="correct"
@@ -179,7 +195,7 @@ function onActionPrevented() {
     />
 
     <ManageAmalgamation
-      v-if="store.correctedFilingType === FilingType.AMALGAMATION_APPLICATION"
+      v-if="store.isCorrectable(CorrectionSection.AMALGAMATION)"
       v-model:active-amal="store.formState.activeAmal"
       v-model:active-amal-stmnt="store.formState.activeAmalStmnt"
       data-testid="amalgamation-section"

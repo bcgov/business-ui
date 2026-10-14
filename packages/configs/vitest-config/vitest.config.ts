@@ -32,6 +32,9 @@ export default defineVitestConfig({
       ]
     },
     setupFiles: './tests/unit/setup.ts',
-    globals: true
+    globals: true,
+    // nuxt env setup is heavy; one worker per core can starve setup hooks past the 10s default
+    maxWorkers: '50%',
+    hookTimeout: 30000
   }
 })

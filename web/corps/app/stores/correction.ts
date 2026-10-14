@@ -73,6 +73,22 @@ export const useCorrectionStore = defineStore('correction-store', () => {
    */
   const isStaffCorrectionType = computed(() => correctionType.value === CorrectionType.STAFF)
 
+  /** Subtype of the filing being corrected (e.g. the type of dissolution, amalgamation or change of liquidators) */
+  const correctedFilingSubType = computed(() => {
+    const filingData = correctedFiling.value?.filing[correctedFilingType.value]
+    return (filingData?.type ?? filingData?.dissolutionType) as string | undefined
+  })
+
+  /** Sections that can be corrected for the filing being corrected */
+  const correctableSections = computed(() =>
+    getCorrectableSections(correctedFilingType.value, correctedFilingSubType.value)
+  )
+
+  /** Whether the given section can be corrected for the filing being corrected */
+  function isCorrectable(section: CorrectionSection): boolean {
+    return correctableSections.value.includes(section)
+  }
+
   /**
    * Initialize the correction store.
    *
@@ -310,6 +326,25 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const regOffice = offices.value.find(o => o.new.type === OfficeType.REGISTERED)?.new.address
     const recOffice = offices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
 
+    // Parties — formatted as relationships (with `entity`), matching transition store pattern
+    // All party types (directors, receivers, liquidators, custodians, completing party) are combined in one array
+    // Only parties with changes are included - the API expects only what was corrected
+    // (e.g. a voluntary dissolution correction must not send the unchanged directors)
+    const relationships = [
+      ...directors.value,
+      ...receivers.value,
+      ...liquidators.value,
+      ...custodians.value
+    ]
+      .filter(entry => entry.new.actions.length > 0)
+      .map(entry => formatRelationshipApi(entry.new))
+      .concat(
+        // Completing party (client corrections) — submitted as a relationship
+        formState.completingParty?.lastName
+          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
+          : []
+      )
+
     const correctionPayload: CorrectionPayload = {
       comment: formState.comment?.detail ?? '',
       correctedFilingId: correctedFilingId.value!,
@@ -318,19 +353,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       type: correctionType.value,
       legalType: businessStore.business?.legalType as CorpTypeCd,
 
-      // Parties — formatted as relationships (with `entity`), matching transition store pattern
-      // All party types (directors, receivers, liquidators, completing party) are combined in one array
-      relationships: [
-        ...directors.value,
-        ...receivers.value,
-        ...liquidators.value,
-        ...custodians.value
-      ].map(entry => formatRelationshipApi(entry.new)).concat(
-        // Completing party (client corrections) — submitted as a relationship
-        formState.completingParty?.lastName
-          ? [formatCompletingPartyRelationshipApi(formState.completingParty)]
-          : []
-      ),
+      // Parties
+      ...(relationships.length > 0 && { relationships }),
 
       // Offices
       ...(hasOfficeChange.value && {
@@ -503,6 +527,9 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingDateDisplay,
     correctionType,
     isStaffCorrectionType,
+    correctedFilingSubType,
+    correctableSections,
+    isCorrectable,
     courtOrders,
     directors,
     receivers,

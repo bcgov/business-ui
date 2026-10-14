@@ -103,9 +103,10 @@ test.describe('Correction - Filing Submit', () => {
       expect(correction.comment).toBe('Correcting director address from original incorporation')
       expect(correction.contactPoint).toHaveProperty('email', 'correction-test@example.com')
 
-      // Verify relationships are included (party data formatted as relationships)
-      expect(correction.relationships).toBeDefined()
-      expect(correction.relationships.length).toBeGreaterThan(0)
+      // Verify only the corrected party is sent as a relationship (unchanged parties are excluded)
+      expect(correction.relationships).toHaveLength(1)
+      expect(correction.relationships[0].entity).toMatchObject({ givenName: 'Tester', familyName: 'Testing' })
+      expect(correction.relationships[0].actions.length).toBeGreaterThan(0)
 
       // Should redirect to dashboard
       await page.waitForURL(
@@ -283,76 +284,33 @@ test.describe('Correction - Filing Submit', () => {
   })
 
   test.describe('Custodians', () => {
-    test('should add a custodian with an email address and include it in the correction payload', async ({ page }) => {
-      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF')
+    test('should only allow correcting an existing custodian', async ({ page }) => {
+      await setupCorrectionPage(page, identifier, filingId, CRCTN_NO_FEE, 'STAFF', 'STAFF', {
+        partyRoleTypes: ['Director', 'Director', 'Custodian'],
+        correctedFiling: { filingType: 'dissolution', data: { dissolutionType: 'voluntary' } }
+      })
       await navigateToCorrectionPage(page, identifier, filingId)
       await page.waitForLoadState('networkidle')
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       const custodians = page.getByTestId('custodians-section')
-      await custodians.getByRole('button', { name: 'Add Custodian' }).click()
+      await expect(custodians).toContainText('MIHAI DINU TEST')
+      // adding or removing a custodian is not part of a custodian correction
+      await expect(custodians.getByRole('button', { name: 'Add Custodian' })).not.toBeVisible()
 
-      const form = page.getByTestId('party-details-form')
+      const row = custodians.locator('tbody tr').first()
+      await expect(row.getByRole('button', { name: 'Correct' })).toBeVisible()
+      // no actions dropdown (remove) next to the correct button
+      await expect(row.getByRole('button')).toHaveCount(1)
+
+      await row.getByRole('button', { name: 'Correct' }).click()
+      const form = custodians.getByTestId('party-details-form')
       await expect(form).toBeVisible()
-      await form.getByTestId('first-name-input').fill('New')
-      await form.getByTestId('last-name-input').fill('Custodian')
-      await form.getByTestId('party-email-input').fill('new.custodian@example.com')
-
-      // mailing address (delivery same as mailing by default)
-      await form.getByTestId('mailing-address-input-street').fill('123 Custodian St')
-      await form.getByTestId('mailing-address-input-city').fill('Victoria')
-      await form.getByTestId('mailing-address-input-region').focus()
-      await form.getByTestId('mailing-address-input-region').click()
-      const regionList = page.getByRole('listbox')
-      await expect(regionList).toBeVisible()
-      await page.keyboard.type('British Columbia')
-      await page.keyboard.press('Enter')
-      await expect(regionList).not.toBeVisible()
-      await form.getByTestId('mailing-address-input-postalCode').fill('V8V 1A1')
-      // Editing the mailing address debounce-resets "same as mailing" for 100ms by design
-      // (see Form/Address/index.vue) — wait it out before checking the box, otherwise the
-      // pending reset from the last mailing edit fires after and unchecks it.
-      await page.waitForTimeout(200)
-      const sameAsMailingCheckbox = form.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
-      await expect(async () => {
-        if (!(await sameAsMailingCheckbox.isChecked())) {
-          await sameAsMailingCheckbox.check({ force: true })
-        }
-        await form.getByRole('button', { name: 'Done' }).click()
-        await expect(form).not.toBeVisible()
-      }).toPass({ timeout: 15000 })
-
-      // table should now show the new custodian with their email
-      await expect(custodians).toContainText('NEW CUSTODIAN')
-      await expect(custodians).toContainText('new.custodian@example.com')
-
-      // Navigate to review — custodians should appear since a change was made
-      await goToReview(page)
-      await expect(page.getByTestId('review-custodians-section')).toBeVisible()
-
-      await fillCorrectionComment(page, 'Adding a custodian of records')
-      await fillCompletingParty(page)
-      await fillConfirmAuthorization(page)
-      await page.getByRole('radio', { name: 'No Fee' }).click()
-
-      const submitRequest = page.waitForRequest(
-        req => req.url().includes(`/businesses/${identifier}/filings`) && req.method() === 'PUT',
-        { timeout: 10000 }
-      )
-      await page.getByRole('button', { name: 'Submit' }).click()
-      const request = await submitRequest
-      const requestBody = request.postDataJSON()
-      const relationships = requestBody.filing.correction.relationships as Array<{
-        entity: { givenName: string, familyName: string, email?: string }
-        roles: Array<{ roleType: string }>
-        actions: string[]
-      }>
-
-      const custodianRelationship = relationships.find(r => r.entity.familyName === 'Custodian')
-      expect(custodianRelationship).toBeDefined()
-      expect(custodianRelationship!.entity.email).toBe('new.custodian@example.com')
-      expect(custodianRelationship!.roles.some(r => r.roleType === 'Custodian')).toBe(true)
-      expect(custodianRelationship!.actions).toContain('ADDED')
+      // name, address and email can be corrected
+      await expect(form.getByTestId('first-name-input')).toBeVisible()
+      await expect(form.getByTestId('mailing-address-input-street')).toBeVisible()
+      await expect(form.getByTestId('party-email-input')).toBeVisible()
+      await expect(form.getByRole('button', { name: 'Delete' })).not.toBeVisible()
     })
   })
 
