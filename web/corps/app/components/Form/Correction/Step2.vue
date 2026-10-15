@@ -184,7 +184,7 @@ function onError(event: FormErrorEvent) {
     <FormCertify
       v-if="!store.isStaffCorrectionType && store.formState.certify"
       v-model="store.formState.certify"
-      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
       order="5"
       name="certify"
     />
@@ -192,7 +192,7 @@ function onError(event: FormErrorEvent) {
     <FormConfirmAuthorization
       v-if="requiresAuthorization && store.formState.authorization"
       v-model="store.formState.authorization"
-      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
       :order="store.isStaffCorrectionType ? 4 : 6"
       name="authorization"
     />

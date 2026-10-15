@@ -53,15 +53,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         variant="subtle"
       >
         <template #description>
-          <i18n-t
-            tag="p"
-            scope="global"
-            keypath="text.consentNoCorrectionsAfterSubmission"
-          >
-            <template #important>
-              <strong>{{ $t('label.important') }}:</strong>
-            </template>
-          </i18n-t>
+          <ConnectI18nHelper as="p" translation-path="text.consentNoCorrectionsAfterSubmission" />
         </template>
       </UAlert>
 

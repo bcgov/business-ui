@@ -6,6 +6,7 @@ import {
   describeCommonFilingStoreBehaviour,
   getDraftFilingMock,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   resetFilingStoreMocks
@@ -20,6 +21,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const filingType = FilingType.CONSENT_AMALGAMATION_OUT
 const bodyKey = 'consentAmalgamationOut'
@@ -50,7 +52,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'authorization',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useConsentAmalgamationOutStore', () => {
@@ -145,7 +148,7 @@ describe('useConsentAmalgamationOutStore', () => {
   })
 
   describe('submit(isSubmission)', () => {
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing. */
     async function initNewFiling() {
@@ -159,7 +162,7 @@ describe('useConsentAmalgamationOutStore', () => {
       await store.submit(true)
 
       // FUTURE: verify the user selected jurisdiction
-      expect(getPostPayload().filing.consentAmalgamationOut).toEqual({
+      expect(getBlockedPayload().filing.consentAmalgamationOut).toEqual({
         foreignJurisdiction: { country: '', region: null }
       })
     })
@@ -169,7 +172,7 @@ describe('useConsentAmalgamationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.consentAmalgamationOut).not.toHaveProperty('details')
+      expect(getBlockedPayload().filing.consentAmalgamationOut).not.toHaveProperty('details')
     })
 
     it('should not send an effective date - the filer derives the consent expiry', async () => {
@@ -177,7 +180,7 @@ describe('useConsentAmalgamationOutStore', () => {
 
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.effectiveDate).toBeUndefined()
       expect(header.name).toBe(FilingType.CONSENT_AMALGAMATION_OUT)
       expect(header.date).toBeTruthy()
@@ -188,7 +191,7 @@ describe('useConsentAmalgamationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.authorizationReceived).toBe(false)
+      expect(getBlockedPayload().filing.header.authorizationReceived).toBe(false)
     })
 
     it('should send the optional document delivery email when one is entered', async () => {
@@ -197,7 +200,7 @@ describe('useConsentAmalgamationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
     })
 
     it('should omit the optional document delivery email when it is blank', async () => {
@@ -205,7 +208,7 @@ describe('useConsentAmalgamationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.documentOptionalEmail).toBeUndefined()
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBeUndefined()
     })
   })
 

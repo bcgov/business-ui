@@ -66,9 +66,6 @@ export default {
     finishTaskBeforeSubmit: 'Finish this task before submitting.',
     finishTaskBeforeSave: 'Finish this task before saving.',
     liquidationRecordsOfficeAddressDesc: 'This is where the Liquidation Records Office is located.',
-    noChangesToSave: 'There are no changes to save.',
-    noChangesToSubmit: 'There are no changes to submit.',
-    finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
     officerInfoDescription: 'You can only view current officers. Keep current and former officer information in the company’s records.',
     trackFolio: 'This is meant for your own tracking purposes and will appear on your receipt.',
     updateAtleastOneReceiverToSubmit: 'Update at least one Receiver to submit.'

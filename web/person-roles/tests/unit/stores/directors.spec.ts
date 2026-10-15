@@ -8,6 +8,7 @@ import {
   getDraftFilingMock,
   mockInitFees,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockOpenFilingNotAvailableModal,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
@@ -25,6 +26,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const mockGetFeatureFlag = vi.fn().mockResolvedValue('BC BEN CC ULC C CBEN CCC CUL CP')
 mockNuxtImport('useConnectLaunchDarkly', () => () => ({
@@ -74,7 +76,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'authorization',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describeCommonFilingStoreBehaviour({
@@ -89,7 +92,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'certified-by',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useDirectorsStore', () => {
@@ -217,7 +221,7 @@ describe('useDirectorsStore', () => {
 
   describe('submit(isSubmission) - corps convention', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing with the authorization confirmed. */
     async function initAndAuthorize() {
@@ -230,7 +234,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      const changeOfDirectors = getPostPayload().filing.changeOfDirectors
+      const changeOfDirectors = getBlockedPayload().filing.changeOfDirectors
       expect(changeOfDirectors).toEqual({ relationships: [] })
       expect(Object.keys(changeOfDirectors)).toEqual(['relationships'])
     })
@@ -240,7 +244,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.name).toBe(FilingType.CHANGE_OF_DIRECTORS)
       expect(header.effectiveDate).toBe(toApiDateTime(getToday('America/Vancouver')))
       expect(header.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/)
@@ -258,7 +262,7 @@ describe('useDirectorsStore', () => {
 
   describe('submit(isSubmission) - coops convention', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     beforeEach(async () => {
       setMockBusiness(coopBusiness)
@@ -271,7 +275,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.effectiveDate).toBe('2026-07-01T07:00:00+00:00')
+      expect(getBlockedPayload().filing.header.effectiveDate).toBe('2026-07-01T07:00:00+00:00')
     })
 
     // FUTURE: the certify section (base FormCertify) supplies the name

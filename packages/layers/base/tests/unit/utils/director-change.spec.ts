@@ -93,7 +93,7 @@ describe('director-change utils', () => {
     })
   })
 
-  describe('buildChangeOfDirectorsRelationships', () => {
+  describe('formatChangeOfDirectorsRelationshipsApi', () => {
     const partiesMock = getPartiesMock()
 
     function tableFromMock(): TableBusinessState<PartySchema>[] {
@@ -107,7 +107,7 @@ describe('director-change utils', () => {
       const table = tableFromMock()
       table[0]!.new.actions = [ActionType.NAME_CHANGED]
 
-      const result = buildChangeOfDirectorsRelationships(table)
+      const result = formatChangeOfDirectorsRelationshipsApi(table)
 
       expect(result).toHaveLength(1)
       expect(result[0]!.actions).toEqual([ActionType.NAME_CHANGED])
@@ -115,7 +115,7 @@ describe('director-change utils', () => {
     })
 
     it('should return an empty array when nothing changed', () => {
-      expect(buildChangeOfDirectorsRelationships(tableFromMock())).toEqual([])
+      expect(formatChangeOfDirectorsRelationshipsApi(tableFromMock())).toEqual([])
     })
 
     it('should stamp the provided cessation date on removed directors', () => {
@@ -123,7 +123,7 @@ describe('director-change utils', () => {
       table[0]!.new.actions = [ActionType.REMOVED]
       table[1]!.new.actions = [ActionType.ADDRESS_CHANGED]
 
-      const result = buildChangeOfDirectorsRelationships(table, { removedCessationDate: '2026-01-15' })
+      const result = formatChangeOfDirectorsRelationshipsApi(table, { removedCessationDate: '2026-01-15' })
 
       const removed = result.find(r => r.actions?.includes(ActionType.REMOVED))!
       expect(removed.roles.every(r => r.cessationDate === '2026-01-15')).toBe(true)
@@ -135,7 +135,7 @@ describe('director-change utils', () => {
       const table = tableFromMock()
       table[0]!.new.actions = [ActionType.REMOVED]
 
-      const result = buildChangeOfDirectorsRelationships(table)
+      const result = formatChangeOfDirectorsRelationshipsApi(table)
 
       expect(result[0]!.roles[0]!.cessationDate).toBeTruthy()
     })

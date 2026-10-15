@@ -12,6 +12,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const filingType = FilingType.CHANGE_OF_DIRECTORS
 const bodyKey = 'changeOfDirectors'
@@ -25,16 +26,12 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
     ...overrides
   })
 
-/** The corps convention: a confirm authorization checkbox instead of a certify name, no fee re-sync. */
-const useAuthorizationStore = defineStore('fixture-authorization-store', () => {
-  const {
-    applyAuthorizationCertify,
-    createFilingPayload,
-    getPaymentHeaderApi,
-    hydratePaymentState,
-    initFiling,
-    saveOrSubmitFiling
-  } = useFiling()
+/**
+ * The corps convention: a confirm authorization checkbox instead of a certify name, no fee re-sync.
+ * @param blockSubmit - a submission is logged instead of filed
+ */
+const defineAuthorizationStore = (id: string, blockSubmit = false) => defineStore(id, () => {
+  const { formatFilingPayloadApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
   const businessStore = useBusinessStore()
   const isStaff = useIsStaff()
   const draftFilingState = shallowRef<FilingDraftState<CODFiling>>({} as FilingDraftState<CODFiling>)
@@ -59,16 +56,21 @@ const useAuthorizationStore = defineStore('fixture-authorization-store', () => {
   }
 
   async function submit(isSubmission: boolean) {
-    const filingPayload = createFilingPayload<CODFiling>(
+    const filingPayload = formatFilingPayloadApi<CODFiling>(
       businessStore.business!,
       filingType,
       { changeOfDirectors: { relationships: [] } },
       {
         authorizationReceived: Boolean(formState.authorization?.isAuthorized),
-        ...getPaymentHeaderApi(formState, isStaff.value)
+        ...formatPaymentHeaderApi(formState, isStaff.value)
       } as Partial<FilingHeaderSubmission>
     )
     applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+
+    if (blockSubmit && isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     return saveOrSubmitFiling<CODFiling>(businessStore.businessIdentifier!, filingPayload, {
       isSubmission,
@@ -84,9 +86,12 @@ const useAuthorizationStore = defineStore('fixture-authorization-store', () => {
   return { draftFilingState, formState, initializing, init, submit, $reset }
 })
 
+const useAuthorizationStore = defineAuthorizationStore('fixture-authorization-store')
+const useBlockedStore = defineAuthorizationStore('fixture-blocked-store', true)
+
 /** The coops convention: always certified by the signed in user, fees re-synced on a staff resume. */
 const useCertifiedByStore = defineStore('fixture-certified-by-store', () => {
-  const { createFilingPayload, getPaymentHeaderApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
+  const { formatFilingPayloadApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
   const businessStore = useBusinessStore()
   const isStaff = useIsStaff()
   const draftFilingState = shallowRef<FilingDraftState<CODFiling>>({} as FilingDraftState<CODFiling>)
@@ -107,11 +112,11 @@ const useCertifiedByStore = defineStore('fixture-certified-by-store', () => {
   }
 
   async function submit(isSubmission: boolean) {
-    const filingPayload = createFilingPayload<CODFiling>(
+    const filingPayload = formatFilingPayloadApi<CODFiling>(
       businessStore.business!,
       filingType,
       { changeOfDirectors: { relationships: [] } },
-      getPaymentHeaderApi(formState, isStaff.value)
+      formatPaymentHeaderApi(formState, isStaff.value)
     )
 
     return saveOrSubmitFiling<CODFiling>(businessStore.businessIdentifier!, filingPayload, {
@@ -140,6 +145,21 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'authorization'
+})
+
+describeCommonFilingStoreBehaviour({
+  name: 'blocked submission fixture store',
+  useStore: useBlockedStore,
+  filingType,
+  bodyKey,
+  buildDraft,
+  initStore: async (store, draftId) => {
+    await store.init(identifier, draftId)
+    store.formState.authorization!.isAuthorized = true
+  },
+  payment: 'both',
+  certify: 'authorization',
+  submitBlocked: true
 })
 
 describeCommonFilingStoreBehaviour({

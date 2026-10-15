@@ -9,6 +9,7 @@ import {
   getDraftFilingMock,
   mockInitFiling,
   mockIsStaff,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   mockUpdateAllFees,
@@ -26,6 +27,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const identifier = 'CP1002605'
 
@@ -71,7 +73,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'certified-by',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useAddressChangeStore', () => {
@@ -185,7 +188,7 @@ describe('useAddressChangeStore', () => {
 
   describe('submit(isSubmission)', () => {
     const getPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing with the registered office loaded. */
     async function initNewFiling(addresses = [getRegisteredOfficeRow()]) {
@@ -200,13 +203,13 @@ describe('useAddressChangeStore', () => {
     it('should echo the business legal type in the filing body', async () => {
       await store.submit(true)
 
-      expect(getPostPayload().filing.changeOfAddress.legalType).toBe(coopBusiness.legalType)
+      expect(getBlockedPayload().filing.changeOfAddress.legalType).toBe(coopBusiness.legalType)
     })
 
     it('should build a change of address only body', async () => {
       await store.submit(true)
 
-      const filing = getPostPayload().filing
+      const filing = getBlockedPayload().filing
       expect(Object.keys(filing.changeOfAddress)).toEqual(['legalType', 'offices'])
       expect(filing).not.toHaveProperty('annualReport')
       expect(filing).not.toHaveProperty('changeOfDirectors')
@@ -215,7 +218,7 @@ describe('useAddressChangeStore', () => {
     it('should send the registered office only - never a records office', async () => {
       await store.submit(true)
 
-      const offices = getPostPayload().filing.changeOfAddress.offices
+      const offices = getBlockedPayload().filing.changeOfAddress.offices
       expect(Object.keys(offices)).toEqual([OfficeType.REGISTERED])
       expect(offices).not.toHaveProperty(OfficeType.RECORDS)
       expect(offices[OfficeType.REGISTERED].deliveryAddress.streetAddress).toBe('111 Registered St')
@@ -228,14 +231,14 @@ describe('useAddressChangeStore', () => {
 
       await store.submit(true)
 
-      const offices = getPostPayload().filing.changeOfAddress.offices
+      const offices = getBlockedPayload().filing.changeOfAddress.offices
       expect(offices[OfficeType.REGISTERED].deliveryAddress.streetAddress).toBe('999 Changed Ave')
     })
 
     it('should never send a header effective date - a coop address change is immediate', async () => {
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.name).toBe(FilingType.CHANGE_OF_ADDRESS)
       expect(header.effectiveDate).toBeUndefined()
       expect(header.futureEffectiveDate).toBeUndefined()

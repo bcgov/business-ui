@@ -2,8 +2,7 @@ const PACIFIC_TZ = 'America/Vancouver'
 
 export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const {
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -34,8 +33,11 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
    * The date the annual report is filed as of - also the effective date of the whole bundle and the
    * date directors/addresses are fetched for.
    * FUTURE: Replace the fallback with the AGM date when one is entered.
+   * FUTURE: May need to refetch the directors/addresses when it changes.
    */
-  const asOfDate = computed<IsoDatePacific>(() => `${arYear.value}-12-31`)
+  const asOfDate = computed<IsoDatePacific>(() =>
+    arYear.value < Number(getToday(PACIFIC_TZ).slice(0, 4)) ? `${arYear.value}-12-31` : getToday(PACIFIC_TZ)
+  )
 
   function getYearFromUrl(): number {
     const currentYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
@@ -85,7 +87,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
     const business = businessStore.business as BusinessData
     const effectiveDate = toApiDateTime(asOfDate.value)
 
-    const filingPayload = createFilingPayload<CoopARFiling>(
+    const filingPayload = formatFilingPayloadApi<CoopARFiling>(
       business,
       FilingType.ANNUAL_REPORT,
       { annualReport: annualReportPayload },
@@ -96,10 +98,16 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
         // round-tripped for the dashboard AR todo when resuming a draft
         ...(business.arMinDate ? { arMinDate: business.arMinDate } : {}),
         ...(business.arMaxDate ? { arMaxDate: business.arMaxDate } : {}),
-        // FUTURE: the certify section - until then createFilingPayload defaults it to the signed in user's name
-        ...getPaymentHeaderApi(formState, isStaff.value)
+        // FUTURE: the certify section - until then formatFilingPayloadApi defaults it to the signed in user's name
+        ...formatPaymentHeaderApi(formState, isStaff.value)
       } as Partial<FilingHeaderSubmission>
     )
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     const filingResp = await saveOrSubmitFiling<CoopARFiling>(
       businessStore.businessIdentifier!,

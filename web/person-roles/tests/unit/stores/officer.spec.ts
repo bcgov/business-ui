@@ -5,7 +5,7 @@ import { setActivePinia, createPinia } from 'pinia'
 
 const identifier = 'BC1234567'
 
-const mockCreateFilingPayload = vi.fn()
+const mockFormatFilingPayloadApi = vi.fn()
 const mockSaveOrUpdateDraftFiling = vi.fn()
 const mockPostFiling = vi.fn()
 const mockBusinessService = {
@@ -20,7 +20,7 @@ mockNuxtImport('useFiling', original => () => {
   return {
     ...orig,
     initFiling: mockInitFiling,
-    createFilingPayload: mockCreateFilingPayload
+    formatFilingPayloadApi: mockFormatFilingPayloadApi
   }
 })
 
@@ -211,7 +211,7 @@ describe('useOfficerStore', () => {
         store.draftFilingState = {} as OfficersDraftState
       }
 
-      mockCreateFilingPayload.mockReturnValue({ filing: {} })
+      mockFormatFilingPayloadApi.mockReturnValue({ filing: {} })
       mockSaveOrUpdateDraftFiling.mockResolvedValue({ filing: { header: { filingId: 'new-id' } } })
       mockPostFiling.mockResolvedValue({ filing: { header: { filingId: 'final-id' } } })
 

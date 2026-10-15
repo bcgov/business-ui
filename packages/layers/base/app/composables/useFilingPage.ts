@@ -34,8 +34,8 @@ interface FilingPageOptions<T> {
   formId: string
   /** The i18n group holding desc/h1/title, eg 'page.changeOfDirectors'. */
   i18nPrefix: string
-  /** Overrides the `${i18nPrefix}.h1` label (eg the annual report interpolates the year). */
-  h1?: MaybeRefOrGetter<string>
+  /** Named params the desc/h1/title keys interpolate (eg the annual report year). */
+  i18nParams?: MaybeRefOrGetter<Record<string, unknown>>
   /** [initialState, currentState] pairs change detection compares - see useFilingTaskGuards. */
   watchers: Parameters<typeof useFilingTaskGuards>[0]
   /** Replaces the default 'any local change, or a resumed draft' submit rule. */
@@ -83,11 +83,14 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
     ? route.params.filingId as string
     : urlParams.draft as string | undefined
 
-  const filingText = computed(() => ({
-    desc: t(`${options.i18nPrefix}.desc`),
-    h1: options.h1 !== undefined ? toValue(options.h1) : t(`${options.i18nPrefix}.h1`),
-    title: t(`${options.i18nPrefix}.title`)
-  }))
+  const filingText = computed(() => {
+    const params = toValue(options.i18nParams) ?? {}
+    return {
+      desc: t(`${options.i18nPrefix}.desc`, params),
+      h1: t(`${options.i18nPrefix}.h1`, params),
+      title: t(`${options.i18nPrefix}.title`, params)
+    }
+  })
 
   useHead({
     title: filingText.value.title

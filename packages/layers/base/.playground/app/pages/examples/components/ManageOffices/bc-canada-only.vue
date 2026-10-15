@@ -13,7 +13,7 @@ tableState.value = formatOfficesSection(mockOffices)
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const loading = ref(false)
 
-const offices = computed(() => buildChangeOfAddressOffices(tableState.value))
+const offices = computed(() => formatChangeOfAddressOfficesApi(tableState.value))
 </script>
 
 <template>

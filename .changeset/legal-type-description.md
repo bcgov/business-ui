@@ -2,4 +2,4 @@
 "@sbc-connect/nuxt-business-base": minor
 ---
 
-Add getLegalTypeDescription (moved from web/corps so person-roles can share it) and shared fee/modal mock handles in the filing-store test kit.
+getCorpFullDescription takes an optional fallback (returned for an unknown or missing code) and shared fee/modal mock handles in the filing-store test kit.

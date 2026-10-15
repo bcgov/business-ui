@@ -14,12 +14,9 @@ definePageMeta({
 })
 
 // an office open in the address sub form must be completed before saving or submitting
-function checkActiveSubForm(action: 'submit' | 'save') {
+function checkActiveSubForm() {
   if (store.formState.activeOffice !== undefined) {
-    setSubFormAlert(
-      'office-address-form',
-      action === 'submit' ? t('text.finishTaskBeforeSubmit') : t('text.finishTaskBeforeSave')
-    )
+    setSubFormAlert('office-address-form', t('text.finishTaskBeforeOtherChanges'))
     return true
   }
   return false

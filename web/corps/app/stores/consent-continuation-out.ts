@@ -1,5 +1,5 @@
 export const useConsentContinuationOutStore = defineStore('consent-continuation-out-store', () => {
-  const { createFilingPayload, getPaymentHeaderApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
+  const { formatFilingPayloadApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
 
   const businessStore = useBusinessStore()
 
@@ -46,28 +46,34 @@ export const useConsentContinuationOutStore = defineStore('consent-continuation-
     const headerPayload = {
       // NB: no effectiveDate - the filer sets the 6 month consent expiry from the real effective date
       // FUTURE: the completing party confirmation drives this
-      authorizationReceived: true,
+      authorizationReceived: false,
       ...(formState.documentDelivery?.completingPartyEmail
         ? { documentOptionalEmail: formState.documentDelivery.completingPartyEmail }
         : {}
       ),
-      ...getPaymentHeaderApi(formState, isStaff.value)
+      ...formatPaymentHeaderApi(formState, isStaff.value)
     }
 
-    const filingPayload = createFilingPayload<CCOFiling>(
+    const filingPayload = formatFilingPayloadApi<CCOFiling>(
       businessStore.business!,
       FilingType.CONSENT_CONTINUATION_OUT,
       { consentContinuationOut: ccoPayload },
       headerPayload
     )
 
-    // NB: unlike the other corps filings certifiedBy is kept (createFilingPayload defaults it to the auth user's
+    // NB: unlike the other corps filings certifiedBy is kept (formatFilingPayloadApi defaults it to the auth user's
     // name) - the completing party name must appear on the letter of consent
     // FUTURE: the completing party confirmation owns the name
     const header = filingPayload.filing.header as Record<string, unknown>
     // authorization is only recorded on submission
     if (!isSubmission) {
       delete header.authorizationReceived
+    }
+
+    // TEMP: submissions are disabled until the filing form lands - drafts still save
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
     }
 
     const filingResp = await saveOrSubmitFiling<CCOFiling>(businessStore.businessIdentifier!, filingPayload, {

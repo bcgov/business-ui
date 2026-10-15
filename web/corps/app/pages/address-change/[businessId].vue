@@ -92,7 +92,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         v-if="store.formState.authorization"
         v-model="store.formState.authorization"
         data-testid="form-section-authorization"
-        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+        :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         name="authorization"
         :order="store.isStaff ? 2 : 3"
       />

@@ -10,13 +10,15 @@ import { vi } from 'vitest'
  * ```ts
  * mockNuxtImport('useBusinessService', async () => (await import('#test-mocks')).makeBusinessServiceMock)
  * mockNuxtImport('useFiling', async original => (await import('#test-mocks')).makeFilingMock(original))
+ * a plain util auto-import is replaced by the mock function itself
+ * mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks')).mockLogBlockedSubmission)
  * ```
  */
 
 /** The filing id every draft mock and saved draft response carries. */
 export const DRAFT_FILING_ID = 987654
 
-/** The signed in user name `createFilingPayload` certifies a filing with. */
+/** The signed in user name `formatFilingPayloadApi` certifies a filing with. */
 export const DEFAULT_FULL_NAME = 'Test User'
 
 const defaultBusiness = {
@@ -43,6 +45,7 @@ export const mockInitFees = vi.fn()
 export const mockAddReplaceFee = vi.fn()
 export const mockRemoveFee = vi.fn()
 export const mockOpenFilingNotAvailableModal = vi.fn()
+export const mockLogBlockedSubmission = vi.fn()
 export const mockIsStaff = ref(false)
 export const mockAccountType = ref<AccountType>(AccountType.PREMIUM)
 export const mockFullName = ref(DEFAULT_FULL_NAME)
@@ -53,7 +56,7 @@ export const makeBusinessServiceMock = () => ({
 })
 
 /**
- * Mocks only `initFiling` - `createFilingPayload` and the payload helpers run for real so the
+ * Mocks only `initFiling` - `formatFilingPayloadApi` and the payload helpers run for real so the
  * submitted payload shape is asserted end to end.
  * @param original the original `useFiling` handed to the `mockNuxtImport` factory
  */
@@ -113,6 +116,7 @@ export function resetFilingStoreMocks() {
   mockAddReplaceFee.mockReset()
   mockRemoveFee.mockReset()
   mockOpenFilingNotAvailableModal.mockReset()
+  mockLogBlockedSubmission.mockReset()
   mockIsStaff.value = false
   mockAccountType.value = AccountType.PREMIUM
   mockFullName.value = DEFAULT_FULL_NAME

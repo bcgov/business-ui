@@ -5,7 +5,7 @@ const EFFECT_OF_ORDER_POA = 'planOfArrangement'
 
 export const useCourtOrderStore = defineStore('court-order-store', () => {
   const schema = getCourtOrderFormSchema()
-  const { initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -99,7 +99,7 @@ export const useCourtOrderStore = defineStore('court-order-store', () => {
     }
 
     // NB: never send header.effectiveDate - it would make the filing future effective
-    const filingPayload = createFilingPayload<CourtOrderFiling>(
+    const filingPayload = formatFilingPayloadApi<CourtOrderFiling>(
       businessStore.business!,
       FilingType.COURT_ORDER,
       { courtOrder: courtOrderPayload },

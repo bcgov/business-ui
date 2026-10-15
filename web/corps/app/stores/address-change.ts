@@ -3,9 +3,7 @@ import { cloneDeep } from 'es-toolkit'
 export const useAddressChangeStore = defineStore('address-change-store', () => {
   const { tableState } = useManageOffices()
   const {
-    applyAuthorizationCertify,
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -54,16 +52,16 @@ export const useAddressChangeStore = defineStore('address-change-store', () => {
       // schema required - the body echoes the legal type of the business
       legalType: businessStore.business!.legalType,
       // both offices are always sent, changed or not - the corps schema requires both
-      offices: buildChangeOfAddressOffices(tableState.value)
+      offices: formatChangeOfAddressOfficesApi(tableState.value)
     }
 
     const headerPayload = {
       // NB: no effectiveDate - api forces it to 00:01 PT the next day
       authorizationReceived: Boolean(formState.authorization?.isAuthorized),
-      ...getPaymentHeaderApi(formState, isStaff.value)
+      ...formatPaymentHeaderApi(formState, isStaff.value)
     }
 
-    const filingPayload = createFilingPayload<COAFiling>(
+    const filingPayload = formatFilingPayloadApi<COAFiling>(
       businessStore.business!,
       FilingType.CHANGE_OF_ADDRESS,
       { changeOfAddress: coaPayload },
@@ -71,6 +69,12 @@ export const useAddressChangeStore = defineStore('address-change-store', () => {
     )
 
     applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     const filingResp = await saveOrSubmitFiling<COAFiling>(businessStore.businessIdentifier!, filingPayload, {
       isSubmission,

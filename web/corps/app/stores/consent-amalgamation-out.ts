@@ -1,8 +1,6 @@
 export const useConsentAmalgamationOutStore = defineStore('consent-amalgamation-out-store', () => {
   const {
-    applyAuthorizationCertify,
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -55,10 +53,10 @@ export const useConsentAmalgamationOutStore = defineStore('consent-amalgamation-
         ? { documentOptionalEmail: formState.documentDelivery.completingPartyEmail }
         : {}
       ),
-      ...getPaymentHeaderApi(formState, isStaff.value)
+      ...formatPaymentHeaderApi(formState, isStaff.value)
     }
 
-    const filingPayload = createFilingPayload<CAOFiling>(
+    const filingPayload = formatFilingPayloadApi<CAOFiling>(
       businessStore.business!,
       FilingType.CONSENT_AMALGAMATION_OUT,
       { consentAmalgamationOut: caoPayload },
@@ -66,6 +64,12 @@ export const useConsentAmalgamationOutStore = defineStore('consent-amalgamation-
     )
 
     applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     const filingResp = await saveOrSubmitFiling<CAOFiling>(businessStore.businessIdentifier!, filingPayload, {
       isSubmission,

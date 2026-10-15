@@ -8,6 +8,7 @@ import {
   getDraftFilingMock,
   mockBusiness,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   resetFilingStoreMocks,
@@ -23,6 +24,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const filingType = FilingType.CHANGE_OF_ADDRESS
 const bodyKey = 'changeOfAddress'
@@ -69,7 +71,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'authorization',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useAddressChangeStore', () => {
@@ -163,7 +166,7 @@ describe('useAddressChangeStore', () => {
 
   describe('submit(isSubmission)', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing with both offices loaded and the authorization confirmed. */
     async function initAndAuthorize(addresses = officeRows()) {
@@ -177,7 +180,7 @@ describe('useAddressChangeStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.changeOfAddress.legalType).toBe(mockBusiness.value.legalType)
+      expect(getBlockedPayload().filing.changeOfAddress.legalType).toBe(mockBusiness.value.legalType)
     })
 
     it('should send both offices with both addresses even when nothing changed', async () => {
@@ -185,7 +188,7 @@ describe('useAddressChangeStore', () => {
 
       await store.submit(true)
 
-      const offices = getPostPayload().filing.changeOfAddress.offices
+      const offices = getBlockedPayload().filing.changeOfAddress.offices
       expect(Object.keys(offices)).toEqual([OfficeType.REGISTERED, OfficeType.RECORDS])
       expect(offices[OfficeType.REGISTERED].deliveryAddress.streetAddress).toBe('111 Registered St')
       expect(offices[OfficeType.REGISTERED].mailingAddress.streetAddress).toBe('111 Registered St')
@@ -201,7 +204,7 @@ describe('useAddressChangeStore', () => {
 
       await store.submit(true)
 
-      const offices = getPostPayload().filing.changeOfAddress.offices
+      const offices = getBlockedPayload().filing.changeOfAddress.offices
       expect(offices[OfficeType.REGISTERED].deliveryAddress.streetAddress).toBe('999 Changed Ave')
       expect(offices[OfficeType.RECORDS].deliveryAddress.streetAddress).toBe('222 Records St')
     })
@@ -211,7 +214,7 @@ describe('useAddressChangeStore', () => {
 
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.name).toBe(FilingType.CHANGE_OF_ADDRESS)
       expect(header.effectiveDate).toBeUndefined()
       expect(header.futureEffectiveDate).toBeUndefined()

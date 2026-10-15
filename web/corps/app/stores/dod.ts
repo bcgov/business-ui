@@ -2,7 +2,7 @@ import { cloneDeep } from 'es-toolkit'
 // TODO - FUTURE - maybe consolidate 'delay' store with other dissolution filings if possible
 export const useDodStore = defineStore('delay-of-dissolution-store', () => {
   const schema = getDodSchema()
-  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -82,14 +82,14 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     const dissolutionPayload: DissolutionPayload = {
       dissolutionType: dissolutionSubType.value,
       delayType: formState.delay.option,
-      ...getCommonFilingPayloadData(formState.courtOrder),
+      ...formatCommonFilingDataApi(formState.courtOrder),
       ...(formState.delay.option === DelayOption.CUSTOM
         ? { dissolutionDate: formState.delay.date }
         : {}
       )
     }
 
-    const payload = createFilingPayload<DissolutionApplication>(
+    const payload = formatFilingPayloadApi<DissolutionApplication>(
       businessStore.business!,
       FilingType.DISSOLUTION,
       { dissolution: dissolutionPayload },

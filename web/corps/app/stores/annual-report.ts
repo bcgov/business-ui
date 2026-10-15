@@ -2,9 +2,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const { tableState: tableDirectors } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const {
-    applyAuthorizationCertify,
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -27,11 +25,12 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   // annualReportDate and nextARDate are both the date part of nextAnnualReport - there is nothing to enter
   const asOfDate = computed<IsoDatePacific>(() => nextAnnualReport.value.split('T')[0] ?? '')
 
-  /** Annual report year precedence: '?year=' query > draft header > the year of the business' next AR. */
+  /**
+   * Annual report year precedence: draft header > the year of the business' next AR.
+   */
   function resolveArYear(draftYear?: number): number | undefined {
-    const queryYear = Number(useUrlSearchParams().year)
     const businessYear = Number(asOfDate.value.slice(0, 4))
-    return queryYear || draftYear || businessYear || undefined
+    return draftYear || businessYear || undefined
   }
 
   async function init(businessId: string, draftId?: string) {
@@ -63,7 +62,6 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
       tableOffices.value = addresses
     }
 
-    // trust the year given by the dashboard todo - overdue years must be filed in contiguous order
     arYear.value = resolveArYear(draftHeader?.ARFilingYear)
 
     await snapshotInitialState()
@@ -81,10 +79,10 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
       // NB: header.effectiveDate must be an API datetime (nextAnnualReport is asOfDate at Pacific midnight)
       effectiveDate: nextAnnualReport.value,
       authorizationReceived: Boolean(formState.authorization?.isAuthorized),
-      ...getPaymentHeaderApi(formState, isStaff.value)
+      ...formatPaymentHeaderApi(formState, isStaff.value)
     }
 
-    const filingPayload = createFilingPayload<ARFiling>(
+    const filingPayload = formatFilingPayloadApi<ARFiling>(
       businessStore.business!,
       FilingType.ANNUAL_REPORT,
       { annualReport: annualReportPayload },
@@ -92,6 +90,12 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
     )
 
     applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     const filingResp = await saveOrSubmitFiling<ARFiling>(businessStore.businessIdentifier!, filingPayload, {
       isSubmission,

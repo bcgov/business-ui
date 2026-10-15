@@ -5,6 +5,23 @@ import { useFilingPage } from '#business/app/composables/useFilingPage'
 
 const identifier = 'BC1234567'
 
+// NB: adds a page group with a {year} placeholder so i18nParams cases assert a real interpolation.
+// The factory is hoisted, so the messages are imported dynamically.
+mockNuxtImport('useNuxtApp', async (original) => {
+  const { createI18n } = await import('vue-i18n')
+  const { default: enCA } = await import('#business/i18n/locales/en-CA')
+  const i18n = createI18n({
+    legacy: false,
+    locale: 'en-CA',
+    messages: {
+      'en-CA': { ...enCA, page: { annualReport: { h1: 'Annual Report {year}' } } },
+      'fr-CA': {}
+    },
+    missing: (_, key) => key
+  })
+  return () => ({ ...(typeof original === 'function' ? original() : {}), $i18n: i18n.global })
+})
+
 const mockRoute = reactive({
   params: { businessId: identifier } as Record<string, string>,
   query: {} as Record<string, string>
@@ -101,9 +118,12 @@ describe('useFilingPage', () => {
       })
     })
 
-    it('uses the h1 override and keeps it reactive', () => {
+    it('interpolates the i18n params and keeps them reactive', () => {
       const year = ref(2025)
-      const { filingText } = useFilingPage(getOptions({ h1: () => `Annual Report ${year.value}` }))
+      const { filingText } = useFilingPage(getOptions({
+        i18nPrefix: 'page.annualReport',
+        i18nParams: () => ({ year: year.value })
+      }))
 
       expect(filingText.value.h1).toBe('Annual Report 2025')
 
@@ -111,11 +131,17 @@ describe('useFilingPage', () => {
       expect(filingText.value.h1).toBe('Annual Report 2026')
     })
 
+    it('ignores the i18n params on a key without a placeholder', () => {
+      const { filingText } = useFilingPage(getOptions({ i18nParams: { year: 2026 } }))
+
+      expect(filingText.value.h1).toBe('page.changeOfDirectors.h1')
+    })
+
     it('sets the page title and the breadcrumb label', () => {
-      useFilingPage(getOptions({ h1: 'Change of Directors' }))
+      useFilingPage(getOptions())
 
       expect(mockHead).toHaveBeenCalledWith({ title: 'page.changeOfDirectors.title' })
-      expect(mockFilingNavigation).toHaveBeenCalledWith('Change of Directors')
+      expect(mockFilingNavigation).toHaveBeenCalledWith('page.changeOfDirectors.h1')
     })
   })
 

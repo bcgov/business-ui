@@ -6,6 +6,7 @@ import {
   describeCommonFilingStoreBehaviour,
   getDraftFilingMock,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   resetFilingStoreMocks,
@@ -21,6 +22,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const filingType = FilingType.ANNUAL_REPORT
 const bodyKey = 'annualReport'
@@ -37,7 +39,7 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
     ...overrides
   })
 
-/** Set the page url - the store reads the AR year from the 'year' query param. */
+/** Set the page url - the store deliberately ignores any 'year' query param. */
 function setUrl(query = '') {
   window.history.replaceState({}, '', `/annual-report/${identifier}${query}`)
 }
@@ -55,7 +57,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'authorization',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useAnnualReportStore', () => {
@@ -148,16 +151,16 @@ describe('useAnnualReportStore', () => {
     })
 
     describe('AR year resolution', () => {
-      it('should prefer the year query param over the draft and the business', async () => {
+      it('should ignore the year query param - a corps AR is strictly the next one due', async () => {
         setUrl('?year=2027')
-        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { ARFilingYear: 2025 } }) })
+        mockInitFiling.mockResolvedValue({ draftFiling: undefined })
 
-        await store.init(identifier, String(DRAFT_FILING_ID))
+        await store.init(identifier)
 
-        expect(store.arYear).toBe(2027)
+        expect(store.arYear).toBe(2026)
       })
 
-      it('should use the draft ARFilingYear when there is no year query param', async () => {
+      it('should use the draft ARFilingYear over the business year', async () => {
         mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { ARFilingYear: 2024 } }) })
 
         await store.init(identifier, String(DRAFT_FILING_ID))
@@ -173,7 +176,7 @@ describe('useAnnualReportStore', () => {
         expect(store.arYear).toBe(2026)
       })
 
-      it('should be undefined when there is no year and no next annual report', async () => {
+      it('should be undefined when there is no next annual report', async () => {
         setMockBusiness({ nextAnnualReport: '' })
         mockInitFiling.mockResolvedValue({ draftFiling: undefined })
 
@@ -186,10 +189,10 @@ describe('useAnnualReportStore', () => {
 
   describe('submit(isSubmission)', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing with the authorization confirmed. */
-    async function initAndAuthorize(query = '?year=2026') {
+    async function initAndAuthorize(query = '') {
       setUrl(query)
       mockInitFiling.mockResolvedValue({ draftFiling: undefined })
       await store.init(identifier)
@@ -201,7 +204,7 @@ describe('useAnnualReportStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.annualReport).toEqual({
+      expect(getBlockedPayload().filing.annualReport).toEqual({
         annualReportDate: asOfDate,
         nextARDate: asOfDate
       })
@@ -212,18 +215,18 @@ describe('useAnnualReportStore', () => {
 
       await store.submit(true)
 
-      const annualReport = getPostPayload().filing.annualReport
+      const annualReport = getBlockedPayload().filing.annualReport
       expect(annualReport.directors).toBeUndefined()
       expect(annualReport.offices).toBeUndefined()
       expect(Object.keys(annualReport)).toEqual(['annualReportDate', 'nextARDate'])
     })
 
     it('should send the AR filing year and effective date in the header', async () => {
-      await initAndAuthorize('?year=2026')
+      await initAndAuthorize()
 
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.name).toBe(FilingType.ANNUAL_REPORT)
       expect(header.ARFilingYear).toBe(2026)
       expect(header.effectiveDate).toBe(nextAnnualReport)
@@ -231,12 +234,12 @@ describe('useAnnualReportStore', () => {
       expect(header.date).toBeTruthy()
     })
 
-    it('should send the year given in the query param, not the business AR year', async () => {
+    it('should send the business AR year, never a conflicting query param year', async () => {
       await initAndAuthorize('?year=2024')
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.ARFilingYear).toBe(2024)
+      expect(getBlockedPayload().filing.header.ARFilingYear).toBe(2026)
     })
 
     it('should keep the AR filing year on a saved draft', async () => {

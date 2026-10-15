@@ -39,10 +39,6 @@ export default {
   text: {
     // Placeholder - need the AGM date picker, registered office addresses and directors
     agmDateNotAvailable: 'Annual general meeting date entry is not available yet.',
-    changeRegisteredOfficeAddress: 'Please change your Registered Office Address.',
-    finishTaskBeforeSave: 'Finish this task before saving.',
-    finishTaskBeforeSubmit: 'Finish this task before submitting.',
-    noChangesToSave: 'There are no changes to save.',
-    noChangesToSubmit: 'There are no changes to submit.'
+    changeRegisteredOfficeAddress: 'Please change your Registered Office Address.'
   }
 }

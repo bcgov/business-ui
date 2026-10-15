@@ -342,24 +342,12 @@ export function getCorpInfoObject(cd: CorpTypeCd): CorpInfo | null {
 /**
  * Given corp type code, returns corp full description.
  * @param cd the corp type code to get
- * @returns the description (or '' if not found)
+ * @param fallback returned when the code is unknown or missing (defaults to '')
+ * @returns the description (or the fallback if not found)
  */
-export function getCorpFullDescription(cd: CorpTypeCd): string {
+export function getCorpFullDescription(cd?: CorpTypeCd | string | null, fallback = ''): string {
   const item = corpInfoArray.find(obj => (cd === obj.corpTypeCd))
-  return (item && item.fullDesc) || ''
-}
-
-/**
- * Given a legal type, returns the corp full description, falling back to the
- * legal type itself when unknown (or '' when missing).
- */
-export function getLegalTypeDescription(legalType?: string | null): string {
-  if (!legalType) {
-    return ''
-  }
-
-  const fullDescription = getCorpFullDescription(legalType as CorpTypeCd)
-  return fullDescription ? fullDescription : legalType
+  return item?.fullDesc || fallback
 }
 
 /**

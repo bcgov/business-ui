@@ -2,8 +2,7 @@ import { cloneDeep } from 'es-toolkit'
 
 export const useAddressChangeStore = defineStore('address-change-store', () => {
   const {
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -60,20 +59,26 @@ export const useAddressChangeStore = defineStore('address-change-store', () => {
       // schema required - the body echoes the legal type of the business
       legalType: businessStore.business!.legalType,
       // the registered office is the only row in the table state, changed or not
-      offices: buildChangeOfAddressOffices(tableState.value)
+      offices: formatChangeOfAddressOfficesApi(tableState.value)
     }
 
-    const filingPayload = createFilingPayload<COAFiling>(
+    const filingPayload = formatFilingPayloadApi<COAFiling>(
       businessStore.business!,
       FilingType.CHANGE_OF_ADDRESS,
       { changeOfAddress: coaPayload },
       {
         // NB: no effectiveDate - handled by api (effective immediately)
         // FUTURE: the certify section (base FormCertify) supplies the name - until
-        // then createFilingPayload defaults it to the signed in user's name
-        ...getPaymentHeaderApi(formState, isStaff.value)
+        // then formatFilingPayloadApi defaults it to the signed in user's name
+        ...formatPaymentHeaderApi(formState, isStaff.value)
       } as Partial<FilingHeaderSubmission>
     )
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     const filingResp = await saveOrSubmitFiling<COAFiling>(
       businessStore.businessIdentifier!,

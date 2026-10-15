@@ -29,7 +29,7 @@ const warning = computed(() => getDirectorWarning(tableState.value, {
   canadianResidency: true
 }))
 
-const relationships = computed(() => buildChangeOfDirectorsRelationships(tableState.value))
+const relationships = computed(() => formatChangeOfDirectorsRelationshipsApi(tableState.value))
 </script>
 
 <template>

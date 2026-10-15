@@ -7,6 +7,7 @@ import {
   getDraftFilingMock,
   mockBusiness,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   mockUpdateAllFees,
@@ -22,6 +23,7 @@ mockNuxtImport('useConnectFeeStore', async () => (await import('#test-mocks/fili
 mockNuxtImport('useConnectAuth', async () => (await import('#test-mocks/filing-store')).makeConnectAuthMock)
 mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/filing-store')).makeAccountStoreMock)
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const mockIsBaseCompany = vi.fn()
 mockNuxtImport('useBusinessStore', async (original) => {
@@ -221,28 +223,40 @@ describe('useContinuationOutStore', () => {
   })
 
   describe('submit(isSubmission)', () => {
-    const getPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
+    const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     beforeEach(async () => {
       await store.init(identifier, String(DRAFT_FILING_ID))
     })
 
+    it('should log the blocked submission instead of filing it', async () => {
+      await store.submit(true)
+
+      expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+      expect(mockPostFiling).not.toHaveBeenCalled()
+      expect(mockLogBlockedSubmission).toHaveBeenCalledExactlyOnceWith(expect.any(Object))
+      const header = getBlockedPayload().filing.header
+      expect(header.waiveFees).toBe(true)
+      expect(header.authorizationReceived).toBe(false)
+    })
+
     it('should waive the fees - the continuation out is always free', async () => {
       await store.submit(true)
 
-      expect(getPayload().filing.header.waiveFees).toBe(true)
+      expect(getBlockedPayload().filing.header.waiveFees).toBe(true)
     })
 
     it('should send certifiedBy - the completing party name belongs on the record', async () => {
       await store.submit(true)
 
-      expect(getPayload().filing.header.certifiedBy).toBe(DEFAULT_FULL_NAME)
+      expect(getBlockedPayload().filing.header.certifiedBy).toBe(DEFAULT_FULL_NAME)
     })
 
     it('should not send an effective date - the date lives in the filing body', async () => {
       await store.submit(true)
 
-      const header = getPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.effectiveDate).toBeUndefined()
       expect(header.name).toBe(FilingType.CONTINUATION_OUT)
       expect(header.date).toBeTruthy()
@@ -252,19 +266,20 @@ describe('useContinuationOutStore', () => {
       await store.submit(true)
 
       // FUTURE: continuationOutDate, foreignJurisdiction, legalName, documents and details
-      expect(getPayload().filing.continuationOut).toEqual({})
+      expect(getBlockedPayload().filing.continuationOut).toEqual({})
     })
 
-    it('should send the authorization on submission', async () => {
+    it('should send a false authorization placeholder on submission', async () => {
       await store.submit(true)
 
-      expect(getPayload().filing.header.authorizationReceived).toBe(true)
+      // FUTURE: the completing party confirmation drives this
+      expect(getBlockedPayload().filing.header.authorizationReceived).toBe(false)
     })
 
     it('should omit the authorization when saving a draft', async () => {
       await store.submit(false)
 
-      const header = getPayload().filing.header
+      const header = getDraftPayload().filing.header
       expect(header.authorizationReceived).toBeUndefined()
       expect(header.waiveFees).toBe(true)
       expect(header.certifiedBy).toBe(DEFAULT_FULL_NAME)
@@ -273,7 +288,7 @@ describe('useContinuationOutStore', () => {
     it('should not send a folio number or staff payment - neither is collected', async () => {
       await store.submit(true)
 
-      const header = getPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.folioNumber).toBeUndefined()
       expect(header.staffPaymentOption).toBeUndefined()
     })
@@ -283,13 +298,13 @@ describe('useContinuationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
     })
 
     it('should omit the optional document delivery email when it is blank', async () => {
       await store.submit(true)
 
-      expect(getPayload().filing.header.documentOptionalEmail).toBeUndefined()
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBeUndefined()
     })
 
     it('should round trip a hydrated document delivery email', async () => {
@@ -302,13 +317,13 @@ describe('useContinuationOutStore', () => {
 
       await store.submit(false)
 
-      expect(getPayload().filing.header.documentOptionalEmail).toBe('resumed@example.com')
+      expect(getDraftPayload().filing.header.documentOptionalEmail).toBe('resumed@example.com')
     })
 
     it('should build the business block from the business store', async () => {
       await store.submit(true)
 
-      expect(getPayload().filing.business).toEqual({
+      expect(getBlockedPayload().filing.business).toEqual({
         identifier,
         legalName: mockBusiness.value.legalName,
         legalType: mockBusiness.value.legalType,
@@ -316,20 +331,17 @@ describe('useContinuationOutStore', () => {
       })
     })
 
-    it.each([true, false])(
-      'should always update the pre-created draft and never post a new filing (isSubmission: %s)',
-      async (isSubmission) => {
-        await store.submit(isSubmission)
+    it('should update the pre-created draft and never post a new filing when saving', async () => {
+      await store.submit(false)
 
-        expect(mockPostFiling).not.toHaveBeenCalled()
-        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
-          identifier,
-          expect.any(Object),
-          isSubmission,
-          DRAFT_FILING_ID
-        )
-      }
-    )
+      expect(mockPostFiling).not.toHaveBeenCalled()
+      expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
+        identifier,
+        expect.any(Object),
+        false,
+        DRAFT_FILING_ID
+      )
+    })
 
     it('should never record the draft id in the url - it is a route param here', async () => {
       await store.submit(false)

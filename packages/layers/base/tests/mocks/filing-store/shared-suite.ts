@@ -7,6 +7,7 @@ import {
   mockFullName,
   mockInitFiling,
   mockIsStaff,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   mockUpdateAllFees,
@@ -42,6 +43,11 @@ export interface CommonFilingStoreOptions<S extends CommonFilingStore> {
   certify?: 'authorization' | 'certified-by'
   /** Whether resuming a staff payment draft re-applies the fees. */
   expectsFeeResync?: boolean
+  /**
+   * For filings that are not finished and shouldn't submit
+   * if someone were to go to the url directly
+   */
+  submitBlocked?: boolean
 }
 
 /**
@@ -51,12 +57,14 @@ export interface CommonFilingStoreOptions<S extends CommonFilingStore> {
 export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
   options: CommonFilingStoreOptions<S>
 ) {
-  const { bodyKey, buildDraft, certify, filingType, initStore, name, payment, useStore } = options
+  const { bodyKey, buildDraft, certify, filingType, initStore, name, payment, submitBlocked, useStore } = options
 
   describe(`${name} — shared filing store behaviour`, () => {
     let store: S
     const postPayload = () => mockPostFiling.mock.calls[0]![1]
     const draftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
+    /** The payload a submission produced - the posted one, or the logged one when blocked. */
+    const submitPayload = () => submitBlocked ? mockLogBlockedSubmission.mock.calls[0]![0] : postPayload()
 
     beforeEach(() => {
       vi.clearAllMocks()
@@ -69,31 +77,56 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
       store = useStore()
     })
 
-    it('should post a new filing when submitting without an existing draft', async () => {
-      await initStore(store)
+    if (submitBlocked) {
+      it('should log the blocked submission instead of filing it', async () => {
+        await initStore(store)
 
-      await store.submit(true)
+        await store.submit(true)
 
-      expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
-      expect(mockPostFiling).toHaveBeenCalledWith(mockBusiness.value.identifier, expect.any(Object))
-      expect(postPayload().filing.header.name).toBe(filingType)
-      expect(postPayload().filing).toHaveProperty(bodyKey)
-    })
+        expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+        expect(mockPostFiling).not.toHaveBeenCalled()
+        expect(mockLogBlockedSubmission).toHaveBeenCalledExactlyOnceWith(expect.any(Object))
+        expect(submitPayload().filing.header.name).toBe(filingType)
+        expect(submitPayload().filing).toHaveProperty(bodyKey)
+      })
 
-    it('should update the existing draft when a draft id is set', async () => {
-      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
-      await initStore(store, String(DRAFT_FILING_ID))
+      it('should block the submission of a resumed draft too', async () => {
+        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+        await initStore(store, String(DRAFT_FILING_ID))
 
-      await store.submit(true)
+        await store.submit(true)
 
-      expect(mockPostFiling).not.toHaveBeenCalled()
-      expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
-        mockBusiness.value.identifier,
-        expect.any(Object),
-        true,
-        DRAFT_FILING_ID
-      )
-    })
+        expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+        expect(mockPostFiling).not.toHaveBeenCalled()
+        expect(mockLogBlockedSubmission).toHaveBeenCalledExactlyOnceWith(expect.any(Object))
+      })
+    } else {
+      it('should post a new filing when submitting without an existing draft', async () => {
+        await initStore(store)
+
+        await store.submit(true)
+
+        expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+        expect(mockPostFiling).toHaveBeenCalledWith(mockBusiness.value.identifier, expect.any(Object))
+        expect(postPayload().filing.header.name).toBe(filingType)
+        expect(postPayload().filing).toHaveProperty(bodyKey)
+      })
+
+      it('should update the existing draft when a draft id is set', async () => {
+        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+        await initStore(store, String(DRAFT_FILING_ID))
+
+        await store.submit(true)
+
+        expect(mockPostFiling).not.toHaveBeenCalled()
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
+          mockBusiness.value.identifier,
+          expect.any(Object),
+          true,
+          DRAFT_FILING_ID
+        )
+      })
+    }
 
     it('should save a draft and record its id in the url when not submitting', async () => {
       await initStore(store)
@@ -115,7 +148,7 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
 
       await store.submit(true)
 
-      expect(postPayload().filing.business).toEqual({
+      expect(submitPayload().filing.business).toEqual({
         identifier: mockBusiness.value.identifier,
         legalName: mockBusiness.value.legalName,
         legalType: mockBusiness.value.legalType,
@@ -129,7 +162,7 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
 
         await store.submit(true)
 
-        const header = postPayload().filing.header
+        const header = submitPayload().filing.header
         expect(header.authorizationReceived).toBe(true)
         expect(header.certifiedBy).toBeUndefined()
       })
@@ -149,7 +182,7 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
 
         await store.submit(true)
 
-        const header = postPayload().filing.header
+        const header = submitPayload().filing.header
         expect(header.certifiedBy).toBe(mockFullName.value)
         expect(header).not.toHaveProperty('authorizationReceived')
       })
@@ -170,7 +203,7 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
 
         await store.submit(true)
 
-        const header = postPayload().filing.header
+        const header = submitPayload().filing.header
         expect(header.folioNumber).toBe('FOLIO-99')
         expect(header.staffPaymentOption).toBeUndefined()
         expect(header.waiveFees).toBeUndefined()
@@ -210,7 +243,7 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
 
           await store.submit(true)
 
-          const header = postPayload().filing.header
+          const header = submitPayload().filing.header
           expect(header.staffPaymentOption).toBe(StaffPaymentOption.NO_FEE)
           expect(header.waiveFees).toBe(true)
           expect(header.folioNumber).toBeUndefined()

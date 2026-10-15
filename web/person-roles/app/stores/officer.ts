@@ -6,7 +6,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
   const businessStore = useBusinessStore()
   const { tableState } = useManageParties()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
   const modal = useFilingModals()
 
   const officersSchema = getOfficersSchema()
@@ -78,7 +78,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       ).filter(relationship => relationship.actions?.length)
     }
 
-    const payload = createFilingPayload<ChangeOfOfficers>(
+    const payload = formatFilingPayloadApi<ChangeOfOfficers>(
       businessStore.business!,
       FilingType.CHANGE_OF_OFFICERS,
       { changeOfOfficers: officersPayload },

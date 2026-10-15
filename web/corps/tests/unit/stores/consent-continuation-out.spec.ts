@@ -7,6 +7,7 @@ import {
   describeCommonFilingStoreBehaviour,
   getDraftFilingMock,
   mockInitFiling,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   resetFilingStoreMocks
@@ -21,6 +22,7 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const filingType = FilingType.CONSENT_CONTINUATION_OUT
 const bodyKey = 'consentContinuationOut'
@@ -51,7 +53,8 @@ describeCommonFilingStoreBehaviour({
     await store.init(identifier, draftId)
   },
   payment: 'both',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useConsentContinuationOutStore', () => {
@@ -136,7 +139,7 @@ describe('useConsentContinuationOutStore', () => {
 
   describe('submit(isSubmission)', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     /** Init a new (no draft) filing. */
     async function initNewFiling() {
@@ -150,7 +153,7 @@ describe('useConsentContinuationOutStore', () => {
       await store.submit(true)
 
       // FUTURE: verify the user selected jurisdiction
-      expect(getPostPayload().filing.consentContinuationOut).toEqual({
+      expect(getBlockedPayload().filing.consentContinuationOut).toEqual({
         foreignJurisdiction: { country: '', region: null }
       })
     })
@@ -160,7 +163,7 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.certifiedBy).toBe(DEFAULT_FULL_NAME)
+      expect(getBlockedPayload().filing.header.certifiedBy).toBe(DEFAULT_FULL_NAME)
     })
 
     it('should not send an effective date - the filer derives the consent expiry', async () => {
@@ -168,18 +171,19 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.submit(true)
 
-      const header = getPostPayload().filing.header
+      const header = getBlockedPayload().filing.header
       expect(header.effectiveDate).toBeUndefined()
       expect(header.name).toBe(FilingType.CONSENT_CONTINUATION_OUT)
       expect(header.date).toBeTruthy()
     })
 
-    it('should send the authorization on submission', async () => {
+    it('should send a false authorization placeholder on submission', async () => {
       await initNewFiling()
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.authorizationReceived).toBe(true)
+      // FUTURE: the completing party confirmation drives this
+      expect(getBlockedPayload().filing.header.authorizationReceived).toBe(false)
     })
 
     it('should omit the authorization but keep certifiedBy when saving a draft', async () => {
@@ -198,7 +202,7 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBe('extra@example.com')
     })
 
     it('should omit the optional document delivery email when it is blank', async () => {
@@ -206,7 +210,7 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.submit(true)
 
-      expect(getPostPayload().filing.header.documentOptionalEmail).toBeUndefined()
+      expect(getBlockedPayload().filing.header.documentOptionalEmail).toBeUndefined()
     })
   })
 

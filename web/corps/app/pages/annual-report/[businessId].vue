@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { z } from 'zod'
 
-const { t } = useI18n()
 const store = useAnnualReportStore()
 const { initializing } = storeToRefs(store)
-const urlParams = useUrlSearchParams()
 const businessStore = useBusinessStore()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
-
-// the dashboard todo always provides the year - the store falls back to the business' next AR year
-const queryYear = Number(urlParams.year) || undefined
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -21,7 +16,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
   filingType: FilingType.ANNUAL_REPORT,
   formId: 'annual-report-filing',
   i18nPrefix: 'page.annualReport',
-  h1: () => t('page.annualReport.h1', { year: store.arYear ?? queryYear ?? '' }),
+  i18nParams: () => ({ year: store.arYear ?? '' }),
   watchers: [
     [() => store.initialFormState, () => store.formState]
   ],
@@ -78,7 +73,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         v-if="store.formState.authorization"
         v-model="store.formState.authorization"
         data-testid="form-section-authorization"
-        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+        :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         name="authorization"
         :order="store.isStaff ? 2 : 3"
       />

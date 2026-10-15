@@ -121,17 +121,7 @@ export const useFiling = () => {
     }
   }
 
-  function getCommonFilingPayloadData(
-    courtOrder?: CourtOrderPoaSchema,
-    documentId?: string
-  ): FilingPayloadData {
-    return {
-      ...(courtOrder?.courtOrderNumber ? { courtOrder: formatCourtOrderApi(courtOrder) } : {}),
-      ...(documentId ? { documentId } : {})
-    }
-  }
-
-  function createFilingPayload<F extends FilingRecord>(
+  function formatFilingPayloadApi<F extends FilingRecord>(
     business: BusinessData | BusinessDataPublic,
     filingName: FilingType,
     filingData: F,
@@ -155,19 +145,6 @@ export const useFiling = () => {
         ...filingData
       }
     }
-  }
-
-  /**
-   * The payment fragment of a filing header: the staff payment for staff, the folio number
-   * for a client account.
-   */
-  function getPaymentHeaderApi(
-    formState: { staffPayment?: StaffPaymentSchema, folio?: FolioSchema },
-    isStaff: boolean
-  ): Partial<FilingHeaderSubmission> {
-    return isStaff
-      ? formatStaffPaymentApi(formState.staffPayment!)
-      : { folioNumber: formState.folio?.folioNumber }
   }
 
   /**
@@ -221,22 +198,9 @@ export const useFiling = () => {
     return undefined
   }
 
-  /**
-   * Applies the authorization certify to the filing header.
-   */
-  function applyAuthorizationCertify(header: Record<string, unknown>, isSubmission: boolean) {
-    delete header.certifiedBy
-    if (!isSubmission) {
-      delete header.authorizationReceived
-    }
-  }
-
   return {
-    applyAuthorizationCertify,
-    getCommonFilingPayloadData,
-    createFilingPayload,
+    formatFilingPayloadApi,
     getFilingName,
-    getPaymentHeaderApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling

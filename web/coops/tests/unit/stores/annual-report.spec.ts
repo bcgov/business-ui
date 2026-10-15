@@ -8,6 +8,7 @@ import {
   getDraftFilingMock,
   mockInitFiling,
   mockIsStaff,
+  mockLogBlockedSubmission,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
   mockUpdateAllFees,
@@ -25,9 +26,12 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
+mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const identifier = 'CP1002605'
-const arYear = 2026
+const PACIFIC_TZ = 'America/Vancouver'
+// the store compares the AR year against the current pacific year, so derive it rather than pin it
+const arYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
 
 /** The CP cooperative association the annual report is filed for. */
 const coopBusiness = {
@@ -66,7 +70,8 @@ describeCommonFilingStoreBehaviour({
   },
   payment: 'both',
   certify: 'certified-by',
-  expectsFeeResync: true
+  expectsFeeResync: true,
+  submitBlocked: true
 })
 
 describe('useAnnualReportStore', () => {
@@ -184,7 +189,7 @@ describe('useAnnualReportStore', () => {
 
   describe('submit(isSubmission)', () => {
     const getPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
+    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
     beforeEach(async () => {
       await store.init(identifier)
@@ -193,9 +198,10 @@ describe('useAnnualReportStore', () => {
     it('should build an annual report only body', async () => {
       await store.submit(true)
 
-      const filing = getPostPayload().filing
+      const filing = getBlockedPayload().filing
       expect(filing.annualReport).toEqual({
-        annualReportDate: `${arYear}-12-31`,
+        // a current year AR is filed as of today - never the future dated Dec 31 the api rejects
+        annualReportDate: getToday(PACIFIC_TZ),
         annualGeneralMeetingDate: null,
         didNotHoldAgm: false
       })
@@ -207,7 +213,7 @@ describe('useAnnualReportStore', () => {
     it('should never emit the dead nested directors and offices blocks', async () => {
       await store.submit(true)
 
-      const annualReport = getPostPayload().filing.annualReport
+      const annualReport = getBlockedPayload().filing.annualReport
       expect(annualReport).not.toHaveProperty('directors')
       expect(annualReport).not.toHaveProperty('offices')
       expect(Object.keys(annualReport)).toEqual([
@@ -220,14 +226,14 @@ describe('useAnnualReportStore', () => {
     it('should build the header with the AR year, min/max dates and effective date', async () => {
       await store.submit(true)
 
-      expect(getPostPayload().filing.header).toEqual(expect.objectContaining({
+      expect(getBlockedPayload().filing.header).toEqual(expect.objectContaining({
         name: FilingType.ANNUAL_REPORT,
         ARFilingYear: arYear,
         arMinDate: coopBusiness.arMinDate,
         arMaxDate: coopBusiness.arMaxDate,
         // pacific midnight of the as-of date (the dashboard todo + bundled COD depend on it)
         // the UTC offset is tzdata-dependent (BC permanent DST, 2026) so derive it rather than pin it
-        effectiveDate: toApiDateTime(`${arYear}-12-31`)
+        effectiveDate: toApiDateTime(getToday(PACIFIC_TZ))
       }))
     })
 
@@ -236,9 +242,9 @@ describe('useAnnualReportStore', () => {
 
       await store.submit(true)
 
-      const filing = getPostPayload().filing
+      const filing = getBlockedPayload().filing
       expect(filing.annualReport.annualReportDate).toBe('2024-12-31')
-      expect(filing.header.effectiveDate).toBe('2024-12-31T08:00:00+00:00')
+      expect(filing.header.effectiveDate).toBe(toApiDateTime('2024-12-31'))
     })
 
     // Future: the certify section (base FormCertify) supplies the name

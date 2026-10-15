@@ -9,9 +9,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
   const feeStore = useConnectFeeStore()
   const { tableState } = useManageParties()
   const {
-    applyAuthorizationCertify,
-    createFilingPayload,
-    getPaymentHeaderApi,
+    formatFilingPayloadApi,
     hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
@@ -122,15 +120,15 @@ export const useDirectorsStore = defineStore('directors-store', () => {
     const headerPayload = {
       // NB: the validator requires an effective date and legal-api enforces the date-time format
       effectiveDate: toApiDateTime(effectiveDate.value),
-      // coops are certified by name instead - createFilingPayload defaults certifiedBy until
+      // coops are certified by name instead - formatFilingPayloadApi defaults certifiedBy until
       // the certify section (base FormCertify) lands
       ...(config.value.certify === 'authorization'
         ? { authorizationReceived: Boolean(formState.authorization?.isAuthorized) }
         : {}),
-      ...getPaymentHeaderApi(formState, isStaff.value)
+      ...formatPaymentHeaderApi(formState, isStaff.value)
     }
 
-    const filingPayload = createFilingPayload<CODFiling>(
+    const filingPayload = formatFilingPayloadApi<CODFiling>(
       businessStore.business!,
       FilingType.CHANGE_OF_DIRECTORS,
       { changeOfDirectors: codPayload },
@@ -139,6 +137,12 @@ export const useDirectorsStore = defineStore('directors-store', () => {
 
     if (config.value.certify === 'authorization') {
       applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+    }
+
+    // FUTURE: submissions are disabled until the form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
     }
 
     const filingResp = await saveOrSubmitFiling<CODFiling>(businessStore.businessIdentifier!, filingPayload, {

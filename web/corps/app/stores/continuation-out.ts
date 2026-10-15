@@ -7,7 +7,7 @@ const CONSENT_VALID_MONTHS = 6
 const API_DATE_TIME_FORMAT = 'yyyy-MM-dd\'T\'HH:mm:ssZZ'
 
 export const useContinuationOutStore = defineStore('continuation-out-store', () => {
-  const { initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -112,21 +112,27 @@ export const useContinuationOutStore = defineStore('continuation-out-store', () 
       waiveFees: true,
       // authorization is only recorded on submission
       // FUTURE: the completing party confirmation drives this
-      ...(isSubmission ? { authorizationReceived: true } : {}),
+      ...(isSubmission ? { authorizationReceived: false } : {}),
       ...(formState.documentDelivery.completingPartyEmail
         ? { documentOptionalEmail: formState.documentDelivery.completingPartyEmail }
         : {}
       )
     }
 
-    // NB: certifiedBy is kept (createFilingPayload defaults it to the auth user's name)
-    const filingPayload = createFilingPayload<ContOutFiling>(
+    // NB: certifiedBy is kept (formatFilingPayloadApi defaults it to the auth user's name)
+    const filingPayload = formatFilingPayloadApi<ContOutFiling>(
       businessStore.business!,
       FilingType.CONTINUATION_OUT,
       { continuationOut: contOutPayload },
       // the header fields are all continuation out specific (not part of FilingHeaderSubmission)
       headerPayload as Record<string, unknown>
     )
+
+    // FUTURE: submissions are disabled until the filing form is completed
+    if (isSubmission) {
+      logBlockedSubmission(filingPayload)
+      return
+    }
 
     // The draft is always pre-created, so the existing filing is always updated (PUT)
     // NB: not saveOrSubmitFiling - the draft id is a route param here, never a '?draft' query param

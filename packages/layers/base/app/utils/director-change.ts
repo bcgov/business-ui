@@ -39,7 +39,7 @@ export function getDirectorChangeManagePartiesProps() {
  * @param options.removedCessationDate overrides the cessation date stamped on REMOVED
  * directors' roles (defaults to today)
  */
-export function buildChangeOfDirectorsRelationships(
+export function formatChangeOfDirectorsRelationshipsApi(
   tableState: TableBusinessState<PartySchema>[],
   options?: { removedCessationDate?: string }
 ): BusinessRelationship[] {

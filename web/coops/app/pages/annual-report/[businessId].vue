@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
 
-const { t } = useI18n()
 const store = useAnnualReportStore()
 const { initializing } = storeToRefs(store)
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
@@ -16,7 +15,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
   filingType: FilingType.ANNUAL_REPORT,
   formId: 'annual-report-filing',
   i18nPrefix: 'page.annualReport',
-  h1: () => t('page.annualReport.h1', { year: store.arYear }),
+  i18nParams: () => ({ year: store.arYear }),
   watchers: [
     [() => store.initialFormState, () => store.formState]
   ],

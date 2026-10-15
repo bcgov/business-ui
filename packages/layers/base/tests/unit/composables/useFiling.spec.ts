@@ -150,7 +150,7 @@ describe('useFiling', () => {
     })
   })
 
-  describe('createFilingPayload', () => {
+  describe('formatFilingPayloadApi', () => {
     const business = {
       identifier: 'BC123',
       foundingDate: '2022-01-01T12:00:00Z',
@@ -162,7 +162,7 @@ describe('useFiling', () => {
       const filingName = FilingType.CHANGE_OF_OFFICERS
       const payload = { relationships: [{ entity: { givenName: 'Test' } }] }
 
-      const result = useFiling().createFilingPayload(business, filingName, { [filingName]: payload })
+      const result = useFiling().formatFilingPayloadApi(business, filingName, { [filingName]: payload })
 
       expect(result).toHaveProperty('filing')
       const filing = result.filing
@@ -187,7 +187,7 @@ describe('useFiling', () => {
         changeOfAddress: { deliveryAddress: { street: '123 Main' } }
       }
 
-      const result = useFiling().createFilingPayload(business, FilingType.CHANGE_OF_OFFICERS, filings)
+      const result = useFiling().formatFilingPayloadApi(business, FilingType.CHANGE_OF_OFFICERS, filings)
       const filing = result.filing
 
       expect(filing.header.name).toBe('changeOfOfficers')

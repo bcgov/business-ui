@@ -32,23 +32,23 @@ describe('useFiling filing store helpers', () => {
     window.history.replaceState({}, '', `/filing/${identifier}`)
   })
 
-  describe('getPaymentHeaderApi', () => {
+  describe('formatPaymentHeaderApi', () => {
     it('should return the staff payment fragment for staff', () => {
       const staffPayment = { ...getDefaultStaffPayment(), option: StaffPaymentOption.NO_FEE }
 
-      const header = useFiling().getPaymentHeaderApi({ staffPayment }, true)
+      const header = formatPaymentHeaderApi({ staffPayment }, true)
 
       expect(header).toEqual({ staffPaymentOption: StaffPaymentOption.NO_FEE, waiveFees: true })
     })
 
     it('should return the folio number for a client', () => {
-      const header = useFiling().getPaymentHeaderApi({ folio: { folioNumber: 'FOLIO-99' } }, false)
+      const header = formatPaymentHeaderApi({ folio: { folioNumber: 'FOLIO-99' } }, false)
 
       expect(header).toEqual({ folioNumber: 'FOLIO-99' })
     })
 
     it('should return an undefined folio number when the client has no folio section', () => {
-      const header = useFiling().getPaymentHeaderApi({}, false)
+      const header = formatPaymentHeaderApi({}, false)
 
       expect(header).toEqual({ folioNumber: undefined })
     })
@@ -125,7 +125,7 @@ describe('useFiling filing store helpers', () => {
     it('should drop the certify name and keep the authorization on submission', () => {
       const header: Record<string, unknown> = { certifiedBy: 'Test User', authorizationReceived: true }
 
-      useFiling().applyAuthorizationCertify(header, true)
+      applyAuthorizationCertify(header, true)
 
       expect(header).toEqual({ authorizationReceived: true })
     })
@@ -133,7 +133,7 @@ describe('useFiling filing store helpers', () => {
     it('should drop the certify name and the authorization when saving a draft', () => {
       const header: Record<string, unknown> = { certifiedBy: 'Test User', authorizationReceived: true, name: 'x' }
 
-      useFiling().applyAuthorizationCertify(header, false)
+      applyAuthorizationCertify(header, false)
 
       expect(header).toEqual({ name: 'x' })
     })
