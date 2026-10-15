@@ -114,6 +114,36 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
 
       expect(result.success).toBe(true)
     })
+
+    it('should fail when founding year is more recent than currentYear - 2 and year is below founding year', () => {
+      // founding year = currentYear → min = max(currentYear-2, currentYear) = currentYear
+      const schemaWithFounding = getAgmLocationChangeValidationSchema(`${currentYear}-06-01`)
+      const result = schemaWithFounding.safeParse({ ...valid, year: String(currentYear - 1) })
+
+      expect(result.success).toBe(false)
+      expect(getPaths(result)).toContain('year')
+    })
+
+    it('should pass when year equals founding year (founding year > currentYear - 2)', () => {
+      const schemaWithFounding = getAgmLocationChangeValidationSchema(`${currentYear}-06-01`)
+      const result = schemaWithFounding.safeParse({ ...valid, year: String(currentYear) })
+
+      expect(result.success).toBe(true)
+    })
+
+    it('should use currentYear - 2 as min when founding year is older', () => {
+      // founding year = currentYear - 5 → min = max(currentYear-2, currentYear-5) = currentYear-2
+      const schemaWithFounding = getAgmLocationChangeValidationSchema(`${currentYear - 5}-01-01`)
+      const result = schemaWithFounding.safeParse({ ...valid, year: String(currentYear - 2) })
+
+      expect(result.success).toBe(true)
+    })
+
+    it('should default to currentYear - 2 as min when no founding date provided', () => {
+      const result = schema.safeParse({ ...valid, year: String(currentYear - 2) })
+
+      expect(result.success).toBe(true)
+    })
   })
 
   describe('reason', () => {
