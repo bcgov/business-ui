@@ -1,3 +1,4 @@
+import { toMerged } from 'es-toolkit'
 // Correctable sections by corrected filing type, from the corrections design spreadsheet.
 // eslint-disable-next-line max-len
 // https://bcgov-my.sharepoint.com/:x:/r/personal/thayne_werdal_gov_bc_ca/Documents/Attachments/Requirements%20-%20Filings%20vs%20Corrections%20Fields.xlsx?d=w8812eaf09920404ca709eb17fc5a78c1
@@ -140,4 +141,48 @@ export function getCorrectableSections(filingType: FilingType, subType?: string)
     return sections
   }
   return (subType && sections[subType]) || sections[DEFAULT_SUBTYPE]
+}
+
+const DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES = {
+  nameNewJurisdiction: 'hide',
+  namePreviousJurisdiction: 'hide',
+  numberExpro: 'hide',
+  numberPreviousJurisdiction: 'hide',
+  outDate: 'hide',
+  jurisdiction: 'readonly',
+  previousJurisdiction: 'hide',
+  newJurisdiction: 'hide',
+  nameRequest: 'readonly',
+  legalType: 'readonly',
+  nameTranslations: 'hide',
+  foundingDate: 'readonly',
+  contactInfo: 'readonly'
+} as const
+
+const YOUR_COMPANY_SECTIONS: Partial<Record<FilingType, ManageYourCompanyProps['sectionOverrides']>> = {
+  [FilingType.INCORPORATION_APPLICATION]: {
+    nameTranslations: 'default'
+  },
+  [FilingType.CONTINUATION_IN]: {
+    nameTranslations: 'default',
+    numberExpro: 'default',
+    numberPreviousJurisdiction: 'default',
+    namePreviousJurisdiction: 'default',
+    previousJurisdiction: 'default'
+  },
+  [FilingType.CONTINUATION_OUT]: {
+    outDate: 'default',
+    nameNewJurisdiction: 'default',
+    newJurisdiction: 'default'
+  },
+  [FilingType.AMALGAMATION_OUT]: {
+    outDate: 'default',
+    nameNewJurisdiction: 'default',
+    newJurisdiction: 'default'
+  }
+}
+
+export function getYourCompanySectionOverrides(filingType: FilingType) {
+  const sections = YOUR_COMPANY_SECTIONS[filingType] ?? {}
+  return toMerged(DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES, sections)
 }

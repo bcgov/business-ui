@@ -27,6 +27,8 @@ const requiresAuthorization = computed(() => {
   return legalType ? CORPS.includes(legalType) : false
 })
 
+const yourCompanySectionOverrides = computed(() => getYourCompanySectionOverrides(store.correctedFilingType))
+
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
 
@@ -61,6 +63,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :business
         :contact="businessContact"
+        :section-overrides="yourCompanySectionOverrides"
         variant="correct-readonly"
       />
 
