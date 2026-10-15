@@ -19,8 +19,10 @@ const { filingText, onError, submitFiling } = useFilingPage({
   watchers: [
     [() => store.initialFormState, () => store.formState]
   ],
-  // no canSubmit check - an annual report on its own is a legitimate filing (changes are optional)
-  submitGuard: 'none',
+  // an annual report on its own is a legitimate filing (changes are optional), but one dated
+  // outside the filing window cannot be submitted - the alert explains why the button does nothing
+  submitCondition: () => !store.isArDateInvalid,
+  submitGuard: 'silent',
   staffPayRef: staffPayFormRef
 })
 </script>
@@ -43,6 +45,19 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ $t('page.annualReport.desc') }}</p>
       </div>
+
+      <!-- a resumed draft keeps its own AR date - it may no longer be inside the filing window -->
+      <UAlert
+        v-if="store.isArDateInvalid"
+        data-testid="ar-date-invalid-alert"
+        icon="i-mdi-alert"
+        color="warning"
+        variant="subtle"
+      >
+        <template #description>
+          <p>{{ $t('text.arDateOutOfRange') }}</p>
+        </template>
+      </UAlert>
 
       <!-- FUTURE: Replace this placeholder with the AGM date, registered office and director sections -->
       <ConnectFieldset

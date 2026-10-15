@@ -112,15 +112,15 @@ export async function setupAnnualReportPageWithDraft(
   })
 }
 
+/** NB: the AR year comes from the business (or the draft header) - there is no 'year' url param. */
 export async function navigateToAnnualReportPage(
   page: Page,
   identifier: string,
-  year: number = COOP_AR_YEAR,
   draftId?: string
 ) {
   const url = draftId
-    ? `./en-CA/annual-report/${identifier}?year=${year}&draft=${draftId}`
-    : `./en-CA/annual-report/${identifier}?year=${year}`
+    ? `./en-CA/annual-report/${identifier}?draft=${draftId}`
+    : `./en-CA/annual-report/${identifier}`
 
   await Promise.all([
     page.waitForResponse('*/**/businesses/**/*'),

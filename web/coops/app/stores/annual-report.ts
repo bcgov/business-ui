@@ -9,13 +9,14 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   } = useFiling()
 
   const businessStore = useBusinessStore()
-  const urlParams = useUrlSearchParams()
 
   const isStaff = useIsStaff()
 
   const draftFilingState = shallowRef<CoopARDraftState>({} as CoopARDraftState)
-  // the AR year the dashboard todo opened this filing for ('?year=', or the draft header on resume)
-  const arYear = ref<number>(getYearFromUrl())
+  // the year the AR is filed for - the business' next unfiled year, or the draft header on resume
+  const arYear = ref<number>(getCurrentPacificYear())
+  // the AR date of a resumed draft - round tripped verbatim so a draft is never silently re-dated
+  const draftArDate = ref<IsoDatePacific | undefined>(undefined)
   const directors = shallowRef<TableBusinessState<PartySchema>[]>([])
   const offices = shallowRef<TableBusinessState<OfficesSchema>[]>([])
 
@@ -31,17 +32,30 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
 
   /**
    * The date the annual report is filed as of - also the effective date of the whole bundle and the
-   * date directors/addresses are fetched for.
-   * FUTURE: Replace the fallback with the AGM date when one is entered.
+   * date directors/addresses are fetched for. A resumed draft keeps its own date.
+   * FUTURE: Replace the derived date with the AGM date when one is entered.
    * FUTURE: May need to refetch the directors/addresses when it changes.
    */
   const asOfDate = computed<IsoDatePacific>(() =>
-    arYear.value < Number(getToday(PACIFIC_TZ).slice(0, 4)) ? `${arYear.value}-12-31` : getToday(PACIFIC_TZ)
+    draftArDate.value
+    ?? (arYear.value < getCurrentPacificYear() ? `${arYear.value}-12-31` : getToday(PACIFIC_TZ))
   )
 
-  function getYearFromUrl(): number {
-    const currentYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
-    return Number(urlParams.year) || currentYear
+  /**
+   * The AR cannot be filed outside the business' filing window - a draft saved with a stale date
+   * (or one that has since aged out) has to be resolved by staff.
+   */
+  const isArDateInvalid = computed<boolean>(() => {
+    // the AR min/max dates are only on the full business data (never the slim/public variant)
+    const business = businessStore.business as BusinessData | undefined
+    if (!business?.arMinDate || !business?.arMaxDate) {
+      return false
+    }
+    return asOfDate.value < business.arMinDate || asOfDate.value > business.arMaxDate
+  })
+
+  function getCurrentPacificYear(): number {
+    return Number(getToday(PACIFIC_TZ).slice(0, 4))
   }
 
   async function init(businessId: string, draftId?: string) {
@@ -63,13 +77,17 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
 
     if (draftFiling?.filing?.annualReport) {
       draftFilingState.value = draftFiling as CoopARDraftState
-      const draftHeader = draftFilingState.value.filing.header
-      if (draftHeader.ARFilingYear) {
-        arYear.value = draftHeader.ARFilingYear
-      }
+      const draftFilingBody = draftFilingState.value.filing
+      // a resumed draft keeps its own year and date, even when they are outside the filing window
+      draftArDate.value = draftFilingBody.annualReport.annualReportDate
       // re-syncs the fee widget with a resumed staff payment selection
-      hydratePaymentState(draftHeader, formState)
+      hydratePaymentState(draftFilingBody.header, formState)
     }
+
+    // a new filing is for the business' next unfiled year (arMinDate is a past year when overdue)
+    const business = businessStore.business as BusinessData | undefined
+    const businessArYear = Number(business?.arMinDate?.slice(0, 4)) || getCurrentPacificYear()
+    arYear.value = draftFilingState.value?.filing?.header?.ARFilingYear ?? businessArYear
 
     await snapshotInitialState()
   }
@@ -122,18 +140,21 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   function $reset() {
     resetFormState()
     draftFilingState.value = {} as CoopARDraftState
+    draftArDate.value = undefined
     directors.value = []
     offices.value = []
-    arYear.value = getYearFromUrl()
+    arYear.value = getCurrentPacificYear()
   }
 
   return {
     arYear,
     asOfDate,
     directors,
+    draftArDate,
     formState,
     initializing,
     initialFormState,
+    isArDateInvalid,
     isStaff,
     offices,
     init,

@@ -89,6 +89,54 @@ const defineAuthorizationStore = (id: string, blockSubmit = false) => defineStor
 const useAuthorizationStore = defineAuthorizationStore('fixture-authorization-store')
 const useBlockedStore = defineAuthorizationStore('fixture-blocked-store', true)
 
+/** The file and pay only convention: a draft is never fetched, and there is nothing to save. */
+const useFileAndPayStore = defineStore('fixture-file-and-pay-store', () => {
+  const { formatFilingPayloadApi, initFiling, saveOrSubmitFiling } = useFiling()
+  const businessStore = useBusinessStore()
+  const isStaff = useIsStaff()
+
+  const getDefaults = () => withPaymentSection(
+    z.object({
+      authorization: getConfirmAuthorizationSchema().default(() => ({ isAuthorized: false as unknown as true }))
+    }),
+    isStaff.value
+  ).parse({}) as WithPaymentSections<z.ZodObject<{ authorization: z.ZodType<{ isAuthorized: boolean }> }>>
+
+  const { formState, initializing, snapshotInitialState, resetFormState } = useFilingFormState(getDefaults)
+
+  async function init(businessId: string) {
+    initializing.value = true
+    await initFiling<CODFiling>(businessId, filingType, undefined, undefined)
+    await snapshotInitialState()
+  }
+
+  async function submit(isSubmission: boolean) {
+    // nothing to save - the page has no save button
+    if (!isSubmission) {
+      return
+    }
+
+    const filingPayload = formatFilingPayloadApi<CODFiling>(
+      businessStore.business!,
+      filingType,
+      { changeOfDirectors: { relationships: [] } },
+      {
+        authorizationReceived: Boolean(formState.authorization?.isAuthorized),
+        ...formatPaymentHeaderApi(formState, isStaff.value)
+      } as Partial<FilingHeaderSubmission>
+    )
+    applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, true)
+
+    return saveOrSubmitFiling<CODFiling>(businessStore.businessIdentifier!, filingPayload, { isSubmission: true })
+  }
+
+  function $reset() {
+    resetFormState()
+  }
+
+  return { formState, initializing, init, submit, $reset }
+})
+
 /** The coops convention: always certified by the signed in user, fees re-synced on a staff resume. */
 const useCertifiedByStore = defineStore('fixture-certified-by-store', () => {
   const { formatFilingPayloadApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
@@ -160,6 +208,21 @@ describeCommonFilingStoreBehaviour({
   payment: 'both',
   certify: 'authorization',
   submitBlocked: true
+})
+
+describeCommonFilingStoreBehaviour({
+  name: 'file and pay fixture store',
+  useStore: useFileAndPayStore,
+  filingType,
+  bodyKey,
+  buildDraft,
+  initStore: async (store) => {
+    await store.init(identifier)
+    store.formState.authorization!.isAuthorized = true
+  },
+  payment: 'both',
+  certify: 'authorization',
+  supportsDrafts: false
 })
 
 describeCommonFilingStoreBehaviour({

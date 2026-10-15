@@ -39,6 +39,7 @@ export default {
   text: {
     // Placeholder - need the AGM date picker, registered office addresses and directors
     agmDateNotAvailable: 'Annual general meeting date entry is not available yet.',
+    arDateOutOfRange: 'This annual report date is outside the allowed filing period. It cannot be submitted - please contact BC Registries staff to resolve it.',
     changeRegisteredOfficeAddress: 'Please change your Registered Office Address.'
   }
 }

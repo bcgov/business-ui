@@ -3,7 +3,6 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const {
     formatFilingPayloadApi,
-    hydratePaymentState,
     initFiling,
     saveOrSubmitFiling
   } = useFiling()
@@ -15,7 +14,6 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const { formState, initialFormState, initializing, snapshotInitialState, resetFormState } = useFilingFormState(
     () => getAnnualReportSchema(isStaff.value).parse({}) as AnnualReportFormSchema
   )
-  const draftFilingState = shallowRef<AnnualReportDraftState>({} as AnnualReportDraftState)
   const arYear = ref<number | undefined>(undefined)
 
   // nextAnnualReport is the annual report due date at Pacific midnight (as an API datetime)
@@ -26,33 +24,22 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const asOfDate = computed<IsoDatePacific>(() => nextAnnualReport.value.split('T')[0] ?? '')
 
   /**
-   * Annual report year precedence: draft header > the year of the business' next AR.
+   * A corps annual report is strictly the next one due and is composed from live business data -
+   * there are no drafts (legacy parity: the page ships `saveEnabled: false`).
    */
-  function resolveArYear(draftYear?: number): number | undefined {
-    const businessYear = Number(asOfDate.value.slice(0, 4))
-    return draftYear || businessYear || undefined
-  }
-
-  async function init(businessId: string, draftId?: string) {
+  async function init(businessId: string) {
     initializing.value = true
     $reset()
 
     // directors and offices are fetched for the readonly display sections
-    const { draftFiling, parties, addresses } = await initFiling<ARFiling>(
+    const { parties, addresses } = await initFiling<ARFiling>(
       businessId,
       FilingType.ANNUAL_REPORT,
       undefined,
-      draftId,
+      undefined,
       { roleType: RoleType.DIRECTOR },
       [OfficeType.REGISTERED, OfficeType.RECORDS]
     )
-
-    const draftHeader = draftFiling?.filing?.header as AnnualReportDraftState['filing']['header'] | undefined
-
-    if (draftFiling?.filing?.annualReport) {
-      draftFilingState.value = draftFiling
-      hydratePaymentState(draftFiling.filing.header, formState)
-    }
 
     if (parties) {
       tableDirectors.value = parties
@@ -62,12 +49,18 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
       tableOffices.value = addresses
     }
 
-    arYear.value = resolveArYear(draftHeader?.ARFilingYear)
+    // undefined when the business has no next annual report due
+    arYear.value = Number(asOfDate.value.slice(0, 4)) || undefined
 
     await snapshotInitialState()
   }
 
+  /** @param isSubmission the useFilingPage contract - a save is a no-op (the page has no save button) */
   async function submit(isSubmission: boolean) {
+    if (!isSubmission) {
+      return
+    }
+
     const annualReportPayload: AnnualReportPayload = {
       annualReportDate: asOfDate.value,
       nextARDate: asOfDate.value
@@ -89,26 +82,20 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
       headerPayload
     )
 
-    applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
+    applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, true)
 
-    // FUTURE: submissions are disabled until the filing form is completed
+    // FUTURE: submissions are disabled until the filing form is completed - drop this gate to file
     if (isSubmission) {
       logBlockedSubmission(filingPayload)
       return
     }
 
-    const filingResp = await saveOrSubmitFiling<ARFiling>(businessStore.businessIdentifier!, filingPayload, {
-      isSubmission,
-      draftId: draftFilingState.value?.filing?.header?.filingId
-    })
-    if (filingResp) {
-      draftFilingState.value = filingResp as AnnualReportDraftState
-    }
+    // no draft id - saveOrSubmitFiling posts the filing
+    await saveOrSubmitFiling<ARFiling>(businessStore.businessIdentifier!, filingPayload, { isSubmission: true })
   }
 
   function $reset() {
     resetFormState()
-    draftFilingState.value = {} as AnnualReportDraftState
     arYear.value = undefined
     tableDirectors.value = []
     tableOffices.value = []

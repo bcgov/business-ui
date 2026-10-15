@@ -44,6 +44,11 @@ export interface CommonFilingStoreOptions<S extends CommonFilingStore> {
   /** Whether resuming a staff payment draft re-applies the fees. */
   expectsFeeResync?: boolean
   /**
+   * false = the filing is file and pay only (no draft save or resume) - every draft case is
+   * skipped, including the payment hydration ones (`expectsFeeResync` is then moot).
+   */
+  supportsDrafts?: boolean
+  /**
    * For filings that are not finished and shouldn't submit
    * if someone were to go to the url directly
    */
@@ -57,7 +62,18 @@ export interface CommonFilingStoreOptions<S extends CommonFilingStore> {
 export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
   options: CommonFilingStoreOptions<S>
 ) {
-  const { bodyKey, buildDraft, certify, filingType, initStore, name, payment, submitBlocked, useStore } = options
+  const {
+    bodyKey,
+    buildDraft,
+    certify,
+    filingType,
+    initStore,
+    name,
+    payment,
+    submitBlocked,
+    supportsDrafts = true,
+    useStore
+  } = options
 
   describe(`${name} — shared filing store behaviour`, () => {
     let store: S
@@ -90,16 +106,18 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
         expect(submitPayload().filing).toHaveProperty(bodyKey)
       })
 
-      it('should block the submission of a resumed draft too', async () => {
-        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
-        await initStore(store, String(DRAFT_FILING_ID))
+      if (supportsDrafts) {
+        it('should block the submission of a resumed draft too', async () => {
+          mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+          await initStore(store, String(DRAFT_FILING_ID))
 
-        await store.submit(true)
+          await store.submit(true)
 
-        expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
-        expect(mockPostFiling).not.toHaveBeenCalled()
-        expect(mockLogBlockedSubmission).toHaveBeenCalledExactlyOnceWith(expect.any(Object))
-      })
+          expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+          expect(mockPostFiling).not.toHaveBeenCalled()
+          expect(mockLogBlockedSubmission).toHaveBeenCalledExactlyOnceWith(expect.any(Object))
+        })
+      }
     } else {
       it('should post a new filing when submitting without an existing draft', async () => {
         await initStore(store)
@@ -112,36 +130,40 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
         expect(postPayload().filing).toHaveProperty(bodyKey)
       })
 
-      it('should update the existing draft when a draft id is set', async () => {
-        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
-        await initStore(store, String(DRAFT_FILING_ID))
+      if (supportsDrafts) {
+        it('should update the existing draft when a draft id is set', async () => {
+          mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+          await initStore(store, String(DRAFT_FILING_ID))
 
-        await store.submit(true)
+          await store.submit(true)
+
+          expect(mockPostFiling).not.toHaveBeenCalled()
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
+            mockBusiness.value.identifier,
+            expect.any(Object),
+            true,
+            DRAFT_FILING_ID
+          )
+        })
+      }
+    }
+
+    if (supportsDrafts) {
+      it('should save a draft and record its id in the url when not submitting', async () => {
+        await initStore(store)
+
+        await store.submit(false)
 
         expect(mockPostFiling).not.toHaveBeenCalled()
         expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
           mockBusiness.value.identifier,
           expect.any(Object),
-          true,
-          DRAFT_FILING_ID
+          false,
+          undefined
         )
+        expect(window.location.search).toContain(`draft=${DRAFT_FILING_ID}`)
       })
     }
-
-    it('should save a draft and record its id in the url when not submitting', async () => {
-      await initStore(store)
-
-      await store.submit(false)
-
-      expect(mockPostFiling).not.toHaveBeenCalled()
-      expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
-        mockBusiness.value.identifier,
-        expect.any(Object),
-        false,
-        undefined
-      )
-      expect(window.location.search).toContain(`draft=${DRAFT_FILING_ID}`)
-    })
 
     it('should build the business block from the business store', async () => {
       await initStore(store)
@@ -167,15 +189,17 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
         expect(header.certifiedBy).toBeUndefined()
       })
 
-      it('should omit the authorization when saving a draft', async () => {
-        await initStore(store)
+      if (supportsDrafts) {
+        it('should omit the authorization when saving a draft', async () => {
+          await initStore(store)
 
-        await store.submit(false)
+          await store.submit(false)
 
-        const header = draftPayload().filing.header
-        expect(header.authorizationReceived).toBeUndefined()
-        expect(header.certifiedBy).toBeUndefined()
-      })
+          const header = draftPayload().filing.header
+          expect(header.authorizationReceived).toBeUndefined()
+          expect(header.certifiedBy).toBeUndefined()
+        })
+      }
     } else if (certify === 'certified-by') {
       it('should send certifiedBy and never an authorization on submission', async () => {
         await initStore(store)
@@ -187,13 +211,15 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
         expect(header).not.toHaveProperty('authorizationReceived')
       })
 
-      it('should send certifiedBy when saving a draft too', async () => {
-        await initStore(store)
+      if (supportsDrafts) {
+        it('should send certifiedBy when saving a draft too', async () => {
+          await initStore(store)
 
-        await store.submit(false)
+          await store.submit(false)
 
-        expect(draftPayload().filing.header.certifiedBy).toBe(mockFullName.value)
-      })
+          expect(draftPayload().filing.header.certifiedBy).toBe(mockFullName.value)
+        })
+      }
     }
 
     if (payment !== 'staff') {
@@ -209,14 +235,16 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
         expect(header.waiveFees).toBeUndefined()
       })
 
-      it('should hydrate the folio number from the draft header', async () => {
-        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { folioNumber: 'ABC-123' } }) })
+      if (supportsDrafts) {
+        it('should hydrate the folio number from the draft header', async () => {
+          mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { folioNumber: 'ABC-123' } }) })
 
-        await initStore(store, String(DRAFT_FILING_ID))
+          await initStore(store, String(DRAFT_FILING_ID))
 
-        expect(store.formState.folio?.folioNumber).toBe('ABC-123')
-        expect(store.formState.staffPayment).toBeUndefined()
-      })
+          expect(store.formState.folio?.folioNumber).toBe('ABC-123')
+          expect(store.formState.staffPayment).toBeUndefined()
+        })
+      }
 
       it('should remain at the schema defaults when no draft filing is returned', async () => {
         await initStore(store)
@@ -249,31 +277,33 @@ export function describeCommonFilingStoreBehaviour<S extends CommonFilingStore>(
           expect(header.folioNumber).toBeUndefined()
         })
 
-        it('should hydrate the staff payment from the draft header', async () => {
-          mockInitFiling.mockResolvedValue({
-            draftFiling: buildDraft({
-              header: {
-                staffPaymentOption: StaffPaymentOption.FAS,
-                routingSlipNumber: '123456789',
-                priority: true
-              }
+        if (supportsDrafts) {
+          it('should hydrate the staff payment from the draft header', async () => {
+            mockInitFiling.mockResolvedValue({
+              draftFiling: buildDraft({
+                header: {
+                  staffPaymentOption: StaffPaymentOption.FAS,
+                  routingSlipNumber: '123456789',
+                  priority: true
+                }
+              })
             })
+
+            await initStore(store, String(DRAFT_FILING_ID))
+
+            expect(store.formState.staffPayment).toEqual({
+              option: StaffPaymentOption.FAS,
+              bcolAccountNumber: '',
+              datNumber: '',
+              folioNumber: '',
+              isPriority: true,
+              routingSlipNumber: '123456789'
+            })
+            expect(store.formState.folio).toBeUndefined()
           })
+        }
 
-          await initStore(store, String(DRAFT_FILING_ID))
-
-          expect(store.formState.staffPayment).toEqual({
-            option: StaffPaymentOption.FAS,
-            bcolAccountNumber: '',
-            datNumber: '',
-            folioNumber: '',
-            isPriority: true,
-            routingSlipNumber: '123456789'
-          })
-          expect(store.formState.folio).toBeUndefined()
-        })
-
-        if (options.expectsFeeResync) {
+        if (supportsDrafts && options.expectsFeeResync) {
           it('should re-apply the fees for the resumed staff payment', async () => {
             mockInitFiling.mockResolvedValue({
               draftFiling: buildDraft({ header: { staffPaymentOption: StaffPaymentOption.FAS, priority: true } })

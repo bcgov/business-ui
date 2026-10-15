@@ -27,9 +27,11 @@ mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/fi
 const filingType = FilingType.ANNUAL_REPORT
 const bodyKey = 'annualReport'
 const identifier = 'BC1234567'
-// the annual report due date at Pacific midnight, as returned by legal-api
-const nextAnnualReport = '2026-04-05T07:00:00+00:00'
 const asOfDate = '2026-04-05'
+const arYear = Number(asOfDate.slice(0, 4))
+// the annual report due date at Pacific midnight, as returned by legal-api
+// the UTC offset is tzdata-dependent (BC permanent DST, 2026) so derive it rather than pin it
+const nextAnnualReport = toApiDateTime(asOfDate)!
 
 const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record<string, unknown> } = {}) =>
   getDraftFilingMock<AnnualReportDraftState>({
@@ -39,7 +41,7 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
     ...overrides
   })
 
-/** Set the page url - the store deliberately ignores any 'year' query param. */
+/** Set the page url - the store deliberately ignores any 'year' or 'draft' query param. */
 function setUrl(query = '') {
   window.history.replaceState({}, '', `/annual-report/${identifier}${query}`)
 }
@@ -50,15 +52,16 @@ describeCommonFilingStoreBehaviour({
   filingType,
   bodyKey,
   buildDraft,
-  initStore: async (store, draftId) => {
+  initStore: async (store) => {
     setMockBusiness({ nextAnnualReport })
-    await store.init(identifier, draftId)
+    await store.init(identifier)
     store.formState.authorization!.isAuthorized = true
   },
   payment: 'both',
   certify: 'authorization',
-  expectsFeeResync: true,
-  submitBlocked: true
+  submitBlocked: true,
+  // a corps AR is file and pay only - it is never saved as or resumed from a draft
+  supportsDrafts: false
 })
 
 describe('useAnnualReportStore', () => {
@@ -91,7 +94,7 @@ describe('useAnnualReportStore', () => {
     expect(store.formState.staffPayment).toBeUndefined()
   })
 
-  describe('init(businessId, draftId)', () => {
+  describe('init(businessId)', () => {
     it('should fetch the directors and offices needed by the readonly display sections', async () => {
       mockInitFiling.mockResolvedValue({ draftFiling: undefined })
 
@@ -107,16 +110,17 @@ describe('useAnnualReportStore', () => {
       )
     })
 
-    it('should pass the route draft id through to initFiling', async () => {
-      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+    it('should never request a draft, even with one in the url', async () => {
+      setUrl(`?draft=${DRAFT_FILING_ID}`)
+      mockInitFiling.mockResolvedValue({ draftFiling: undefined })
 
-      await store.init(identifier, String(DRAFT_FILING_ID))
+      await store.init(identifier)
 
       expect(mockInitFiling).toHaveBeenCalledWith(
         identifier,
         FilingType.ANNUAL_REPORT,
         undefined,
-        String(DRAFT_FILING_ID),
+        undefined,
         { roleType: RoleType.DIRECTOR },
         [OfficeType.REGISTERED, OfficeType.RECORDS]
       )
@@ -157,23 +161,15 @@ describe('useAnnualReportStore', () => {
 
         await store.init(identifier)
 
-        expect(store.arYear).toBe(2026)
+        expect(store.arYear).toBe(arYear)
       })
 
-      it('should use the draft ARFilingYear over the business year', async () => {
-        mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { ARFilingYear: 2024 } }) })
-
-        await store.init(identifier, String(DRAFT_FILING_ID))
-
-        expect(store.arYear).toBe(2024)
-      })
-
-      it('should fall back to the year of the business nextAnnualReport', async () => {
+      it('should take the year of the business nextAnnualReport', async () => {
         mockInitFiling.mockResolvedValue({ draftFiling: undefined })
 
         await store.init(identifier)
 
-        expect(store.arYear).toBe(2026)
+        expect(store.arYear).toBe(arYear)
       })
 
       it('should be undefined when there is no next annual report', async () => {
@@ -188,10 +184,9 @@ describe('useAnnualReportStore', () => {
   })
 
   describe('submit(isSubmission)', () => {
-    const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
     const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
 
-    /** Init a new (no draft) filing with the authorization confirmed. */
+    /** Init the filing with the authorization confirmed. */
     async function initAndAuthorize(query = '') {
       setUrl(query)
       mockInitFiling.mockResolvedValue({ draftFiling: undefined })
@@ -228,7 +223,7 @@ describe('useAnnualReportStore', () => {
 
       const header = getBlockedPayload().filing.header
       expect(header.name).toBe(FilingType.ANNUAL_REPORT)
-      expect(header.ARFilingYear).toBe(2026)
+      expect(header.ARFilingYear).toBe(arYear)
       expect(header.effectiveDate).toBe(nextAnnualReport)
       expect(header.authorizationReceived).toBe(true)
       expect(header.date).toBeTruthy()
@@ -239,25 +234,37 @@ describe('useAnnualReportStore', () => {
 
       await store.submit(true)
 
-      expect(getBlockedPayload().filing.header.ARFilingYear).toBe(2026)
+      expect(getBlockedPayload().filing.header.ARFilingYear).toBe(arYear)
     })
 
-    it('should keep the AR filing year on a saved draft', async () => {
+    it('should keep the filing year and the AR date in step', async () => {
+      await initAndAuthorize()
+
+      await store.submit(true)
+
+      const filing = getBlockedPayload().filing
+      expect(filing.header.ARFilingYear).toBe(Number(filing.annualReport.annualReportDate.slice(0, 4)))
+    })
+
+    it('should do nothing when saving - there is no draft to write', async () => {
       await initAndAuthorize()
 
       await store.submit(false)
 
-      expect(getDraftPayload().filing.header.ARFilingYear).toBe(2026)
+      expect(mockSaveOrUpdateDraftFiling).not.toHaveBeenCalled()
+      expect(mockPostFiling).not.toHaveBeenCalled()
+      expect(mockLogBlockedSubmission).not.toHaveBeenCalled()
     })
   })
 
   describe('$reset', () => {
     it('restores schema defaults and clears the tables', async () => {
       mockInitFiling.mockResolvedValue({
-        draftFiling: buildDraft({ header: { folioNumber: 'ABC-123', ARFilingYear: 2024 } }),
+        draftFiling: undefined,
         parties: [{ new: { id: 'party-1' } }] as unknown as TableBusinessState<PartySchema>[]
       })
-      await store.init(identifier, String(DRAFT_FILING_ID))
+      await store.init(identifier)
+      store.formState.folio!.folioNumber = 'ABC-123'
 
       store.$reset()
 

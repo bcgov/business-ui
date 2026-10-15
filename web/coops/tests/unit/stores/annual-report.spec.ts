@@ -33,15 +33,15 @@ const PACIFIC_TZ = 'America/Vancouver'
 // the store compares the AR year against the current pacific year, so derive it rather than pin it
 const arYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
 
-/** The CP cooperative association the annual report is filed for. */
+/** The CP cooperative association the annual report is filed for - its AR is due this year. */
 const coopBusiness = {
   identifier,
   legalName: 'TEST COOPERATIVE ASSOCIATION',
   legalType: 'CP',
   foundingDate: '1998-08-26T07:00:00+00:00',
-  arMinDate: '2026-01-01',
-  arMaxDate: '2026-12-31',
-  lastAnnualGeneralMeetingDate: '2025-04-15'
+  arMinDate: `${arYear}-01-01`,
+  arMaxDate: `${arYear}-12-31`,
+  lastAnnualGeneralMeetingDate: `${arYear - 1}-04-15`
 }
 
 /** A coop annual report draft filing as returned by legal-api. */
@@ -49,13 +49,14 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
   getDraftFilingMock<CoopARDraftState>({
     filingName: FilingType.ANNUAL_REPORT,
     bodyKey: 'annualReport',
+    business: { identifier, legalType: 'CP' },
+    ...overrides,
     body: {
       annualReportDate: `${arYear}-12-31`,
       annualGeneralMeetingDate: null,
-      didNotHoldAgm: false
+      didNotHoldAgm: false,
+      ...overrides.body
     },
-    business: { identifier, legalType: 'CP' },
-    ...overrides,
     header: { ARFilingYear: arYear, ...overrides.header }
   })
 
@@ -91,7 +92,6 @@ describe('useAnnualReportStore', () => {
     mockSaveOrUpdateDraftFiling.mockResolvedValue(buildDraft())
     mockPostFiling.mockResolvedValue(undefined)
     store = useAnnualReportStore()
-    store.arYear = arYear
   })
 
   it('initializes with the non staff schema defaults', () => {
@@ -142,13 +142,44 @@ describe('useAnnualReportStore', () => {
       expect(store.offices).toEqual(addresses)
     })
 
-    it('should hydrate the AR year from the draft header', async () => {
-      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft({ header: { ARFilingYear: 2024 } }) })
+    it('should derive the AR year and date from the business for a new filing', async () => {
+      await store.init(identifier)
+
+      expect(store.arYear).toBe(arYear)
+      expect(store.asOfDate).toBe(getToday(PACIFIC_TZ))
+      expect(store.isArDateInvalid).toBe(false)
+    })
+
+    it('should derive an overdue AR year from a past arMinDate', async () => {
+      setMockBusiness({ ...coopBusiness, arMinDate: '2024-01-01', arMaxDate: '2024-12-31' })
+
+      await store.init(identifier)
+
+      expect(store.arYear).toBe(2024)
+      expect(store.asOfDate).toBe('2024-12-31')
+      expect(store.isArDateInvalid).toBe(false)
+    })
+
+    it('should keep the draft AR year and date verbatim, flagging one outside the window', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: buildDraft({ header: { ARFilingYear: 2024 }, body: { annualReportDate: '2024-12-31' } })
+      })
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 
       expect(store.arYear).toBe(2024)
       expect(store.asOfDate).toBe('2024-12-31')
+      expect(store.isArDateInvalid).toBe(true)
+    })
+
+    it('should not flag a draft dated inside the filing window', async () => {
+      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft() })
+
+      await store.init(identifier, String(DRAFT_FILING_ID))
+
+      expect(store.arYear).toBe(arYear)
+      expect(store.asOfDate).toBe(`${arYear}-12-31`)
+      expect(store.isArDateInvalid).toBe(false)
     })
 
     it('should set the initial form state for change detection', async () => {
@@ -176,7 +207,6 @@ describe('useAnnualReportStore', () => {
         mockIsStaff.value = true
         setActivePinia(createPinia())
         store = useAnnualReportStore()
-        store.arYear = arYear
       })
 
       it('should initialize with a staff payment instead of a folio', () => {
@@ -243,6 +273,27 @@ describe('useAnnualReportStore', () => {
       await store.submit(true)
 
       const filing = getBlockedPayload().filing
+      expect(filing.annualReport.annualReportDate).toBe('2024-12-31')
+      expect(filing.header.effectiveDate).toBe(toApiDateTime('2024-12-31'))
+    })
+
+    it('should keep the filing year and the AR date in step', async () => {
+      await store.submit(true)
+
+      const filing = getBlockedPayload().filing
+      expect(filing.header.ARFilingYear).toBe(Number(filing.annualReport.annualReportDate.slice(0, 4)))
+    })
+
+    it('should round-trip a resumed draft AR year and date', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: buildDraft({ header: { ARFilingYear: 2024 }, body: { annualReportDate: '2024-12-31' } })
+      })
+      await store.init(identifier, String(DRAFT_FILING_ID))
+
+      await store.submit(true)
+
+      const filing = getBlockedPayload().filing
+      expect(filing.header.ARFilingYear).toBe(2024)
       expect(filing.annualReport.annualReportDate).toBe('2024-12-31')
       expect(filing.header.effectiveDate).toBe(toApiDateTime('2024-12-31'))
     })
