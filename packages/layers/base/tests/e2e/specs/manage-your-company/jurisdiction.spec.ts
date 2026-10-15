@@ -11,7 +11,7 @@ async function navigateToManageYourCompanyPage(page: Page) {
 // Name anchored at the start - other rows ("Name in previous Jurisdiction", "Identifying
 // Number (Previous Jurisdiction)") substring-match, and a badge suffix appears once corrected.
 function getFieldRow(page: Page, rowLabel: string) {
-  return page.getByRole('group', { name: new RegExp(`^${rowLabel}`) })
+  return page.getByTestId('your-company-section').getByRole('group', { name: new RegExp(`^${rowLabel}`) })
 }
 
 test.describe('ManageYourCompany - jurisdiction', () => {

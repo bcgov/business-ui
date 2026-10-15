@@ -75,7 +75,7 @@ state.value = {
     outDate: {
       value: '2024-10-23',
       actions: []
-    },
+    }
   }
 }
 
@@ -198,6 +198,7 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['sectionOverride
       </div>
     </ConnectPageSection>
     <ManageYourCompany
+      data-testid="your-company-section"
       v-model:active-subject="activeYourCompany"
       v-model:active-name-translation="activeNameTranslation"
       :state-key
