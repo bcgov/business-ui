@@ -5,13 +5,15 @@ const {
   fields,
   loading,
   labelOverrides,
-  isReadOnlyVariant
+  isReadOnlyVariant,
+  sectionOverrides
 } = defineProps<{
   stateKey: string
   fields: ManageYourCompanyFields
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
+  sectionOverrides?: ManageYourCompanyProps['sectionOverrides']
 }>()
 
 defineEmits<{
@@ -52,66 +54,78 @@ function jurisdictionValueModel(key: 'newJurisdiction' | 'previousJurisdiction')
 
 const newJurisdictionValue = jurisdictionValueModel('newJurisdiction')
 const previousJurisdictionValue = jurisdictionValueModel('previousJurisdiction')
+
+function getIsReadOnly(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
+  return isReadOnlyVariant || sectionOverrides?.[key] === 'readonly'
+}
+
+function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
+  return sectionOverrides?.[key] !== 'hide'
+}
 </script>
 
 <template>
-  <ConnectFormFieldWrapper
-    padding-class="py-4 sm:py-5 padding-x-default"
-    :label="$t('label.jurisdiction')"
-  >
-    <div class="-mt-2 sm:mt-0">
-      {{ $t('label.britishColumbia') }}
-    </div>
-  </ConnectFormFieldWrapper>
+  <div>
+    <ConnectFormFieldWrapper
+      padding-class="py-4 sm:py-5 padding-x-default"
+      :label="$t('label.jurisdiction')"
+    >
+      <div class="-mt-2 sm:mt-0">
+        {{ $t('label.britishColumbia') }}
+      </div>
+    </ConnectFormFieldWrapper>
 
-  <!-- The new jurisdiction after an Amalgamation Out or Continuation Out filing -->
-  <ManageYourCompanyFieldRow
-    v-model="model"
-    :state-key
-    field-key="newJurisdiction"
-    :field-state="fields.newJurisdiction"
-    :label="$t('label.newJurisdiction')"
-    :display-value="newJurisdictionDisplayValue"
-    :loading
-    :label-overrides
-    :is-read-only-variant
-    indent
-    @init-edit="$emit('init-edit', $event)"
-    @undo="$emit('undo', $event)"
-    @done="$emit('done')"
-    @cancel="$emit('cancel')"
-  >
-    <FormForeignJurisdictionField
-      v-if="model && model.key === 'newJurisdiction'"
-      id="new-jurisdiction-menu"
-      v-model="newJurisdictionValue"
-      name="value.country"
-    />
-  </ManageYourCompanyFieldRow>
+    <!-- The new jurisdiction after an Amalgamation Out or Continuation Out filing -->
+    <ManageYourCompanyFieldRow
+      v-if="getIsVisible('newJurisdiction')"
+      v-model="model"
+      :state-key
+      field-key="newJurisdiction"
+      :field-state="fields.newJurisdiction"
+      :label="$t('label.newJurisdiction')"
+      :display-value="newJurisdictionDisplayValue"
+      :loading
+      :label-overrides
+      :is-read-only-variant="getIsReadOnly('newJurisdiction')"
+      indent
+      @init-edit="$emit('init-edit', $event)"
+      @undo="$emit('undo', $event)"
+      @done="$emit('done')"
+      @cancel="$emit('cancel')"
+    >
+      <FormForeignJurisdictionField
+        v-if="model && model.key === 'newJurisdiction'"
+        id="new-jurisdiction-menu"
+        v-model="newJurisdictionValue"
+        name="value.country"
+      />
+    </ManageYourCompanyFieldRow>
 
-  <!-- The previous jurisdiction after a Continuation In filing -->
-  <ManageYourCompanyFieldRow
-    v-model="model"
-    :state-key
-    field-key="previousJurisdiction"
-    :field-state="fields.previousJurisdiction"
-    :label="$t('label.previousJurisdiction')"
-    :display-value="previousJurisdictionDisplayValue"
-    :loading
-    :label-overrides
-    :is-read-only-variant
-    indent
-    @init-edit="$emit('init-edit', $event)"
-    @undo="$emit('undo', $event)"
-    @done="$emit('done')"
-    @cancel="$emit('cancel')"
-  >
-    <FormForeignJurisdictionField
-      v-if="model && model.key === 'previousJurisdiction'"
-      id="previous-jurisdiction-menu"
-      v-model="previousJurisdictionValue"
-      :select-label="$t('label.selectPreviousJurisdiction')"
-      name="value.country"
-    />
-  </ManageYourCompanyFieldRow>
+    <!-- The previous jurisdiction after a Continuation In filing -->
+    <ManageYourCompanyFieldRow
+      v-if="getIsVisible('previousJurisdiction')"
+      v-model="model"
+      :state-key
+      field-key="previousJurisdiction"
+      :field-state="fields.previousJurisdiction"
+      :label="$t('label.previousJurisdiction')"
+      :display-value="previousJurisdictionDisplayValue"
+      :loading
+      :label-overrides
+      :is-read-only-variant="getIsReadOnly('previousJurisdiction')"
+      indent
+      @init-edit="$emit('init-edit', $event)"
+      @undo="$emit('undo', $event)"
+      @done="$emit('done')"
+      @cancel="$emit('cancel')"
+    >
+      <FormForeignJurisdictionField
+        v-if="model && model.key === 'previousJurisdiction'"
+        id="previous-jurisdiction-menu"
+        v-model="previousJurisdictionValue"
+        :select-label="$t('label.selectPreviousJurisdiction')"
+        name="value.country"
+      />
+    </ManageYourCompanyFieldRow>
+  </div>
 </template>

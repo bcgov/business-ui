@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { cloneDeep } from 'es-toolkit'
 import type { Form, FormErrorEvent } from '@nuxt/ui'
 import type { ManageYourCompanyProps } from '#business/app/interfaces'
 
@@ -14,7 +13,8 @@ const {
   preventActions = false,
   actionPreventedSignal = 0,
   nested = true,
-  labelOverrides
+  labelOverrides,
+  sectionOverrides
 } = defineProps<ManageYourCompanyProps>()
 
 const emit = defineEmits<{
@@ -109,6 +109,14 @@ async function onDone() {
     onFormSubmitError(e as FormErrorEvent)
   }
 }
+
+function getIsVisible(keys: Array<keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>>): boolean {
+  return keys.some(k => sectionOverrides?.[k] !== 'hide')
+}
+
+function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>>): boolean {
+  return isReadOnlyVariant.value || keys.some(k => sectionOverrides?.[k] === 'readonly')
+}
 </script>
 
 <template>
@@ -126,12 +134,19 @@ async function onDone() {
       :schema
       :nested
       name="activeYourCompany"
-      class="flex flex-col"
+      :class="[
+        'flex flex-col',
+        '[&>:not(:first-child)]:relative [&>:not(:first-child)]:before:absolute [&>:not(:first-child)]:before:right-0',
+        '[&>:not(:first-child)]:before:top-0 [&>:not(:first-child)]:before:left-0',
+        '[&>:not(:first-child)]:before:border-t [&>:not(:first-child)]:before:border-line-muted',
+        '[&>:not(:first-child)]:before:mx-4 sm:[&>:not(:first-child)]:before:mx-7.5'
+      ]"
       @pointerup="clearAllAlerts"
       @keyup="clearAllAlerts"
     >
       <!-- Current legal name & name in new and/or previous jurisdiction -->
       <ManageYourCompanySectionName
+        v-if="getIsVisible(['nameRequest'])"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
@@ -141,51 +156,50 @@ async function onDone() {
         :business
         :loading
         :label-overrides="tableLabels"
+        :section-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
         @undo="onUndo"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Company name translations -->
       <ManageYourCompanySectionNameTranslations
+        v-if="getIsVisible(['nameTranslations'])"
         v-model="activeNt"
         :state-key="stateKey + '-nt'"
         :variant
         :loading
         :prevent-actions
         :action-prevented-signal
-        :allowed-actions="ntAllowedActions"
+        :allowed-actions="getIsReadOnly(['nameTranslations']) ? [] : ntAllowedActions"
         :label-overrides="tableLabels"
         @action-prevented="setActiveSubjectAlert"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Company Extraprovincial number and the identifying number in the previous jurisdiction -->
       <ManageYourCompanySectionExproNumber
+        v-if="getIsVisible(['numberExpro'])"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
         :is-read-only-variant
         :loading
         :label-overrides="tableLabels"
+        :section-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
         @undo="onUndo"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Current legal type also known as entity type or corp type -->
       <ManageYourCompanySectionType
+        v-if="getIsVisible(['legalType'])"
         v-model="activeSubject"
         :field-state="state.new.legalType"
         :state-key
-        :is-read-only-variant
+        :is-read-only-variant="getIsReadOnly(['legalType'])"
         :loading
         :label-overrides="tableLabels"
         @done="onDone"
@@ -194,22 +208,20 @@ async function onDone() {
         @undo="onUndo"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Recognition Date - non-editable -->
       <ManageYourCompanySectionRecognitionDate
+        v-if="getIsVisible(['foundingDate'])"
         :loading
         :founding-date="business?.foundingDate"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Amalgamation Out or Continuation Out Date -->
       <ManageYourCompanySectionOutDate
+        v-if="getIsVisible(['outDate'])"
         v-model="activeSubject"
         :field-state="state.new.outDate"
         :state-key
-        :is-read-only-variant
+        :is-read-only-variant="getIsReadOnly(['outDate'])"
         :loading
         :corrected-filing-type
         :label-overrides="tableLabels"
@@ -219,26 +231,25 @@ async function onDone() {
         @undo="onUndo"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Current jurisdiction & new and/or previous jurisdiction -->
       <ManageYourCompanySectionJurisdiction
+        v-if="getIsVisible(['jurisdiction', 'newJurisdiction', 'previousJurisdiction'])"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
         :is-read-only-variant
         :loading
         :label-overrides="tableLabels"
+        :section-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
         @undo="onUndo"
       />
 
-      <USeparator class="padding-x-default" />
-
       <!-- Contact Info - non-editable -->
       <ManageYourCompanySectionContactInfo
+        v-if="getIsVisible(['contactInfo'])"
         :loading
         :contact
       />

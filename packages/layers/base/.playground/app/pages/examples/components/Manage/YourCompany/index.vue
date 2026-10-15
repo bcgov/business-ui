@@ -23,7 +23,11 @@ state.value = {
       actions: []
     },
     nameNewJurisdiction: {
-      value: '0887699 B.C. LTD.',
+      value: 'NEW 0887699 B.C. LTD.',
+      actions: []
+    },
+    namePreviousJurisdiction: {
+      value: 'PREVIOUS 0887699 B.C. LTD.',
       actions: []
     },
     newJurisdiction: {
@@ -32,6 +36,18 @@ state.value = {
     },
     previousJurisdiction: {
       value: { country: 'US', region: null },
+      actions: []
+    },
+    numberExpro: {
+      value: 'EXPRO-123456',
+      actions: []
+    },
+    numberPreviousJurisdiction: {
+      value: 'PREV-JUR-123456',
+      actions: []
+    },
+    outDate: {
+      value: '2024-10-23',
       actions: []
     }
   },
@@ -55,7 +71,11 @@ state.value = {
     previousJurisdiction: {
       value: { country: 'US', region: null },
       actions: []
-    }
+    },
+    outDate: {
+      value: '2024-10-23',
+      actions: []
+    },
   }
 }
 
@@ -77,10 +97,106 @@ const contact: ContactPoint = {
 const activeNameTranslation = ref<ActiveNameTranslationSchema | undefined>(undefined)
 const activeYourCompany = ref<ActiveYourCompanySchema>(undefined)
 const loading = ref(false)
+
+const items = ['default', 'readonly', 'hide']
+const configState = reactive<NonNullable<ManageYourCompanyProps['sectionOverrides']>>({})
 </script>
 
 <template>
-  <UContainer>
+  <UContainer class="flex flex-col">
+    <ConnectPageSection :heading="{ label: 'Section Config' }">
+      <div class="flex gap-2 p-2">
+        <div class="flex flex-col gap-4">
+          <h3>Company Name</h3>
+          <URadioGroup
+            v-model="configState.nameRequest"
+            legend="Name Request"
+            :items
+          />
+          <URadioGroup
+            v-model="configState.nameNewJurisdiction"
+            legend="Name in new Jurisdiction"
+            :items
+          />
+          <URadioGroup
+            v-model="configState.namePreviousJurisdiction"
+            legend="Name in previous Jurisdiction"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Name Translations</h3>
+          <URadioGroup
+            v-model="configState.nameTranslations"
+            legend="Name Translations"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Expro Number</h3>
+          <URadioGroup
+            v-model="configState.numberExpro"
+            legend="Expro # in B.C."
+            :items
+          />
+          <URadioGroup
+            v-model="configState.numberPreviousJurisdiction"
+            legend="Identifying Number"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Business Type</h3>
+          <URadioGroup
+            v-model="configState.legalType"
+            legend="Business Type"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Recognition Date and Time</h3>
+          <URadioGroup
+            v-model="configState.foundingDate"
+            legend="Recognition Date and Time"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Date Of Cont/Amal Out</h3>
+          <URadioGroup
+            v-model="configState.outDate"
+            legend="Date Of Cont/Amal Out"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Jurisdiction</h3>
+          <URadioGroup
+            v-model="configState.jurisdiction"
+            legend="Jurisdiction"
+            :items
+          />
+          <URadioGroup
+            v-model="configState.newJurisdiction"
+            legend="New Jurisdiction"
+            :items
+          />
+          <URadioGroup
+            v-model="configState.previousJurisdiction"
+            legend="Previous Jurisdiction"
+            :items
+          />
+        </div>
+        <div class="flex flex-col gap-4">
+          <h3>Contact Info</h3>
+          <URadioGroup
+            v-model="configState.contactInfo"
+            legend="Contact Info"
+            :items
+          />
+        </div>
+      </div>
+    </ConnectPageSection>
     <ManageYourCompany
       v-model:active-subject="activeYourCompany"
       v-model:active-name-translation="activeNameTranslation"
@@ -96,6 +212,7 @@ const loading = ref(false)
         ManageAllowedAction.NAME_CHANGE,
         ManageAllowedAction.REMOVE
       ]"
+      :section-overrides="configState"
     />
   </UContainer>
 </template>

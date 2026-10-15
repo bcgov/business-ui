@@ -39,6 +39,8 @@ export interface ManageYourCompanyState {
   old: ManageYourCompanyFields
 }
 
+type SectionDisplayMode = 'default' | 'hide' | 'readonly'
+
 export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   tableTitle?: string
   business?: BusinessData | BusinessDataPublic
@@ -47,6 +49,21 @@ export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   correctedFilingType?: FilingType
   nameTranslationLabelOverrides?: TableLabelOverrides
   variant?: 'default' | 'correct' | 'readonly' | 'correct-readonly'
+  sectionOverrides?: {
+    nameNewJurisdiction?: SectionDisplayMode
+    namePreviousJurisdiction?: SectionDisplayMode
+    numberExpro?: SectionDisplayMode
+    numberPreviousJurisdiction?: SectionDisplayMode
+    outDate?: SectionDisplayMode
+    jurisdiction?: SectionDisplayMode
+    previousJurisdiction?: SectionDisplayMode
+    newJurisdiction?: SectionDisplayMode
+    nameRequest?: SectionDisplayMode
+    legalType?: SectionDisplayMode
+    nameTranslations?: SectionDisplayMode
+    foundingDate?: SectionDisplayMode
+    contactInfo?: SectionDisplayMode
+  }
 } & (
   | {
     variant?: 'default' | 'correct'
