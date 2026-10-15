@@ -122,6 +122,7 @@ export default {
       yearInvalid: 'Please enter a valid 4-digit year.',
       yearMin: 'Must be on or after {year}.',
       yearMax: 'Must be on or before {year}.',
+      yearBeforeFounding: 'AGM year cannot be before the year the business was founded.',
       reasonRequired: 'Reason is required.',
       reasonMax: 'Must be 2000 characters or less.',
       locationRequired: 'AGM location is required.',
