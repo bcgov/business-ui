@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // NB: Outline styles changed recently, may need to update here
 // https://github.com/nuxt/ui/pull/6576
 export default defineAppConfig({
