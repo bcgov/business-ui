@@ -4,7 +4,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
   const { tableState } = useManageParties()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -62,10 +62,10 @@ export const useReceiverStore = defineStore('receiver-store', () => {
         tableState.value.map(relationship => formatRelationshipApi(relationship.new))
         // Only add relationships that have changes
       ).filter(relationship => relationship.actions?.length),
-      ...getCommonFilingPayloadData(formState.courtOrder)
+      ...formatCommonFilingDataApi(formState.courtOrder)
     }
 
-    const payload = createFilingPayload<ChangeOfReceivers>(
+    const payload = formatFilingPayloadApi<ChangeOfReceivers>(
       businessStore.business!,
       FilingType.CHANGE_OF_RECEIVERS,
       { changeOfReceivers: receiverPayload },

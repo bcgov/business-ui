@@ -1,7 +1,7 @@
 import { cloneDeep } from 'es-toolkit'
 
 export const useAgmLocationChangeStore = defineStore('agm-location-change-store', () => {
-  const { initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -58,7 +58,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       ? Boolean(formState.authorization?.isAuthorized)
       : Boolean(formState.certify?.isCertified)
 
-    const filingPayload = createFilingPayload<AgmLocationChangeFiling>(
+    const filingPayload = formatFilingPayloadApi<AgmLocationChangeFiling>(
       businessStore.business!,
       FilingType.AGM_LOCATION_CHANGE,
       { agmLocationChange: agmLocationChangePayload },

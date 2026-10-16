@@ -102,7 +102,7 @@ useFilingPageWatcher({
     <UForm
       id="agm-location-change-filing"
       :state="store.formState"
-      :schema="getAgmLocationChangeValidationSchema()"
+      :schema="getAgmLocationChangeValidationSchema(businessStore.business?.foundingDate)"
       novalidate
       class="py-6 space-y-6 sm:py-10 sm:space-y-10"
       :aria-label="filingText.h1"
@@ -193,7 +193,7 @@ useFilingPageWatcher({
       <FormConfirmAuthorization
         v-if="store.isStaff && store.formState.authorization"
         v-model="(store.formState as any).authorization"
-        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+        :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         data-testid="form-section-authorization"
         name="authorization"
         :order="2"

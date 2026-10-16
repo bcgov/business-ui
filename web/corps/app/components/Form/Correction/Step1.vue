@@ -32,6 +32,8 @@ const directorFormProps = computed(() => {
   }
 })
 
+const yourCompanySectionOverrides = computed(() => getYourCompanySectionOverrides(store.correctedFilingType))
+
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
 function onActionPrevented() {
@@ -58,6 +60,7 @@ function onActionPrevented() {
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
       :prevent-actions="hasActiveSubForm"
+      :section-overrides="yourCompanySectionOverrides"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"

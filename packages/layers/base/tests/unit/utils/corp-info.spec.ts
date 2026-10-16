@@ -30,6 +30,17 @@ describe('business corp info utils', () => {
       const result = getCorpFullDescription('INVALID_CODE' as CorpTypeCd)
       expect(result).toBe('')
     })
+
+    test('should return the fallback for a corp type code that does not exist', () => {
+      const result = getCorpFullDescription('INVALID_CODE', 'INVALID_CODE')
+      expect(result).toBe('INVALID_CODE')
+    })
+
+    test('should return the fallback for a missing corp type code', () => {
+      expect(getCorpFullDescription(undefined, 'Unknown')).toBe('Unknown')
+      expect(getCorpFullDescription(null, 'Unknown')).toBe('Unknown')
+      expect(getCorpFullDescription(undefined)).toBe('')
+    })
   })
 
   describe('getCorpNumberedDescription', () => {

@@ -4,7 +4,7 @@ import { cloneDeep } from 'es-toolkit'
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
   const businessStore = useBusinessStore()
 
   const {
@@ -358,7 +358,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }),
 
       // Court order (common filing data)
-      ...getCommonFilingPayloadData(formState.courtOrder),
+      ...formatCommonFilingDataApi(formState.courtOrder),
 
       // Document delivery / contact point
       // contactPoint is always required, use completing party email if submitted else use
@@ -389,7 +389,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       authorizationReceived: Boolean(formState.authorization?.isAuthorized)
     }
 
-    const filingPayload = createFilingPayload(
+    const filingPayload = formatFilingPayloadApi(
       businessStore.business!,
       FilingType.CORRECTION,
       { correction: correctionPayload },

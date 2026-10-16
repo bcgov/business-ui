@@ -37,4 +37,22 @@ describe('date util', () => {
       expect(invalidCall).toThrow(/Invalid timezone/)
     })
   })
+
+  describe('toApiDateTime', () => {
+    test('should convert a pacific standard time date to UTC', () => {
+      expect(toApiDateTime('2021-01-01')).toBe('2021-01-01T08:00:00+00:00')
+    })
+
+    test('should convert a pacific daylight time date to UTC', () => {
+      expect(toApiDateTime('2021-07-01')).toBe('2021-07-01T07:00:00+00:00')
+    })
+
+    test('should convert a date in a given timezone', () => {
+      expect(toApiDateTime('2021-07-01', 'UTC')).toBe('2021-07-01T00:00:00+00:00')
+    })
+
+    test('should return undefined for an invalid date', () => {
+      expect(toApiDateTime('not-a-date')).toBeUndefined()
+    })
+  })
 })

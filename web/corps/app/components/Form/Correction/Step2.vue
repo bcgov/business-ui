@@ -27,6 +27,8 @@ const requiresAuthorization = computed(() => {
   return legalType ? CORPS.includes(legalType) : false
 })
 
+const yourCompanySectionOverrides = computed(() => getYourCompanySectionOverrides(store.correctedFilingType))
+
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
 
@@ -61,6 +63,7 @@ function onError(event: FormErrorEvent) {
         :loading="store.initializing"
         :business
         :contact="businessContact"
+        :section-overrides="yourCompanySectionOverrides"
         variant="correct-readonly"
       />
 
@@ -184,7 +187,7 @@ function onError(event: FormErrorEvent) {
     <FormCertify
       v-if="!store.isStaffCorrectionType && store.formState.certify"
       v-model="store.formState.certify"
-      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
       order="5"
       name="certify"
     />
@@ -192,7 +195,7 @@ function onError(event: FormErrorEvent) {
     <FormConfirmAuthorization
       v-if="requiresAuthorization && store.formState.authorization"
       v-model="store.formState.authorization"
-      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
       :order="store.isStaffCorrectionType ? 4 : 6"
       name="authorization"
     />

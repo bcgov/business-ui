@@ -13,7 +13,7 @@ mockNuxtImport('useBusinessService', () => () => ({
   postFiling: mockPostFiling
 }))
 
-// NB: only initFiling is mocked - createFilingPayload runs for real so the submitted
+// NB: only initFiling is mocked - formatFilingPayloadApi runs for real so the submitted
 // payload shape (including the filing header) is asserted end to end
 const mockInitFiling = vi.fn()
 mockNuxtImport('useFiling', original => () => {

@@ -192,7 +192,7 @@ useFilingPageWatcher<DissolutionType>({
         v-else
         v-model="store.formState.certify"
         data-testid="form-section-certify"
-        :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+        :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         :disabled="initializing"
         name="certify"
         order="3"
