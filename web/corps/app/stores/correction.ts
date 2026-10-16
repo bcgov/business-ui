@@ -20,7 +20,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     resolutionDates,
     nameTranslations,
     yourCompany,
-    hasOfficeChange,
     hasShareStructureChange
   } = useCorrectionHelper()
 
@@ -308,9 +307,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
    * @param isSubmission - true to submit for processing, false to save as draft
    */
   async function submit(isSubmission: boolean) {
-    const regOffice = offices.value.find(o => o.new.type === OfficeType.REGISTERED)?.new.address
-    const recOffice = offices.value.find(o => o.new.type === OfficeType.RECORDS)?.new.address
-
     // Parties — formatted as relationships (with `entity`), matching transition store pattern
     // All party types (directors, receivers, liquidators, custodians, completing party) are combined in one array
     // Only parties with changes are included - the API expects only what was corrected
