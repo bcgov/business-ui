@@ -39,6 +39,24 @@ export interface ManageYourCompanyState {
   old: ManageYourCompanyFields
 }
 
+type FieldDisplayMode = 'default' | 'hide' | 'readonly'
+
+export type YourCompanyFieldOverrides = {
+  nameNewJurisdiction?: FieldDisplayMode
+  namePreviousJurisdiction?: FieldDisplayMode
+  numberExpro?: FieldDisplayMode
+  numberPreviousJurisdiction?: FieldDisplayMode
+  outDate?: FieldDisplayMode
+  jurisdiction?: FieldDisplayMode
+  previousJurisdiction?: FieldDisplayMode
+  newJurisdiction?: FieldDisplayMode
+  nameRequest?: FieldDisplayMode
+  legalType?: FieldDisplayMode
+  nameTranslations?: FieldDisplayMode
+  foundingDate?: FieldDisplayMode
+  contactInfo?: FieldDisplayMode
+}
+
 export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   tableTitle?: string
   business?: BusinessData | BusinessDataPublic
@@ -47,6 +65,7 @@ export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   correctedFilingType?: FilingType
   nameTranslationLabelOverrides?: TableLabelOverrides
   variant?: 'default' | 'correct' | 'readonly' | 'correct-readonly'
+  fieldOverrides?: YourCompanyFieldOverrides
 } & (
   | {
     variant?: 'default' | 'correct'
