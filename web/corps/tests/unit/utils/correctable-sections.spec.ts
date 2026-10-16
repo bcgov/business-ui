@@ -47,7 +47,7 @@ describe('getCorrectableSections', () => {
   })
 })
 
-describe('getYourCompanySectionOverrides', () => {
+describe('getYourCompanyFieldOverrides', () => {
   const defaults = {
     nameNewJurisdiction: 'hide',
     namePreviousJurisdiction: 'hide',
@@ -106,7 +106,7 @@ describe('getYourCompanySectionOverrides', () => {
   it.each(customSections)(
     'returns correct overrides for %s',
     (filingType, expected) => {
-      expect(getYourCompanySectionOverrides(filingType)).toEqual(expected)
+      expect(getYourCompanyFieldOverrides(filingType)).toEqual(expected)
     })
 
   const handledFilingTypes = customSections.map(([type]) => type)
@@ -117,7 +117,7 @@ describe('getYourCompanySectionOverrides', () => {
   it.each(unhandledFilingTypes)(
     'returns defaults for %s',
     (filingType) => {
-      expect(getYourCompanySectionOverrides(filingType)).toEqual(defaults)
+      expect(getYourCompanyFieldOverrides(filingType)).toEqual(defaults)
     }
   )
 })
