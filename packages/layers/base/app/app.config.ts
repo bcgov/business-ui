@@ -44,6 +44,16 @@ export default defineAppConfig({
           card: {
             item: 'border-line-muted!'
           }
+        },
+        size: {
+          bcGov: {
+            fieldset: 'gap-y-1',
+            legend: 'text-sm',
+            base: 'size-4',
+            item: 'text-sm',
+            container: 'h-5',
+            indicator: 'after:size-1.5'
+          }
         }
       },
       compoundVariants: [
@@ -58,9 +68,8 @@ export default defineAppConfig({
         {
           color: 'primary',
           variant: 'list',
-          indicator: ['start', 'end'],
           class: {
-            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
+            base: 'ring-2 ring-line-muted focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!',
           }
         }
       ]
