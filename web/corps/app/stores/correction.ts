@@ -341,13 +341,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       // Parties
       ...(relationships.length > 0 && { relationships }),
 
-      // Offices
-      ...(hasOfficeChange.value && {
-        offices: {
-          registeredOffice: formatOfficeApi(regOffice),
-          recordsOffice: formatOfficeApi(recOffice)
-        } as unknown as ApiEntityOfficeAddress
-      }),
+      offices: formatOfficesApi(offices.value),
 
       // Share structure
       ...(hasShareStructureChange.value && {
