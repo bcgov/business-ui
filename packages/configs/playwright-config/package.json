@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.0",
   "engines": {
-    "node": ">=24"
+    "node": "^24.15.0"
   },
   "repository": "github:bcgov/business-ui",
   "main": "./playwright.config.ts",

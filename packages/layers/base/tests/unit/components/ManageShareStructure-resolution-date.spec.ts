@@ -93,7 +93,7 @@ describe('ManageShareStructure — resolution date add section in correction', (
   it('hides the add-resolution-date input when collectResolutionDate is false and variant is not correct', async () => {
     const wrapper = await mountSuspended(ManageShareStructure, {
       props: {
-        variant: 'change',
+        variant: 'default',
         collectResolutionDate: false
       },
       global: { stubs }
@@ -108,7 +108,7 @@ describe('ManageShareStructure — resolution date add section in correction', (
     'does not require a resolution date in a correction filing for a new share class with rights or restrictions',
     async () => {
       // a share class was added this session and has rights/restrictions -> would require a
-      // resolution date outside of corrections (see equivalent 'change' variant test below)
+      // resolution date outside of corrections (see equivalent 'default' variant test below)
       mockShareClasses.value = [
         {
           new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true },
@@ -144,7 +144,7 @@ describe('ManageShareStructure — resolution date add section in correction', (
 
       const wrapper = await mountSuspended(ManageShareStructure, {
         props: {
-          variant: 'change',
+          variant: 'default',
           collectResolutionDate: true
         },
         global: { stubs }

@@ -143,7 +143,7 @@ export function getCorrectableSections(filingType: FilingType, subType?: string)
   return (subType && sections[subType]) || sections[DEFAULT_SUBTYPE]
 }
 
-const DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES = {
+const DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES = {
   nameNewJurisdiction: 'hide',
   namePreviousJurisdiction: 'hide',
   numberExpro: 'hide',
@@ -159,7 +159,7 @@ const DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES = {
   contactInfo: 'readonly'
 } as const
 
-const YOUR_COMPANY_SECTIONS: Partial<Record<FilingType, ManageYourCompanyProps['fieldOverrides']>> = {
+const YOUR_COMPANY_FIELDS: Partial<Record<FilingType, ManageYourCompanyProps['fieldOverrides']>> = {
   [FilingType.INCORPORATION_APPLICATION]: {
     nameTranslations: 'default'
   },
@@ -182,7 +182,7 @@ const YOUR_COMPANY_SECTIONS: Partial<Record<FilingType, ManageYourCompanyProps['
   }
 }
 
-export function getYourCompanySectionOverrides(filingType: FilingType) {
-  const sections = YOUR_COMPANY_SECTIONS[filingType] ?? {}
-  return toMerged(DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES, sections)
+export function getYourCompanyFieldOverrides(filingType: FilingType) {
+  const sections = YOUR_COMPANY_FIELDS[filingType] ?? {}
+  return toMerged(DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES, sections)
 }
