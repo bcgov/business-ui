@@ -831,6 +831,8 @@ export default {
     legalNameChangeSpellingHint: 'To fix a spelling mistake in a name, submit a {link} to BC Registries.',
     limitedRestorationWasSuccessful: 'The Company {boldStart}{name}{boldEnd} was successfully restored and is active {boldStart}until {date} at 11:59 pm Pacific time{boldEnd}. At the end of the limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
     limitedRestorationExtensionWasSuccessful: 'The period of restoration was successfully extended and is active {boldStart}until {date}{boldEnd}. At the end of the extended limited restoration period, the company will be automatically dissolved. If you require assistance to extend a limited restoration/reinstatement or wish to convert your restoration from a limited period to a full restoration, please contact BC Registry Services.',
+    noChangesToSave: 'There are no changes to save.',
+    noChangesToSubmit: 'There are no changes to submit.',
     noDataToDisplay: 'No data to display',
     noDocumentsAvailable: 'No documents available',
     effectiveDateFormat: 'Format: Month DD, YYYY (eg., January 1, 2026, Jan 1, 2026) or YYYY-MM-DD (e.g., 2026-01-01)',

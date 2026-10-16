@@ -32,6 +32,20 @@ export function getToday(timezone = 'UTC', format?: string): string {
 }
 
 /**
+ * Converts an iso date string (YYYY-MM-DD) to an API date-time string in UTC, at midnight in the
+ * given timezone (defaults to pacific time).
+ * @example "2021-01-01" -> "2021-01-01T08:00:00+00:00" // PST
+ * @example "2021-07-01" -> "2021-07-01T07:00:00+00:00" // PDT
+ */
+export function toApiDateTime(
+  dateStr: IsoDatePacific,
+  timezone = 'America/Vancouver'
+): ApiDateTimeUtc | undefined {
+  const newDate = DateTime.fromISO(dateStr, { zone: timezone })
+  return newDate.isValid ? newDate.toUTC().toFormat('yyyy-MM-dd\'T\'HH:mm:ssZZ') : undefined
+}
+
+/**
  * Converts a date string to a Date object in the specified timezone (defaults to pacific time).
  */
 export const toDate = (

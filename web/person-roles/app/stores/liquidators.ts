@@ -6,7 +6,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
   const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
-  const { getCommonFilingPayloadData, initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -80,11 +80,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const liquidatorPayload = formatLiquidatorsApi(
       tableState.value,
       liquidateSubType.value,
-      getCommonFilingPayloadData(formState.courtOrder),
+      formatCommonFilingDataApi(formState.courtOrder),
       tableOffices.value
     )
 
-    const payload = createFilingPayload<ChangeOfLiquidators>(
+    const payload = formatFilingPayloadApi<ChangeOfLiquidators>(
       businessStore.business!,
       FilingType.CHANGE_OF_LIQUIDATORS,
       { changeOfLiquidators: liquidatorPayload },

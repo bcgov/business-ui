@@ -4,7 +4,7 @@ import { formatOfficeApi } from '#business/app/utils/formatters/format-address'
 /**
  * Builds the changeOfAddress `offices` payload from the ManageOffices table state.
  */
-export function buildChangeOfAddressOffices(
+export function formatChangeOfAddressOfficesApi(
   tableState: TableBusinessState<OfficesSchema>[]
 ): Partial<Record<OfficeType, { mailingAddress: ApiAddress, deliveryAddress: ApiAddress }>> {
   const offices: Partial<Record<OfficeType, { mailingAddress: ApiAddress, deliveryAddress: ApiAddress }>> = {}

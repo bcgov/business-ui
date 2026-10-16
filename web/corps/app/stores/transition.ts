@@ -5,7 +5,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableOffices } = useManageOffices()
   const { shareClasses: tableShareClasses } = useManageShareStructure()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, createFilingPayload } = useFiling()
+  const { initFiling, formatFilingPayloadApi } = useFiling()
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
@@ -89,7 +89,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       })
     }
 
-    const filingPayload = createFilingPayload(
+    const filingPayload = formatFilingPayloadApi(
       businessStore.business!,
       FilingType.TRANSITION,
       { transition: transitionPayload },

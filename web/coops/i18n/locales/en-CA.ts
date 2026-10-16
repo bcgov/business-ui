@@ -15,13 +15,31 @@ export default {
       }
     }
   },
+  label: {
+    agmDate: 'Annual General Meeting Date',
+    registeredOfficeAddress: 'Registered Office Address'
+  },
   page: {
     annualReport: {
-      desc: 'TBD',
-      feeCode: 'TBD',
-      feeLabel: 'TBD',
-      h1: 'TBD',
-      title: 'TBD'
+      agmDateDesc: 'Enter the date of the annual general meeting (AGM) this annual report is for.',
+      desc: 'File the annual report for your cooperative association.',
+      feeCode: 'OTANN',
+      feeLabel: 'Annual Report',
+      h1: 'File {year} Annual Report',
+      title: 'File Annual Report - BC Registries and Online Services'
+    },
+    changeOfAddress: {
+      desc: 'Update the registered office address of your cooperative association.',
+      feeCode: 'OTADD',
+      feeLabel: 'Address Change',
+      h1: 'Address Change',
+      title: 'Address Change - BC Registries and Online Services'
     }
+  },
+  text: {
+    // Placeholder - need the AGM date picker, registered office addresses and directors
+    agmDateNotAvailable: 'Annual general meeting date entry is not available yet.',
+    arDateOutOfRange: 'This annual report date is outside the allowed filing period. It cannot be submitted - please contact BC Registries staff to resolve it.',
+    changeRegisteredOfficeAddress: 'Please change your Registered Office Address.'
   }
 }

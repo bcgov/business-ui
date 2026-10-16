@@ -60,6 +60,45 @@ export default {
       locationChangeDetailDesc: 'Enter the calendar year the AGM is for and the AGM location outside B.C.',
       title: 'AGM Location Change - BC Registries and Online Services'
     },
+    annualReport: {
+      arDate: 'Annual Report Date',
+      desc: 'Review the information below, then file and pay for your annual report.',
+      feeCode: 'BCANN',
+      feeLabel: 'Annual Report',
+      h1: 'Annual Report {year}',
+      title: 'Annual Report - BC Registries and Online Services'
+    },
+    changeOfAddress: {
+      desc: 'Update the registered and records office addresses of this business.',
+      feeCode: 'BCADD',
+      feeLabel: 'Address Change',
+      h1: 'Address Change',
+      title: 'Address Change - BC Registries and Online Services'
+    },
+    consentAmalgamationOut: {
+      desc: 'Request the Registrar’s consent to amalgamate this business out of British Columbia into a corporation in another jurisdiction. The consent is valid for six months.',
+      feeCode: 'IAMGO',
+      feeLabel: '6-Month Consent to Amalgamate Out',
+      h1: 'Six-Month Consent to Amalgamate Out',
+      jurisdictionDesc: 'Enter the Jurisdiction you will be Amalgamating Out to.',
+      title: 'Six-Month Consent to Amalgamate Out - BC Registries and Online Services'
+    },
+    consentContinuationOut: {
+      desc: 'Request the Registrar’s consent to continue this business out of British Columbia to another jurisdiction. The consent is valid for six months.',
+      feeCode: 'CONTO',
+      feeLabel: '6-Month Consent to Continue Out',
+      h1: 'Six-Month Consent to Continue Out',
+      jurisdictionDesc: 'Enter the Jurisdiction you will be Continuing Out to.',
+      title: 'Six-Month Consent to Continue Out - BC Registries and Online Services'
+    },
+    continuationOut: {
+      consentExpiredWarning: 'The Six-Month Consent to Continue Out for this business has expired. Manager approval is required to file this Continuation Out.',
+      desc: 'Continue this business out of British Columbia to the jurisdiction it has received consent to continue out to. The business will become historical in B.C. once this filing is processed.',
+      feeCode: 'COUTI',
+      feeLabel: 'Continuation Out',
+      h1: 'Continuation Out',
+      title: 'Continuation Out - BC Registries and Online Services'
+    },
     correction: {
       desc: 'This filing will correct the information in the original {boldStart}{filing-type}{boldEnd} filing from {boldStart}{filing-date}{boldEnd}. Changes made in this correction will be applied to the business record.',
       feeCode: 'CRCTN',
@@ -92,6 +131,7 @@ export default {
     }
   },
   text: {
+    addressUpdateEffectiveTomorrow: 'Any address update will be effective tomorrow.',
     addToLedgerDescription: 'If you require this delay of dissolution to be ledgered, select the box below.',
     alertMaxTwoDelays: '{important} Businesses are only allowed to request up to two 6 month delays. If a business requires more time and has valid reasons for a longer delay, they may place a request by emailing {email}.',
     certifyCorrectionDescription: 'Confirm the legal name of the person authorized to complete and submit this correction.',
@@ -99,16 +139,14 @@ export default {
     certifyTransitionDescription: 'Confirm the legal name of the person authorized to complete and submit this application.',
     confirmDirectorsCorrect: 'I confirm that the director information listed for this business is correct.',
     confirmOfficesCorrect: 'I confirm that the office address information listed for this business is correct.',
+    consentNoCorrectionsAfterSubmission: '{boldStart}Important:{boldEnd} Make sure the information you are providing is correct. Corrections cannot be made after submission. You will need to resubmit if there are any errors.',
     correctionCommentDescription: 'Enter a detail comment that describes the reason for this correction.',
     correctionReviewDescription: 'Review the changes below. Only sections that have been modified will appear.',
     currentDirectorsMustBeCorrect: 'Current directors must be correct before filing your application.',
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
-    formatYYYYMMDD: 'Format: YYYY-MM-DD',
     liquidatorsMustBeCorrect: 'Liquidator information must be correct before filing your application.',
     nameTranslationsDescription: 'Name translations must use the Latin Alphabet (English, French, etc.). Names that use other writing systems must spell the name phonetically in English or French.',
     agmLocationHint: 'Enter the AGM location not in B.C. Include the city, province or state equivalent, and country. E.g. "Red Deer, Alberta, Canada"',
-    noChangesToSave: 'There are no changes to save.',
-    noChangesToSubmit: 'There are no changes to submit.',
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
     officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
     receiversMustBeCorrect: 'Receiver information must be correct before filing your application.',

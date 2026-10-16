@@ -39,7 +39,7 @@ export function getDirectorChangeManagePartiesProps() {
  * @param options.removedCessationDate overrides the cessation date stamped on REMOVED
  * directors' roles (defaults to today)
  */
-export function buildChangeOfDirectorsRelationships(
+export function formatChangeOfDirectorsRelationshipsApi(
   tableState: TableBusinessState<PartySchema>[],
   options?: { removedCessationDate?: string }
 ): BusinessRelationship[] {
@@ -71,12 +71,15 @@ export interface DirectorWarning {
   message: string
 }
 
-function directorRegion(director: PartySchema): string {
-  return director.address.deliveryAddress?.region || director.address.mailingAddress?.region || ''
+// FUTURE: confirm isBcResident and isCanadianResident rules
+/** A director resides in BC when their delivery address region is BC. */
+function isBcResident(director: PartySchema): boolean {
+  return director.address.deliveryAddress?.region === 'BC'
 }
 
-function directorCountry(director: PartySchema): string {
-  return director.address.deliveryAddress?.country || director.address.mailingAddress?.country || ''
+/** A director resides in Canada when their delivery address country is CA. */
+function isCanadianResident(director: PartySchema): boolean {
+  return director.address.deliveryAddress?.country === 'CA'
 }
 
 /**
@@ -88,23 +91,24 @@ export function getDirectorWarning(
 ): DirectorWarning | undefined {
   const t = useNuxtApp().$i18n.t
 
+  const allDirectors = tableState.map(row => row.new)
   const activeDirectors = tableState
     .filter(row => !row.new.actions.includes(ActionType.REMOVED))
     .map(row => row.new)
 
-  if (activeDirectors.length < config.minCount) {
-    return { type: 'minCount', message: t('text.directorWarningMinCount', config.minCount) }
-  }
-
-  if (config.bcResidency && activeDirectors.every(d => directorRegion(d) !== 'BC')) {
+  if (config.bcResidency && allDirectors.length > 0 && allDirectors.every(d => !isBcResident(d))) {
     return { type: 'bcResidency', message: t('text.directorWarningBcResidency') }
   }
 
-  if (config.canadianResidency && activeDirectors.length > 0) {
-    const notCanadian = activeDirectors.filter(d => directorCountry(d) !== 'CA').length
-    if (notCanadian / activeDirectors.length > 0.5) {
+  if (config.canadianResidency && allDirectors.length > 0) {
+    const notCanadian = allDirectors.filter(d => !isCanadianResident(d)).length
+    if (notCanadian / allDirectors.length > 0.5) {
       return { type: 'canadianResidency', message: t('text.directorWarningCanadianResidency') }
     }
+  }
+
+  if (activeDirectors.length < config.minCount) {
+    return { type: 'minCount', message: t('text.directorWarningMinCount', config.minCount) }
   }
 
   return undefined
@@ -140,6 +144,8 @@ export async function syncDirectorChangeFee(
     )
   }
 
-  feeStore.removeFee(inactiveCode)
-  feeStore.addReplaceFee(activeCode, options.feeOptions)
+  if (feeStore.feesCached[activeCode]) {
+    feeStore.removeFee(inactiveCode)
+    feeStore.addReplaceFee(activeCode, options.feeOptions)
+  }
 }
