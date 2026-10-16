@@ -39,7 +39,23 @@ export interface ManageYourCompanyState {
   old: ManageYourCompanyFields
 }
 
-type SectionDisplayMode = 'default' | 'hide' | 'readonly'
+type FieldDisplayMode = 'default' | 'hide' | 'readonly'
+
+export type YourCompanyFieldOverrides = {
+  nameNewJurisdiction?: FieldDisplayMode
+  namePreviousJurisdiction?: FieldDisplayMode
+  numberExpro?: FieldDisplayMode
+  numberPreviousJurisdiction?: FieldDisplayMode
+  outDate?: FieldDisplayMode
+  jurisdiction?: FieldDisplayMode
+  previousJurisdiction?: FieldDisplayMode
+  newJurisdiction?: FieldDisplayMode
+  nameRequest?: FieldDisplayMode
+  legalType?: FieldDisplayMode
+  nameTranslations?: FieldDisplayMode
+  foundingDate?: FieldDisplayMode
+  contactInfo?: FieldDisplayMode
+}
 
 export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   tableTitle?: string
@@ -49,21 +65,7 @@ export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   correctedFilingType?: FilingType
   nameTranslationLabelOverrides?: TableLabelOverrides
   variant?: 'default' | 'correct' | 'readonly' | 'correct-readonly'
-  sectionOverrides?: {
-    nameNewJurisdiction?: SectionDisplayMode
-    namePreviousJurisdiction?: SectionDisplayMode
-    numberExpro?: SectionDisplayMode
-    numberPreviousJurisdiction?: SectionDisplayMode
-    outDate?: SectionDisplayMode
-    jurisdiction?: SectionDisplayMode
-    previousJurisdiction?: SectionDisplayMode
-    newJurisdiction?: SectionDisplayMode
-    nameRequest?: SectionDisplayMode
-    legalType?: SectionDisplayMode
-    nameTranslations?: SectionDisplayMode
-    foundingDate?: SectionDisplayMode
-    contactInfo?: SectionDisplayMode
-  }
+  fieldOverrides?: YourCompanyFieldOverrides
 } & (
   | {
     variant?: 'default' | 'correct'

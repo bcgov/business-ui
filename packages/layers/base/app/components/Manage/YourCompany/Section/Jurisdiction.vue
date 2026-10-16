@@ -6,14 +6,14 @@ const {
   loading,
   labelOverrides,
   isReadOnlyVariant,
-  sectionOverrides
+  fieldOverrides
 } = defineProps<{
   stateKey: string
   fields: ManageYourCompanyFields
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
-  sectionOverrides?: ManageYourCompanyProps['sectionOverrides']
+  fieldOverrides?: ManageYourCompanyProps['fieldOverrides']
 }>()
 
 defineEmits<{
@@ -55,13 +55,20 @@ function jurisdictionValueModel(key: 'newJurisdiction' | 'previousJurisdiction')
 const newJurisdictionValue = jurisdictionValueModel('newJurisdiction')
 const previousJurisdictionValue = jurisdictionValueModel('previousJurisdiction')
 
-function getIsReadOnly(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return isReadOnlyVariant || sectionOverrides?.[key] === 'readonly'
-}
+const { getIsVisible, getIsReadOnly } = useManageYourCompanyFieldOverrides(
+  () => fieldOverrides,
+  () => isReadOnlyVariant
+)
 
-function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return sectionOverrides?.[key] !== 'hide'
-}
+const isVisible = computed(() => ({
+  newJurisdiction: getIsVisible('newJurisdiction'),
+  previousJurisdiction: getIsVisible('previousJurisdiction')
+}))
+
+const isReadOnly = computed(() => ({
+  newJurisdiction: getIsReadOnly('newJurisdiction'),
+  previousJurisdiction: getIsReadOnly('previousJurisdiction')
+}))
 </script>
 
 <template>
@@ -77,7 +84,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
 
     <!-- The new jurisdiction after an Amalgamation Out or Continuation Out filing -->
     <ManageYourCompanyFieldRow
-      v-if="getIsVisible('newJurisdiction')"
+      v-if="isVisible.newJurisdiction"
       v-model="model"
       :state-key
       field-key="newJurisdiction"
@@ -86,7 +93,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :display-value="newJurisdictionDisplayValue"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('newJurisdiction')"
+      :is-read-only-variant="isReadOnly.newJurisdiction"
       indent
       @init-edit="$emit('init-edit', $event)"
       @undo="$emit('undo', $event)"
@@ -103,7 +110,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
 
     <!-- The previous jurisdiction after a Continuation In filing -->
     <ManageYourCompanyFieldRow
-      v-if="getIsVisible('previousJurisdiction')"
+      v-if="isVisible.previousJurisdiction"
       v-model="model"
       :state-key
       field-key="previousJurisdiction"
@@ -112,7 +119,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :display-value="previousJurisdictionDisplayValue"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('previousJurisdiction')"
+      :is-read-only-variant="isReadOnly.previousJurisdiction"
       indent
       @init-edit="$emit('init-edit', $event)"
       @undo="$emit('undo', $event)"

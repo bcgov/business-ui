@@ -2,7 +2,7 @@
 // The legal company name in the new jurisdiction after an Amalgamation Out or Continuation Out filing
 const {
   isReadOnlyVariant,
-  sectionOverrides
+  fieldOverrides
 } = defineProps<{
   stateKey: string
   fields: ManageYourCompanyFields
@@ -12,7 +12,7 @@ const {
   correctNameOptions?: CorrectNameOption[]
   nrAllowedActionsTypes?: NrRequestActionCode[]
   business?: BusinessData | BusinessDataPublic
-  sectionOverrides?: ManageYourCompanyProps['sectionOverrides']
+  fieldOverrides?: ManageYourCompanyProps['fieldOverrides']
 }>()
 
 defineEmits<{
@@ -24,24 +24,33 @@ defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-function getIsReadOnly(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return isReadOnlyVariant || sectionOverrides?.[key] === 'readonly'
-}
+const { getIsVisible, getIsReadOnly } = useManageYourCompanyFieldOverrides(
+  () => fieldOverrides,
+  () => isReadOnlyVariant
+)
 
-function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return sectionOverrides?.[key] !== 'hide'
-}
+const isVisible = computed(() => ({
+  nameRequest: getIsVisible('nameRequest'),
+  nameNewJurisdiction: getIsVisible('nameNewJurisdiction'),
+  namePreviousJurisdiction: getIsVisible('namePreviousJurisdiction')
+}))
+
+const isReadOnly = computed(() => ({
+  nameRequest: getIsReadOnly('nameRequest'),
+  nameNewJurisdiction: getIsReadOnly('nameNewJurisdiction'),
+  namePreviousJurisdiction: getIsReadOnly('namePreviousJurisdiction')
+}))
 </script>
 
 <template>
   <div>
     <ManageYourCompanySectionNameLegal
-      v-if="getIsVisible('nameRequest')"
+      v-if="isVisible.nameRequest"
       v-model="model"
       :field-state="fields.nameRequest"
       :loading
       :state-key
-      :is-read-only-variant="getIsReadOnly('nameRequest')"
+      :is-read-only-variant="isReadOnly.nameRequest"
       :label-overrides
       :business
       :correct-name-options
@@ -54,7 +63,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
 
     <!-- The legal company name in the new jurisdiction after an Amalgamation Out or Continuation Out filing -->
     <ManageYourCompanyFieldRow
-      v-if="getIsVisible('nameNewJurisdiction')"
+      v-if="isVisible.nameNewJurisdiction"
       v-model="model"
       :state-key
       field-key="nameNewJurisdiction"
@@ -62,7 +71,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :label="$t('label.nameInNewJurisdiction')"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('nameNewJurisdiction')"
+      :is-read-only-variant="isReadOnly.nameNewJurisdiction"
       indent
       @init-edit="$emit('init-edit', $event)"
       @undo="$emit('undo', $event)"
@@ -79,7 +88,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
 
     <!-- The legal company name in the previous jurisdiction after a Continuation In filing -->
     <ManageYourCompanyFieldRow
-      v-if="getIsVisible('namePreviousJurisdiction')"
+      v-if="isVisible.namePreviousJurisdiction"
       v-model="model"
       :state-key
       field-key="namePreviousJurisdiction"
@@ -87,7 +96,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :label="$t('label.nameInPreviousJurisdiction')"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('namePreviousJurisdiction')"
+      :is-read-only-variant="isReadOnly.namePreviousJurisdiction"
       indent
       @init-edit="$emit('init-edit', $event)"
       @undo="$emit('undo', $event)"

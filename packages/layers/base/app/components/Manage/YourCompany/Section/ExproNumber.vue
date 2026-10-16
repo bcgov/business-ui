@@ -2,14 +2,14 @@
 // The company expro numbers after a Continuation In filing
 const {
   isReadOnlyVariant,
-  sectionOverrides
+  fieldOverrides
 } = defineProps<{
   stateKey: string
   fields: ManageYourCompanyFields
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
-  sectionOverrides?: ManageYourCompanyProps['sectionOverrides']
+  fieldOverrides?: ManageYourCompanyProps['fieldOverrides']
 }>()
 
 defineEmits<{
@@ -21,13 +21,19 @@ defineEmits<{
 
 const model = defineModel<ActiveYourCompanySchema>()
 
-function getIsReadOnly(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return isReadOnlyVariant || sectionOverrides?.[key] === 'readonly'
-}
+const { getIsVisible, getIsReadOnly } = useManageYourCompanyFieldOverrides(
+  () => fieldOverrides,
+  () => isReadOnlyVariant
+)
 
-function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>): boolean {
-  return sectionOverrides?.[key] !== 'hide'
-}
+const isVisible = computed(() => ({
+  numberPreviousJurisdiction: getIsVisible('numberPreviousJurisdiction')
+}))
+
+const isReadOnly = computed(() => ({
+  numberExpro: getIsReadOnly('numberExpro'),
+  numberPreviousJurisdiction: getIsReadOnly('numberPreviousJurisdiction')
+}))
 </script>
 
 <template>
@@ -41,7 +47,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :label="$t('label.exproNumberInBc')"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('numberExpro')"
+      :is-read-only-variant="isReadOnly.numberExpro"
       padding-class="py-4 sm:py-5 padding-x-default"
       @init-edit="$emit('init-edit', $event)"
       @undo="$emit('undo', $event)"
@@ -57,7 +63,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
     </ManageYourCompanyFieldRow>
 
     <ManageYourCompanyFieldRow
-      v-if="getIsVisible('numberPreviousJurisdiction')"
+      v-if="isVisible.numberPreviousJurisdiction"
       v-model="model"
       :state-key
       field-key="numberPreviousJurisdiction"
@@ -65,7 +71,7 @@ function getIsVisible(key: keyof NonNullable<ManageYourCompanyProps['sectionOver
       :label="$t('label.identifyingNumber')"
       :loading
       :label-overrides
-      :is-read-only-variant="getIsReadOnly('numberPreviousJurisdiction')"
+      :is-read-only-variant="isReadOnly.numberPreviousJurisdiction"
       indent
       :sub-label="$t('label.previousJurisdiction')"
       @init-edit="$emit('init-edit', $event)"

@@ -14,7 +14,7 @@ const {
   actionPreventedSignal = 0,
   nested = true,
   labelOverrides,
-  sectionOverrides
+  fieldOverrides
 } = defineProps<ManageYourCompanyProps>()
 
 const emit = defineEmits<{
@@ -110,13 +110,28 @@ async function onDone() {
   }
 }
 
-function getIsVisible(keys: Array<keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>>): boolean {
-  return keys.some(k => sectionOverrides?.[k] !== 'hide')
-}
+const { getIsVisible, getIsReadOnly } = useManageYourCompanyFieldOverrides(
+  () => fieldOverrides,
+  isReadOnlyVariant
+)
 
-function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sectionOverrides']>>): boolean {
-  return isReadOnlyVariant.value || keys.some(k => sectionOverrides?.[k] === 'readonly')
-}
+const isVisible = computed(() => ({
+  nameRequest: getIsVisible('nameRequest'),
+  nameTranslations: getIsVisible('nameTranslations'),
+  numberExpro: getIsVisible('numberExpro'),
+  legalType: getIsVisible('legalType'),
+  foundingDate: getIsVisible('foundingDate'),
+  outDate: getIsVisible('outDate'),
+  jurisdiction: getIsVisible(['jurisdiction', 'newJurisdiction', 'previousJurisdiction']),
+  contactInfo: getIsVisible('contactInfo')
+}))
+
+const isReadonly = computed(() => ({
+  nameTranslations: getIsReadOnly('nameTranslations'),
+  numberExpro: getIsReadOnly('numberExpro'),
+  legalType: getIsReadOnly('legalType'),
+  outDate: getIsReadOnly('outDate')
+}))
 </script>
 
 <template>
@@ -146,7 +161,7 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
     >
       <!-- Current legal name & name in new and/or previous jurisdiction -->
       <ManageYourCompanySectionName
-        v-if="getIsVisible(['nameRequest'])"
+        v-if="isVisible.nameRequest"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
@@ -156,7 +171,7 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
         :business
         :loading
         :label-overrides="tableLabels"
-        :section-overrides
+        :field-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -165,28 +180,28 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
 
       <!-- Company name translations -->
       <ManageYourCompanySectionNameTranslations
-        v-if="getIsVisible(['nameTranslations'])"
+        v-if="isVisible.nameTranslations"
         v-model="activeNt"
         :state-key="stateKey + '-nt'"
         :variant
         :loading
         :prevent-actions
         :action-prevented-signal
-        :allowed-actions="getIsReadOnly(['nameTranslations']) ? [] : ntAllowedActions"
+        :allowed-actions="isReadonly.nameTranslations ? [] : ntAllowedActions"
         :label-overrides="tableLabels"
         @action-prevented="setActiveSubjectAlert"
       />
 
       <!-- Company Extraprovincial number and the identifying number in the previous jurisdiction -->
       <ManageYourCompanySectionExproNumber
-        v-if="getIsVisible(['numberExpro'])"
+        v-if="isVisible.numberExpro"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
         :is-read-only-variant
         :loading
         :label-overrides="tableLabels"
-        :section-overrides
+        :field-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -195,11 +210,11 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
 
       <!-- Current legal type also known as entity type or corp type -->
       <ManageYourCompanySectionType
-        v-if="getIsVisible(['legalType'])"
+        v-if="isVisible.legalType"
         v-model="activeSubject"
         :field-state="state.new.legalType"
         :state-key
-        :is-read-only-variant="getIsReadOnly(['legalType'])"
+        :is-read-only-variant="isReadonly.legalType"
         :loading
         :label-overrides="tableLabels"
         @done="onDone"
@@ -210,18 +225,18 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
 
       <!-- Recognition Date - non-editable -->
       <ManageYourCompanySectionRecognitionDate
-        v-if="getIsVisible(['foundingDate'])"
+        v-if="isVisible.foundingDate"
         :loading
         :founding-date="business?.foundingDate"
       />
 
       <!-- Amalgamation Out or Continuation Out Date -->
       <ManageYourCompanySectionOutDate
-        v-if="getIsVisible(['outDate'])"
+        v-if="isVisible.outDate"
         v-model="activeSubject"
         :field-state="state.new.outDate"
         :state-key
-        :is-read-only-variant="getIsReadOnly(['outDate'])"
+        :is-read-only-variant="isReadonly.outDate"
         :loading
         :corrected-filing-type
         :label-overrides="tableLabels"
@@ -233,14 +248,14 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
 
       <!-- Current jurisdiction & new and/or previous jurisdiction -->
       <ManageYourCompanySectionJurisdiction
-        v-if="getIsVisible(['jurisdiction', 'newJurisdiction', 'previousJurisdiction'])"
+        v-if="isVisible.jurisdiction"
         v-model="activeSubject"
         :fields="state.new"
         :state-key
         :is-read-only-variant
         :loading
         :label-overrides="tableLabels"
-        :section-overrides
+        :field-overrides
         @done="onDone"
         @cancel="cleanupForm"
         @init-edit="onInitEdit"
@@ -249,7 +264,7 @@ function getIsReadOnly(keys: Array<keyof NonNullable<ManageYourCompanyProps['sec
 
       <!-- Contact Info - non-editable -->
       <ManageYourCompanySectionContactInfo
-        v-if="getIsVisible(['contactInfo'])"
+        v-if="isVisible.contactInfo"
         :loading
         :contact
       />

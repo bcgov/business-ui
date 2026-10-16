@@ -99,7 +99,7 @@ const activeYourCompany = ref<ActiveYourCompanySchema>(undefined)
 const loading = ref(false)
 
 const items = ['default', 'readonly', 'hide']
-const configState = reactive<NonNullable<ManageYourCompanyProps['sectionOverrides']>>({})
+const configState = reactive<NonNullable<ManageYourCompanyProps['fieldOverrides']>>({})
 </script>
 
 <template>
@@ -198,9 +198,9 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['sectionOverride
       </div>
     </ConnectPageSection>
     <ManageYourCompany
-      data-testid="your-company-section"
       v-model:active-subject="activeYourCompany"
       v-model:active-name-translation="activeNameTranslation"
+      data-testid="your-company-section"
       :state-key
       :business
       :contact
@@ -213,7 +213,7 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['sectionOverride
         ManageAllowedAction.NAME_CHANGE,
         ManageAllowedAction.REMOVE
       ]"
-      :section-overrides="configState"
+      :field-overrides="configState"
     />
   </UContainer>
 </template>
