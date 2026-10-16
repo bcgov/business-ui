@@ -69,7 +69,7 @@ export default defineAppConfig({
           color: 'primary',
           variant: 'list',
           class: {
-            base: 'ring-2 ring-line-muted focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!',
+            base: 'ring-2 ring-line-muted focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
           }
         }
       ]
