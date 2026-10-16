@@ -52,7 +52,7 @@ export default defineAppConfig({
           variant: ['card', 'table'],
           class: {
             item: 'has-data-[state=checked]:bg-white hover:bg-shade! hover:has-data-[state=checked]:bg-white! has-data-[state=checked]:border-primary! has-focus-visible:outline-none!',
-            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!',
+            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
           }
         },
         {
@@ -60,7 +60,7 @@ export default defineAppConfig({
           variant: 'list',
           indicator: ['start', 'end'],
           class: {
-            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!',
+            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
           }
         }
       ]
