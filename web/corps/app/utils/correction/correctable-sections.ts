@@ -159,7 +159,7 @@ const DEFAULT_YOUR_COMPANY_SECTION_OVERRIDES = {
   contactInfo: 'readonly'
 } as const
 
-const YOUR_COMPANY_SECTIONS: Partial<Record<FilingType, ManageYourCompanyProps['sectionOverrides']>> = {
+const YOUR_COMPANY_SECTIONS: Partial<Record<FilingType, ManageYourCompanyProps['fieldOverrides']>> = {
   [FilingType.INCORPORATION_APPLICATION]: {
     nameTranslations: 'default'
   },
