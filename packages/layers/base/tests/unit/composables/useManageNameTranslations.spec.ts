@@ -1,39 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 describe('useManageNameTranslations', () => {
   const stateKey = 'manage-name-translations-test'
 
-  const mockRow = (index: number, original: any) => ({
-    index,
+  const mockRow = (original: any) => ({
     original
   }) as any
 
   const existingNameTranslation = {
     id: '100',
+    isEditing: false,
     name: 'Nom Entreprise',
     actions: []
   }
 
   const draftNameTranslation = {
     id: '200',
+    isEditing: false,
     name: 'Raison Sociale',
     actions: []
   }
 
   beforeEach(() => {
-    const { tableState, addingNameTranslation, expandedState } = useManageNameTranslations(stateKey)
+    const { tableState } = useManageNameTranslations(stateKey)
     tableState.value = []
-    addingNameTranslation.value = false
-    expandedState.value = undefined
   })
 
   describe('Initial State', () => {
-    it('should initialize with default values', () => {
-      const { tableState, addingNameTranslation, expandedState } = useManageNameTranslations(stateKey)
+    it('should initialize with an empty table', () => {
+      const { tableState } = useManageNameTranslations(stateKey)
       expect(tableState.value).toEqual([])
-      expect(addingNameTranslation.value).toBe(false)
-      expect(expandedState.value).toBeUndefined()
     })
   })
 
@@ -67,31 +64,6 @@ describe('useManageNameTranslations', () => {
     })
   })
 
-  describe('addNewNameTranslation', () => {
-    it('should ignore undefined input', () => {
-      const { addNewNameTranslation, tableState } = useManageNameTranslations(stateKey)
-      addNewNameTranslation(undefined as any)
-      expect(tableState.value).toHaveLength(0)
-    })
-
-    it('should prepend newest added rows before older added and existing rows', () => {
-      const { addNewNameTranslation, tableState } = useManageNameTranslations(stateKey)
-
-      tableState.value = [
-        { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } },
-        { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
-      ] as any
-
-      addNewNameTranslation({ name: 'Nouveau Nom' } as any)
-
-      expect(tableState.value).toHaveLength(3)
-      expect(tableState.value[0]!.new.id).toBeUndefined()
-      expect(tableState.value[0]!.new.actions).toEqual([ActionType.ADDED])
-      expect(tableState.value[1]!.new.id).toBe('200')
-      expect(tableState.value[2]!.new.id).toBe('100')
-    })
-  })
-
   describe('updateTable', () => {
     it('should deep clone inserted state', () => {
       const { updateTable, tableState } = useManageNameTranslations(stateKey)
@@ -105,144 +77,176 @@ describe('useManageNameTranslations', () => {
       expect(tableState.value[0]).not.toBe(newState)
     })
 
-    it('should replace state by row index when row is provided', () => {
+    it('should replace the row with the matching new.id', () => {
       const { updateTable, tableState } = useManageNameTranslations(stateKey)
       tableState.value = [
         { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } },
         { new: { ...draftNameTranslation }, old: undefined }
       ] as any
 
-      const updated = {
-        new: { ...existingNameTranslation, name: 'Entreprise Modifiee', actions: [ActionType.CORRECTED] },
-        old: { ...existingNameTranslation }
-      }
+      updateTable({
+        new: { ...draftNameTranslation, name: 'Raison Modifiee', actions: [ActionType.ADDED] },
+        old: undefined
+      } as any)
 
-      updateTable(updated as any, mockRow(0, tableState.value[0]))
+      expect(tableState.value).toHaveLength(2)
+      expect(tableState.value[0]!.new.name).toBe('Nom Entreprise')
+      expect(tableState.value[1]!.new.name).toBe('Raison Modifiee')
+    })
 
-      expect(tableState.value[0]!.new.name).toBe('Entreprise Modifiee')
-      expect(tableState.value[1]!.new.name).toBe('Raison Sociale')
+    it('should call the cleanup function', () => {
+      const cleanupFn = vi.fn()
+      const { updateTable } = useManageNameTranslations(stateKey, { cleanupFn })
+
+      updateTable({ new: { ...draftNameTranslation }, old: undefined } as any)
+
+      expect(cleanupFn).toHaveBeenCalledOnce()
     })
   })
 
-  describe('removeNameTranslation', () => {
-    it('should remove newly added row entirely', () => {
-      const { removeNameTranslation, tableState } = useManageNameTranslations(stateKey)
-      const added = {
-        new: { ...draftNameTranslation, actions: [ActionType.ADDED] },
-        old: undefined
-      }
-      tableState.value = [added] as any
+  describe('addSubject', () => {
+    it('should ignore undefined input', () => {
+      const cleanupFn = vi.fn()
+      const { addSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
 
-      removeNameTranslation(mockRow(0, added))
+      addSubject(undefined)
 
       expect(tableState.value).toHaveLength(0)
+      expect(cleanupFn).not.toHaveBeenCalled()
+    })
+
+    it('should prepend newest added rows before older added and existing rows', () => {
+      const cleanupFn = vi.fn()
+      const { addSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+
+      tableState.value = [
+        { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } },
+        { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
+      ] as any
+
+      addSubject({ ...draftNameTranslation, id: '300', name: 'Nouveau Nom' })
+
+      expect(tableState.value.map(row => row.new.id)).toEqual(['300', '200', '100'])
+      expect(tableState.value[0]!.new.actions).toEqual([ActionType.ADDED])
+      expect(tableState.value[0]!.old).toBeUndefined()
+      expect(cleanupFn).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('removeSubject', () => {
+    it('should remove newly added row entirely', () => {
+      const cleanupFn = vi.fn()
+      const { removeSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
+      const added = { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
+      tableState.value = [added, existing] as any
+
+      removeSubject(mockRow(added))
+
+      expect(tableState.value.map(row => row.new.id)).toEqual(['100'])
+      expect(cleanupFn).toHaveBeenCalledOnce()
     })
 
     it('should set REMOVED action for existing row', () => {
-      const { removeNameTranslation, tableState } = useManageNameTranslations(stateKey)
-      const existing = {
-        new: { ...existingNameTranslation },
-        old: { ...existingNameTranslation }
-      }
+      const cleanupFn = vi.fn()
+      const { removeSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
       tableState.value = [existing] as any
 
-      removeNameTranslation(mockRow(0, existing))
+      removeSubject(mockRow(existing))
 
       expect(tableState.value).toHaveLength(1)
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.REMOVED])
+      expect(cleanupFn).toHaveBeenCalledOnce()
     })
   })
 
-  describe('undoNameTranslation', () => {
+  describe('undoSubject', () => {
     it('should revert new to old state when old exists', () => {
-      const { undoNameTranslation, tableState } = useManageNameTranslations(stateKey)
+      const { undoSubject, tableState } = useManageNameTranslations(stateKey)
       const existing = {
         new: { ...existingNameTranslation, name: 'Changed Name', actions: [ActionType.CORRECTED] },
         old: { ...existingNameTranslation }
       }
       tableState.value = [existing] as any
 
-      undoNameTranslation(mockRow(0, existing))
+      undoSubject(mockRow(existing))
 
       expect(tableState.value[0]!.new).toEqual(existing.old)
     })
 
     it('should do nothing when old is undefined', () => {
-      const { undoNameTranslation, tableState } = useManageNameTranslations(stateKey)
-      const draft = {
-        new: { ...draftNameTranslation, actions: [ActionType.ADDED] },
-        old: undefined
-      }
+      const cleanupFn = vi.fn()
+      const { undoSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+      const draft = { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
       tableState.value = [draft] as any
 
-      undoNameTranslation(mockRow(0, draft))
+      undoSubject(mockRow(draft))
 
       expect(tableState.value[0]).toEqual(draft)
+      expect(cleanupFn).not.toHaveBeenCalled()
     })
   })
 
-  describe('applyTableEdits', () => {
+  describe('editSubject', () => {
     it('should preserve ADDED for draft-only rows', () => {
-      const { applyTableEdits, tableState } = useManageNameTranslations(stateKey)
-      const draft = {
-        new: { ...draftNameTranslation, actions: [ActionType.ADDED] },
-        old: undefined
-      }
+      const { editSubject, tableState } = useManageNameTranslations(stateKey)
+      const draft = { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
       tableState.value = [draft] as any
 
-      applyTableEdits(
-        { ...draftNameTranslation, name: 'Raison Sociale Modifiee' } as any,
-        mockRow(0, draft)
-      )
+      editSubject({ ...draftNameTranslation, name: 'Raison Sociale Modifiee' }, mockRow(draft))
 
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.ADDED])
+      expect(tableState.value[0]!.new.name).toBe('Raison Sociale Modifiee')
     })
 
     it('should set CORRECTED when existing name changes', () => {
-      const { applyTableEdits, tableState } = useManageNameTranslations(stateKey)
-      const existing = {
-        new: { ...existingNameTranslation },
-        old: { ...existingNameTranslation }
-      }
+      const cleanupFn = vi.fn()
+      const { editSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
       tableState.value = [existing] as any
 
-      applyTableEdits(
-        { ...existingNameTranslation, name: 'Nom Corrige' } as any,
-        mockRow(0, existing)
-      )
+      editSubject({ ...existingNameTranslation, name: 'Nom Corrige' }, mockRow(existing))
 
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.CORRECTED])
       expect(tableState.value[0]!.new.name).toBe('Nom Corrige')
+      expect(cleanupFn).toHaveBeenCalledOnce()
     })
 
     it('should clear actions when existing name is unchanged', () => {
-      const { applyTableEdits, tableState } = useManageNameTranslations(stateKey)
-      const existing = {
-        new: { ...existingNameTranslation },
-        old: { ...existingNameTranslation }
-      }
+      const { editSubject, tableState } = useManageNameTranslations(stateKey)
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
       tableState.value = [existing] as any
 
-      applyTableEdits(
-        { ...existingNameTranslation } as any,
-        mockRow(0, existing)
+      editSubject({ ...existingNameTranslation }, mockRow(existing))
+
+      expect(tableState.value[0]!.new.actions).toEqual([])
+    })
+
+    it('should ignore non-editable fields when comparing', () => {
+      const { editSubject, tableState } = useManageNameTranslations(stateKey)
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
+      tableState.value = [existing] as any
+
+      editSubject(
+        { ...existingNameTranslation, isEditing: true, actions: [ActionType.CORRECTED] },
+        mockRow(existing)
       )
 
       expect(tableState.value[0]!.new.actions).toEqual([])
     })
 
     it('should ignore undefined name translation', () => {
-      const { applyTableEdits, tableState } = useManageNameTranslations(stateKey)
-      const existing = {
-        new: { ...existingNameTranslation },
-        old: { ...existingNameTranslation }
-      }
+      const cleanupFn = vi.fn()
+      const { editSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+      const existing = { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
       tableState.value = [existing] as any
 
-      applyTableEdits(undefined as any, mockRow(0, existing))
+      editSubject(undefined, mockRow(existing))
 
       expect(tableState.value[0]!.new.name).toBe('Nom Entreprise')
       expect(tableState.value[0]!.new.actions).toEqual([])
+      expect(cleanupFn).not.toHaveBeenCalled()
     })
   })
 })

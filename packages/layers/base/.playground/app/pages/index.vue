@@ -54,6 +54,23 @@ const componentExamples: DropdownMenuItem[] = [
         ]
       },
       {
+        label: 'ManageNameTranslations',
+        children: [
+          {
+            to: localePath('/examples/components/Manage/NameTranslations'),
+            label: 'Default'
+          },
+          {
+            to: localePath('/examples/components/Manage/NameTranslations/correct'),
+            label: 'Correct'
+          },
+          {
+            to: localePath('/examples/components/Manage/NameTranslations/readonly'),
+            label: 'Readonly'
+          }
+        ]
+      },
+      {
         label: 'ManageOffices',
         children: [
           {
