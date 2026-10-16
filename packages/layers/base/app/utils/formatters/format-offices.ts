@@ -54,6 +54,7 @@ export function formatOfficesSection(
     // If a draft office type matching an original type is found, do equality check and add actions
     if (draftOffice) {
       const newItem = processItem(type, draftOffice)
+      newItem.id = oldItem.id
       const isChanged = !isEqualOmit(oldItem, newItem, NON_EDITABLE_FIELDS)
 
       return {
@@ -99,7 +100,7 @@ export function formatOfficesApi(
     return undefined
   }
 
-  const result: Partial<ApiEntityOfficeAddress> = {}
+  const result: ApiEntityOfficeAddress = {}
 
   offices
     .filter(office => office.new.actions.length > 0) // only include offices where changes have been made
@@ -108,5 +109,5 @@ export function formatOfficesApi(
       result[type] = formatOfficeApi(address)
     })
 
-  return result as ApiEntityOfficeAddress
+  return result
 }

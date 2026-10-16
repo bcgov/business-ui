@@ -77,7 +77,7 @@ export const useManageOffices = (
 
     updateTable({
       old: oldSubjectState,
-      new: oldSubjectState
+      new: cloneDeep(oldSubjectState)
     })
   }
 
