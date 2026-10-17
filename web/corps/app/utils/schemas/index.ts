@@ -1,5 +1,6 @@
 export * from './address-change'
 export * from './agm-location-change'
+export * from './change-of-directors'
 export * from './annual-report'
 export * from './consent-amalgamation-out'
 export * from './consent-continuation-out'
