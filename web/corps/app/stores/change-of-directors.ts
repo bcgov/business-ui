@@ -10,6 +10,7 @@ export const useChangeOfDirectorsStore = defineStore('change-of-directors-store'
   } = useFiling()
 
   const businessStore = useBusinessStore()
+  const modal = useFilingModals()
 
   const isStaff = useIsStaff()
 
@@ -30,6 +31,12 @@ export const useChangeOfDirectorsStore = defineStore('change-of-directors-store'
       draftId,
       { roleType: RoleType.DIRECTOR }
     )
+
+    if (businessStore.business && !businessStore.isBaseCompany()) {
+      initializing.value = false
+      await modal.openFilingNotAllowedErrorModal()
+      return
+    }
 
     if (draftFiling?.filing?.changeOfDirectors) {
       draftFilingState.value = draftFiling

@@ -13,7 +13,7 @@ test.describe('Change of Directors - Task Guards', () => {
   })
 
   test('should prevent submit when no director changes have been made', async ({ page }) => {
-    await page.getByTestId('cod-date-input').fill('2026-02-15')
+    await page.getByLabel('Director Change Date').fill('2026-02-15')
     await page.getByRole('checkbox', { name: /i certify/i }).check()
     await page.getByRole('button', { name: 'Submit' }).click()
 
@@ -33,7 +33,7 @@ test.describe('Change of Directors - Task Guards', () => {
   })
 
   test('should display modal on cancel when changes have been made', async ({ page }) => {
-    await page.getByTestId('cod-date-input').fill('2026-02-15')
+    await page.getByLabel('Director Change Date').fill('2026-02-15')
     await page.getByRole('button', { name: 'Cancel', exact: true }).click({ delay: 500 })
 
     const modal = page.getByRole('dialog')
@@ -44,7 +44,7 @@ test.describe('Change of Directors - Task Guards', () => {
   })
 
   test('should prevent external navigation with browser popup if changes have been made', async ({ page }) => {
-    await page.getByTestId('cod-date-input').fill('2026-02-15')
+    await page.getByLabel('Director Change Date').fill('2026-02-15')
 
     page.on('dialog', async (dialog) => {
       expect(dialog.type()).toBe('beforeunload')

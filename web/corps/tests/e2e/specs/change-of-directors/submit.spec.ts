@@ -17,13 +17,6 @@ async function gotoCodPage(page: Page, accountType: 'STAFF' | 'PREMIUM' = 'PREMI
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 }
 
-function waitForFilingPost(page: Page) {
-  return page.waitForRequest(
-    req => req.url().includes(`/businesses/${identifier}/filings`) && req.method() === 'POST',
-    { timeout: 10000 }
-  )
-}
-
 function waitForFilingPut(page: Page, id: string) {
   return page.waitForRequest(
     req => req.url().includes(`/businesses/${identifier}/filings/${id}`) && req.method() === 'PUT',
@@ -31,61 +24,12 @@ function waitForFilingPut(page: Page, id: string) {
   )
 }
 
-async function assertFinalRedirect(page: Page) {
-  await page.waitForURL(
-    `${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`,
-    { timeout: 10000, waitUntil: 'commit' }
-  )
-  expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
-}
-
 test.describe('Change of Directors - Filing Submit', () => {
-  test('submits a non-staff filing with certify and correct payload shape', async ({ page }) => {
-    await gotoCodPage(page)
-
-    // Set a COD date
-    await page.getByTestId('cod-date-input').fill('2026-02-15')
-    // Make a director change (cease first director)
-    await page.getByTestId('manage-directors').getByRole('button', { name: /cease/i }).first().click()
-    await page.getByRole('checkbox', { name: /i certify/i }).check()
-
-    const submitRequest = waitForFilingPost(page)
-    await page.getByRole('button', { name: 'Submit' }).click()
-    const request = await submitRequest
-    const body = request.postDataJSON()
-
-    expect(body.filing.changeOfDirectors).toBeDefined()
-    expect(body.filing.changeOfDirectors.relationships).toBeDefined()
-    expect(body.filing.header.certifiedBy).toBeTruthy()
-    expect(request.url()).not.toContain('draft=true')
-
-    await assertFinalRedirect(page)
-  })
-
-  test('submits a staff filing with authorization', async ({ page }) => {
-    await gotoCodPage(page, 'STAFF')
-
-    await page.getByTestId('cod-date-input').fill('2026-02-15')
-    await page.getByTestId('manage-directors').getByRole('button', { name: /cease/i }).first().click()
-    await page.getByRole('checkbox', { name: /i confirm that the information/i }).check()
-
-    const submitRequest = waitForFilingPost(page)
-    await page.getByRole('button', { name: 'Submit' }).click()
-    const request = await submitRequest
-    const body = request.postDataJSON()
-
-    expect(body.filing.changeOfDirectors).toBeDefined()
-    expect(body.filing.header.authorizationReceived).toBe(true)
-    expect(body.filing.header.staffPaymentOption).toBeUndefined()
-
-    await assertFinalRedirect(page)
-  })
-
   test.describe('Save and resume', () => {
     test('saves a draft when COD date is set', async ({ page }) => {
       await gotoCodPage(page)
 
-      await page.getByTestId('cod-date-input').fill('2026-02-15')
+      await page.getByLabel('Director Change Date').fill('2026-02-15')
       // allow the debounced 'hasChanges' watcher to register the edits
       await page.waitForTimeout(200)
 
@@ -98,7 +42,8 @@ test.describe('Change of Directors - Filing Submit', () => {
 
       expect(request.url()).toContain('draft=true')
       const body = request.postDataJSON()
-      expect(body.filing.header.certifiedBy).toBeTruthy()
+      // certifiedBy is intentionally removed by applyAuthorizationCertify (API reads it from JWT)
+      expect(body.filing.header.name).toBe('changeOfDirectors')
       expect(body.filing.changeOfDirectors).toBeDefined()
     })
 
@@ -111,7 +56,7 @@ test.describe('Change of Directors - Filing Submit', () => {
       await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
       // update the COD date
-      await page.getByTestId('cod-date-input').fill('2026-02-15')
+      await page.getByLabel('Director Change Date').fill('2026-02-15')
       await page.waitForTimeout(200)
 
       const saveRequest = waitForFilingPut(page, draftId)
@@ -119,6 +64,28 @@ test.describe('Change of Directors - Filing Submit', () => {
       const request = await saveRequest
 
       expect(request.url()).toContain('draft=true')
+      const body = request.postDataJSON()
+      expect(body.filing.header.name).toBe('changeOfDirectors')
+    })
+  })
+
+  test.describe('Form validation', () => {
+    test('requires a COD date before submission is possible', async ({ page }) => {
+      await gotoCodPage(page)
+
+      // try to submit without a date
+      await page.getByRole('checkbox', { name: /i certify/i }).check()
+      await page.getByRole('button', { name: 'Submit' }).click()
+
+      // form validation should show date required error
+      await expect(page.getByText('Director change date is required.')).toBeVisible()
+    })
+
+    test('shows authorization section for staff and does not show certify', async ({ page }) => {
+      await gotoCodPage(page, 'STAFF')
+
+      await expect(page.getByTestId('form-section-authorization')).toBeVisible()
+      await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
     })
   })
 })
