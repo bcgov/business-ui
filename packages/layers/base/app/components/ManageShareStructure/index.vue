@@ -29,8 +29,8 @@ let editSubject = ''
 
 const expandedResolutionDate = ref<ExpandedState | undefined>(undefined)
 const resolutionDateSchema = getResolutionDateSchema()
-const activeResolutionDate = defineModel<ActiveResolutionDateSchema | undefined>('active-rd')
-const resolutionDate = defineModel<ResolutionDateSchema | undefined>('rd')
+const activeResolutionDate = defineModel<ActiveResolutionDateSchema>('active-rd')
+const resolutionDate = defineModel<ResolutionDateSchema | null>('rd')
 
 const {
   expandedState,
