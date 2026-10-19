@@ -10,7 +10,8 @@ const props = withDefaults(
     variant: 'default',
     preventActions: false,
     actionPreventedSignal: 0,
-    collectResolutionDate: true
+    collectResolutionDate: true,
+    modelName: 'activeSubject'
   }
 )
 
@@ -316,7 +317,7 @@ function onActionPrevented() {
           :subject="$t('label.shareClass')"
           :state-key
           variant="add"
-          name="activeSubject"
+          :name="modelName"
           :validation-context="classValidationContext"
           nested
           class="p-6"
@@ -357,7 +358,7 @@ function onActionPrevented() {
                 :state-key
                 :variant="getExpandedFormVariant(variant, row)"
                 :subject="editSubjectLabel"
-                name="activeSubject"
+                :name="modelName"
                 :validation-context="classValidationContext"
                 nested
                 @done="() => editSubject(activeSubject, row)"
@@ -376,7 +377,7 @@ function onActionPrevented() {
             >
               <FormShareSeries
                 v-model="activeSubject.value"
-                name="activeSubject"
+                :name="modelName"
                 :subject="editSubjectLabel"
                 :variant="getSeriesExpandedFormVariant(row)"
                 :row
@@ -454,7 +455,7 @@ function onActionPrevented() {
                 v-if="activeSubject?.key === 'resolutionDate'"
                 v-model="activeSubject.value"
                 :state-key
-                name="activeSubject"
+                :name="modelName"
                 :validation-context="changeResolutionDateValidationContext"
                 :variant="getExpandedFormVariant(variant, row)"
                 @done="() => editSubject(activeSubject, row)"

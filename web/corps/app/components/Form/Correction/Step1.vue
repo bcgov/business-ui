@@ -170,15 +170,14 @@ function onActionPrevented() {
 
     <ManageShareStructure
       v-if="store.isCorrectable(CorrectionSection.SHARE_STRUCTURE)"
-      v-model:active-class="store.formState.activeClass"
-      v-model:active-series="store.formState.activeSeries"
-      v-model:active-rd="store.formState.activeResolutionDate"
+      v-model:active-subject="store.formState.activeShareStructure"
       v-model:rd="store.formState.resolutionDate"
       data-testid="share-structure-section"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
+      model-name="activeShareStructure.value"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
     />

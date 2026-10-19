@@ -124,11 +124,10 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.SHARE_STRUCTURE,
-      activeSubjects: [
-        { subject: () => store.formState.activeClass, alertTarget: 'share-class-form' },
-        { subject: () => store.formState.activeSeries, alertTarget: 'share-series-form' },
-        { subject: () => store.formState.activeResolutionDate, alertTarget: 'resolution-date-form' }
-      ]
+      activeSubjects: {
+        subject: () => store.formState.activeShareStructure,
+        alertTarget: ['share-class-form', 'share-series-form', 'resolution-date-form']
+      }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.YOUR_COMPANY,

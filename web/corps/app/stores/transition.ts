@@ -125,8 +125,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const defaults = getTransitionSchema(isStaff.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
-    formState.activeClass = undefined
-    formState.activeSeries = undefined
+    formState.activeShareStructure = undefined
     formState.confirmDirectors = false
     formState.confirmOffices = false
 

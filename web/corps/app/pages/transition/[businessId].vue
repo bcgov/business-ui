@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormErrorEvent } from '@nuxt/ui'
 import type { FetchError } from 'ofetch'
-import type { FormTransitionStep1 } from '#components'
 import { omit } from 'es-toolkit'
 
 const { t } = useI18n()
@@ -17,7 +16,6 @@ const {
   handleButtonLoading,
   setAlertText: setBtnCtrlAlert
 } = useConnectButtonControl()
-const step1Ref = useTemplateRef<InstanceType<typeof FormTransitionStep1>>('step-1-ref')
 
 const businessId = route.params.businessId as string
 const FILING_TYPE = FilingType.TRANSITION
@@ -50,15 +48,20 @@ useHead({
 function checkActiveSubForm() {
   const hasActiveSubForm
     = (store.formState.activeDirector && setPartiesAlert('party-details-form', t('text.finishTaskBeforeOtherChanges')))
-      || (store.formState.activeClass && setSharesAlert('share-class-form', t('text.finishTaskBeforeOtherChanges')))
-      || (store.formState.activeSeries && setSharesAlert('share-series-form', t('text.finishTaskBeforeOtherChanges')))
+      || (
+        store.formState.activeShareStructure
+        && setSharesAlert('share-class-form', t('text.finishTaskBeforeOtherChanges'))
+      )
+      || (
+        store.formState.activeShareStructure
+        && setSharesAlert('share-series-form', t('text.finishTaskBeforeOtherChanges'))
+      )
 
   return hasActiveSubForm
 }
 
 async function reviewAndConfirm() {
   try {
-    await step1Ref.value?.formRef?.validate()
     if (checkActiveSubForm()) {
       return
     }
@@ -140,7 +143,12 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   steps: [
     {
       cancelFiling: { class: 'min-w-[300px] justify-center' },
-      submitFiling: { label: t('label.reviewAndConfirm'), onClick: reviewAndConfirm }
+      submitFiling: {
+        label: t('label.reviewAndConfirm'),
+        form: 'transition-filing-step-1',
+        type: 'submit',
+        onClick: undefined
+      }
     },
     { submitFiling: { form: 'transition-filing-step-2', type: 'submit' } }
   ],
@@ -163,7 +171,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep1
       v-if="currentStep === 1"
       id="transition-filing-step-1"
-      ref="step-1-ref"
+      @submit="reviewAndConfirm"
     />
     <FormTransitionStep2
       v-if="currentStep === 2"
