@@ -8,6 +8,7 @@ const businessStore = useBusinessStore()
 const { setAlert: setSubFormAlert } = useFilingAlerts('manage-parties')
 const { hasChanges: hasDirectorChanges } = useManageParties()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
+const effectiveDateFormRef = useTemplateRef<FormEffectiveDateRef>('effective-date-form')
 
 definePageMeta({
   layout: 'connect-pay-tombstone-buttons',
@@ -17,9 +18,14 @@ definePageMeta({
 const directorChangeProps = getDirectorChangeManagePartiesProps()
 
 // a director open in the party details sub form must be completed before saving or submitting
-function checkActiveSubForm() {
+async function checkActiveSubForm() {
   if (store.formState.activeParty !== undefined) {
     setSubFormAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
+    return true
+  }
+  try {
+    await effectiveDateFormRef.value?.formRef?.validate()
+  } catch {
     return true
   }
   return false
@@ -119,9 +125,10 @@ watch(() => store.directors, async (directors) => {
         data-testid="effective-date-section"
       >
         <FormEffectiveDate
+          v-if="!initializing"
+          ref="effective-date-form"
           v-model="effectiveDateModel"
           :bounds="effectiveDateBounds"
-          :disabled="initializing"
           data-testid="effective-date-input"
         />
       </ConnectPageSection>
