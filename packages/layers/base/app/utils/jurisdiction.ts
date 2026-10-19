@@ -12,7 +12,7 @@ export function getJurisdictionLabel(j?: { country?: string, region?: string | n
       return t('label.federal')
     }
     const provinceDisplay = countrySubdivisions.ca.find(p => p.code === j.region)?.name || j.region
-    return `${provinceDisplay}, Canada`
+    return provinceDisplay as string
   }
 
   const countryDisplay = isoCountriesListSortedByName.find(c => c.alpha_2 === j.country)?.name || j.country
