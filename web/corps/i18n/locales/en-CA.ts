@@ -75,19 +75,6 @@ export default {
       h1: 'Address Change',
       title: 'Address Change - BC Registries and Online Services'
     },
-    changeOfDirectors: {
-      certifyDescription: 'Confirm the legal name of the person authorized to complete and submit this Director Change.',
-      codDateLabel: 'Director Change Date',
-      codDateHint: 'Select the date your director changes took effect.',
-      desc: 'Select the date of your director changes. If you have director changes that occurred on different dates, you will need to perform multiple Director Change filings — one for each unique date.',
-      directorsLabel: 'Directors',
-      feePaidCode: 'OTCDR',
-      feePaidLabel: 'Director Change',
-      feeFreeCode: 'OTFDR',
-      feeFreeLabel: 'Director Change (no fee)',
-      h1: 'Director Change',
-      title: 'Director Change - BC Registries and Online Services'
-    },
     consentAmalgamationOut: {
       desc: 'Request the Registrar’s consent to amalgamate this business out of British Columbia into a corporation in another jurisdiction. The consent is valid for six months.',
       feeCode: 'IAMGO',
