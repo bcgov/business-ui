@@ -39,21 +39,10 @@ export const useManageNameTranslations = (
       return
     }
 
-    const newRow: TableBusinessState<NameTranslationSchema> = cloneDeep({
+    updateTable({
       old: undefined,
-      new: {
-        ...subject,
-        actions: [ActionType.ADDED]
-      }
+      new: { ...subject, actions: [ActionType.ADDED] }
     })
-
-    // Keep existing rows in original order and keep newly added rows newest-first.
-    const existingRows = tableState.value.filter(row => row.old !== undefined)
-    const addedRows = tableState.value.filter(row => row.old === undefined)
-
-    tableState.value = [newRow, ...addedRows, ...existingRows]
-
-    opts?.cleanupFn?.()
   }
 
   function removeSubject(row: TableBusinessRow<NameTranslationSchema>): void {
@@ -84,7 +73,7 @@ export const useManageNameTranslations = (
 
     updateTable({
       old: oldSubjectState,
-      new: oldSubjectState
+      new: cloneDeep(oldSubjectState)
     })
   }
 

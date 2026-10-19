@@ -94,6 +94,17 @@ describe('useManageNameTranslations', () => {
       expect(tableState.value[1]!.new.name).toBe('Raison Modifiee')
     })
 
+    it('should append a row when no row matches new.id', () => {
+      const { updateTable, tableState } = useManageNameTranslations(stateKey)
+      tableState.value = [
+        { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } }
+      ] as any
+
+      updateTable({ new: { ...draftNameTranslation }, old: undefined } as any)
+
+      expect(tableState.value.map(row => row.new.id)).toEqual(['100', '200'])
+    })
+
     it('should call the cleanup function', () => {
       const cleanupFn = vi.fn()
       const { updateTable } = useManageNameTranslations(stateKey, { cleanupFn })
@@ -115,21 +126,13 @@ describe('useManageNameTranslations', () => {
       expect(cleanupFn).not.toHaveBeenCalled()
     })
 
-    it('should prepend newest added rows before older added and existing rows', () => {
-      const cleanupFn = vi.fn()
-      const { addSubject, tableState } = useManageNameTranslations(stateKey, { cleanupFn })
+    it('should add the subject with the ADDED action', () => {
+      const { addSubject, tableState } = useManageNameTranslations(stateKey)
 
-      tableState.value = [
-        { new: { ...existingNameTranslation }, old: { ...existingNameTranslation } },
-        { new: { ...draftNameTranslation, actions: [ActionType.ADDED] }, old: undefined }
-      ] as any
+      addSubject({ ...draftNameTranslation })
 
-      addSubject({ ...draftNameTranslation, id: '300', name: 'Nouveau Nom' })
-
-      expect(tableState.value.map(row => row.new.id)).toEqual(['300', '200', '100'])
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.ADDED])
       expect(tableState.value[0]!.old).toBeUndefined()
-      expect(cleanupFn).toHaveBeenCalledOnce()
     })
   })
 
@@ -173,6 +176,7 @@ describe('useManageNameTranslations', () => {
       undoSubject(mockRow(existing))
 
       expect(tableState.value[0]!.new).toEqual(existing.old)
+      expect(tableState.value[0]!.new).not.toBe(tableState.value[0]!.old)
     })
 
     it('should do nothing when old is undefined', () => {

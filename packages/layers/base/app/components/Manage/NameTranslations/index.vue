@@ -5,6 +5,7 @@ import { cloneDeep } from 'es-toolkit'
 const {
   stateKey = 'manage-name-translations',
   labelOverrides,
+  modelName = 'activeNameTranslation',
   variant = 'default',
   allowedActions,
   preventActions = false,
@@ -16,6 +17,7 @@ const {
   variant?: ManageVariant
   allowedActions?: ManageAllowedAction[]
   labelOverrides?: TableLabelOverrides
+  modelName?: string
   preventActions?: boolean
   actionPreventedSignal?: number
 }>()
@@ -24,7 +26,7 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeSubject = defineModel<ActiveNameTranslationSchema | undefined>('active-name-translation')
+const activeSubject = defineModel<ActiveNameTranslationSchema | undefined>('active-subject')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
@@ -32,8 +34,6 @@ const addingSubject = ref(false)
 let editSubjectLabel = ''
 
 const formTarget = 'name-translation-form'
-
-const { t } = useI18n()
 
 const {
   tableState,
@@ -56,7 +56,7 @@ const {
   stateKey,
   variant,
   allowedActions,
-  labelOverrides: () => ({ editLabel: t('label.correct'), ...labelOverrides }),
+  labelOverrides: () => labelOverrides,
   preventActions: () => preventActions,
   actionPreventedSignal: () => actionPreventedSignal,
   activeSubjects: {
@@ -73,8 +73,7 @@ const allowAddSubject = computed(() => {
 
 function initAddSubject() {
   if (shouldPreventActions.value) {
-    setActiveSubjectAlert()
-    emit('action-prevented')
+    onActionPrevented()
     return
   }
   activeSubject.value = activeSubjectSchema.parse({})
@@ -120,7 +119,7 @@ function onActionPrevented() {
       v-if="addingSubject && activeSubject"
       v-model="activeSubject"
       :subject="$t('label.nameTranslation')"
-      name="activeNameTranslation"
+      :name="modelName"
       variant="add"
       :state-key="stateKey"
       @done="() => addSubject(activeSubject)"
@@ -151,7 +150,7 @@ function onActionPrevented() {
           v-if="activeSubject"
           v-model="activeSubject"
           :subject="editSubjectLabel"
-          name="activeNameTranslation"
+          :name="modelName"
           :variant="getExpandedFormVariant(variant, row)"
           :state-key="stateKey"
           @cancel="cleanupForm"

@@ -30,7 +30,7 @@ const activeNameTranslation = ref<ActiveNameTranslationSchema | undefined>(undef
       ui-body="p-10"
     >
       <ManageNameTranslations
-        v-model:active-name-translation="activeNameTranslation"
+        v-model:active-subject="activeNameTranslation"
         :state-key
         variant="readonly"
       />

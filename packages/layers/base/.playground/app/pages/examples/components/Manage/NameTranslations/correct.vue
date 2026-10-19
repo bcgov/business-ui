@@ -40,7 +40,7 @@ const loading = ref(false)
       ui-body="p-10"
     >
       <ManageNameTranslations
-        v-model:active-name-translation="activeNameTranslation"
+        v-model:active-subject="activeNameTranslation"
         :state-key
         :loading
         variant="correct"
