@@ -81,6 +81,7 @@ watch(
         :label="$t('label.resolutionOrCourtOrderDate')"
         :max-date="maxDate"
         :required="isDateRequired"
+        class="w-full"
       />
     </SubFormFieldWrapper>
     <UFormField

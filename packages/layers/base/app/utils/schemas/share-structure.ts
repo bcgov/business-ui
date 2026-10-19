@@ -2,7 +2,22 @@ import { z } from 'zod'
 import { DateTime } from 'luxon'
 import { DATE_API_INPUT_FORMAT } from '#base/app/utils/schemas/date'
 
-export function getShareSeriesSchema(context?: { existingNames: string[], maxAllowedShares: number }) {
+interface ShareSeriesContext {
+  existingNames: string[]
+  maxAllowedShares: number
+}
+
+interface ShareClassContext {
+  existingNames: string[]
+}
+
+interface ResolutionDateContext {
+  hasRightsOrRestrictions?: boolean
+  isEditingExisting?: boolean
+  existingResolutions?: { id: string, date: string, type?: string }[]
+}
+
+export function getShareSeriesSchema(context?: ShareSeriesContext) {
   const t = useNuxtApp().$i18n.t
   return z.object({
     isEditing: z.boolean().default(false),
@@ -67,7 +82,7 @@ export function getActiveShareSeriesSchema(context?: { existingNames: string[], 
 
 export type ActiveShareSeriesSchema = z.output<ReturnType<typeof getActiveShareSeriesSchema>>
 
-export function getShareClassSchema(context?: { existingNames: string[] }) {
+export function getShareClassSchema(context?: ShareClassContext) {
   const t = useNuxtApp().$i18n.t
   return z.object({
     isEditing: z.boolean().default(false),
@@ -203,11 +218,7 @@ export function getActiveShareClassSchema(context?: { existingNames: string[] })
 
 export type ActiveShareClassSchema = z.output<ReturnType<typeof getActiveShareClassSchema>>
 
-export function getResolutionDateSchema(context?: {
-  hasRightsOrRestrictions?: boolean
-  isEditingExisting?: boolean
-  existingResolutions?: { id: string, date: string, type?: string }[]
-}) {
+export function getResolutionDateSchema(context?: ResolutionDateContext) {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
@@ -298,3 +309,26 @@ export function getActiveResolutionDateSchema(context?: {
 }
 
 export type ActiveResolutionDateSchema = z.output<ReturnType<typeof getActiveResolutionDateSchema>>
+
+export function getActiveShareStructureSchema(context?: {
+  shareClass?: ShareClassContext
+  shareSeries?: ShareSeriesContext
+  resolutionDate?: ResolutionDateContext
+}) {
+  return z.discriminatedUnion('key', [
+    z.object({
+      key: z.literal('shareClass'),
+      value: getShareClassSchema(context?.shareClass)
+    }),
+    z.object({
+      key: z.literal('shareSeries'),
+      value: getShareSeriesSchema(context?.shareSeries)
+    }),
+    z.object({
+      key: z.literal('resolutionDate'),
+      value: getResolutionDateSchema(context?.resolutionDate)
+    })
+  ]).optional()
+}
+
+export type ActiveShareStructureSchema = z.infer<ReturnType<typeof getActiveShareStructureSchema>>

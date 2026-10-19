@@ -7,11 +7,10 @@ mockNuxtImport('useModal', () => () => ({
   baseModal: { open: openModalMock }
 }))
 
-// Helper to create a dummy row for TanStack table logic
 const createMockRow = (data: any, depth = 0, parentId?: string) => ({
   depth,
   original: data,
-  getParentRow: () => parentId ? { original: { new: { id: parentId } } } : undefined
+  getParentRow: () => (parentId ? { original: { new: { id: parentId } } } : undefined)
 })
 
 describe('useManageShareStructure', () => {
@@ -19,781 +18,502 @@ describe('useManageShareStructure', () => {
     vi.clearAllMocks()
   })
 
-  describe('hasChanges', () => {
-    it('should return false when there are no actions on share classes, series, or resolution dates', () => {
-      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+  describe('Type Guards', () => {
+    it('isClassData identifies share classes correctly', () => {
+      const { isClassData } = useManageShareStructure()
+
+      const classData = { id: 'c1', series: [] }
+      const seriesData = { id: 's1', hasMaximumShares: true }
+      const dateData = { id: 'd1', date: '2026-01-01' }
+
+      expect(isClassData(classData as any)).toBe(true)
+      expect(isClassData(seriesData as any)).toBe(false)
+      expect(isClassData(dateData as any)).toBe(false)
+    })
+
+    it('isSeriesData identifies share series correctly', () => {
+      const { isSeriesData } = useManageShareStructure()
+
+      const classData = { id: 'c1', series: [] }
+      const seriesData = { id: 's1', hasMaximumShares: true }
+      const dateData = { id: 'd1', date: '2026-01-01' }
+
+      expect(isSeriesData(seriesData as any)).toBe(true)
+      expect(isSeriesData(classData as any)).toBe(false)
+      expect(isSeriesData(dateData as any)).toBe(false)
+    })
+
+    it('isDateData identifies resolution dates correctly', () => {
+      const { isDateData } = useManageShareStructure('')
+
+      const classData = { id: 'c1', series: [] }
+      const dateData = { id: 'd1', date: '2026-01-01' }
+
+      expect(isDateData(dateData as any)).toBe(true)
+      expect(isDateData(classData as any)).toBe(false)
+    })
+  })
+
+  describe('Computed Properties', () => {
+    it('hasChangedShares is true if class or series has active actions', () => {
+      const { shareClasses, hasChangedShares } = useManageShareStructure()
 
       shareClasses.value = [
-        {
-          old: { id: '1', actions: [] },
-          new: {
-            id: '1',
-            actions: [],
-            series: [
-              { id: '10', actions: [] }
-            ]
-          }
-        }
+        { new: { id: 'c1', actions: [], series: [] }, old: undefined }
       ] as any
-      resolutionDates.value = [
-        {
-          old: { id: '1', actions: [] },
-          new: { id: '1', actions: [] }
-        }
-      ] as any
+      expect(hasChangedShares.value).toBe(false)
 
+      shareClasses.value[0]!.new.series = [{ id: 's1', actions: [ActionType.ADDED] }] as any
+      expect(hasChangedShares.value).toBe(true)
+
+      shareClasses.value[0]!.new.actions = [ActionType.CHANGED]
+      shareClasses.value[0]!.new.series = []
+      expect(hasChangedShares.value).toBe(true)
+    })
+
+    it('hasChangedDates is true if a resolution date has actions', () => {
+      const { resolutionDates, hasChangedDates } = useManageShareStructure()
+
+      resolutionDates.value = [{ new: { id: 'r1', actions: [] } }] as any
+      expect(hasChangedDates.value).toBe(false)
+
+      resolutionDates.value[0]!.new.actions = [ActionType.REMOVED]
+      expect(hasChangedDates.value).toBe(true)
+    })
+
+    it('hasChanges is true if either shares or dates have changes', () => {
+      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+
+      shareClasses.value = [{ new: { id: 'c1', actions: [], series: [] } }] as any
+      resolutionDates.value = [{ new: { id: 'r1', actions: [] } }] as any
       expect(hasChanges.value).toBe(false)
+
+      resolutionDates.value[0]!.new.actions = [ActionType.ADDED]
+      expect(hasChanges.value).toBe(true)
     })
 
-    it('should return true when a share class has actions', () => {
-      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+    it('hasRightsOrRestrictions checks both new and old states across classes and series', () => {
+      const { shareClasses, hasRightsOrRestrictions } = useManageShareStructure()
 
       shareClasses.value = [
         {
-          old: { id: '1', actions: [] },
-          new: { id: '1', actions: [ActionType.CHANGED], series: [] }
+          new: { id: 'c1', hasRightsOrRestrictions: false, series: [] },
+          old: { id: 'c1', hasRightsOrRestrictions: false, series: [] }
         }
       ] as any
-      resolutionDates.value = []
+      expect(hasRightsOrRestrictions.value).toBe(false)
 
-      expect(hasChanges.value).toBe(true)
+      shareClasses.value[0]!.old!.hasRightsOrRestrictions = true
+      expect(hasRightsOrRestrictions.value).toBe(true)
+
+      shareClasses.value[0]!.old!.hasRightsOrRestrictions = false
+      shareClasses.value[0]!.new.series = [{ id: 's1', hasRightsOrRestrictions: true }] as any
+      expect(hasRightsOrRestrictions.value).toBe(true)
     })
 
-    it('should return true when a share series has actions', () => {
-      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+    it('existingResolutionDates and hasExistingResolutionDates', async () => {
+      const { resolutionDates, existingResolutionDates, hasExistingResolutionDates } = useManageShareStructure()
+      resolutionDates.value = []
+
+      await nextTick()
+
+      expect(hasExistingResolutionDates.value).toBe(false)
+      expect(existingResolutionDates.value).toEqual([])
+
+      const dateObj = { id: 'r1', date: '2026-03-31' }
+      resolutionDates.value = [{ new: dateObj, old: undefined }] as any
+
+      expect(hasExistingResolutionDates.value).toBe(true)
+      expect(existingResolutionDates.value).toEqual([dateObj])
+    })
+  })
+
+  describe('addSubject', () => {
+    it('adds a new share class and normalizes priorities', () => {
+      const { shareClasses, addSubject } = useManageShareStructure('add-class')
+
+      shareClasses.value = [
+        { new: { id: 'c1', priority: 1, actions: [] }, old: undefined },
+        { new: { id: 'c2', priority: 2, actions: [] }, old: undefined }
+      ] as any
+
+      addSubject({
+        key: 'shareClass',
+        value: { id: 'c3', name: 'Class C' }
+      } as any)
+
+      expect(shareClasses.value).toHaveLength(3)
+      expect(shareClasses.value[0]!.new.id).toBe('c3')
+      expect(shareClasses.value[0]!.new.actions).toContain(ActionType.ADDED)
+      expect(shareClasses.value.map(c => c.new.priority)).toEqual([1, 2, 3])
+    })
+
+    it('adds a series to a class and normalizes series priorities', () => {
+      const { shareClasses, addSubject } = useManageShareStructure()
 
       shareClasses.value = [
         {
-          old: { id: '1', actions: [] },
           new: {
-            id: '1',
-            actions: [],
-            series: [
-              { id: '10', actions: [ActionType.ADDED] }
-            ]
-          }
+            id: 'c1',
+            series: [{ id: 's1', priority: 1, actions: [] }]
+          },
+          old: undefined
         }
       ] as any
-      resolutionDates.value = []
 
-      expect(hasChanges.value).toBe(true)
+      addSubject(
+        { key: 'shareSeries', value: { id: 's2', name: 'Series 2' } } as any,
+        'c1'
+      )
+
+      const seriesList = shareClasses.value[0]!.new.series
+      expect(seriesList).toHaveLength(2)
+      expect(seriesList[0]!.id).toBe('s2')
+      expect(seriesList[0]!.actions).toContain(ActionType.ADDED)
+      expect(seriesList.map(s => s.priority)).toEqual([1, 2])
     })
 
-    it('should return true when a resolution date has actions', () => {
-      const { shareClasses, resolutionDates, hasChanges } = useManageShareStructure()
+    it('adds a resolution date to state', () => {
+      const { resolutionDates, addSubject } = useManageShareStructure()
 
-      shareClasses.value = []
-      resolutionDates.value = [
+      addSubject({
+        key: 'resolutionDate',
+        value: { id: 'r1', date: '2026-05-15' } as any
+      })
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-05-15')
+      expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.ADDED)
+    })
+
+    it('does nothing for a class if subject or subject.value is missing', () => {
+      const cleanup = vi.fn()
+      const { shareClasses, addSubject } = useManageShareStructure('test-null', { cleanupFn: cleanup })
+
+      addSubject(undefined as any)
+      addSubject({ key: 'shareClass', value: undefined as any })
+
+      expect(shareClasses.value).toHaveLength(0)
+      expect(cleanup).not.toHaveBeenCalled()
+    })
+
+    it('does nothing for a series if parentId is missing or invalid', () => {
+      const cleanup = vi.fn()
+      const { shareClasses, addSubject } = useManageShareStructure('test-invalid-parent', { cleanupFn: cleanup })
+
+      shareClasses.value = [{ new: { id: 'c1', series: [] } }] as any
+
+      const seriesSubject = {
+        key: 'shareSeries' as const,
+        value: { id: 's1', name: 'Series A', hasMaximumShares: true }
+      }
+
+      addSubject(seriesSubject as any)
+      addSubject(seriesSubject as any, 'non-existent-id')
+
+      expect(shareClasses.value[0]!.new.series).toHaveLength(0)
+      expect(cleanup).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('editSubject', () => {
+    it('updates share class, resets currencyAdditional and adds ActionType.CHANGED when changed', () => {
+      const cleanup = vi.fn()
+      const { shareClasses, editSubject } = useManageShareStructure('edit-class', { cleanupFn: cleanup })
+
+      const initialRecord = {
+        new: { id: 'c1', name: 'Original Class', currencyAdditional: 'Custom', series: [], actions: [] },
+        old: { id: 'c1', name: 'Original Class' }
+      }
+      shareClasses.value = [initialRecord] as any
+
+      const mockRow = createMockRow(initialRecord) as any
+      editSubject({ key: 'shareClass', value: { id: 'c1', name: 'Renamed Class', series: [] } } as any, mockRow)
+
+      expect(shareClasses.value[0]!.new.name).toBe('Renamed Class')
+      expect(shareClasses.value[0]!.new.currencyAdditional).toBeUndefined()
+      expect(shareClasses.value[0]!.new.actions).toContain(ActionType.CHANGED)
+      expect(cleanup).toHaveBeenCalled()
+    })
+
+    it('opens modal when maxShares or rights/restrictions are removed on a class with a series', () => {
+      const cleanup = vi.fn()
+      const { shareClasses, editSubject } = useManageShareStructure('edit-class-modal', { cleanupFn: cleanup })
+
+      const classData = {
+        new: {
+          id: 'c1',
+          name: 'Class A',
+          maxNumberOfShares: 500,
+          hasRightsOrRestrictions: true,
+          series: [{ id: 's1', actions: [] }]
+        },
+        old: { id: 'c1' }
+      }
+      shareClasses.value = [classData] as any
+
+      const mockRow = createMockRow(classData) as any
+
+      editSubject(
         {
-          old: { id: '1', actions: [] },
-          new: { id: '1', actions: [ActionType.REMOVED] }
-        }
+          key: 'shareClass',
+          value: { id: 'c1', name: 'Class A', maxNumberOfShares: 500, hasRightsOrRestrictions: false } as any
+        },
+        mockRow
+      )
+
+      expect(openModalMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Remove Share Series' })
+      )
+
+      const modalConfig = openModalMock.mock.calls[0]![0]
+      modalConfig.buttons.find((b: any) => b.label === 'Remove Series').onClick()
+
+      const seriesItem = shareClasses.value[0]!.new.series[0]
+      expect(seriesItem!.actions).toContain(ActionType.REMOVED)
+      expect(seriesItem!.isInvalid).toBe(true)
+      expect(cleanup).toHaveBeenCalled()
+    })
+
+    it('updates series and preserves ADDED action if series was newly added', () => {
+      const { shareClasses, editSubject } = useManageShareStructure('edit-series')
+
+      const draftSeries = { id: 's1', name: 'Draft', actions: [ActionType.ADDED] }
+      shareClasses.value = [{ new: { id: 'c1', series: [draftSeries] } }] as any
+
+      const mockRow = createMockRow({ new: draftSeries }, 1, 'c1') as any
+
+      editSubject(
+        { key: 'shareSeries', value: { id: 's1', name: 'Renamed Draft' } } as any,
+        mockRow,
+        'c1'
+      )
+
+      const updated = shareClasses.value[0]!.new.series[0]!
+      expect(updated.name).toBe('Renamed Draft')
+      expect(updated.actions).toEqual([ActionType.ADDED])
+    })
+
+    it('updates an existing resolution date and adds ActionType.CHANGED', () => {
+      const { resolutionDates, editSubject } = useManageShareStructure()
+
+      const dateRecord = {
+        new: { id: 'r1', date: '2026-01-01', actions: [] },
+        old: { id: 'r1', date: '2026-01-01' }
+      }
+      resolutionDates.value = [dateRecord] as any
+
+      const mockRow = createMockRow(dateRecord) as any
+      editSubject({ key: 'resolutionDate', value: { id: 'r1', date: '2026-06-01' } } as any, mockRow)
+
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-06-01')
+      expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.CHANGED)
+    })
+  })
+
+  describe('removeSubject', () => {
+    it('filters out newly added share classes and updates priorities', () => {
+      const { shareClasses, removeSubject } = useManageShareStructure()
+
+      shareClasses.value = [
+        { new: { id: 'c1', priority: 1, series: [] }, old: undefined },
+        { new: { id: 'c2', priority: 2, series: [] }, old: undefined }
       ] as any
 
-      expect(hasChanges.value).toBe(true)
+      const mockRow = createMockRow(shareClasses.value[0]) as any
+      removeSubject(mockRow)
+
+      expect(shareClasses.value).toHaveLength(1)
+      expect(shareClasses.value[0]!.new.id).toBe('c2')
+      expect(shareClasses.value[0]!.new.priority).toBe(1)
+    })
+
+    it('sets existing share classes as REMOVED if old state is present', () => {
+      const { shareClasses, removeSubject } = useManageShareStructure()
+
+      const existingRecord = {
+        new: { id: 'c1', priority: 1, series: [], actions: [] },
+        old: { id: 'c1', name: 'Original Class' }
+      }
+      shareClasses.value = [existingRecord] as any
+
+      removeSubject(createMockRow(existingRecord) as any)
+
+      expect(shareClasses.value[0]!.new.actions).toContain(ActionType.REMOVED)
+    })
+
+    it('opens modal before removing class with series', () => {
+      const { shareClasses, removeSubject } = useManageShareStructure()
+
+      const classWithSeries = {
+        new: { id: 'c1', priority: 1, series: [{ id: 's1', actions: [] }] },
+        old: undefined
+      }
+      shareClasses.value = [classWithSeries] as any
+
+      removeSubject(createMockRow(classWithSeries) as any)
+
+      expect(openModalMock).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Remove Share Class with Series' })
+      )
+    })
+
+    it('removes a newly added series and updates priorities', () => {
+      const { shareClasses, removeSubject } = useManageShareStructure()
+
+      const s1 = { id: 's1', priority: 1, hasMaximumShares: true }
+      const s2 = { id: 's2', priority: 2, hasMaximumShares: true }
+      const s3 = { id: 's3', priority: 3, hasMaximumShares: true }
+
+      shareClasses.value = [{ new: { id: 'c1', series: [s1, s2, s3] } }] as any
+
+      const mockRow = {
+        depth: 1,
+        original: { new: s2, old: undefined },
+        getParentRow: () => ({ original: { new: { id: 'c1' } } })
+      }
+
+      removeSubject(mockRow as any)
+
+      const remainingSeries = shareClasses.value[0]!.new.series
+      expect(remainingSeries).toHaveLength(2)
+      expect(remainingSeries.map(s => s.id)).toEqual(['s1', 's3'])
+      expect(remainingSeries.map(s => s.priority)).toEqual([1, 2])
+    })
+
+    it('handles removing resolution dates correctly', () => {
+      const { resolutionDates, removeSubject } = useManageShareStructure()
+
+      const newDateRecord = { new: { id: 'r1', date: '2026-01-01' }, old: undefined }
+      resolutionDates.value = [newDateRecord] as any
+
+      removeSubject(createMockRow(newDateRecord) as any)
+      expect(resolutionDates.value).toHaveLength(0)
     })
   })
 
-  describe('Share Class Methods', () => {
-    describe('addNewShareClass', () => {
-      it('should add a new class to start of array and increment existing priorities', () => {
-        const { shareClasses, addNewShareClass } = useManageShareStructure('test1')
+  describe('undoSubject', () => {
+    it('does nothing if old state is undefined', () => {
+      const cleanup = vi.fn()
+      const { undoSubject } = useManageShareStructure('undo-undefined', { cleanupFn: cleanup })
 
-        shareClasses.value = [{
-          new: { id: 'old-1', priority: 1, series: [] },
-          old: undefined
-        }] as any
+      const mockRow = createMockRow({ new: { id: 'c1' }, old: undefined }) as any
+      undoSubject(mockRow)
 
-        const newClass = { id: 'new-2', priority: 1, series: [] }
-        addNewShareClass(newClass as any)
-
-        expect(shareClasses.value).toHaveLength(2)
-        expect(shareClasses.value[0]!.new.id).toBe('new-2')
-        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.ADDED)
-        expect(shareClasses.value[1]!.new.priority).toBe(2)
-      })
+      expect(cleanup).not.toHaveBeenCalled()
     })
 
-    describe('removeShareClass', () => {
-      it('should delete from state and update other priorities if newly added (no old state)', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test2')
+    it('restores share class while preserving priority', () => {
+      const { shareClasses, undoSubject } = useManageShareStructure('undo-class')
 
-        shareClasses.value = [
-          { new: { id: '1', priority: 1, series: [] }, old: undefined },
-          { new: { id: '2', priority: 2, series: [] }, old: undefined }
-        ] as any
+      const classData = {
+        new: { id: 'c1', name: 'Modified', priority: 4, series: [], actions: [ActionType.CHANGED] },
+        old: { id: 'c1', name: 'Original', priority: 1, series: [], actions: [] }
+      }
+      shareClasses.value = [classData] as any
 
-        const mockRow = createMockRow(shareClasses.value[0]) as any
-        removeShareClass(mockRow)
+      undoSubject(createMockRow(classData) as any)
 
-        expect(shareClasses.value).toHaveLength(1)
-        expect(shareClasses.value[0]!.new.id).toBe('2')
-        expect(shareClasses.value[0]!.new.priority).toBe(1)
-      })
-
-      it('should add removed action if class has an old state and no series', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test3')
-
-        const rowData = {
-          new: { id: '1', priority: 1, series: [], actions: [] },
-          old: { id: '1', name: 'Original' }
-        }
-        shareClasses.value = [rowData] as any
-
-        const mockRow = createMockRow(rowData) as any
-        removeShareClass(mockRow)
-
-        expect(shareClasses.value).toHaveLength(1)
-        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.REMOVED)
-      })
-
-      it('should trigger modal if class has series', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test4')
-        const rowData = {
-          new: { id: '1', priority: 1, series: [{ id: 's1' }] },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        removeShareClass(createMockRow(rowData) as any)
-
-        expect(openModalMock).toHaveBeenCalledWith(expect.objectContaining({
-          title: 'Remove Share Class with Series'
-        }))
-      })
-
-      it('should only apply removal after modal confirmation when series exist', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test5')
-
-        const rowData = {
-          new: { id: '1', priority: 1, series: [{ id: 's1' }] },
-          old: undefined
-        }
-        shareClasses.value = [rowData] as any
-
-        removeShareClass(createMockRow(rowData) as any)
-
-        expect(openModalMock).toHaveBeenCalled()
-
-        expect(shareClasses.value).toHaveLength(1)
-
-        const modalConfig = openModalMock.mock.calls[0]![0]
-        const removeButton = modalConfig.buttons.find((b: any) => b.label === 'Remove')
-
-        removeButton.onClick()
-        expect(shareClasses.value).toHaveLength(0)
-      })
-
-      it('should not remove the class if the modal is opened but Cancel is clicked', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test6')
-        const rowData = { new: { id: '1', priority: 1, series: [{ id: 's1' }] }, old: undefined }
-        shareClasses.value = [rowData] as any
-
-        removeShareClass(createMockRow(rowData) as any)
-
-        const modalConfig = openModalMock.mock.calls[0]![0]
-        const cancelButton = modalConfig.buttons.find((b: any) => b.label === 'Cancel')
-
-        if (cancelButton.onClick) {
-          cancelButton.onClick()
-        }
-
-        expect(shareClasses.value).toHaveLength(1)
-        expect(shareClasses.value[0]!.new.id).toBe('1')
-      })
-
-      it('should only update priorities for rows with a priority greater than the removed row', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test7')
-        shareClasses.value = [
-          { new: { id: '1', priority: 1, series: [] }, old: undefined },
-          { new: { id: '2', priority: 2, series: [] }, old: undefined },
-          { new: { id: '3', priority: 3, series: [] }, old: undefined }
-        ] as any
-
-        const mockRow = createMockRow(shareClasses.value[1]) as any
-        removeShareClass(mockRow)
-
-        expect(shareClasses.value).toHaveLength(2)
-        expect(shareClasses.value.find(r => r.new.id === '1')?.new.priority).toBe(1)
-        expect(shareClasses.value.find(r => r.new.id === '3')?.new.priority).toBe(2)
-      })
-
-      it('should call cleanupForm callback after removal', () => {
-        const { shareClasses, removeShareClass } = useManageShareStructure('test8')
-        const cleanup = vi.fn()
-
-        const rowA = { new: { id: '1', priority: 1, series: [] }, old: undefined }
-        shareClasses.value = [rowA] as any
-        removeShareClass(createMockRow(rowA) as any, cleanup)
-        expect(cleanup).toHaveBeenCalledTimes(1)
-
-        const rowB = { new: { id: '2', priority: 1, series: [{ id: 's1' }] }, old: undefined }
-        shareClasses.value = [rowB] as any
-        removeShareClass(createMockRow(rowB) as any, cleanup)
-
-        const modalConfig = openModalMock.mock.calls[openModalMock.mock.calls.length - 1]![0]
-        modalConfig.buttons.find((b: any) => b.label === 'Remove').onClick()
-
-        expect(cleanup).toHaveBeenCalledTimes(2)
-      })
+      expect(shareClasses.value[0]!.new.name).toBe('Original')
+      expect(shareClasses.value[0]!.new.priority).toBe(4)
+      expect(shareClasses.value[0]!.new.actions).toEqual([])
     })
 
-    describe('undoShareClass', () => {
-      it('should revert the new state to the old state', () => {
-        const { shareClasses, undoShareClass } = useManageShareStructure('test9')
+    it('restores series state', () => {
+      const { shareClasses, undoSubject } = useManageShareStructure()
 
-        const rowData = {
-          new: { id: '1', name: 'Changed Name', priority: 1, series: [], actions: [ActionType.CHANGED] },
-          old: { id: '1', name: 'Original Name', priority: 1, series: [], actions: [] }
-        }
-        shareClasses.value = [rowData] as any
+      const oldSeries = { id: 's1', name: 'Original Series', priority: 1, hasMaximumShares: true }
+      const currentSeries = { id: 's1', name: 'Edited Series', priority: 3, hasMaximumShares: true }
 
-        undoShareClass(createMockRow(rowData) as any)
+      shareClasses.value = [{ new: { id: 'c1', series: [currentSeries] } }] as any
 
-        expect(shareClasses.value[0]!.new.name).toBe('Original Name')
-        expect(shareClasses.value[0]!.new.actions).toEqual([])
-      })
+      const mockRow = {
+        depth: 1,
+        original: { new: currentSeries, old: oldSeries },
+        getParentRow: () => ({ original: { new: { id: 'c1' } } })
+      }
 
-      it('should preserve the current priority when undoing other data', () => {
-        const { shareClasses, undoShareClass } = useManageShareStructure('test10')
+      undoSubject(mockRow as any)
 
-        const rowData = {
-          new: { id: '1', name: 'New Name', priority: 5 },
-          old: { id: '1', name: 'Old Name', priority: 1 }
-        }
-        shareClasses.value = [rowData] as any
-
-        undoShareClass(createMockRow(rowData) as any)
-
-        expect(shareClasses.value[0]!.new.name).toBe('Old Name')
-        expect(shareClasses.value[0]!.new.priority).toBe(5)
-      })
+      const result = shareClasses.value[0]!.new.series[0]!
+      expect(result.name).toBe('Original Series')
+      expect(result.priority).toBe(3)
     })
 
-    describe('updateShareClass', () => {
-      it('should not update the action or state if no data was changed', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test11')
-        const cleanup = vi.fn()
-        const rowData = {
-          new: { id: '1', name: 'Class A', series: [], actions: [] },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        updateShareClass(createMockRow(rowData) as any, rowData.new as any, cleanup)
-
-        expect(shareClasses.value[0]!.new.actions).toEqual([])
-        expect(cleanup).toHaveBeenCalled()
-      })
-
-      it('should add changed action for existing rows and added for new rows', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test12')
-
-        const existingRow = { new: { id: '1', name: 'Old' }, old: { id: '1' } }
-        shareClasses.value = [existingRow] as any
-        updateShareClass(createMockRow(existingRow) as any, { id: '1', name: 'New' } as any, vi.fn())
-        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.CHANGED)
-
-        const newRow = { new: { id: '2', name: 'New' }, old: undefined }
-        shareClasses.value = [newRow] as any
-        updateShareClass(createMockRow(newRow) as any, { id: '2', name: 'Newer' } as any, vi.fn())
-        expect(shareClasses.value[0]!.new.actions).toContain(ActionType.ADDED)
-      })
-
-      it('should ignore the series when checking for changes', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test13')
-        const rowData = {
-          new: { id: '1', name: 'Class A', series: [], actions: [] },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        const dataWithNewSeries = { ...rowData.new, series: [{ id: 'new-s' }] }
-        updateShareClass(createMockRow(rowData) as any, dataWithNewSeries as any, vi.fn())
-
-        expect(shareClasses.value[0]!.new.actions).toEqual([])
-      })
-
-      it('should trigger modal and invalidate series when maxShares changes', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test14')
-        const cleanup = vi.fn()
-        const rowData = {
-          new: {
-            id: '1',
-            maxNumberOfShares: 100,
-            hasRightsOrRestrictions: true,
-            series: [{ id: 's1', actions: [] }]
-          },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
-        updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
-
-        expect(openModalMock).toHaveBeenCalledWith(expect.objectContaining({
-          title: 'Remove Share Series'
-        }))
-
-        const modalConfig = openModalMock.mock.calls[0]![0]
-        modalConfig.buttons.find((b: any) => b.label === 'Remove Series').onClick()
-
-        const series = shareClasses.value[0]!.new.series[0]
-        expect(series!.actions).toContain(ActionType.REMOVED)
-        expect(series!.isInvalid).toBe(true)
-        expect(cleanup).toHaveBeenCalled()
-      })
-
-      it('should not trigger modal if maxShares changes but no series exist', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test15')
-        const cleanup = vi.fn()
-
-        const rowData = {
-          new: {
-            id: '1',
-            maxNumberOfShares: 100,
-            series: []
-          },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
-        updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
-
-        expect(openModalMock).not.toHaveBeenCalled()
-        expect(cleanup).toHaveBeenCalled()
-      })
-
-      it('should always set currencyAdditional to undefined when making any changes', () => {
-        const { shareClasses, updateShareClass } = useManageShareStructure('test-currency-additonal-change')
-        const cleanup = vi.fn()
-
-        const rowData = {
-          new: {
-            id: '1',
-            maxNumberOfShares: 100,
-            currencyAdditional: 'Some Invalid Value',
-            series: []
-          },
-          old: { id: '1' }
-        }
-        shareClasses.value = [rowData] as any
-
-        const updatedData = { ...rowData.new, maxNumberOfShares: 200 }
-        updateShareClass(createMockRow(rowData) as any, updatedData as any, cleanup)
-
-        expect(shareClasses.value[0]!.new.currencyAdditional).toBeUndefined()
-        expect(cleanup).toHaveBeenCalled()
-      })
-    })
-  })
-
-  describe('Share Series Methods', () => {
-    describe('addNewShareSeries', () => {
-      it('should add a new series and increment priority of existing ones', () => {
-        const { shareClasses, addNewShareSeries } = useManageShareStructure('test16')
-
-        const existingSeries = { id: 's1', priority: 1, actions: [] }
-        const rowData = {
-          original: { new: { id: 'class-1' } },
-          new: {
-            id: 'class-1',
-            series: [existingSeries]
-          }
-        }
-        shareClasses.value = [rowData] as any
-
-        const newSeries = { id: 's2', priority: 1 }
-
-        addNewShareSeries(rowData as any, newSeries as any)
-
-        const seriesArray = shareClasses.value[0]!.new.series
-
-        expect(seriesArray[0]!.id).toBe('s2')
-        expect(seriesArray[0]!.actions).toContain(ActionType.ADDED)
-
-        expect(seriesArray[1]!.id).toBe('s1')
-        expect(seriesArray[1]!.priority).toBe(2)
-      })
-    })
-
-    describe('updateShareSeries', () => {
-      it('should not update if no changes', () => {
-        const { shareClasses, updateShareSeries } = useManageShareStructure('test17')
-
-        const existingSeries = { id: 's1', name: 'Series A', actions: [] }
-        shareClasses.value = [{
-          new: { id: 'parent-1', series: [existingSeries] }
-        }] as any
-
-        const rowMock = {
-          original: { new: { id: 's1' } },
-          getParentRow: () => ({ original: { new: { id: 'parent-1' } } })
-        }
-
-        updateShareSeries(rowMock as any, { ...existingSeries } as any)
-        expect(shareClasses.value[0]!.new.series[0]!.actions).toEqual([])
-      })
-
-      it('should add the changed action if edits were made to an existing series', () => {
-        const { shareClasses, updateShareSeries } = useManageShareStructure('test18')
-
-        const existingSeries = { id: 's1', name: 'Original Name', actions: [] }
-        shareClasses.value = [{
-          new: { id: 'parent-1', series: [existingSeries] }
-        }] as any
-
-        const rowMock = {
-          original: {
-            new: { id: 's1' },
-            old: { id: 's1' }
-          },
-          getParentRow: () => ({
-            original: { new: { id: 'parent-1' } }
-          })
-        }
-
-        const updatedSeries = { id: 's1', name: 'Updated Name' }
-
-        updateShareSeries(rowMock as any, updatedSeries as any)
-
-        const resultSeries = shareClasses.value[0]!.new.series[0]
-        expect(resultSeries!.name).toBe('Updated Name')
-        expect(resultSeries!.actions).toContain(ActionType.CHANGED)
-        expect(resultSeries!.actions).not.toContain(ActionType.ADDED)
-      })
-
-      it('should maintain the ADDED action if edits are made to a series with no old state', () => {
-        const { shareClasses, updateShareSeries } = useManageShareStructure('test19')
-
-        const draftSeries = {
-          id: 's-new-123',
-          name: 'Draft Series',
-          actions: [ActionType.ADDED]
-        }
-
-        shareClasses.value = [{
-          new: { id: 'parent-1', series: [draftSeries] }
-        }] as any
-
-        const rowMock = {
-          original: {
-            new: { id: 's-new-123' },
-            old: undefined
-          },
-          getParentRow: () => ({
-            original: { new: { id: 'parent-1' } }
-          })
-        }
-
-        const updatedSeriesData = { id: 's-new-123', name: 'Renamed Draft Series' }
-
-        updateShareSeries(rowMock as any, updatedSeriesData as any)
-
-        const resultSeries = shareClasses.value[0]!.new.series[0]
-        expect(resultSeries!.name).toBe('Renamed Draft Series')
-
-        expect(resultSeries!.actions).toEqual([ActionType.ADDED])
-        expect(resultSeries!.actions).not.toContain(ActionType.CHANGED)
-      })
-    })
-
-    describe('undoShareSeries', () => {
-      it('should revert series data to old state but keep current priority', () => {
-        const { shareClasses, undoShareSeries } = useManageShareStructure('test20')
-
-        const oldState = { id: 's1', name: 'Original Name', priority: 1 }
-        const currentState = { id: 's1', name: 'Edited Name', priority: 5 }
-
-        shareClasses.value = [{
-          new: { id: 'p1', series: [currentState] }
-        }] as any
-
-        const rowMock = {
-          original: {
-            new: currentState,
-            old: oldState
-          },
-          getParentRow: () => ({ original: { new: { id: 'p1' } } })
-        }
-
-        undoShareSeries(rowMock as any)
-
-        const result = shareClasses.value[0]!.new.series[0]!
-        expect(result.name).toBe('Original Name')
-        expect(result.priority).toBe(5)
-      })
-    })
-
-    describe('removeShareSeries', () => {
-      it('should fully remove a new series and update other priorities', () => {
-        const { shareClasses, removeShareSeries } = useManageShareStructure('test21')
-
-        const s1 = { id: 's1', priority: 1 }
-        const s2 = { id: 's2', priority: 2 }
-        const s3 = { id: 's3', priority: 3 }
-
-        shareClasses.value = [{
-          new: { id: 'p1', series: [s1, s2, s3] }
-        }] as any
-
-        const rowMock = {
-          original: { new: s2, old: undefined },
-          getParentRow: () => ({ original: { new: { id: 'p1' } } })
-        }
-
-        removeShareSeries(rowMock as any)
-
-        const finalSeries = shareClasses.value[0]!.new.series
-
-        expect(finalSeries.length).toBe(2)
-        expect(finalSeries.find(s => s.id === 's2')).toBeUndefined()
-
-        expect(finalSeries.find(s => s.id === 's1')!.priority).toBe(1)
-        expect(finalSeries.find(s => s.id === 's3')!.priority).toBe(2)
-      })
-
-      it('should add removed action when removing an existing series', () => {
-        const { shareClasses, removeShareSeries } = useManageShareStructure('test22')
-
-        const existingSeries = { id: 's1', priority: 1, actions: [] }
-        shareClasses.value = [{
-          new: { id: 'p1', series: [existingSeries] }
-        }] as any
-
-        const rowMock = {
-          original: {
-            new: existingSeries,
-            old: { id: 's1' }
-          },
-          getParentRow: () => ({ original: { new: { id: 'p1' } } })
-        }
-
-        removeShareSeries(rowMock as any)
-
-        const result = shareClasses.value[0]!.new.series[0]!
-        expect(result.id).toBe('s1')
-        expect(result.actions).toContain(ActionType.REMOVED)
-      })
+    it('restores resolution date state', () => {
+      const { resolutionDates, undoSubject } = useManageShareStructure()
+
+      const dateData = {
+        new: { id: 'r1', date: '2026-12-31', actions: [ActionType.CHANGED] },
+        old: { id: 'r1', date: '2026-01-01', actions: [] }
+      }
+      resolutionDates.value = [dateData] as any
+
+      undoSubject(createMockRow(dateData) as any)
+
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-01-01')
+      expect(resolutionDates.value[0]!.new.actions).toEqual([])
     })
   })
 
   describe('changePriority', () => {
-    it('class - should swap priority with the nearest item below when moving down', () => {
-      const { shareClasses, changePriority } = useManageShareStructure('test23')
+    it('swaps priority between class items when moving down', () => {
+      const { shareClasses, changePriority } = useManageShareStructure()
 
-      const class1 = { new: { id: 'c1', priority: 1 } }
-      const class2 = { new: { id: 'c2', priority: 2 } }
-      shareClasses.value = [class1, class2] as any
+      const c1 = { new: { id: 'c1', priority: 1, series: [] } }
+      const c2 = { new: { id: 'c2', priority: 2, series: [] } }
+      shareClasses.value = [c1, c2] as any
 
-      const rowMock = {
-        depth: 0,
-        original: class1,
-        getParentRow: () => undefined
-      }
+      changePriority(createMockRow(c1) as any, 'down')
 
-      changePriority(rowMock as any, 'down')
-
-      expect(class1.new.priority).toBe(2)
-      expect(class2.new.priority).toBe(1)
+      expect(c1.new.priority).toBe(2)
+      expect(c2.new.priority).toBe(1)
     })
 
-    it('class - should swap priority with the nearest item above when moving up', () => {
-      const { shareClasses, changePriority } = useManageShareStructure('test24')
+    it('swaps priority between class items when moving up', () => {
+      const { shareClasses, changePriority } = useManageShareStructure()
 
-      const class1 = { new: { id: 'c1', priority: 1 } }
-      const class2 = { new: { id: 'c2', priority: 2 } }
-      shareClasses.value = [class1, class2] as any
+      const c1 = { new: { id: 'c1', priority: 1, series: [] } }
+      const c2 = { new: { id: 'c2', priority: 2, series: [] } }
+      shareClasses.value = [c1, c2] as any
 
-      const rowMock = {
-        depth: 0,
-        original: class2,
-        getParentRow: () => undefined
-      }
+      changePriority(createMockRow(c2) as any, 'up')
 
-      changePriority(rowMock as any, 'up')
-
-      expect(class1.new.priority).toBe(2)
-      expect(class2.new.priority).toBe(1)
+      expect(c1.new.priority).toBe(2)
+      expect(c2.new.priority).toBe(1)
     })
 
-    it('series - should swap priority with the nearest item above when moving up', () => {
-      const { shareClasses, changePriority } = useManageShareStructure('test24')
+    it('swaps priority between series', () => {
+      const { shareClasses, changePriority } = useManageShareStructure()
 
-      const s1 = { id: 's1', priority: 1 }
-      const s2 = { id: 's2', priority: 2 }
-      const s3 = { id: 's3', priority: 3 }
+      const s1 = { id: 's1', priority: 1, hasMaximumShares: true }
+      const s2 = { id: 's2', priority: 2, hasMaximumShares: true }
+      shareClasses.value = [{ new: { id: 'c1', series: [s1, s2] } }] as any
 
-      shareClasses.value = [{
-        new: { id: 'p1', series: [s1, s2, s3] }
-      }] as any
-
-      const rowMock = {
-        depth: 1,
-        original: { new: s3 },
-        getParentRow: () => ({ original: { new: { id: 'p1' } } })
-      }
-
-      changePriority(rowMock as any, 'up')
-
-      expect(s3.priority).toBe(2)
-      expect(s2.priority).toBe(3)
-      expect(s1.priority).toBe(1)
-    })
-
-    it('series - should swap priority with the nearest item below when moving down', () => {
-      const { shareClasses, changePriority } = useManageShareStructure('test25')
-
-      const s1 = { id: 's1', priority: 1 }
-      const s2 = { id: 's2', priority: 2 }
-      const s3 = { id: 's3', priority: 3 }
-
-      shareClasses.value = [{
-        new: { id: 'p1', series: [s1, s2, s3] }
-      }] as any
-
-      const rowMock = {
+      const mockRow = {
         depth: 1,
         original: { new: s2 },
-        getParentRow: () => ({ original: { new: { id: 'p1' } } })
+        getParentRow: () => ({ original: { new: { id: 'c1' } } })
       }
 
-      changePriority(rowMock as any, 'down')
+      changePriority(mockRow as any, 'up')
 
-      expect(s3.priority).toBe(2)
-      expect(s2.priority).toBe(3)
-      expect(s1.priority).toBe(1)
-    })
-  })
-
-  describe('Resolution Date Methods', () => {
-    describe('updateResolutionDate', () => {
-      it('should do nothing if no resolution object is passed', () => {
-        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-1')
-        const cleanup = vi.fn()
-
-        const rowData = { new: { id: 'r1', date: '2026-01-01' }, old: undefined }
-        resolutionDates.value = [rowData] as any
-
-        updateResolutionDate(createMockRow(rowData) as any, null as any, cleanup)
-
-        expect(cleanup).not.toHaveBeenCalled()
-      })
-
-      it('should not update actions or state if no data was changed', () => {
-        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-2')
-        const cleanup = vi.fn()
-
-        const rowData = {
-          new: { id: 'r1', date: '2026-01-01', isEditing: false, actions: [] },
-          old: { id: 'r1', date: '2026-01-01', isEditing: false, actions: [] }
-        }
-        resolutionDates.value = [rowData] as any
-
-        const updatedData = { id: 'r1', date: '2026-01-01', isEditing: true, actions: [] }
-        updateResolutionDate(createMockRow(rowData) as any, updatedData as any, cleanup)
-
-        expect(resolutionDates.value[0]!.new.actions).toEqual([])
-        expect(cleanup).toHaveBeenCalledTimes(1)
-      })
-
-      it('should add CHANGED action for existing rows when data is updated', () => {
-        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-3')
-        const cleanup = vi.fn()
-
-        const existingRow = {
-          new: { id: 'r1', date: '2026-01-01', actions: [] },
-          old: { id: 'r1', date: '2026-01-01' }
-        }
-        resolutionDates.value = [existingRow] as any
-
-        const updatedData = { id: 'r1', date: '2026-02-02' }
-        updateResolutionDate(createMockRow(existingRow) as any, updatedData as any, cleanup)
-
-        expect(resolutionDates.value[0]!.new.date).toBe('2026-02-02')
-        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.CHANGED)
-        expect(cleanup).toHaveBeenCalledTimes(1)
-      })
-
-      it('should add ADDED action for new rows with no old state when data is updated', () => {
-        const { resolutionDates, updateResolutionDate } = useManageShareStructure('res-test-4')
-        const cleanup = vi.fn()
-
-        const newRow = {
-          new: { id: 'r2', date: '2026-05-05', actions: [] },
-          old: undefined
-        }
-        resolutionDates.value = [newRow] as any
-
-        const updatedData = { id: 'r2', date: '2026-06-06' }
-        updateResolutionDate(createMockRow(newRow) as any, updatedData as any, cleanup)
-
-        expect(resolutionDates.value[0]!.new.date).toBe('2026-06-06')
-        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.ADDED)
-        expect(cleanup).toHaveBeenCalledTimes(1)
-      })
+      expect(s1.priority).toBe(2)
+      expect(s2.priority).toBe(1)
     })
 
-    describe('removeResolutionDate', () => {
-      it('should add REMOVED action', () => {
-        const { resolutionDates, removeResolutionDate } = useManageShareStructure('res-test-5')
+    it('does nothing when moving top item up or bottom item down', () => {
+      const { shareClasses, changePriority } = useManageShareStructure('test-bounds')
 
-        const rowData = {
-          new: { id: 'r1', date: '2026-01-01', actions: [] },
-          old: { id: 'r1' }
-        }
-        resolutionDates.value = [rowData] as any
+      const c1 = { new: { id: 'c1', priority: 1, series: [] } }
+      const c2 = { new: { id: 'c2', priority: 2, series: [] } }
+      shareClasses.value = [c1, c2] as any
 
-        removeResolutionDate(createMockRow(rowData) as any)
+      changePriority(createMockRow(c1) as any, 'up')
+      expect(c1.new.priority).toBe(1)
 
-        expect(resolutionDates.value[0]!.new.actions).toContain(ActionType.REMOVED)
-      })
-
-      it('should do nothing if the row to remove cannot be found', () => {
-        const { resolutionDates, removeResolutionDate } = useManageShareStructure('res-test-6')
-
-        resolutionDates.value = [
-          { new: { id: 'r1', actions: [] }, old: undefined }
-        ] as any
-
-        const nonExistentRow = createMockRow({ new: { id: 'r-missing' } }) as any
-        removeResolutionDate(nonExistentRow)
-
-        expect(resolutionDates.value[0]!.new.actions).toEqual([])
-      })
-    })
-
-    describe('undoResolutionDate', () => {
-      it('should revert the new state back to the old state', () => {
-        const { resolutionDates, undoResolutionDate } = useManageShareStructure('res-test-7')
-
-        const rowData = {
-          new: { id: 'r1', date: '2026-12-25', actions: [ActionType.CHANGED] },
-          old: { id: 'r1', date: '2026-01-01', actions: [] }
-        }
-        resolutionDates.value = [rowData] as any
-
-        undoResolutionDate(createMockRow(rowData) as any)
-
-        expect(resolutionDates.value[0]!.new.date).toBe('2026-01-01')
-        expect(resolutionDates.value[0]!.new.actions).toEqual([])
-      })
-
-      it('should do nothing if no old state found', () => {
-        const { resolutionDates, undoResolutionDate } = useManageShareStructure('res-test-8')
-
-        const rowData = {
-          new: { id: 'r2', date: '2026-05-05', actions: [ActionType.ADDED] },
-          old: undefined
-        }
-        resolutionDates.value = [rowData] as any
-
-        undoResolutionDate(createMockRow(rowData) as any)
-
-        expect(resolutionDates.value[0]!.new.date).toBe('2026-05-05')
-        expect(resolutionDates.value[0]!.new.actions).toEqual([ActionType.ADDED])
-      })
+      changePriority(createMockRow(c2) as any, 'down')
+      expect(c2.new.priority).toBe(2)
     })
   })
 })

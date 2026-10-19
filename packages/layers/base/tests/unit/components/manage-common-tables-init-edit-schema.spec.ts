@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
-
-import { ManageParties, ManageShareStructure } from '#components'
-
-// --- Mock composables used by the three manager components ---
+import { ManageParties } from '#components'
 
 mockNuxtImport('useManageParties', () => () => ({
   addingParty: ref(false),
@@ -16,43 +13,12 @@ mockNuxtImport('useManageParties', () => () => ({
   applyTableEdits: vi.fn()
 }))
 
-mockNuxtImport('useManageShareStructure', () => () => ({
-  expandedState: ref<undefined>(undefined),
-  shareClasses: ref([]),
-  resolutionDates: ref([]),
-  addNewShareClass: vi.fn(),
-  removeShareClass: vi.fn(),
-  undoShareClass: vi.fn(),
-  updateShareClass: vi.fn(),
-  updateShareSeries: vi.fn(),
-  undoShareSeries: vi.fn(),
-  removeShareSeries: vi.fn(),
-  addNewShareSeries: vi.fn(),
-  changePriority: vi.fn()
-}))
-
-mockNuxtImport('useFilingAlerts', () => () => ({
-  alerts: reactive<Record<string, string>>({}),
-  setAlert: vi.fn(),
-  clearAlert: vi.fn(),
-  attachAlerts: vi.fn(() => ({ targetId: 'target-id', messageId: 'message-id' }))
-}))
-
 mockNuxtImport('useConnectButtonControl', () => () => ({ setAlertText: vi.fn() }))
-
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: (key: string, params?: { name?: string }) => params?.name || key })
-}))
 
 // --- Stubs: lightweight stand-ins for child components ---
 
 const TablePartyStub = defineComponent({ name: 'TableParty', props: { expanded: Object }, template: '<div />' })
 const TableOfficesStub = defineComponent({ name: 'TableOffices', props: { expanded: Object }, template: '<div />' })
-const TableShareStructureStub = defineComponent({
-  name: 'TableShareStructure',
-  props: { expanded: Object },
-  template: '<div />'
-})
 
 const stubs = {
   UButton: true,
@@ -63,14 +29,13 @@ const stubs = {
   FormShareClass: true,
   FormShareSeries: true,
   TableParty: TablePartyStub,
-  TableOffices: TableOfficesStub,
-  TableShareStructure: TableShareStructureStub
+  TableOffices: TableOfficesStub
 }
 
 // --- Helper: mount a component, emit init-edit, return the wrapper ---
 
 async function emitInitEdit(
-  component: typeof ManageParties | typeof ManageShareStructure,
+  component: typeof ManageParties,
   props: Record<string, unknown>,
   tableStub: ReturnType<typeof defineComponent>,
   row: Record<string, unknown>
@@ -101,28 +66,6 @@ describe('Common table managers — init-edit with invalid schema data', () => {
     expect(emitted.name.partyType).toBe('BAD')
     expect(row.original.new.isEditing).toBe(true)
   })
-
-  it('ManageShareStructure class: emits raw data when schema is invalid', async () => {
-    const row = { id: 'c1', depth: 0, original: { new: { isEditing: false, name: 'X', priority: 'BAD' } } }
-    const wrapper = await emitInitEdit(ManageShareStructure,
-      { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
-      TableShareStructureStub, row)
-
-    const emitted = wrapper.emitted('update:active-class')?.[0]?.[0] as { priority: string }
-    expect(emitted.priority).toBe('BAD')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageShareStructure series: emits raw data when schema is invalid', async () => {
-    const row = { id: 's1', depth: 1, original: { new: { isEditing: false, name: 'X', priority: 'BAD' } } }
-    const wrapper = await emitInitEdit(ManageShareStructure,
-      { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
-      TableShareStructureStub, row)
-
-    const emitted = wrapper.emitted('update:active-series')?.[0]?.[0] as { priority: string }
-    expect(emitted.priority).toBe('BAD')
-    expect(row.original.new.isEditing).toBe(true)
-  })
 })
 
 describe('Common table managers — init-edit with valid schema data', () => {
@@ -148,51 +91,6 @@ describe('Common table managers — init-edit with valid schema data', () => {
     expect(emitted.name.partyType).toBe(PartyType.PERSON)
     expect(emitted.address.sameAs).toBe(false)
     expect(emitted.address.mailingAddress.country).toBe('CA')
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageShareStructure class: emits schema-parsed data when valid', async () => {
-    const row = {
-      id: 'c1', depth: 0, original: { new: {
-        isEditing: false, id: 'c1', name: 'Alpha', priority: 1, actions: [],
-        hasParValue: false, hasMaximumShares: false
-      } }
-    }
-    const wrapper = await emitInitEdit(ManageShareStructure,
-      { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
-      TableShareStructureStub, row)
-
-    const emitted = wrapper.emitted('update:active-class')?.[0]?.[0] as {
-      name: string
-      series: unknown[]
-      hasRightsOrRestrictions: boolean
-    }
-    expect(emitted.name).toBe('Alpha')
-    expect(emitted.series).toEqual([])
-    expect(emitted.hasRightsOrRestrictions).toBe(false)
-    expect(row.original.new.isEditing).toBe(true)
-  })
-
-  it('ManageShareStructure series: emits schema-parsed data when valid', async () => {
-    const row = {
-      id: 's1', depth: 1, original: { new: {
-        isEditing: false, id: 's1', name: 'Beta', priority: 1, actions: []
-      } }
-    }
-    const wrapper = await emitInitEdit(ManageShareStructure,
-      { addLabel: 'unused-label', activeClass: undefined, activeSeries: undefined },
-      TableShareStructureStub, row)
-
-    const emitted = wrapper.emitted('update:active-series')?.[0]?.[0] as {
-      name: string
-      hasMaximumShares: boolean
-      hasRightsOrRestrictions: boolean
-      isInvalid: boolean
-    }
-    expect(emitted.name).toBe('Beta')
-    expect(emitted.hasMaximumShares).toBe(false)
-    expect(emitted.hasRightsOrRestrictions).toBe(false)
-    expect(emitted.isInvalid).toBe(false)
     expect(row.original.new.isEditing).toBe(true)
   })
 })

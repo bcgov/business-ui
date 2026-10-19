@@ -154,15 +154,15 @@ const componentExamples: DropdownMenuItem[] = [
         label: 'ManageShareStructure',
         children: [
           {
-            to: localePath('/examples/components/ManageShareStructure'),
+            to: localePath('/examples/components/Manage/ShareStructure'),
             label: 'Default'
           },
           {
-            to: localePath('/examples/components/ManageShareStructure/currency-other'),
+            to: localePath('/examples/components/Manage/ShareStructure/currency-other'),
             label: 'Currency Other'
           },
           {
-            to: localePath('/examples/components/ManageShareStructure/real-data'),
+            to: localePath('/examples/components/Manage/ShareStructure/real-data'),
             label: 'Real Data'
           }
         ]
