@@ -2,4 +2,7 @@
 "@sbc-connect/nuxt-business-base": minor
 ---
 
-Update dependencies. POSSIBLE BREAKING CHANGE. Nuxt UI updated how styles are resolved and some of our custom themes may be affected.
+Updated dependencies and minimum Node.js requirement.
+
+- **BREAKING**: Requires Node version `>=24.15` and `<25`.
+- Updated Nuxt UI dependency (style resolution changes may affect custom themes).
