@@ -62,11 +62,14 @@ describe('getDirectorsSchema', () => {
       schema = getDirectorsSchema(false, 'certified-by')
     })
 
-    it('should have no authorization section', () => {
+    it('should have no authorization section but include certify', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
-      expect(result.data).toEqual({ folio: { folioNumber: '' } })
+      expect(result.data).toEqual({
+        folio: { folioNumber: '' },
+        certify: { isCertified: false }
+      })
     })
 
     it('should pass without an authorization confirmation', () => {
@@ -74,6 +77,7 @@ describe('getDirectorsSchema', () => {
 
       expect(result.success).toBe(true)
       expect((result.data as DirectorsFormSchema).folio).toEqual({ folioNumber: 'ABC-123' })
+      expect((result.data as DirectorsFormSchema).authorization).toBeUndefined()
     })
   })
 

@@ -14,6 +14,8 @@ definePageMeta({
   middleware: ['connect-auth']
 })
 
+const directorChangeProps = getDirectorChangeManagePartiesProps()
+
 // a director open in the party details sub form must be completed before saving or submitting
 function checkActiveSubForm() {
   if (store.formState.activeParty !== undefined) {
@@ -37,6 +39,57 @@ const { filingText, onError, submitFiling } = useFilingPage({
   preTaskGuard: checkActiveSubForm,
   staffPayRef: staffPayFormRef
 })
+
+/** Effective date model bridging store.effectiveDate ↔ FormEffectiveDate's EffectiveDateSchema. */
+const effectiveDateModel = ref<EffectiveDateSchema>({ dateInput: store.effectiveDate })
+
+// sync the local model when init completes (e.g. draft restores a date)
+watch(() => store.initializing, (isInitializing) => {
+  if (!isInitializing) {
+    effectiveDateModel.value = { dateInput: store.effectiveDate }
+  }
+})
+
+// keep store.effectiveDate in sync as the user edits the date picker
+watch(effectiveDateModel, (val) => {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(val.dateInput)) {
+    store.effectiveDate = val.dateInput as IsoDatePacific
+  }
+})
+
+/** Min/max bounds for the effective date picker, driven by the business type config. */
+const effectiveDateBounds = computed<DateBounds>(() => {
+  const business = businessStore.business as BusinessData | undefined
+  if (!business) {
+    return { max: { date: getToday('America/Vancouver') } }
+  }
+
+  let minDate: string | undefined
+  if (store.config.minDateSource === 'latestOfCodAr') {
+    // coops: latest of last director change or last annual report
+    const candidates = [business.lastDirectorChangeDate, business.lastAnnualReportDate].filter(Boolean)
+    minDate = candidates.sort().at(-1) ?? business.foundingDate?.split('T')[0]
+  }
+  else {
+    // corps: last director change, or founding date when the backdating flag allows
+    minDate = business.lastDirectorChangeDate || business.foundingDate?.split('T')[0]
+  }
+
+  return {
+    min: minDate ? { date: minDate } : undefined,
+    max: { date: getToday('America/Vancouver') }
+  }
+})
+
+const warning = computed(() => getDirectorWarning(store.directors, store.config.warnings))
+
+// sync paid/free fee when the directors table changes
+watch(() => store.directors, async (directors) => {
+  await syncDirectorChangeFee(directors, {
+    paidCode: store.config.paidFeeCode,
+    freeCode: store.config.freeFeeCode
+  })
+}, { deep: true })
 </script>
 
 <template>
@@ -59,18 +112,45 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <p>{{ filingText.desc }}</p>
       </div>
 
-      <!-- FUTURE: replace with FormEffectiveDate (bounds per store.config.minDateSource, max = today) -->
+      <!-- Section 1: Effective Date -->
       <ConnectPageSection
         :heading="{ label: `1. ${$t('label.effectiveDate')}` }"
         ui-body="px-4 py-4 sm:px-6"
         data-testid="effective-date-section"
       >
-        <p data-testid="effective-date-value">
-          {{ toReadableDate(store.effectiveDate) }}
-        </p>
+        <FormEffectiveDate
+          v-model="effectiveDateModel"
+          :bounds="effectiveDateBounds"
+          :disabled="initializing"
+          data-testid="effective-date-input"
+        />
       </ConnectPageSection>
 
-      <!-- FUTURE: the directors table (ManageParties with the director change preset + config warnings) -->
+      <!-- Section 2: Directors -->
+      <ConnectPageSection
+        :heading="{ label: `2. ${$t('page.changeOfDirectors.directorsLabel')}` }"
+        ui-body="px-4 py-4 sm:px-6"
+        data-testid="directors-section"
+      >
+        <UAlert
+          v-if="warning"
+          color="warning"
+          variant="subtle"
+          icon="i-mdi-alert"
+          :description="warning.message"
+          data-testid="director-warning"
+          class="mb-4"
+        />
+        <ManageParties
+          v-model:active-party="store.formState.activeParty"
+          v-bind="directorChangeProps"
+          :loading="initializing"
+          :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
+          :table-title="$t('page.changeOfDirectors.directorsLabel')"
+          subject="Director"
+          data-testid="manage-directors"
+        />
+      </ConnectPageSection>
 
       <FormFolio
         v-if="!store.isStaff && store.formState.folio"
@@ -78,17 +158,26 @@ const { filingText, onError, submitFiling } = useFilingPage({
         data-testid="form-section-folio-number"
         :disabled="initializing"
         name="folio"
-        :order="2"
+        :order="3"
       />
 
-      <!-- corps convention only - coops certify with a legal name (FUTURE: base FormCertify) -->
       <FormConfirmAuthorization
         v-if="store.formState.authorization"
         v-model="store.formState.authorization"
         data-testid="form-section-authorization"
         :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         name="authorization"
-        :order="store.isStaff ? 2 : 3"
+        :order="store.isStaff ? 3 : 4"
+      />
+
+      <!-- coops certify with a legal name instead of the authorization checkbox -->
+      <FormCertify
+        v-if="!store.isStaff && store.config.certify === 'certified-by' && store.formState.certify"
+        v-model="store.formState.certify"
+        :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
+        data-testid="form-section-certify"
+        name="certify"
+        :order="4"
       />
 
       <StaffPaymentFieldset
@@ -96,7 +185,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         ref="staff-pay-ref"
         v-model="store.formState.staffPayment"
         data-testid="form-section-staff-payment"
-        :order="store.formState.authorization ? 3 : 2"
+        :order="store.formState.authorization ? 4 : 3"
         :initializing
       />
     </UForm>

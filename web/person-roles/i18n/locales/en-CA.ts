@@ -37,6 +37,7 @@ export default {
     addLiquidator: 'Add Liquidator',
     addOfficer: 'Add Officer',
     addReceiver: 'Add Receiver',
+    noDirectors: 'No Directors',
     changeAddress: 'Change Address',
     changeName: 'Change Name',
     changeRoles: 'Change Roles',
@@ -84,7 +85,8 @@ export default {
   page: {
     // Below sections are named based on filing type and filing sub type
     changeOfDirectors: {
-      desc: 'Add, remove or update the directors of this business. Director changes are effective as of the date selected below.',
+      desc: 'Select the date of your director changes and update the directors table. If director changes occurred on different dates, you will need to file multiple Director Changes.',
+      directorsLabel: 'Directors',
       // the corps code - the store swaps in the coop code for CP businesses (see getDirectorsConfig)
       feeCode: 'BCCDR',
       feeLabel: 'Director Change',
