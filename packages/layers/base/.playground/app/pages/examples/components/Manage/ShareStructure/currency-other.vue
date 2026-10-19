@@ -26,6 +26,7 @@ const formState = reactive<{
     >
       <ManageShareStructure
         v-model:active-subject="formState.activeSubject"
+        model-name="activeSubject.value"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No classes'"
         subject="Share Class"
