@@ -1,31 +1,36 @@
 import { z } from 'zod'
 
-/** Base schema for store defaults and type inference. */
-export function getChangeOfDirectorsSchema(isStaff: boolean) {
-  const base = z.object({
+function getChangeOfDirectorsBaseSchema() {
+  return z.object({
     codDate: z.string().default('')
-  })
-
-  if (isStaff) {
-    return base.extend({
-      authorization: getConfirmAuthorizationSchema().default(() => ({ isAuthorized: false as unknown as true }))
-    })
-  }
-
-  return base.extend({
-    certify: getCertifySchema().default(() => ({ isCertified: false }))
   })
 }
 
-/**
- * Validation schema for the COD date field.
- * Requires Nuxt context for i18n error messages and business context for date range.
- */
-export type ChangeOfDirectorsFormSchema = Partial<
-  z.output<ReturnType<typeof getChangeOfDirectorsSchema>>
-  & { authorization: z.output<ReturnType<typeof getConfirmAuthorizationSchema>> }
-  & { certify: z.output<ReturnType<typeof getCertifySchema>> }
->
+/** Full form state schema — certify for clients, authorization + staffPayment for staff. */
+export function getChangeOfDirectorsSchema(isStaff: boolean) {
+  if (isStaff) {
+    return withPaymentSection(
+      getChangeOfDirectorsBaseSchema().extend({
+        authorization: getConfirmAuthorizationSchema().default(() => ({ isAuthorized: false as unknown as true }))
+      }),
+      true
+    )
+  }
+
+  return withPaymentSection(
+    getChangeOfDirectorsBaseSchema().extend({
+      certify: getCertifySchema().default(() => ({ isCertified: false }))
+    }),
+    false
+  )
+}
+
+export type ChangeOfDirectorsFormSchema
+  = WithPaymentSections<ReturnType<typeof getChangeOfDirectorsBaseSchema>>
+    & Partial<{
+      authorization: z.output<ReturnType<typeof getConfirmAuthorizationSchema>>
+      certify: z.output<ReturnType<typeof getCertifySchema>>
+    }>
 
 export function getChangeOfDirectorsValidationSchema(minDate?: string) {
   const t = useNuxtApp().$i18n.t
