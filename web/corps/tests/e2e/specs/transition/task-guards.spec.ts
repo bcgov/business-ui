@@ -62,7 +62,7 @@ test.describe('Task Guards', () => {
     await addClassBtn.click()
     await expect(subForm).toBeVisible()
     await reviewButton.click()
-    await expect(subForm).toContainText(taskMessage)
+    await expect(subForm).toContainText('This field is required')
     await subForm.getByRole('button', { name: 'Cancel' }).first().click()
     await expect(subForm).not.toBeVisible()
   })

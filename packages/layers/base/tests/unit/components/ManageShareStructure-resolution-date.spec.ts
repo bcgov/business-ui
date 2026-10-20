@@ -1,49 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { describe, expect, it, vi } from 'vitest'
-
 import { ManageShareStructure } from '#components'
 
-// mutated per-test to control hasChangedShares/hasRightsOrRestrictions without re-registering the mock
-const mockShareClasses = {
-  // no actions on any class/series -> hasChangedShares is false this session
-  value: [
-    {
-      new: { id: 'c1', name: 'A Shares', actions: [] as ActionType[], series: [], hasRightsOrRestrictions: true },
-      old: undefined
-    }
-  ]
-}
-
-mockNuxtImport('useManageShareStructure', () => () => ({
-  expandedState: ref<undefined>(undefined),
-  shareClasses: ref(mockShareClasses.value),
-  resolutionDates: ref([]),
-  addNewShareClass: vi.fn(),
-  removeShareClass: vi.fn(),
-  undoShareClass: vi.fn(),
-  updateShareClass: vi.fn(),
-  updateShareSeries: vi.fn(),
-  undoShareSeries: vi.fn(),
-  removeShareSeries: vi.fn(),
-  addNewShareSeries: vi.fn(),
-  changePriority: vi.fn(),
-  updateResolutionDate: vi.fn(),
-  removeResolutionDate: vi.fn(),
-  undoResolutionDate: vi.fn()
-}))
-
-mockNuxtImport('useFilingAlerts', () => () => ({
-  alerts: reactive<Record<string, string>>({}),
-  setAlert: vi.fn(),
-  clearAlert: vi.fn(),
-  attachAlerts: vi.fn(() => ({ targetId: 'target-id', messageId: 'message-id' }))
-}))
-
 mockNuxtImport('useConnectButtonControl', () => () => ({ setAlertText: vi.fn() }))
-
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: (key: string, params?: { name?: string }) => params?.name || key })
-}))
 
 const stubs = {
   UButton: true,
@@ -107,15 +67,6 @@ describe('ManageShareStructure — resolution date add section in correction', (
   it(
     'does not require a resolution date in a correction filing for a new share class with rights or restrictions',
     async () => {
-      // a share class was added this session and has rights/restrictions -> would require a
-      // resolution date outside of corrections (see equivalent 'default' variant test below)
-      mockShareClasses.value = [
-        {
-          new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true },
-          old: undefined
-        }
-      ]
-
       const wrapper = await mountSuspended(ManageShareStructure, {
         props: {
           variant: 'correct',
@@ -135,11 +86,12 @@ describe('ManageShareStructure — resolution date add section in correction', (
   it(
     'requires a resolution date outside of corrections when a new share class with rights or restrictions was added',
     async () => {
-      mockShareClasses.value = [
+      const { shareClasses } = useManageShareStructure()
+      shareClasses.value = [
         {
           new: { id: 'c1', name: 'A Shares', actions: [ActionType.ADDED], series: [], hasRightsOrRestrictions: true },
           old: undefined
-        }
+        } as any
       ]
 
       const wrapper = await mountSuspended(ManageShareStructure, {

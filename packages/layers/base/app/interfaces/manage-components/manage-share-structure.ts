@@ -8,11 +8,13 @@ export type ManageShareStructureProps = Omit<ManageBaseProps, 'tableTitle'> & {
 } & (
   | {
     variant?: 'default' | 'correct'
+    modelName?: string
     allowedActions?: ManageAllowedAction[]
     collectResolutionDate?: boolean
   }
   | {
     variant: 'readonly' | 'correct-readonly'
+    modelName?: never
     allowedActions?: never
     collectResolutionDate?: never
   }

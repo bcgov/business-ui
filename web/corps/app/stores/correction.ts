@@ -451,10 +451,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeLiquidator = undefined
     formState.activeCustodian = undefined
     formState.activeOffice = undefined
-    formState.activeClass = undefined
-    formState.activeSeries = undefined
+    formState.activeShareStructure = undefined
     formState.activeNameTranslation = undefined
-    formState.activeResolutionDate = undefined
     formState.activeCourtOrder = undefined
     formState.activeAmal = undefined
     formState.activeAmalStmnt = undefined

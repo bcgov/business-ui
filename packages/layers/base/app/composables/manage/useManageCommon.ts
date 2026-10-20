@@ -14,7 +14,7 @@ interface ActiveSubjectGroup {
    * The unique key used by `useFilingAlerts` to focus and attach
    * task guard error messages for this specific sub-form.
   */
-  alertTarget: string // The associated target ID the task guard config is associated with
+  alertTarget: string | string[] // The associated target ID the task guard config is associated with
 }
 
 /**
@@ -143,7 +143,8 @@ export const useManageCommon = (opts: ManageCommonOptions) => {
   function setActiveSubjectAlert() {
     subjectGroups.value.forEach((sg) => {
       if (toValue(sg.subject)) {
-        setAlert(sg.alertTarget, t('text.finishTaskBeforeOtherChanges'))
+        const targets = [sg.alertTarget].flat()
+        targets.forEach(target => setAlert(target, t('text.finishTaskBeforeOtherChanges')))
       }
     })
   }
@@ -151,7 +152,8 @@ export const useManageCommon = (opts: ManageCommonOptions) => {
   function clearAllAlerts() {
     // clear alerts in all sub forms
     subjectGroups.value.forEach((sg) => {
-      clearAlert(sg.alertTarget)
+      const targets = [sg.alertTarget].flat()
+      targets.forEach(target => clearAlert(target))
     })
 
     // clear alert in button control

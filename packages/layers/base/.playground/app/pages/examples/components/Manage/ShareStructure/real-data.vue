@@ -18,12 +18,7 @@ async function initData() {
     const sc = await service.getShareClasses(identifier.value)
     const rd = await service.getResolutions(identifier.value)
     shareClasses.value = formatShareClassesSection(sc)
-
-    const rdMapped = rd.map((d) => {
-      const data = rdSchema.parse(d)
-      return { old: structuredClone(data), new: structuredClone(data) }
-    })
-    resolutionDates.value = rdMapped
+    resolutionDates.value = formatResolutionDatesSection(rd).tableState
   } catch (e) {
     console.error(e)
   } finally {
@@ -37,14 +32,10 @@ function reset() {
 }
 
 const formState = reactive<{
-  activeClass: ActiveShareClassSchema | undefined
-  activeSeries: ActiveShareSeriesSchema | undefined
-  activeResolutionDate: ActiveResolutionDateSchema | undefined
+  activeSubject: ActiveShareStructureSchema
   resolutionDate: ResolutionDateSchema | undefined
 }>({
-  activeClass: undefined,
-  activeSeries: undefined,
-  activeResolutionDate: undefined,
+  activeSubject: undefined,
   resolutionDate: undefined
 })
 
@@ -88,9 +79,7 @@ onMounted(() => {
           <USwitch v-model="collectResolutionDate" label="Collect Date on Change" />
         </div>
         <ManageShareStructure
-          v-model:active-class="formState.activeClass"
-          v-model:active-series="formState.activeSeries"
-          v-model:active-rd="formState.activeResolutionDate"
+          v-model:active-subject="formState.activeSubject"
           v-model:rd="formState.resolutionDate"
           :loading
           subject="Share Class"

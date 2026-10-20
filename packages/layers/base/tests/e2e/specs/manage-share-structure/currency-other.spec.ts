@@ -3,7 +3,7 @@ import i18n from '#business/i18n/locales/en-CA'
 
 test.describe('ManageShareStructure (currency other)', () => {
   test('Should render table with expected data', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
+    await page.goto('./en-CA/examples/components/Manage/ShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
     const table = page.getByRole('table')
@@ -78,7 +78,7 @@ test.describe('ManageShareStructure (currency other)', () => {
   })
 
   test('Should be able to add share class', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
+    await page.goto('./en-CA/examples/components/Manage/ShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
     const scForm = page.getByTestId('add-share-class-form')
@@ -112,7 +112,7 @@ test.describe('ManageShareStructure (currency other)', () => {
   })
 
   test('Should not be able to add share series to a class with a currencyAdditional value', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
+    await page.goto('./en-CA/examples/components/Manage/ShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
     const ssForm = page.getByTestId('share-series-form')
@@ -133,7 +133,7 @@ test.describe('ManageShareStructure (currency other)', () => {
   })
 
   test('Should be able to edit share class with `OTHER` currency type', async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageShareStructure/currency-other')
+    await page.goto('./en-CA/examples/components/Manage/ShareStructure/currency-other')
     await page.waitForLoadState('networkidle')
 
     const scForm = page.getByTestId('change-share-class-form')

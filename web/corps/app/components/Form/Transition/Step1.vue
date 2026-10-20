@@ -95,8 +95,8 @@ defineExpose({
     </div>
 
     <ManageShareStructure
-      v-model:active-class="store.formState.activeClass"
-      v-model:active-series="store.formState.activeSeries"
+      v-model:active-subject="store.formState.activeShareStructure"
+      model-name="activeShareStructure.value"
       data-testid="share-structure-section"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.shareClasses') })"
