@@ -34,7 +34,8 @@ const isReadOnlyVariant = computed(() => variant.includes('readonly'))
       <div class="flex flex-col flex-1 gap-4">
         <span v-if="!isReadOnlyVariant">{{ $t('text.addNameTranslation') }}</span>
         <ManageNameTranslations
-          v-model:active-name-translation="model"
+          v-model:active-subject="model"
+          model-name="activeNameTranslation"
           :state-key
           :loading
           :variant

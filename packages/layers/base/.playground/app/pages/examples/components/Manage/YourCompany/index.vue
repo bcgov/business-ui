@@ -199,7 +199,7 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['fieldOverrides'
     </ConnectPageSection>
     <ManageYourCompany
       v-model:active-subject="activeYourCompany"
-      v-model:active-name-translation="activeNameTranslation"
+      v-model:active-nt="activeNameTranslation"
       data-testid="your-company-section"
       :state-key
       :business
