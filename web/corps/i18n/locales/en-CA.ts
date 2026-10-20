@@ -166,11 +166,6 @@ export default {
       locationRequired: 'AGM location is required.',
       locationMax: 'Must be 100 characters or less.'
     },
-    changeOfDirectors: {
-      dateRequired: 'Director change date is required.',
-      dateFuture: 'Director change date cannot be in the future.',
-      dateMin: 'Director change date cannot be before the last director change or founding date.'
-    },
     appointmentDateBeforeFounding: 'Appointment date cannot be before the business founding date.',
     cessationDateInFuture: 'Cessation date cannot be in the future.',
     date: {
