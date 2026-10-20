@@ -35,6 +35,7 @@ const isReadOnlyVariant = computed(() => variant.includes('readonly'))
         <span v-if="!isReadOnlyVariant">{{ $t('text.addNameTranslation') }}</span>
         <ManageNameTranslations
           v-model:active-subject="model"
+          model-name="activeNameTranslation"
           :state-key
           :loading
           :variant

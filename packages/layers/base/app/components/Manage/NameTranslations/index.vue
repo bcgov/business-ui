@@ -5,7 +5,7 @@ import { cloneDeep } from 'es-toolkit'
 const {
   stateKey = 'manage-name-translations',
   labelOverrides,
-  modelName = 'activeNameTranslation',
+  modelName = 'activeSubject',
   variant = 'default',
   allowedActions,
   preventActions = false,
