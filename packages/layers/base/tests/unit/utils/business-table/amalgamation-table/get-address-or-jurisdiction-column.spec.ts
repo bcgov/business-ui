@@ -81,7 +81,7 @@ describe('getAddressOrJurisdictionColumn', () => {
 
     expect(cell.type).toBe('span')
     expect(cell.props.class).toEqual('min-w-48 max-w-48')
-    expect(cell.children).toBe('New Brunswick, Canada')
+    expect(cell.children).toBe('New Brunswick')
   })
 
   it('should render the Federal label for the federal Canadian jurisdiction', () => {
