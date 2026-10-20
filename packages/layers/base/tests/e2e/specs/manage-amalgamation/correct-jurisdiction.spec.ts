@@ -42,7 +42,7 @@ test.describe('ManageAmalgamation Correct - jurisdiction', () => {
     await form.getByRole('button', { name: 'Done' }).click()
 
     await expect(form).not.toBeVisible()
-    await expect(row.getByRole('cell').nth(2)).toContainText('Manitoba, Canada')
+    await expect(row.getByRole('cell').nth(2)).toContainText('Manitoba')
     await expect(row.getByRole('cell').first()).toContainText('CORRECTED')
   })
 

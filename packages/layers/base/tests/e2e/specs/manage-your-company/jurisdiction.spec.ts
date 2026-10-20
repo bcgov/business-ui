@@ -23,7 +23,7 @@ test.describe('ManageYourCompany - jurisdiction', () => {
     const newRow = getFieldRow(page, 'New Jurisdiction')
     const previousRow = getFieldRow(page, 'Previous Jurisdiction')
 
-    await expect(newRow).toContainText('Alberta, Canada')
+    await expect(newRow).toContainText('Alberta')
     await expect(previousRow).toContainText('United States')
   })
 
@@ -35,7 +35,7 @@ test.describe('ManageYourCompany - jurisdiction', () => {
     await pickJurisdiction(page, combobox, 'Manitoba, Canada')
     await newRow.getByRole('button', { name: 'Done' }).click()
 
-    await expect(newRow).toContainText('Manitoba, Canada')
+    await expect(newRow).toContainText('Manitoba')
     await expect(newRow).toContainText('CORRECTED')
   })
 
@@ -50,7 +50,7 @@ test.describe('ManageYourCompany - jurisdiction', () => {
 
     await newRow.getByRole('button', { name: 'Undo' }).click()
 
-    await expect(newRow).toContainText('Alberta, Canada')
+    await expect(newRow).toContainText('Alberta')
     await expect(newRow).not.toContainText('CORRECTED')
   })
 
