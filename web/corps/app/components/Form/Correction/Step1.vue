@@ -32,7 +32,7 @@ const directorFormProps = computed(() => {
   }
 })
 
-const yourCompanySectionOverrides = computed(() => getYourCompanySectionOverrides(store.correctedFilingType))
+const yourCompanyFieldOverrides = computed(() => getYourCompanyFieldOverrides(store.correctedFilingType))
 
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
@@ -60,7 +60,7 @@ function onActionPrevented() {
       :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
       :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
       :prevent-actions="hasActiveSubForm"
-      :section-overrides="yourCompanySectionOverrides"
+      :field-overrides="yourCompanyFieldOverrides"
       variant="correct"
       :action-prevented-signal="actionPreventedSignal"
       @action-prevented="onActionPrevented"
@@ -75,6 +75,7 @@ function onActionPrevented() {
       :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
+      bc-canada-only
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :prevent-actions="hasActiveSubForm"
       :action-prevented-signal="actionPreventedSignal"
