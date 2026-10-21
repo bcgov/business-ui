@@ -50,19 +50,14 @@ export function getMissingInfoSummary(warnings: BusinessWarning[] = []): Missing
     if (warning.warningType !== ApiWarningType.MISSING_REQUIRED_BUSINESS_INFO) {
       continue
     }
-    const data = (warning.data ?? {}) as { officeType?: OfficeType, partyId?: number | string }
     const field = parseMissingInfoCode(warning.code)
-    if (data.officeType) {
-      (summary.offices[data.officeType] ??= []).push(field)
-    } else if (data.partyId !== undefined) {
-      (summary.directors[String(data.partyId)] ??= []).push(field)
+    if (warning.data?.officeType) {
+      (summary.offices[warning.data.officeType] ??= []).push(field)
+    } else if (warning.data?.partyId !== undefined) {
+      (summary.directors[String(warning.data.partyId)] ??= []).push(field)
     }
   }
   return summary
-}
-
-export function hasMissingInfo(summary: MissingInfoSummary): boolean {
-  return Object.keys(summary.offices).length > 0 || Object.keys(summary.directors).length > 0
 }
 
 /**
@@ -81,17 +76,6 @@ export function seedMissingOffices(
     }
   }
   return seeded
-}
-
-/**
- * The changed offices whose delivery address is outside BC, Canada - legal-api rejects these
- * (validate_offices bc_req=True, the same rule as a change of address).
- */
-export function getOfficesDeliveryOutsideBc(offices: TableBusinessState<OfficesSchema>[]): OfficeType[] {
-  return offices
-    .filter(o => o.new.actions.length > 0)
-    .filter(o => o.new.address.deliveryAddress.region !== 'BC' || o.new.address.deliveryAddress.country !== 'CA')
-    .map(o => o.new.type)
 }
 
 type Translate = (key: string, params?: Record<string, unknown>) => string

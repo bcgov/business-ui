@@ -58,13 +58,11 @@ describe('getMissingInfoSummary', () => {
       ],
       456: [{ addressType: 'deliveryAddress' }]
     })
-    expect(hasMissingInfo(summary)).toBe(true)
   })
 
   it('is empty without missing info warnings', () => {
     const summary = getMissingInfoSummary(undefined)
     expect(summary).toEqual({ offices: {}, directors: {} })
-    expect(hasMissingInfo(summary)).toBe(false)
   })
 })
 
@@ -83,22 +81,6 @@ describe('seedMissingOffices', () => {
   it('leaves a complete office set alone', () => {
     const rows = [officeRow(OfficeType.REGISTERED), officeRow(OfficeType.RECORDS)]
     expect(seedMissingOffices(rows, [OfficeType.REGISTERED, OfficeType.RECORDS])).toEqual(rows)
-  })
-})
-
-describe('getOfficesDeliveryOutsideBc', () => {
-  it('flags only the changed offices whose delivery address is outside BC, Canada', () => {
-    const inBc = officeRow(OfficeType.REGISTERED, { actions: [ActionType.CHANGED] })
-    inBc.new.address.deliveryAddress.region = 'BC'
-    inBc.new.address.deliveryAddress.country = 'CA'
-    const inAb = officeRow(OfficeType.RECORDS, { actions: [ActionType.ADDED] })
-    inAb.new.address.deliveryAddress.region = 'AB'
-    inAb.new.address.deliveryAddress.country = 'CA'
-    const untouchedUs = officeRow(OfficeType.RECORDS)
-    untouchedUs.new.address.deliveryAddress.region = 'WA'
-    untouchedUs.new.address.deliveryAddress.country = 'US'
-
-    expect(getOfficesDeliveryOutsideBc([inBc, inAb, untouchedUs])).toEqual([OfficeType.RECORDS])
   })
 })
 

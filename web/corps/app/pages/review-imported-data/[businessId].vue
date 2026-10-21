@@ -35,11 +35,6 @@ function reviewAndConfirm() {
     setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
     return
   }
-  // legal-api rejects an office delivery address outside BC (same rule as a change of address)
-  if (getOfficesDeliveryOutsideBc(store.offices).length > 0) {
-    setOfficesAlert('offices-table', t('text.officeDeliveryAddressMustBeInBc'))
-    return
-  }
   nextStep()
 }
 

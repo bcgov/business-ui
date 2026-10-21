@@ -8,6 +8,7 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
 
   const service = useBusinessService()
   const businessStore = useBusinessStore()
+  const modal = useFilingModals()
 
   const isStaff = useIsStaff()
 
@@ -30,7 +31,7 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
     $reset()
 
     // offices are fetched raw rather than through initFiling so a draft can be merged over the originals
-    const [{ draftFiling, parties }, addressData] = await Promise.all([
+    const [{ draftFiling, parties }, addressResult] = await Promise.all([
       initFiling<ReviewImportedDataFiling>(
         businessId,
         FilingType.REVIEW_IMPORTED_DATA,
@@ -38,8 +39,15 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
         draftId,
         { roleType: RoleType.DIRECTOR }
       ),
-      service.getAddresses(businessId).catch(() => undefined)
+      service.getAddresses(businessId).then(data => ({ data })).catch((error: unknown) => ({ error }))
     ])
+
+    // a failed office fetch must not seed both offices as missing - the user would file over real addresses
+    if (!('data' in addressResult)) {
+      initializing.value = false
+      await modal.openInitFilingErrorModal(addressResult.error)
+      return
+    }
 
     const draft = draftFiling?.filing?.reviewImportedData
     if (draft) {
@@ -47,15 +55,14 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
       hydratePaymentState(draftFiling.filing.header, formState)
     }
 
-    if (parties) {
-      tableDirectors.value = draft?.relationships?.length
-        ? getPartiesMergedWithRelationships(parties, draft.relationships)
-        : parties
-    }
+    const directors = parties ?? []
+    tableDirectors.value = draft?.relationships?.length
+      ? getPartiesMergedWithRelationships(directors, draft.relationships)
+      : directors
 
     const officeTypes = [OfficeType.REGISTERED, OfficeType.RECORDS]
     tableOffices.value = seedMissingOffices(
-      formatOfficesSection(addressData, draft?.offices, officeTypes),
+      formatOfficesSection(addressResult.data, draft?.offices, officeTypes),
       officeTypes
     )
 
@@ -94,9 +101,10 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
   }
 
   function $reset() {
-    resetFormState()
+    // clear the open sub forms before the reset snapshots the form state
     formState.activeOffice = undefined
     formState.activeDirector = undefined
+    resetFormState()
     initialOffices.value = []
     initialDirectors.value = []
     draftFilingState.value = {} as ReviewImportedDataDraftState

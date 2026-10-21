@@ -169,7 +169,6 @@ export default {
     },
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
     officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
-    officeDeliveryAddressMustBeInBc: 'Office delivery addresses must be in British Columbia, Canada.',
     reviewImportedDataDirectors: 'Complete any director address that is missing information. Director names cannot be changed here.',
     reviewImportedDataOffices: 'Complete any office address that is missing information. Office delivery addresses must be in British Columbia.',
     reviewImportedDataReview: 'Review the changes below. Only the sections you changed will appear and be filed.',

@@ -12,7 +12,10 @@ import {
   setMockBusiness
 } from '#test-mocks/filing-store'
 
-const { mockGetAddresses } = vi.hoisted(() => ({ mockGetAddresses: vi.fn() }))
+const { mockGetAddresses, mockOpenInitFilingErrorModal } = vi.hoisted(() => ({
+  mockGetAddresses: vi.fn(),
+  mockOpenInitFilingErrorModal: vi.fn()
+}))
 
 mockNuxtImport('useBusinessService', async () => {
   const { makeBusinessServiceMock } = await import('#test-mocks/filing-store')
@@ -20,7 +23,10 @@ mockNuxtImport('useBusinessService', async () => {
 })
 mockNuxtImport('useConnectFeeStore', async () => (await import('#test-mocks/filing-store')).makeFeeStoreMock)
 mockNuxtImport('useIsStaff', async () => (await import('#test-mocks/filing-store')).makeIsStaffMock)
-mockNuxtImport('useFilingModals', async () => (await import('#test-mocks/filing-store')).makeFilingModalsMock)
+mockNuxtImport('useFilingModals', async () => {
+  const { makeFilingModalsMock } = await import('#test-mocks/filing-store')
+  return () => ({ ...makeFilingModalsMock(), openInitFilingErrorModal: mockOpenInitFilingErrorModal })
+})
 mockNuxtImport('useConnectAuth', async () => (await import('#test-mocks/filing-store')).makeConnectAuthMock)
 mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/filing-store')).makeAccountStoreMock)
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
@@ -152,6 +158,18 @@ describe('useReviewImportedDataStore', () => {
       expect(records.old).toBeUndefined()
       expect(records.new.actions).toEqual([])
       expect(store.hasChanges).toBe(false)
+    })
+
+    it('does not seed offices when the office fetch fails, and opens the init error modal', async () => {
+      const error = new Error('addresses unavailable')
+      mockGetAddresses.mockRejectedValue(error)
+
+      await store.init(identifier)
+
+      expect(mockOpenInitFilingErrorModal).toHaveBeenCalledWith(error)
+      expect(store.offices).toEqual([])
+      expect(store.directors).toEqual([])
+      expect(store.initializing).toBe(false)
     })
 
     it('summarizes the missing info warnings on the business', async () => {

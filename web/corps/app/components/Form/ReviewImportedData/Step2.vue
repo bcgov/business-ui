@@ -6,6 +6,12 @@ const store = useReviewImportedDataStore()
 const businessStore = useBusinessStore()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
+// the review table leaves out the empty rows seeded for offices the business has no record of
+const { tableState: reviewOffices } = useManageOffices('review-offices')
+watchEffect(() => {
+  reviewOffices.value = store.offices.filter(office => office.old !== undefined || office.new.actions.length > 0)
+})
+
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
 
@@ -37,6 +43,7 @@ function onError(event: FormErrorEvent) {
 
       <ManageOffices
         v-if="store.hasOfficeChanges"
+        state-key="review-offices"
         variant="readonly"
         data-testid="review-office-addresses-section"
         :loading="store.initializing"

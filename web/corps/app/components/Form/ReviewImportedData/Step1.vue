@@ -28,7 +28,7 @@ const missingDirectors = computed(() => describeMissingDirectors(store.missingIn
       >
         <template #description>
           <ul class="list-disc pl-5">
-            <li v-for="line in missingOffices" :key="line">
+            <li v-for="(line, index) in missingOffices" :key="index">
               {{ line }}
             </li>
           </ul>
@@ -45,6 +45,8 @@ const missingDirectors = computed(() => describeMissingDirectors(store.missingIn
         subject=""
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
         :label-overrides="{ editLabel: $t('label.changeAddress') }"
+        bc-canada-only="delivery"
+        hide-remove
       />
     </div>
 
@@ -59,7 +61,7 @@ const missingDirectors = computed(() => describeMissingDirectors(store.missingIn
       >
         <template #description>
           <ul class="list-disc pl-5">
-            <li v-for="line in missingDirectors" :key="line">
+            <li v-for="(line, index) in missingDirectors" :key="index">
               {{ line }}
             </li>
           </ul>
