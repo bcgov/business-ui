@@ -102,12 +102,10 @@ export function formatOfficesApi(
 
   const result: ApiEntityOfficeAddress = {}
 
-  offices
-    .filter(office => office.new.actions.length > 0) // only include offices where changes have been made
-    .forEach((office) => {
-      const { type, address } = office.new
-      result[type] = formatOfficeApi(address)
-    })
+  offices.forEach((office) => {
+    const { type, address } = office.new
+    result[type] = formatOfficeApi(address)
+  })
 
   return result
 }

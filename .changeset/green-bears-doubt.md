@@ -2,6 +2,7 @@
 "@sbc-connect/nuxt-business-base": minor
 ---
 
+- formatOfficesApi: Include all offices if any have changes.
 - ManageShareStructure: handle standalone resolution date sync automatically
   - Add an optional `resolutionDate` property to `useManageShareStructure` options.
   - Sync standalone date input directly into the `resolutionDates` array whenever provided and valid.
