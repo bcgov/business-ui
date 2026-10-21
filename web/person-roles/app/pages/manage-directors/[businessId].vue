@@ -134,30 +134,24 @@ watch(() => store.directors, async (directors) => {
       </ConnectPageSection>
 
       <!-- Section 2: Directors -->
-      <ConnectPageSection
-        :heading="{ label: `2. ${$t('page.changeOfDirectors.directorsLabel')}` }"
-        ui-body="px-4 py-4 sm:px-6"
-        data-testid="directors-section"
-      >
-        <UAlert
-          v-if="warning"
-          color="warning"
-          variant="subtle"
-          icon="i-mdi-alert"
-          :description="warning.message"
-          data-testid="director-warning"
-          class="mb-4"
-        />
-        <ManageParties
-          v-model:active-party="store.formState.activeParty"
-          v-bind="directorChangeProps"
-          :loading="initializing"
-          :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
-          :table-title="$t('page.changeOfDirectors.directorsLabel')"
-          subject="Director"
-          data-testid="manage-directors"
-        />
-      </ConnectPageSection>
+      <UAlert
+        v-if="warning"
+        color="warning"
+        variant="subtle"
+        icon="i-mdi-alert"
+        :description="warning.message"
+        data-testid="director-warning"
+      />
+      <ManageParties
+        v-model:active-party="store.formState.activeParty"
+        v-bind="directorChangeProps"
+        :loading="initializing"
+        :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
+        :section-title="`2. ${$t('page.changeOfDirectors.directorsLabel')}`"
+        :table-title="$t('page.changeOfDirectors.directorsLabel')"
+        subject="Director"
+        data-testid="manage-directors"
+      />
 
       <FormFolio
         v-if="!store.isStaff && store.formState.folio"
