@@ -87,7 +87,7 @@ test.describe('Business Ledger Tests (dissolution)', () => {
       ],
       bodyText: [
         // eslint-disable-next-line max-len
-        'The Company 0887698 B.C. LTD. was successfully dissolved on December 12, 2024 at 11:46 am Pacific time. The Company has been struck from the register and dissolved, and ceased to be a registered Company under the Business Corporations Act.',
+        'The Company 0887698 B.C. LTD. was successfully dissolved on December 12, 2024 at 12:46 pm Pacific time. The Company has been struck from the register and dissolved, and ceased to be a registered Company under the Business Corporations Act.',
         // Due to orderDetails
         'test'
       ],

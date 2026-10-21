@@ -1,6 +1,6 @@
 import { cloneDeep } from 'es-toolkit'
 
-const PACIFIC_TZ = 'America/Vancouver'
+const PACIFIC_TZ = 'UTC-7'
 
 export const useDirectorsStore = defineStore('directors-store', () => {
   const ld = useConnectLaunchDarkly()

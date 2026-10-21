@@ -29,7 +29,7 @@ const mockBusiness: Business = {
   nameRequest: {
     state: 'APPROVED',
     legalType: CorpTypes.BENEFIT_COMPANY,
-    expirationDate: moment().tz('America/Vancouver').add(1, 'year').toDate(),
+    expirationDate: moment().tz('UTC-7').add(1, 'year').toDate(),
     enableIncorporation: true,
     requestActionCd: NrRequestActionCodes.NEW_BUSINESS,
     requestTypeCd: NrRequestTypeCodes.CHANGE_BEN,
@@ -254,7 +254,7 @@ describe('affiliations utils', () => {
 
     it('should return false if NR is not expired', () => {
       // const business = { ...mockBusiness }
-      // business.nameRequest!.expirationDate = moment().tz('America/Vancouver').add(1, 'year').toDate()
+      // business.nameRequest!.expirationDate = moment().tz('UTC-7').add(1, 'year').toDate()
       expect(isExpired(mockBusiness)).toBe(false)
     })
   })

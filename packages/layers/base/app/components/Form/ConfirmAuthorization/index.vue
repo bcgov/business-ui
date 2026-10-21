@@ -18,7 +18,7 @@ const formError = computed<FormError | undefined>(() => {
   return errors?.find(e => e.name === 'isAuthorized')
 })
 
-const today = getToday('America/Vancouver')
+const today = getToday('UTC-7')
 
 defineExpose({
   formRef

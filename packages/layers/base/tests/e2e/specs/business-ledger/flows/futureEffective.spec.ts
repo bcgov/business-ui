@@ -14,7 +14,7 @@ const futureDate = DateTime.fromObject(
 // eslint-disable-next-line max-len
 const futureDateStr = `${futureDate.weekdayShort}, ${futureDate.day} ${futureDate.monthShort} ${futureDate.year} 07:01:00 GMT`
 // The app converts to Pacific time for display — June 15 2027 07:01 UTC = June 15 2027 00:01 PDT (12:01 am)
-const futureDatePacific = futureDate.setZone('America/Vancouver')
+const futureDatePacific = futureDate.setZone('UTC-7')
 
 test.describe('Business Ledger Tests (future effective)', () => {
   test.beforeEach(async ({ page }) => {

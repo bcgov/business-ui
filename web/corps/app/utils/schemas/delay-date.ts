@@ -32,7 +32,7 @@ export function getDelayDateSchema() {
       return
     }
 
-    const selectedDate = DateTime.fromISO(val.date, { zone: 'America/Vancouver' })
+    const selectedDate = DateTime.fromISO(val.date, { zone: 'UTC-7' })
 
     if (!selectedDate.isValid) {
       ctx.addIssue({
@@ -43,7 +43,7 @@ export function getDelayDateSchema() {
       return
     }
 
-    const today = DateTime.fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' })
+    const today = DateTime.fromISO(getToday('UTC-7'), { zone: 'UTC-7' })
 
     if (selectedDate <= today) {
       ctx.addIssue({

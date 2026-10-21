@@ -1,4 +1,4 @@
-const PACIFIC_TZ = 'America/Vancouver'
+const PACIFIC_TZ = 'UTC-7'
 
 export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const {

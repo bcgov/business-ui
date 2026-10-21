@@ -5,7 +5,7 @@ import type { DateTimeFormatOptions } from 'luxon'
 /**
  * Gets todays date, can customize timezone and output format.
  *
- * @param timezone - An IANA timezone string (e.g., 'America/Vancouver').
+ * @param timezone - An IANA timezone string or offset (e.g., 'UTC-7').
  * @param format - A Luxon format string (e.g., 'MMMM dd, yyyy').
  *
  * Defaults to UTC and ISODate (yyyy-mm-dd) format
@@ -33,13 +33,12 @@ export function getToday(timezone = 'UTC', format?: string): string {
 
 /**
  * Converts an iso date string (YYYY-MM-DD) to an API date-time string in UTC, at midnight in the
- * given timezone (defaults to pacific time).
- * @example "2021-01-01" -> "2021-01-01T08:00:00+00:00" // PST
- * @example "2021-07-01" -> "2021-07-01T07:00:00+00:00" // PDT
+ * given timezone (defaults to PCT/UTC-7).
+ * @example "2021-07-01" -> "2021-07-01T07:00:00+00:00" // (PCT year-round)
  */
 export function toApiDateTime(
   dateStr: IsoDatePacific,
-  timezone = 'America/Vancouver'
+  timezone = 'UTC-7'
 ): ApiDateTimeUtc | undefined {
   const newDate = DateTime.fromISO(dateStr, { zone: timezone })
   return newDate.isValid ? newDate.toUTC().toFormat('yyyy-MM-dd\'T\'HH:mm:ssZZ') : undefined
@@ -50,14 +49,14 @@ export function toApiDateTime(
  */
 export const toDate = (
   dateStr: IsoDatePacific | ApiDateTimeUtc,
-  timezone = 'America/Vancouver'
+  timezone = 'UTC-7'
 ): Date | undefined => {
   const newDate = DateTime.fromISO(dateStr, { zone: timezone })
   return newDate.isValid ? newDate.toJSDate() : undefined
 }
 
 /**  Return the date as a string in iso date format */
-export function toDateStr(date: Date, timezone = 'America/Vancouver'): IsoDatePacific | undefined {
+export function toDateStr(date: Date, timezone = 'UTC-7'): IsoDatePacific | undefined {
   const newDate = DateTime.fromJSDate(date, { zone: timezone })
   return newDate.isValid ? newDate.toISODate() : undefined
 }
@@ -69,7 +68,7 @@ export function toDateStr(date: Date, timezone = 'America/Vancouver'): IsoDatePa
 export function toFormattedDateStr(
   date: Date,
   format?: DateTimeFormatOptions,
-  timezone = 'America/Vancouver'
+  timezone = 'UTC-7'
 ): IsoDatePacific | undefined {
   const newDate = DateTime.fromJSDate(date, { zone: timezone })
   return newDate.isValid ? newDate.toLocaleString(format) : undefined
@@ -105,7 +104,7 @@ export function daysBetween(startDate: Date, endDate: Date) {
  *
  * @param dateStr - An ISO date string (YYYY-MM-DD or full ISO 8601).
  * @param format - A Luxon DateTimeFormatOptions object. Defaults to DateTime.DATE_FULL.
- * @param timezone - An IANA timezone string. Defaults to 'America/Vancouver'.
+ * @param timezone - An IANA timezone string or UTC offset. Defaults to 'UTC-7'.
  * @returns The formatted date string, or the original string if parsing fails.
  *
  * @example toReadableDate('2021-02-08') // "February 8, 2021"
@@ -114,7 +113,7 @@ export function daysBetween(startDate: Date, endDate: Date) {
 export function toReadableDate(
   dateStr: string,
   format: DateTimeFormatOptions = DateTime.DATE_FULL,
-  timezone = 'America/Vancouver'
+  timezone = 'UTC-7'
 ): string {
   const dt = DateTime.fromISO(dateStr, { zone: timezone })
   return dt.isValid ? dt.toLocaleString(format) : dateStr

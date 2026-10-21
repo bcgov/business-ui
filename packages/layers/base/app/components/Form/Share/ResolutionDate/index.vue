@@ -24,7 +24,7 @@ const formRef = useTemplateRef<Form<ResolutionDateSchema>>('resolution-date-form
 
 // mirrors the superRefine rules in getResolutionDateSchema: dates can't be in the future,
 // and are required when there are rights/restrictions or an existing date is being edited
-const maxDate = getToday('America/Vancouver')
+const maxDate = getToday('UTC-7')
 const isDateRequired = computed(() =>
   !!(props.validationContext?.hasRightsOrRestrictions || props.validationContext?.isEditingExisting)
 )

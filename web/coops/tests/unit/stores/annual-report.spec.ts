@@ -29,7 +29,7 @@ mockNuxtImport('useBusinessStore', async original =>
 mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const identifier = 'CP1002605'
-const PACIFIC_TZ = 'America/Vancouver'
+const PACIFIC_TZ = 'UTC-7'
 // the store compares the AR year against the current pacific year, so derive it rather than pin it
 const arYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
 

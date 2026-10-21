@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 function formatDate(date: string): string | undefined {
-  const dt = DateTime.fromISO(date, { zone: 'America/Vancouver' })
+  const dt = DateTime.fromISO(date, { zone: 'UTC-7' })
   return dt.isValid ? dt.toFormat('DDD') : undefined
 }
 

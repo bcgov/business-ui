@@ -41,6 +41,6 @@ export function addOneYear (dateString: string) {
  */
 export function formatEffectiveDate (dateString: string) {
   return moment(dateString)
-    .tz('America/Vancouver')
+    .tz('UTC-7')
     .format('MMM D, YYYY [at] h:mm a [Pacific time]')
 }

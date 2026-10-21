@@ -182,12 +182,12 @@ export const isExpired = (item: Business, type?: CorpTypes): boolean => {
     return false
   }
 
-  // Using moment-timezone with a specific timezone (America/Vancouver) for date comparison
+  // Using moment-timezone with a specific timezone (UTC-7) for date comparison
   // This approach addresses several issues with using new Date():
   // Prevents manipulation by users who might change their system clock
   // Ensures consistent timezone handling across all users regardless of their location
-  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver')
-  const currentDate = moment().tz('America/Vancouver')
+  const expirationDate = moment(item.nameRequest.expirationDate).tz('UTC-7')
+  const currentDate = moment().tz('UTC-7')
   const isExpiredDate = expirationDate.isBefore(currentDate)
 
   if (!isExpiredDate) {
@@ -214,8 +214,8 @@ export const isExpiringSoon = (item: Business): { daysDiff: number, isSoon: bool
     return { daysDiff: NaN, isSoon: false }
   }
 
-  const expirationDate = moment(item.nameRequest.expirationDate).tz('America/Vancouver').startOf('day')
-  const currentDate = moment().tz('America/Vancouver').startOf('day')
+  const expirationDate = moment(item.nameRequest.expirationDate).tz('UTC-7').startOf('day')
+  const currentDate = moment().tz('UTC-7').startOf('day')
 
   const daysDiff = expirationDate.diff(currentDate, 'days')
   const isSoon = daysDiff >= 0 && daysDiff <= 10 && !isConsumed(item)

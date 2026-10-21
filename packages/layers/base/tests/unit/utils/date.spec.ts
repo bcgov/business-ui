@@ -18,7 +18,7 @@ describe('date util', () => {
     })
 
     test('should return the correct date for a specified timezone', () => {
-      const result = getToday('America/Vancouver')
+      const result = getToday('UTC-7')
       expect(result).toBe('2025-06-23')
     })
 
@@ -28,7 +28,7 @@ describe('date util', () => {
     })
 
     test.skip('should return the date in a custom format for a specific timezone', () => {
-      const result = getToday('America/Vancouver', 'D')
+      const result = getToday('UTC-7', 'D')
       expect(result).toBe('6/23/2025')
     })
 
@@ -39,8 +39,8 @@ describe('date util', () => {
   })
 
   describe('toApiDateTime', () => {
-    test('should convert a pacific standard time date to UTC', () => {
-      expect(toApiDateTime('2021-01-01')).toBe('2021-01-01T08:00:00+00:00')
+    test('should convert a pacific time date to UTC', () => {
+      expect(toApiDateTime('2021-01-01')).toBe('2021-01-01T07:00:00+00:00')
     })
 
     test('should convert a pacific daylight time date to UTC', () => {

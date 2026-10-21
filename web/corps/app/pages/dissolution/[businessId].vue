@@ -41,7 +41,7 @@ const delayDateDisplay = computed<string>(() => {
   if (delayOption === DelayOption.DEFAULT) {
     const dissolutionDate = DateTime.fromISO(
       store.dissolutionInfo.targetDissolutionDate,
-      { zone: 'America/Vancouver' }
+      { zone: 'UTC-7' }
     )
     return dissolutionDate.isValid
       ? dissolutionDate.plus({ months: 6 }).toFormat(DATE_DISPLAY_FORMAT)
@@ -49,7 +49,7 @@ const delayDateDisplay = computed<string>(() => {
   }
 
   // selected date
-  const delayDate = DateTime.fromISO(store.formState.delay.date, { zone: 'America/Vancouver' })
+  const delayDate = DateTime.fromISO(store.formState.delay.date, { zone: 'UTC-7' })
   if (!delayDate.isValid) {
     return unknownStr
   }

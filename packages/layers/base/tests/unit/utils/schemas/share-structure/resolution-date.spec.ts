@@ -113,7 +113,7 @@ describe('getResolutionDateSchema', () => {
     describe('Future Dates', () => {
       it('should fail when date is in the future', () => {
         const schema = getResolutionDateSchema()
-        const tomorrowStr = DateTime.now().setZone('America/Vancouver').plus({ days: 1 }).toISODate()
+        const tomorrowStr = DateTime.now().setZone('UTC-7').plus({ days: 1 }).toISODate()
 
         const result = schema.safeParse({ id: '2', date: tomorrowStr })
 
@@ -126,7 +126,7 @@ describe('getResolutionDateSchema', () => {
 
       it('should pass when date is today or in the past', () => {
         const schema = getResolutionDateSchema()
-        const todayStr = DateTime.now().setZone('America/Vancouver').toISODate()
+        const todayStr = DateTime.now().setZone('UTC-7').toISODate()
 
         const resultToday = schema.safeParse({ id: '2', date: todayStr })
         const resultPast = schema.safeParse({ id: '3', date: '2025-12-25' })

@@ -119,7 +119,7 @@ describe('useBusinessStateReason', () => {
       }
     })
     const { getStateReason } = useBusinessStateReason()
-    expect(await getStateReason()).toBe('Continuation Out – January 15, 2026 at 8:22 pm Pacific time')
+    expect(await getStateReason()).toBe('Continuation Out – January 15, 2026 at 9:22 pm Pacific time')
   })
 
   it('falls back to the filing name for other state filing types', async () => {

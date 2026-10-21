@@ -283,7 +283,7 @@ export function getResolutionDateSchema(context?: ResolutionDateContext) {
 
     // Date must not be a future date
     if (!isDateEmpty) {
-      const zone = 'America/Vancouver'
+      const zone = 'UTC-7'
       const today = DateTime.now().setZone(zone).startOf('day')
       const inputDatetime = DateTime.fromISO(date, { zone }).startOf('day')
       if (inputDatetime.isValid && inputDatetime > today) {
