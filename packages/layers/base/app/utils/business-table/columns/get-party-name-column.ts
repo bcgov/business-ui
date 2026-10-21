@@ -21,7 +21,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
         badges.unshift({ label: t('badge.ceased'), class: 'bg-shade-secondary text-neutral-highlighted' })
       }
       const isRemoved = getIsRowRemoved(row)
-      const defaultClass = 'min-w-36 max-w-36 font-bold flex flex-col gap-2 break-words'
+      const defaultClass = 'min-w-36 font-bold flex flex-col gap-2 break-words'
       const nameProps = row.original.new.name
 
       const label = (nameProps.partyType === PartyType.PERSON
