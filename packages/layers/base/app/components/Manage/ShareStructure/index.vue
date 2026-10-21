@@ -123,13 +123,27 @@ const resolutionDateRequired = computed(() => !isCorrectVariant.value
   && props.collectResolutionDate
 )
 
+const displayedResolutionDates = computed(() => {
+  // In readonly, return all resolution dates
+  if (isReadOnlyVariant.value) {
+    return resolutionDates.value
+  }
+
+  // in edit mode, filter out the standalone resolution date
+  return resolutionDates.value.filter(rd => rd.new.id !== resolutionDate.value?.id)
+})
+
 // Show section if in corrections, if edits require it, if history exists,
 // OR if a draft date was pre-populated on load
-const showResolutionDateSection = computed(() =>
-  isCorrectVariant.value
-  || resolutionDateRequired.value
-  || hasExistingResolutionDates.value
-  || !!resolutionDate.value?.date?.trim()
+const showResolutionDateSection = computed(() => {
+  if (isReadOnlyVariant.value) {
+    return displayedResolutionDates.value.length > 0
+  }
+  return isCorrectVariant.value
+    || resolutionDateRequired.value
+    || hasExistingResolutionDates.value
+    || !!resolutionDate.value?.date?.trim()
+}
 )
 
 watch(showResolutionDateSection, (v) => {
@@ -153,16 +167,6 @@ const addResolutionDateValidationContext = computed(() => ({
   hasRightsOrRestrictions: resolutionDateRequired.value,
   existingResolutions: existingResolutionDates.value
 }))
-
-const displayedResolutionDates = computed(() => {
-  // In readonly, return all resolution dates
-  if (isReadOnlyVariant.value) {
-    return resolutionDates.value
-  }
-
-  // in edit mode, filter out the standalone resolution date
-  return resolutionDates.value.filter(rd => rd.new.id !== resolutionDate.value?.id)
-})
 
 /** handles opening a conditionally shown 'Add' share class or series form */
 function initAddSubject(addSeriesToRow?: TableBusinessRow<ShareClassSchema>) {
