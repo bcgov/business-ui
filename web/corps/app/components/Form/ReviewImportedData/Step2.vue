@@ -67,7 +67,7 @@ function onError(event: FormErrorEvent) {
       v-if="!store.isStaff && store.formState.certify"
       v-model="store.formState.certify"
       data-testid="certify-section"
-      :entity-type="getLegalTypeDescription(businessStore.business?.legalType)"
+      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
       order="3"
       name="certify"
     />
