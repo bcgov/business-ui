@@ -691,6 +691,7 @@ export default {
       limitedRestoration: 'Limited Restoration',
       undefined: 'Restoration Application'
     },
+    reviewImportedData: 'Review Migrated Information',
     specialResolution: 'Special Resolution',
     transition: 'Transition Application',
     undefined: 'Unknown'

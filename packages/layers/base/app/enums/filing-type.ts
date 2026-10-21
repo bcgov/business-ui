@@ -31,6 +31,7 @@ export enum FilingType {
   REGISTRARS_NOTATION = 'registrarsNotation',
   REGISTRARS_ORDER = 'registrarsOrder',
   RESTORATION = 'restoration',
+  REVIEW_IMPORTED_DATA = 'reviewImportedData',
   SPECIAL_RESOLUTION = 'specialResolution',
   TRANSITION = 'transition',
 
