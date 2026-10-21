@@ -128,6 +128,209 @@ describe('useManageShareStructure', () => {
     })
   })
 
+  describe('Resolution Date Sync', () => {
+    it('syncs a valid resolution date on init', async () => {
+      const standaloneDate = ref({ id: 'rd-1', date: '2026-01-15' }) as any
+      const { resolutionDates } = useManageShareStructure('sync-init', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new).toEqual({ id: 'rd-1', date: '2026-01-15' })
+    })
+
+    it('syncs a valid resolution date from undefined', async () => {
+      const standaloneDate = ref<any>(undefined)
+      const { resolutionDates } = useManageShareStructure('sync-init-undefined', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(0)
+
+      standaloneDate.value = { id: 'rd-1', date: '2026-05-10' }
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new).toEqual({ id: 'rd-1', date: '2026-05-10' })
+    })
+
+    it('syncs a valid resolution date from null', async () => {
+      const standaloneDate = ref<any>(null)
+      const { resolutionDates } = useManageShareStructure('sync-init-null', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(0)
+
+      standaloneDate.value = { id: 'rd-1', date: '2026-05-10' }
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new).toEqual({ id: 'rd-1', date: '2026-05-10' })
+    })
+
+    it('updates resolutionDates when standalone date changes', async () => {
+      const standaloneDate = ref({ id: 'rd-1', date: '2026-01-15' }) as any
+      const { resolutionDates } = useManageShareStructure('sync-update', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-01-15')
+
+      standaloneDate.value.date = '2026-02-20'
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-02-20')
+    })
+
+    it('removes date when cleared or whitespace only', async () => {
+      const standaloneDate = ref({ id: 'rd-1', date: '2026-01-15' }) as any
+      const { resolutionDates } = useManageShareStructure('sync-clear', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+
+      standaloneDate.value.date = '   '
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(0)
+    })
+
+    it('removes date when invalid', async () => {
+      const standaloneDate = ref({ id: 'rd-1', date: '2026-01-15' }) as any
+      const { resolutionDates } = useManageShareStructure('sync-invalid', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+
+      standaloneDate.value.date = 'invalid-date-string'
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(0)
+    })
+
+    it('deletes previous date when resolutionDate id changes', async () => {
+      const standaloneDate = ref<any>({ id: 'rd-1', date: '2026-01-15' })
+      const { resolutionDates } = useManageShareStructure('sync-swap', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.id).toBe('rd-1')
+
+      standaloneDate.value = { id: 'rd-2', date: '2026-05-10' }
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.id).toBe('rd-2')
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-05-10')
+    })
+
+    it('removes row when resolutionDate is set to undefined', async () => {
+      const standaloneDate = ref<any>({ id: 'rd-1', date: '2026-01-15' })
+      const { resolutionDates } = useManageShareStructure('sync-undefined', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+
+      standaloneDate.value = undefined
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(0)
+    })
+
+    it('removes row when resolutionDate is set to null', async () => {
+      const standaloneDate = ref<any>({ id: 'rd-1', date: '2026-01-15' })
+      const { resolutionDates } = useManageShareStructure('sync-null', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+
+      standaloneDate.value = null
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(0)
+    })
+
+    it('should not sync duplicate dates', async () => {
+      const standaloneDate = ref<any>(undefined)
+      const { resolutionDates } = useManageShareStructure('sync-duplicate', {
+        resolutionDate: standaloneDate
+      })
+
+      resolutionDates.value = [
+        { old: undefined, new: { id: 'rd-table-1', date: '2026-01-15' } }
+      ] as any
+
+      standaloneDate.value = { id: 'rd-standalone', date: '2026-01-15' }
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.id).toBe('rd-table-1')
+    })
+
+    it('preserves existing resolution dates when standalone date becomes invalid', async () => {
+      const standaloneDate = ref<any>({ id: 'rd-1', date: '2026-01-15' })
+      const { resolutionDates } = useManageShareStructure('sync-preserve-others', {
+        resolutionDate: standaloneDate
+      })
+
+      resolutionDates.value.push({
+        old: undefined,
+        new: { id: 'rd-existing', date: '2025-12-01' }
+      } as any)
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(2)
+
+      standaloneDate.value.date = ''
+      await nextTick()
+
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.id).toBe('rd-existing')
+    })
+
+    it('allows resolutionDate opt to be a getter', async () => {
+      const state = reactive({ standaloneDate: { id: 'rd-getter', date: '2026-04-10' } }) as any
+      const { resolutionDates } = useManageShareStructure('sync-getter', {
+        resolutionDate: () => state.standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(1)
+      expect(resolutionDates.value[0]!.new.id).toBe('rd-getter')
+
+      state.standaloneDate.date = '2026-08-20'
+      await nextTick()
+      expect(resolutionDates.value[0]!.new.date).toBe('2026-08-20')
+    })
+
+    it('ignores object input if id is missing or empty', async () => {
+      const standaloneDate = ref<any>({ id: '', date: '2026-01-15' })
+      const { resolutionDates } = useManageShareStructure('sync-no-id', {
+        resolutionDate: standaloneDate
+      })
+
+      await nextTick()
+      expect(resolutionDates.value).toHaveLength(0)
+    })
+  })
+
   describe('addSubject', () => {
     it('adds a new share class and normalizes priorities', () => {
       const { shareClasses, addSubject } = useManageShareStructure('add-class')
