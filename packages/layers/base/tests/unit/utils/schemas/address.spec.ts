@@ -47,6 +47,20 @@ describe('getAddressSchema', () => {
       expect(messages).toContain('Address must be in Canada')
     })
   })
+
+  describe("bcCanadaOnly: 'delivery' option", () => {
+    it('should enforce BC, Canada on the delivery address only', () => {
+      const schema = getAddressSchema({ bcCanadaOnly: 'delivery' })
+      const state = makeState()
+      state.mailingAddress = { ...state.mailingAddress, region: 'ON' }
+      expect(schema.safeParse(state).success).toBe(true)
+
+      state.deliveryAddress = { ...state.deliveryAddress, region: 'ON' }
+      const result = schema.safeParse(state)
+      expect(result.success).toBe(false)
+      expect(result.error!.issues.map(i => i.path.join('.'))).toContain('deliveryAddress.region')
+    })
+  })
 })
 
 describe('getAddressWithIdSchema', () => {

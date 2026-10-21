@@ -2,7 +2,8 @@ import type { FormAddress } from '#components'
 import { z } from 'zod'
 
 export interface AddressSchemaOptions {
-  bcCanadaOnly?: boolean
+  /** true = both addresses must be in BC, Canada; 'delivery' = the delivery address only (mailing may be anywhere) */
+  bcCanadaOnly?: boolean | 'delivery'
 }
 
 // intersected onto the base address schema when bcCanadaOnly is set
@@ -15,14 +16,22 @@ function getBcCanadaRefinement() {
   })
 }
 
+/** The delivery / mailing address schemas for the bcCanadaOnly option. */
+function getAddressPairSchemas(options?: AddressSchemaOptions) {
+  const base = getRequiredAddressSchema()
+  const bcCanada = options?.bcCanadaOnly ? base.and(getBcCanadaRefinement()) : base
+  return {
+    deliveryAddress: bcCanada,
+    mailingAddress: options?.bcCanadaOnly === true ? bcCanada : base
+  }
+}
+
 export function getAddressSchema(options?: AddressSchemaOptions) {
-  const reqSchema = options?.bcCanadaOnly
-    ? getRequiredAddressSchema().and(getBcCanadaRefinement())
-    : getRequiredAddressSchema()
+  const { deliveryAddress, mailingAddress } = getAddressPairSchemas(options)
 
   return z.object({
-    deliveryAddress: reqSchema,
-    mailingAddress: reqSchema,
+    deliveryAddress,
+    mailingAddress,
     sameAs: z.boolean()
   })
 }
@@ -32,18 +41,14 @@ export type AddressSchema = z.output<ReturnType<typeof getAddressSchema>>
 export type AddressFormRef = InstanceType<typeof FormAddress>
 
 export function getAddressWithIdSchema(options?: AddressSchemaOptions) {
-  const reqSchema = options?.bcCanadaOnly
-    ? getRequiredAddressSchema().and(getBcCanadaRefinement())
-    : getRequiredAddressSchema()
-  const reqWithIdSchema = reqSchema.and(
-    z.object({
-      id: z.string().optional()
-    })
-  )
+  const { deliveryAddress, mailingAddress } = getAddressPairSchemas(options)
+  const idSchema = z.object({
+    id: z.string().optional()
+  })
 
   return z.object({
-    deliveryAddress: reqWithIdSchema,
-    mailingAddress: reqWithIdSchema,
+    deliveryAddress: deliveryAddress.and(idSchema),
+    mailingAddress: mailingAddress.and(idSchema),
     sameAs: z.boolean()
   })
 }

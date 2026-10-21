@@ -4,7 +4,7 @@ import type { FormError, Form } from '@nuxt/ui'
 const props = defineProps<{
   nested?: boolean
   name?: string
-  bcCanadaOnly?: boolean
+  bcCanadaOnly?: boolean | 'delivery'
 }>()
 
 defineEmits<{
