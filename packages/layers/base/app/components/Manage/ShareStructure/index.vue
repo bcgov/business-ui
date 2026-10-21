@@ -53,7 +53,8 @@ const {
   isSeriesData,
   isDateData
 } = useManageShareStructure(props.stateKey, {
-  cleanupFn: cleanupForm
+  cleanupFn: cleanupForm,
+  resolutionDate
 })
 
 const {
@@ -122,31 +123,44 @@ const resolutionDateRequired = computed(() => !isCorrectVariant.value
   && props.collectResolutionDate
 )
 
-// in corrections, staff can add a resolution/court order date any time the filing type
-// collects them, even if they haven't changed shares in this session
-const showResolutionDateSection = computed(() =>
-  isCorrectVariant.value || resolutionDateRequired.value || hasExistingResolutionDates.value
+const displayedResolutionDates = computed(() => {
+  // In readonly, return all resolution dates
+  if (isReadOnlyVariant.value) {
+    return resolutionDates.value
+  }
+
+  // in edit mode, filter out the standalone resolution date
+  return resolutionDates.value.filter(rd => rd.new.id !== resolutionDate.value?.id)
+})
+
+// Show section if in corrections, if edits require it, if history exists,
+// OR if a draft date was pre-populated on load
+const showResolutionDateSection = computed(() => {
+  if (isReadOnlyVariant.value) {
+    return displayedResolutionDates.value.length > 0
+  }
+  return isCorrectVariant.value
+    || resolutionDateRequired.value
+    || hasExistingResolutionDates.value
+    || !!resolutionDate.value?.date?.trim()
+}
 )
 
 watch(showResolutionDateSection, (v) => {
   if (v) {
-    resolutionDate.value = dateSchema.parse(toRaw(resolutionDate.value) ?? {})
+    if (!resolutionDate.value?.id) {
+      resolutionDate.value = dateSchema.parse({})
+    }
   } else {
     resolutionDate.value = undefined
   }
 }, { immediate: true })
 
-// when editing dates, date must not match an existing date or the date from the standalone date field
-const changeResolutionDateValidationContext = computed(() => {
-  const dates = [...existingResolutionDates.value]
-  if (resolutionDate.value) {
-    dates.push(resolutionDate.value)
-  }
-  return {
-    isEditingExisting: true,
-    existingResolutions: dates
-  }
-})
+// when editing dates, date must not match an existing date
+const changeResolutionDateValidationContext = computed(() => ({
+  isEditingExisting: true,
+  existingResolutions: existingResolutionDates.value
+}))
 
 // when adding a date, must not match existing dates and may be required per the share structure changes
 const addResolutionDateValidationContext = computed(() => ({
@@ -414,6 +428,7 @@ function onActionPrevented() {
               t-key="text.resolutionDateHelp"
             />
             <FormShareResolutionDate
+              :key="resolutionDate.id"
               v-model="resolutionDate"
               variant="add"
               standalone
@@ -422,10 +437,10 @@ function onActionPrevented() {
             />
           </div>
         </ConnectFieldset>
-        <USeparator v-if="existingResolutionDates.length > 0" class="padding-x-default" />
+        <USeparator v-if="displayedResolutionDates.length > 0" class="padding-x-default" />
       </template>
       <ConnectFieldset
-        v-if="existingResolutionDates.length > 0"
+        v-if="displayedResolutionDates.length > 0"
         :label="isReadOnlyVariant
           ? $t('label.previousResolutionOrCourtOrderDatesRegardingShares')
           : $t('label.previousDates')
@@ -435,7 +450,7 @@ function onActionPrevented() {
         <div class="-my-4">
           <TableShareStructureResolutionDates
             v-model:expanded="expandedResolutionDate"
-            :data="resolutionDates"
+            :data="displayedResolutionDates"
             :label-overrides="tableLabels"
             :allowed-actions="tableAllowedActions"
             :prevent-actions="shouldPreventActions"
