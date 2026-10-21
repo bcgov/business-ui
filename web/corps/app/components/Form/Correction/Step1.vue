@@ -84,7 +84,7 @@ function onActionPrevented() {
 
     <ManageParties
       v-if="store.isCorrectable(CorrectionSection.DIRECTORS)"
-      v-model:active-party="store.formState.activeDirector"
+      v-model:active-subject="store.formState.activeParty"
       state-key="manage-directors"
       :loading="store.initializing"
       :empty-text="$t('label.noDirectors')"
@@ -93,7 +93,6 @@ function onActionPrevented() {
       :columns-to-display="partyColumns"
       data-testid="current-directors-section"
       :role-type="RoleTypeUi.DIRECTOR"
-      model-name="activeDirector"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="directorFormProps"
@@ -104,7 +103,7 @@ function onActionPrevented() {
     <!-- FUTURE: conditionally show receivers? -->
     <ManageParties
       v-if="store.isCorrectable(CorrectionSection.RECEIVERS)"
-      v-model:active-party="store.formState.activeReceiver"
+      v-model:active-subject="store.formState.activeParty"
       state-key="manage-receivers"
       :loading="store.initializing"
       :empty-text="$t('label.noReceivers')"
@@ -113,7 +112,6 @@ function onActionPrevented() {
       :columns-to-display="partyColumns"
       data-testid="receivers-section"
       :role-type="RoleTypeUi.RECEIVER"
-      model-name="activeReceiver"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
@@ -126,7 +124,7 @@ function onActionPrevented() {
     <!-- FUTURE: conditionally show liquidators? -->
     <ManageParties
       v-if="store.isCorrectable(CorrectionSection.LIQUIDATORS)"
-      v-model:active-party="store.formState.activeLiquidator"
+      v-model:active-subject="store.formState.activeParty"
       state-key="manage-liquidators"
       :loading="store.initializing"
       :empty-text="$t('label.noLiquidators')"
@@ -135,7 +133,6 @@ function onActionPrevented() {
       :columns-to-display="partyColumns"
       data-testid="liquidators-section"
       :role-type="RoleTypeUi.LIQUIDATOR"
-      model-name="activeLiquidator"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :party-form-props="{
@@ -147,7 +144,7 @@ function onActionPrevented() {
 
     <ManageParties
       v-if="store.isCorrectable(CorrectionSection.CUSTODIANS)"
-      v-model:active-party="store.formState.activeCustodian"
+      v-model:active-subject="store.formState.activeParty"
       state-key="manage-custodians"
       :loading="store.initializing"
       :empty-text="$t('label.noCustodians')"
@@ -156,7 +153,6 @@ function onActionPrevented() {
       :columns-to-display="custodianColumns"
       data-testid="custodians-section"
       :role-type="RoleTypeUi.CUSTODIAN"
-      model-name="activeCustodian"
       :prevent-actions="hasActiveSubForm"
       variant="correct"
       :allowed-actions="custodianAllowedActions"

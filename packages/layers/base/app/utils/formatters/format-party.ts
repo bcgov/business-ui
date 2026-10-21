@@ -74,7 +74,7 @@ export function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = f
 export function formatPartyUi(party: OrgPerson, roleType?: RoleType): PartySchema {
   const { mailingAddress, deliveryAddress, roles, officer } = party
   const filteredRoles = roles?.filter(role => roleType ? role.roleType === roleType : true) || []
-  const id = officer.id ? String(officer.id) : ''
+  const id = officer.id ? String(officer.id) : crypto.randomUUID()
   return {
     id,
     name: {
@@ -98,7 +98,8 @@ export function formatRelationshipUi(party: BusinessRelationship): PartySchema {
   const { mailingAddress, deliveryAddress } = party
   const partyType = party.entity.businessName ? PartyType.ORGANIZATION : PartyType.PERSON
   return {
-    id: party.entity.identifier ?? '',
+    // new parties have no identifier so generate a ui only id to identify the table row
+    id: party.entity.identifier || crypto.randomUUID(),
     name: {
       firstName: party.entity.givenName ?? '',
       middleName: party.entity.middleInitial ?? '',
@@ -121,7 +122,8 @@ export function formatRelationshipApi(party: PartySchema): BusinessRelationship 
   const deliveryAddress = formatAddressApi(party.address.deliveryAddress as ConnectAddress)
   return {
     entity: {
-      identifier: party.id,
+      // the ui generates ids for new parties which must not be sent to the api
+      identifier: party.actions.includes(ActionType.ADDED) ? '' : party.id,
       givenName: party.name.firstName ?? '',
       middleInitial: party.name.middleName ?? '',
       familyName: party.name.lastName ?? '',

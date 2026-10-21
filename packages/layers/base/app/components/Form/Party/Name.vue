@@ -21,9 +21,9 @@ const partyNameSchema = getPartyNameSchema()
 const model = defineModel<PartyNameSchema>({ required: true })
 
 // the confirmation is UI-only gating state - deliberately kept out of the name model so an
-// unchanged name never diffs as changed in applyTableEdits and nothing is ever serialized
+// unchanged name never diffs as changed in editSubject in useManageParties and nothing is ever serialized
 const nameChangeConfirmed = ref(false)
-// same comparison applyTableEdits uses to emit NAME_CHANGED, so the checkbox appears
+// same comparison editSubject in useManageParties uses to emit NAME_CHANGED, so the checkbox appears
 // exactly when the edit would be recorded as a legal name change
 const isConfirmationRequired = computed(() =>
   !!requireNameChangeConfirmation

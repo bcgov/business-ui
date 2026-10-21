@@ -39,7 +39,7 @@ export function getPartySchema(roleType?: RoleTypeUi) {
     }),
     roles: getPartyRoleSchema(roleType),
     email: z.string().default(''),
-    id: z.string().optional().default(() => ''),
+    id: z.string().default(() => crypto.randomUUID()),
     isEditing: z.boolean().default(false)
   })
 }

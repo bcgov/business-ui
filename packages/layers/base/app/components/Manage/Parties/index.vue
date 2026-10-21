@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ManagePartiesProps } from '#business/app/interfaces'
+import type { ExpandedState } from '@tanstack/vue-table'
+import { cloneDeep } from 'es-toolkit'
 
 const {
   roleType,
@@ -12,38 +14,64 @@ const {
   modelName = 'activeParty',
   preventActions = false,
   actionPreventedSignal = 0
-} = defineProps<ManagePartiesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+} = defineProps<ManagePartiesProps>()
 
 const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-let editSubject = ''
-let currentEditingRow: PartySchema | null = null
+const activeSubject = defineModel<ActivePartySchema | undefined>('active-subject')
 
-const activeParty = defineModel<ActivePartySchema | undefined>('active-party')
-const shouldPreventActions = computed(() => {
-  return !!activeParty.value || preventActions
+const expandedState = ref<ExpandedState | undefined>(undefined)
+const addingSubject = ref(false)
+
+let editSubjectLabel = ''
+
+const tableTarget = 'parties-table'
+const formTarget = 'party-details-form'
+
+const { t } = useI18n()
+const { alerts, attachAlerts } = useFilingAlerts(stateKey)
+const { messageId, targetId } = attachAlerts(tableTarget, activeSubject)
+
+const {
+  tableState,
+  addSubject,
+  removeSubject,
+  undoSubject,
+  editSubject
+} = useManageParties(stateKey, {
+  cleanupFn: cleanupForm
 })
+
+const {
+  isCorrectVariant,
+  shouldPreventActions,
+  tableAllowedActions,
+  tableLabels,
+  setActiveSubjectAlert,
+  clearAllAlerts
+} = useManageCommon({
+  stateKey,
+  variant,
+  allowedActions,
+  labelOverrides,
+  preventActions: () => preventActions,
+  actionPreventedSignal: () => actionPreventedSignal,
+  activeSubjects: {
+    subject: activeSubject,
+    alertTarget: formTarget
+  }
+})
+
+const activeSubjectSchema = getActivePartySchema(roleType)
 
 type PartyTab = 'active' | 'ceased'
 
-const isCorrectVariant = variant === 'correct' || variant === 'correct-readonly'
-
 // ceased parties only apply to corrections - show them in their own tab when correcting a role type that can be ceased
-const showCeasedTab = isCorrectVariant && hasCeasedTab(roleType)
+const showCeasedTab = isCorrectVariant.value && hasCeasedTab(roleType)
 const selectedTab = ref<PartyTab>('active')
 const isCeasedTab = computed(() => selectedTab.value === 'ceased')
-
-const {
-  addingParty,
-  expandedState,
-  tableState,
-  addNewParty,
-  removeParty: removeTableParty,
-  undoParty: undoTableParty,
-  applyTableEdits
-} = useManageParties(stateKey)
 
 // classify by the original state so a party doesn't jump tabs while it's being changed
 function isRowCeased(party: TableBusinessState<PartySchema>) {
@@ -55,61 +83,22 @@ const displayedTableState = computed(() => showCeasedTab
   : tableState.value
 )
 
-// the table only receives the parties for the selected tab, so map the row back to its index in the full table state
-function toTableStateRow(row: TableBusinessRow<PartySchema>): TableBusinessRow<PartySchema> {
-  if (!showCeasedTab) {
-    return row
-  }
-  return { ...row, index: tableState.value.indexOf(row.original) } as TableBusinessRow<PartySchema>
-}
-
-const { t } = useI18n()
-const { setAlert, clearAlert, alerts, attachAlerts } = useFilingAlerts(stateKey)
-const tableTarget = 'parties-table'
-const { messageId, targetId } = attachAlerts(tableTarget, activeParty)
-const { setAlertText } = useConnectButtonControl()
-const activePartySchema = getActivePartySchema(roleType)
-
-watch(() => actionPreventedSignal, (value) => {
-  if (value) {
-    setActiveFormAlert()
-  }
-})
-
-const tableLabels = computed(() => {
-  if (labelOverrides) {
-    return labelOverrides
-  }
-  if (isCorrectVariant) {
-    return getCorrectionLabelOverrides()
-  }
-  return undefined
-})
-
 const partyAllowedActions = computed(() => {
   // a ceased party can only be corrected - it can't be removed or have its roles changed (which would un-cease it).
   // ADD is dropped too since the party form treats it as "allow any edit"
   if (isCeasedTab.value) {
     const notAllowedWhenCeased = [ManageAllowedAction.ADD, ManageAllowedAction.REMOVE, ManageAllowedAction.ROLE_CHANGE]
-    return (allowedActions ?? Object.values(ManageAllowedAction)).filter(a => !notAllowedWhenCeased.includes(a))
+    return (tableAllowedActions.value ?? Object.values(ManageAllowedAction))
+      .filter(a => !notAllowedWhenCeased.includes(a))
   }
-  if (allowedActions) {
-    return allowedActions
-  }
-  if (variant === 'readonly' || variant === 'correct-readonly') {
-    return []
-  }
-  return undefined
+  return tableAllowedActions.value
 })
 
-const showAddButton = computed(() => {
-  if (variant === 'readonly' || variant === 'correct-readonly') {
-    return false
-  }
-  return !allowedActions || allowedActions.includes(ManageAllowedAction.ADD)
+const allowAddSubject = computed(() => {
+  return !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
 })
 
-const headerActions = computed(() => showAddButton.value
+const headerActions = computed(() => allowAddSubject.value
   ? [
     {
       'label': t('label.addSubject', { subject }),
@@ -117,7 +106,7 @@ const headerActions = computed(() => showAddButton.value
       'icon': 'i-mdi-plus',
       'data-alert-focus-target': targetId,
       'aria-describedby': messageId,
-      'onClick': initAddParty
+      'onClick': initAddSubject
     }
   ]
   : undefined
@@ -133,8 +122,7 @@ function selectTab(tab: PartyTab) {
     return
   }
   if (shouldPreventActions.value) {
-    setActiveFormAlert()
-    emit('action-prevented')
+    onActionPrevented()
     return
   }
   selectedTab.value = tab
@@ -148,84 +136,47 @@ function onTabKeydown(event: KeyboardEvent) {
   }
 }
 
-function setActiveFormAlert() {
-  if (activeParty.value !== undefined) {
-    setAlert('party-details-form', t('text.finishTaskBeforeOtherChanges'))
-  }
-}
-
-function initAddParty() {
+function initAddSubject() {
   if (shouldPreventActions.value) {
-    setActiveFormAlert()
-    emit('action-prevented')
+    onActionPrevented()
     return
   }
-  activeParty.value = activePartySchema.parse({})
-  addingParty.value = true
+  activeSubject.value = activeSubjectSchema.parse({})
+  addingSubject.value = true
   selectedTab.value = 'active'
 }
 
-function cleanupPartyForm() {
-  if (currentEditingRow) {
-    currentEditingRow.isEditing = false
-  }
-  addingParty.value = false
+function cleanupForm() {
   expandedState.value = undefined
-  activeParty.value = undefined
+  addingSubject.value = false
+  activeSubject.value = undefined
 }
 
-function addParty(party: ActivePartySchema) {
-  addNewParty(party)
-  cleanupPartyForm()
+function getPartyLabel(party: PartySchema): string {
+  const nameProps = party.name
+  if (!nameProps) {
+    return ''
+  }
+  const name = nameProps.partyType === PartyType.PERSON
+    ? [nameProps.firstName, nameProps.middleName, nameProps.lastName].filter(Boolean).join(' ')
+    : nameProps.businessName || ''
+
+  return name.toUpperCase()
 }
 
-function initEditParty(row: TableBusinessRow<PartySchema>) {
+function initEditSubject(row: TableBusinessRow<PartySchema>) {
   // FUTURE: handle the incomplete address parsing in connect layer
-  const parsedParty = activePartySchema.safeParse({ ...row.original.new })
-  activeParty.value = parsedParty.success
-    ? parsedParty.data
-    : JSON.parse(JSON.stringify({ ...row.original.new }))
-
-  currentEditingRow = row.original.new
-  currentEditingRow.isEditing = true
-
-  editSubject = ''
-  const nameProps = row.original.new.name
-  if (nameProps) {
-    const name = nameProps.partyType === PartyType.PERSON
-      ? [nameProps.firstName, nameProps.middleName, nameProps.lastName].filter(Boolean).join(' ')
-      : nameProps.businessName || ''
-
-    editSubject = name.toUpperCase()
-  }
-  expandedState.value = { [row.index]: true }
+  const parsed = activeSubjectSchema.safeParse(cloneDeep(row.original.new))
+  activeSubject.value = parsed.success
+    ? parsed.data
+    : cloneDeep(row.original.new)
+  editSubjectLabel = getPartyLabel(row.original.new)
+  expandedState.value = { [row.id]: true }
 }
 
-function applyEdits(party: ActivePartySchema, row: TableBusinessRow<PartySchema>) {
-  applyTableEdits(party, toTableStateRow(row))
-  cleanupPartyForm()
-}
-
-function removeParty(row: TableBusinessRow<PartySchema>) {
-  removeTableParty(toTableStateRow(row))
-}
-
-function undoParty(row: TableBusinessRow<PartySchema>) {
-  undoTableParty(toTableStateRow(row))
-}
-
-function clearAllAlerts() {
-  clearAlert('party-details-form') // clear alert in sub form
-  setAlertText(undefined) // clear alert in button control
-}
-
-function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant {
-  // old is always undefined for newly added parties
-  const isAdded = row.original.old === undefined
-  if (isAdded) {
-    return 'edit'
-  }
-  return isCorrectVariant ? 'correct' : 'change'
+function onActionPrevented() {
+  setActiveSubjectAlert()
+  emit('action-prevented')
 }
 </script>
 
@@ -306,16 +257,16 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
       </template>
       <template #default>
         <FormPartyDetails
-          v-if="addingParty && activeParty"
-          v-model="activeParty"
+          v-if="addingSubject && activeSubject"
+          v-model="activeSubject"
           v-bind="partyFormProps"
           :subject="subject!"
           :name="modelName"
           variant="add"
           :state-key="stateKey"
           class="p-6"
-          @done="() => addParty(activeParty)"
-          @cancel="cleanupPartyForm"
+          @done="() => addSubject(activeSubject)"
+          @cancel="cleanupForm"
         />
         <USeparator />
         <TableParty
@@ -335,27 +286,27 @@ function getExpandedFormVariant(row: TableBusinessRow<PartySchema>): FormVariant
             targetId,
             message: alerts[tableTarget]
           }"
-          @init-edit="initEditParty"
-          @remove="removeParty"
-          @undo="undoParty"
-          @action-prevented="() => { setActiveFormAlert(); emit('action-prevented') }"
+          @init-edit="initEditSubject"
+          @remove="removeSubject"
+          @undo="undoSubject"
+          @action-prevented="onActionPrevented"
         >
           <template #expanded="{ row }">
             <FormPartyDetails
-              v-if="activeParty"
-              v-model="activeParty"
+              v-if="activeSubject"
+              v-model="activeSubject"
               v-bind="partyFormProps"
               :allowed-actions="partyAllowedActions"
               :original-name="row.original.old?.name"
               :hide-remove="partyFormProps?.hideRemove || isCeasedTab"
               :name="modelName"
-              :variant="getExpandedFormVariant(row)"
-              :subject="editSubject"
+              :variant="getExpandedFormVariant(variant, row)"
+              :subject="editSubjectLabel"
               :state-key="stateKey"
               class="px-4 sm:px-6"
-              @cancel="cleanupPartyForm"
-              @done="() => applyEdits(activeParty, row)"
-              @remove="cleanupPartyForm(); removeParty(row)"
+              @cancel="cleanupForm"
+              @done="() => editSubject(activeSubject, row)"
+              @remove="removeSubject(row)"
             />
           </template>
         </TableParty>

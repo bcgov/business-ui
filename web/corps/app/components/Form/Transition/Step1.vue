@@ -64,7 +64,7 @@ defineExpose({
 
     <div class="space-y-4" data-testid="current-directors-section">
       <ManageParties
-        v-model:active-party="store.formState.activeDirector"
+        v-model:active-subject="store.formState.activeDirector"
         :loading="store.initializing"
         :empty-text="$t('label.noDirectors')"
         :section-title="`2. ${$t('label.currentDirectors')}`"

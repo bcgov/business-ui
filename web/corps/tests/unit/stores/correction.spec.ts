@@ -264,10 +264,7 @@ describe('Correction Schema', () => {
       const result = schema.safeParse({})
 
       expect(result.success).toBe(true)
-      expect(result.data!.activeDirector).toBeUndefined()
-      expect(result.data!.activeReceiver).toBeUndefined()
-      expect(result.data!.activeLiquidator).toBeUndefined()
-      expect(result.data!.activeCustodian).toBeUndefined()
+      expect(result.data!.activeParty).toBeUndefined()
       expect(result.data!.activeOffice).toBeUndefined()
       expect(result.data!.activeShareStructure).toBeUndefined()
     })

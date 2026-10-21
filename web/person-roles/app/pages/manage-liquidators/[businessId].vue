@@ -244,7 +244,7 @@ onMounted(() => {
 
       <div class="space-y-4" data-testid="liquidator-info-section">
         <ManageParties
-          v-model:active-party="store.formState.activeParty"
+          v-model:active-subject="store.formState.activeParty"
           :loading="store.initializing"
           :empty-text="$t('text.noLiquidators')"
           :section-title="`1. ${$t('label.liquidatorInfo')}`"

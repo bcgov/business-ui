@@ -4,14 +4,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ManageParties } from '#components'
 
-const { mockRemoveParty, mockUndoParty, mockApplyTableEdits } = vi.hoisted(() => ({
-  mockRemoveParty: vi.fn(),
-  mockUndoParty: vi.fn(),
-  mockApplyTableEdits: vi.fn()
+const { mockRemoveSubject, mockUndoSubject, mockEditSubject } = vi.hoisted(() => ({
+  mockRemoveSubject: vi.fn(),
+  mockUndoSubject: vi.fn(),
+  mockEditSubject: vi.fn()
 }))
 
 function party(firstName: string, roleType: RoleTypeUi, cessationDate: string | null = null) {
   const state = {
+    id: firstName,
     name: { partyType: PartyType.PERSON, firstName, middleName: '', lastName: 'DOE' },
     roles: [{ roleType, appointmentDate: '2020-12-22', cessationDate }],
     actions: []
@@ -22,13 +23,11 @@ function party(firstName: string, roleType: RoleTypeUi, cessationDate: string | 
 const tableState = ref<any[]>([])
 
 mockNuxtImport('useManageParties', () => () => ({
-  addingParty: ref(false),
-  expandedState: ref<undefined>(undefined),
   tableState,
-  addNewParty: vi.fn(),
-  removeParty: mockRemoveParty,
-  undoParty: mockUndoParty,
-  applyTableEdits: mockApplyTableEdits
+  addSubject: vi.fn(),
+  removeSubject: mockRemoveSubject,
+  undoSubject: mockUndoSubject,
+  editSubject: mockEditSubject
 }))
 
 mockNuxtImport('useFilingAlerts', () => () => ({
@@ -118,21 +117,23 @@ describe('ManageParties - ceased tab', () => {
     expect(wrapper.findComponent(TablePartyStub).props('allowedActions')).toEqual([ManageAllowedAction.NAME_CHANGE])
   })
 
-  it('maps the displayed row back to its index in the full table state', async () => {
+  it('passes the displayed row straight to the composable (rows are matched by id)', async () => {
     const wrapper = await mountManageParties()
     const table = wrapper.findComponent(TablePartyStub)
 
     // ACTIVE2 is index 1 in the active tab but index 2 in the table state
-    table.vm.$emit('remove', { index: 1, original: tableState.value[2] })
-    expect(mockRemoveParty).toHaveBeenCalledWith(expect.objectContaining({ index: 2 }))
+    const activeRow = { index: 1, id: 'ACTIVE2', original: tableState.value[2] }
+    table.vm.$emit('remove', activeRow)
+    expect(mockRemoveSubject).toHaveBeenCalledWith(activeRow)
 
     await wrapper.find('[data-testid="parties-tab-ceased"]').trigger('click')
-    wrapper.findComponent(TablePartyStub).vm.$emit('undo', { index: 0, original: tableState.value[1] })
-    expect(mockUndoParty).toHaveBeenCalledWith(expect.objectContaining({ index: 1 }))
+    const ceasedRow = { index: 0, id: 'CEASED', original: tableState.value[1] }
+    wrapper.findComponent(TablePartyStub).vm.$emit('undo', ceasedRow)
+    expect(mockUndoSubject).toHaveBeenCalledWith(ceasedRow)
   })
 
   it('does not switch tabs while a party form is open', async () => {
-    const wrapper = await mountManageParties({ activeParty: { name: {}, roles: [] } })
+    const wrapper = await mountManageParties({ activeSubject: { name: {}, roles: [] } })
 
     await wrapper.find('[data-testid="parties-tab-ceased"]').trigger('click')
 
