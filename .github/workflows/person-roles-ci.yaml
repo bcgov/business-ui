@@ -3,6 +3,7 @@ name: Business People UI CI
 on:
   pull_request:
     paths:
+      - ".github/workflows/person-roles-ci.yaml"
       - "web/person-roles/**"
       - "packages/**"
   workflow_dispatch:

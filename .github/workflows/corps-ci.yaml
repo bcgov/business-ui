@@ -3,6 +3,7 @@ name: Corps UI CI
 on:
   pull_request:
     paths:
+      - ".github/workflows/corps-ci.yaml"
       - "web/corps/**"
       - "packages/**"
   workflow_dispatch:
