@@ -581,7 +581,13 @@ export default {
   modal: {
     addBusinessSuccess: {
       title: 'Succès! {name} a été ajoutée à votre compte.',
-      description: 'Vous pouvez maintenant gérer votre entreprise à partir de votre liste en utilisant votre compte BC Registries.',
+      description: [
+        'Gérez cette entreprise dès maintenant ou retrouvez-la dans votre liste d’entreprises à tout moment.',
+        'Ajoutez cette page à vos favoris pour accéder à votre entreprise à l’avenir.'
+      ],
+      important: 'Important :',
+      migrationWarning: 'Veuillez vérifier les renseignements migrés de {name} et corriger toute erreur survenue pendant le transfert.',
+      reviewNow: 'Vérifier maintenant',
       manageBusiness: 'Gérer L\'Entreprise'
     },
     manageBusiness: {

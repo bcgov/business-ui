@@ -604,6 +604,9 @@ export default {
         'Manage this business right away, or find it in your business list any time.',
         'Bookmark this page to access your business in the future.'
       ],
+      important: 'Important:',
+      migrationWarning: 'Please review your migrated {name} information and change any errors that have occurred during the move.',
+      reviewNow: 'Review now',
       manageBusiness: 'Manage Business'
     },
     removeBusiness: {

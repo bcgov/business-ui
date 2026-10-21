@@ -15,6 +15,7 @@ export enum LDFlags {
   EnableCreditCardPremium = 'enable-credit-card-premium',
   EnableDetailsFilter = 'enable-transactions-detail-filter',
   EnableEFTPaymentMethod = 'enable-eft-payment-method',
+  EnableNewFeature = 'enable-new-feature',
   IaSupportedEntities = 'ia-supported-entities',
   IaSupportedEntitiesBrd = 'ia-supported-entities-brd',
   ProductBCAStatus = 'product-BCA-status',
