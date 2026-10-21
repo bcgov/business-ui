@@ -27,7 +27,8 @@ test.describe('ManageParties', () => {
     expect(columns[5]!).toContainText('Change')
   })
 
-  test('Should not allow a preferred name', async ({ page }) => {
+  // allowPreferredName is not set in the example, so this verifies the default (false)
+  test('Should not allow a preferred name by default', async ({ page }) => {
     await page.goto('./en-CA/examples/components/Manage/Parties')
     await page.waitForLoadState('networkidle')
 

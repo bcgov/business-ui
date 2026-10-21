@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ManagePartiesProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
-import { cloneDeep } from 'es-toolkit'
 
 const {
   roleType,
@@ -94,12 +93,13 @@ const partyAllowedActions = computed(() => {
   return tableAllowedActions.value
 })
 
-const allowAddSubject = computed(() => {
-  return !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
-})
+const headerActions = computed(() => {
+  const allowAddSubject = !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
+  if (!allowAddSubject) {
+    return undefined
+  }
 
-const headerActions = computed(() => allowAddSubject.value
-  ? [
+  return [
     {
       'label': t('label.addSubject', { subject }),
       'variant': 'outline' as const,
@@ -109,8 +109,7 @@ const headerActions = computed(() => allowAddSubject.value
       'onClick': initAddSubject
     }
   ]
-  : undefined
-)
+})
 
 const tabs = computed<{ value: PartyTab, label?: string, icon?: string }[]>(() => [
   { value: 'active', label: tableTitle, icon: 'i-mdi-account-supervisor-circle-outline' },
@@ -165,11 +164,7 @@ function getPartyLabel(party: PartySchema): string {
 }
 
 function initEditSubject(row: TableBusinessRow<PartySchema>) {
-  // FUTURE: handle the incomplete address parsing in connect layer
-  const parsed = activeSubjectSchema.safeParse(cloneDeep(row.original.new))
-  activeSubject.value = parsed.success
-    ? parsed.data
-    : cloneDeep(row.original.new)
+  activeSubject.value = cloneDeep(row.original.new)
   editSubjectLabel = getPartyLabel(row.original.new)
   expandedState.value = { [row.id]: true }
 }
