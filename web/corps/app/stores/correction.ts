@@ -409,34 +409,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     }
   }
 
-  function syncResolutionTableState(isReview: boolean) {
-    const addedDate = formState.resolutionDate
-
-    if (!isReview) {
-      if (addedDate?.id) {
-        resolutionDates.value = resolutionDates.value.filter(
-          rd => rd.new.id !== addedDate.id
-        )
-      }
-      return
-    }
-
-    // Only treat the add-resolution-date placeholder as a real addition once a date has
-    // actually been entered — the form marks it ActionType.ADDED as soon as it mounts
-    // (see Form/Share/ResolutionDate), so an untouched placeholder must not be synced in.
-    if (!addedDate?.date) {
-      return
-    }
-
-    const existingIndex = resolutionDates.value.findIndex(rd => rd.new.id === addedDate.id)
-
-    if (existingIndex > -1) {
-      resolutionDates.value[existingIndex] = { old: undefined, new: cloneDeep(addedDate) }
-    } else {
-      resolutionDates.value.unshift({ old: undefined, new: cloneDeep(addedDate) })
-    }
-  }
-
   function $reset() {
     correctedFilingId.value = undefined
     correctedFilingType.value = FilingType.UNKNOWN
@@ -515,7 +487,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     isStaff,
     init,
     submit,
-    syncResolutionTableState,
     $reset
   }
 })

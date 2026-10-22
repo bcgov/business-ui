@@ -20,10 +20,46 @@ function isDateData(
   return 'date' in data
 }
 
+/**
+ * Keeps the resolution dates array in sync with the standalone date input.
+ *
+ * Removes any previous or empty instances of the standalone date from the list.
+ * If the standalone date is valid, it adds the date to the resolution dates array.
+ *
+ * - The ManageShareStructure component computes the displayed list of dates by the `variant` prop.
+ * - ReadOnly variant -> displays full list. Other variants -> displays list excluding the standalone date.
+ * - This simplifies the consuming app usage so no manual sync is needed.
+*/
+function syncResolutionDate(
+  resolutionDates: Ref<TableBusinessState<ResolutionDateSchema>[]>,
+  item: ResolutionDateSchema | null | undefined,
+  previousId?: string
+) {
+  const excludeIds = new Set([previousId, item?.id].filter(Boolean))
+  const remaining = resolutionDates.value.filter(rd => !excludeIds.has(rd.new.id))
+
+  if (!item?.id) {
+    resolutionDates.value = remaining
+    return
+  }
+
+  const trimmedDate = item.date?.trim() ?? ''
+  const isValid = Boolean(trimmedDate && getResolutionDateSchema({
+    existingResolutions: remaining.map(rd => rd.new)
+  }).validate(item))
+
+  if (isValid) {
+    resolutionDates.value = [{ old: undefined, new: cloneDeep(item) }, ...remaining]
+  } else {
+    resolutionDates.value = remaining
+  }
+}
+
 export const useManageShareStructure = (
   stateKey: string = 'manage-share-structure',
   opts?: {
     cleanupFn?: () => void
+    resolutionDate?: MaybeRefOrGetter<ResolutionDateSchema | null | undefined>
   }
 ) => {
   const { baseModal } = useModal()
@@ -64,8 +100,15 @@ export const useManageShareStructure = (
   /** returns an array of raw resolutionDate object (not new/old table state) */
   const existingResolutionDates = computed(() => resolutionDates.value.map(rd => rd.new))
 
-  /** returns an array of raw resolutionDate object (not wrapped in new/old table state) */
   const hasExistingResolutionDates = computed(() => existingResolutionDates.value.length > 0)
+
+  if (opts?.resolutionDate) {
+    watch(
+      () => toValue(opts.resolutionDate),
+      (v, oldV) => syncResolutionDate(resolutionDates, v, oldV?.id),
+      { immediate: true, deep: true }
+    )
+  }
 
   function resolvePriorities<T extends { id: string, priority: number, actions?: ActionType[] }>(items: T[]) {
     const sorted = items.toSorted((a, b) => a.priority - b.priority)

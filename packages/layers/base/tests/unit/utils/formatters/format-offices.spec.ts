@@ -210,7 +210,7 @@ describe('formatOfficesApi', () => {
       expect(result).toBeUndefined()
     })
 
-    it('should only include offices that have active actions', () => {
+    it('should include all offices even if no actions', () => {
       const offices = [
         createMockOfficeState(OfficeType.REGISTERED, [ActionType.CHANGED]),
         createMockOfficeState(OfficeType.RECORDS, [])
@@ -219,9 +219,9 @@ describe('formatOfficesApi', () => {
       const result = formatOfficesApi(offices)
 
       expect(result).toBeDefined()
-      expect(Object.keys(result!)).toEqual([OfficeType.REGISTERED])
+      expect(Object.keys(result!)).toEqual([OfficeType.REGISTERED, OfficeType.RECORDS])
       expect(result!.registeredOffice).toBeDefined()
-      expect(result!.recordsOffice).toBeUndefined()
+      expect(result!.recordsOffice).toBeDefined()
     })
 
     it('should remove id from newly added offices', () => {

@@ -146,10 +146,6 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   ],
   buttonLayout: 'stackedDefault'
 })
-
-watch(currentStep, (step) => {
-  store.syncResolutionTableState(step === 2)
-}, { immediate: true })
 </script>
 
 <template>
