@@ -73,7 +73,9 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
 
   async function submit(isSubmission: boolean) {
     // only the sections the user changed are sent - the api leaves the rest untouched
-    const offices = formatOfficesApi(tableOffices.value)
+    // NB: formatOfficesApi sends every office once any changed; an untouched office may still be the
+    // broken (or seeded empty) one the api would reject, so filter to the changed rows here
+    const offices = formatOfficesApi(tableOffices.value.filter(office => office.new.actions.length > 0))
     const relationships = tableDirectors.value
       .filter(director => director.new.actions.length > 0)
       .map(director => formatRelationshipApi(director.new))
