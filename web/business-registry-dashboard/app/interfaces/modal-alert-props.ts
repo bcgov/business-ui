@@ -1,10 +1,16 @@
-import type { AlertColor, AlertVariant } from '#ui/types'
+import type { AlertColor, AlertVariant, Button } from '#ui/types'
 // FUTURE: extend from AlertProps type from nuxt/ui once available
 export interface ModalAlertProps {
   color: AlertColor,
   icon: string,
   translationPath: string,
   variant: AlertVariant,
+  title?: string,
   class?: string,
-  extraTextCtx?: object
+  extraTextCtx?: object,
+  closeButton?: Partial<Button>,
+  ui?: {
+    title?: string,
+    description?: string
+  }
 }
