@@ -2,6 +2,7 @@
 "@sbc-connect/nuxt-business-base": patch
 ---
 
-Show formerly name in director table for NAME_CHANGED directors
-- Display "Formerly [OLD NAME]" in italic below the new name in the Name column when a director has the NAME_CHANGED action.
-- Uses `row.original.old?.name` to derive the former name from the pre-change state.
+Add showFormerName opt-in to getPartyNameColumn
+- Add `showFormerName` parameter (default `false`) to `getPartyNameColumn` to gate the "Formerly [OLD NAME]" display.
+- When `true`, shows the previous name in italic below the new name for NAME_CHANGED parties.
+- No existing table is affected by default; callers that need the feature (e.g. the COD director table) must pass `showFormerName: true`.

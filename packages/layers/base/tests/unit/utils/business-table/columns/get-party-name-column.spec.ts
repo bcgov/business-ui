@@ -86,7 +86,42 @@ describe('getPartyNameColumn', () => {
     expect(preferredDiv.children[1].props.class).toBe('text-sm font-normal')
   })
 
-  it('renders formerly name for a NAME_CHANGED director', () => {
+  it('renders formerly name for a NAME_CHANGED director when showFormerName is true', () => {
+    const row = {
+      original: {
+        new: {
+          name: {
+            partyType: PartyType.PERSON,
+            firstName: 'Jane',
+            middleName: '',
+            lastName: 'Smith'
+          },
+          actions: [ActionType.NAME_CHANGED]
+        },
+        old: {
+          name: {
+            partyType: PartyType.PERSON,
+            firstName: 'Jane',
+            middleName: '',
+            lastName: 'Doe'
+          }
+        }
+      }
+    }
+    const column = getPartyNameColumn('first', undefined, true) as any
+    mockGetIsRowRemoved.mockReturnValue(false)
+    mockGetTableBadges.mockReturnValue([])
+
+    const cell = column.cell({ row })
+
+    expect(cell.props.label).toBe('JANE SMITH')
+    const slot = cell.children['additional-label']()
+    expect(slot.length).toBe(1)
+    expect(slot[0].children[0].children).toBe('Formerly JANE DOE')
+    expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic')
+  })
+
+  it('does not render formerly name when showFormerName is false (default)', () => {
     const row = {
       original: {
         new: {
@@ -113,12 +148,8 @@ describe('getPartyNameColumn', () => {
     mockGetTableBadges.mockReturnValue([])
 
     const cell = column.cell({ row })
-
-    expect(cell.props.label).toBe('JANE SMITH')
     const slot = cell.children['additional-label']()
-    expect(slot.length).toBe(1)
-    expect(slot[0].children[0].children).toBe('Formerly JANE DOE')
-    expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic')
+    expect(slot.length).toBe(0)
   })
 
   it('renders both formerly name and preferred name when both apply', () => {
@@ -144,7 +175,7 @@ describe('getPartyNameColumn', () => {
         }
       }
     }
-    const column = getPartyNameColumn() as any
+    const column = getPartyNameColumn('first', undefined, true) as any
     mockGetIsRowRemoved.mockReturnValue(false)
     mockGetTableBadges.mockReturnValue([])
 
