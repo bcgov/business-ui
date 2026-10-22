@@ -3,11 +3,12 @@ import { isEqual } from 'es-toolkit'
 import type { FormError, Form, RadioGroupItem, AcceptableValue } from '@nuxt/ui'
 import { PartyType } from '#imports'
 
-const { requireNameChangeConfirmation, originalName } = defineProps<{
+const { requireNameChangeConfirmation, requireFirstName, originalName } = defineProps<{
   name?: string
   allowBusinessName?: boolean
   allowPreferredName?: boolean
   requireNameChangeConfirmation?: boolean
+  requireFirstName?: boolean
   originalName?: PartyNameSchema
 }>()
 
@@ -16,7 +17,7 @@ const { t } = useI18n()
 // eslint-disable-next-line max-len
 const REGISTER_CORRECTION_FORM_URL = 'https://www2.gov.bc.ca/assets/gov/employment-business-and-economic-development/business-management/permits-licences-and-registration/registries-forms/register_correction_form_47.pdf'
 
-const partyNameSchema = getPartyNameSchema()
+const partyNameSchema = getPartyNameSchema(requireFirstName)
 
 const model = defineModel<PartyNameSchema>({ required: true })
 
@@ -134,6 +135,7 @@ defineExpose({
               data-testid="form-group-first-name"
               name="firstName"
               input-id="first-name-input"
+              :required="requireFirstName"
               :label="t('label.firstName')"
             />
 

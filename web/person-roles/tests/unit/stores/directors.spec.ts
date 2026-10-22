@@ -8,7 +8,6 @@ import {
   getDraftFilingMock,
   mockInitFees,
   mockInitFiling,
-  mockLogBlockedSubmission,
   mockOpenFilingNotAvailableModal,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
@@ -26,7 +25,6 @@ mockNuxtImport('useConnectAccountStore', async () => (await import('#test-mocks/
 mockNuxtImport('useFiling', async original => (await import('#test-mocks/filing-store')).makeFilingMock(original))
 mockNuxtImport('useBusinessStore', async original =>
   (await import('#test-mocks/filing-store')).makeBusinessStoreMock(original))
-mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const mockGetFeatureFlag = vi.fn().mockResolvedValue('BC BEN CC ULC C CBEN CCC CUL CP')
 mockNuxtImport('useConnectLaunchDarkly', () => () => ({
@@ -77,7 +75,7 @@ describeCommonFilingStoreBehaviour({
   payment: 'both',
   certify: 'authorization',
   expectsFeeResync: true,
-  submitBlocked: true
+  submitBlocked: false
 })
 
 describeCommonFilingStoreBehaviour({
@@ -93,7 +91,7 @@ describeCommonFilingStoreBehaviour({
   payment: 'both',
   certify: 'certified-by',
   expectsFeeResync: true,
-  submitBlocked: true
+  submitBlocked: false
 })
 
 describe('useDirectorsStore', () => {
@@ -183,6 +181,16 @@ describe('useDirectorsStore', () => {
       expect(store.initializing).toBe(false)
     })
 
+    it('should restore the effective date from a draft header', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: buildDraft({ header: { effectiveDate: '2026-03-15T08:00:00+00:00' } })
+      })
+
+      await store.init(corpsIdentifier)
+
+      expect(store.effectiveDate).toBe('2026-03-15')
+    })
+
     describe('legal type config', () => {
       it('should keep the corps convention for a base company', async () => {
         await store.init(corpsIdentifier)
@@ -211,6 +219,7 @@ describe('useDirectorsStore', () => {
         expect(store.config.paidFeeCode).toBe('OTCDR')
         expect(store.config.warnings).toEqual({ minCount: 3, bcResidency: true, canadianResidency: true })
         expect(store.formState.authorization).toBeUndefined()
+        expect(store.formState.certify).toEqual({ isCertified: false })
         expect(mockInitFees).toHaveBeenCalledWith(
           [{ code: 'OTCDR', entityType: 'CP', label: expect.any(String) }],
           { label: expect.any(String) }
@@ -221,7 +230,7 @@ describe('useDirectorsStore', () => {
 
   describe('submit(isSubmission) - corps convention', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
+    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
 
     /** Init a new (no draft) filing with the authorization confirmed. */
     async function initAndAuthorize() {
@@ -234,7 +243,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      const changeOfDirectors = getBlockedPayload().filing.changeOfDirectors
+      const changeOfDirectors = getPostPayload().filing.changeOfDirectors
       expect(changeOfDirectors).toEqual({ relationships: [] })
       expect(Object.keys(changeOfDirectors)).toEqual(['relationships'])
     })
@@ -244,7 +253,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      const header = getBlockedPayload().filing.header
+      const header = getPostPayload().filing.header
       expect(header.name).toBe(FilingType.CHANGE_OF_DIRECTORS)
       expect(header.effectiveDate).toBe(toApiDateTime(getToday('America/Vancouver')))
       expect(header.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/)
@@ -262,7 +271,7 @@ describe('useDirectorsStore', () => {
 
   describe('submit(isSubmission) - coops convention', () => {
     const getDraftPayload = () => mockSaveOrUpdateDraftFiling.mock.calls[0]![1]
-    const getBlockedPayload = () => mockLogBlockedSubmission.mock.calls[0]![0]
+    const getPostPayload = () => mockPostFiling.mock.calls[0]![1]
 
     beforeEach(async () => {
       setMockBusiness(coopBusiness)
@@ -275,10 +284,9 @@ describe('useDirectorsStore', () => {
 
       await store.submit(true)
 
-      expect(getBlockedPayload().filing.header.effectiveDate).toBe('2026-07-01T07:00:00+00:00')
+      expect(getPostPayload().filing.header.effectiveDate).toBe('2026-07-01T07:00:00+00:00')
     })
 
-    // FUTURE: the certify section (base FormCertify) supplies the name
     it('should certify a saved draft too and never send authorizationReceived', async () => {
       await store.submit(false)
 

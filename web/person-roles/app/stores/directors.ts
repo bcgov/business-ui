@@ -8,6 +8,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
   const businessStore = useBusinessStore()
   const feeStore = useConnectFeeStore()
   const { tableState } = useManageParties()
+  const { getPartiesMergedWithRelationships } = useBusinessParty()
   const {
     formatFilingPayloadApi,
     hydratePaymentState,
@@ -27,11 +28,10 @@ export const useDirectorsStore = defineStore('directors-store', () => {
   const draftFilingState = shallowRef<CODDraftState>({} as CODDraftState)
 
   /**
-   * The date the director changes take effect - required.
-   * FUTURE: make this user selectable. Lower bound per config.minDateSource - corps
-   * lastDirectorChangeDate (or founding when `enable-backdated-cod` allows), coops
-   * latest(lastDirectorChangeDate, lastAnnualReportDate) || founding (the backdating
-   * flag does not apply). Upper bound today.
+   * The date the director changes take effect — required.
+   * Lower bound per config.minDateSource: corps lastDirectorChangeDate (or founding when
+   * `enable-backdated-cod` allows), coops latest(lastDirectorChangeDate, lastAnnualReportDate).
+   * Upper bound is today.
    */
   const effectiveDate = ref<IsoDatePacific>(getToday(PACIFIC_TZ))
 
@@ -71,15 +71,20 @@ export const useDirectorsStore = defineStore('directors-store', () => {
     resetFormState()
     await syncConfiguredFee()
 
-    // FUTURE: merge the draft relationships into the parties (getPartiesMergedWithRelationships)
-    // and restore header.effectiveDate
     if (draftFiling?.filing?.changeOfDirectors) {
       draftFilingState.value = draftFiling as CODDraftState
-      // re-syncs the fee widget with a resumed staff payment selection
       hydratePaymentState(draftFiling.filing.header, formState)
+      // restore the effective date from the draft header
+      if (draftFiling.filing.header?.effectiveDate) {
+        effectiveDate.value = (draftFiling.filing.header.effectiveDate.split('T')[0]
+          ?? getToday(PACIFIC_TZ)) as IsoDatePacific
+      }
     }
 
-    tableState.value = parties ?? []
+    const draftRelationships = draftFiling?.filing?.changeOfDirectors?.relationships
+    tableState.value = parties
+      ? (draftRelationships ? getPartiesMergedWithRelationships(parties, draftRelationships) : parties)
+      : []
 
     await snapshotInitialState()
     initialDirectors.value = cloneDeep(tableState.value)
@@ -113,15 +118,14 @@ export const useDirectorsStore = defineStore('directors-store', () => {
 
   async function submit(isSubmission: boolean) {
     const codPayload: CODPayload = {
-      // FUTURE: only the rows with actions are sent - the filer processes every item as an edit
-      relationships: []
+      relationships: formatChangeOfDirectorsRelationshipsApi(tableState.value, {
+        removedCessationDate: effectiveDate.value
+      })
     }
 
     const headerPayload = {
       // NB: the validator requires an effective date and legal-api enforces the date-time format
       effectiveDate: toApiDateTime(effectiveDate.value),
-      // coops are certified by name instead - formatFilingPayloadApi defaults certifiedBy until
-      // the certify section (base FormCertify) lands
       ...(config.value.certify === 'authorization'
         ? { authorizationReceived: Boolean(formState.authorization?.isAuthorized) }
         : {}),
@@ -137,12 +141,6 @@ export const useDirectorsStore = defineStore('directors-store', () => {
 
     if (config.value.certify === 'authorization') {
       applyAuthorizationCertify(filingPayload.filing.header as Record<string, unknown>, isSubmission)
-    }
-
-    // FUTURE: submissions are disabled until the form is completed
-    if (isSubmission) {
-      logBlockedSubmission(filingPayload)
-      return
     }
 
     const filingResp = await saveOrSubmitFiling<CODFiling>(businessStore.businessIdentifier!, filingPayload, {

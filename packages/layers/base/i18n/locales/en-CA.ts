@@ -898,6 +898,7 @@ export default {
     datNumberEmpty: 'Enter DAT Number',
     duplicateDocId: 'A document record already exists with this document ID',
     enterCourtOrderOrUploadFile: 'Enter a court order or upload a file',
+    enterFirstName: 'Enter a first name',
     enterLastName: 'Enter a last name',
     exactDocIDChars: 'Document ID must be 8 characters',
     fieldRequired: 'This field is required',

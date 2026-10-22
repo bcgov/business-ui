@@ -14,7 +14,7 @@ interface FilingPageStore<T> {
  * Blocks save/submit when a sub form is still open (the page sets its own alert).
  * NB: the action is passed through so a page can alert with an action specific message.
  */
-type FilingPagePreTaskGuard = (action: 'submit' | 'save') => boolean
+type FilingPagePreTaskGuard = (action: 'submit' | 'save') => boolean | Promise<boolean>
 
 /** Button/step passthrough for the underlying useFilingPageWatcher. */
 interface FilingPageWatcherOverrides {
@@ -110,7 +110,7 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
   async function submitFiling() {
     try {
       setBtnCtrlAlert(undefined)
-      if (options.preTaskGuard?.('submit')) {
+      if (await options.preTaskGuard?.('submit')) {
         return
       }
       if (submitGuard !== 'none' && !canSubmit()) {
@@ -139,7 +139,7 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
   async function saveDraftFiling(enableUnsavedChangesBlock = true) {
     try {
       if (enableUnsavedChangesBlock) {
-        if (options.preTaskGuard?.('save')) {
+        if (await options.preTaskGuard?.('save')) {
           return
         }
         if (!canSave()) {

@@ -10,6 +10,7 @@ const props = defineProps<{
     allowBusinessName?: boolean
     allowPreferredName?: boolean
     requireNameChangeConfirmation?: boolean
+    requireFirstName?: boolean
   }
   partyRoleProps?: {
     allowedRoles: RoleTypeUi[]

@@ -1,11 +1,13 @@
 import { z } from 'zod'
 import type { FormPartyName } from '#components'
 
-export function getPartyNameSchema() {
+export function getPartyNameSchema(requireFirstName = false) {
   const t = useNuxtApp().$i18n.t
 
   const personNameSchema = z.object({
-    firstName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
+    firstName: requireFirstName
+      ? z.string().min(1, t('validation.enterFirstName')).max(20, t('connect.validation.maxChars', { count: 20 }))
+      : z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
     middleName: z.string().max(20, t('connect.validation.maxChars', { count: 20 })),
     lastName: z.string().min(1, t('validation.enterLastName')).max(30, t('connect.validation.maxChars', { count: 30 })),
     preferredName: z.string().max(50, t('connect.validation.maxChars', { count: 50 })),
