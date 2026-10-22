@@ -561,6 +561,7 @@ export default {
     planOfArrangement: 'Plan of Arrangement',
     preExistingCompanyProvisions: 'Pre-existing Company Provisions',
     preExistingCompanyProvisionsApplyToCompany: 'The Pre-existing Company Provisions apply to this company',
+    formerly: 'Formerly',
     preferredName: 'Preferred Name',
     preferredNameOpt: 'Preferred Name (Optional)',
     previousDates: 'Previous Dates',
