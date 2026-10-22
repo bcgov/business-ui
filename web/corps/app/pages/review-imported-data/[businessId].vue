@@ -32,7 +32,8 @@ function reviewAndConfirm() {
     return
   }
   if (!store.hasChanges) {
-    setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
+    // target the primary button (right group index 1) so the alert sits under it instead of floating over the page
+    setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right', 1)
     return
   }
   nextStep()
