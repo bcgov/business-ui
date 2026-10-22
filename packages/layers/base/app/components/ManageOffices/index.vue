@@ -13,7 +13,8 @@ const {
   variant = 'default',
   preventActions = false,
   actionPreventedSignal = 0,
-  bcCanadaOnly = false
+  bcCanadaOnly = false,
+  hideRemove = false
 } = defineProps<ManageOfficesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
 
 const emit = defineEmits<{
@@ -197,7 +198,7 @@ function onActionPrevented() {
                 :name="modelName"
                 :subject="editSubjectLabel"
                 :state-key
-                :hide-remove="variant === 'correct'"
+                :hide-remove="hideRemove || variant === 'correct'"
                 :bc-canada-only
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"

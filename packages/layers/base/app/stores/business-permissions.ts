@@ -136,6 +136,10 @@ export const useBusinessPermissionsStore = defineStore('business-permissions-sto
         authorized = isAuthorized(AuthorizedAction.RESTORATION_REINSTATEMENT_FILING)
         break
       }
+      case FilingType.REVIEW_IMPORTED_DATA: {
+        authorized = isAuthorized(AuthorizedAction.REVIEW_IMPORTED_DATA_FILING)
+        break
+      }
       case FilingType.SPECIAL_RESOLUTION: {
         authorized = isAuthorized(AuthorizedAction.SPECIAL_RESOLUTION_FILING)
         break

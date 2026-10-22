@@ -7,7 +7,7 @@ const props = defineProps<{
   stateKey: string
   hideRemove?: boolean
   name?: string
-  bcCanadaOnly?: boolean
+  bcCanadaOnly?: boolean | 'delivery'
 }>()
 
 const emit = defineEmits<{

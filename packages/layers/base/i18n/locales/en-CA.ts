@@ -691,6 +691,7 @@ export default {
       limitedRestoration: 'Limited Restoration',
       undefined: 'Restoration Application'
     },
+    reviewImportedData: 'Review Migrated Information',
     specialResolution: 'Special Resolution',
     transition: 'Transition Application',
     undefined: 'Unknown'
@@ -896,6 +897,8 @@ export default {
     dateRequired: 'Date is required',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
+    deliveryAddressMustBeInBc: 'Delivery Address must be in British Columbia. Uncheck "same as" to enter a different Delivery Address.',
+    deliveryAddressMustBeInCanada: 'Delivery Address must be in Canada. Uncheck "same as" to enter a different Delivery Address.',
     duplicateDocId: 'A document record already exists with this document ID',
     enterCourtOrderOrUploadFile: 'Enter a court order or upload a file',
     enterFirstName: 'Enter a first name',

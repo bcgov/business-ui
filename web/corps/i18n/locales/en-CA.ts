@@ -122,6 +122,13 @@ export default {
         title: 'Delay of Dissolution - Dissolution - BC Registries and Online Services'
       }
     },
+    reviewImportedData: {
+      desc: 'Some office or director address information for this business was missing or incomplete when it was migrated. Review and complete the information below.',
+      feeCode: 'NOFEE',
+      feeLabel: 'Review Migrated Information',
+      h1: 'Review Migrated Information',
+      title: 'Review Migrated Information - BC Registries and Online Services'
+    },
     transition: {
       desc: 'Transition your business so that it operates under the new {italicStart}Business Corporations Act.{italicEnd}',
       feeCode: 'TRANP',
@@ -147,8 +154,24 @@ export default {
     liquidatorsMustBeCorrect: 'Liquidator information must be correct before filing your application.',
     nameTranslationsDescription: 'Name translations must use the Latin Alphabet (English, French, etc.). Names that use other writing systems must spell the name phonetically in English or French.',
     agmLocationHint: 'Enter the AGM location not in B.C. Include the city, province or state equivalent, and country. E.g. "Red Deer, Alberta, Canada"',
+    missingInfo: {
+      title: 'Missing information',
+      officeMissing: 'No office address on record',
+      addressMissing: '{address} is missing',
+      fieldMissing: '{address} is missing the {field}',
+      field: {
+        street: 'street address',
+        city: 'city',
+        country: 'country',
+        postalCode: 'postal code',
+        region: 'province or state'
+      }
+    },
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
     officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
+    reviewImportedDataDirectors: 'Complete any director address that is missing information. Director names cannot be changed here.',
+    reviewImportedDataOffices: 'Complete any office address that is missing information. Office delivery addresses must be in British Columbia.',
+    reviewImportedDataReview: 'Review the changes below. Only the sections you changed will appear and be filed.',
     receiversMustBeCorrect: 'Receiver information must be correct before filing your application.',
     reviewCorrectionChanges: 'Review the correction changes below before submitting.',
     shareStructureMustContainAtleastOneClass: 'Your share structure must contain at least one share class.',
