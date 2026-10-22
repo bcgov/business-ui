@@ -8,7 +8,7 @@ import { formatRelationshipApi } from '#business/app/utils/formatters/format-par
 /**
  * Structural ManageParties props shared by director-change filings.
  */
-export function getDirectorChangeManagePartiesProps() {
+export function getDirectorChangeManagePartiesProps(requireFirstName = false) {
   return {
     roleType: RoleTypeUi.DIRECTOR,
     columnsToDisplay: ['name', 'mailing', 'delivery', 'effectiveDates', 'actions'] as TablePartyColumnName[],
@@ -21,7 +21,8 @@ export function getDirectorChangeManagePartiesProps() {
     partyFormProps: {
       partyNameProps: {
         allowBusinessName: false,
-        requireNameChangeConfirmation: true
+        requireNameChangeConfirmation: true,
+        requireFirstName
       },
       partyRoleProps: {
         allowedRoles: [RoleTypeUi.DIRECTOR],

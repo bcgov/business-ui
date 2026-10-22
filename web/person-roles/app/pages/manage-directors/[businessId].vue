@@ -15,7 +15,9 @@ definePageMeta({
   middleware: ['connect-auth']
 })
 
-const directorChangeProps = getDirectorChangeManagePartiesProps()
+const directorChangeProps = computed(() =>
+  getDirectorChangeManagePartiesProps(businessStore.business?.legalType !== 'CP')
+)
 
 // a director open in the party details sub form must be completed before saving or submitting
 async function checkActiveSubForm() {
