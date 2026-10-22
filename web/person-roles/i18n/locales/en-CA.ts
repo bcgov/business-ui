@@ -51,6 +51,7 @@ export default {
     officerChange: 'Officer Change',
     receiverChange: 'Receiver Change',
     liquidatorChange: 'Liquidator Change',
+    directorInfo: 'Director Information',
     officerInfo: 'Officer Information',
     receiverInfo: 'Receiver Information',
     liquidatorInfo: 'Liquidator Information',

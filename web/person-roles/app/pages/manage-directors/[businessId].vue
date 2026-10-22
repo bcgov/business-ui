@@ -147,8 +147,8 @@ watch(() => store.directors, async (directors) => {
         v-bind="directorChangeProps"
         :loading="initializing"
         :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
-        :section-title="`2. ${$t('page.changeOfDirectors.directorsLabel')}`"
-        :table-title="$t('page.changeOfDirectors.directorsLabel')"
+        :section-title="`2. ${$t('label.directorInfo')}`"
+        :table-title="$t('label.directors')"
         subject="Director"
         data-testid="manage-directors"
       />
