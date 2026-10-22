@@ -57,6 +57,9 @@ watch(
     if (v) {
       const id = model.value.deliveryAddress.id
       model.value.deliveryAddress = { ...model.value.mailingAddress, id }
+    } else {
+      // clear deliveryAddress when unchecking 'same as'
+      formRef.value?.clear(/deliveryAddress/)
     }
   }
 )
