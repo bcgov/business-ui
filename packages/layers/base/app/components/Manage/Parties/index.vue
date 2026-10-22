@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ManagePartiesProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
+import { omit } from 'es-toolkit'
 
 const {
   roleType,
@@ -163,8 +164,23 @@ function getPartyLabel(party: PartySchema): string {
   return name.toUpperCase()
 }
 
+// Drops the address ids from an edited party so the submitted payload is unchanged from before
+// (the party schema has no address id, so parsing the row used to strip them).
+// Unlike offices, the api doesn't need them: the filer finds an existing party by `entity.identifier`
+// and updates its current delivery/mailing address in place, ignoring the address id (lear business-filer
+// `update_relationship_addresses`). New parties always get new address records.
+function omitAddressIds(address: PartySchema['address']): PartySchema['address'] {
+  type AddressWithId = PartySchema['address']['deliveryAddress'] & { id?: string }
+  return {
+    ...address,
+    deliveryAddress: omit(address.deliveryAddress as AddressWithId, ['id']),
+    mailingAddress: omit(address.mailingAddress as AddressWithId, ['id'])
+  }
+}
+
 function initEditSubject(row: TableBusinessRow<PartySchema>) {
-  activeSubject.value = cloneDeep(row.original.new)
+  const subject = cloneDeep(row.original.new)
+  activeSubject.value = { ...subject, address: omitAddressIds(subject.address) }
   editSubjectLabel = getPartyLabel(row.original.new)
   expandedState.value = { [row.id]: true }
 }
