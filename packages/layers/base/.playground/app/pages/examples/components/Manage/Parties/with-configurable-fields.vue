@@ -42,7 +42,7 @@ const loading = ref(false)
         subject="Party"
         :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :party-form-props="{
-          partyNameProps: { allowBusinessName: true },
+          partyNameProps: { allowBusinessName: true, allowPreferredName: true },
           partyRoleProps: { allowedRoles }
         }"
       />
