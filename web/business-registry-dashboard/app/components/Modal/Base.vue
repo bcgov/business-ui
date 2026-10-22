@@ -6,6 +6,8 @@ const closeButtonRef = ref<InstanceType<typeof UButton> | null>(null)
 
 defineProps<{
   alert?: ModalAlertProps
+  alertPlacement?: 'header' | 'body'
+  stackedHeader?: boolean
   title?: string
   actions?: { label: string, handler:() => void, color?: string, variant?: string }[]
   error?: {
@@ -19,6 +21,7 @@ defineProps<{
 
 defineEmits<{
   modalClosed: [void]
+  alertClosed: [void]
 }>()
 
 // Remove focus from close button after modal mount to prevent it from being auto-focused.
@@ -58,10 +61,10 @@ defineShortcuts({
       }"
     >
       <template #header>
-        <div v-if="title || alert" class="flex justify-between">
+        <div v-if="title || alert" :class="stackedHeader ? 'flex flex-col-reverse' : 'flex justify-between'">
           <div>
             <!-- NB: UAlert has a vue warn on close button prop. This will go away when nuxt and nuxt/ui are upgraded to 4+ and 3+ -->
-            <UAlert v-if="alert" class="mb-3" v-bind="alert">
+            <UAlert v-if="alert && alertPlacement !== 'body'" class="mb-3" v-bind="alert">
               <template #description>
                 <p class="text-bcGovColor-darkGray">
                   <ConnectI18nHelper :translation-path="alert.translationPath" v-bind="alert.extraTextCtx" />
@@ -72,7 +75,7 @@ defineShortcuts({
               {{ title }}
             </span>
           </div>
-          <div class="ml-4">
+          <div :class="stackedHeader ? 'self-end' : 'ml-4'">
             <UButton
               ref="closeButtonRef"
               :ui="{ icon: { base: 'shrink-0 scale-150' } }"
@@ -112,6 +115,14 @@ defineShortcuts({
           <BCRegContactInfo v-if="error.showContactInfo" class="self-start text-left" />
         </div>
       </slot>
+
+      <UAlert v-if="alert && alertPlacement === 'body'" class="mt-4" v-bind="alert" @close="$emit('alertClosed')">
+        <template #description>
+          <span class="text-bcGovColor-darkGray">
+            <ConnectI18nHelper :translation-path="alert.translationPath" v-bind="alert.extraTextCtx" />
+          </span>
+        </template>
+      </UAlert>
 
       <template v-if="actions !== undefined || $slots.footer" #footer>
         <slot name="footer">
