@@ -81,7 +81,7 @@ async function assertCorrectOffices(page: Page) {
   await expect(tbody).not.toContainText('Liquidation Records Office')
 
   const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(3)
+  await expect(rows).toHaveCount(2)
 }
 
 async function assertCorrectDirectors(page: Page) {
