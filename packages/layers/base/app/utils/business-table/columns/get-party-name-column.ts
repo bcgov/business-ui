@@ -4,7 +4,8 @@ import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'first',
-  badgeLabelOverrides?: Partial<Record<ActionType, string>>
+  badgeLabelOverrides?: Partial<Record<ActionType, string>>,
+  showFormerName = false
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
@@ -31,6 +32,15 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
 
       const preferredName = row.original.new.name.preferredName
 
+      const isNameChanged = showFormerName && row.original.new.actions?.includes(ActionType.NAME_CHANGED)
+      const oldNameProps = row.original.old?.name
+      const formerName = isNameChanged && oldNameProps
+        ? (oldNameProps.partyType === PartyType.PERSON
+          ? [oldNameProps.firstName, oldNameProps.middleName, oldNameProps.lastName].filter(Boolean).join(' ')
+          : oldNameProps.businessName || ''
+        ).toUpperCase()
+        : null
+
       return h(
         TableColumnIdentity,
         {
@@ -43,11 +53,21 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
           labelClass: isRemoved ? DELETED_CLASS : isCeased ? CEASED_CLASS : ''
         },
         {
-          'additional-label': () => preferredName
-            ? h('div', { class: 'flex flex-col pl-7' }, [
-              h('i', { class: 'text-sm italic' }, t('label.preferredName') + ':'),
-              h('span', { class: 'text-sm font-normal' }, preferredName)])
-            : []
+          'additional-label': () => {
+            const items = []
+            if (formerName) {
+              items.push(h('div', { class: 'flex flex-col pl-7' }, [
+                h('span', { class: 'text-sm font-normal italic' }, `${t('label.formerly')} ${formerName}`)
+              ]))
+            }
+            if (preferredName) {
+              items.push(h('div', { class: 'flex flex-col pl-7' }, [
+                h('i', { class: 'text-sm italic' }, t('label.preferredName') + ':'),
+                h('span', { class: 'text-sm font-normal' }, preferredName)
+              ]))
+            }
+            return items
+          }
         }
       )
     }

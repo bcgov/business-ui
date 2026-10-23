@@ -21,6 +21,8 @@ interface PartyFormProps {
 export type ManagePartiesProps = ManageBaseProps & {
   columnsToDisplay?: TablePartyColumnName[]
   labelOverrides?: TableLabelOverrides
+  // opt-in since this table is shared by every party type
+  showFormerName?: boolean
 } & (
   | {
     variant?: 'default' | 'correct'
