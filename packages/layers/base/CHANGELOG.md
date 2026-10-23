@@ -1,5 +1,47 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.28.0
+
+### Minor Changes
+
+- [#587](https://github.com/bcgov/business-ui/pull/587) [`9317b53`](https://github.com/bcgov/business-ui/commit/9317b53f45ade87238cc95299ccc27c4eaeee3b3) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageParties component and useManageParties composable
+  - Moved party component and composable to be under the `/manage` directory.
+  - Renamed the active party model to `active-subject` and kept the default `modelName` as `activeParty`.
+  - useManageParties only handles table state, accepts an optional `cleanupFn` and uses generic subject naming (`addSubject`, `removeSubject`, `undoSubject`, `editSubject`).
+  - Table rows are now identified by `new.id` - new parties get a generated UI id which is not sent to the API.
+  - ManageParties now uses useManageCommon for variants, allowed actions, label overrides and alerts.
+
+- [#582](https://github.com/bcgov/business-ui/pull/582) [`2412e60`](https://github.com/bcgov/business-ui/commit/2412e60b598cd5629a3671291e971eb0a278941b) Thanks [@deetz99](https://github.com/deetz99)! - Refactor ManageShareStructure models and composable actions
+  - Replaced separate class, series and date model with a single activeSubject model ref.
+  - Simplify useManageShareStructure add, undo, remove, edit methods to handle multiple schema types using type predicates.
+  - Update useManageCommon to accept multiple alert target IDs for a single model ref.
+  - Moved share structure component and composable to be under the `/manage` directory.
+
+- [#584](https://github.com/bcgov/business-ui/pull/584) [`5a838ba`](https://github.com/bcgov/business-ui/commit/5a838ba1832e0ae699af4910d5a659f937b2c78f) Thanks [@deetz99](https://github.com/deetz99)! - - formatOfficesApi: Include all offices if any have changes.
+  - ManageShareStructure: handle standalone resolution date sync automatically
+    - Add an optional `resolutionDate` property to `useManageShareStructure` options.
+    - Sync standalone date input directly into the `resolutionDates` array whenever provided and valid.
+    - Update `ManageShareStructure` to display all dates when in `readonly` variant or omit the active standalone date outside of readonly variant.
+
+- [#577](https://github.com/bcgov/business-ui/pull/577) [`17b25f3`](https://github.com/bcgov/business-ui/commit/17b25f31edf952938dc8f3d8e765f8e88827ed56) Thanks [@deetz99](https://github.com/deetz99)! - Updated dependencies and minimum Node.js requirement.
+  
+  - **BREAKING**: Requires Node version `>=24.15` and `<25`.
+  - Updated Nuxt UI dependency (style resolution changes may affect custom themes).
+
+- [#576](https://github.com/bcgov/business-ui/pull/576) [`58cb41d`](https://github.com/bcgov/business-ui/commit/58cb41d84082518b9d2576308ba8c94fd9df5fa7) Thanks [@eve-git](https://github.com/eve-git)! - Align ManageNameTranslations with the manage conventions. Move component to components/Manage/NameTranslations and composable to composables/manage. useManageNameTranslations now only handles tableState, accepts an optional opts.cleanupFn, uses generic subject naming (addSubject, editSubject, removeSubject, undoSubject), updates rows by new.id and uses cloneDeep and isEqualOmit. ManageNameTranslations handles expanded/adding state locally, uses useManageCommon and no longer requires the active-name-translation model. TableNameTranslation sets get-row-id to row.new.id and syncs isEditing from the expanded state.
+
+### Patch Changes
+
+- [#579](https://github.com/bcgov/business-ui/pull/579) [`ac1d23f`](https://github.com/bcgov/business-ui/commit/ac1d23f23d9b961231b1d8d5aafc5bfd8d66d242) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Extended `FilingPagePreTaskGuard` type to support async guards (`boolean | Promise<boolean>`) and await the result in `useFilingPage` submit and save handlers.
+
+- [#581](https://github.com/bcgov/business-ui/pull/581) [`5238c36`](https://github.com/bcgov/business-ui/commit/5238c36026f707f031de318c9b3be87d2caa36b2) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Updated jurisdiction display in business ledger and `getJurisdictionLabel` to show only the province/state name for CA and US jurisdictions, removing the country suffix. Fixes bcgov/entity#35269.
+
+- [#588](https://github.com/bcgov/business-ui/pull/588) [`2703597`](https://github.com/bcgov/business-ui/commit/2703597e73b83922a4fa59b6bc0ee66311c01a10) Thanks [@deetz99](https://github.com/deetz99)! - FormAddress: Clear deliveryAddress validation errors when unchecking 'same as' checkbox.
+
+- [#583](https://github.com/bcgov/business-ui/pull/583) [`d3ba740`](https://github.com/bcgov/business-ui/commit/d3ba740d3b8e29919eba36d45b850c9a86dc3979) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Add the reviewImportedData filing type, its REVIEW_IMPORTED_DATA_FILING permission mapping and filing name. Address schemas and ManageOffices accept `bcCanadaOnly: 'delivery'` (delivery address only; while 'same as' is checked the BC/Canada errors are raised on the visible mailing inputs), ManageOffices gains a `hideRemove` prop, and BusinessWarning.data types the missing info `officeType` / `partyId` keys.
+
+- [#578](https://github.com/bcgov/business-ui/pull/578) [`c1c8f12`](https://github.com/bcgov/business-ui/commit/c1c8f1205ae1e678a7a2007e76c05ab7c35ef44d) Thanks [@deetz99](https://github.com/deetz99)! - Fix offices draft merging issue.
+
 ## 0.27.0
 
 ### Minor Changes
