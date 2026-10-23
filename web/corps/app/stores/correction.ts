@@ -1,6 +1,4 @@
 /* eslint-disable max-len */
-import { cloneDeep } from 'es-toolkit'
-
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
   const { getPartiesMergedWithRelationships } = useBusinessParty()
@@ -120,18 +118,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       return
     }
 
-    const [
-      addressData,
-      nameTranslationData,
-      courtOrderData,
-      businessExtendedData
-    ] = await Promise.all([
-      service.getAddresses(businessId).catch(() => undefined),
-      service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
-      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
-      service.getBusinessExtended(businessId, true).catch(() => undefined)
-    ])
-
     // The draft is always expected to exist (pre-created before page load)
     const draft = draftFiling.filing.correction
     draftFilingState.value = draftFiling
@@ -141,6 +127,36 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     correctedFilingType.value = draft.correctedFilingType
     correctedFilingDate.value = draft.correctedFilingDate ?? ''
     correctionType.value = draft.type
+
+    // This is only used for filing sub type?
+    // FUTURE: consistently return filing sub type in draft, remove this fetch
+    if (correctedFilingId.value) {
+      correctedFiling.value = await service.getFiling(businessId, correctedFilingId.value)
+        .catch(() => {
+          console.warn(`Could not fetch corrected filing ${correctedFilingId.value}`)
+          return undefined
+        })
+    }
+
+    // Only fetch offices if allowed to be corrected for this filing type
+    const correctableOffices = getCorrectableOfficeTypes(
+      correctedFilingType.value, correctedFilingSubType.value as FilingSubType
+    )
+    const officesPromise = correctableOffices.length
+      ? service.getAddresses(businessId).catch(() => undefined)
+      : undefined
+
+    const [
+      addressData,
+      nameTranslationData,
+      courtOrderData,
+      businessExtendedData
+    ] = await Promise.all([
+      officesPromise,
+      service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
+      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
+      service.getBusinessExtended(businessId, true).catch(() => undefined)
+    ])
 
     // Set business extended data (Used for amalgamationApplication, amalgamationOut, coninuationOut or continuationIn corrections)
     businessExtended.value = businessExtendedData
@@ -184,19 +200,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
-    // Fetch the original corrected filing for display (original filing date, type, etc.)
-    if (correctedFilingId.value) {
-      try {
-        const originalFiling = await service.getFiling(businessId, correctedFilingId.value)
-        if (originalFiling) {
-          correctedFiling.value = originalFiling as FilingGetByIdResponse<FilingRecord>
-        }
-      } catch {
-        // Original filing fetch is non-blocking — correction can still proceed
-        console.warn(`Could not fetch corrected filing ${correctedFilingId.value}`)
-      }
-    }
-
     // Draft relationships from the pre-created correction draft (new format with `entity`)
     const draftRelationships = draft?.relationships as BusinessRelationship[] | undefined
 
@@ -210,8 +213,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
         : directorData
     }
 
-    // Offices (corrections may include address changes)
-    offices.value = formatOfficesSection(addressData, draft?.offices)
+    offices.value = formatOfficesSection(addressData, draft?.offices, correctableOffices)
 
     shareClasses.value = formatShareClassesSection(shareClassData, draft.shareStructure?.shareClasses)
 
