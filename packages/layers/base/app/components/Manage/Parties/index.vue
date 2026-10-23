@@ -11,7 +11,7 @@ const {
   allowedActions,
   labelOverrides,
   variant = 'default',
-  modelName = 'activeParty',
+  modelName = 'activeSubject',
   preventActions = false,
   actionPreventedSignal = 0
 } = defineProps<ManagePartiesProps>()
