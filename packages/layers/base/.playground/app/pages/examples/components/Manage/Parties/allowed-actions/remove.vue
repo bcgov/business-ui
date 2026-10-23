@@ -4,7 +4,7 @@ import mockParties from '#test-mocks/parties/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Parties (mixed)' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Parties (remove)' }]
 })
 
 const { tableState } = useManageParties()
@@ -20,49 +20,23 @@ tableState.value = parties
 
 const activeParty = ref<ActivePartySchema | undefined>(undefined)
 const loading = ref(false)
-const selectItems = ref([
-  ManageAllowedAction.ADDRESS_CHANGE,
-  ManageAllowedAction.EFFECTIVE_DATE_CHANGE,
-  ManageAllowedAction.NAME_CHANGE,
-  ManageAllowedAction.ROLE_CHANGE,
-  ManageAllowedAction.ADD,
-  ManageAllowedAction.REMOVE
-])
-const selectedItems = ref([
-  ManageAllowedAction.ADDRESS_CHANGE,
-  ManageAllowedAction.EFFECTIVE_DATE_CHANGE,
-  ManageAllowedAction.NAME_CHANGE,
-  ManageAllowedAction.ROLE_CHANGE,
-  ManageAllowedAction.ADD,
-  ManageAllowedAction.REMOVE
-])
 </script>
 
 <template>
   <UContainer>
-    <h1>ManageParties - Mixed</h1>
-    <div class="p-4 bg-white sm:max-w-1/4">
-      <ConnectSelect
-        id="allowed-changes-select"
-        v-model="selectedItems"
-        class="w-full"
-        label="Select Allowed Actions"
-        :items="selectItems"
-        multiple
-      />
-    </div>
+    <h1>ManageParties - Remove</h1>
     <ConnectPageSection
-      :heading="{ label: 'Manage Parties - Mixed' }"
+      :heading="{ label: 'Manage Parties - remove' }"
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-subject="activeParty"
         :loading="loading"
         :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"
-        :allowed-actions="selectedItems"
+        :allowed-actions="[ManageAllowedAction.REMOVE]"
       />
     </ConnectPageSection>
   </UContainer>

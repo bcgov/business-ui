@@ -112,19 +112,19 @@ const componentExamples: DropdownMenuItem[] = [
         label: 'ManageParties',
         children: [
           {
-            to: localePath('/examples/components/ManageParties'),
+            to: localePath('/examples/components/Manage/Parties'),
             label: 'Default'
           },
           {
-            to: localePath('/examples/components/ManageParties/with-configurable-fields'),
+            to: localePath('/examples/components/Manage/Parties/with-configurable-fields'),
             label: 'With Configurable Fields'
           },
           {
-            to: localePath('/examples/components/ManageParties/with-ceased-director'),
+            to: localePath('/examples/components/Manage/Parties/with-ceased-director'),
             label: 'With Ceased Director'
           },
           {
-            to: localePath('/examples/components/ManageParties/director-change'),
+            to: localePath('/examples/components/Manage/Parties/director-change'),
             label: 'Director Change'
           },
           {
@@ -132,19 +132,19 @@ const componentExamples: DropdownMenuItem[] = [
             children: [
               {
                 label: 'Add',
-                to: localePath('/examples/components/ManageParties/allowed-actions/add')
+                to: localePath('/examples/components/Manage/Parties/allowed-actions/add')
               },
               {
                 label: 'Remove',
-                to: localePath('/examples/components/ManageParties/allowed-actions/remove')
+                to: localePath('/examples/components/Manage/Parties/allowed-actions/remove')
               },
               {
                 label: 'Edits',
-                to: localePath('/examples/components/ManageParties/allowed-actions/edits')
+                to: localePath('/examples/components/Manage/Parties/allowed-actions/edits')
               },
               {
                 label: 'Mixed',
-                to: localePath('/examples/components/ManageParties/allowed-actions/mixed')
+                to: localePath('/examples/components/Manage/Parties/allowed-actions/mixed')
               }
             ]
           }

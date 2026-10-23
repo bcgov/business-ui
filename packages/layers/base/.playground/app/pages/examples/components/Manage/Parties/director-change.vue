@@ -49,7 +49,7 @@ const relationships = computed(() => formatChangeOfDirectorsRelationshipsApi(tab
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-subject="activeParty"
         v-bind="directorChangeProps"
         :loading
         :empty-text="loading ? `Loading...` : 'No directors'"

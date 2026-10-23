@@ -45,10 +45,6 @@ const allowedActions = [
   ManageAllowedAction.REMOVE
 ]
 const columnsToDisplay: TablePartyColumnName[] = ['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']
-// no partyRoleProps - the role is always Director (from role-type), so there's no role selection
-const partyFormProps = {
-  partyNameProps: { allowBusinessName: true, allowPreferredName: true }
-}
 </script>
 
 <template>
@@ -58,7 +54,7 @@ const partyFormProps = {
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-subject="activeParty"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Directors"
@@ -67,7 +63,6 @@ const partyFormProps = {
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="allowedActions"
         :columns-to-display="columnsToDisplay"
-        :party-form-props="partyFormProps"
       />
     </ConnectPageSection>
 
@@ -76,7 +71,7 @@ const partyFormProps = {
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="noCeasedActiveParty"
+        v-model:active-subject="noCeasedActiveParty"
         state-key="manage-parties-no-ceased"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
@@ -86,7 +81,6 @@ const partyFormProps = {
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="allowedActions"
         :columns-to-display="columnsToDisplay"
-        :party-form-props="partyFormProps"
       />
     </ConnectPageSection>
 
@@ -95,7 +89,7 @@ const partyFormProps = {
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="noTabActiveParty"
+        v-model:active-subject="noTabActiveParty"
         state-key="manage-parties-no-tab"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
@@ -104,7 +98,6 @@ const partyFormProps = {
         :role-type="RoleTypeUi.DIRECTOR"
         :allowed-actions="allowedActions"
         :columns-to-display="columnsToDisplay"
-        :party-form-props="partyFormProps"
       />
     </ConnectPageSection>
   </UContainer>

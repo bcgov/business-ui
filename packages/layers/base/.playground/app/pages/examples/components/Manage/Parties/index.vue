@@ -28,14 +28,13 @@ const loading = ref(false)
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-subject="activeParty"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"
         :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :party-form-props="{
-          partyNameProps: { allowBusinessName: true, allowPreferredName: true },
           partyRoleProps: { allowedRoles: [RoleTypeUi.DIRECTOR, RoleTypeUi.RECEIVER, RoleTypeUi.LIQUIDATOR] }
         }"
       />

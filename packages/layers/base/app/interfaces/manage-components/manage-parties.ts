@@ -29,6 +29,8 @@ export type ManagePartiesProps = ManageBaseProps & {
     roleType?: RoleTypeUi
     partyFormProps?: PartyFormProps
     allowedActions?: ManageAllowedAction[]
+    preventActions?: boolean
+    actionPreventedSignal?: number
   }
   | {
     variant: 'readonly' | 'correct-readonly'
@@ -37,5 +39,7 @@ export type ManagePartiesProps = ManageBaseProps & {
     roleType?: RoleTypeUi
     partyFormProps?: never
     allowedActions?: never
+    preventActions?: never
+    actionPreventedSignal?: never
   }
 )

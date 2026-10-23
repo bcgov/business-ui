@@ -151,7 +151,7 @@ useFilingPageWatcher({
     </div>
 
     <ManageParties
-      v-model:active-party="officerStore.formState.activeParty"
+      v-model:active-subject="officerStore.formState.activeParty"
       :loading="officerStore.initializing"
       :empty-text="$t('text.noOfficers')"
       :section-title="`1. ${$t('label.officerInfo')}`"

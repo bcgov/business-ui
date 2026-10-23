@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('ManageParties - director change preset', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageParties/director-change')
+    await page.goto('./en-CA/examples/components/Manage/Parties/director-change')
     await page.waitForLoadState('networkidle')
   })
 

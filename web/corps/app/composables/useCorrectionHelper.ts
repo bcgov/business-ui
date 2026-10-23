@@ -100,15 +100,15 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.CUSTODIAN,
-      activeSubjects: { subject: () => store.formState.activeCustodian, alertTarget: 'party-details-form' }
+      activeSubjects: { subject: () => store.formState.activeParty, alertTarget: 'party-details-form' }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.DIRECTOR,
-      activeSubjects: { subject: () => store.formState.activeDirector, alertTarget: 'party-details-form' }
+      activeSubjects: { subject: () => store.formState.activeParty, alertTarget: 'party-details-form' }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.LIQUIDATOR,
-      activeSubjects: { subject: () => store.formState.activeLiquidator, alertTarget: 'party-details-form' }
+      activeSubjects: { subject: () => store.formState.activeParty, alertTarget: 'party-details-form' }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.NAME_TRANSLATION,
@@ -120,7 +120,7 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.RECEIVER,
-      activeSubjects: { subject: () => store.formState.activeReceiver, alertTarget: 'party-details-form' }
+      activeSubjects: { subject: () => store.formState.activeParty, alertTarget: 'party-details-form' }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.SHARE_STRUCTURE,

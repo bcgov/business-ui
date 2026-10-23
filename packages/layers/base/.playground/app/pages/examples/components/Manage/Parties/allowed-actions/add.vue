@@ -1,19 +1,13 @@
 <script setup lang="ts">
-import mockParties from '#test-mocks/parties/json/with-configurable-fields.json'
+import { ManageAllowedAction } from '#imports'
+import mockParties from '#test-mocks/parties/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Parties - With Configurable Fields' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Parties (add)' }]
 })
 
 const { tableState } = useManageParties()
-
-const allowedRoles = [
-  RoleTypeUi.CUSTODIAN,
-  RoleTypeUi.DIRECTOR,
-  RoleTypeUi.APPLICANT
-]
-
 const parties = mockParties.map((p) => {
   return {
     // @ts-expect-error - party type enum/string mismatch
@@ -31,20 +25,17 @@ const loading = ref(false)
 <template>
   <UContainer>
     <ConnectPageSection
-      :heading="{ label: 'Manage Parties - With Configurable Fields' }"
+      :heading="{ label: 'Manage Parties - Add' }"
       ui-body="p-10"
     >
       <ManageParties
-        v-model:active-party="activeParty"
+        v-model:active-subject="activeParty"
         :loading="loading"
+        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
         :empty-text="loading ? `Loading...` : 'No parties'"
         table-title="Parties"
         subject="Party"
-        :columns-to-display="['name', 'mailing', 'delivery', 'roles', 'effectiveDates', 'actions']"
-        :party-form-props="{
-          partyNameProps: { allowBusinessName: true, allowPreferredName: true },
-          partyRoleProps: { allowedRoles }
-        }"
+        :allowed-actions="[ManageAllowedAction.ADD]"
       />
     </ConnectPageSection>
   </UContainer>

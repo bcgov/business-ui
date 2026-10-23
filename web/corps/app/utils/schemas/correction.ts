@@ -48,10 +48,7 @@ export function getCorrectionSchema(isStaff: boolean) {
       folioNumber: '',
       isPriority: false
     })),
-    activeDirector: getActivePartySchema(),
-    activeReceiver: getActivePartySchema(RoleTypeUi.RECEIVER),
-    activeLiquidator: getActivePartySchema(RoleTypeUi.LIQUIDATOR),
-    activeCustodian: getActivePartySchema(RoleTypeUi.CUSTODIAN),
+    activeParty: getActivePartySchema(),
     activeOffice: getActiveOfficesSchema(),
     activeShareStructure: getActiveShareStructureSchema(),
     resolutionDate: getActiveResolutionDateSchema(),

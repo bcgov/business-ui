@@ -418,10 +418,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
 
     const defaults = getCorrectionSchema(isStaffCorrectionType.value).parse({})
     Object.assign(formState, defaults)
-    formState.activeDirector = undefined
-    formState.activeReceiver = undefined
-    formState.activeLiquidator = undefined
-    formState.activeCustodian = undefined
+    formState.activeParty = undefined
     formState.activeOffice = undefined
     formState.activeShareStructure = undefined
     formState.activeNameTranslation = undefined
