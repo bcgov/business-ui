@@ -4,7 +4,8 @@ import type { ExpandedState } from '@tanstack/vue-table'
 const {
   data,
   columns = ['name', 'mailing', 'delivery', 'actions'],
-  labelOverrides
+  labelOverrides,
+  showFormerName = false
 } = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
@@ -13,6 +14,7 @@ const {
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   columns?: TablePartyColumnName[]
+  showFormerName?: boolean
   taskGuardConfig?: {
     message?: string
     messageId: string
@@ -20,7 +22,7 @@ const {
   }
 }>()
 
-const partyColumns = computed(() => getPartyTableColumns<T>(columns, labelOverrides?.badges))
+const partyColumns = computed(() => getPartyTableColumns<T>(columns, labelOverrides?.badges, showFormerName))
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
 // Local reference to the currently editing item

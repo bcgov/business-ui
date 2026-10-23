@@ -91,6 +91,10 @@ describe('director-change utils', () => {
       expect(props.partyFormProps.partyRoleProps.roleClass).toBe(RoleClass.DIRECTOR)
       expect(props.columnsToDisplay).toContain('effectiveDates')
     })
+
+    it('should show the former name for renamed directors', () => {
+      expect(getDirectorChangeManagePartiesProps().showFormerName).toBe(true)
+    })
   })
 
   describe('formatChangeOfDirectorsRelationshipsApi', () => {

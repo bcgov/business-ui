@@ -292,6 +292,7 @@ function onActionPrevented() {
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :columns="columnsToDisplay"
+          :show-former-name="showFormerName"
           :task-guard-config="{
             messageId,
             targetId,

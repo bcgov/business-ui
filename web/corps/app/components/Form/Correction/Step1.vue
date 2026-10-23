@@ -151,6 +151,7 @@ function onActionPrevented() {
       :table-title="$t('label.custodians')"
       :subject="$t('label.custodian')"
       :columns-to-display="custodianColumns"
+      show-former-name
       data-testid="custodians-section"
       :role-type="RoleTypeUi.CUSTODIAN"
       :prevent-actions="hasActiveSubForm"
