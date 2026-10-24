@@ -22,7 +22,7 @@ const filingText = {
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.h1)
 
 definePageMeta({
-  layout: 'connect-pay-tombstone-buttons',
+  layout: 'connect-pay-tombstone-buttons-split',
   middleware: ['connect-auth']
 })
 
@@ -98,10 +98,12 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
   saveFiling: { onClick: () => saveFiling(true) },
-  cancelFiling: { onClick: cancelFiling },
-  submitFiling: { form: 'agm-location-change-filing-step-2' },
+  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
+  submitFiling: { form: 'agm-location-change-filing-step-2', removeAlertSpacing: true },
+  // the split layout puts the right group (cancel/submit) under the fee summary
   steps: [
     {
+      rightStacked: true,
       submitFiling: {
         label: t('label.reviewAndConfirm'),
         form: 'agm-location-change-filing-step-1',
@@ -109,7 +111,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         onClick: undefined
       }
     },
-    { submitFiling: { label: t('label.fileAndPay') } }
+    { rightStacked: true, submitFiling: { label: t('label.fileAndPay') } }
   ],
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {

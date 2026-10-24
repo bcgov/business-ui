@@ -30,8 +30,9 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('fee-widget')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('AGM Location Change')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
+  // has buttons - cancel/submit under the fee summary, back/save in the bottom bar
+  await expect(page.getByTestId('right-buttons')).toBeVisible()
+  await expect(page.getByTestId('left-buttons')).toBeVisible()
   // has footer
   await expect(page.getByTestId('connect-main-footer')).toBeVisible()
 }
