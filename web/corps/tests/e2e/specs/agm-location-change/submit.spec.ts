@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import {
+  fillLocationChangeDetail,
+  goToReviewStep,
   setupAgmLocationChangePage,
   setupAgmLocationChangePageWithDraft,
   navigateToAgmLocationChangePage
@@ -43,13 +45,16 @@ test.describe('AGM Location Change - Filing Submit', () => {
   test('submits a new filing with all fields and correct payload shape', async ({ page }) => {
     await gotoAgmPage(page)
 
-    await page.getByLabel('AGM Year').fill('2025')
-    await page.getByLabel('Reason').fill('Shareholders are located outside BC.')
-    await page.getByLabel('AGM Location', { exact: true }).fill('Calgary, Alberta, Canada')
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Shareholders are located outside BC.',
+      location: 'Calgary, Alberta, Canada'
+    })
+    await goToReviewStep(page)
     await page.getByRole('checkbox', { name: /i certify/i }).check()
 
     const submitRequest = waitForFilingPost(page)
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'File and Pay' }).click()
     const request = await submitRequest
     const body = request.postDataJSON()
 
@@ -59,6 +64,8 @@ test.describe('AGM Location Change - Filing Submit', () => {
       agmLocation: 'Calgary, Alberta, Canada'
     })
     expect(body.filing.header.certifiedBy).toBeTruthy()
+    // the business's default folio is filed unless a different one is entered
+    expect(body.filing.header.folioNumber).toBe('folio-1234')
     expect(request.url()).not.toContain('draft=true')
 
     await assertFinalRedirect(page)
@@ -67,13 +74,16 @@ test.describe('AGM Location Change - Filing Submit', () => {
   test('submits a staff filing with authorization and no staff payment fields', async ({ page }) => {
     await gotoAgmPage(page, 'STAFF')
 
-    await page.getByLabel('AGM Year').fill('2025')
-    await page.getByLabel('Reason').fill('Staff authorization submission.')
-    await page.getByLabel('AGM Location', { exact: true }).fill('Seattle, Washington, USA')
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Staff authorization submission.',
+      location: 'Seattle, Washington, USA'
+    })
+    await goToReviewStep(page)
     await page.getByRole('checkbox', { name: /i confirm that the information/i }).check()
 
     const submitRequest = waitForFilingPost(page)
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'File and Pay' }).click()
     const request = await submitRequest
     const body = request.postDataJSON()
 
@@ -82,10 +92,61 @@ test.describe('AGM Location Change - Filing Submit', () => {
       reason: 'Staff authorization submission.',
       agmLocation: 'Seattle, Washington, USA'
     })
+    expect(body.filing.header.folioNumber).toBe('folio-1234')
     expect(body.filing.header.staffPaymentOption).toBeUndefined()
     expect(body.filing.header.waiveFees).toBeUndefined()
 
     await assertFinalRedirect(page)
+  })
+
+  test('files a different folio number for this transaction only', async ({ page }) => {
+    await gotoAgmPage(page)
+
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Shareholders are located outside BC.',
+      location: 'Calgary, Alberta, Canada'
+    })
+    await goToReviewStep(page)
+    await page.getByRole('radio', { name: 'Enter a different number for this transaction only' }).click()
+    await page.getByLabel('Temporary Folio or Reference Number').fill('TXN-123')
+    await page.getByRole('checkbox', { name: /i certify/i }).check()
+
+    const submitRequest = waitForFilingPost(page)
+    await page.getByRole('button', { name: 'File and Pay' }).click()
+    const body = (await submitRequest).postDataJSON()
+
+    expect(body.filing.header.folioNumber).toBe('TXN-123')
+  })
+
+  test('stays on the first step with an alert when required details are missing', async ({ page }) => {
+    await gotoAgmPage(page)
+
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+    await expect(page.getByText('Please complete required information')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'AGM Location Change', exact: true })).toBeVisible()
+  })
+
+  test('requires certification before filing from the review step', async ({ page }) => {
+    await gotoAgmPage(page)
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Shareholders are located outside BC.',
+      location: 'Calgary, Alberta, Canada'
+    })
+    await goToReviewStep(page)
+
+    let posted = false
+    page.on('request', (req) => {
+      if (req.url().includes(`/businesses/${identifier}/filings`) && req.method() === 'POST') {
+        posted = true
+      }
+    })
+    await page.getByRole('button', { name: 'File and Pay' }).click()
+
+    await expect(page.getByText('Please complete required information')).toBeVisible()
+    expect(posted).toBe(false)
   })
 
   test.describe('Save and resume', () => {

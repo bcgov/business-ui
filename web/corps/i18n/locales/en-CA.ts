@@ -30,6 +30,7 @@ export default {
     delayDate: 'Delay the Time of Dissolution or Cancellation',
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
+    fileAndPay: 'File and Pay',
     important: 'Important',
     noCustodians: 'There are currently no custodians.',
     noDirectors: 'No Directors',
@@ -58,6 +59,7 @@ export default {
       ],
       locationChangeDetail: 'Location Change Detail',
       locationChangeDetailDesc: 'Enter the calendar year the AGM is for and the AGM location outside B.C.',
+      reviewH1: 'Review Annual General Meeting (AGM) Location Change',
       title: 'AGM Location Change - BC Registries and Online Services'
     },
     annualReport: {

@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
 import type { BusinessOverride } from '#test-mocks'
@@ -100,6 +101,21 @@ export async function setupAgmLocationChangePageWithDraft(
       await route.fulfill({ status: 200, json: draftMock })
     }
   })
+}
+
+export async function fillLocationChangeDetail(
+  page: Page,
+  detail: { year: string, reason: string, location: string }
+) {
+  await page.getByLabel('AGM Year').fill(detail.year)
+  await page.getByLabel('Reason').fill(detail.reason)
+  await page.getByLabel('AGM Location', { exact: true }).fill(detail.location)
+}
+
+export async function goToReviewStep(page: Page) {
+  await page.getByRole('button', { name: 'Review and Confirm' }).click()
+  await expect(page.getByRole('heading', { name: 'Review Annual General Meeting (AGM) Location Change' }))
+    .toBeVisible()
 }
 
 export async function navigateToAgmLocationChangePage(page: Page, identifier: string, draftId?: string) {
