@@ -66,7 +66,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       { agmLocationChange: agmLocationChangePayload },
       {
         authorizationReceived,
-        // a blank "this transaction only" folio is filed as the business's default one
+        // a blank folio is filed as the business's default one
         folioNumber: formState.folio?.folioNumber || businessStore.businessFolio || undefined
       } as Record<string, unknown>
     )

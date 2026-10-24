@@ -7,6 +7,7 @@ import {
   setupAgmLocationChangePageWithDraft,
   navigateToAgmLocationChangePage
 } from '../../test-utils'
+import { fillOutFolio } from '#business/tests/e2e/test-utils'
 import { AGMLC } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -99,7 +100,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
     await assertFinalRedirect(page)
   })
 
-  test('files a different folio number for this transaction only', async ({ page }) => {
+  test('files a different folio number when one is entered', async ({ page }) => {
     await gotoAgmPage(page)
 
     await fillLocationChangeDetail(page, {
@@ -108,8 +109,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
       location: 'Calgary, Alberta, Canada'
     })
     await goToReviewStep(page)
-    await page.getByRole('radio', { name: 'Enter a different number for this transaction only' }).click()
-    await page.getByLabel('Temporary Folio or Reference Number').fill('TXN-123')
+    await fillOutFolio(page, 'TXN-123')
     await page.getByRole('checkbox', { name: /i certify/i }).check()
 
     const submitRequest = waitForFilingPost(page)

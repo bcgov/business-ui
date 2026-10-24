@@ -48,7 +48,6 @@ const reviewRows = computed(() => [
       v-model="store.formState.folio"
       data-testid="folio-section"
       name="folio"
-      :default-folio="businessStore.businessFolio"
     />
 
     <FormCertify

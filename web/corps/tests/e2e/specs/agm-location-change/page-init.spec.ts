@@ -79,7 +79,7 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(detail).toContainText('Shareholders are located outside BC.')
     await expect(detail).toContainText('Calgary, Alberta, Canada')
 
-    await expect(page.getByRole('radio', { name: 'Use Default Folio or Reference Number: folio-1234' })).toBeChecked()
+    await expect(page.getByTestId('folio-input')).toHaveValue('folio-1234')
     await expect(page.getByTestId('form-section-certify')).toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()

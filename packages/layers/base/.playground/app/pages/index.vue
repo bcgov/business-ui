@@ -250,13 +250,6 @@ const componentExamples: DropdownMenuItem[] = [
         to: localePath('/examples/components/Form/EffectiveDate/Range')
       },
       {
-        label: 'FormFolio',
-        children: [
-          { label: 'Default', to: localePath('/examples/components/Form/Folio/default') },
-          { label: 'With Default Folio', to: localePath('/examples/components/Form/Folio/with-default') }
-        ]
-      },
-      {
         label: 'FormForeignJurisdiction',
         to: localePath('/examples/components/Form/ForeignJurisdiction')
       },
