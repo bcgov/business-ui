@@ -69,20 +69,22 @@ export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
 } & (
   | {
     variant?: 'default' | 'correct'
-    correctNameOptions: CorrectNameOption[]
-    nrAllowedActionsTypes: NrRequestActionCode[]
     nameTranslationAllowedActions?: ManageAllowedAction[]
     preventActions?: boolean
     actionPreventedSignal?: number
     nested?: boolean
+    // NB: These props are removed currently as they are not necessary for corrections
+    // correctNameOptions: CorrectNameOption[]
+    // nrAllowedActionsTypes: NrRequestActionCode[]
   }
   | {
     variant: 'readonly' | 'correct-readonly'
-    correctNameOptions?: never
-    nrAllowedActionsTypes?: never
     nameTranslationAllowedActions?: never
     preventActions?: never
     actionPreventedSignal?: never
     nested?: never
+    // NB: These props are removed currently as they are not necessary for corrections
+    // correctNameOptions?: never
+    // nrAllowedActionsTypes?: never
   }
 )
