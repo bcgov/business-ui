@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import {
+  fillLocationChangeDetail,
+  goToReviewStep,
   setupAgmLocationChangePage,
   setupAgmLocationChangePageWithDraft,
   navigateToAgmLocationChangePage
@@ -28,8 +30,9 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('fee-widget')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('AGM Location Change')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
+  // has buttons - cancel/submit under the fee summary, back/save in the bottom bar
+  await expect(page.getByTestId('right-buttons')).toBeVisible()
+  await expect(page.getByTestId('left-buttons')).toBeVisible()
   // has footer
   await expect(page.getByTestId('connect-main-footer')).toBeVisible()
 }
@@ -48,8 +51,9 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('Reason')).toBeVisible()
     await expect(page.getByLabel('AGM Location', { exact: true })).toBeVisible()
 
-    // Certify section visible for non-staff
-    await expect(page.getByTestId('form-section-certify')).toBeVisible()
+    // Certify is on the review step
+    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Review and Confirm' })).toBeVisible()
 
     // Fields start empty
     await expect(page.getByLabel('AGM Year')).toHaveValue('')
@@ -57,7 +61,36 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('AGM Location', { exact: true })).toHaveValue('')
   })
 
-  test('should display authorization section for staff (no staff payment — no-fee filing)', async ({ page }) => {
+  test('should display the review step with the details, folio and certify for non-staff', async ({ page }) => {
+    await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
+    await navigateToAgmLocationChangePage(page, identifier)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Shareholders are located outside BC.',
+      location: 'Calgary, Alberta, Canada'
+    })
+    await goToReviewStep(page)
+
+    const detail = page.getByTestId('review-location-change-detail')
+    await expect(detail).toContainText('2025')
+    await expect(detail).toContainText('Shareholders are located outside BC.')
+    await expect(detail).toContainText('Calgary, Alberta, Canada')
+
+    await expect(page.getByTestId('folio-input')).toHaveValue('folio-1234')
+    await expect(page.getByTestId('form-section-certify')).toBeVisible()
+    await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()
+
+    // back returns to the details with the entered values kept
+    await page.getByRole('button', { name: 'Back' }).click()
+    await expect(page.getByLabel('AGM Year')).toHaveValue('2025')
+  })
+
+  // no staff payment section - this filing has no fee
+  test('should display authorization and folio on the review step for staff', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'STAFF')
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
@@ -65,8 +98,17 @@ test.describe('AGM Location Change - Page init', () => {
     await assertCommonElements(page)
 
     await expect(page.getByTestId('form-section-location-change-detail')).toBeVisible()
-    await expect(page.getByTestId('form-section-authorization')).toBeVisible()
+    await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
 
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'Staff authorization submission.',
+      location: 'Seattle, Washington, USA'
+    })
+    await goToReviewStep(page)
+
+    await expect(page.getByTestId('form-section-authorization')).toBeVisible()
+    await expect(page.getByTestId('folio-section')).toBeVisible()
     // Certify not visible for staff
     await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
   })

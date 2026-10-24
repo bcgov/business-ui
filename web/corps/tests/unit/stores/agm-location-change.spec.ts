@@ -32,12 +32,16 @@ const mockBusiness = {
   foundingDate: '2022-01-01T12:00:00+00:00'
 }
 
+const mockBusinessFolio = { value: '' }
 mockNuxtImport('useBusinessStore', original => () => {
   const orig = typeof original === 'function' ? original() : {}
   return {
     ...orig,
     business: mockBusiness,
     businessIdentifier: identifier,
+    get businessFolio() {
+      return mockBusinessFolio.value
+    },
     isBaseCompany: vi.fn().mockReturnValue(true)
   }
 })
@@ -84,6 +88,7 @@ describe('useAgmLocationChangeStore', () => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
     mockIsStaff.value = false
+    mockBusinessFolio.value = ''
     store = useAgmLocationChangeStore()
     mockSaveOrUpdateDraftFiling.mockResolvedValue(getDraftMock())
     mockPostFiling.mockResolvedValue(undefined)
@@ -159,6 +164,27 @@ describe('useAgmLocationChangeStore', () => {
       expect(store.formState.year).toBe('')
       expect(store.formState.reason).toBe('')
       expect(store.formState.agmLocation).toBe('')
+    })
+
+    it('should start the folio at the business default folio for a new filing', async () => {
+      mockBusinessFolio.value = '777555222'
+      mockInitFiling.mockResolvedValue({ draftFiling: undefined })
+
+      await store.init(identifier)
+
+      expect(store.formState.folio).toEqual({ folioNumber: '777555222' })
+      expect(store.initialFormState.folio).toEqual({ folioNumber: '777555222' })
+    })
+
+    it('should restore the folio saved on a draft', async () => {
+      mockBusinessFolio.value = '777555222'
+      mockInitFiling.mockResolvedValue({
+        draftFiling: getDraftMock({ year: '2025', reason: 'Reason', agmLocation: 'Location' }, { folioNumber: 'TXN-1' })
+      })
+
+      await store.init(identifier, String(draftFilingId))
+
+      expect(store.formState.folio).toEqual({ folioNumber: 'TXN-1' })
     })
   })
 
@@ -264,6 +290,31 @@ describe('useAgmLocationChangeStore', () => {
       const header = getPayload().filing.header
       expect(header.staffPaymentOption).toBeUndefined()
       expect(header.waiveFees).toBeUndefined()
+    })
+
+    it.each([
+      ['the entered folio', 'TXN-1', '777555222', 'TXN-1'],
+      ['the business default folio when the entered one is blank', '', '777555222', '777555222'],
+      ['no folio when there is none', '', '', undefined]
+    ])('should file %s in the header', async (_, folioNumber, businessFolio, expected) => {
+      mockBusinessFolio.value = businessFolio
+      await initAndEdit()
+      store.formState.folio = { folioNumber }
+
+      await store.submit(true)
+
+      expect(getPayload().filing.header.folioNumber).toBe(expected)
+    })
+
+    it('should file the folio for staff too', async () => {
+      mockIsStaff.value = true
+      store.$reset()
+      await initAndEdit()
+      store.formState.folio = { folioNumber: 'STAFF-1' }
+
+      await store.submit(true)
+
+      expect(getPayload().filing.header.folioNumber).toBe('STAFF-1')
     })
 
     it('should build the business block from the business store', async () => {

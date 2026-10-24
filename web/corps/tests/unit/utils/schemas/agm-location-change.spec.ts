@@ -16,6 +16,7 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
       expect(result.data!.year).toBe('')
       expect(result.data!.reason).toBe('')
       expect(result.data!.agmLocation).toBe('')
+      expect(result.data!.folio).toEqual({ folioNumber: '' })
       expect((result.data as any).certify).toEqual({ isCertified: false })
     })
 
@@ -40,6 +41,7 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
 
       expect(result.success).toBe(true)
       expect(result.data!.year).toBe('')
+      expect(result.data!.folio).toEqual({ folioNumber: '' })
       expect((result.data as any).authorization).toBeDefined()
     })
 

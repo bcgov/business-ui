@@ -2,10 +2,12 @@ import { z } from 'zod'
 
 /** Base schema for store defaults and type inference. */
 export function getAgmLocationChangeSchema(isStaff: boolean) {
+  // staff file the folio too - this filing has no fee, so there is no staff payment section
   const base = z.object({
     year: z.string().default(''),
     reason: z.string().default(''),
-    agmLocation: z.string().default('')
+    agmLocation: z.string().default(''),
+    ...getFolioSectionShape()
   })
 
   if (isStaff) {

@@ -42,6 +42,8 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       formState.agmLocation = draft.agmLocation ?? ''
     }
 
+    formState.folio = { folioNumber: draftFiling?.filing?.header?.folioNumber || businessStore.businessFolio }
+
     await nextTick()
     initialFormState.value = cloneDeep(formState)
     initializing.value = false
@@ -62,7 +64,11 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       businessStore.business!,
       FilingType.AGM_LOCATION_CHANGE,
       { agmLocationChange: agmLocationChangePayload },
-      { authorizationReceived } as Record<string, unknown>
+      {
+        authorizationReceived,
+        // a blank folio is filed as the business's default one
+        folioNumber: formState.folio?.folioNumber || businessStore.businessFolio || undefined
+      } as Record<string, unknown>
     )
 
     const header = filingPayload.filing.header as Record<string, unknown>
