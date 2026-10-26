@@ -30,20 +30,21 @@ const businessFolio = computed(() => defaultFolio ?? businessStore.businessFolio
 const folioOption = ref<FolioOption>(
   !model.value.folioNumber || model.value.folioNumber === businessFolio.value ? 'default' : 'transaction'
 )
-let transactionFolio = folioOption.value === 'transaction' ? model.value.folioNumber ?? '' : ''
+
+// the design marks the section optional when the business folio is offered
+const fieldsetLabel = computed(() => businessFolio.value ? 'label.folioOrRefNumberOpt' : 'label.folioOrRefNumber')
 
 const folioOptions = computed<RadioGroupItem[]>(() => [
   { label: t('label.useDefaultFolio', { folio: businessFolio.value }), value: 'default' },
   { label: t('label.useTransactionFolio'), value: 'transaction' }
 ])
 
+// picking the default files the business folio; picking a different number starts from an empty input
 watch(folioOption, (option) => {
   if (option === 'default') {
-    transactionFolio = model.value.folioNumber ?? ''
     model.value.folioNumber = businessFolio.value
-  } else if (!model.value.folioNumber || model.value.folioNumber === businessFolio.value) {
-    // switched by the user: bring back the number they entered earlier, if any
-    model.value.folioNumber = transactionFolio
+  } else if (model.value.folioNumber === businessFolio.value) {
+    model.value.folioNumber = ''
   }
 })
 
@@ -67,7 +68,7 @@ defineExpose({
     :name
   >
     <ConnectFieldset
-      :label="order ? `${order}. ${$t('label.folioOrRefNumber')}` : $t('label.folioOrRefNumber')"
+      :label="order ? `${order}. ${$t(fieldsetLabel)}` : $t(fieldsetLabel)"
       :description="$t('text.folioDescription')"
       :error="businessFolio ? formError : undefined"
       body-variant="card"

@@ -5,7 +5,7 @@ export function getFolioSchema() {
   const t = useNuxtApp().$i18n.t
 
   return z.object({
-    folioNumber: z.string().max(50, t('connect.validation.maxChars', { count: 50 })).optional()
+    folioNumber: z.string().max(30, t('connect.validation.maxChars', { count: 30 })).optional()
   })
 }
 

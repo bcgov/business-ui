@@ -69,16 +69,24 @@ describe('FormFolio', () => {
     expect(model.folioNumber).toBe('TXN-1')
   })
 
-  it('switches back to the default folio and keeps the entered number for later', async () => {
+  it('returns to the default folio when the first option is selected again', async () => {
     const { wrapper, model } = await mountFolio(defaultFolio, defaultFolio)
     await selectOption(wrapper, 1)
     await wrapper.find('#folio-input').setValue('TXN-1')
 
     await selectOption(wrapper, 0)
     expect(model.folioNumber).toBe(defaultFolio)
+    expect(wrapper.find('#folio-input').exists()).toBe(false)
 
     await selectOption(wrapper, 1)
-    expect(model.folioNumber).toBe('TXN-1')
+    expect(model.folioNumber).toBe('')
+  })
+
+  it('marks the section optional and uses the design description when the business folio is offered', async () => {
+    const { wrapper } = await mountFolio(defaultFolio, defaultFolio)
+
+    expect(wrapper.text()).toContain('Folio or Reference Number (Optional)')
+    expect(wrapper.text()).toContain('This number will appear on your receipt and will be linked to this transaction.')
   })
 
   it('shows the entered number when the model is filled after mount, e.g. a resumed draft', async () => {

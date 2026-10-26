@@ -821,7 +821,7 @@ export default {
     filingDateWillBeDate: 'The {filing} date and time for {name} will be {boldStart}{date}{boldEnd}.',
     filingWillTakeEffectOnDate: 'The {filing} will take effect on {boldStart}{date}{boldEnd}.',
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
-    folioDescription: 'This is meant for your own tracking purposes and will appear on your receipt.',
+    folioDescription: 'This number will appear on your receipt and will be linked to this transaction. It is meant for your own tracking purposes.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     haspreferredName: 'This person also has another name they prefer to use',
     incorporation: 'incorporation',

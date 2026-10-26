@@ -65,12 +65,12 @@ test.describe('Form Validation', () => {
     })
 
     test('should display a max length error', async ({ page }) => {
-      const folioInput = page.getByLabel('Folio or Reference Number (Optional)')
-      await folioInput.fill('a'.repeat(51))
+      const folioInput = page.getByTestId('folio-input')
+      await folioInput.fill('a'.repeat(31))
       // click outside to trigger validation
       await page.getByText('Folio or Reference Number').first().click()
       await expect(page.locator('fieldset').filter({ hasText: 'Folio or Reference Number' }).first())
-        .toContainText('Maximum 50 characters')
+        .toContainText('Maximum 30 characters')
     })
   })
 })
