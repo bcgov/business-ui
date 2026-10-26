@@ -22,7 +22,7 @@ const filingText = {
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.h1)
 
 definePageMeta({
-  layout: 'connect-pay-tombstone-buttons-split',
+  layout: 'connect-pay-tombstone-buttons-stacked',
   middleware: ['connect-auth']
 })
 
@@ -71,7 +71,7 @@ async function submitFiling() {
 async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock && !canSave()) {
-      return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+      return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
     }
     await store.submit(false)
     revokeBeforeUnload()
@@ -97,13 +97,13 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
-  saveFiling: { onClick: () => saveFiling(true) },
+  backButton: { removeAlertSpacing: true },
+  saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
-  submitFiling: { form: 'agm-location-change-filing-step-2', removeAlertSpacing: true },
-  // the split layout puts the right group (cancel/submit) under the fee summary
+  submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   steps: [
     {
-      rightStacked: true,
+      cancelFiling: { class: 'min-w-[300px] justify-center' },
       submitFiling: {
         label: t('label.reviewAndConfirm'),
         form: 'agm-location-change-filing-step-1',
@@ -111,8 +111,9 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         onClick: undefined
       }
     },
-    { rightStacked: true, submitFiling: { label: t('label.fileAndPay') } }
+    { submitFiling: { label: t('label.fileAndPay'), form: 'agm-location-change-filing-step-2', type: 'submit' } }
   ],
+  buttonLayout: 'stackedDefault',
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {
       await saveFiling(false)

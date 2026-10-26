@@ -14,7 +14,7 @@ test.describe('AGM Location Change - Task Guards', () => {
 
   test('should prevent save when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Save and Resume Later' }).click()
-    await expect(page.getByTestId('left-buttons')).toContainText('There are no changes to save')
+    await expect(page.getByTestId('right-buttons')).toContainText('There are no changes to save')
   })
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {

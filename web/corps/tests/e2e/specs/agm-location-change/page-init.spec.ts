@@ -30,9 +30,8 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('fee-widget')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('AGM Location Change')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
-  // has buttons - cancel/submit under the fee summary, back/save in the bottom bar
-  await expect(page.getByTestId('right-buttons')).toBeVisible()
-  await expect(page.getByTestId('left-buttons')).toBeVisible()
+  // has buttons
+  await expect(page.getByTestId('connect-button-control')).toBeVisible()
   // has footer
   await expect(page.getByTestId('connect-main-footer')).toBeVisible()
 }
@@ -79,7 +78,11 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(detail).toContainText('Shareholders are located outside BC.')
     await expect(detail).toContainText('Calgary, Alberta, Canada')
 
-    await expect(page.getByTestId('folio-input')).toHaveValue('folio-1234')
+    // the business's folio on file is offered as the default
+    const folioOption = page.getByTestId('folio-option')
+    await expect(folioOption).toContainText('Use Default Folio or Reference Number: folio-1234')
+    await expect(folioOption.getByRole('radio').first()).toBeChecked()
+    await expect(page.getByTestId('folio-input')).not.toBeVisible()
     await expect(page.getByTestId('form-section-certify')).toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()

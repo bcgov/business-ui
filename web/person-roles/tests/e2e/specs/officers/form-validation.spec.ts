@@ -56,6 +56,11 @@ test.describe('Form Validation', () => {
 
   test.describe('Folio Form', () => {
     test.beforeEach(async ({ page }) => {
+      // businesses with a folio on file get a choice first; pick a number for this transaction only
+      const transactionOption = page.getByTestId('folio-option').getByRole('radio').nth(1)
+      if (await transactionOption.count()) {
+        await transactionOption.click()
+      }
       await expect(page.getByTestId('folio-input')).toBeVisible()
     })
 
