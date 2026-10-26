@@ -83,7 +83,7 @@ onMounted(async () => {
     <div
       :class="{
         'rounded-b overflow-hidden bg-white border-l border-r border-b border-shade-secondary': container,
-        'border-l-error border-l-3': error && !container
+        'border-l-error border-l-3': error && container
       }"
     >
       <slot />
