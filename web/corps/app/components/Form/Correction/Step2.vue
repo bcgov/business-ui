@@ -27,7 +27,10 @@ const requiresAuthorization = computed(() => {
   return legalType ? CORPS.includes(legalType) : false
 })
 
-const yourCompanyFieldOverrides = computed(() => getYourCompanyFieldOverrides(store.correctedFilingType))
+const yourCompanyFieldOverrides = computed(() => getYourCompanyFieldOverrides(
+  store.correctedFilingType,
+  store.correctedFilingSubType as FilingSubType
+))
 
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]

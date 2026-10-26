@@ -32,7 +32,10 @@ const directorFormProps = computed(() => {
   }
 })
 
-const yourCompanyFieldOverrides = computed(() => getYourCompanyFieldOverrides(store.correctedFilingType))
+const yourCompanyFieldOverrides = computed(() => getYourCompanyFieldOverrides(
+  store.correctedFilingType,
+  store.correctedFilingSubType as FilingSubType
+))
 
 // transient signal for child-initiated prevented actions
 const actionPreventedSignal = ref(0)
