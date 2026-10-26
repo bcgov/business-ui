@@ -75,10 +75,13 @@ async function assertCorrectOffices(page: Page) {
   const tbody = section.locator('tbody')
   await expect(tbody).toContainText('Registered Office')
   await expect(tbody).toContainText('Records Office')
-  await expect(tbody).toContainText('Liquidation Records Office')
+
+  // Mock data is for an Incorporation Application (IA)
+  // An IA does not allow correcting the Liquidation Records Office
+  await expect(tbody).not.toContainText('Liquidation Records Office')
 
   const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(3)
+  await expect(rows).toHaveCount(2)
 }
 
 async function assertCorrectDirectors(page: Page) {
