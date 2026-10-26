@@ -31,8 +31,10 @@ const folioOption = ref<FolioOption>(
   !model.value.folioNumber || model.value.folioNumber === businessFolio.value ? 'default' : 'transaction'
 )
 
-// the design marks the section optional when the business folio is offered
-const fieldsetLabel = computed(() => businessFolio.value ? 'label.folioOrRefNumberOpt' : 'label.folioOrRefNumber')
+// the section text differs between the two states of the design
+const fieldsetDescription = computed(() =>
+  businessFolio.value ? 'text.folioDefaultDescription' : 'text.folioDescription'
+)
 
 const folioOptions = computed<RadioGroupItem[]>(() => [
   { label: t('label.useDefaultFolio', { folio: businessFolio.value }), value: 'default' },
@@ -68,8 +70,8 @@ defineExpose({
     :name
   >
     <ConnectFieldset
-      :label="order ? `${order}. ${$t(fieldsetLabel)}` : $t(fieldsetLabel)"
-      :description="$t('text.folioDescription')"
+      :label="order ? `${order}. ${$t('label.folioOrRefNumberOpt')}` : $t('label.folioOrRefNumberOpt')"
+      :description="$t(fieldsetDescription)"
       :error="businessFolio ? formError : undefined"
       body-variant="card"
       orientation="vertical"
@@ -94,16 +96,19 @@ defineExpose({
       <ConnectFormFieldWrapper
         v-else
         :label="$t('label.folioOrRefNumber')"
-        orientation="horizontal"
+        orientation="vertical"
         :error="formError"
         padding-class="xy-default"
       >
-        <ConnectFormInput
-          v-model="model.folioNumber"
-          input-id="folio-input"
-          :label="$t('label.folioOrRefNumberOpt')"
-          name="folioNumber"
-        />
+        <div class="flex flex-col gap-4">
+          <p>{{ $t('text.folioReceiptDescription') }}</p>
+          <ConnectFormInput
+            v-model="model.folioNumber"
+            input-id="folio-input"
+            :label="$t('label.folioOrRefNumberOpt')"
+            name="folioNumber"
+          />
+        </div>
       </ConnectFormFieldWrapper>
     </ConnectFieldset>
   </UForm>

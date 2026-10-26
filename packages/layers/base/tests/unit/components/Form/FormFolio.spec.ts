@@ -34,6 +34,9 @@ describe('FormFolio', () => {
 
     expect(wrapper.find('#folio-input').exists()).toBe(true)
     expect(wrapper.find('[data-testid="folio-option"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Folio or Reference Number (Optional)')
+    expect(wrapper.text()).toContain('You can use a unique reference number to help keep your transactions organized.')
+    expect(wrapper.text()).toContain('This number will appear on your receipt and will be linked to this transaction.')
   })
 
   it('offers the default folio or a different one when the business has a folio on file', async () => {
@@ -86,7 +89,8 @@ describe('FormFolio', () => {
     const { wrapper } = await mountFolio(defaultFolio, defaultFolio)
 
     expect(wrapper.text()).toContain('Folio or Reference Number (Optional)')
-    expect(wrapper.text()).toContain('This number will appear on your receipt and will be linked to this transaction.')
+    expect(wrapper.text()).toContain('linked to this transaction. It is meant for your own tracking purposes.')
+    expect(wrapper.text()).not.toContain('You can use a unique reference number')
   })
 
   it('shows the entered number when the model is filled after mount, e.g. a resumed draft', async () => {
