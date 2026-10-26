@@ -86,10 +86,9 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByTestId('form-section-certify')).toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()
-
-    // back returns to the details with the entered values kept
-    await page.getByRole('button', { name: 'Back' }).click()
-    await expect(page.getByLabel('AGM Year')).toHaveValue('2025')
+    // the design has no back or save buttons
+    await expect(page.getByRole('button', { name: 'Back' })).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Save and Resume Later' })).not.toBeVisible()
   })
 
   // no staff payment section - this filing has no fee

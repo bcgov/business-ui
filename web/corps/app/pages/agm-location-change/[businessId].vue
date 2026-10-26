@@ -43,7 +43,7 @@ const {
 
 function onStepError(event: FormErrorEvent) {
   onFormSubmitError(event)
-  setBtnCtrlAlert(t('validation.pleaseCompleteRequiredInfo'), 'right', 1)
+  setBtnCtrlAlert(t('validation.pleaseCompleteRequiredInfo'), 'right', 0)
 }
 
 function reviewAndConfirm() {
@@ -68,19 +68,14 @@ async function submitFiling() {
   }
 }
 
-async function saveFiling(enableUnsavedChangesBlock = true) {
+// the design has no Save and Resume Later button, so a draft is only saved when the session is about to expire
+async function saveFiling() {
   try {
-    if (enableUnsavedChangesBlock && !canSave()) {
-      return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
-    }
     await store.submit(false)
     revokeBeforeUnload()
     await navigateTo(dashboardUrl.value, { external: true })
-  } catch (error) {
-    if (enableUnsavedChangesBlock) {
-      await modal.openSaveFilingErrorModal(error)
-      initBeforeUnload()
-    }
+  } catch {
+    // the session is ending, there is nothing to show
   }
 }
 
@@ -97,13 +92,13 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
-  backButton: { removeAlertSpacing: true },
-  saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
-  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
+  // cancel and the main button only, under the fee summary, as in the design
+  backButton: null,
+  saveFiling: null,
+  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   steps: [
     {
-      cancelFiling: { class: 'min-w-[300px] justify-center' },
       submitFiling: {
         label: t('label.reviewAndConfirm'),
         form: 'agm-location-change-filing-step-1',
@@ -116,7 +111,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   buttonLayout: 'stackedDefault',
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {
-      await saveFiling(false)
+      await saveFiling()
     }
   }
 })
