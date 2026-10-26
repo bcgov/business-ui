@@ -82,12 +82,18 @@ export function toFormattedDateStr(
  * @example "2021-01-01 08:00:00 GMT" -> "January 1, 2021 at 12:00 pm Pacific time"
  */
 export function toPacificDateTime(date: Date): string | undefined {
-  const dateStr = toFormattedDateStr(date, { ...DateTime.DATETIME_FULL, timeZoneName: undefined })
-  // useNuxtApp().$i18n works outside setup (e.g. async calls after await), unlike useI18n()
+  const dt = DateTime.fromJSDate(date, { zone: 'America/Vancouver' })
+  if (!dt.isValid) {
+    return undefined
+  }
+
   const t = useNuxtApp().$i18n.t
-  return dateStr
-    ? `${dateStr.replace('AM', 'am').replace('PM', 'pm')} ${t('label.pacificTime')}`
-    : undefined
+
+  const formatted = dt.toFormat("LLLL d, yyyy 'at' h:mm a")
+    .replace('AM', 'am')
+    .replace('PM', 'pm')
+
+  return `${formatted} ${t('label.pacificTime')}`
 }
 
 /**
