@@ -130,10 +130,6 @@ const isReadonly = computed(() => ({
   legalType: getIsReadOnly('legalType'),
   outDate: getIsReadOnly('outDate')
 }))
-
-defineOptions({
-  inheritAttrs: false
-})
 </script>
 
 <template>
