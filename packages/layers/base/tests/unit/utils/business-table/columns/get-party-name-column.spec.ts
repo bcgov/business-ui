@@ -86,7 +86,7 @@ describe('getPartyNameColumn', () => {
     expect(preferredDiv.children[1].props.class).toBe('text-sm font-normal')
   })
 
-  it('renders formerly name for a NAME_CHANGED director when showFormerName is true', () => {
+  it('renders the former name for a NAME_CHANGED party by default', () => {
     const row = {
       original: {
         new: {
@@ -108,7 +108,7 @@ describe('getPartyNameColumn', () => {
         }
       }
     }
-    const column = getPartyNameColumn('first', undefined, true) as any
+    const column = getPartyNameColumn('first') as any
     mockGetIsRowRemoved.mockReturnValue(false)
     mockGetTableBadges.mockReturnValue([])
 
@@ -121,7 +121,7 @@ describe('getPartyNameColumn', () => {
     expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic')
   })
 
-  it('does not render formerly name when showFormerName is false (default)', () => {
+  it('does not render the former name when showFormerName is false', () => {
     const row = {
       original: {
         new: {
@@ -143,7 +143,7 @@ describe('getPartyNameColumn', () => {
         }
       }
     }
-    const column = getPartyNameColumn() as any
+    const column = getPartyNameColumn('first', undefined, false) as any
     mockGetIsRowRemoved.mockReturnValue(false)
     mockGetTableBadges.mockReturnValue([])
 

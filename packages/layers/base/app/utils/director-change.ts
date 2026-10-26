@@ -12,7 +12,6 @@ export function getDirectorChangeManagePartiesProps(requireFirstName = false) {
   return {
     roleType: RoleTypeUi.DIRECTOR,
     columnsToDisplay: ['name', 'mailing', 'delivery', 'effectiveDates', 'actions'] as TablePartyColumnName[],
-    showFormerName: true,
     allowedActions: [
       ManageAllowedAction.ADD,
       ManageAllowedAction.REMOVE,

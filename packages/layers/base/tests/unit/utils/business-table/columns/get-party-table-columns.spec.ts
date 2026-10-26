@@ -53,14 +53,14 @@ describe('getPartyTableColumns', () => {
   it('should not show the former name by default', () => {
     getPartyTableColumns()
 
-    expect(getPartyNameColumn).toHaveBeenCalledWith('first', undefined, false)
+    expect(getPartyNameColumn).toHaveBeenCalledWith('first', undefined, true)
   })
 
-  it('should pass showFormerName through to the name column', () => {
+  it('should pass a showFormerName opt-out through to the name column', () => {
     const badges = { [ActionType.NAME_CHANGED]: 'Corrected' }
-    getPartyTableColumns(['name'], badges, true)
+    getPartyTableColumns(['name'], badges, false)
 
-    expect(getPartyNameColumn).toHaveBeenCalledWith('first', badges, true)
+    expect(getPartyNameColumn).toHaveBeenCalledWith('first', badges, false)
   })
 
   it('should return custom column config and ordering', () => {

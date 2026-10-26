@@ -21,7 +21,7 @@ interface PartyFormProps {
 export type ManagePartiesProps = ManageBaseProps & {
   columnsToDisplay?: TablePartyColumnName[]
   labelOverrides?: TableLabelOverrides
-  // opt-in since this table is shared by every party type
+  // former name shows for NAME_CHANGED parties in every party table; pass false to opt out
   showFormerName?: boolean
 } & (
   | {

@@ -5,7 +5,7 @@ const {
   data,
   columns = ['name', 'mailing', 'delivery', 'actions'],
   labelOverrides,
-  showFormerName = false
+  showFormerName = true
 } = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean

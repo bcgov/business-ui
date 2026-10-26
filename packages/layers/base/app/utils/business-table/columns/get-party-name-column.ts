@@ -5,7 +5,7 @@ import { CEASED_CLASS, DELETED_CLASS } from './constants'
 export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: PartyRoleSchema, actions: ActionType[] }>(
   metaOption: TableColumnMetaOption = 'first',
   badgeLabelOverrides?: Partial<Record<ActionType, string>>,
-  showFormerName = false
+  showFormerName = true
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
