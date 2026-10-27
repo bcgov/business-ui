@@ -39,6 +39,14 @@ describe('FormFolio', () => {
     expect(wrapper.text()).toContain('This number will appear on your receipt and will be linked to this transaction.')
   })
 
+  it('offers help with folio numbers in both states', async () => {
+    const { wrapper: noDefault } = await mountFolio('')
+    expect(noDefault.text()).toContain('Help with Folio or Reference Numbers')
+
+    const { wrapper: withDefault } = await mountFolio(defaultFolio, defaultFolio)
+    expect(withDefault.text()).toContain('Help with Folio or Reference Numbers')
+  })
+
   it('offers the default folio or a different one when the business has a folio on file', async () => {
     const { wrapper } = await mountFolio(defaultFolio, defaultFolio)
 

@@ -71,28 +71,43 @@ defineExpose({
   >
     <ConnectFieldset
       :label="order ? `${order}. ${$t('label.folioOrRefNumberOpt')}` : $t('label.folioOrRefNumberOpt')"
-      :description="$t(fieldsetDescription)"
       :error="businessFolio ? formError : undefined"
       body-variant="card"
       orientation="vertical"
     >
-      <div
+      <template #description>
+        <div class="flex flex-col gap-2">
+          <p>{{ $t(fieldsetDescription) }}</p>
+          <HelpExpansion
+            :label="$t('label.helpWithFolioOrRefNumbers')"
+            t-key="text.folioHelp"
+          />
+        </div>
+      </template>
+      <URadioGroup
         v-if="businessFolio"
-        class="px-4 py-6 sm:px-7.5 space-y-4"
+        v-model="folioOption"
+        data-testid="folio-option"
+        class="px-4 py-6 sm:px-7.5"
+        :items="folioOptions"
+        size="xl"
+        :ui="{ fieldset: 'gap-y-3' }"
       >
-        <URadioGroup
-          v-model="folioOption"
-          data-testid="folio-option"
-          :items="folioOptions"
-        />
-        <ConnectFormInput
-          v-if="folioOption === 'transaction'"
-          v-model="model.folioNumber"
-          input-id="folio-input"
-          :label="$t('label.folioOrRefNumberOpt')"
-          name="folioNumber"
-        />
-      </div>
+        <template #description="{ item }">
+          <!-- under its option so the input lines up with the option text, as in the design -->
+          <div
+            v-if="item.value === 'transaction' && folioOption === 'transaction'"
+            class="pt-2"
+          >
+            <ConnectFormInput
+              v-model="model.folioNumber"
+              input-id="folio-input"
+              :label="$t('label.folioOrRefNumberOpt')"
+              name="folioNumber"
+            />
+          </div>
+        </template>
+      </URadioGroup>
       <ConnectFormFieldWrapper
         v-else
         :label="$t('label.folioOrRefNumber')"
