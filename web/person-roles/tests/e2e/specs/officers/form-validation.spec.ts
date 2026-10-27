@@ -56,16 +56,21 @@ test.describe('Form Validation', () => {
 
   test.describe('Folio Form', () => {
     test.beforeEach(async ({ page }) => {
+      // businesses with a folio on file get a choice first; pick a number for this transaction only
+      const transactionOption = page.getByTestId('folio-option').getByRole('radio').nth(1)
+      if (await transactionOption.count()) {
+        await transactionOption.click()
+      }
       await expect(page.getByTestId('folio-input')).toBeVisible()
     })
 
     test('should display a max length error', async ({ page }) => {
-      const folioInput = page.getByLabel('Folio or Reference Number (Optional)')
-      await folioInput.fill('a'.repeat(51))
+      const folioInput = page.getByTestId('folio-input')
+      await folioInput.fill('a'.repeat(31))
       // click outside to trigger validation
       await page.getByText('Folio or Reference Number').first().click()
       await expect(page.locator('fieldset').filter({ hasText: 'Folio or Reference Number' }).first())
-        .toContainText('Maximum 50 characters')
+        .toContainText('Maximum 30 characters')
     })
   })
 })
