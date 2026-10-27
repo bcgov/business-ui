@@ -634,6 +634,7 @@ export default {
     useTransactionFolio: 'Enter a different number for this transaction only',
     useTheCorporationNumberAsTheName: 'Use the incorporation number {boldStart}{corpnum}{boldEnd} as the name',
     newNameRequestNumber: 'New Name Request Number',
+    viewAndChangeBusinessInfo: 'View and Change Business Information',
     viewDetails: 'View Details',
     viewDocuments: 'View Documents',
     voluntaryDissolutionPending: 'Voluntary Dissolution Pending',
@@ -824,7 +825,25 @@ export default {
     finishTaskBeforeOtherChanges: 'Finish this task before making other changes.',
     folioDefaultDescription: 'This number will appear on your receipt and will be linked to this transaction. It is meant for your own tracking purposes.',
     folioDescription: 'You can use a unique reference number to help keep your transactions organized. This number is meant for your own tracking purposes.',
-    folioHelp: 'If you file forms for a number of companies, you may want to enter a folio or reference number to help you keep track of your transactions.',
+    folioHelp: {
+      title: 'Folio or Reference Number',
+      noFolio: {
+        q1: 'What is a folio or reference number?',
+        a1: 'A folio or reference number is a custom number you can create to help organize and track your transactions. This number is meant for your own tracking purposes.',
+        q2: 'Where does this number appear?',
+        a2: 'The folio or reference number will be printed on the receipt for this transaction. This number will also display next to this transaction under the transaction history list.',
+        q3: 'Is there a way to use the same number for all transactions related to this business?',
+        a3: 'Yes. You can add a number that will display on all transactions related to this business by going to the {link} page and adding a default folio or reference number.'
+      },
+      withFolio: {
+        q1: 'What is a default folio or reference number?',
+        a1: 'A folio or reference number is a custom number you can create to help organize and track your transactions. It is meant for your own tracking purposes. A default folio or reference number appears on all receipts for this business. This number will also display next to each transaction for this business under the transaction history list.',
+        q2: 'What if I enter a different number for this transaction only?',
+        a2: 'The number that you enter will appear on the receipt for this transaction only. Your default folio or reference number won\'t be affected.',
+        q3: 'How do I change my default folio or reference number?',
+        a3: 'Go to the {link} page to change your default folio or reference number.'
+      }
+    },
     folioReceiptDescription: 'This number will appear on your receipt and will be linked to this transaction.',
     formatYYYYMMDD: 'Format: YYYY-MM-DD',
     haspreferredName: 'This person also has another name they prefer to use',

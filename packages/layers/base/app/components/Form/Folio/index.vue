@@ -12,6 +12,7 @@ const { defaultFolio } = defineProps<{
 
 const { t } = useI18n()
 const businessStore = useBusinessStore()
+const accountStore = useConnectAccountStore()
 const folioSchema = getFolioSchema()
 
 const model = defineModel<FolioSchema>({ required: true })
@@ -31,10 +32,18 @@ const folioOption = ref<FolioOption>(
   !model.value.folioNumber || model.value.folioNumber === businessFolio.value ? 'default' : 'transaction'
 )
 
-// the section text differs between the two states of the design
+// the section text and the help content differ between the two states of the design
 const fieldsetDescription = computed(() =>
   businessFolio.value ? 'text.folioDefaultDescription' : 'text.folioDescription'
 )
+const helpKey = computed(() => `text.folioHelp.${businessFolio.value ? 'withFolio' : 'noFolio'}`)
+
+// the help links to the page where the business's default folio is changed
+const businessEditUrl = computed(() => getBusinessEditUrl(
+  businessStore.business?.identifier ?? '',
+  businessStore.business?.legalType ?? '',
+  accountStore.currentAccount?.id
+))
 
 const folioOptions = computed<RadioGroupItem[]>(() => [
   { label: t('label.useDefaultFolio', { folio: businessFolio.value }), value: 'default' },
@@ -79,10 +88,42 @@ defineExpose({
         <!-- cancel the link button's bottom padding so the card sits at the fieldset gap, as in the design -->
         <div class="flex flex-col gap-4 -mb-2">
           <p>{{ $t(fieldsetDescription) }}</p>
-          <HelpExpansion
-            :label="$t('label.helpWithFolioOrRefNumbers')"
-            t-key="text.folioHelp"
-          />
+          <HelpExpansion :label="$t('label.helpWithFolioOrRefNumbers')">
+            <p class="text-center font-bold">
+              {{ $t('text.folioHelp.title') }}
+            </p>
+            <div
+              v-for="n in 3"
+              :key="n"
+              class="space-y-2"
+            >
+              <p class="font-bold">
+                {{ $t(`${helpKey}.q${n}`) }}
+              </p>
+              <!-- the last answer links to where the default folio is set, in a new tab so the filing is kept -->
+              <i18n-t
+                v-if="n === 3"
+                :keypath="`${helpKey}.a${n}`"
+                tag="p"
+                scope="global"
+              >
+                <template #link>
+                  <UButton
+                    :to="businessEditUrl"
+                    target="_blank"
+                    variant="link"
+                    class="underline p-0 text-base"
+                    data-testid="folio-help-edit-link"
+                  >
+                    {{ $t('label.viewAndChangeBusinessInfo') }}
+                  </UButton>
+                </template>
+              </i18n-t>
+              <p v-else>
+                {{ $t(`${helpKey}.a${n}`) }}
+              </p>
+            </div>
+          </HelpExpansion>
         </div>
       </template>
       <URadioGroup

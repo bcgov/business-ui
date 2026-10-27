@@ -3,7 +3,9 @@ import { describe, expect, it, beforeEach } from 'vitest'
 import { FormFolio } from '#components'
 
 const storeFolio = { value: '' }
+mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 3602 } }))
 mockNuxtImport('useBusinessStore', () => () => ({
+  business: { identifier: 'BC1234567', legalType: 'BC' },
   get businessFolio() {
     return storeFolio.value
   }
@@ -45,6 +47,31 @@ describe('FormFolio', () => {
 
     const { wrapper: withDefault } = await mountFolio(defaultFolio, defaultFolio)
     expect(withDefault.text()).toContain('Help with Folio or Reference Numbers')
+  })
+
+  it('explains folio numbers and links to the edit UI when the business has no folio on file', async () => {
+    const { wrapper } = await mountFolio('')
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('What is a folio or reference number?')
+    expect(wrapper.text()).toContain('Where does this number appear?')
+    expect(wrapper.text()).toContain('Is there a way to use the same number for all transactions')
+    const link = wrapper.find('[data-testid="folio-help-edit-link"]')
+    expect(link.text()).toBe('View and Change Business Information')
+    expect(link.attributes('href')).toBe('http://edit/BC1234567/alteration?accountid=3602&businessid=BC1234567')
+    expect(link.attributes('target')).toBe('_blank')
+  })
+
+  it('explains the default folio when the business has a folio on file', async () => {
+    const { wrapper } = await mountFolio(defaultFolio, defaultFolio)
+    await wrapper.find('button').trigger('click')
+    await nextTick()
+
+    expect(wrapper.text()).toContain('What is a default folio or reference number?')
+    expect(wrapper.text()).toContain('What if I enter a different number for this transaction only?')
+    expect(wrapper.text()).toContain('How do I change my default folio or reference number?')
+    expect(wrapper.find('[data-testid="folio-help-edit-link"]').exists()).toBe(true)
   })
 
   it('offers the default folio or a different one when the business has a folio on file', async () => {
