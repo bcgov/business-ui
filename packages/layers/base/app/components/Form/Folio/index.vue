@@ -76,7 +76,8 @@ defineExpose({
       orientation="vertical"
     >
       <template #description>
-        <div class="flex flex-col gap-2">
+        <!-- cancel the link button's bottom padding so the card sits at the fieldset gap, as in the design -->
+        <div class="flex flex-col gap-4 -mb-2">
           <p>{{ $t(fieldsetDescription) }}</p>
           <HelpExpansion
             :label="$t('label.helpWithFolioOrRefNumbers')"
