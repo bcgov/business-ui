@@ -41,7 +41,7 @@ mockNuxtImport('useConnectButtonControl', () => () => ({ setAlertText: vi.fn() }
 
 const TablePartyStub = defineComponent({
   name: 'TableParty',
-  props: { expanded: Object, data: Array, emptyText: String, allowedActions: Array },
+  props: { expanded: Object, data: Array, emptyText: String, allowedActions: Array, showFormerName: Boolean },
   template: '<div />'
 })
 
@@ -157,5 +157,24 @@ describe('ManageParties - ceased tab', () => {
 
     expect(wrapper.find('[data-testid="parties-tabs"]').exists()).toBe(false)
     expect(getTableNames(wrapper)).toEqual(['ACTIVE', 'CEASED', 'ACTIVE2'])
+  })
+})
+
+describe('ManageParties - former name', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    tableState.value = [party('ACTIVE', RoleTypeUi.DIRECTOR)]
+  })
+
+  it('shows the former name in the table by default (an absent boolean prop must not become false)', async () => {
+    const wrapper = await mountManageParties()
+
+    expect(wrapper.findComponent(TablePartyStub).props('showFormerName')).toBe(true)
+  })
+
+  it('lets a table opt out of the former name', async () => {
+    const wrapper = await mountManageParties({ showFormerName: false })
+
+    expect(wrapper.findComponent(TablePartyStub).props('showFormerName')).toBe(false)
   })
 })

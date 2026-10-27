@@ -13,7 +13,8 @@ const {
   variant = 'default',
   modelName = 'activeSubject',
   preventActions = false,
-  actionPreventedSignal = 0
+  actionPreventedSignal = 0,
+  showFormerName = true
 } = defineProps<ManagePartiesProps>()
 
 const emit = defineEmits<{
