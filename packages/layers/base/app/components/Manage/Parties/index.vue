@@ -13,7 +13,8 @@ const {
   variant = 'default',
   modelName = 'activeSubject',
   preventActions = false,
-  actionPreventedSignal = 0
+  actionPreventedSignal = 0,
+  showFormerName = true
 } = defineProps<ManagePartiesProps>()
 
 const emit = defineEmits<{
@@ -292,6 +293,7 @@ function onActionPrevented() {
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :columns="columnsToDisplay"
+          :show-former-name="showFormerName"
           :task-guard-config="{
             messageId,
             targetId,
