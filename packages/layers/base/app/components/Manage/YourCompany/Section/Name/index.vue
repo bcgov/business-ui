@@ -9,10 +9,12 @@ const {
   loading?: boolean
   labelOverrides?: TableLabelOverrides
   isReadOnlyVariant?: boolean
-  correctNameOptions?: CorrectNameOption[]
-  nrAllowedActionsTypes?: NrRequestActionCode[]
-  business?: BusinessData | BusinessDataPublic
   fieldOverrides?: ManageYourCompanyProps['fieldOverrides']
+
+  // NB: These options do not apply to corrections - removing until needed
+  // correctNameOptions?: CorrectNameOption[]
+  // nrAllowedActionsTypes?: NrRequestActionCode[]
+  // business?: BusinessData | BusinessDataPublic
 }>()
 
 defineEmits<{
@@ -40,11 +42,42 @@ const isReadOnly = computed(() => ({
   nameNewJurisdiction: getIsReadOnly('nameNewJurisdiction'),
   namePreviousJurisdiction: getIsReadOnly('namePreviousJurisdiction')
 }))
+
+defineOptions({
+  inheritAttrs: false
+})
 </script>
 
 <template>
   <div>
-    <ManageYourCompanySectionNameLegal
+    <ManageYourCompanyFieldRow
+      v-if="isVisible.nameRequest"
+      v-model="model"
+      :state-key
+      field-key="nameRequest"
+      :field-state="fields.nameRequest"
+      :label="$t('label.companyName')"
+      :loading
+      :label-overrides
+      :is-read-only-variant="isReadOnly.nameRequest"
+      :display-value="fields.nameRequest?.value?.legalName"
+      padding-class="py-4 sm:py-5 padding-x-default"
+      name="value.legalName"
+      @init-edit="$emit('init-edit', $event)"
+      @undo="$emit('undo', $event)"
+      @done="$emit('done')"
+      @cancel="$emit('cancel')"
+    >
+      <ConnectInput
+        v-if="model && model.key === 'nameRequest'"
+        id="name-request-name"
+        v-model="model.value.legalName"
+        :label="$t('label.companyName')"
+      />
+    </ManageYourCompanyFieldRow>
+
+    <!-- NB: Leaving as a reference, not necessary for corrections (only free text edit enabled for corrections) -->
+    <!-- <ManageYourCompanySectionNameLegal
       v-if="isVisible.nameRequest"
       v-model="model"
       :field-state="fields.nameRequest"
@@ -59,7 +92,7 @@ const isReadOnly = computed(() => ({
       @undo="$emit('undo', 'nameRequest')"
       @done="$emit('done')"
       @cancel="$emit('cancel')"
-    />
+    /> -->
 
     <!-- The legal company name in the new jurisdiction after an Amalgamation Out or Continuation Out filing -->
     <ManageYourCompanyFieldRow

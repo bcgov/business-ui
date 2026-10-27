@@ -2,7 +2,19 @@
 // https://bcgov-my.sharepoint.com/:x:/r/personal/thayne_werdal_gov_bc_ca/Documents/Attachments/Requirements%20-%20Filings%20vs%20Corrections%20Fields.xlsx?d=w8812eaf09920404ca709eb17fc5a78c1
 import { toMerged } from 'es-toolkit'
 
-const DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES = {
+type ConfigVariant = 'default' | 'hide' | 'readonly'
+
+type YourCompanyField = keyof ManageYourCompanyProps['fieldOverrides']
+
+type YourCompanyConfig = Partial<Record<YourCompanyField, ConfigVariant>>
+
+type FilingSubTypeYourCompanyConfig = Partial<Record<FilingSubType, YourCompanyConfig>>
+
+type FilingTypeYourCompanyConfig = YourCompanyConfig | FilingSubTypeYourCompanyConfig
+
+type YourCompanyFieldsConfig = Partial<Record<FilingType, FilingTypeYourCompanyConfig>>
+
+const DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES: Record<YourCompanyField, ConfigVariant> = {
   nameNewJurisdiction: 'hide',
   namePreviousJurisdiction: 'hide',
   numberExpro: 'hide',
@@ -18,8 +30,9 @@ const DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES = {
   contactInfo: 'readonly'
 } as const
 
-const YOUR_COMPANY_FIELDS: Partial<Record<FilingType, ManageYourCompanyProps['fieldOverrides']>> = {
+const YOUR_COMPANY_FIELDS: YourCompanyFieldsConfig = {
   [FilingType.INCORPORATION_APPLICATION]: {
+    nameRequest: 'default',
     nameTranslations: 'default'
   },
   [FilingType.CONTINUATION_IN]: {
@@ -34,6 +47,11 @@ const YOUR_COMPANY_FIELDS: Partial<Record<FilingType, ManageYourCompanyProps['fi
     nameNewJurisdiction: 'default',
     newJurisdiction: 'default'
   },
+  [FilingType.AMALGAMATION_APPLICATION]: {
+    [FilingSubType.AMALGAMATION_REGULAR]: {
+      nameRequest: 'default'
+    }
+  },
   [FilingType.AMALGAMATION_OUT]: {
     outDate: 'default',
     nameNewJurisdiction: 'default',
@@ -41,7 +59,23 @@ const YOUR_COMPANY_FIELDS: Partial<Record<FilingType, ManageYourCompanyProps['fi
   }
 }
 
-export function getYourCompanyFieldOverrides(filingType: FilingType) {
-  const sections = YOUR_COMPANY_FIELDS[filingType] ?? {}
-  return toMerged(DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES, sections)
+const FILING_SUB_TYPES = new Set<string>(Object.values(FilingSubType))
+
+export function getYourCompanyFieldOverrides(
+  filingType: FilingType,
+  filingSubType?: FilingSubType
+) {
+  const entry = YOUR_COMPANY_FIELDS[filingType]
+
+  if (!entry) {
+    return DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES
+  }
+
+  const hasSubTypeConfig = Object.keys(entry).some(key => FILING_SUB_TYPES.has(key))
+
+  const config = hasSubTypeConfig
+    ? entry[filingSubType as keyof typeof entry] ?? {}
+    : entry
+
+  return toMerged(DEFAULT_YOUR_COMPANY_FIELD_OVERRIDES, config)
 }

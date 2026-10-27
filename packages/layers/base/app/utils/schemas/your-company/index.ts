@@ -1,7 +1,12 @@
 import { z } from 'zod'
+import { getLegalNameRefinement } from './legal-name-refinement'
 
 // TODO/FUTURE: refine validations + add i18n
-export function getActiveYourCompanySchema() {
+export function getActiveYourCompanySchema(
+  context?: {
+    business?: BusinessData | BusinessDataPublic
+  }
+) {
   const t = useNuxtApp().$i18n.t
 
   return z.discriminatedUnion('key', [
@@ -47,13 +52,15 @@ export function getActiveYourCompanySchema() {
       })
     }),
 
-    // Name Request
+    // Name Request/Legal Name
     z.object({
       key: z.literal('nameRequest'),
       value: getNameRequestSchema()
+        .superRefine(getLegalNameRefinement({ business: context?.business }))
     }),
 
     // Legal Type (also known as entity type or corp type)
+    // Not editable in a Correction filing
     z.object({
       key: z.literal('legalType'),
       value: z.enum(CorpTypeCd)

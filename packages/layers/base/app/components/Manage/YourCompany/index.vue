@@ -7,8 +7,6 @@ const {
   business,
   contact,
   variant = 'default',
-  correctNameOptions,
-  nrAllowedActionsTypes,
   nameTranslationAllowedActions,
   preventActions = false,
   actionPreventedSignal = 0,
@@ -26,8 +24,8 @@ const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt
 
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
-const schema = getActiveYourCompanySchema()
-const fieldKeys = schema.unwrap().options.map(o => o.shape.key.value)
+const schema = computed(() => getActiveYourCompanySchema({ business }))
+const fieldKeys = toValue(schema).unwrap().options.map(o => o.shape.key.value)
 
 const {
   state,
@@ -166,8 +164,6 @@ const isReadonly = computed(() => ({
         :fields="state.new"
         :state-key
         :is-read-only-variant
-        :nr-allowed-actions-types
-        :correct-name-options
         :business
         :loading
         :label-overrides="tableLabels"

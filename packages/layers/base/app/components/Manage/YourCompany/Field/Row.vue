@@ -10,7 +10,8 @@ const {
   labelOverrides,
   isReadOnlyVariant = false,
   indent = false,
-  paddingClass = 'padding-x-default pb-4 sm:pb-5'
+  paddingClass = 'padding-x-default pb-4 sm:pb-5',
+  name = 'value'
 } = defineProps<{
   stateKey: string
   fieldKey: keyof ManageYourCompanyFields
@@ -23,6 +24,7 @@ const {
   isReadOnlyVariant?: boolean
   indent?: boolean
   paddingClass?: string
+  name?: string
 }>()
 
 defineEmits<{
@@ -79,7 +81,7 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
 
       <SubFormFieldWrapper
         v-else-if="isEditing"
-        name="value"
+        :name
         :task-guard-config="{
           message: alerts[fieldKey],
           messageId,

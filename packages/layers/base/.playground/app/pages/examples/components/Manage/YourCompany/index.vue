@@ -100,6 +100,12 @@ const loading = ref(false)
 
 const items = ['default', 'readonly', 'hide']
 const configState = reactive<NonNullable<ManageYourCompanyProps['fieldOverrides']>>({})
+
+// const nameOptions = [
+//   CorrectNameOption.CORRECT_NEW_NR,
+//   CorrectNameOption.CORRECT_NAME_TO_NUMBER,
+//   CorrectNameOption.CORRECT_NAME
+// ]
 </script>
 
 <template>
@@ -206,8 +212,6 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['fieldOverrides'
       :contact
       :loading
       variant="correct"
-      :correct-name-options="[CorrectNameOption.CORRECT_NAME]"
-      :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]"
       :name-translation-allowed-actions="[
         ManageAllowedAction.ADD,
         ManageAllowedAction.NAME_CHANGE,
@@ -215,5 +219,9 @@ const configState = reactive<NonNullable<ManageYourCompanyProps['fieldOverrides'
       ]"
       :field-overrides="configState"
     />
+
+    <!-- NB: These props are removed currently as they are not necessary for corrections -->
+    <!-- :correct-name-options="nameOptions"
+    :nr-allowed-actions-types="[NrRequestActionCode.CHANGE_NAME]" -->
   </UContainer>
 </template>

@@ -61,7 +61,7 @@ export default defineAppConfig({
           color: 'primary',
           variant: ['card', 'table'],
           class: {
-            item: 'has-data-[state=checked]:bg-white hover:bg-shade! hover:has-data-[state=checked]:bg-white! has-data-[state=checked]:border-primary! has-focus-visible:outline-none!',
+            item: 'p-4 has-data-[state=checked]:bg-white hover:bg-shade! hover:has-data-[state=checked]:bg-white! has-data-[state=checked]:border-primary! has-focus-visible:outline-none!',
             base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
           }
         },
