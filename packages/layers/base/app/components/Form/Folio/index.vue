@@ -91,13 +91,13 @@ defineExpose({
         class="px-4 py-6 sm:px-7.5"
         :items="folioOptions"
         size="xl"
-        :ui="{ fieldset: 'gap-y-3' }"
+        :ui="{ fieldset: 'gap-y-6', item: 'gap-4', base: 'ring-neutral' }"
       >
         <template #description="{ item }">
           <!-- under its option so the input lines up with the option text, as in the design -->
           <div
             v-if="item.value === 'transaction' && folioOption === 'transaction'"
-            class="pt-2"
+            class="pt-3 sm:w-3/4"
           >
             <ConnectFormInput
               v-model="model.folioNumber"
@@ -117,12 +117,14 @@ defineExpose({
       >
         <div class="flex flex-col gap-4">
           <p>{{ $t('text.folioReceiptDescription') }}</p>
-          <ConnectFormInput
-            v-model="model.folioNumber"
-            input-id="folio-input"
-            :label="$t('label.folioOrRefNumberOpt')"
-            name="folioNumber"
-          />
+          <div class="sm:w-3/4">
+            <ConnectFormInput
+              v-model="model.folioNumber"
+              input-id="folio-input"
+              :label="$t('label.folioOrRefNumberOpt')"
+              name="folioNumber"
+            />
+          </div>
         </div>
       </ConnectFormFieldWrapper>
     </ConnectFieldset>
