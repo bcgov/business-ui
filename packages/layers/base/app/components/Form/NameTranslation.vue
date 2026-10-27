@@ -53,22 +53,21 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         targetId
       }"
       :hide-remove
+      :container="false"
       @done="onDone"
       @cancel="$emit('cancel')"
       @remove="$emit('remove')"
     >
-      <div class="padding-xy-default">
-        <ConnectFormInput
-          v-if="model"
-          v-model="model.name"
-          required
-          autofocus
-          :label="$t('label.nameTranslation')"
-          input-id="name-translation-input"
-          name="name"
-          :help="$t('text.latinAlphabetOnly')"
-        />
-      </div>
+      <ConnectFormInput
+        v-if="model"
+        v-model="model.name"
+        required
+        autofocus
+        :label="$t('label.nameTranslation')"
+        input-id="name-translation-input"
+        name="name"
+        :help="$t('text.latinAlphabetOnly')"
+      />
     </SubFormWrapper>
   </UForm>
 </template>
