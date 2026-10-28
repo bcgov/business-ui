@@ -1,5 +1,8 @@
 import { DateTime } from 'luxon'
 
+// Placeholder founding date from the mainframe migration, renders as "December 31, 1".
+const BROKEN_FOUNDING_DATE = '0001-01-01T08:00:00+00:00'
+
 export const useBusinessTombstone = () => {
   const t = useNuxtApp().$i18n.t
   const { tombstone: businessTombstone, $reset: resetTombstone } = useConnectTombstone()
@@ -45,7 +48,9 @@ export const useBusinessTombstone = () => {
     businessTombstone.value.details = business.value?.state && business.value.state != EntityState.ACTIVE
       ? [{ badge: { label: business.value.state } }]
       : []
-    const foundingDate = toDate(business.value?.foundingDate || '')
+    // mainframe migration left some entities with a placeholder founding date, treat it as not available
+    const hasBrokenFoundingDate = business.value?.foundingDate === BROKEN_FOUNDING_DATE
+    const foundingDate = hasBrokenFoundingDate ? undefined : toDate(business.value?.foundingDate || '')
     const foundingDateStr = foundingDate ? toFormattedDateStr(foundingDate, DateTime.DATE_FULL) : undefined
     businessTombstone.value.sideDetails = [
       {
