@@ -31,7 +31,7 @@ const selectableRoles = computed(() => allowedRoles.map(
 ))
 
 function handleRoleChange(newRoles: RoleTypeUi[]) {
-  const todayUtc = getToday()
+  const today = getToday('America/Vancouver')
   const before = selectedRoles.value
   const after = newRoles
 
@@ -55,7 +55,7 @@ function handleRoleChange(newRoles: RoleTypeUi[]) {
 
     if (existingRole && existingRole.appointmentDate) {
       if (!existingRole?.cessationDate) {
-        existingRole.cessationDate = todayUtc
+        existingRole.cessationDate = today
       }
     } else if (existingRole) {
       // newly added so remove from the list instead of adding cessation date
