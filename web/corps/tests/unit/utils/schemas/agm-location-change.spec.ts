@@ -15,7 +15,7 @@ describe('getAgmLocationChangeSchema (defaults)', () => {
       expect(result.success).toBe(true)
       expect(result.data!.year).toBe('')
       expect(result.data!.reason).toBe('')
-      expect(result.data!.agmLocation).toBe('')
+      expect(result.data!.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
       expect(result.data!.folio).toEqual({ folioNumber: '' })
       expect((result.data as any).certify).toEqual({ isCertified: false })
     })
@@ -67,7 +67,11 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
   const getPaths = (result: ReturnType<typeof schema.safeParse>) =>
     getIssues(result).map(i => i.path.join('.'))
 
-  const valid = { year: String(currentYear), reason: 'Some reason', agmLocation: 'Calgary, Alberta, Canada' }
+  const valid = {
+    year: String(currentYear),
+    reason: 'Some reason',
+    agmLocation: { country: 'CA', city: 'Calgary', region: 'AB' }
+  }
 
   describe('year', () => {
     it('should fail when empty', () => {
@@ -178,31 +182,78 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
   })
 
   describe('agmLocation', () => {
-    it('should fail when empty', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: '' })
+    describe('country', () => {
+      it('should fail when empty', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, country: '' } })
 
-      expect(result.success).toBe(false)
-      expect(getPaths(result)).toContain('agmLocation')
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.country')
+      })
+
+      it('should fail when whitespace-only', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, country: '   ' } })
+
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.country')
+      })
     })
 
-    it('should fail when whitespace-only', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: '   ' })
+    describe('city', () => {
+      it('should fail when empty', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, city: '' } })
 
-      expect(result.success).toBe(false)
-      expect(getPaths(result)).toContain('agmLocation')
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.city')
+      })
+
+      it('should fail when whitespace-only', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, city: '   ' } })
+
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.city')
+      })
+
+      it('should fail when over 40 characters', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, city: 'a'.repeat(41) } })
+
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.city')
+      })
+
+      it('should pass at exactly 40 characters', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, city: 'a'.repeat(40) } })
+
+        expect(result.success).toBe(true)
+      })
     })
 
-    it('should fail when over 100 characters', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(101) })
+    describe('region', () => {
+      it('should fail when empty for Canada', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, region: '' } })
 
-      expect(result.success).toBe(false)
-      expect(getPaths(result)).toContain('agmLocation')
-    })
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.region')
+      })
 
-    it('should pass at exactly 100 characters', () => {
-      const result = schema.safeParse({ ...valid, agmLocation: 'a'.repeat(100) })
+      it('should fail when empty for the US', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { country: 'US', city: 'Seattle', region: '' } })
 
-      expect(result.success).toBe(true)
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.region')
+      })
+
+      it('should fail when over two characters', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { ...valid.agmLocation, region: 'ABC' } })
+
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.region')
+      })
+
+      it('should allow an empty region for other countries', () => {
+        const result = schema.safeParse({ ...valid, agmLocation: { country: 'GB', city: 'London', region: '' } })
+
+        expect(result.success).toBe(true)
+      })
     })
   })
 
@@ -213,7 +264,7 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
       expect(result.success).toBe(true)
       expect(result.data!.year).toBe(String(currentYear))
       expect(result.data!.reason).toBe('Some reason')
-      expect(result.data!.agmLocation).toBe('Calgary, Alberta, Canada')
+      expect(result.data!.agmLocation).toEqual({ country: 'CA', city: 'Calgary', region: 'AB' })
     })
   })
 })
