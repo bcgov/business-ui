@@ -39,7 +39,11 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       const draft = draftFiling.filing.agmLocationChange
       formState.year = draft.year ?? ''
       formState.reason = draft.reason ?? ''
-      formState.agmLocation = draft.agmLocation ?? ''
+      formState.agmLocation = {
+        country: draft.agmLocation.country ?? 'CA',
+        city: draft.agmLocation.city ?? '',
+        region: draft.agmLocation.region ?? ''
+      }
     }
 
     formState.folio = { folioNumber: draftFiling?.filing?.header?.folioNumber || businessStore.businessFolio }
@@ -53,7 +57,11 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
     const agmLocationChangePayload: AgmLocationChangePayload = {
       year: formState.year!,
       reason: formState.reason!,
-      agmLocation: formState.agmLocation!
+      agmLocation: {
+        country: formState.agmLocation.country,
+        city: formState.agmLocation.city.trim(),
+        region: formState.agmLocation.region.trim() || null
+      }
     }
 
     const authorizationReceived = isStaff.value

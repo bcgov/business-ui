@@ -31,6 +31,7 @@ export default {
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
     fileAndPay: 'File and Pay',
+    generalMeetingYear: 'General Meeting Year',
     important: 'Important',
     noCustodians: 'There are currently no custodians.',
     noDirectors: 'No Directors',
@@ -48,7 +49,7 @@ export default {
       certifyDescription: 'Enter the legal name of the person authorized to complete and submit this filing.',
       feeCode: 'AGMLC',
       feeLabel: 'AGM Location Change',
-      h1: 'AGM Location Change',
+      h1: 'Annual General Meeting (AGM) Location Change',
       helpLabel: 'Help with Annual General Meeting Location Change',
       helpText: 'Generally, company meetings must be in British Columbia (BC). However, there are exceptions to this rule. A company must request a location change if the meeting will be fully or partially in-person and none of the exceptions listed below apply. Partially in-person meetings combine both in-person and online participation. The location change request only applies to the in-person participants.',
       helpExceptionsTitle: 'Exceptions to the requirement for a location change request include the following:',
@@ -58,7 +59,6 @@ export default {
         'Nothing in the articles restrict a location change approved by resolution or by ordinary resolution, as the case may be.'
       ],
       locationChangeDetail: 'Location Change Detail',
-      locationChangeDetailDesc: 'Enter the calendar year the AGM is for and the AGM location outside B.C.',
       reviewH1: 'Review Annual General Meeting (AGM) Location Change',
       title: 'AGM Location Change - BC Registries and Online Services'
     },
@@ -155,7 +155,8 @@ export default {
     delayDateDescription: 'Select how long the dissolution or cancellation will be delayed for.',
     liquidatorsMustBeCorrect: 'Liquidator information must be correct before filing your application.',
     nameTranslationsDescription: 'Name translations must use the Latin Alphabet (English, French, etc.). Names that use other writing systems must spell the name phonetically in English or French.',
-    agmLocationHint: 'Enter the AGM location not in B.C. Include the city, province or state equivalent, and country. E.g. "Red Deer, Alberta, Canada"',
+    agmLocationHint: 'Enter the location of the AGM outside B.C.',
+    reasonHint: 'Enter the reason for the location change.',
     missingInfo: {
       title: 'Missing information',
       officeMissing: 'No office address on record',
@@ -181,15 +182,19 @@ export default {
   },
   validation: {
     agmLocationChange: {
-      yearRequired: 'AGM year is required.',
+      yearRequired: 'AGM year field is required.',
       yearInvalid: 'Please enter a valid 4-digit year.',
       yearMin: 'Must be on or after {year}.',
       yearMax: 'Must be on or before {year}.',
       yearBeforeFounding: 'AGM year cannot be before the year the business was founded.',
-      reasonRequired: 'Reason is required.',
+      reasonRequired: 'Reason field is required.',
       reasonMax: 'Must be 2000 characters or less.',
-      locationRequired: 'AGM location is required.',
-      locationMax: 'Must be 100 characters or less.'
+      countryRequired: 'Country field is required.',
+      cityRequired: 'City field is required.',
+      cityMax: 'City must be 40 characters or less.',
+      provinceRequired: 'Province field is required.',
+      stateRequired: 'State field is required.',
+      regionMax: 'Region must be 2 characters or less.'
     },
     appointmentDateBeforeFounding: 'Appointment date cannot be before the business founding date.',
     cessationDateInFuture: 'Cessation date cannot be in the future.',

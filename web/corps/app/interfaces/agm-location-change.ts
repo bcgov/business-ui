@@ -2,7 +2,11 @@
 export interface AgmLocationChangePayload extends FilingPayloadData {
   year: string
   reason: string
-  agmLocation: string
+  agmLocation: {
+    country: string
+    city: string
+    region: string | null
+  }
 }
 
 export interface AgmLocationChangeFiling {
