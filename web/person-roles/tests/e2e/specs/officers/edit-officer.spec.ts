@@ -50,7 +50,7 @@ test.describe('Editing Officers', () => {
     // the name they had before the change shows under the new one
     const { givenName, middleInitial, familyName } = initialRelationship.entity
     const formerName = [givenName, middleInitial, familyName].filter(Boolean).join(' ').toUpperCase()
-    await expect(updatedRow.getByRole('cell').first()).toContainText(`Formerly ${formerName}`)
+    await expect(updatedRow.getByRole('cell').first()).toContainText(`(Formerly ${formerName})`)
 
     // delivery should be updated
     await assertAddress(page, updatedRelationship, 1, updatedRelationship.mailingAddress!)

@@ -117,7 +117,7 @@ describe('getPartyNameColumn', () => {
     expect(cell.props.label).toBe('JANE SMITH')
     const slot = cell.children['additional-label']()
     expect(slot.length).toBe(1)
-    expect(slot[0].children[0].children).toBe('Formerly JANE DOE')
+    expect(slot[0].children[0].children).toBe('(Formerly JANE DOE)')
     expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic')
   })
 
@@ -183,7 +183,7 @@ describe('getPartyNameColumn', () => {
 
     const slot = cell.children['additional-label']()
     expect(slot.length).toBe(2)
-    expect(slot[0].children[0].children).toBe('Formerly JANE DOE')
+    expect(slot[0].children[0].children).toBe('(Formerly JANE DOE)')
     expect(slot[1].children[0].children).toBe('Preferred Name:')
   })
 
