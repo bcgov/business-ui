@@ -9,7 +9,8 @@ const NON_EDITABLE_FIELDS = [
 
 // helper to format single class or series into ShareClassSchema
 function formatItem<T extends { id?: number | string | null, name: string, actions?: ActionType[] }>(item: T) {
-  const name = item.name.replace(/\s*\b(shares|share|value)\b/gi, '').trim()
+  // name is possibly null from db, fallback to empty string if null/undefined
+  const name = (item.name || '').replace(/\s*\b(shares|share|value)\b/gi, '').trim()
   const id = (item.id !== null && item.id !== undefined) ? item.id.toString() : crypto.randomUUID()
 
   return {

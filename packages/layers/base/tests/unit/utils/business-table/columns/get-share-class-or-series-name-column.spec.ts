@@ -88,4 +88,16 @@ describe('getShareClassOrSeriesNameColumn', () => {
     expect(cell.props.badges).toEqual([])
     expect(mockGetTableBadges).not.toHaveBeenCalledWith(row)
   })
+
+  it('should render "Not Available" if the name is an empty string', () => {
+    const row = {
+      depth: 0,
+      original: { new: { name: '' } }
+    }
+    const column = getShareClassOrSeriesNameColumn() as any
+
+    const cell = column.cell({ row })
+
+    expect(cell.props.label).toContain('Not Available')
+  })
 })
