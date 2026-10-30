@@ -55,11 +55,11 @@ const corpInfoArray: Array<CorpInfo> = [
     fullDesc: 'BC Community Contribution Company',
     numberedDesc: 'Numbered Community Contribution Company'
   }, {
-    corpTypeCd: CorpTypeCd.CEMETARY,
+    corpTypeCd: CorpTypeCd.CEMETERY,
     colinInd: false,
     corpClass: CorpClass.OT,
-    shortDesc: 'CEMETARY',
-    fullDesc: 'Cemetary'
+    shortDesc: 'CEMETERY',
+    fullDesc: 'Cemetery'
   }, {
     corpTypeCd: CorpTypeCd.COOP,
     colinInd: false,
