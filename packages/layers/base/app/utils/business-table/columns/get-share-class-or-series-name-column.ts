@@ -26,7 +26,11 @@ export function getShareClassOrSeriesNameColumn<T extends ShareClassSchema>(
       // if the parent row is removed, show no badges on the series
       const badges = isParentRowRemoved ? [] : getTableBadges(row, badgeLabelOverrides)
 
-      const label = row.original.new.name + ' ' + t('label.shares')
+      // name is possibly null from db, display fallback text if name is an empty string
+      const name = row.original.new.name
+      const label = name
+        ? `${name} ${t('label.shares')}`
+        : t('label.notAvailable')
 
       return h(
         TableColumnIdentity,

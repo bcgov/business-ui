@@ -164,6 +164,46 @@ describe('formatShareClassesSection', () => {
     expect(result[2]!.new.id).toBe('3')
     expect(result[2]!.new.priority).toBe(3)
   })
+
+  it('should set name to empty string if name is null or undefined', () => {
+    const test: ShareClass[] = [
+      {
+        ...baseData[0]!,
+        name: null
+      },
+      {
+        ...baseData[1]!,
+        name: undefined
+      },
+      {
+        ...baseData[0]!,
+        series: [{
+          ...baseData[0]!.series,
+          name: null
+        }]
+      },
+      {
+        ...baseData[0]!,
+        series: [{
+          ...baseData[0]!.series,
+          name: undefined
+        }]
+      }
+    ] as unknown as ShareClass[]
+
+    let result
+
+    expect(() => {
+      result = formatShareClassesSection(test)
+    }).not.toThrow()
+
+    expect(result).toBeDefined()
+    expect(result).toHaveLength(4)
+    expect(result![0]!.new.name).toEqual('')
+    expect(result![1]!.new.name).toEqual('')
+    expect(result![2]!.new.series[0]!.name).toEqual('')
+    expect(result![3]!.new.series[0]!.name).toEqual('')
+  })
 })
 
 describe('formatShareClassesApi', () => {
