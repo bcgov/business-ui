@@ -25,7 +25,14 @@ function mountForm(props: Record<string, unknown> = {}) {
   return mountSuspended(FormPartyDetails, {
     props: {
       modelValue: {
-        name: { partyType: PartyType.PERSON, firstName: 'ADA', middleName: '', lastName: 'LOVELACE' },
+        name: {
+          partyType: PartyType.PERSON,
+          firstName: 'ADA',
+          middleName: '',
+          lastName: 'LOVELACE',
+          hasPreferredName: false,
+          businessName: ''
+        },
         address: { deliveryAddress: address, mailingAddress: address, sameAs: true },
         roles: [{ roleType: RoleTypeUi.DIRECTOR }],
         email: ''
