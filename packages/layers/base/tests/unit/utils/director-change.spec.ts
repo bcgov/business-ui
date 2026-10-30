@@ -91,6 +91,32 @@ describe('director-change utils', () => {
       expect(props.partyFormProps.partyRoleProps.roleClass).toBe(RoleClass.DIRECTOR)
       expect(props.columnsToDisplay).toContain('effectiveDates')
     })
+
+    it('should lay the table out as the design does: cease first, address and legal name edits on their own', () => {
+      const props = getDirectorChangeManagePartiesProps(true, 'https://example.com/form.pdf')
+
+      expect(props.columnsToDisplay).toEqual(['name', 'delivery', 'mailing', 'effectiveDates', 'actions'])
+      expect(props.primaryAction).toBe('remove')
+      expect(props.labelOverrides).toEqual({
+        removeLabel: 'Cease',
+        removeIcon: 'i-mdi-close',
+        addLabel: 'Appoint New Director',
+        headers: { effectiveDates: 'Appointed/Elected' }
+      })
+      expect(props.editOptions).toEqual([
+        { label: 'Change address', actions: [ManageAllowedAction.ADDRESS_CHANGE] },
+        { label: 'Change legal name', actions: [ManageAllowedAction.NAME_CHANGE] }
+      ])
+      expect(props.columnOptions).toEqual({ effectiveDates: { dateFormat: 'iso', hideCurrent: true } })
+      expect(props.hideTableHeading).toBe(true)
+      expect(props.partyFormProps.hideRemove).toBe(true)
+      expect(props.partyFormProps.inlineEdit).toBe(true)
+      expect(props.partyFormProps.showReset).toBe(true)
+      expect(props.partyFormProps.doneFirst).toBe(true)
+      expect(props.partyFormProps.partyNameProps.requireFirstName).toBe(true)
+      expect(props.partyFormProps.partyNameProps.correctionFormUrl).toBe('https://example.com/form.pdf')
+      expect(props.partyFormProps.partyNameProps.hideLabel).toBe(true)
+    })
   })
 
   describe('formatChangeOfDirectorsRelationshipsApi', () => {

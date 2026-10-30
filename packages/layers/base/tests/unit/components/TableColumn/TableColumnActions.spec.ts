@@ -302,4 +302,98 @@ describe('TableColumnActions', () => {
       expect(wrapper.findComponent(UButton).props('label')).toBe('Undo')
     })
   })
+
+  describe('Edit Options and Primary Action', () => {
+    const editOptions = [
+      { label: 'Change Address', actions: [ManageAllowedAction.ADDRESS_CHANGE] },
+      { label: 'Change Legal Name', actions: [ManageAllowedAction.NAME_CHANGE] }
+    ]
+
+    function dropdownLabels(wrapper: any) {
+      return (wrapper.findComponent(UDropdownMenu) as any).props('items').map((i: any) => i.label)
+    }
+
+    it('should replace the Change entry with one entry per edit option for an existing row', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({ editOptions })
+
+      // the first option is the main button, the rest and Delete sit in the dropdown
+      expect(wrapper.findComponent(UButton).props('label')).toBe('Change Address')
+      expect(dropdownLabels(wrapper)).toEqual(['Change Legal Name', 'Delete'])
+    })
+
+    it('should emit "init-edit" with the actions of the chosen option', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({ editOptions })
+
+      await wrapper.find('button').trigger('click')
+
+      expect(wrapper.emitted('init-edit')).toEqual([[[ManageAllowedAction.ADDRESS_CHANGE]]])
+    })
+
+    it('should only list the edit options the row is allowed', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({
+        editOptions,
+        allowedActions: [ManageAllowedAction.NAME_CHANGE, ManageAllowedAction.REMOVE]
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('Change Legal Name')
+      expect(dropdownLabels(wrapper)).toEqual(['Delete'])
+    })
+
+    it('should keep the single Edit entry for a NEW row even with edit options', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({ editOptions, row: createMockRow(true) })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('Edit')
+      await wrapper.find('button').trigger('click')
+      expect(wrapper.emitted('init-edit')).toEqual([[undefined]])
+    })
+
+    it('should put the remove entry first with its overrides when primaryAction is remove', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const wrapper = await mountComponent({
+        editOptions,
+        primaryAction: 'remove',
+        labelOverrides: { removeLabel: 'Cease', removeIcon: 'i-mdi-close' }
+      })
+
+      const mainButton = wrapper.findComponent(UButton)
+      expect(mainButton.props('label')).toBe('Cease')
+      expect(mainButton.props('icon')).toBe('i-mdi-close')
+      expect(dropdownLabels(wrapper)).toEqual(['Change Address', 'Change Legal Name'])
+
+      await wrapper.find('button').trigger('click')
+      expect(wrapper.emitted('remove')).toHaveLength(1)
+    })
+
+    it('should keep Undo as the main button once the row is edited, with the remove entry next', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(true)
+      const wrapper = await mountComponent({
+        editOptions,
+        primaryAction: 'remove',
+        labelOverrides: { removeLabel: 'Cease' }
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('Undo')
+      expect(dropdownLabels(wrapper)).toEqual(['Cease', 'Change Address', 'Change Legal Name'])
+    })
+
+    it('should use the remove label override without edit options and keep Remove for a NEW row', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+      const existing = await mountComponent({ labelOverrides: { removeLabel: 'Cease' } })
+      expect(dropdownLabels(existing)).toEqual(['Cease'])
+
+      const added = await mountComponent({ labelOverrides: { removeLabel: 'Cease' }, row: createMockRow(true) })
+      expect(dropdownLabels(added)).toEqual(['Remove'])
+    })
+  })
 })

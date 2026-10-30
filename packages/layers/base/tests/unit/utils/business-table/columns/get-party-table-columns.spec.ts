@@ -89,4 +89,19 @@ describe('getPartyTableColumns', () => {
       'actions'
     ])
   })
+
+  it('should apply header overrides to the matching columns only', () => {
+    const headers = { effectiveDates: 'Appointed/Elected' }
+    const columns = getPartyTableColumns(['name', 'effectiveDates'], undefined, true, headers)
+
+    expect(columns[0]).toEqual({ id: 'name' })
+    expect(columns[1]).toEqual({ id: 'effectiveDates', header: 'Appointed/Elected' })
+  })
+
+  it('should pass the effective dates column options through', () => {
+    const columnOptions = { effectiveDates: { dateFormat: 'iso' as const, hideCurrent: true } }
+    getPartyTableColumns(['effectiveDates'], undefined, true, undefined, columnOptions)
+
+    expect(getEffectiveDatesColumn).toHaveBeenCalledWith('default', columnOptions.effectiveDates)
+  })
 })
