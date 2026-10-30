@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   variant: FormVariant
   name?: string
   subject: string
@@ -9,7 +9,8 @@ const props = defineProps<{
   // Reset button (restores the values the form opened with); the parent owns the state and handles `reset`
   showReset?: boolean
   resetDisabled?: boolean
-  // false renders the form without the "Changing {subject}" header and card border (inline in a table row)
+  // false renders the form without the "Changing {subject}" header and card border (inline in a table row).
+  // Defaults to true: an absent boolean prop is cast to false, so the default is set in withDefaults
   container?: boolean
   doneFirst?: boolean
   partyNameProps?: {
@@ -27,7 +28,9 @@ const props = defineProps<{
   effectiveDateBounds?: DateBounds
   cessationDateBounds?: DateBounds
   originalName?: PartyNameSchema
-}>()
+}>(), {
+  container: true
+})
 
 const emit = defineEmits<{
   done: []
@@ -190,7 +193,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
       :hide-remove
       :show-reset="showReset"
       :reset-disabled="resetDisabled"
-      :container="container ?? true"
+      :container="container"
       :done-first="doneFirst"
       @done="onDone"
       @cancel="$emit('cancel')"
