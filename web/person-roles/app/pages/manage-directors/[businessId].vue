@@ -147,7 +147,7 @@ watch(() => store.directors, async (directors) => {
         data-testid="director-warning"
       />
       <ManageParties
-        v-model:active-party="store.formState.activeParty"
+        v-model:active-subject="store.formState.activeParty"
         v-bind="directorChangeProps"
         :loading="initializing"
         :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
