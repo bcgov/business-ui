@@ -7,22 +7,50 @@ import { formatRelationshipApi } from '#business/app/utils/formatters/format-par
 
 /**
  * Structural ManageParties props shared by director-change filings.
+ *
+ * Follows the Director Change design: delivery before mailing with the appointment date, directors are
+ * ceased (not deleted) from the row's main button, and the dropdown opens the address or the legal name on
+ * its own, inline in the row with a Reset button.
+ *
+ * @param requireFirstName whether a director needs a first name (coops don't)
+ * @param correctionFormUrl register correction form for the business type (see getRegisterCorrectionFormUrl)
  */
-export function getDirectorChangeManagePartiesProps(requireFirstName = false) {
+export function getDirectorChangeManagePartiesProps(requireFirstName = false, correctionFormUrl?: string) {
+  const t = useNuxtApp().$i18n.t
+
   return {
     roleType: RoleTypeUi.DIRECTOR,
-    columnsToDisplay: ['name', 'mailing', 'delivery', 'effectiveDates', 'actions'] as TablePartyColumnName[],
+    columnsToDisplay: ['name', 'delivery', 'mailing', 'effectiveDates', 'actions'] as TablePartyColumnName[],
     allowedActions: [
       ManageAllowedAction.ADD,
       ManageAllowedAction.REMOVE,
       ManageAllowedAction.NAME_CHANGE,
       ManageAllowedAction.ADDRESS_CHANGE
     ],
+    labelOverrides: {
+      removeLabel: t('label.cease'),
+      removeIcon: 'i-mdi-close',
+      addLabel: t('label.appointNewDirector'),
+      headers: { effectiveDates: t('label.appointedElected') }
+    } as TableLabelOverrides,
+    primaryAction: 'remove' as TablePrimaryAction,
+    editOptions: [
+      { label: t('text.changeAddress'), actions: [ManageAllowedAction.ADDRESS_CHANGE] },
+      { label: t('text.changeLegalName'), actions: [ManageAllowedAction.NAME_CHANGE] }
+    ] as TableEditOption[],
+    columnOptions: { effectiveDates: { dateFormat: 'iso', hideCurrent: true } } as TablePartyColumnOptions,
+    hideTableHeading: true,
     partyFormProps: {
+      hideRemove: true,
+      inlineEdit: true,
+      showReset: true,
+      doneFirst: true,
       partyNameProps: {
         allowBusinessName: false,
         requireNameChangeConfirmation: true,
-        requireFirstName
+        requireFirstName,
+        correctionFormUrl,
+        hideLabel: true
       },
       partyRoleProps: {
         allowedRoles: [RoleTypeUi.DIRECTOR],

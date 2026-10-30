@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ManagePartiesProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
-import { omit } from 'es-toolkit'
+import { isEqual, omit } from 'es-toolkit'
 
 const {
   roleType,
@@ -14,7 +14,10 @@ const {
   modelName = 'activeSubject',
   preventActions = false,
   actionPreventedSignal = 0,
-  showFormerName = true
+  showFormerName = true,
+  editOptions,
+  primaryAction,
+  partyFormProps
 } = defineProps<ManagePartiesProps>()
 
 const emit = defineEmits<{
@@ -27,6 +30,11 @@ const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
 
 let editSubjectLabel = ''
+// what Reset restores: the party as it is on record (`old`), or as it was added, like the Vue 2 director
+// change where Reset put the original name back; limited to the fields of the open edit option
+let editSubjectBaseline: ActivePartySchema | undefined
+// set when the edit was opened from an edit option (e.g. "Change Address"), limiting the form to those actions
+const activeEditActions = ref<ManageAllowedAction[] | undefined>(undefined)
 
 const tableTarget = 'parties-table'
 const formTarget = 'party-details-form'
@@ -95,6 +103,44 @@ const partyAllowedActions = computed(() => {
   return tableAllowedActions.value
 })
 
+// an edit opened from an edit option only shows that part of the form
+const partyFormAllowedActions = computed(() => activeEditActions.value ?? partyAllowedActions.value)
+
+// the fields an edit option covers; undefined means the whole party
+function getResetFields(actions?: ManageAllowedAction[]): (keyof PartySchema)[] | undefined {
+  if (!actions) {
+    return undefined
+  }
+  const fields: (keyof PartySchema)[] = []
+  if (actions.includes(ManageAllowedAction.NAME_CHANGE)) {
+    fields.push('name')
+  }
+  if (actions.includes(ManageAllowedAction.ADDRESS_CHANGE)) {
+    fields.push('address')
+  }
+  if (actions.includes(ManageAllowedAction.EMAIL_CHANGE)) {
+    fields.push('email')
+  }
+  if (actions.includes(ManageAllowedAction.ROLE_CHANGE)
+    || actions.includes(ManageAllowedAction.EFFECTIVE_DATE_CHANGE)
+    || actions.includes(ManageAllowedAction.CESSATION_DATE_CHANGE)) {
+    fields.push('roles')
+  }
+  return fields
+}
+
+const canResetActiveSubject = computed(() => {
+  const subject = activeSubject.value
+  const baseline = editSubjectBaseline
+  if (!subject || !baseline) {
+    return false
+  }
+  const fields = getResetFields(activeEditActions.value)
+  return fields
+    ? fields.some(field => !isEqual(subject[field], baseline[field]))
+    : !isEqual(subject, baseline)
+})
+
 const headerActions = computed(() => {
   const allowAddSubject = !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
   if (!allowAddSubject) {
@@ -103,7 +149,7 @@ const headerActions = computed(() => {
 
   return [
     {
-      'label': t('label.addSubject', { subject }),
+      'label': tableLabels.value?.addLabel ?? t('label.addSubject', { subject }),
       'variant': 'outline' as const,
       'icon': 'i-mdi-plus',
       'data-alert-focus-target': targetId,
@@ -151,6 +197,8 @@ function cleanupForm() {
   expandedState.value = undefined
   addingSubject.value = false
   activeSubject.value = undefined
+  activeEditActions.value = undefined
+  editSubjectBaseline = undefined
 }
 
 function getPartyLabel(party: PartySchema): string {
@@ -179,11 +227,34 @@ function omitAddressIds(address: PartySchema['address']): PartySchema['address']
   }
 }
 
-function initEditSubject(row: TableBusinessRow<PartySchema>) {
+function initEditSubject(row: TableBusinessRow<PartySchema>, actions?: ManageAllowedAction[]) {
   const subject = cloneDeep(row.original.new)
   activeSubject.value = { ...subject, address: omitAddressIds(subject.address) }
+  // built from the row, not read back from the model: with a parent v-model the model only
+  // reflects the new value once the parent has re-rendered
+  const baseline = cloneDeep(row.original.old ?? row.original.new)
+  editSubjectBaseline = { ...baseline, address: omitAddressIds(baseline.address) }
+  activeEditActions.value = actions
   editSubjectLabel = getPartyLabel(row.original.new)
   expandedState.value = { [row.id]: true }
+}
+
+function resetActiveSubject() {
+  const subject = activeSubject.value
+  const baseline = editSubjectBaseline
+  if (!subject || !baseline) {
+    return
+  }
+  const fields = getResetFields(activeEditActions.value)
+  if (!fields) {
+    activeSubject.value = cloneDeep(baseline)
+    return
+  }
+  const next = cloneDeep(subject)
+  for (const field of fields) {
+    Object.assign(next, { [field]: cloneDeep(baseline[field]) })
+  }
+  activeSubject.value = next
 }
 
 function onActionPrevented() {
@@ -208,16 +279,30 @@ function onActionPrevented() {
         {{ sectionDescription }}
       </p>
     </div>
+    <!-- the design can ask for the add button alone above the table instead of the heading bar -->
+    <div
+      v-if="hideTableHeading && !showCeasedTab && headerActions"
+      class="flex"
+      data-testid="manage-parties-header-actions"
+    >
+      <UButton
+        v-for="(action, i) in headerActions"
+        :key="i"
+        v-bind="action"
+      />
+    </div>
     <ConnectPageSection
-      :heading="{
-        label: tableTitle,
-        icon: 'i-mdi-account-supervisor',
-        ui: showCeasedTab
-          ? 'bg-shade-secondary pl-0 pr-4 pt-3 pb-0 sm:pl-0 sm:pr-6 rounded-t-md text-base'
-          : 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
-        level: sectionTitle ? 'h3' : 'h2'
-      }"
-      :actions="headerActions"
+      :heading="hideTableHeading && !showCeasedTab
+        ? undefined
+        : {
+          label: tableTitle,
+          icon: 'i-mdi-account-supervisor',
+          ui: showCeasedTab
+            ? 'bg-shade-secondary pl-0 pr-4 pt-3 pb-0 sm:pl-0 sm:pr-6 rounded-t-md text-base'
+            : 'bg-shade-secondary px-4 py-3 sm:px-6 rounded-t-md text-base',
+          level: sectionTitle ? 'h3' : 'h2'
+        }"
+      :actions="hideTableHeading && !showCeasedTab ? undefined : headerActions"
     >
       <template v-if="showCeasedTab" #header>
         <component :is="sectionTitle ? 'h3' : 'h2'" class="sr-only">
@@ -268,6 +353,13 @@ function onActionPrevented() {
         </div>
       </template>
       <template #default>
+        <component
+          :is="sectionTitle ? 'h3' : 'h2'"
+          v-if="hideTableHeading && !showCeasedTab"
+          class="sr-only"
+        >
+          {{ tableTitle }}
+        </component>
         <FormPartyDetails
           v-if="addingSubject && activeSubject"
           v-model="activeSubject"
@@ -294,6 +386,9 @@ function onActionPrevented() {
           :label-overrides="tableLabels"
           :columns="columnsToDisplay"
           :show-former-name="showFormerName"
+          :edit-options="editOptions"
+          :primary-action="primaryAction"
+          :column-options="columnOptions"
           :task-guard-config="{
             messageId,
             targetId,
@@ -305,22 +400,40 @@ function onActionPrevented() {
           @action-prevented="onActionPrevented"
         >
           <template #expanded="{ row }">
-            <FormPartyDetails
+            <!-- an inline edit keeps the party's name in the first column, like the row it replaces -->
+            <div
               v-if="activeSubject"
-              v-model="activeSubject"
-              v-bind="partyFormProps"
-              :allowed-actions="partyAllowedActions"
-              :original-name="row.original.old?.name"
-              :hide-remove="partyFormProps?.hideRemove || isCeasedTab"
-              :name="modelName"
-              :variant="getExpandedFormVariant(variant, row)"
-              :subject="editSubjectLabel"
-              :state-key="stateKey"
-              class="px-4 sm:px-6"
-              @cancel="cleanupForm"
-              @done="() => editSubject(activeSubject, row)"
-              @remove="removeSubject(row)"
-            />
+              :class="partyFormProps?.inlineEdit
+                ? 'flex flex-col gap-4 px-4 sm:px-6 sm:flex-row sm:gap-6'
+                : 'px-4 sm:px-6'"
+            >
+              <span
+                v-if="partyFormProps?.inlineEdit"
+                class="min-w-36 shrink-0 text-sm font-bold text-neutral-highlighted break-words sm:pt-4"
+                data-testid="inline-edit-subject"
+              >
+                {{ editSubjectLabel }}
+              </span>
+              <FormPartyDetails
+                v-model="activeSubject"
+                v-bind="partyFormProps"
+                :allowed-actions="partyFormAllowedActions"
+                :original-name="row.original.old?.name"
+                :hide-remove="partyFormProps?.hideRemove || isCeasedTab"
+                :show-reset="partyFormProps?.showReset"
+                :reset-disabled="!canResetActiveSubject"
+                :container="!partyFormProps?.inlineEdit"
+                :name="modelName"
+                :variant="getExpandedFormVariant(variant, row)"
+                :subject="editSubjectLabel"
+                :state-key="stateKey"
+                class="grow min-w-0"
+                @cancel="cleanupForm"
+                @done="() => editSubject(activeSubject, row)"
+                @remove="removeSubject(row)"
+                @reset="resetActiveSubject"
+              />
+            </div>
           </template>
         </TableParty>
       </template>

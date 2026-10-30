@@ -86,6 +86,39 @@ describe('SubFormWrapper', () => {
     expect(wrapper.emitted('remove')).toBeTruthy()
   })
 
+  it('should not render the Reset button by default', async () => {
+    const wrapper = await mountSuspended(SubFormWrapper, { props: defaultProps })
+    expect(findButtonByText(wrapper, 'Reset')).toBeUndefined()
+  })
+
+  it('should render a disabled Reset button when showReset and resetDisabled are set', async () => {
+    const wrapper = await mountSuspended(SubFormWrapper, {
+      props: { ...defaultProps, showReset: true, resetDisabled: true }
+    })
+    const resetBtn = findButtonByText(wrapper, 'Reset')
+    expect(resetBtn).toBeDefined()
+    expect(resetBtn.props('disabled')).toBe(true)
+  })
+
+  it('should emit "reset" when the Reset button is clicked', async () => {
+    const wrapper = await mountSuspended(SubFormWrapper, {
+      props: { ...defaultProps, showReset: true, hideRemove: true }
+    })
+    const resetBtn = findButtonByText(wrapper, 'Reset')
+    await resetBtn.vm.$emit('click')
+    expect(wrapper.emitted('reset')).toBeTruthy()
+  })
+
+  it('should move the footer Cancel after Done when doneFirst is set', async () => {
+    // hide the header Cancel so the footer one is the only Cancel button
+    const props = { ...defaultProps, hideHeaderCancel: true }
+    const wrapper = await mountSuspended(SubFormWrapper, { props: { ...props, doneFirst: true } })
+    expect(findButtonByText(wrapper, 'Cancel').classes()).toContain('order-last')
+
+    const defaultWrapper = await mountSuspended(SubFormWrapper, { props })
+    expect(findButtonByText(defaultWrapper, 'Cancel').classes()).not.toContain('order-last')
+  })
+
   it('should render slot content', async () => {
     const wrapper = await mountSuspended(SubFormWrapper, {
       props: defaultProps,

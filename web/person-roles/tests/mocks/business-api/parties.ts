@@ -38,3 +38,45 @@ export const partiesBC1234567 = {
     }
   ]
 }
+
+// one current director, shaped like the business api `parties?role=director` response
+export const partiesDirectorsBC1234567 = {
+  parties: [
+    {
+      deliveryAddress: {
+        addressCity: 'Vancouver',
+        addressCountry: 'CA',
+        addressRegion: 'BC',
+        deliveryInstructions: '',
+        id: 3304774,
+        postalCode: 'G1J 4M6',
+        streetAddress: '260 Champ Ave',
+        streetAddressAdditional: ''
+      },
+      mailingAddress: {
+        addressCity: 'Vancouver',
+        addressCountry: 'CA',
+        addressRegion: 'BC',
+        deliveryInstructions: '',
+        id: 3304775,
+        postalCode: 'G1J 4M6',
+        streetAddress: '260 Champ Ave',
+        streetAddressAdditional: ''
+      },
+      officer: {
+        firstName: 'VIVIAN',
+        id: 615059,
+        lastName: 'SMITH',
+        middleInitial: '',
+        partyType: 'person'
+      },
+      roles: [
+        {
+          appointmentDate: '2025-04-23',
+          roleClass: 'DIRECTOR',
+          roleType: 'Director'
+        }
+      ]
+    }
+  ]
+}
