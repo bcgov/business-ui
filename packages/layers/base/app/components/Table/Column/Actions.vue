@@ -6,17 +6,24 @@ const {
   allowedActions,
   preventActions,
   labelOverrides,
-  getCustomDropdownItems
+  getCustomDropdownItems,
+  editOptions,
+  primaryAction = 'edit'
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
+  /** one edit entry per option for existing rows (e.g. address only) instead of the single "Change" entry */
+  editOptions?: TableEditOption[]
+  /** which action is the main button; 'remove' puts the remove entry first (e.g. "Cease" for directors) */
+  primaryAction?: TablePrimaryAction
 }>()
 
 const emit = defineEmits<{
-  'init-edit': []
+  // `actions` is set when the edit was opened from an edit option, limiting the form to those actions
+  'init-edit': [actions?: ManageAllowedAction[]]
   'undo': []
   'remove': []
   'action-prevented': []
@@ -24,17 +31,23 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+interface RowAction {
+  label: string
+  icon?: string
+  click: () => void
+}
+
 function isActionAllowed(action: ManageAllowedAction) {
   return !allowedActions || allowedActions.includes(action)
 }
 
-function emitAction(event: 'init-edit' | 'undo' | 'remove') {
+function emitAction(event: 'init-edit' | 'undo' | 'remove', editActions?: ManageAllowedAction[]) {
   if (preventActions) {
     emit('action-prevented')
     return
   }
   switch (event) {
-    case 'init-edit': return emit('init-edit')
+    case 'init-edit': return emit('init-edit', editActions)
     case 'undo': return emit('undo')
     case 'remove': return emit('remove')
     default: return
@@ -55,8 +68,46 @@ const canChange = computed(() => {
   return allowed || isAdded.value
 })
 
-const availableActions = computed(() => {
-  const actions = []
+// the single "Change"/"Edit" entry, or one entry per edit option the row is allowed
+// (added rows always get the single entry - their form allows every edit)
+const editActions = computed<RowAction[]>(() => {
+  if (!canChange.value || isRemoved.value) {
+    return []
+  }
+  if (editOptions?.length && !isAdded.value) {
+    return editOptions
+      .filter(option => option.actions.some(isActionAllowed))
+      .map(option => ({
+        label: option.label,
+        icon: option.icon,
+        click: () => emitAction('init-edit', option.actions)
+      }))
+  }
+  return [{
+    label: isAdded.value
+      ? t('label.edit')
+      : labelOverrides?.editLabel || t('label.change'),
+    icon: 'i-mdi-pencil',
+    click: () => emitAction('init-edit')
+  }]
+})
+
+const removeAction = computed<RowAction | undefined>(() => {
+  if (!canRemove.value || isRemoved.value) {
+    return undefined
+  }
+  return {
+    // old is always undefined for newly added rows
+    label: isAdded.value
+      ? t('label.remove')
+      : labelOverrides?.removeLabel || t('label.delete'),
+    icon: labelOverrides?.removeIcon || 'i-mdi-delete',
+    click: () => emitAction('remove')
+  }
+})
+
+const availableActions = computed<RowAction[]>(() => {
+  const actions: RowAction[] = []
 
   if (isRemovedOrEdited.value) {
     actions.push({
@@ -66,25 +117,10 @@ const availableActions = computed(() => {
     })
   }
 
-  if (canChange.value && !isRemoved.value) {
-    actions.push({
-      label: isAdded.value
-        ? t('label.edit')
-        : labelOverrides?.editLabel || t('label.change'),
-      icon: 'i-mdi-pencil',
-      click: () => emitAction('init-edit')
-    })
-  }
-
-  if (canRemove.value && !isRemoved.value) {
-    // old is always undefined for newly added rows
-    const isAdded = row.original.old === undefined
-    actions.push({
-      label: isAdded ? t('label.remove') : t('label.delete'),
-      icon: 'i-mdi-delete',
-      click: () => emitAction('remove')
-    })
-  }
+  const ordered = primaryAction === 'remove'
+    ? [removeAction.value, ...editActions.value]
+    : [...editActions.value, removeAction.value]
+  actions.push(...ordered.filter((action): action is RowAction => !!action))
 
   return actions
 })

@@ -20,10 +20,13 @@ const props = defineProps<{
   }
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
+  editOptions?: TableEditOption[]
+  primaryAction?: TablePrimaryAction
 }>()
 
 defineEmits<{
-  'init-edit': [row: TableBusinessRow<T>]
+  // `actions` is set when the edit was opened from an edit option, limiting the form to those actions
+  'init-edit': [row: TableBusinessRow<T>, actions?: ManageAllowedAction[]]
   'undo': [row: TableBusinessRow<T>]
   'remove': [row: TableBusinessRow<T>]
   'action-prevented': []
@@ -91,7 +94,9 @@ const tableUi = computed(() => {
         :prevent-actions="preventActions"
         :label-overrides="labelOverrides"
         :get-custom-dropdown-items="getCustomDropdownItems"
-        @init-edit="$emit('init-edit', row)"
+        :edit-options="editOptions"
+        :primary-action="primaryAction"
+        @init-edit="(actions?: ManageAllowedAction[]) => $emit('init-edit', row, actions)"
         @undo="$emit('undo', row)"
         @remove="$emit('remove', row)"
         @action-prevented="$emit('action-prevented')"

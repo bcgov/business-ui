@@ -15,9 +15,10 @@ definePageMeta({
   middleware: ['connect-auth']
 })
 
-const directorChangeProps = computed(() =>
-  getDirectorChangeManagePartiesProps(businessStore.business?.legalType !== 'CP')
-)
+const directorChangeProps = computed(() => {
+  const legalType = businessStore.business?.legalType
+  return getDirectorChangeManagePartiesProps(legalType !== 'CP', getRegisterCorrectionFormUrl(legalType))
+})
 
 // a director open in the party details sub form must be completed before saving or submitting
 async function checkActiveSubForm() {
@@ -120,9 +121,8 @@ watch(() => store.directors, async (directors) => {
         <p>{{ filingText.desc }}</p>
       </div>
 
-      <!-- Section 1: Effective Date -->
+      <!-- Director Change Date (the design has no numbered sections on this page) -->
       <ConnectPageSection
-        :heading="{ label: `1. ${$t('label.effectiveDate')}` }"
         ui-body="px-4 py-4 sm:px-6"
         data-testid="effective-date-section"
       >
@@ -131,11 +131,13 @@ watch(() => store.directors, async (directors) => {
           ref="effective-date-form"
           v-model="effectiveDateModel"
           :bounds="effectiveDateBounds"
+          :label="$t('label.directorChangeDate')"
+          :input-label="$t('label.directorChangeDate')"
           data-testid="effective-date-input"
         />
       </ConnectPageSection>
 
-      <!-- Section 2: Directors -->
+      <!-- Directors -->
       <UAlert
         v-if="warning"
         color="warning"
@@ -149,7 +151,6 @@ watch(() => store.directors, async (directors) => {
         v-bind="directorChangeProps"
         :loading="initializing"
         :empty-text="initializing ? $t('label.loading') : $t('label.noDirectors')"
-        :section-title="`2. ${$t('label.directorInfo')}`"
         :table-title="$t('label.directors')"
         subject="Director"
         data-testid="manage-directors"
@@ -161,7 +162,6 @@ watch(() => store.directors, async (directors) => {
         data-testid="form-section-folio-number"
         :disabled="initializing"
         name="folio"
-        :order="3"
       />
 
       <FormConfirmAuthorization
@@ -170,7 +170,6 @@ watch(() => store.directors, async (directors) => {
         data-testid="form-section-authorization"
         :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         name="authorization"
-        :order="store.isStaff ? 3 : 4"
       />
 
       <!-- coops certify with a legal name instead of the authorization checkbox -->
@@ -180,7 +179,6 @@ watch(() => store.directors, async (directors) => {
         :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
         data-testid="form-section-certify"
         name="certify"
-        :order="4"
       />
 
       <StaffPaymentFieldset
@@ -188,7 +186,6 @@ watch(() => store.directors, async (directors) => {
         ref="staff-pay-ref"
         v-model="store.formState.staffPayment"
         data-testid="form-section-staff-payment"
-        :order="store.formState.authorization ? 4 : 3"
         :initializing
       />
     </UForm>

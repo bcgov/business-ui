@@ -3,12 +3,18 @@
 const {
   container = true,
   hideRemove,
+  showReset,
   variant
 } = defineProps<{
   variant: FormVariant
   subject: string
   hideHeaderCancel?: boolean
   hideRemove?: boolean
+  // a Reset button next to Remove that restores the values the form opened with (the parent owns the state)
+  showReset?: boolean
+  resetDisabled?: boolean
+  // Done before Cancel (the default is Cancel then Done)
+  doneFirst?: boolean
   error?: boolean
   container?: boolean
   taskGuardConfig?: {
@@ -22,11 +28,13 @@ defineEmits<{
   done: []
   cancel: []
   remove: []
+  reset: []
 }>()
 
 const { t } = useI18n()
 const labelId = useId()
 const showRemoveButton = computed(() => hideRemove ? false : variant !== 'add')
+const showLeftActions = computed(() => showRemoveButton.value || !!showReset)
 
 const itemLabelPrefixMap: Record<FormVariant, string> = {
   edit: t('label.editing'),
@@ -93,18 +101,33 @@ onMounted(async () => {
         :class="{
           'px-4 xl:px-8 pb-4 xl:pb-8': container,
           'pt-4 xl:pt-8': !container,
-          'justify-between': showRemoveButton,
-          'justify-end': !showRemoveButton
+          'justify-between': showLeftActions,
+          'justify-end': !showLeftActions
         }"
       >
-        <UButton
-          v-if="showRemoveButton"
-          :label="removeButtonLabelMap[variant]"
-          variant="outline"
-          color="error"
-          class="w-full xl:w-min justify-center"
-          @click="$emit('remove')"
-        />
+        <div
+          v-if="showLeftActions"
+          class="flex flex-col xl:flex-row gap-2 xl:gap-6 items-center w-full xl:w-auto"
+        >
+          <UButton
+            v-if="showRemoveButton"
+            :label="removeButtonLabelMap[variant]"
+            variant="outline"
+            color="error"
+            class="w-full xl:w-min justify-center"
+            @click="$emit('remove')"
+          />
+          <UButton
+            v-if="showReset"
+            :label="$t('label.reset')"
+            variant="outline"
+            color="error"
+            :disabled="resetDisabled"
+            class="w-full xl:w-min justify-center"
+            data-testid="subform-reset-btn"
+            @click="$emit('reset')"
+          />
+        </div>
         <div class="flex flex-col xl:flex-row gap-2 xl:gap-6 justify-end items-center w-full xl:w-auto">
           <FormAlertMessage
             v-if="taskGuardConfig"
@@ -115,7 +138,7 @@ onMounted(async () => {
           <UButton
             variant="outline"
             :label="$t('label.cancel')"
-            class="w-full xl:w-min justify-center"
+            :class="['w-full xl:w-min justify-center', { 'order-last': doneFirst }]"
             @click="$emit('cancel')"
           />
           <UButton

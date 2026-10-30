@@ -6,11 +6,19 @@ const props = defineProps<{
   allowedActions?: ManageAllowedAction[]
   stateKey: string
   hideRemove?: boolean
+  // Reset button (restores the values the form opened with); the parent owns the state and handles `reset`
+  showReset?: boolean
+  resetDisabled?: boolean
+  // false renders the form without the "Changing {subject}" header and card border (inline in a table row)
+  container?: boolean
+  doneFirst?: boolean
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean
     requireNameChangeConfirmation?: boolean
     requireFirstName?: boolean
+    correctionFormUrl?: string
+    hideLabel?: boolean
   }
   partyRoleProps?: {
     allowedRoles: RoleTypeUi[]
@@ -25,6 +33,7 @@ const emit = defineEmits<{
   done: []
   cancel: []
   remove: []
+  reset: []
 }>()
 
 const { alerts, attachAlerts } = useFilingAlerts(props.stateKey)
@@ -179,9 +188,14 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         targetId
       }"
       :hide-remove
+      :show-reset="showReset"
+      :reset-disabled="resetDisabled"
+      :container="container ?? true"
+      :done-first="doneFirst"
       @done="onDone"
       @cancel="$emit('cancel')"
       @remove="$emit('remove')"
+      @reset="$emit('reset')"
     >
       <template #default>
         <FormPartyName
