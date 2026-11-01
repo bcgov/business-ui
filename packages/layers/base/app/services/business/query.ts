@@ -279,6 +279,34 @@ export const useBusinessQuery = () => {
     )
   }
 
+  function filingValidateSectionOptions(
+    businessId: MaybeRefOrGetter<string>,
+    payload: FilingValidateSectionRequest,
+    options?: DefineOptions<FilingValidateSectionResponse>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<FilingValidateSectionResponse>(
+        `businesses/${toValue(businessId)}/filings/validate-section`, {
+          method: 'POST',
+          body: payload
+        }
+      ),
+      staleTime: DEFAULT_STALE_TIME,
+      ...options,
+      key: keys.filingValidateSection(toValue(businessId), payload)
+    })
+  }
+
+  function filingValidateSection(
+    businessId: MaybeRefOrGetter<string>,
+    payload: FilingValidateSectionRequest,
+    options?: QueryOptions<FilingValidateSectionResponse>
+  ) {
+    return useQuery(() => filingValidateSectionOptions(
+      businessId, payload, options as DefineOptions<FilingValidateSectionResponse>)
+    )
+  }
+
   function ledgerOptions(
     businessId: MaybeRefOrGetter<string>,
     effectiveDate?: IsoDatePacific,
@@ -458,6 +486,8 @@ export const useBusinessQuery = () => {
     filingCommentsOptions,
     filingDocumentUrls,
     filingDocumentUrlsOptions,
+    filingValidateSection,
+    filingValidateSectionOptions,
     ledger,
     ledgerOptions,
     linkedNameRequest,

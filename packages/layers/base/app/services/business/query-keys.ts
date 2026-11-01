@@ -35,6 +35,8 @@ export const useBusinessQueryKeys = () => {
     filingComments: (url: string) => [...base.value, 'filing', 'comments', { url }] as const,
     filingDocumentUrls: (businessId: string, filingId: string | number) =>
       [...base.value, businessId, 'filing', filingId, 'document-urls'] as const,
+    filingValidateSection: (businessId: string, payload: FilingValidateSectionRequest) =>
+      [...base.value, businessId, 'filing', 'validate', 'section', payload] as const,
     ledger: (businessId: string, date: string) => [...base.value, businessId, 'ledger', { date }] as const,
     linkedNameRequest: (nrNumber: string) => [...base.value, 'linked-name-request', nrNumber] as const,
     parties: (businessId: string, query?: BusinessPartiesQuery) =>

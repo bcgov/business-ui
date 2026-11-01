@@ -5,6 +5,7 @@ import { getLegalNameRefinement } from './legal-name-refinement'
 export function getActiveYourCompanySchema(
   context?: {
     business?: BusinessData | BusinessDataPublic
+    filingType?: FilingType
   }
 ) {
   const t = useNuxtApp().$i18n.t
@@ -56,7 +57,7 @@ export function getActiveYourCompanySchema(
     z.object({
       key: z.literal('nameRequest'),
       value: getNameRequestSchema()
-        .superRefine(getLegalNameRefinement({ business: context?.business }))
+        .superRefine(getLegalNameRefinement(context))
     }),
 
     // Legal Type (also known as entity type or corp type)

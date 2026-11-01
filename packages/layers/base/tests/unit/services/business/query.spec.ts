@@ -16,6 +16,7 @@ const mockKeys = {
   filing: vi.fn(),
   filingComments: vi.fn(),
   filingDocumentUrls: vi.fn(),
+  filingValidateSection: vi.fn(),
   ledger: vi.fn(),
   linkedNameRequest: vi.fn(),
   parties: vi.fn(),
@@ -265,6 +266,29 @@ describe('useBusinessQuery', () => {
     const custom = filingDocumentUrlsOptions(businessId, '12345', { staleTime: 5000 })
     expect(custom.staleTime).toBe(5000)
     expect(mockKeys.filingDocumentUrls).toHaveBeenCalledWith(businessId, '12345')
+  })
+
+  it('filingValidateSectionOptions should have correct config', () => {
+    const { filingValidateSectionOptions } = useBusinessQuery()
+    const validatePayload = {
+      filingType: FilingType.CORRECTION,
+      section: 'nameRequest',
+      data: { legalName: 'Test Name LTD' },
+      filingSubType: FilingSubType.AMEND_RECEIVER
+    }
+
+    const options = filingValidateSectionOptions(businessId, validatePayload)
+    options.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/filings/validate-section`, {
+      body: validatePayload,
+      method: 'POST'
+    })
+    expect(mockKeys.filingValidateSection).toHaveBeenCalledWith(businessId, validatePayload)
+    expect(options.staleTime).toBe(DEFAULT_STALE_TIME)
+
+    const custom = filingValidateSectionOptions(businessId, validatePayload, { staleTime: 5000 })
+    expect(custom.staleTime).toBe(5000)
+    expect(mockKeys.filingValidateSection).toHaveBeenCalledWith(businessId, validatePayload)
   })
 
   it('ledgerOptions should have correct config', () => {

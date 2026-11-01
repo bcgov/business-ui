@@ -14,6 +14,13 @@ mockNuxtImport('storeToRefs', () => {
   return (store: any) => store
 })
 
+const validateKeyPayload = {
+  filingType: FilingType.CORRECTION,
+  section: 'nameRequest',
+  data: { legalName: 'Test Name LTD' },
+  filingSubType: FilingSubType.AMEND_RECEIVER
+}
+
 describe('useBusinessQueryKeys', () => {
   beforeEach(() => {
     mockCurrentAccount.value = { id: 'ACC123' }
@@ -54,6 +61,7 @@ describe('useBusinessQueryKeys', () => {
       ['filing', [businessId, 55, true], ['business', accountId, businessId, 'filing', 55, { publicData: true }]],
       ['filingComments', ['http://comments'], ['business', accountId, 'filing', 'comments', { url: 'http://comments' }]],
       ['filingDocumentUrls', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'document-urls']],
+      ['filingValidateSection', [businessId, validateKeyPayload], ['business', accountId, businessId, 'filing', 'validate', 'section', validateKeyPayload]],
       ['ledger', [businessId, '2026-01-13'], ['business', accountId, businessId, 'ledger', { date: '2026-01-13' }]],
       ['linkedNameRequest', ['NR 123'], ['business', accountId, 'linked-name-request', 'NR 123']],
       ['parties', [businessId, { role: 'director' }], ['business', accountId, businessId, 'parties', { role: 'director' }]],
