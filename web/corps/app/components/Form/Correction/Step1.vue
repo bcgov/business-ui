@@ -71,7 +71,7 @@ function onActionPrevented() {
 
     <ManageOffices
       v-if="store.isCorrectable(CorrectionSection.OFFICES)"
-      v-model:active-office="store.formState.activeOffice"
+      v-model:active-subject="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
       :empty-text="$t('label.noOffices')"
