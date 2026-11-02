@@ -14,7 +14,8 @@ const {
   preventActions = false,
   actionPreventedSignal = 0,
   bcCanadaOnly = false,
-  hideRemove = false
+  hideRemove = false,
+  validateOnOpen = false
 } = defineProps<ManageOfficesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
 
 const emit = defineEmits<{
@@ -170,6 +171,8 @@ function onActionPrevented() {
           @cancel="cleanupForm"
         />
         <USeparator />
+        <!-- e.g. a notice above the table (review imported data's "fill in the missing information" alert) -->
+        <slot name="before-table" />
         <TableOffices
           v-model:expanded="expandedState"
           :data="tableState"
@@ -200,6 +203,7 @@ function onActionPrevented() {
                 :state-key
                 :hide-remove="hideRemove || variant === 'correct'"
                 :bc-canada-only
+                :validate-on-open
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"
                 @remove="removeSubject(row)"

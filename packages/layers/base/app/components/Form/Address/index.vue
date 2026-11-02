@@ -5,6 +5,8 @@ const props = defineProps<{
   nested?: boolean
   name?: string
   bcCanadaOnly?: boolean | 'delivery'
+  /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
+  validateOnMount?: boolean
 }>()
 
 defineEmits<{
@@ -63,6 +65,13 @@ watch(
     }
   }
 )
+
+onMounted(() => {
+  if (props.validateOnMount) {
+    // silent: populate the field errors without throwing
+    formRef.value?.validate({ silent: true })
+  }
+})
 
 // NOTE: Need to expose ref to access form instance in parent
 defineExpose({

@@ -19,7 +19,7 @@ const {
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
-const officesColumns = getOfficesTableColumns<T>(labelOverrides?.badges)
+const officesColumns = getOfficesTableColumns<T>(labelOverrides?.badges, labelOverrides?.invalidAddress)
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
 // Local reference to the currently editing item

@@ -281,6 +281,8 @@ function onActionPrevented() {
           @cancel="cleanupForm"
         />
         <USeparator />
+        <!-- e.g. a notice above the table (review imported data's "fill in the missing information" alert) -->
+        <slot name="before-table" />
         <TableParty
           :id="showCeasedTab ? `${stateKey}-tabpanel` : undefined"
           v-model:expanded="expandedState"

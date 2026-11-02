@@ -22,7 +22,12 @@ const {
   }
 }>()
 
-const partyColumns = computed(() => getPartyTableColumns<T>(columns, labelOverrides?.badges, showFormerName))
+const partyColumns = computed(() => getPartyTableColumns<T>(
+  columns,
+  labelOverrides?.badges,
+  showFormerName,
+  labelOverrides?.invalidAddress
+))
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
 // Local reference to the currently editing item
