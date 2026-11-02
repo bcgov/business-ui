@@ -94,34 +94,35 @@ defineExpose({
       :error="formErrors?.mailing"
       padding-class="xy-default"
     >
-      <div class="flex flex-col gap-6">
-        <ConnectFormAddress
-          id="mailing-address"
-          v-model="model.mailingAddress"
-          schema-prefix="mailingAddress"
-          @should-validate="formRef?.clear(/^mailingAddress.*/)"
-        />
-        <UCheckbox
-          v-model="model.sameAs"
-          :label="$t('label.deliveryAddressSameAsMailing')"
-        />
-      </div>
+      <ConnectFormAddress
+        id="mailing-address"
+        v-model="model.mailingAddress"
+        schema-prefix="mailingAddress"
+        @should-validate="formRef?.clear(/^mailingAddress.*/)"
+      />
     </ConnectFieldset>
-    <USeparator v-if="!model.sameAs" class="padding-x-default" />
+    <USeparator class="padding-x-default" />
+    <!-- the 'same as' checkbox leads the delivery section - the delivery inputs only show while it is unchecked -->
     <ConnectFieldset
-      v-if="!model.sameAs"
       :label="$t('label.deliveryAddress')"
       :error="formErrors?.delivery"
       padding-class="xy-default"
     >
-      <ConnectFormAddress
-        id="delivery-address"
-        v-model="model.deliveryAddress"
-        schema-prefix="deliveryAddress"
-        street-help-text="no-po"
-        required
-        @should-validate="formRef?.clear(/^deliveryAddress.*/)"
-      />
+      <div class="flex flex-col gap-6">
+        <UCheckbox
+          v-model="model.sameAs"
+          :label="$t('label.deliveryAddressSameAsMailing')"
+        />
+        <ConnectFormAddress
+          v-if="!model.sameAs"
+          id="delivery-address"
+          v-model="model.deliveryAddress"
+          schema-prefix="deliveryAddress"
+          street-help-text="no-po"
+          required
+          @should-validate="formRef?.clear(/^deliveryAddress.*/)"
+        />
+      </div>
     </ConnectFieldset>
     <slot v-if="!nested" name="actions">
       <div class="flex gap-6 justify-end padding-xy-default">
