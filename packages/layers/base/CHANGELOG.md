@@ -1,5 +1,23 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.29.0
+
+### Minor Changes
+
+- [#605](https://github.com/bcgov/business-ui/pull/605) [`fe091a2`](https://github.com/bcgov/business-ui/commit/fe091a28fbb471b054540bb983641859855fc0d1) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - ManageOffices / ManageParties: add a `before-table` slot for a notice above the table, a `validateOnOpen` option (ManageOffices prop / `partyFormProps.validateOnOpen`) that opens an address form with its validation errors shown, and `labelOverrides.invalidAddress` to mark incomplete mailing / delivery addresses in their table cells. FormAddress: `validateOnOpen` prop.
+  
+  FormAddress: the "Delivery Address same as Mailing Address" checkbox now leads the Delivery Address section (Components 2.0); the delivery inputs render under it while unchecked.
+
+### Patch Changes
+
+- [#603](https://github.com/bcgov/business-ui/pull/603) [`1d26c55`](https://github.com/bcgov/business-ui/commit/1d26c55137c280be3d3d42141ee1c87dc06af052) Thanks [@JazzarKarim](https://github.com/JazzarKarim)! - Corp info: Fix "Cemetary" typo to "Cemetery" in the CEM corp type descriptions and rename `CorpTypeCd.CEMETARY` to `CorpTypeCd.CEMETERY`.
+
+- [#600](https://github.com/bcgov/business-ui/pull/600) [`f8121ba`](https://github.com/bcgov/business-ui/commit/f8121babd3b1addad162c3fa0808e410cc198281) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Wrap the former name shown under a NAME_CHANGED party in parentheses, "(Formerly [OLD NAME])", to match the design
+
+- [#598](https://github.com/bcgov/business-ui/pull/598) [`2000ea7`](https://github.com/bcgov/business-ui/commit/2000ea7d250e6b96e140437e38a4d72ef725146b) Thanks [@deetz99](https://github.com/deetz99)! - Share class formatter and name column util: Add fallback for possibly null or undefined name property from db.
+
+- [#599](https://github.com/bcgov/business-ui/pull/599) [`18a1ec6`](https://github.com/bcgov/business-ui/commit/18a1ec6e7ecf00b2fc4addf18fa6312a861cce7e) Thanks [@meawong](https://github.com/meawong)! - Added a utility to resolve region codes to their display names.
+
 ## 0.28.0
 
 ### Minor Changes
