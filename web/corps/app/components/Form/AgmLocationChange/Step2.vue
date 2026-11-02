@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getRegionLabel } from '#business/app/utils/jurisdiction'
 import { z } from 'zod'
 
 const { t } = useI18n()
@@ -12,7 +13,13 @@ const entityType = computed(() =>
 const reviewRows = computed(() => [
   { label: t('label.agmYear'), value: store.formState.year },
   { label: t('label.reason'), value: store.formState.reason },
-  { label: t('label.agmLocation'), value: store.formState.agmLocation }
+  { label: t('label.agmLocation'),
+    value: [
+      store.formState.agmLocation.city,
+      getRegionLabel(store.formState.agmLocation.country, store.formState.agmLocation.region),
+      isoCountriesListSortedByName.find(c => c.alpha_2 === store.formState.agmLocation.country)?.name
+    ].filter(Boolean).join(', ')
+  }
 ])
 </script>
 

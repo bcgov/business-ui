@@ -19,6 +19,18 @@ export function getJurisdictionLabel(j?: { country?: string, region?: string | n
   return countryDisplay
 }
 
+export function getRegionLabel(country?: string, region?: string | null): string {
+  if (country === 'CA') {
+    return countrySubdivisions.ca.find(r => r.code === region)?.name ?? region ?? ''
+  }
+
+  if (country === 'US') {
+    return countrySubdivisions.us.find(r => r.code === region)?.name ?? region ?? ''
+  }
+
+  return region ?? ''
+}
+
 export function getJurisdictionMenuItems(): InputMenuItem[][] {
   const t = useNuxtApp().$i18n.t
 

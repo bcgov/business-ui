@@ -3,6 +3,9 @@ import type { Page } from '@playwright/test'
 import {
   fillLocationChangeDetail,
   goToReviewStep,
+  selectAgmCountry,
+  selectAgmRegion,
+  selectAgmYear,
   setupAgmLocationChangePage,
   setupAgmLocationChangePageWithDraft,
   navigateToAgmLocationChangePage
@@ -18,14 +21,15 @@ async function assertCommonElements(page: Page) {
   await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
   // has breadcrumb
   await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('AGM Location Change')).toBeVisible()
+  await expect(page.getByTestId('connect-breadcrumb-wrapper')
+    .getByText('Annual General Meeting (AGM) Location Change')).toBeVisible()
   // has tombstone
   await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
   await expect(page.getByTestId('connect-tombstone-wrapper')
-    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
-  ).toBeVisible()
+    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')).toBeVisible()
   // has heading
-  await expect(page.getByRole('heading', { name: 'AGM Location Change', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading',
+    { name: 'Annual General Meeting (AGM) Location Change', exact: true })).toBeVisible()
   // has fee summary
   await expect(page.getByTestId('fee-widget')).toBeVisible()
   await expect(page.getByTestId('fee-widget').getByText('AGM Location Change')).toBeVisible()
@@ -46,18 +50,33 @@ test.describe('AGM Location Change - Page init', () => {
 
     // Location Change Detail section
     await expect(page.getByTestId('form-section-location-change-detail')).toBeVisible()
-    await expect(page.getByLabel('AGM Year')).toBeVisible()
+
+    const yearSelect = page.getByRole('combobox', { name: 'General Meeting Year' })
+    await expect(yearSelect).toBeVisible()
+    await expect(yearSelect).toHaveAttribute('data-placeholder', '')
+
+    // Open the custom dropdown and verify that years are ordered newest first.
+    await yearSelect.click()
+    const yearOptions = await page.getByRole('option').allTextContents()
+    const numericYears = yearOptions.map(year => Number(year))
+    expect(numericYears).toEqual([...numericYears].sort((a, b) => b - a))
+    await page.keyboard.press('Escape')
+
     await expect(page.getByLabel('Reason')).toBeVisible()
-    await expect(page.getByLabel('AGM Location', { exact: true })).toBeVisible()
+    await expect(page.getByLabel('Country')).toBeVisible()
+    await expect(page.getByLabel('City')).toBeVisible()
+    await expect(page.getByLabel('Province')).toBeVisible()
 
     // Certify is on the review step
     await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'Review and Confirm' })).toBeVisible()
 
     // Fields start empty
-    await expect(page.getByLabel('AGM Year')).toHaveValue('')
+    await expect(page.getByRole('combobox', { name: 'General Meeting Year' })).toHaveAttribute('data-placeholder', '')
     await expect(page.getByLabel('Reason')).toHaveValue('')
-    await expect(page.getByLabel('AGM Location', { exact: true })).toHaveValue('')
+    await expect(page.getByLabel('City')).toHaveValue('')
+    // Country defaults to Canada; the city and region have no initial value.
+    await expect(page.getByLabel('Country')).toHaveValue('Canada')
   })
 
   test('should display the review step with the details, folio and certify for non-staff', async ({ page }) => {
@@ -69,7 +88,11 @@ test.describe('AGM Location Change - Page init', () => {
     await fillLocationChangeDetail(page, {
       year: '2025',
       reason: 'Shareholders are located outside BC.',
-      location: 'Calgary, Alberta, Canada'
+      agmLocation: {
+        country: 'CA',
+        city: 'Calgary',
+        region: 'Alberta'
+      }
     })
     await goToReviewStep(page)
 
@@ -105,10 +128,16 @@ test.describe('AGM Location Change - Page init', () => {
     await fillLocationChangeDetail(page, {
       year: '2025',
       reason: 'Staff authorization submission.',
-      location: 'Seattle, Washington, USA'
+      agmLocation: {
+        country: 'US',
+        city: 'Seattle',
+        region: 'Washington'
+      }
     })
     await goToReviewStep(page)
 
+    await expect(page.getByTestId('review-location-change-detail'))
+      .toContainText('Seattle, Washington, United States')
     await expect(page.getByTestId('form-section-authorization')).toBeVisible()
     await expect(page.getByTestId('folio-section')).toBeVisible()
     // Certify not visible for staff
@@ -120,16 +149,58 @@ test.describe('AGM Location Change - Page init', () => {
       agmLocationChange: {
         year: '2025',
         reason: 'Shareholders are located outside BC.',
-        agmLocation: 'Calgary, Alberta, Canada'
+        agmLocation: {
+          country: 'CA',
+          city: 'Calgary',
+          region: 'AB'
+        }
       }
     })
     await navigateToAgmLocationChangePage(page, identifier, draftId)
     await page.waitForLoadState('networkidle')
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
-    await expect(page.getByLabel('AGM Year')).toHaveValue('2025')
+    await expect(page.getByRole('combobox', { name: 'General Meeting Year' })).toContainText('2025')
     await expect(page.getByLabel('Reason')).toHaveValue('Shareholders are located outside BC.')
-    await expect(page.getByLabel('AGM Location', { exact: true })).toHaveValue('Calgary, Alberta, Canada')
+    await expect(page.getByLabel('Country')).toHaveValue('Canada')
+    await expect(page.getByLabel('City')).toHaveValue('Calgary')
+    await expect(page.getByLabel('Province')).toContainText('Alberta')
+  })
+
+  test('should reset the region when the country changes', async ({ page }) => {
+    await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
+    await navigateToAgmLocationChangePage(page, identifier)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await selectAgmCountry(page, 'CA')
+    await selectAgmRegion(page, 'CA', 'Alberta')
+    await expect(page.getByLabel('Province')).toContainText('Alberta')
+
+    await selectAgmCountry(page, 'US')
+
+    await expect(page.getByLabel('Province')).not.toBeVisible()
+    await selectAgmRegion(page, 'US', 'Washington')
+    await expect(page.getByTestId('agm-location-input-region')).toContainText('Washington')
+  })
+
+  test('should reject a region longer than two characters', async ({ page }) => {
+    await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
+    await navigateToAgmLocationChangePage(page, identifier)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await selectAgmCountry(page, 'Mexico')
+    await page.getByLabel('City').fill('Mexico City')
+    await page.getByLabel('Region').fill('XYZ')
+    await selectAgmYear(page, '2025')
+    await page.getByLabel('Reason').fill('Region validation test.')
+
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+    await expect(page.getByText('Please complete required information')).toBeVisible()
+    await expect(page.getByRole('heading',
+      { name: 'Annual General Meeting (AGM) Location Change', exact: true })).toBeVisible()
   })
 
   test('should show the not-allowed modal for a non-BC-corp legal type', async ({ page }) => {

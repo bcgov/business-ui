@@ -98,7 +98,7 @@ describe('useAgmLocationChangeStore', () => {
     expect(store.initializing).toBe(false)
     expect(store.formState.year).toBe('')
     expect(store.formState.reason).toBe('')
-    expect(store.formState.agmLocation).toBe('')
+    expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
   })
 
   describe('init(businessId, draftId)', () => {
@@ -120,7 +120,7 @@ describe('useAgmLocationChangeStore', () => {
         draftFiling: getDraftMock({
           year: '2025',
           reason: 'Meeting held outside BC.',
-          agmLocation: 'Vancouver, Alberta, Canada'
+          agmLocation: { country: 'CA', city: 'Calgary', region: 'AB' }
         })
       })
 
@@ -128,15 +128,32 @@ describe('useAgmLocationChangeStore', () => {
 
       expect(store.formState.year).toBe('2025')
       expect(store.formState.reason).toBe('Meeting held outside BC.')
-      expect(store.formState.agmLocation).toBe('Vancouver, Alberta, Canada')
+      expect(store.formState.agmLocation).toEqual({ country: 'CA', city: 'Calgary', region: 'AB' })
       expect(store.initializing).toBe(false)
+    })
+
+    it('should hydrate a null region as an empty string', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Meeting held outside BC.',
+          agmLocation: { country: 'GB', city: 'London', region: null }
+        })
+      })
+
+      await store.init(identifier, String(draftFilingId))
+
+      expect(store.formState.agmLocation).toEqual({ country: 'GB', city: 'London', region: '' })
     })
 
     it('should have authorization in form state for staff', async () => {
       mockIsStaff.value = true
       store.$reset()
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Reason', agmLocation: 'Location' })
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Reason',
+          agmLocation: { country: 'CA', city: 'Calgary', region: 'AB' } })
       })
 
       await store.init(identifier, String(draftFilingId))
@@ -146,7 +163,10 @@ describe('useAgmLocationChangeStore', () => {
 
     it('should set the initial form state for change detection', async () => {
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Some reason', agmLocation: 'Edmonton, Alberta, Canada' })
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Some reason',
+          agmLocation: { country: 'CA', city: 'Edmonton', region: 'Alberta' } })
       })
 
       await store.init(identifier, String(draftFilingId))
@@ -163,7 +183,7 @@ describe('useAgmLocationChangeStore', () => {
       expect(store.initializing).toBe(false)
       expect(store.formState.year).toBe('')
       expect(store.formState.reason).toBe('')
-      expect(store.formState.agmLocation).toBe('')
+      expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
     })
 
     it('should start the folio at the business default folio for a new filing', async () => {
@@ -179,7 +199,10 @@ describe('useAgmLocationChangeStore', () => {
     it('should restore the folio saved on a draft', async () => {
       mockBusinessFolio.value = '777555222'
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Reason', agmLocation: 'Location' }, { folioNumber: 'TXN-1' })
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Reason',
+          agmLocation: { country: 'CA', city: 'Calgary', region: 'AB' } }, { folioNumber: 'TXN-1' })
       })
 
       await store.init(identifier, String(draftFilingId))
@@ -190,9 +213,18 @@ describe('useAgmLocationChangeStore', () => {
 
   describe('submit(isSubmission)', () => {
     /** Init with a draft, then apply form state edits. */
-    async function initAndEdit(overrides: Partial<{ year: string, reason: string, agmLocation: string }> = {}) {
+    async function initAndEdit(
+      overrides: Partial<{
+        year: string
+        reason: string
+        agmLocation: typeof store.formState.agmLocation
+      }> = {}
+    ) {
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Test reason', agmLocation: 'Calgary, Alberta, Canada' })
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Test reason',
+          agmLocation: { country: 'CA', city: 'Calgary', region: 'Alberta' } })
       })
       await store.init(identifier, String(draftFilingId))
       Object.assign(store.formState, overrides)
@@ -217,7 +249,10 @@ describe('useAgmLocationChangeStore', () => {
     it('should post a new filing when no draft exists', async () => {
       mockInitFiling.mockResolvedValue({ draftFiling: undefined })
       await store.init(identifier)
-      Object.assign(store.formState, { year: '2025', reason: 'Test reason', agmLocation: 'Location' })
+      Object.assign(store.formState, {
+        year: '2025',
+        reason: 'Test reason',
+        agmLocation: { country: 'CA', city: 'Calgary', region: 'Alberta' } })
 
       await store.submit(true)
 
@@ -239,14 +274,17 @@ describe('useAgmLocationChangeStore', () => {
     })
 
     it('should build the correct agmLocationChange payload', async () => {
-      await initAndEdit({ year: '2024', reason: 'Board decision', agmLocation: 'Toronto, Ontario, Canada' })
+      await initAndEdit({
+        year: '2024',
+        reason: 'Board decision',
+        agmLocation: { country: 'CA', city: 'Toronto', region: 'Ontario' } })
 
       await store.submit(true)
 
       expect(getPayload().filing.agmLocationChange).toEqual({
         year: '2024',
         reason: 'Board decision',
-        agmLocation: 'Toronto, Ontario, Canada'
+        agmLocation: { country: 'CA', city: 'Toronto', region: 'Ontario' }
       })
     })
 
@@ -334,7 +372,10 @@ describe('useAgmLocationChangeStore', () => {
   describe('$reset', () => {
     it('restores schema defaults', async () => {
       mockInitFiling.mockResolvedValue({
-        draftFiling: getDraftMock({ year: '2025', reason: 'Some reason', agmLocation: 'Location' })
+        draftFiling: getDraftMock({
+          year: '2025',
+          reason: 'Some reason',
+          agmLocation: { country: 'CA', city: '', region: '' } })
       })
       await store.init(identifier, String(draftFilingId))
 
@@ -342,7 +383,7 @@ describe('useAgmLocationChangeStore', () => {
 
       expect(store.formState.year).toBe('')
       expect(store.formState.reason).toBe('')
-      expect(store.formState.agmLocation).toBe('')
+      expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
     })
   })
 })

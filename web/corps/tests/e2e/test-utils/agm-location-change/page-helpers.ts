@@ -103,13 +103,71 @@ export async function setupAgmLocationChangePageWithDraft(
   })
 }
 
+/**
+ * Select a country using its ISO alpha-2 code.
+ */
+export async function selectAgmCountry(page: Page, country: string) {
+  const countryNames: Record<string, string> = {
+    CA: 'Canada',
+    US: 'United States'
+  }
+  const countryName = countryNames[country] ?? country
+  const countryInput = page.getByTestId('agm-location-input-country')
+
+  await countryInput.fill(countryName)
+  await countryInput.press('Enter')
+}
+
+/**
+ * Select a Canadian province or US state by its visible name.
+ * For other countries, the region is a free-text field.
+ */
+export async function selectAgmRegion(page: Page, country: string, region: string) {
+  if (country === 'CA' || country === 'US') {
+    const regionInput = page.locator('#agm-location-input-region')
+
+    await regionInput.click()
+    await page.getByRole('option', { name: region, exact: true }).click()
+    return
+  }
+
+  await page.getByTestId('agm-location-input-region').fill(region)
+}
+
+/**
+ * Select a year from the General Meeting Year dropdown.
+ */
+export async function selectAgmYear(page: Page, year: string) {
+  const yearSelect = page.getByRole('combobox', { name: 'General Meeting Year' })
+  await yearSelect.click()
+  await page.getByRole('option', { name: year, exact: true }).click()
+}
+
+/**
+ * Fill the first-step fields. Region is the visible province/state name
+ * for Canada and the US, and free text for other countries.
+ */
 export async function fillLocationChangeDetail(
   page: Page,
-  detail: { year: string, reason: string, location: string }
+  detail: {
+    year: string
+    reason: string
+    agmLocation: {
+      country: string
+      city: string
+      region: string
+    }
+  }
 ) {
-  await page.getByLabel('AGM Year').fill(detail.year)
+  await selectAgmYear(page, detail.year)
   await page.getByLabel('Reason').fill(detail.reason)
-  await page.getByLabel('AGM Location', { exact: true }).fill(detail.location)
+  await selectAgmCountry(page, detail.agmLocation.country)
+  await page.getByLabel('City').fill(detail.agmLocation.city)
+  await selectAgmRegion(
+    page,
+    detail.agmLocation.country,
+    detail.agmLocation.region
+  )
 }
 
 export async function goToReviewStep(page: Page) {
