@@ -212,7 +212,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           :state="model.address"
           nested
           name="address"
-          :validate-on-mount="validateOnOpen"
+          :validate-on-open="validateOnOpen"
         />
         <template v-if="isEmailVisible && isEmailChangeAllowed">
           <USeparator class="padding-x-default" />

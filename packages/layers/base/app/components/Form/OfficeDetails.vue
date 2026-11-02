@@ -64,7 +64,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         nested
         name="address"
         :bc-canada-only
-        :validate-on-mount="validateOnOpen"
+        :validate-on-open="validateOnOpen"
       />
     </SubFormWrapper>
   </UForm>

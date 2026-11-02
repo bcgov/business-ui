@@ -6,7 +6,7 @@ const props = defineProps<{
   name?: string
   bcCanadaOnly?: boolean | 'delivery'
   /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
-  validateOnMount?: boolean
+  validateOnOpen?: boolean
 }>()
 
 defineEmits<{
@@ -60,14 +60,14 @@ watch(
       const id = model.value.deliveryAddress.id
       model.value.deliveryAddress = { ...model.value.mailingAddress, id }
     }
-    // clear the delivery errors either way: on check, errors raised before the copy (e.g. validateOnMount)
+    // clear the delivery errors either way: on check, errors raised before the copy (e.g. validateOnOpen)
     // would otherwise keep the fieldset flagged with nothing left to fix
     formRef.value?.clear(/deliveryAddress/)
   }
 )
 
 onMounted(() => {
-  if (props.validateOnMount) {
+  if (props.validateOnOpen) {
     // silent: populate the field errors without throwing
     formRef.value?.validate({ silent: true })
   }
