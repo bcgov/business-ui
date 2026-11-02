@@ -9,20 +9,20 @@ const {
   allowedActions,
   allowAddOfficeType,
   labelOverrides,
-  modelName = 'activeOffice',
+  modelName = 'activeSubject',
   variant = 'default',
   preventActions = false,
   actionPreventedSignal = 0,
   bcCanadaOnly = false,
   hideRemove = false,
   validateOnOpen = false
-} = defineProps<ManageOfficesProps & { preventActions?: boolean, actionPreventedSignal?: number }>()
+} = defineProps<ManageOfficesProps>()
 
 const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeSubject = defineModel<ActiveOfficesSchema | undefined>('active-office')
+const activeSubject = defineModel<ActiveOfficesSchema | undefined>('active-subject')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
@@ -88,8 +88,7 @@ const allowAddOffice = computed(() => {
 
 function initAddSubject() {
   if (shouldPreventActions.value) {
-    setActiveSubjectAlert()
-    emit('action-prevented')
+    onActionPrevented()
     return
   }
   const overrides = allowAddOfficeType ? { type: allowAddOfficeType } : {}

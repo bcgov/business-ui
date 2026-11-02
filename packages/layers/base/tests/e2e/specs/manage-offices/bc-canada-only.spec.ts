@@ -4,7 +4,7 @@ import { fillOutAddress } from '#business/tests/e2e/test-utils'
 
 test.describe('ManageOffices - bcCanadaOnly', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('./en-CA/examples/components/ManageOffices/bc-canada-only')
+    await page.goto('./en-CA/examples/components/Manage/Offices/bc-canada-only')
     await page.waitForLoadState('networkidle')
   })
 

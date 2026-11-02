@@ -25,7 +25,7 @@ const tableLabelOverrides = computed(() => ({
     @error="onFormSubmitError"
   >
     <ManageOffices
-      v-model:active-office="store.formState.activeOffice"
+      v-model:active-subject="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
       :empty-text="$t('label.noOffices')"

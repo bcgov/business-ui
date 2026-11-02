@@ -66,7 +66,7 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
           label="Search by Business Identifier"
         />
         <ManageOffices
-          v-model:active-office="activeOffice"
+          v-model:active-subject="activeOffice"
           :loading="asyncStatus === 'loading'"
           :subject="$t(`officeType.${allowAddOfficeType}`)"
           table-title="Offices"

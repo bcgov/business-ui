@@ -74,7 +74,7 @@ const componentExamples: DropdownMenuItem[] = [
         label: 'ManageOffices',
         children: [
           {
-            to: localePath('/examples/components/ManageOffices'),
+            to: localePath('/examples/components/Manage/Offices'),
             label: 'Default'
           },
           {
@@ -82,28 +82,28 @@ const componentExamples: DropdownMenuItem[] = [
             children: [
               {
                 label: 'Add',
-                to: localePath('/examples/components/ManageOffices/allowed-actions/add')
+                to: localePath('/examples/components/Manage/Offices/allowed-actions/add')
               },
               {
                 label: 'Edits',
-                to: localePath('/examples/components/ManageOffices/allowed-actions/edits')
+                to: localePath('/examples/components/Manage/Offices/allowed-actions/edits')
               },
               {
                 label: 'Remove',
-                to: localePath('/examples/components/ManageOffices/allowed-actions/remove')
+                to: localePath('/examples/components/Manage/Offices/allowed-actions/remove')
               },
               {
                 label: 'None',
-                to: localePath('/examples/components/ManageOffices/allowed-actions/none')
+                to: localePath('/examples/components/Manage/Offices/allowed-actions/none')
               }
             ]
           },
           {
-            to: localePath('/examples/components/ManageOffices/bc-canada-only'),
+            to: localePath('/examples/components/Manage/Offices/bc-canada-only'),
             label: 'BC/Canada Only'
           },
           {
-            to: localePath('/examples/components/ManageOffices/live-data'),
+            to: localePath('/examples/components/Manage/Offices/live-data'),
             label: 'Live Data'
           }
         ]

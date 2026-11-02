@@ -48,13 +48,13 @@ describe('FormCorrectionStep1', () => {
   })
 
   describe('ManageOffices', () => {
-    it('should bind activeOffice model with store.formState', async () => {
+    it('should bind active-subject model to store.formState.activeOffice', async () => {
       const correctionStore = useCorrectionStore()
       const mockOffice = { id: 1, name: 'Registered Office' } as any
 
       const manageOffices = wrapper.findComponent(ManageOffices)
 
-      await manageOffices.vm.$emit('update:activeOffice', mockOffice)
+      await manageOffices.vm.$emit('update:activeSubject', mockOffice)
 
       expect(correctionStore.formState.activeOffice).toEqual(mockOffice)
     })

@@ -3,7 +3,7 @@ import mockOffices from '#test-mocks/business-addresses/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices (Remove)' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices (add)' }]
 })
 
 const { tableState } = useManageOffices()
@@ -16,18 +16,19 @@ const loading = ref(false)
 
 <template>
   <UContainer>
-    <h1>ManageOffices - Remove</h1>
+    <h1>ManageOffices - Add</h1>
     <ConnectPageSection
-      :heading="{ label: 'ManageOffices - Remove' }"
+      :heading="{ label: 'ManageOffices - Add' }"
       ui-body="p-10"
     >
       <ManageOffices
-        v-model:active-office="activeOffice"
+        v-model:active-subject="activeOffice"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
-        subject="Office"
+        :subject="$t(`officeType.${OfficeType.CUSTODIAL}`)"
         table-title="Offices"
-        :allowed-actions="[ManageAllowedAction.REMOVE]"
+        :allowed-actions="[ManageAllowedAction.ADD]"
+        :allow-add-office-type="OfficeType.CUSTODIAL"
       />
     </ConnectPageSection>
   </UContainer>

@@ -279,7 +279,7 @@ onMounted(() => {
         data-testid="records-office-section"
       >
         <ManageOffices
-          v-model:active-office="store.formState.activeOffice"
+          v-model:active-subject="store.formState.activeOffice"
           :loading="store.initializing"
           :empty-text="$t('text.noOffices')"
           :subject="officeSubject"

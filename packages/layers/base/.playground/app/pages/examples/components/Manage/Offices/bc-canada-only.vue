@@ -24,7 +24,7 @@ const offices = computed(() => formatChangeOfAddressOfficesApi(tableState.value)
       ui-body="p-10"
     >
       <ManageOffices
-        v-model:active-office="activeOffice"
+        v-model:active-subject="activeOffice"
         :loading
         :empty-text="loading ? `Loading...` : 'No offices'"
         subject="Office"
