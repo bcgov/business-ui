@@ -3,19 +3,28 @@ import { isEqual } from 'es-toolkit'
 import type { FormError, Form, RadioGroupItem, AcceptableValue } from '@nuxt/ui'
 import { PartyType } from '#imports'
 
-const { requireNameChangeConfirmation, requireFirstName, originalName } = defineProps<{
+const {
+  requireNameChangeConfirmation,
+  requireFirstName,
+  originalName,
+  correctionFormUrl,
+  hideLabel
+} = defineProps<{
   name?: string
   allowBusinessName?: boolean
   allowPreferredName?: boolean
   requireNameChangeConfirmation?: boolean
   requireFirstName?: boolean
   originalName?: PartyNameSchema
+  // the correction form differs by business type (see getRegisterCorrectionFormUrl); defaults to form 47
+  correctionFormUrl?: string
+  // keep the "Legal Name" legend for screen readers only, so the fields take the full width
+  hideLabel?: boolean
 }>()
 
 const { t } = useI18n()
 
-// eslint-disable-next-line max-len
-const REGISTER_CORRECTION_FORM_URL = 'https://www2.gov.bc.ca/assets/gov/employment-business-and-economic-development/business-management/permits-licences-and-registration/registries-forms/register_correction_form_47.pdf'
+const registerCorrectionFormUrl = computed(() => correctionFormUrl ?? getRegisterCorrectionFormUrl())
 
 const partyNameSchema = getPartyNameSchema(requireFirstName)
 
@@ -110,8 +119,19 @@ defineExpose({
       :label="t('label.legalName')"
       :error="confirmationError || (formErrors && formErrors[0])"
       :show-error-msg="!!confirmationError"
+      :orientation="hideLabel ? 'vertical' : 'horizontal'"
       padding-class="xy-default"
     >
+      <template v-if="hideLabel" #label>
+        <span class="sr-only">{{ t('label.legalName') }}</span>
+        <span
+          v-if="confirmationError"
+          class="font-normal text-error"
+          data-testid="name-change-confirmation-error"
+        >
+          {{ confirmationError.message }}
+        </span>
+      </template>
       <div class="space-y-6">
         <div v-if="allowBusinessName" class="space-y-6">
           <URadioGroup
@@ -211,7 +231,7 @@ defineExpose({
             >
               <template #link>
                 <UButton
-                  :to="REGISTER_CORRECTION_FORM_URL"
+                  :to="registerCorrectionFormUrl"
                   target="_blank"
                   variant="link"
                   class="underline text-primary p-0 text-base gap-1"

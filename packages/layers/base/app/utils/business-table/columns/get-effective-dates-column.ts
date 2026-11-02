@@ -2,16 +2,21 @@ import { h } from 'vue'
 import { DateTime } from 'luxon'
 import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
-function formatDate(date: string): string | undefined {
+function formatDate(date: string, format: 'long' | 'iso'): string | undefined {
   const dt = DateTime.fromISO(date, { zone: 'America/Vancouver' })
-  return dt.isValid ? dt.toFormat('DDD') : undefined
+  if (!dt.isValid) {
+    return undefined
+  }
+  return format === 'iso' ? (dt.toISODate() ?? undefined) : dt.toFormat('DDD')
 }
 
 export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, actions: ActionType[] }>(
-  metaOption: TableColumnMetaOption = 'default'
+  metaOption: TableColumnMetaOption = 'default',
+  options: TablePartyColumnOptions['effectiveDates'] = {}
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
+  const { dateFormat = 'long', hideCurrent = false } = options
 
   const effectiveDatesColumn: TableBusinessColumn<T> = {
     id: 'effectiveDates',
@@ -25,13 +30,13 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
 
       // FUTURE: handle multiple roles/dates?
       const role = row.original.new.roles.find(role => role.appointmentDate)
-      const startDate = role?.appointmentDate ? formatDate(role.appointmentDate) : undefined
+      const startDate = role?.appointmentDate ? formatDate(role.appointmentDate, dateFormat) : undefined
 
       if (!startDate) {
         return h('span', { class: cellClass }, t('label.notAvailable'))
       }
 
-      const endDate = role?.cessationDate ? formatDate(role.cessationDate) : undefined
+      const endDate = role?.cessationDate ? formatDate(role.cessationDate, dateFormat) : undefined
 
       // once ceased, show the effective date as a Start/End range; otherwise just the date
       if (endDate) {
@@ -42,7 +47,7 @@ export function getEffectiveDatesColumn<T extends { roles: PartyRoleSchema, acti
         ])
       }
 
-      return h('span', { class: cellClass }, t('text.dateToCurrent', { date: startDate }))
+      return h('span', { class: cellClass }, hideCurrent ? startDate : t('text.dateToCurrent', { date: startDate }))
     }
   }
 

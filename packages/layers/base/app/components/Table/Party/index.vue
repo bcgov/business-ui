@@ -5,7 +5,8 @@ const {
   data,
   columns = ['name', 'mailing', 'delivery', 'actions'],
   labelOverrides,
-  showFormerName = true
+  showFormerName = true,
+  columnOptions
 } = defineProps<{
   data?: TableBusinessState<T>[]
   loading?: boolean
@@ -15,6 +16,9 @@ const {
   labelOverrides?: TableLabelOverrides
   columns?: TablePartyColumnName[]
   showFormerName?: boolean
+  editOptions?: TableEditOption[]
+  primaryAction?: TablePrimaryAction
+  columnOptions?: TablePartyColumnOptions
   taskGuardConfig?: {
     message?: string
     messageId: string
@@ -22,7 +26,9 @@ const {
   }
 }>()
 
-const partyColumns = computed(() => getPartyTableColumns<T>(columns, labelOverrides?.badges, showFormerName))
+const partyColumns = computed(() =>
+  getPartyTableColumns<T>(columns, labelOverrides?.badges, showFormerName, labelOverrides?.headers, columnOptions)
+)
 const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
 
 // Local reference to the currently editing item
@@ -73,6 +79,8 @@ watch(
     :allowed-actions="allowedActions"
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
+    :edit-options="editOptions"
+    :primary-action="primaryAction"
     :task-guard-config
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >

@@ -107,4 +107,38 @@ describe('getEffectiveDatesColumn', () => {
     expect(cell.children[1].children).toBe('to')
     expect(cell.children[2].children).toBe('April 12, 2025')
   })
+
+  it('cell should render an ISO appointment date alone with the iso and hideCurrent options', () => {
+    const row = getMockRow()
+    const column = getEffectiveDatesColumn('default', { dateFormat: 'iso', hideCurrent: true }) as any
+
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.children).toBe('2025-04-12')
+  })
+
+  it('cell should keep "to current" with the iso format unless hideCurrent is set', () => {
+    const row = getMockRow()
+    const column = getEffectiveDatesColumn('default', { dateFormat: 'iso' }) as any
+
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.children).toBe('2025-04-12 to current')
+  })
+
+  it('cell should render an ISO Start/End range once ceased', () => {
+    const row = getMockRow('2023-08-16', '2025-04-12')
+    const column = getEffectiveDatesColumn('default', { dateFormat: 'iso', hideCurrent: true }) as any
+
+    mockGetIsRowRemoved.mockReturnValue(false)
+
+    const cell = column.cell({ row })
+
+    expect(cell.children[0].children).toBe('2023-08-16')
+    expect(cell.children[2].children).toBe('2025-04-12')
+  })
 })
