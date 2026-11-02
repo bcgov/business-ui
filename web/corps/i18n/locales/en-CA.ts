@@ -33,6 +33,7 @@ export default {
     fileAndPay: 'File and Pay',
     generalMeetingYear: 'General Meeting Year',
     important: 'Important',
+    missingInformation: 'Missing information',
     noCustodians: 'There are currently no custodians.',
     noDirectors: 'No Directors',
     noLiquidators: 'There are currently no liquidators.',
@@ -125,7 +126,9 @@ export default {
       }
     },
     reviewImportedData: {
-      desc: 'Some office or director address information for this business was missing or incomplete when it was migrated. Review and complete the information below.',
+      desc: 'Some of the following information is either incorrect or incomplete at the time of migration. Please review and make the following changes to these sections:',
+      descReview: 'Review the changes below. Only sections that have been modified will appear.',
+      h1Review: 'Review and Confirm Migrated Information',
       feeCode: 'NOFEE',
       feeLabel: 'Review Migrated Information',
       h1: 'Review Migrated Information',
@@ -157,24 +160,9 @@ export default {
     nameTranslationsDescription: 'Name translations must use the Latin Alphabet (English, French, etc.). Names that use other writing systems must spell the name phonetically in English or French.',
     agmLocationHint: 'Enter the location of the AGM outside B.C.',
     reasonHint: 'Enter the reason for the location change.',
-    missingInfo: {
-      title: 'Missing information',
-      officeMissing: 'No office address on record',
-      addressMissing: '{address} is missing',
-      fieldMissing: '{address} is missing the {field}',
-      field: {
-        street: 'street address',
-        city: 'city',
-        country: 'country',
-        postalCode: 'postal code',
-        region: 'province or state'
-      }
-    },
     officeAddressesMustBeCorrect: 'Office addresses must be correct before filing your application.',
     officeDirectorsSharesMustBeCorrectBeforeFiling: 'Office addresses, current directors and share structure must be correct before filing your application.',
-    reviewImportedDataDirectors: 'Complete any director address that is missing information. Director names cannot be changed here.',
-    reviewImportedDataOffices: 'Complete any office address that is missing information. Office delivery addresses must be in British Columbia.',
-    reviewImportedDataReview: 'Review the changes below. Only the sections you changed will appear and be filed.',
+    reviewImportedDataImportant: 'Review and fill in the specified incorrect or incomplete information',
     receiversMustBeCorrect: 'Receiver information must be correct before filing your application.',
     reviewCorrectionChanges: 'Review the correction changes below before submitting.',
     shareStructureMustContainAtleastOneClass: 'Your share structure must contain at least one share class.',

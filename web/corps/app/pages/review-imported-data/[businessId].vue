@@ -66,9 +66,9 @@ const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
     <ConnectSpinner v-if="initializing" fullscreen />
     <div class="space-y-2">
       <h1 id="filing-h1">
-        {{ filingText.h1 }}
+        {{ currentStep === 2 ? $t('page.reviewImportedData.h1Review') : filingText.h1 }}
       </h1>
-      <p>{{ filingText.desc }}</p>
+      <p>{{ currentStep === 2 ? $t('page.reviewImportedData.descReview') : filingText.desc }}</p>
     </div>
     <FormReviewImportedDataStep1
       v-if="currentStep === 1"

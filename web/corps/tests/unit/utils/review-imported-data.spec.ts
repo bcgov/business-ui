@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest'
 
-/** A translate stub that echoes the key and any params so the composed lines can be asserted. */
-const t = (key: string, params?: Record<string, unknown>) =>
-  params ? `${key}(${Object.values(params).join(',')})` : key
-
 const missingInfoWarning = (code: string, data: Record<string, unknown>) => ({
   code,
   message: code,
@@ -81,38 +77,5 @@ describe('seedMissingOffices', () => {
   it('leaves a complete office set alone', () => {
     const rows = [officeRow(OfficeType.REGISTERED), officeRow(OfficeType.RECORDS)]
     expect(seedMissingOffices(rows, [OfficeType.REGISTERED, OfficeType.RECORDS])).toEqual(rows)
-  })
-})
-
-describe('describe missing info', () => {
-  const summary: MissingInfoSummary = {
-    offices: {
-      registeredOffice: [{ addressType: 'deliveryAddress', field: 'postalCode' }],
-      recordsOffice: [{}]
-    },
-    directors: {
-      123: [{ addressType: 'mailingAddress' }],
-      999: [{ addressType: 'deliveryAddress', field: 'city' }]
-    }
-  }
-
-  it('writes one office line per missing field', () => {
-    expect(describeMissingOffices(summary, t)).toEqual([
-      'officeType.registeredOffice: '
-      + 'text.missingInfo.fieldMissing(label.deliveryAddress,text.missingInfo.field.postalCode)',
-      'officeType.recordsOffice: text.missingInfo.officeMissing'
-    ])
-  })
-
-  it('names the director from the table and falls back to the role label', () => {
-    const director = getPartySchema(RoleTypeUi.DIRECTOR).parse({ id: '123' })
-    director.name.firstName = 'Jane'
-    director.name.lastName = 'Doe'
-    const directors: TableBusinessState<PartySchema>[] = [{ old: director, new: director }]
-
-    expect(describeMissingDirectors(summary, directors, t)).toEqual([
-      'Jane Doe: text.missingInfo.addressMissing(label.mailingAddress)',
-      'label.director: text.missingInfo.fieldMissing(label.deliveryAddress,text.missingInfo.field.city)'
-    ])
   })
 })

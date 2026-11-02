@@ -34,13 +34,6 @@ function onError(event: FormErrorEvent) {
   >
     <!-- only the sections the user changed are reviewed - they are the only ones sent -->
     <section class="space-y-6" data-testid="review-section">
-      <div>
-        <h2 class="text-base">
-          1. {{ $t('label.reviewAndConfirm') }}
-        </h2>
-        <p>{{ $t('text.reviewImportedDataReview') }}</p>
-      </div>
-
       <ManageOffices
         v-if="store.hasOfficeChanges"
         state-key="review-offices"
