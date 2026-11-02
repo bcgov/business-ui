@@ -36,6 +36,7 @@ export default {
     missingInformation: 'Missing information',
     noCustodians: 'There are currently no custodians.',
     noDirectors: 'No Directors',
+    companyInformation: 'Company Information',
     noLiquidators: 'There are currently no liquidators.',
     noOffices: 'No Offices',
     originalFilingDate: 'Original Filing Date',
