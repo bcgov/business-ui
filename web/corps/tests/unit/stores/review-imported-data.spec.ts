@@ -160,6 +160,18 @@ describe('useReviewImportedDataStore', () => {
       expect(store.hasChanges).toBe(false)
     })
 
+    it('seeds both offices as missing when the Legal API has no office addresses (404)', async () => {
+      mockGetAddresses.mockRejectedValue({ statusCode: 404, data: { message: `${identifier} address not found` } })
+
+      await store.init(identifier)
+
+      expect(mockOpenInitFilingErrorModal).not.toHaveBeenCalled()
+      expect(store.offices.map(o => o.new.type)).toEqual([OfficeType.REGISTERED, OfficeType.RECORDS])
+      expect(store.offices.every(o => o.old === undefined)).toBe(true)
+      expect(store.directors.map(d => d.new.id)).toEqual(['123', '456'])
+      expect(store.initializing).toBe(false)
+    })
+
     it('does not seed offices when the office fetch fails, and opens the init error modal', async () => {
       const error = new Error('addresses unavailable')
       mockGetAddresses.mockRejectedValue(error)

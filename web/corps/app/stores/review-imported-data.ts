@@ -39,10 +39,14 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
         draftId,
         { roleType: RoleType.DIRECTOR }
       ),
-      service.getAddresses(businessId).then(data => ({ data })).catch((error: unknown) => ({ error }))
+      service.getAddresses(businessId)
+        .then(data => ({ data }))
+        // the Legal API returns 404 when the business has no office addresses at all - that is the
+        // missing-offices case this filing exists for, so treat it as an empty office set
+        .catch((error: unknown) => (getErrorStatus(error) === 404 ? { data: {} } : { error }))
     ])
 
-    // a failed office fetch must not seed both offices as missing - the user would file over real addresses
+    // any other failed office fetch must not seed both offices as missing - the user would file over real addresses
     if (!('data' in addressResult)) {
       initializing.value = false
       await modal.openInitFilingErrorModal(addressResult.error)
