@@ -3,12 +3,30 @@ import mockOffices from '#test-mocks/business-addresses/json/default.json'
 
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices (edits)' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Manage Offices' }]
 })
 
 const { tableState } = useManageOffices()
 
-tableState.value = formatOfficesSection(mockOffices)
+tableState.value = Object.entries(mockOffices).map(([key, value]) => {
+  const id = crypto.randomUUID()
+  return {
+    new: {
+      id,
+      type: key as OfficeType,
+      actions: [],
+      address: { ...formatBaseAddressUi(value) },
+      isEditing: false
+    },
+    old: {
+      id,
+      type: key as OfficeType,
+      actions: [],
+      address: { ...formatBaseAddressUi(value) },
+      isEditing: false
+    }
+  }
+})
 
 const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const loading = ref(false)
@@ -16,18 +34,16 @@ const loading = ref(false)
 
 <template>
   <UContainer>
-    <h1>ManageOffices - Edits</h1>
     <ConnectPageSection
-      :heading="{ label: 'ManageOffices - Edits' }"
+      :heading="{ label: 'Manage Offices - Default' }"
       ui-body="p-10"
     >
       <ManageOffices
-        v-model:active-office="activeOffice"
+        v-model:active-subject="activeOffice"
         :loading="loading"
         :empty-text="loading ? `Loading...` : 'No offices'"
         subject="Office"
         table-title="Offices"
-        :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       />
     </ConnectPageSection>
   </UContainer>

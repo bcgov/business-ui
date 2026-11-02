@@ -1,5 +1,6 @@
 export * from './useManageCommon'
 export * from './useManageNameTranslations'
+export * from './useManageOffices'
 export * from './useManageParties'
 export * from './useManageShareStructure'
 export * from './your-company/useManageYourCompany'
