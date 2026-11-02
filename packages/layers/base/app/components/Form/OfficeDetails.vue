@@ -8,6 +8,7 @@ const props = defineProps<{
   hideRemove?: boolean
   name?: string
   bcCanadaOnly?: boolean | 'delivery'
+  validateOnOpen?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -63,6 +64,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         nested
         name="address"
         :bc-canada-only
+        :validate-on-open="validateOnOpen"
       />
     </SubFormWrapper>
   </UForm>

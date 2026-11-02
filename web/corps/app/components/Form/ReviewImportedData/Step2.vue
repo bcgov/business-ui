@@ -34,13 +34,6 @@ function onError(event: FormErrorEvent) {
   >
     <!-- only the sections the user changed are reviewed - they are the only ones sent -->
     <section class="space-y-6" data-testid="review-section">
-      <div>
-        <h2 class="text-base">
-          1. {{ $t('label.reviewAndConfirm') }}
-        </h2>
-        <p>{{ $t('text.reviewImportedDataReview') }}</p>
-      </div>
-
       <ManageOffices
         v-if="store.hasOfficeChanges"
         state-key="review-offices"
@@ -48,7 +41,7 @@ function onError(event: FormErrorEvent) {
         data-testid="review-office-addresses-section"
         :loading="store.initializing"
         :empty-text="$t('label.noOffices')"
-        :table-title="$t('label.offices')"
+        :table-title="$t('label.companyInformation')"
       />
 
       <ManageParties
@@ -57,16 +50,16 @@ function onError(event: FormErrorEvent) {
         data-testid="review-current-directors-section"
         :loading="store.initializing"
         :empty-text="$t('label.noDirectors')"
-        :table-title="$t('label.directors')"
+        :table-title="$t('label.currentDirectors')"
         :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
       />
     </section>
 
+    <!-- the review tables above carry no number, so the sections below don't either (per the UXA mocks) -->
     <FormFolio
       v-if="!store.isStaff && store.formState.folio"
       v-model="store.formState.folio"
       data-testid="folio-section"
-      order="2"
       name="folio"
     />
 
@@ -75,7 +68,6 @@ function onError(event: FormErrorEvent) {
       v-model="store.formState.certify"
       data-testid="certify-section"
       :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
-      order="3"
       name="certify"
     />
 
@@ -83,7 +75,6 @@ function onError(event: FormErrorEvent) {
       v-if="store.isStaff && store.formState.staffPayment"
       ref="staff-pay-ref"
       v-model="store.formState.staffPayment"
-      order="2"
       :initializing="store.initializing"
     />
   </UForm>

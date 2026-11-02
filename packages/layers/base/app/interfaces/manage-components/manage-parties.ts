@@ -2,6 +2,8 @@ import type { ManageBaseProps } from '#business/app/interfaces'
 
 interface PartyFormProps {
   hideRemove?: boolean
+  /** opens a party's address form with its validation errors already shown */
+  validateOnOpen?: boolean
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean

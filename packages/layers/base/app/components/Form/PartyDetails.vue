@@ -19,6 +19,7 @@ const props = defineProps<{
   effectiveDateBounds?: DateBounds
   cessationDateBounds?: DateBounds
   originalName?: PartyNameSchema
+  validateOnOpen?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -211,6 +212,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
           :state="model.address"
           nested
           name="address"
+          :validate-on-open="validateOnOpen"
         />
         <template v-if="isEmailVisible && isEmailChangeAllowed">
           <USeparator class="padding-x-default" />

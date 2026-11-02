@@ -23,4 +23,6 @@ export interface TableLabelOverrides {
   editLabel?: string
   /** Override badge text for specific action types (e.g. { ADDRESS_CHANGED: 'CORRECTED' }) */
   badges?: Partial<Record<ActionType, string>>
+  /** Marks an incomplete mailing / delivery address in its cell with this text (e.g. "Missing information") */
+  invalidAddress?: string
 }

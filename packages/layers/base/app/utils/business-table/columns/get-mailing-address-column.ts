@@ -3,7 +3,8 @@ import { h } from 'vue'
 import { CEASED_CLASS, DELETED_CLASS } from './constants'
 
 export function getMailingAddressColumn<T extends { address: AddressSchema, actions: ActionType[] }>(
-  metaOption: TableColumnMetaOption = 'default'
+  metaOption: TableColumnMetaOption = 'default',
+  invalidAddressLabel?: string
 ): TableBusinessColumn<T> {
   const t = useNuxtApp().$i18n.t
   const meta = getColumnMeta<T>(metaOption)
@@ -20,6 +21,7 @@ export function getMailingAddressColumn<T extends { address: AddressSchema, acti
         TableColumnMailingAddress,
         {
           data: row.original.new.address,
+          invalidLabel: invalidAddressLabel,
           class: [defaultClass, isRemoved ? DELETED_CLASS : '', getIsRowCeased(row) ? CEASED_CLASS : '']
         },
         () => []

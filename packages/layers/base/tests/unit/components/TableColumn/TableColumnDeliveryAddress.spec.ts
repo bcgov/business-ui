@@ -57,6 +57,48 @@ describe('TableColumnDeliveryAddress', () => {
     expect(addressDisplay.exists()).toBe(false)
   })
 
+  it('should mark an incomplete address with the invalid label instead of "Not Entered"', async () => {
+    const wrapper = await mountSuspended(TableColumnDeliveryAddress, {
+      props: {
+        data: {
+          mailingAddress: mockAddress,
+          deliveryAddress: { ...mockAddress, postalCode: '' },
+          sameAs: false
+        },
+        invalidLabel: 'Missing information'
+      }
+    })
+
+    expect(wrapper.text()).not.toContain('Not Entered')
+    expect(wrapper.findComponent({ name: 'ConnectAddressDisplay' }).exists()).toBe(true)
+    expect(wrapper.find('[data-testid="invalid-address-label"]').text()).toBe('Missing information')
+  })
+
+  it('should show only the invalid label when nothing beyond the country was entered', async () => {
+    const wrapper = await mountSuspended(TableColumnDeliveryAddress, {
+      props: {
+        data: {
+          mailingAddress: mockAddress,
+          deliveryAddress: { ...mockAddress, street: '', city: '', region: '', postalCode: '', streetAdditional: '' },
+          sameAs: false
+        },
+        invalidLabel: 'Missing information'
+      }
+    })
+
+    expect(wrapper.findComponent({ name: 'ConnectAddressDisplay' }).exists()).toBe(false)
+    expect(wrapper.find('[data-testid="invalid-address-label"]').text()).toBe('Missing information')
+  })
+
+  it('should keep "Same as Mailing Address" over the invalid label', async () => {
+    const wrapper = await mountSuspended(TableColumnDeliveryAddress, {
+      props: { ...defaultProps, invalidLabel: 'Missing information' }
+    })
+
+    expect(wrapper.find('span').text()).toBe('Same as Mailing Address')
+    expect(wrapper.find('[data-testid="invalid-address-label"]').exists()).toBe(false)
+  })
+
   it('should render ConnectAddressDisplay with a valid address', async () => {
     const wrapper = await mountSuspended(TableColumnDeliveryAddress, {
       props: {

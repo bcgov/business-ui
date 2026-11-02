@@ -9,7 +9,7 @@ const { setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
 const FORM_ID = 'review-imported-data-filing'
 
 definePageMeta({
-  layout: 'connect-pay-tombstone-buttons-stacked',
+  layout: 'connect-pay-tombstone-buttons',
   middleware: ['connect-auth']
 })
 
@@ -53,7 +53,6 @@ const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
   submitCondition: () => store.hasChanges,
   preTaskGuard: checkActiveSubForm,
   watcher: {
-    buttonLayout: 'stackedDefault',
     steps: [
       { submitFiling: { label: t('label.reviewAndConfirm'), onClick: reviewAndConfirm } },
       { submitFiling: { form: FORM_ID, type: 'submit' } }
@@ -67,9 +66,9 @@ const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
     <ConnectSpinner v-if="initializing" fullscreen />
     <div class="space-y-2">
       <h1 id="filing-h1">
-        {{ filingText.h1 }}
+        {{ currentStep === 2 ? $t('page.reviewImportedData.h1Review') : filingText.h1 }}
       </h1>
-      <p>{{ filingText.desc }}</p>
+      <p>{{ currentStep === 2 ? $t('page.reviewImportedData.descReview') : filingText.desc }}</p>
     </div>
     <FormReviewImportedDataStep1
       v-if="currentStep === 1"
