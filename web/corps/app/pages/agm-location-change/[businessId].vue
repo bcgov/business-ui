@@ -92,10 +92,9 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
   breadcrumbs,
-  // cancel and the main button only, under the fee summary, as in the design
-  backButton: null,
+  backButton: { removeAlertSpacing: true },
   saveFiling: null,
-  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
+  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
   submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
   steps: [
     {
@@ -106,7 +105,13 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         onClick: undefined
       }
     },
-    { submitFiling: { label: t('label.fileAndPay'), form: 'agm-location-change-filing-step-2', type: 'submit' } }
+    {
+      submitFiling: {
+        label: t('label.fileAndPay'),
+        form: 'agm-location-change-filing-step-2',
+        type: 'submit'
+      }
+    }
   ],
   buttonLayout: 'stackedDefault',
   setOnBeforeSessionExpired: async () => {
