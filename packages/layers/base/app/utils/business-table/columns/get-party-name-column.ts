@@ -57,7 +57,11 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
             const items = []
             if (formerName) {
               items.push(h('div', { class: 'flex flex-col pl-7' }, [
-                h('span', { class: 'text-sm font-normal italic' }, `(${t('label.formerly')} ${formerName})`)
+                h(
+                  'span',
+                  { class: 'text-sm font-normal italic text-gray-700' },
+                  `(${t('label.formerly')} ${formerName})`
+                )
               ]))
             }
             if (preferredName) {

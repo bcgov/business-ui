@@ -118,7 +118,7 @@ describe('getPartyNameColumn', () => {
     const slot = cell.children['additional-label']()
     expect(slot.length).toBe(1)
     expect(slot[0].children[0].children).toBe('(Formerly JANE DOE)')
-    expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic')
+    expect(slot[0].children[0].props.class).toBe('text-sm font-normal italic text-gray-700')
   })
 
   it('does not render the former name when showFormerName is false', () => {
