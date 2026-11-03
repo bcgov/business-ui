@@ -254,6 +254,27 @@ describe('getAgmLocationChangeValidationSchema (validation)', () => {
 
         expect(result.success).toBe(true)
       })
+
+      it('should fail when the region is British Columbia', () => {
+        const result = schema.safeParse({
+          ...valid,
+          agmLocation: { ...valid.agmLocation, region: 'BC' }
+        })
+
+        expect(result.success).toBe(false)
+        expect(getPaths(result)).toContain('agmLocation.region')
+        expect(getIssues(result).find(i => i.path.join('.') === 'agmLocation.region')?.message)
+          .toBe('AGM location must be outside B.C.')
+      })
+
+      it('should pass for a Canadian province other than British Columbia', () => {
+        const result = schema.safeParse({
+          ...valid,
+          agmLocation: { ...valid.agmLocation, region: 'ON' }
+        })
+
+        expect(result.success).toBe(true)
+      })
     })
   })
 

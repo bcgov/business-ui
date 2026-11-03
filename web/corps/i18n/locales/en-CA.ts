@@ -183,7 +183,8 @@ export default {
       cityMax: 'City must be 40 characters or less.',
       provinceRequired: 'Province field is required.',
       stateRequired: 'State field is required.',
-      regionMax: 'Region must be 2 characters or less.'
+      regionMax: 'Region must be 2 characters or less.',
+      locationOutsideBc: 'AGM location must be outside B.C.'
     },
     appointmentDateBeforeFounding: 'Appointment date cannot be before the business founding date.',
     cessationDateInFuture: 'Cessation date cannot be in the future.',

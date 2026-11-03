@@ -149,6 +149,30 @@ test.describe('AGM Location Change - Filing Submit', () => {
       exact: true })).toBeVisible()
   })
 
+  test('stays on the first step when the AGM location is in British Columbia', async ({ page }) => {
+    await gotoAgmPage(page)
+
+    await fillLocationChangeDetail(page, {
+      year: '2025',
+      reason: 'The AGM is being held in British Columbia.',
+      agmLocation: {
+        country: 'CA',
+        city: 'Vancouver',
+        region: 'British Columbia'
+      }
+    })
+
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+    await expect(page.getByText('AGM location must be outside B.C.')).toBeVisible()
+    await expect(page.getByRole('heading', {
+      name: 'Annual General Meeting (AGM) Location Change',
+      exact: true
+    })).toBeVisible()
+
+    await expect(page.getByTestId('review-location-change-detail')).not.toBeVisible()
+  })
+
   test('requires certification before filing from the review step', async ({ page }) => {
     await gotoAgmPage(page)
     await fillLocationChangeDetail(page, {

@@ -81,6 +81,15 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
             : 'validation.agmLocationChange.stateRequired')
         })
       }
+
+      // AGM location must be outside B.C.
+      if (val.country === 'CA' && val.region === 'BC') {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['region'],
+          message: t('validation.agmLocationChange.locationOutsideBc')
+        })
+      }
     })
   })
 }
