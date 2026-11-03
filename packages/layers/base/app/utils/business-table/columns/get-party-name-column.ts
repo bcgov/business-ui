@@ -59,7 +59,7 @@ export function getPartyNameColumn<T extends { name: PartyNameSchema, roles: Par
               items.push(h('div', { class: 'flex flex-col pl-7' }, [
                 h(
                   'span',
-                  { class: 'text-sm font-normal italic text-gray-700' },
+                  { class: 'text-sm font-normal italic text-neutral' },
                   `(${t('label.formerly')} ${formerName})`
                 )
               ]))
