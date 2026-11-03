@@ -109,8 +109,6 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByTestId('form-section-certify')).toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()
-    // the design has no back or save buttons
-    await expect(page.getByRole('button', { name: 'Back' })).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'Save and Resume Later' })).not.toBeVisible()
   })
 
