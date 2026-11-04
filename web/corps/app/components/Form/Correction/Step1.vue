@@ -59,9 +59,8 @@ function onActionPrevented() {
       v-model:active-nt="store.formState.activeNameTranslation"
       :loading="store.initializing"
       :business
+      :filing-type="FilingType.CORRECTION"
       :contact="businessContact"
-      :correct-name-options="getCorrectNameOptionsForCorpType(business?.legalType)"
-      :nr-allowed-actions-types="FILING_NR_ALLOWED_ACTIONS[FilingType.CORRECTION]"
       :prevent-actions="hasActiveSubForm"
       :field-overrides="yourCompanyFieldOverrides"
       variant="correct"

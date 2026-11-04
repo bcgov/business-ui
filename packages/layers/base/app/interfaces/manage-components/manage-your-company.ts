@@ -60,6 +60,7 @@ export type YourCompanyFieldOverrides = {
 export type ManageYourCompanyProps = Omit<ManageBaseProps, 'tableTitle'> & {
   tableTitle?: string
   business?: BusinessData | BusinessDataPublic
+  filingType?: FilingType
   contact?: ContactPoint
   labelOverrides?: TableLabelOverrides
   correctedFilingType?: FilingType

@@ -469,6 +469,23 @@ export const useBusinessService = () => {
     return $businessApi(`businesses/${businessId}/filings/${filingId}`, { method: 'DELETE' })
   }
 
+  /**
+   * Validate a specific section of filing data.
+   *
+   * @param businessId The identifier of the business (e.g., BC1234567).
+   * @param payload The section validation payload containing filing type, section, and data.
+   * @param force Whether to bypass any cached results and force a fresh fetch.
+   * @returns A promise resolving to the section validation result and errors.
+   */
+  async function validateFilingSection(
+    businessId: string,
+    payload: FilingValidateSectionRequest,
+    force = false
+  ): Promise<FilingValidateSectionResponse> {
+    const options = query.filingValidateSectionOptions(businessId, payload)
+    return await getCachedOrFetch(options, force)
+  }
+
   return {
     // GETs
     getAddresses,
@@ -495,6 +512,7 @@ export const useBusinessService = () => {
     postDocument,
     postFiling,
     saveOrUpdateDraftFiling,
-    deleteFiling
+    deleteFiling,
+    validateFilingSection
   }
 }

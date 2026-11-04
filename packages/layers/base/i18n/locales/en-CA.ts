@@ -925,7 +925,7 @@ export default {
     datNumberEmpty: 'Enter DAT Number',
     deliveryAddressMustBeInBc: 'Delivery Address must be in British Columbia. Uncheck "same as" to enter a different Delivery Address.',
     deliveryAddressMustBeInCanada: 'Delivery Address must be in Canada. Uncheck "same as" to enter a different Delivery Address.',
-    designationCannotBeChanged: 'The business designation {designation} cannot be changed.',
+    designationCannotBeVerified: 'Legal name edits are disabled: business designation could not be verified.',
     duplicateDocId: 'A document record already exists with this document ID',
     enterCourtOrderOrUploadFile: 'Enter a court order or upload a file',
     enterFirstName: 'Enter a first name',

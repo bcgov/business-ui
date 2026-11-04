@@ -12,7 +12,8 @@ const {
   actionPreventedSignal = 0,
   nested = true,
   labelOverrides,
-  fieldOverrides
+  fieldOverrides,
+  filingType
 } = defineProps<ManageYourCompanyProps>()
 
 const emit = defineEmits<{
@@ -24,7 +25,7 @@ const activeNt = defineModel<ActiveNameTranslationSchema | undefined>('active-nt
 
 const formRef = useTemplateRef<Form<ActiveYourCompanySchema>>('form-ref')
 
-const schema = computed(() => getActiveYourCompanySchema({ business }))
+const schema = computed(() => getActiveYourCompanySchema({ business, filingType }))
 const fieldKeys = toValue(schema).unwrap().options.map(o => o.shape.key.value)
 
 const {

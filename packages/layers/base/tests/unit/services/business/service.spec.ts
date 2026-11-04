@@ -14,6 +14,7 @@ const mockQuery = {
   filingOptions: vi.fn(),
   filingCommentsOptions: vi.fn(),
   filingDocumentUrlsOptions: vi.fn(),
+  filingValidateSectionOptions: vi.fn(),
   ledgerOptions: vi.fn(),
   linkedNameRequestOptions: vi.fn(),
   partiesOptions: vi.fn(),
@@ -465,6 +466,24 @@ describe('useBusinessService', () => {
         `businesses/${businessId}/filings/${filingId}`,
         { method: 'DELETE' }
       )
+    })
+  })
+
+  describe('validateFilingSection', () => {
+    it('should call the correct endpoint with the POST method', async () => {
+      const businessId = 'BC123'
+      const validatePayload = {
+        filingType: FilingType.CORRECTION,
+        section: 'nameRequest',
+        data: { legalName: 'Test Name LTD' },
+        filingSubType: FilingSubType.AMEND_RECEIVER
+      }
+
+      await service.validateFilingSection(businessId, validatePayload)
+      const opts = mockQuery.filingValidateSectionOptions
+
+      expect(opts).toHaveBeenCalledWith(businessId, validatePayload)
+      expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), false)
     })
   })
 })
