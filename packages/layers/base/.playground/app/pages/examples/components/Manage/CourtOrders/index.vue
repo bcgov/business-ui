@@ -33,7 +33,7 @@ onMounted(async () => {
       ui-body="p-10"
     >
       <ManageCourtOrders
-        v-model:active-co="activeCourtOrder"
+        v-model:active-subject="activeCourtOrder"
         :entity-type="CorpTypeCd.BC_COMPANY"
         identifier="BC1234567"
         :loading

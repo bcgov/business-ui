@@ -183,7 +183,7 @@ function onActionPrevented() {
 
     <ManageCourtOrders
       v-if="store.isCorrectable(CorrectionSection.COURT_ORDERS)"
-      v-model:active-co="store.formState.activeCourtOrder"
+      v-model:active-subject="store.formState.activeCourtOrder"
       data-testid="court-orders-section"
       variant="correct"
       :loading="store.initializing"

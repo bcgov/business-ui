@@ -1,3 +1,5 @@
+import { cloneDeep } from 'es-toolkit'
+
 // These values will be omitted during the edit equality check
 const NON_EDITABLE_FIELDS = [
   'isEditing',
@@ -22,7 +24,7 @@ export const useManageCourtOrders = (
   const hasChanges = computed(() => tableState.value.some(co => co.new.actions.length > 0))
 
   function updateTable(subject: TableBusinessState<CourtOrderPoaFullSchema>): void {
-    const cloned = JSON.parse(JSON.stringify(subject))
+    const cloned = cloneDeep(subject)
 
     const index = tableState.value.findIndex(
       item => item.new.id === cloned.new.id
@@ -39,7 +41,7 @@ export const useManageCourtOrders = (
     opts?.cleanupFn?.()
   }
 
-  function addSubject(subject: ActiveCourtOrderPoaFullSchema) {
+  function addSubject(subject: ActiveCourtOrderPoaFullSchema): void {
     if (!subject) {
       return
     }
@@ -54,7 +56,7 @@ export const useManageCourtOrders = (
     const { old: oldSubjectState, new: newSubjectState } = row.original
 
     // If new subject, remove from state entirely
-    if (oldSubjectState === undefined) {
+    if (!getIsExistingRecord(row)) {
       tableState.value = tableState.value.filter(
         item => item.new.id !== newSubjectState.id
       )
@@ -70,15 +72,15 @@ export const useManageCourtOrders = (
   }
 
   function undoSubject(row: TableBusinessRow<CourtOrderPoaFullSchema>): void {
-    const { old: oldSubjectState } = row.original
-
-    if (oldSubjectState === undefined) {
+    if (!getIsExistingRecord(row)) {
       return
     }
 
+    const oldSubjectState = row.original.old
+
     updateTable({
       old: oldSubjectState,
-      new: oldSubjectState
+      new: cloneDeep(oldSubjectState)
     })
   }
 
@@ -87,20 +89,25 @@ export const useManageCourtOrders = (
       return
     }
 
-    const { old: oldSubjectState } = row.original
-    let actions: ActionType[] = []
-
     // If new subject, only ever apply the ADDED badge
-    if (oldSubjectState === undefined) {
-      actions = [ActionType.ADDED]
-    // else compare new and old state, omitting values the user can't edit
-    } else if (!isEqualOmit(subject, oldSubjectState, NON_EDITABLE_FIELDS)) {
-      actions = [ActionType.CHANGED]
+    if (!getIsExistingRecord(row)) {
+      updateTable({
+        old: undefined,
+        new: { ...subject, actions: [ActionType.ADDED] }
+      })
+      return
     }
+
+    // else compare new and old state, omitting values the user can't edit
+    const oldSubjectState = row.original.old
+    const isChanged = !isEqualOmit(subject, oldSubjectState, NON_EDITABLE_FIELDS)
 
     updateTable({
       old: oldSubjectState,
-      new: { ...subject, actions }
+      new: {
+        ...subject,
+        actions: isChanged ? [ActionType.CHANGED] : []
+      }
     })
   }
 
