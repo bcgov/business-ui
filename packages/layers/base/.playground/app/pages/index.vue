@@ -48,7 +48,7 @@ const componentExamples: DropdownMenuItem[] = [
         label: 'ManageCourtOrders',
         children: [
           {
-            to: localePath('/examples/components/ManageCourtOrders'),
+            to: localePath('/examples/components/Manage/CourtOrders'),
             label: 'Default'
           }
         ]

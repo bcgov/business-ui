@@ -68,7 +68,7 @@ interface ManageCommonOptions {
  *
  * @example
  * ```ts
- * const activeCo = defineModel<ActiveCourtOrderSchema>('active-co')
+ * const activeCo = defineModel<ActiveCourtOrderSchema>('active-subject')
  *
  * const {
  *   shouldPreventActions,

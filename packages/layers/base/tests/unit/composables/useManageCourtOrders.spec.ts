@@ -159,6 +159,20 @@ describe('useManageCourtOrders', () => {
       expect(tableState.value[0]!.new).toEqual(oldVersion)
     })
 
+    it('should not share a reference between the "new" and "old" state', () => {
+      const { tableState, undoSubject } = useManageCourtOrders(stateKey)
+      const currentVersion = {
+        new: { ...mockSubject, actions: [ActionType.REMOVED] },
+        old: { ...mockSubject, fileNumber: 'OLD_NUMBER' }
+      }
+      tableState.value = [currentVersion]
+
+      undoSubject(mockRow(0, currentVersion))
+      tableState.value[0]!.new.fileNumber = 'MUTATED'
+
+      expect(tableState.value[0]!.old!.fileNumber).toBe('OLD_NUMBER')
+    })
+
     it('should do nothing if old state is undefined (draft subject)', () => {
       const { tableState, undoSubject } = useManageCourtOrders(stateKey)
       const draftSubject = { new: mockSubject, old: undefined }

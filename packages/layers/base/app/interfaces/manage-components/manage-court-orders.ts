@@ -10,6 +10,8 @@ export type ManageCourtOrdersProps = ManageBaseProps & {
     addDefaultValues?: Partial<CourtOrderPoaFullSchema>
     identifier?: string
     entityType: CorpTypeCd
+    preventActions?: boolean
+    actionPreventedSignal?: number
   }
   | {
     variant: 'readonly' | 'correct-readonly'
@@ -18,5 +20,7 @@ export type ManageCourtOrdersProps = ManageBaseProps & {
     addDefaultValues?: never
     identifier?: never
     entityType?: never
+    preventActions?: never
+    actionPreventedSignal?: never
   }
 )
