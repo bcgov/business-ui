@@ -70,7 +70,7 @@ watch(
     :allowed-actions
     :prevent-actions
     :label-overrides
-    :hide-actions-when="hideActionsWhen"
+    :hide-actions-when
     :task-guard-config
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >
