@@ -16,6 +16,9 @@ const FIELD_NAMES: Record<string, MissingAddressFieldName> = {
   POSTAL_CODE: 'postalCode',
   REGION: 'region'
 }
+const ADDRESS_FORM_FIELDS: AddressFormFieldName[] = [
+  'country', 'street', 'streetAdditional', 'city', 'region', 'postalCode', 'locationDescription'
+]
 
 /**
  * Parses a corps missing info warning code into the address part it names, eg
@@ -76,4 +79,25 @@ export function seedMissingOffices(
     }
   }
   return seeded
+}
+
+/**
+ * The address inputs to lock for an office / director so only the fields the api flagged can be edited.
+ * An address with no flags is locked entirely; an address flagged as a whole (no field) or a record with no
+ * flags at all (e.g. a seeded missing office) stays fully editable.
+ */
+export function getLockedAddressFields(missing: MissingAddressField[] = []): AddressFormProps['disabledFields'] {
+  if (missing.length === 0 || missing.some(m => !m.addressType)) {
+    return undefined
+  }
+  const locked: NonNullable<AddressFormProps['disabledFields']> = {}
+  for (const addressType of ['mailingAddress', 'deliveryAddress'] as const) {
+    const flags = missing.filter(m => m.addressType === addressType)
+    if (flags.some(m => !m.field)) {
+      continue
+    }
+    const editable = new Set(flags.map(m => m.field))
+    locked[addressType] = ADDRESS_FORM_FIELDS.filter(f => !editable.has(f as MissingAddressFieldName))
+  }
+  return locked
 }

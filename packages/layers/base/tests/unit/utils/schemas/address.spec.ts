@@ -96,6 +96,62 @@ describe('getAddressSchema', () => {
   })
 })
 
+describe('noPoBox option', () => {
+  it('should allow a PO Box by default', () => {
+    const schema = getAddressSchema()
+    const state = { ...makeState({ street: 'PO Box 234' }), sameAs: false }
+    expect(schema.safeParse(state).success).toBe(true)
+  })
+
+  it.each(['PO Box 234', 'P.O. Box 234', 'p o box 234', 'Post Office Box 9', '123 Main St, PO Box 4'])(
+    'should reject "%s" on the delivery address',
+    (street) => {
+      const schema = getAddressSchema({ noPoBox: true })
+      const state = { ...makeState(), sameAs: false }
+      state.deliveryAddress = { ...state.deliveryAddress, street }
+      const result = schema.safeParse(state)
+      expect(result.success).toBe(false)
+      expect(result.error!.issues.map(i => [i.path.join('.'), i.message]))
+        .toContainEqual(['deliveryAddress.street', 'Address cannot be a PO Box'])
+    }
+  )
+
+  it('should leave the mailing address free to be a PO Box', () => {
+    const schema = getAddressSchema({ noPoBox: true })
+    const state = { ...makeState(), sameAs: false }
+    state.mailingAddress = { ...state.mailingAddress, street: 'PO Box 234' }
+    expect(schema.safeParse(state).success).toBe(true)
+  })
+
+  it('should not flag a street that merely contains "box"', () => {
+    const schema = getAddressSchema({ noPoBox: true })
+    const state = { ...makeState(), sameAs: false }
+    state.deliveryAddress = { ...state.deliveryAddress, street: '12 Boxwood Lane' }
+    expect(schema.safeParse(state).success).toBe(true)
+  })
+
+  it('should raise the error on the mailing street while sameAs is checked', () => {
+    const schema = getAddressSchema({ noPoBox: true })
+    const result = schema.safeParse(makeState({ street: 'PO Box 234' }))
+    expect(result.success).toBe(false)
+    expect(result.error!.issues.map(i => [i.path.join('.'), i.message])).toContainEqual([
+      'mailingAddress.street',
+      'Delivery Address cannot be a PO Box. Uncheck "same as" to enter a different Delivery Address.'
+    ])
+  })
+
+  it('should combine with the delivery BC rule', () => {
+    const schema = getAddressSchema({ bcCanadaOnly: 'delivery', noPoBox: true })
+    const state = { ...makeState(), sameAs: false }
+    state.deliveryAddress = { ...state.deliveryAddress, street: 'PO Box 234', region: 'AB' }
+    const result = schema.safeParse(state)
+    expect(result.success).toBe(false)
+    const paths = result.error!.issues.map(i => i.path.join('.'))
+    expect(paths).toContain('deliveryAddress.street')
+    expect(paths).toContain('deliveryAddress.region')
+  })
+})
+
 describe('getAddressWithIdSchema', () => {
   it('should enforce BC/Canada when the option is set', () => {
     const schema = getAddressWithIdSchema({ bcCanadaOnly: true })

@@ -79,3 +79,39 @@ describe('seedMissingOffices', () => {
     expect(seedMissingOffices(rows, [OfficeType.REGISTERED, OfficeType.RECORDS])).toEqual(rows)
   })
 })
+
+describe('getLockedAddressFields', () => {
+  const allFields = ['country', 'street', 'streetAdditional', 'city', 'region', 'postalCode', 'locationDescription']
+
+  it('locks every input except the flagged field, per address', () => {
+    const locked = getLockedAddressFields([
+      { addressType: 'deliveryAddress', field: 'postalCode' },
+      { addressType: 'mailingAddress', field: 'street' },
+      { addressType: 'mailingAddress', field: 'city' }
+    ])
+    expect(locked).toEqual({
+      mailingAddress: allFields.filter(f => f !== 'street' && f !== 'city'),
+      deliveryAddress: allFields.filter(f => f !== 'postalCode')
+    })
+  })
+
+  it('locks an address with no flags entirely', () => {
+    const locked = getLockedAddressFields([{ addressType: 'deliveryAddress', field: 'region' }])
+    expect(locked?.mailingAddress).toEqual(allFields)
+    expect(locked?.deliveryAddress).toEqual(allFields.filter(f => f !== 'region'))
+  })
+
+  it('leaves an address flagged as a whole fully editable', () => {
+    const locked = getLockedAddressFields([
+      { addressType: 'deliveryAddress' },
+      { addressType: 'mailingAddress', field: 'postalCode' }
+    ])
+    expect(locked).toEqual({ mailingAddress: allFields.filter(f => f !== 'postalCode') })
+  })
+
+  it('leaves a record with no flags, or a missing office, fully editable', () => {
+    expect(getLockedAddressFields(undefined)).toBeUndefined()
+    expect(getLockedAddressFields([])).toBeUndefined()
+    expect(getLockedAddressFields([{}])).toBeUndefined()
+  })
+})

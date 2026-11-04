@@ -4,6 +4,8 @@ interface PartyFormProps {
   hideRemove?: boolean
   /** opens a party's address form with its validation errors already shown */
   validateOnOpen?: boolean
+  /** passed through to the party sub form's FormAddress */
+  addressFormProps?: AddressFormProps
   partyNameProps?: {
     allowBusinessName?: boolean
     allowPreferredName?: boolean

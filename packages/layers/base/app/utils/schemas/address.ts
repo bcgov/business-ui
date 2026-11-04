@@ -4,7 +4,12 @@ import { z } from 'zod'
 export interface AddressSchemaOptions {
   /** true = both addresses must be in BC, Canada; 'delivery' = the delivery address only (mailing may be anywhere) */
   bcCanadaOnly?: boolean | 'delivery'
+  /** the delivery address street cannot be a PO Box (off by default, only review imported data asks for it) */
+  noPoBox?: boolean
 }
+
+// matches 'PO Box', 'P.O. Box' and 'Post Office Box' anywhere in the street
+const PO_BOX_REGEX = /\b(?:p\.?\s*o\.?|post\s+office)\s*box\b/i
 
 // intersected onto the base address schema when bcCanadaOnly is set
 function getBcCanadaRefinement() {
@@ -27,17 +32,18 @@ function getAddressPairSchemas(options?: AddressSchemaOptions) {
 }
 
 interface AddressPairState {
-  deliveryAddress: { country: string, region?: string }
-  mailingAddress: { country: string, region?: string }
+  deliveryAddress: { street: string, country: string, region?: string }
+  mailingAddress: { street: string, country: string, region?: string }
   sameAs: boolean
 }
 
 /**
- * Applies the bcCanadaOnly: 'delivery' rule. While 'same as' is checked the delivery inputs are hidden and mirror
- * the mailing address, so the errors are raised on the visible mailing inputs instead of the hidden delivery ones.
+ * Applies the delivery-only rules (bcCanadaOnly: 'delivery', noPoBox). While 'same as' is checked the delivery
+ * inputs are hidden and mirror the mailing address, so the errors are raised on the visible mailing inputs instead.
  */
-function withDeliveryBcCanadaRule<T extends z.ZodType<AddressPairState>>(schema: T, options?: AddressSchemaOptions) {
-  if (options?.bcCanadaOnly !== 'delivery') {
+function withDeliveryRules<T extends z.ZodType<AddressPairState>>(schema: T, options?: AddressSchemaOptions) {
+  const bcCanadaDelivery = options?.bcCanadaOnly === 'delivery'
+  if (!bcCanadaDelivery && !options?.noPoBox) {
     return schema
   }
   const t = useNuxtApp().$i18n.t
@@ -45,11 +51,16 @@ function withDeliveryBcCanadaRule<T extends z.ZodType<AddressPairState>>(schema:
   return schema.superRefine((data, ctx) => {
     const target = data.sameAs ? 'mailingAddress' : 'deliveryAddress'
     const prefix = data.sameAs ? 'validation.deliveryAddress' : 'validation.address'
-    if (data[target].country !== 'CA') {
-      ctx.addIssue({ code: 'custom', path: [target, 'country'], message: t(`${prefix}MustBeInCanada`) })
+    if (bcCanadaDelivery) {
+      if (data[target].country !== 'CA') {
+        ctx.addIssue({ code: 'custom', path: [target, 'country'], message: t(`${prefix}MustBeInCanada`) })
+      }
+      if (data[target].region !== 'BC') {
+        ctx.addIssue({ code: 'custom', path: [target, 'region'], message: t(`${prefix}MustBeInBc`) })
+      }
     }
-    if (data[target].region !== 'BC') {
-      ctx.addIssue({ code: 'custom', path: [target, 'region'], message: t(`${prefix}MustBeInBc`) })
+    if (options?.noPoBox && PO_BOX_REGEX.test(data[target].street)) {
+      ctx.addIssue({ code: 'custom', path: [target, 'street'], message: t(`${prefix}CannotBePoBox`) })
     }
   })
 }
@@ -57,7 +68,7 @@ function withDeliveryBcCanadaRule<T extends z.ZodType<AddressPairState>>(schema:
 export function getAddressSchema(options?: AddressSchemaOptions) {
   const { deliveryAddress, mailingAddress } = getAddressPairSchemas(options)
 
-  return withDeliveryBcCanadaRule(z.object({
+  return withDeliveryRules(z.object({
     deliveryAddress,
     mailingAddress,
     sameAs: z.boolean()
@@ -74,7 +85,7 @@ export function getAddressWithIdSchema(options?: AddressSchemaOptions) {
     id: z.string().optional()
   })
 
-  return withDeliveryBcCanadaRule(z.object({
+  return withDeliveryRules(z.object({
     deliveryAddress: deliveryAddress.and(idSchema),
     mailingAddress: mailingAddress.and(idSchema),
     sameAs: z.boolean()

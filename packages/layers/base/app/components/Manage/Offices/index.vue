@@ -15,7 +15,8 @@ const {
   actionPreventedSignal = 0,
   bcCanadaOnly = false,
   hideRemove = false,
-  validateOnOpen = false
+  validateOnOpen = false,
+  addressFormProps
 } = defineProps<ManageOfficesProps>()
 
 const emit = defineEmits<{
@@ -165,6 +166,7 @@ function onActionPrevented() {
           :subject="subject!"
           :state-key
           :bc-canada-only
+          :address-form-props
           class="p-6"
           @done="() => addSubject(activeSubject)"
           @cancel="cleanupForm"
@@ -203,6 +205,7 @@ function onActionPrevented() {
                 :hide-remove="hideRemove || variant === 'correct'"
                 :bc-canada-only
                 :validate-on-open
+                :address-form-props
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"
                 @remove="removeSubject(row)"

@@ -907,6 +907,7 @@ export default {
     yourFilingsWillAppearHere: 'Your completed filings and transactions will appear here'
   },
   validation: {
+    addressCannotBePoBox: 'Address cannot be a PO Box',
     addressMustBeInBc: 'Address must be in British Columbia',
     addressMustBeInCanada: 'Address must be in Canada',
     amountMustBeGreaterThan: 'Amount must be greater than {count}',
@@ -923,6 +924,7 @@ export default {
     dateRequired: 'Date is required',
     datNumber: 'DAT Number must be in standard format (eg, C1234567)',
     datNumberEmpty: 'Enter DAT Number',
+    deliveryAddressCannotBePoBox: 'Delivery Address cannot be a PO Box. Uncheck "same as" to enter a different Delivery Address.',
     deliveryAddressMustBeInBc: 'Delivery Address must be in British Columbia. Uncheck "same as" to enter a different Delivery Address.',
     deliveryAddressMustBeInCanada: 'Delivery Address must be in Canada. Uncheck "same as" to enter a different Delivery Address.',
     designationCannotBeVerified: 'Legal name edits are disabled: business designation could not be verified.',

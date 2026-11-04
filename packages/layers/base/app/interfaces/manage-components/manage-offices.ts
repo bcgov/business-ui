@@ -15,6 +15,8 @@ export type ManageOfficesProps = ManageBaseProps & {
     bcCanadaOnly?: boolean | 'delivery'
     /** opens an existing office's address form with its validation errors already shown */
     validateOnOpen?: boolean
+    /** passed through to the office sub form's FormAddress */
+    addressFormProps?: AddressFormProps
     preventActions?: boolean
     actionPreventedSignal?: number
   }
@@ -26,6 +28,7 @@ export type ManageOfficesProps = ManageBaseProps & {
     allowAddOfficeType?: never
     bcCanadaOnly?: never
     validateOnOpen?: never
+    addressFormProps?: never
     preventActions?: never
     actionPreventedSignal?: never
   }

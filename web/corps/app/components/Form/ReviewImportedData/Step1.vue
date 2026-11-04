@@ -13,6 +13,24 @@ const tableLabelOverrides = computed(() => ({
   editLabel: $t('label.changeAddress'),
   invalidAddress: $t('label.missingInformation')
 }))
+
+// only one office / director sub form is open at a time, so lock the inputs the api did not flag on that record
+const officeAddressFormProps = computed<AddressFormProps>(() => {
+  const officeType = store.formState.activeOffice?.type
+  return {
+    noPoBox: true,
+    hideSameAs: true,
+    disabledFields: officeType ? getLockedAddressFields(store.missingInfo.offices[officeType]) : undefined
+  }
+})
+const directorAddressFormProps = computed<AddressFormProps>(() => {
+  const partyId = store.formState.activeDirector?.id
+  return {
+    noPoBox: true,
+    hideSameAs: true,
+    disabledFields: partyId ? getLockedAddressFields(store.missingInfo.directors[partyId]) : undefined
+  }
+})
 </script>
 
 <template>
@@ -36,6 +54,7 @@ const tableLabelOverrides = computed(() => ({
       bc-canada-only="delivery"
       hide-remove
       validate-on-open
+      :address-form-props="officeAddressFormProps"
     >
       <template #before-table>
         <UAlert
@@ -67,7 +86,7 @@ const tableLabelOverrides = computed(() => ({
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       model-name="activeDirector"
       :label-overrides="tableLabelOverrides"
-      :party-form-props="{ hideRemove: true, validateOnOpen: true }"
+      :party-form-props="{ hideRemove: true, validateOnOpen: true, addressFormProps: directorAddressFormProps }"
     >
       <template #before-table>
         <UAlert

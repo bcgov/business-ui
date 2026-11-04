@@ -7,6 +7,12 @@ const props = defineProps<{
   bcCanadaOnly?: boolean | 'delivery'
   /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
   validateOnOpen?: boolean
+  /** the delivery address street cannot be a PO Box */
+  noPoBox?: boolean
+  /** drops the 'same as mailing' checkbox so the delivery inputs always show */
+  hideSameAs?: boolean
+  /** inputs to render disabled, per address */
+  disabledFields?: AddressFormProps['disabledFields']
 }>()
 
 defineEmits<{
@@ -14,7 +20,7 @@ defineEmits<{
   'should-validate': []
 }>()
 
-const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly })
+const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly, noPoBox: props.noPoBox })
 
 const model = defineModel<AddressWithIdSchema>({ required: true })
 
@@ -67,6 +73,10 @@ watch(
 )
 
 onMounted(() => {
+  if (props.hideSameAs) {
+    // no checkbox to uncheck, so the delivery inputs must hold their own values
+    model.value.sameAs = false
+  }
   if (props.validateOnOpen) {
     // silent: populate the field errors without throwing
     formRef.value?.validate({ silent: true })
@@ -98,6 +108,7 @@ defineExpose({
         id="mailing-address"
         v-model="model.mailingAddress"
         schema-prefix="mailingAddress"
+        :disabled-fields="disabledFields?.mailingAddress"
         @should-validate="formRef?.clear(/^mailingAddress.*/)"
       />
     </ConnectFieldset>
@@ -110,16 +121,18 @@ defineExpose({
     >
       <div class="flex flex-col gap-6">
         <UCheckbox
+          v-if="!hideSameAs"
           v-model="model.sameAs"
           :label="$t('label.deliveryAddressSameAsMailing')"
         />
         <ConnectFormAddress
-          v-if="!model.sameAs"
+          v-if="hideSameAs || !model.sameAs"
           id="delivery-address"
           v-model="model.deliveryAddress"
           schema-prefix="deliveryAddress"
           street-help-text="no-po"
           required
+          :disabled-fields="disabledFields?.deliveryAddress"
           @should-validate="formRef?.clear(/^deliveryAddress.*/)"
         />
       </div>
