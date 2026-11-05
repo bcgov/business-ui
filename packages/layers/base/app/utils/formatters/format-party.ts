@@ -62,7 +62,7 @@ export function formatRelationshipRolesApi(roles: PartyRoleSchema, isRemoved = f
     const convertedRole = UI_ROLE_TO_API_ROLE_MAP[role.roleType]!
     return {
       ...role,
-      cessationDate: isRemoved && !role.cessationDate ? getToday() : role.cessationDate,
+      cessationDate: isRemoved && !role.cessationDate ? getToday('America/Vancouver') : role.cessationDate,
       roleType: [RoleType.CEO, RoleType.CFO].includes(convertedRole)
         // FUTURE - update schema so that we don't need to do this
         ? convertedRole.toLocaleUpperCase() as RoleType

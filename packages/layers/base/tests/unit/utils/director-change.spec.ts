@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getPartiesMock } from '#test-mocks/parties'
@@ -131,13 +131,24 @@ describe('director-change utils', () => {
       expect(edited.roles.every(r => r.cessationDate !== '2026-01-15')).toBe(true)
     })
 
-    it('should default removed directors cessation date to today', () => {
-      const table = tableFromMock()
-      table[0]!.new.actions = [ActionType.REMOVED]
+    describe('removed directors cessation date default', () => {
+      beforeEach(() => {
+        // Oct 20 at 7pm Pacific - already Oct 21 in UTC
+        vi.setSystemTime(new Date('2026-10-21T02:00:00.000Z'))
+      })
 
-      const result = formatChangeOfDirectorsRelationshipsApi(table)
+      afterEach(() => {
+        vi.useRealTimers()
+      })
 
-      expect(result[0]!.roles[0]!.cessationDate).toBeTruthy()
+      it('should default removed directors cessation date to today in Pacific time', () => {
+        const table = tableFromMock()
+        table[0]!.new.actions = [ActionType.REMOVED]
+
+        const result = formatChangeOfDirectorsRelationshipsApi(table)
+
+        expect(result[0]!.roles.every(r => r.cessationDate === '2026-10-20')).toBe(true)
+      })
     })
   })
 
