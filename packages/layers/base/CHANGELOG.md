@@ -1,5 +1,43 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.30.0
+
+### Minor Changes
+
+- [#612](https://github.com/bcgov/business-ui/pull/612) [`cc32bca`](https://github.com/bcgov/business-ui/commit/cc32bca4009a0af1a89a366ad009e7e8372b0b59) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageCourtOrders component and useManageCourtOrders composable
+  - Moved court order component and composable to be under the `/manage` directory.
+  - Renamed the active court order model to `active-subject` and the default `modelName` to `activeSubject`.
+  - Moved `preventActions` and `actionPreventedSignal` into `ManageCourtOrdersProps` - not available on the readonly variants.
+  - ManageCourtOrders now uses useManageCommon for variants, allowed actions, label overrides and alerts.
+  - useManageCourtOrders uses cloneDeep and getIsExistingRecord, and undoSubject no longer shares a reference between the old and new state.
+  - TableCourtOrder syncs isEditing from the expanded state.
+
+- [#604](https://github.com/bcgov/business-ui/pull/604) [`ca89e31`](https://github.com/bcgov/business-ui/commit/ca89e314c6caafe90f9f1928c526ac94305c7043) Thanks [@deetz99](https://github.com/deetz99)! - Add filing section validation support to business services and ManageYourCompany component
+  
+  - Add `validateFilingSection` endpoint service and query options for partial filing validations
+  - Update `ManageYourCompany` to accept `filingType` and `filingSubType` props
+  - Pass filing context to `getActiveYourCompanySchema` to enable asynchronous legal name designation validation
+
+- [#614](https://github.com/bcgov/business-ui/pull/614) [`1e71b17`](https://github.com/bcgov/business-ui/commit/1e71b17a992602f0e7b5a80102db155606947ee0) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Address form options for the Review Imported Data filing
+  - New `AddressFormProps` (`bcCanadaOnly`, `validateOnOpen`, `noPoBox`, `hideSameAs`, `disabledFields`) is the single way to configure `FormAddress` from `FormOfficeDetails`, `FormPartyDetails`, `ManageOffices` (`addressFormProps`) and `ManageParties` (`partyFormProps.addressFormProps`).
+  - BREAKING: `bcCanadaOnly` and `validateOnOpen` moved off `ManageOffices` / `FormOfficeDetails` / `FormPartyDetails` / `partyFormProps` into `addressFormProps` (e.g. `bc-canada-only` becomes `:address-form-props="{ bcCanadaOnly: true }"`).
+  - `getAddressSchema` / `getAddressWithIdSchema` take a `noPoBox` option: the delivery address street cannot be a PO Box. Off by default.
+  - `hideSameAs` drops the 'same as mailing' checkbox; the caller keeps `sameAs` false on the model.
+  - `disabledFields` renders the listed inputs disabled and skips their validation errors (`getEditableAddressErrors`).
+
+- [#606](https://github.com/bcgov/business-ui/pull/606) [`e3927e6`](https://github.com/bcgov/business-ui/commit/e3927e6f4815f61e26fc0416ddcb4ab13afdc010) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageOffices component and useManageOffices composable
+  - Moved office component and composable to be under the `/manage` directory.
+  - Renamed the active office model to `active-subject` and the default `modelName` to `activeSubject`.
+  - Moved `preventActions` and `actionPreventedSignal` into `ManageOfficesProps` - not available on the readonly variants.
+
+### Patch Changes
+
+- [#613](https://github.com/bcgov/business-ui/pull/613) [`1773c70`](https://github.com/bcgov/business-ui/commit/1773c70b1399a7717cc128c0479288777a335a18) Thanks [@meawong](https://github.com/meawong)! - Update connect-pay dependency
+
+- [#609](https://github.com/bcgov/business-ui/pull/609) [`04db065`](https://github.com/bcgov/business-ui/commit/04db0650fa685ac564055872048d0c8442b3356a) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Party table: show the former name line in the neutral text token (gray-700, [#495057](https://github.com/bcgov/business-ui/issues/495057)) so it reads as secondary text next to the bold current name.
+
+- [#611](https://github.com/bcgov/business-ui/pull/611) [`03a12fd`](https://github.com/bcgov/business-ui/commit/03a12fd3674095762905351550c57f1bbe145248) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Folio, certify and confirm authorization boxes: 32px top and bottom padding with the default side padding, per the UX review, so the review page boxes share one outer spacing.
+
 ## 0.29.0
 
 ### Minor Changes
