@@ -4,16 +4,7 @@ import type { FormError, Form } from '@nuxt/ui'
 const props = defineProps<{
   nested?: boolean
   name?: string
-  bcCanadaOnly?: boolean | 'delivery'
-  /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
-  validateOnOpen?: boolean
-  /** the delivery address street cannot be a PO Box */
-  noPoBox?: boolean
-  /** drops the 'same as mailing' checkbox so the delivery inputs always show */
-  hideSameAs?: boolean
-  /** inputs to render disabled, per address */
-  disabledFields?: AddressFormProps['disabledFields']
-}>()
+} & AddressFormProps>()
 
 defineEmits<{
   'cancel': []
@@ -23,6 +14,9 @@ defineEmits<{
 const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly, noPoBox: props.noPoBox })
 
 const model = defineModel<AddressWithIdSchema>({ required: true })
+
+// with disabled inputs the schema runs through `validate` instead, so their errors can be dropped
+const validateEditableFields = (state: unknown) => getEditableAddressErrors(schema, state, props.disabledFields)
 
 const formRef = useTemplateRef<Form<AddressWithIdSchema>>('address-form')
 
@@ -73,10 +67,6 @@ watch(
 )
 
 onMounted(() => {
-  if (props.hideSameAs) {
-    // no checkbox to uncheck, so the delivery inputs must hold their own values
-    model.value.sameAs = false
-  }
   if (props.validateOnOpen) {
     // silent: populate the field errors without throwing
     formRef.value?.validate({ silent: true })
@@ -93,7 +83,8 @@ defineExpose({
   <UForm
     ref="address-form"
     :state="model"
-    :schema
+    :schema="disabledFields ? undefined : schema"
+    :validate="disabledFields ? validateEditableFields : undefined"
     :nested
     :name
     novalidate

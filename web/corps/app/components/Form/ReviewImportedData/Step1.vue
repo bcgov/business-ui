@@ -18,6 +18,8 @@ const tableLabelOverrides = computed(() => ({
 const officeAddressFormProps = computed<AddressFormProps>(() => {
   const officeType = store.formState.activeOffice?.type
   return {
+    bcCanadaOnly: 'delivery',
+    validateOnOpen: true,
     noPoBox: true,
     hideSameAs: true,
     disabledFields: officeType ? getLockedAddressFields(store.missingInfo.offices[officeType]) : undefined
@@ -26,6 +28,7 @@ const officeAddressFormProps = computed<AddressFormProps>(() => {
 const directorAddressFormProps = computed<AddressFormProps>(() => {
   const partyId = store.formState.activeDirector?.id
   return {
+    validateOnOpen: true,
     noPoBox: true,
     hideSameAs: true,
     disabledFields: partyId ? getLockedAddressFields(store.missingInfo.directors[partyId]) : undefined
@@ -51,9 +54,7 @@ const directorAddressFormProps = computed<AddressFormProps>(() => {
       subject=""
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :label-overrides="tableLabelOverrides"
-      bc-canada-only="delivery"
       hide-remove
-      validate-on-open
       :address-form-props="officeAddressFormProps"
     >
       <template #before-table>
@@ -86,7 +87,7 @@ const directorAddressFormProps = computed<AddressFormProps>(() => {
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       model-name="activeDirector"
       :label-overrides="tableLabelOverrides"
-      :party-form-props="{ hideRemove: true, validateOnOpen: true, addressFormProps: directorAddressFormProps }"
+      :party-form-props="{ hideRemove: true, addressFormProps: directorAddressFormProps }"
     >
       <template #before-table>
         <UAlert

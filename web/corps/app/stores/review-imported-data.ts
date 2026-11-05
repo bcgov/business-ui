@@ -60,15 +60,15 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
     }
 
     const directors = parties ?? []
-    tableDirectors.value = draft?.relationships?.length
+    tableDirectors.value = withSeparateDeliveryAddress(draft?.relationships?.length
       ? getPartiesMergedWithRelationships(directors, draft.relationships)
-      : directors
+      : directors)
 
     const officeTypes = [OfficeType.REGISTERED, OfficeType.RECORDS]
-    tableOffices.value = seedMissingOffices(
+    tableOffices.value = withSeparateDeliveryAddress(seedMissingOffices(
       formatOfficesSection(addressResult.data, draft?.offices, officeTypes),
       officeTypes
-    )
+    ))
 
     await snapshotInitialState()
     initialOffices.value = cloneDeep(tableOffices.value)

@@ -60,7 +60,7 @@ function withDeliveryRules<T extends z.ZodType<AddressPairState>>(schema: T, opt
       }
     }
     if (options?.noPoBox && PO_BOX_REGEX.test(data[target].street)) {
-      ctx.addIssue({ code: 'custom', path: [target, 'street'], message: t(`${prefix}CannotBePoBox`) })
+      ctx.addIssue({ code: 'custom', path: [target, 'street'], message: t('validation.addressCannotBePoBox') })
     }
   })
 }
@@ -118,4 +118,26 @@ export function createDefaultAddress(): AddressWithIdSchema {
     },
     sameAs: false
   }
+}
+
+/**
+ * Validates the address pair and drops the errors on disabled inputs - the user cannot fix those,
+ * so they must not block the form (e.g. review imported data only unlocks the fields flagged as missing).
+ */
+export function getEditableAddressErrors(
+  schema: z.ZodType,
+  state: unknown,
+  disabledFields: AddressFormProps['disabledFields'] = {}
+): { name: string, message: string }[] {
+  const result = schema.safeParse(state)
+  if (result.success) {
+    return []
+  }
+  const disabled = new Set(
+    (['mailingAddress', 'deliveryAddress'] as const)
+      .flatMap(address => (disabledFields[address] ?? []).map(field => `${address}.${field}`))
+  )
+  return result.error.issues
+    .map(issue => ({ name: issue.path.join('.'), message: issue.message }))
+    .filter(error => !disabled.has(error.name))
 }

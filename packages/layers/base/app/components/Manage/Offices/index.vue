@@ -13,9 +13,7 @@ const {
   variant = 'default',
   preventActions = false,
   actionPreventedSignal = 0,
-  bcCanadaOnly = false,
   hideRemove = false,
-  validateOnOpen = false,
   addressFormProps
 } = defineProps<ManageOfficesProps>()
 
@@ -165,8 +163,7 @@ function onActionPrevented() {
           :name="modelName"
           :subject="subject!"
           :state-key
-          :bc-canada-only
-          :address-form-props
+          :address-form-props="{ ...addressFormProps, validateOnOpen: false }"
           class="p-6"
           @done="() => addSubject(activeSubject)"
           @cancel="cleanupForm"
@@ -203,8 +200,6 @@ function onActionPrevented() {
                 :subject="editSubjectLabel"
                 :state-key
                 :hide-remove="hideRemove || variant === 'correct'"
-                :bc-canada-only
-                :validate-on-open
                 :address-form-props
                 @done="() => editSubject(activeSubject, row)"
                 @cancel="cleanupForm"

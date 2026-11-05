@@ -30,7 +30,7 @@ const offices = computed(() => formatChangeOfAddressOfficesApi(tableState.value)
         subject="Office"
         table-title="Offices"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        bc-canada-only
+        :address-form-props="{ bcCanadaOnly: true }"
       />
     </ConnectPageSection>
     <ConnectPageSection

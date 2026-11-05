@@ -67,7 +67,7 @@ describe('FormCorrectionStep1', () => {
       expect(component.props('tableTitle')).toBeDefined()
       expect(component.props('subject')).toBe('')
       expect(component.props('variant')).toBe('correct')
-      expect(component.props('bcCanadaOnly')).toBe(true)
+      expect(component.props('addressFormProps')).toEqual({ bcCanadaOnly: true })
       expect(component.props('allowedActions')).toEqual(['ADDRESS_CHANGE'])
 
       expect(component.attributes('data-testid')).toBe('office-addresses-section')
