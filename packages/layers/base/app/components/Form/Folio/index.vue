@@ -130,7 +130,7 @@ defineExpose({
         v-if="businessFolio"
         v-model="folioOption"
         data-testid="folio-option"
-        class="px-4 py-6 sm:px-7.5"
+        class="padding-x-default py-8"
         :items="folioOptions"
         size="xl"
         :ui="{ fieldset: 'gap-y-6', item: 'gap-4', base: 'ring-neutral' }"
@@ -155,7 +155,7 @@ defineExpose({
         :label="$t('label.folioOrRefNumber')"
         orientation="vertical"
         :error="formError"
-        padding-class="xy-default"
+        padding-class="padding-x-default py-8"
       >
         <div class="flex flex-col gap-4">
           <p>{{ $t('text.folioReceiptDescription') }}</p>
