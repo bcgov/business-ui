@@ -22,6 +22,15 @@ describe('parseMissingInfoCode', () => {
       .toEqual({ addressType: 'mailingAddress', field: 'region' })
   })
 
+  it('reads the invalid codes the same way as the missing ones', () => {
+    expect(parseMissingInfoCode('INVALID_REGISTERED_OFFICE_DELIVERY_ADDRESS_REGION'))
+      .toEqual({ addressType: 'deliveryAddress', field: 'region' })
+    expect(parseMissingInfoCode('INVALID_RECORDS_OFFICE_MAILING_ADDRESS_POSTAL_CODE'))
+      .toEqual({ addressType: 'mailingAddress', field: 'postalCode' })
+    expect(parseMissingInfoCode('INVALID_DIRECTOR_DELIVERY_ADDRESS_COUNTRY'))
+      .toEqual({ addressType: 'deliveryAddress', field: 'country' })
+  })
+
   it('returns only the address when the whole address is missing', () => {
     expect(parseMissingInfoCode('NO_DIRECTOR_DELIVERY_ADDRESS')).toEqual({ addressType: 'deliveryAddress' })
   })
@@ -77,5 +86,90 @@ describe('seedMissingOffices', () => {
   it('leaves a complete office set alone', () => {
     const rows = [officeRow(OfficeType.REGISTERED), officeRow(OfficeType.RECORDS)]
     expect(seedMissingOffices(rows, [OfficeType.REGISTERED, OfficeType.RECORDS])).toEqual(rows)
+  })
+})
+
+describe('getLockedAddressFields', () => {
+  const allFields = ['country', 'street', 'streetAdditional', 'city', 'region', 'postalCode', 'locationDescription']
+
+  it('locks every input except the flagged field, per address', () => {
+    const locked = getLockedAddressFields([
+      { addressType: 'deliveryAddress', field: 'postalCode' },
+      { addressType: 'mailingAddress', field: 'street' },
+      { addressType: 'mailingAddress', field: 'city' }
+    ])
+    expect(locked).toEqual({
+      mailingAddress: allFields.filter(f => f !== 'street' && f !== 'city'),
+      deliveryAddress: allFields.filter(f => f !== 'postalCode')
+    })
+  })
+
+  it('locks an address with no flags entirely', () => {
+    const locked = getLockedAddressFields([{ addressType: 'deliveryAddress', field: 'region' }])
+    expect(locked?.mailingAddress).toEqual(allFields)
+    expect(locked?.deliveryAddress).toEqual(allFields.filter(f => f !== 'region'))
+  })
+
+  it('leaves an address flagged as a whole fully editable', () => {
+    const locked = getLockedAddressFields([
+      { addressType: 'deliveryAddress' },
+      { addressType: 'mailingAddress', field: 'postalCode' }
+    ])
+    expect(locked).toEqual({ mailingAddress: allFields.filter(f => f !== 'postalCode') })
+  })
+
+  it('locks a record with no flags entirely', () => {
+    const allLocked = { mailingAddress: allFields, deliveryAddress: allFields }
+    expect(getLockedAddressFields(undefined)).toEqual(allLocked)
+    expect(getLockedAddressFields([])).toEqual(allLocked)
+  })
+
+  it('leaves an office that is missing altogether fully editable', () => {
+    expect(getLockedAddressFields([{}])).toBeUndefined()
+  })
+
+  it('unlocks the region and postal code along with a flagged country', () => {
+    const locked = getLockedAddressFields([{ addressType: 'mailingAddress', field: 'country' }])
+    expect(locked?.mailingAddress).toEqual(allFields.filter(f => !['country', 'region', 'postalCode'].includes(f)))
+    expect(locked?.deliveryAddress).toEqual(allFields)
+  })
+})
+
+describe('invalid codes end to end', () => {
+  it('unlocks an invalid field like a missing one', () => {
+    const summary = getMissingInfoSummary([
+      missingInfoWarning('INVALID_REGISTERED_OFFICE_DELIVERY_ADDRESS_REGION', { officeType: OfficeType.REGISTERED }),
+      missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 7 }),
+      missingInfoWarning('INVALID_DIRECTOR_DELIVERY_ADDRESS_COUNTRY', { partyId: 7 })
+    ])
+    const allFields = ['country', 'street', 'streetAdditional', 'city', 'region', 'postalCode', 'locationDescription']
+
+    expect(getLockedAddressFields(summary.offices[OfficeType.REGISTERED])).toEqual({
+      mailingAddress: allFields,
+      deliveryAddress: allFields.filter(f => f !== 'region')
+    })
+    expect(getLockedAddressFields(summary.directors['7'])).toEqual({
+      mailingAddress: allFields.filter(f => f !== 'postalCode'),
+      deliveryAddress: allFields.filter(f => !['country', 'region', 'postalCode'].includes(f))
+    })
+  })
+})
+
+describe('withSeparateDeliveryAddress', () => {
+  it('clears sameAs on both sides of every row without touching the addresses', () => {
+    const existing = officeRow(OfficeType.REGISTERED)
+    existing.old!.address.sameAs = true
+    existing.new.address.sameAs = true
+    const seeded = { old: undefined, new: createDefaultOffice({ type: OfficeType.RECORDS }) }
+
+    const rows = withSeparateDeliveryAddress([existing, seeded])
+
+    expect(rows[0]!.old!.address.sameAs).toBe(false)
+    expect(rows[0]!.new.address.sameAs).toBe(false)
+    expect(rows[0]!.new.address.deliveryAddress).toEqual(existing.new.address.deliveryAddress)
+    expect(rows[1]!.old).toBeUndefined()
+    expect(rows[1]!.new.address.sameAs).toBe(false)
+    // the input rows are left alone
+    expect(existing.new.address.sameAs).toBe(true)
   })
 })

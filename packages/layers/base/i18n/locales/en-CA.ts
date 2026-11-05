@@ -907,6 +907,7 @@ export default {
     yourFilingsWillAppearHere: 'Your completed filings and transactions will appear here'
   },
   validation: {
+    addressCannotBePoBox: 'Address cannot be a PO Box',
     addressMustBeInBc: 'Address must be in British Columbia',
     addressMustBeInCanada: 'Address must be in Canada',
     amountMustBeGreaterThan: 'Amount must be greater than {count}',

@@ -4,19 +4,19 @@ import type { FormError, Form } from '@nuxt/ui'
 const props = defineProps<{
   nested?: boolean
   name?: string
-  bcCanadaOnly?: boolean | 'delivery'
-  /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
-  validateOnOpen?: boolean
-}>()
+} & AddressFormProps>()
 
 defineEmits<{
   'cancel': []
   'should-validate': []
 }>()
 
-const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly })
+const schema = getAddressWithIdSchema({ bcCanadaOnly: props.bcCanadaOnly, noPoBox: props.noPoBox })
 
 const model = defineModel<AddressWithIdSchema>({ required: true })
+
+// with disabled inputs the schema runs through `validate` instead, so their errors can be dropped
+const validateEditableFields = (state: unknown) => getEditableAddressErrors(schema, state, props.disabledFields)
 
 const formRef = useTemplateRef<Form<AddressWithIdSchema>>('address-form')
 
@@ -83,7 +83,8 @@ defineExpose({
   <UForm
     ref="address-form"
     :state="model"
-    :schema
+    :schema="disabledFields ? undefined : schema"
+    :validate="disabledFields ? validateEditableFields : undefined"
     :nested
     :name
     novalidate
@@ -98,6 +99,7 @@ defineExpose({
         id="mailing-address"
         v-model="model.mailingAddress"
         schema-prefix="mailingAddress"
+        :disabled-fields="disabledFields?.mailingAddress"
         @should-validate="formRef?.clear(/^mailingAddress.*/)"
       />
     </ConnectFieldset>
@@ -110,16 +112,18 @@ defineExpose({
     >
       <div class="flex flex-col gap-6">
         <UCheckbox
+          v-if="!hideSameAs"
           v-model="model.sameAs"
           :label="$t('label.deliveryAddressSameAsMailing')"
         />
         <ConnectFormAddress
-          v-if="!model.sameAs"
+          v-if="hideSameAs || !model.sameAs"
           id="delivery-address"
           v-model="model.deliveryAddress"
           schema-prefix="deliveryAddress"
           street-help-text="no-po"
           required
+          :disabled-fields="disabledFields?.deliveryAddress"
           @should-validate="formRef?.clear(/^deliveryAddress.*/)"
         />
       </div>

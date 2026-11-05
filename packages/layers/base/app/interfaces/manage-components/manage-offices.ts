@@ -11,10 +11,8 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: string
     allowedActions?: ManageAllowedAction[]
     allowAddOfficeType?: OfficeType
-    /** true = both office addresses must be in BC, Canada; 'delivery' = the delivery address only */
-    bcCanadaOnly?: boolean | 'delivery'
-    /** opens an existing office's address form with its validation errors already shown */
-    validateOnOpen?: boolean
+    /** passed through to the office sub form's FormAddress (validateOnOpen only applies to existing offices) */
+    addressFormProps?: AddressFormProps
     preventActions?: boolean
     actionPreventedSignal?: number
   }
@@ -24,8 +22,7 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: never
     allowedActions?: never
     allowAddOfficeType?: never
-    bcCanadaOnly?: never
-    validateOnOpen?: never
+    addressFormProps?: never
     preventActions?: never
     actionPreventedSignal?: never
   }

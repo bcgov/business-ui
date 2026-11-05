@@ -78,7 +78,7 @@ function onActionPrevented() {
       :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
-      bc-canada-only
+      :address-form-props="{ bcCanadaOnly: true }"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :prevent-actions="hasActiveSubForm"
       :action-prevented-signal="actionPreventedSignal"
