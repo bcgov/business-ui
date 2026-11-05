@@ -46,7 +46,7 @@ defineExpose({
         :label="$t('label.confirmAuthorization')"
         :error="formError"
         :show-error-msg="true"
-        padding-class="p-6"
+        padding-class="padding-x-default py-8"
         data-testid="confirm-authorization-section"
       >
         <UFormField
