@@ -9,4 +9,5 @@ Draft rebase: resume a draft over filings staff made since it was saved
 - `saveOrSubmitFiling`: sends `baseTransactionId` from `useDraftRebase().getSaveOptions`; `syncUrlDraftParam` option
 - new `useDraftRebase`, `utils/draft-rebase`, `useBusinessService.getFilingChanges`, `useBusinessQuery.filingChanges` / `filingChangesOptions`: resolve the Legal API `/changes` report against the draft
 - `getBusinessParties(..., force)`
+- `getCachedOrFetch(options, force)`: a forced fetch joins a request already in flight instead of aborting it
 - `TableBusinessState.modifiedByStaff`, "MODIFIED BY STAFF" badge in `getTableBadges`, `ManageYourCompanyFieldBadge` `modifiedByStaff` prop
