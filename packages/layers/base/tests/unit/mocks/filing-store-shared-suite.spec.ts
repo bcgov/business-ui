@@ -47,7 +47,7 @@ const defineAuthorizationStore = (id: string, blockSubmit = false) => defineStor
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
-    const { draftFiling } = await initFiling<CODFiling>(businessId, filingType, undefined, draftId)
+    const { draftFiling } = await initFiling<CODFiling>(businessId, filingType, { draftId })
     if (draftFiling?.filing?.changeOfDirectors) {
       draftFilingState.value = draftFiling as FilingDraftState<CODFiling>
       hydratePaymentState(draftFilingState.value.filing.header, formState, { syncFees: false })
@@ -106,7 +106,7 @@ const useFileAndPayStore = defineStore('fixture-file-and-pay-store', () => {
 
   async function init(businessId: string) {
     initializing.value = true
-    await initFiling<CODFiling>(businessId, filingType, undefined, undefined)
+    await initFiling<CODFiling>(businessId, filingType)
     await snapshotInitialState()
   }
 
@@ -151,7 +151,7 @@ const useCertifiedByStore = defineStore('fixture-certified-by-store', () => {
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
-    const { draftFiling } = await initFiling<CODFiling>(businessId, filingType, undefined, draftId)
+    const { draftFiling } = await initFiling<CODFiling>(businessId, filingType, { draftId })
     if (draftFiling?.filing?.changeOfDirectors) {
       draftFilingState.value = draftFiling as FilingDraftState<CODFiling>
       hydratePaymentState(draftFilingState.value.filing.header, formState)

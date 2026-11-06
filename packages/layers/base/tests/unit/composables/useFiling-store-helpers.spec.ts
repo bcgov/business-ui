@@ -175,5 +175,83 @@ describe('useFiling filing store helpers', () => {
       expect(mockPostFiling).not.toHaveBeenCalled()
       expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(identifier, payload, true, DRAFT_FILING_ID)
     })
+
+    it('should not record the draft id in the url when syncUrlDraftParam is false', async () => {
+      window.history.replaceState({}, '', `/correction/${identifier}/${DRAFT_FILING_ID}`)
+
+      await useFiling().saveOrSubmitFiling(identifier, payload, {
+        isSubmission: false,
+        draftId: DRAFT_FILING_ID,
+        syncUrlDraftParam: false
+      })
+
+      expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(identifier, payload, false, DRAFT_FILING_ID)
+      expect(window.location.search).not.toContain('draft=')
+    })
+
+    describe('with a rebased draft', () => {
+      const conflictError = { statusCode: 409, data: { currentTransactionId: 13 } }
+
+      beforeEach(() => {
+        useDraftRebase().$reset()
+        useDraftRebase().baseTransactionId.value = 12
+      })
+
+      it('should send the base transaction id with the put', async () => {
+        await useFiling().saveOrSubmitFiling(identifier, payload, { isSubmission: false, draftId: DRAFT_FILING_ID })
+
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(1)
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(
+          identifier, payload, false, DRAFT_FILING_ID, { baseTransactionId: 12 }
+        )
+      })
+
+      it('should not send a base with a new draft post', async () => {
+        await useFiling().saveOrSubmitFiling(identifier, payload, { isSubmission: false })
+
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledWith(identifier, payload, false, undefined)
+      })
+
+      it('should save the draft at the old base when the base is stale', async () => {
+        mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(conflictError)
+
+        const result = await useFiling().saveOrSubmitFiling(identifier, payload, {
+          isSubmission: false,
+          draftId: DRAFT_FILING_ID
+        })
+
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(2)
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenLastCalledWith(identifier, payload, false, DRAFT_FILING_ID)
+        expect(result).toBeDefined()
+        expect(useDraftRebase().staleOnSave.value).toBe(true)
+        expect(useDraftRebase().getSaveOptions()).toBeUndefined()
+      })
+
+      it('should keep the work as a draft and reject a stale submission', async () => {
+        mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(conflictError)
+
+        await expect(useFiling().saveOrSubmitFiling(identifier, payload, {
+          isSubmission: true,
+          draftId: DRAFT_FILING_ID
+        })).rejects.toBe(conflictError)
+
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(2)
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenLastCalledWith(identifier, payload, false, DRAFT_FILING_ID)
+        expect(useDraftRebase().staleOnSave.value).toBe(true)
+      })
+
+      it('should rethrow other save errors untouched', async () => {
+        const error = { statusCode: 500 }
+        mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(error)
+
+        await expect(useFiling().saveOrSubmitFiling(identifier, payload, {
+          isSubmission: false,
+          draftId: DRAFT_FILING_ID
+        })).rejects.toBe(error)
+
+        expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(1)
+        expect(useDraftRebase().staleOnSave.value).toBe(false)
+      })
+    })
   })
 })

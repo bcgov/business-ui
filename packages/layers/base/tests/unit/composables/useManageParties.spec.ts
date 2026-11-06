@@ -173,6 +173,36 @@ describe('useManageParties', () => {
     })
   })
 
+  describe('modifiedByStaff', () => {
+    it('should keep the tag through an edit, a removal and an undo', () => {
+      const { tableState, editSubject, removeSubject, undoSubject } = useManageParties(stateKey)
+      const existing = { new: mockParty, old: { ...mockParty, email: 'old.email@example.com' }, modifiedByStaff: true }
+      tableState.value = [existing]
+
+      editSubject(mockParty as any, mockRow(0, existing))
+      expect(tableState.value[0]!.new.actions).toEqual([ActionType.EMAIL_CHANGED])
+      expect(tableState.value[0]!.modifiedByStaff).toBe(true)
+
+      removeSubject(mockRow(0, tableState.value[0]))
+      expect(tableState.value[0]!.new.actions).toEqual([ActionType.REMOVED])
+      expect(tableState.value[0]!.modifiedByStaff).toBe(true)
+
+      undoSubject(mockRow(0, tableState.value[0]))
+      expect(tableState.value[0]!.new.actions).toEqual([])
+      expect(tableState.value[0]!.modifiedByStaff).toBe(true)
+    })
+
+    it('should not tag rows that were never tagged', () => {
+      const { tableState, editSubject } = useManageParties(stateKey)
+      const existing = { new: mockParty, old: mockParty }
+      tableState.value = [existing]
+
+      editSubject(mockParty as any, mockRow(0, existing))
+
+      expect(tableState.value[0]).not.toHaveProperty('modifiedByStaff')
+    })
+  })
+
   describe('editSubject', () => {
     it('should keep the ADDED action if row has no old state', () => {
       const { tableState, editSubject } = useManageParties(stateKey)

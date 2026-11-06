@@ -35,12 +35,7 @@ export const useCourtOrderStore = defineStore('court-order-store', () => {
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
 
-    const { draftFiling } = await initFiling<CourtOrderFiling>(
-      businessId,
-      FilingType.COURT_ORDER,
-      undefined,
-      draftId
-    )
+    const { draftFiling } = await initFiling<CourtOrderFiling>(businessId, FilingType.COURT_ORDER, { draftId })
 
     // a missing/invalid filing id (or a filing that isn't a court order draft) is handled by
     // initFiling - it opens the get draft filing error modal and returns no draft filing

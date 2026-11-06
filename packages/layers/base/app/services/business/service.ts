@@ -216,6 +216,20 @@ export const useBusinessService = () => {
   }
 
   /**
+   * Fetches the draft rebase changes report.
+   * - what completed since the draft's base, and the draft edits that collide with it
+   * - always fresh unless `force` is false
+   */
+  async function getFilingChanges(
+    businessId: string,
+    filingId: number | string,
+    force = true
+  ): Promise<DraftChangesReport> {
+    const options = query.filingChangesOptions(businessId, filingId)
+    return await getCachedOrFetch(options, force)
+  }
+
+  /**
    * Fetches the list of documents grouped by types.
    * @param url the full URL to fetch the comments
    * @returns a promise to return the comments list for the url
@@ -417,6 +431,7 @@ export const useBusinessService = () => {
     * @param body The data payload for the filing creation.
     * @param isSubmission - If false, the filing is saved as draft. If true, it is submitted as final.
     * @param filingId - The filing Id to submit the PUT request against. Will submit a POST request if undefined.
+    * @param opts.baseTransactionId - Rebase watermark (PUT only): advanced, or 409 if a filing completed since.
     *
     * @returns A promise that resolves the API response.
   */
@@ -426,13 +441,15 @@ export const useBusinessService = () => {
     body: FilingSubmissionBody<F>,
     isSubmission: boolean,
     filingId: string | number,
-    headers?: HeadersInit
+    opts?: { baseTransactionId?: number, headers?: HeadersInit }
   ): Promise<FilingPutResponse<F>>
   // will return Promise<FilingPostResponse<F> if no filingId is provided
   async function saveOrUpdateDraftFiling<F extends FilingRecord>(
     identifier: string,
     body: FilingSubmissionBody<F>,
-    isSubmission: boolean
+    isSubmission: boolean,
+    filingId?: undefined,
+    opts?: { baseTransactionId?: number, headers?: HeadersInit }
   ): Promise<FilingPostResponse<F>>
   // main function
   async function saveOrUpdateDraftFiling<F extends FilingRecord>(
@@ -440,14 +457,18 @@ export const useBusinessService = () => {
     body: FilingSubmissionBody<F>,
     isSubmission = false,
     filingId?: string | number,
-    headers?: HeadersInit
+    opts?: { baseTransactionId?: number, headers?: HeadersInit }
   ): Promise<FilingPutResponse<F> | FilingPostResponse<F>> {
     const url = filingId
       ? `businesses/${identifier}/filings/${filingId}`
       : `businesses/${identifier}/filings`
     const method = filingId ? 'PUT' : 'POST'
-    const query = isSubmission ? undefined : { draft: true }
-    headers = headers ? headers : {}
+    const queryParams = {
+      ...(isSubmission ? {} : { draft: true }),
+      ...(filingId && opts?.baseTransactionId !== undefined ? { baseTransactionId: opts.baseTransactionId } : {})
+    }
+    const query = Object.keys(queryParams).length ? queryParams : undefined
+    const headers = opts?.headers ?? {}
 
     return $businessApi(url,
       {
@@ -499,6 +520,7 @@ export const useBusinessService = () => {
     getCourtOrders,
     getDocument,
     getFiling,
+    getFilingChanges,
     getFilingComments,
     getFilingDocumentUrls,
     getLedger,

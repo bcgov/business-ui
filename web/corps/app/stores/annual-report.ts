@@ -35,10 +35,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
     const { parties, addresses } = await initFiling<ARFiling>(
       businessId,
       FilingType.ANNUAL_REPORT,
-      undefined,
-      undefined,
-      { roleType: RoleType.DIRECTOR },
-      [OfficeType.REGISTERED, OfficeType.RECORDS]
+      { parties: { roleType: RoleType.DIRECTOR }, offices: [OfficeType.REGISTERED, OfficeType.RECORDS] }
     )
 
     if (parties) {

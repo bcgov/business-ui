@@ -24,9 +24,17 @@ const mockBusinessService = {
   getAuthorizedActions: vi.fn(),
   getBusiness: vi.fn(),
   getParties: vi.fn(),
-  getAndValidateDraftFiling: vi.fn()
+  getAndValidateDraftFiling: vi.fn(),
+  getFilingChanges: vi.fn(),
+  getResolutions: vi.fn(),
+  getAddresses: vi.fn(),
+  getShareClasses: vi.fn(),
+  getNameTranslations: vi.fn()
 }
 mockNuxtImport('useBusinessService', () => () => mockBusinessService)
+
+const mockGetFeatureFlag = vi.fn().mockResolvedValue(false)
+mockNuxtImport('useConnectLaunchDarkly', () => () => ({ getFeatureFlag: mockGetFeatureFlag }))
 
 const mockErrorModalOpen = vi.fn()
 const mockBaseModalOpen = vi.fn()
@@ -88,9 +96,7 @@ describe('useFiling', () => {
         const { parties } = await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
-          undefined,
-          undefined,
-          { roleClass: RoleClass.OFFICER }
+          { parties: { roleClass: RoleClass.OFFICER } }
         )
 
         // assert
@@ -116,9 +122,7 @@ describe('useFiling', () => {
         const { draftFiling, parties } = await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
-          undefined,
-          draftId,
-          { roleClass: RoleClass.OFFICER }
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
         )
 
         expect(mockErrorModalOpen).not.toHaveBeenCalled()
@@ -129,15 +133,184 @@ describe('useFiling', () => {
         expect(draftFiling).toEqual(draftFilingMock)
       })
 
+      test('should force fresh data and rebase the draft against the changes report', async () => {
+        const currentPartyId = String(partiesMock.parties[0]!.officer.id)
+        const draftRelationship = draftFilingMock.filing.changeOfOfficers.relationships[0]
+        mockBusinessService.getFilingChanges.mockResolvedValue({
+          baseTransactionId: 10,
+          currentTransactionId: 12,
+          upToDate: false,
+          interveningFilings: [],
+          businessChanges: {},
+          changedSections: ['parties'],
+          draftSections: ['parties'],
+          conflicts: [{
+            section: 'parties',
+            entityKey: 'TEST, NEW',
+            rowId: Number(currentPartyId),
+            paths: ['/deliveryAddress/addressCity'],
+            baseValue: {},
+            currentValue: {},
+            draftValue: draftRelationship
+          }],
+          alreadyApplied: [],
+          absorbed: [],
+          staleIds: { parties: [], nameTranslations: [], resolutions: [] }
+        })
+
+        const { draftFiling, parties } = await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_OFFICERS,
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
+        )
+
+        expect(mockErrorModalOpen).not.toHaveBeenCalled()
+        // the draft and the parties are fetched fresh
+        expect(mockBusinessService.getAndValidateDraftFiling)
+          .toHaveBeenCalledWith(identifier, draftId, FilingType.CHANGE_OF_OFFICERS, true)
+        expect(mockBusinessService.getParties).toHaveBeenCalledWith(identifier, expect.any(Object), true)
+        expect(mockBusinessInit).toHaveBeenCalledWith(identifier, false, false, true, true)
+        expect(mockBusinessService.getFilingChanges).toHaveBeenCalledWith(identifier, draftId)
+        // the conflicted draft edit is gone, the current row is tagged, the save will carry the base
+        expect(draftFiling!.filing.changeOfOfficers!.relationships).toEqual([])
+        expect(parties!.find(p => p.new.id === currentPartyId)!.modifiedByStaff).toBe(true)
+        expect(parties!.filter(p => p.modifiedByStaff)).toHaveLength(1)
+        expect(useDraftRebase().getSaveOptions()).toEqual({ baseTransactionId: 12 })
+      })
+
+      test('should leave the draft alone when rebase is not enabled for the filing', async () => {
+        // the API 404s the changes report when the feature is off for this filing type
+        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+        const { draftFiling, parties } = await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_OFFICERS,
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
+        )
+
+        expect(mockBusinessService.getFilingChanges).toHaveBeenCalledOnce()
+        expect(draftFiling).toEqual(draftFilingMock)
+        expect(parties!.some(p => p.modifiedByStaff)).toBe(false)
+        expect(useDraftRebase().getSaveOptions()).toBeUndefined()
+      })
+
+      test('should merge the draft relationships over the fresh parties', async () => {
+        const currentPartyId = String(partiesMock.parties[0]!.officer.id)
+        const draftRelationship = {
+          ...draftFilingMock.filing.changeOfOfficers.relationships[0],
+          entity: {
+            ...draftFilingMock.filing.changeOfOfficers.relationships[0].entity,
+            identifier: currentPartyId,
+            givenName: 'Rebased'
+          },
+          actions: ['NAME_CHANGED']
+        }
+        mockBusinessService.getAndValidateDraftFiling.mockResolvedValue({
+          ...draftFilingMock,
+          filing: { ...draftFilingMock.filing, changeOfOfficers: { relationships: [draftRelationship] } }
+        })
+        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+
+        const { parties, draftBody } = await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_OFFICERS,
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
+        )
+
+        const merged = parties!.find(p => p.new.id === currentPartyId)!
+        expect(merged.new.name.firstName).toBe('Rebased')
+        expect(merged.new.actions).toEqual(['NAME_CHANGED'])
+        expect(merged.old?.name.firstName).not.toBe('Rebased')
+        expect(parties!.filter(p => p.new.actions.length)).toHaveLength(1)
+        expect(draftBody).toEqual({ relationships: [draftRelationship] })
+      })
+
+      test('should merge the draft offices over the fresh addresses, untouched offices pass through', async () => {
+        const address = {
+          streetAddress: '1 Old St',
+          addressCity: 'Victoria',
+          addressRegion: 'BC',
+          postalCode: 'V8V 8V8',
+          addressCountry: 'CA'
+        }
+        mockBusinessService.getAddresses.mockResolvedValue({
+          registeredOffice: { deliveryAddress: address, mailingAddress: address },
+          recordsOffice: { deliveryAddress: address, mailingAddress: address }
+        })
+        mockBusinessService.getAndValidateDraftFiling.mockResolvedValue({
+          ...draftFilingMock,
+          filing: {
+            ...draftFilingMock.filing,
+            changeOfAddress: {
+              offices: {
+                registeredOffice: {
+                  deliveryAddress: { ...address, streetAddress: '2 New St' },
+                  mailingAddress: address
+                }
+              }
+            }
+          }
+        })
+        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+
+        const { addresses } = await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_ADDRESS,
+          { draftId, offices: [OfficeType.REGISTERED, OfficeType.RECORDS] }
+        )
+
+        expect(mockBusinessService.getAddresses).toHaveBeenCalledWith(identifier, undefined, true)
+        const registered = addresses!.find(o => o.new.type === OfficeType.REGISTERED)!
+        expect(registered.new.address.deliveryAddress.street).toBe('2 New St')
+        expect(registered.new.actions).toEqual([ActionType.CHANGED])
+        expect(registered.old?.address.deliveryAddress.street).toBe('1 Old St')
+        const records = addresses!.find(o => o.new.type === OfficeType.RECORDS)!
+        expect(records.new.actions).toEqual([])
+      })
+
+      test('should leave read-only offices on the current addresses when mergeDraftOffices is false', async () => {
+        const address = {
+          streetAddress: '1 Old St',
+          addressCity: 'Victoria',
+          addressRegion: 'BC',
+          postalCode: 'V8V 8V8',
+          addressCountry: 'CA'
+        }
+        mockBusinessService.getAddresses.mockResolvedValue({
+          registeredOffice: { deliveryAddress: address, mailingAddress: address }
+        })
+        mockBusinessService.getAndValidateDraftFiling.mockResolvedValue({
+          ...draftFilingMock,
+          filing: {
+            ...draftFilingMock.filing,
+            transition: {
+              offices: {
+                registeredOffice: {
+                  deliveryAddress: { ...address, streetAddress: '2 Stale St' },
+                  mailingAddress: address
+                }
+              }
+            }
+          }
+        })
+        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+
+        const { addresses } = await useFiling().initFiling(
+          identifier,
+          FilingType.TRANSITION,
+          { draftId, offices: [OfficeType.REGISTERED], mergeDraftOffices: false }
+        )
+
+        expect(addresses![0]!.new.address.deliveryAddress.street).toBe('1 Old St')
+        expect(addresses![0]!.new.actions).toEqual([])
+      })
+
       test('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {
         mockBusinessService.getAndValidateDraftFiling.mockRejectedValue(new Error('invalid-draft-filing'))
 
         await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
-          undefined,
-          draftId,
-          { roleClass: RoleClass.OFFICER }
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
         )
 
         expect(mockErrorModalOpen).toHaveBeenCalledOnce()

@@ -233,6 +233,29 @@ export const useBusinessQuery = () => {
     ))
   }
 
+  function filingChangesOptions(
+    businessId: MaybeRefOrGetter<string>,
+    filingId: MaybeRefOrGetter<string | number>,
+    options?: DefineOptions<DraftChangesReport>
+  ) {
+    return defineQueryOptions({
+      query: () => $businessApi<DraftChangesReport>(
+        `businesses/${toValue(businessId)}/filings/${toValue(filingId)}/changes`
+      ),
+      staleTime: 0, // the report must reflect the business as it is now
+      ...options,
+      key: keys.filingChanges(toValue(businessId), toValue(filingId))
+    })
+  }
+
+  function filingChanges(
+    businessId: MaybeRefOrGetter<string>,
+    filingId: MaybeRefOrGetter<string | number>,
+    options?: QueryOptions<DraftChangesReport>
+  ) {
+    return useQuery(() => filingChangesOptions(businessId, filingId, options as DefineOptions<DraftChangesReport>))
+  }
+
   function filingCommentsOptions(
     url: string,
     options?: DefineOptions<{ comments: { comment: BusinessComment }[] }>
@@ -482,6 +505,8 @@ export const useBusinessQuery = () => {
     documentOptions,
     filing,
     filingOptions,
+    filingChanges,
+    filingChangesOptions,
     filingComments,
     filingCommentsOptions,
     filingDocumentUrls,
