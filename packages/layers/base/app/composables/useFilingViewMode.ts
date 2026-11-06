@@ -7,6 +7,6 @@ export function useFilingViewMode(
   return computed(() =>
     isStaff.value
     && toValue(hasDraft)
-    && toValue(filedByStaff) !== true
+    && toValue(filedByStaff) === false
   )
 }

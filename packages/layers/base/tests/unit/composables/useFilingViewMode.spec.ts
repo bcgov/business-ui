@@ -14,7 +14,7 @@ describe('useFilingViewMode', () => {
     staff.value = true
 
     expect(useFilingViewMode(false, true).value).toBe(true)
-    expect(useFilingViewMode(undefined, true).value).toBe(true)
+    expect(useFilingViewMode(undefined, true).value).toBe(false)
   })
 
   it('keeps staff-owned drafts editable', () => {
@@ -38,12 +38,14 @@ describe('useFilingViewMode', () => {
     expect(viewOnly.value).toBe(false)
 
     staff.value = true
+    expect(viewOnly.value).toBe(false)
+
+    filedByStaff.value = false
     expect(viewOnly.value).toBe(true)
 
     filedByStaff.value = true
     expect(viewOnly.value).toBe(false)
 
-    filedByStaff.value = false
     hasDraft.value = false
     expect(viewOnly.value).toBe(false)
   })
