@@ -4,6 +4,8 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useFilingPage } from '#business/app/composables/useFilingPage'
 
 const identifier = 'BC1234567'
+const staff = ref(false)
+mockNuxtImport('useIsStaff', () => () => staff)
 
 // NB: adds a page group with a {year} placeholder so i18nParams cases assert a real interpolation.
 // The factory is hoisted, so the messages are imported dynamically.
@@ -99,6 +101,7 @@ describe('useFilingPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     watcherOptions = undefined
+    staff.value = false
     mockRoute.params = { businessId: identifier }
     mockRoute.query = {}
     mockUrlParams.draft = undefined
@@ -187,6 +190,31 @@ describe('useFilingPage', () => {
       expect(watcherOptions.backButton).toBeNull()
     })
 
+    it('configures Back to return to the dashboard in automatically detected view-only mode', async () => {
+      staff.value = true
+      mockUrlParams.draft = '123'
+      const { viewOnly } = useFilingPage(getOptions({ filedByStaff: false }))
+
+      expect(viewOnly.value).toBe(true)
+      expect(watcherOptions.filedByStaff).toBe(false)
+      expect(watcherOptions.viewOnlyBackButton.onClick).toEqual(expect.any(Function))
+
+      await watcherOptions.viewOnlyBackButton.onClick()
+
+      expect(mockNavigateTo).toHaveBeenCalledWith('http://dashboard/BC1234567', { external: true })
+    })
+
+    it('derives view-only mode from staff status and draft ownership metadata', () => {
+      staff.value = true
+      mockUrlParams.draft = '123'
+      const { viewOnly } = useFilingPage(getOptions({
+        filedByStaff: () => false
+      }))
+
+      expect(viewOnly.value).toBe(true)
+      expect(watcherOptions.filedByStaff).toEqual(expect.any(Function))
+    })
+
     it('saves a draft before the session expires', async () => {
       useFilingPage(getOptions())
       await watcherOptions.setOnBeforeSessionExpired()
@@ -217,6 +245,17 @@ describe('useFilingPage', () => {
   })
 
   describe('submitFiling', () => {
+    it('does not submit in view-only mode', async () => {
+      staff.value = true
+      mockUrlParams.draft = '123'
+      const { submitFiling } = useFilingPage(getOptions({ filedByStaff: false }))
+
+      await submitFiling()
+
+      expect(store.submit).not.toHaveBeenCalled()
+      expect(guards.canSubmit).not.toHaveBeenCalled()
+    })
+
     it('submits, revokes the unload prompt and returns to the dashboard', async () => {
       const { submitFiling } = useFilingPage(getOptions())
 
@@ -306,6 +345,17 @@ describe('useFilingPage', () => {
   })
 
   describe('saveFiling', () => {
+    it('does not save in view-only mode', async () => {
+      staff.value = true
+      mockUrlParams.draft = '123'
+      const { saveFiling } = useFilingPage(getOptions({ filedByStaff: false }))
+
+      await saveFiling!()
+
+      expect(store.submit).not.toHaveBeenCalled()
+      expect(guards.canSave).not.toHaveBeenCalled()
+    })
+
     it('saves a draft and returns to the dashboard', async () => {
       const { saveFiling } = useFilingPage(getOptions())
 

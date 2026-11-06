@@ -165,6 +165,51 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('Province')).toContainText('Alberta')
   })
 
+  test('should automatically show a staff view-only review for a public user draft', async ({ page }) => {
+    await setupAgmLocationChangePageWithDraft(page, identifier, draftId, AGMLC, 'STAFF', {
+      agmLocationChange: {
+        year: '2025',
+        reason: 'Shareholders are located outside BC.',
+        agmLocation: {
+          country: 'CA',
+          city: 'Calgary',
+          region: 'AB'
+        }
+      },
+      filedByStaff: false
+    })
+
+    const filingWriteRequests: string[] = []
+    page.on('request', (request) => {
+      if (
+        request.url().includes(`/businesses/${identifier}/filings`)
+        && ['POST', 'PUT'].includes(request.method())
+      ) {
+        filingWriteRequests.push(request.method())
+      }
+    })
+
+    await navigateToAgmLocationChangePage(page, identifier, draftId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await expect(page.getByRole('heading', {
+      name: 'Review Annual General Meeting (AGM) Location Change'
+    })).toBeVisible()
+    const detail = page.getByTestId('review-location-change-detail')
+    await expect(detail).toContainText('2025')
+    await expect(detail).toContainText('Shareholders are located outside BC.')
+    await expect(detail).toContainText('Calgary, Alberta, Canada')
+    await expect(detail.locator('input, textarea, select, button')).toHaveCount(0)
+
+    await expect(page.getByTestId('folio-section')).not.toBeVisible()
+    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
+    await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
+    await expect(page.getByTestId('connect-button-control').getByRole('button', { name: 'Back' })).toBeVisible()
+    await expect(page.getByTestId('connect-button-control').locator('button')).toHaveCount(1)
+    expect(filingWriteRequests).toEqual([])
+  })
+
   test('should reset the region when the country changes', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
     await navigateToAgmLocationChangePage(page, identifier)

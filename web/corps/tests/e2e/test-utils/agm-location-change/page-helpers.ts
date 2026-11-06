@@ -26,6 +26,7 @@ export interface AgmLocationChangeDraftOverrides {
   agmLocationChange?: object
   header?: object
   business?: object
+  filedByStaff?: boolean
 }
 
 /**
@@ -44,7 +45,8 @@ export function getAgmLocationChangeDraftMock(overrides: AgmLocationChangeDraftO
       },
       agmLocationChange: overrides.agmLocationChange ?? {},
       header: { ...defaultHeader, ...(overrides.header ?? {}) }
-    }
+    },
+    filedByStaff: overrides.filedByStaff ?? true
   }
 }
 

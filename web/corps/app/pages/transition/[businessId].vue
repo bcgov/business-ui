@@ -79,6 +79,10 @@ async function reviewAndConfirm() {
 }
 
 async function submitFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
@@ -97,6 +101,10 @@ async function submitFiling() {
 }
 
 async function saveFiling(enableUnsavedChangesBlock = true) {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     if (enableUnsavedChangesBlock) {
       if (checkActiveSubForm()) {
@@ -124,15 +132,17 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-const { currentStep, nextStep } = useFilingPageWatcher({
+const { currentStep, nextStep, viewOnly: isViewOnly } = useFilingPageWatcher({
   store,
   businessId,
   filingSubType: undefined,
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
+  filedByStaff: () => store.draftFilingState.filedByStaff,
+  viewOnlyBackButton: { onClick: () => navigateTo(dashboardUrl.value, { external: true }) },
   breadcrumbs,
   setOnBeforeSessionExpired: async () => {
-    if (canSave()) {
+    if (!isViewOnly.value && canSave()) {
       await saveFiling(false)
     }
   },
@@ -176,6 +186,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep2
       v-if="currentStep === 2"
       id="transition-filing-step-2"
+      :view-only="isViewOnly"
       @submit="submitFiling"
     />
   </div>
