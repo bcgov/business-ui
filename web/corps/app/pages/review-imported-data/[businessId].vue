@@ -39,7 +39,7 @@ function reviewAndConfirm() {
   nextStep()
 }
 
-const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
+const { currentStep, filingText, nextStep, submitFiling, viewOnly: isViewOnly } = useFilingPage({
   store,
   filingType: FilingType.REVIEW_IMPORTED_DATA,
   formId: FORM_ID,
@@ -52,6 +52,7 @@ const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
   // at least one office or director address must change (schema anyOf)
   submitCondition: () => store.hasChanges,
   preTaskGuard: checkActiveSubForm,
+  filedByStaff: () => store.draftFilingState.filedByStaff,
   watcher: {
     steps: [
       { submitFiling: { label: t('label.reviewAndConfirm'), onClick: reviewAndConfirm } },
@@ -77,6 +78,7 @@ const { currentStep, filingText, nextStep, submitFiling } = useFilingPage({
     <FormReviewImportedDataStep2
       v-if="currentStep === 2"
       :id="FORM_ID"
+      :view-only="isViewOnly"
       @submit="submitFiling"
     />
   </div>

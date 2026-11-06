@@ -261,6 +261,10 @@ const componentExamples: DropdownMenuItem[] = [
         to: localePath('/examples/components/Form/ForeignJurisdiction')
       },
       {
+        label: 'FormReview',
+        to: localePath('/examples/components/Form/Review')
+      },
+      {
         label: 'FormNameRequestNumber',
         to: localePath('/examples/components/Form/NameRequest/Number')
       },

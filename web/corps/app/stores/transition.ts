@@ -122,6 +122,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
   }
 
   function $reset() {
+    draftFilingState.value = {} as TransitionDraftState
     const defaults = getTransitionSchema(isStaff.value).parse({})
     Object.assign(formState, defaults)
     formState.activeDirector = undefined
@@ -136,6 +137,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
 
   return {
     formState,
+    draftFilingState,
     initializing,
     directors: tableParties,
     offices: tableOffices,

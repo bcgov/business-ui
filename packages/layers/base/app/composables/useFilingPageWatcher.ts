@@ -16,10 +16,12 @@ interface FilingPageWatcherOptions<T> {
   filingType: FilingType
   filingSubType?: T
   draftId?: string
+  filedByStaff?: MaybeRefOrGetter<boolean | undefined>
   saveFiling: ConnectButton | null
   cancelFiling: ConnectButton | null
   submitFiling?: ConnectButton | null
   backButton?: ConnectButton | null
+  viewOnlyBackButton?: ConnectButton
   steps?: StepOverride[] // pass array of objects to use steps - object can be empty
   breadcrumbs: Ref<ConnectBreadcrumb[]>
   setOnBeforeSessionExpired: () => Promise<void>
@@ -30,17 +32,23 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
   const { setButtonControl } = useConnectButtonControl()
+  const viewOnly = options.filedByStaff !== undefined
+    ? useFilingViewMode(options.filedByStaff, () => !!options.draftId)
+    : computed(() => false)
+  const maxSteps = options.steps?.length || 1
   const _currentStep = ref(1)
   const currentStep = computed({
-    get: () => _currentStep.value,
+    get: () => toValue(viewOnly) ? maxSteps : _currentStep.value,
     set: (val: number) => {
-      const max = options.steps?.length || 1
       let next = Math.round(val)
+      if (toValue(viewOnly)) {
+        next = maxSteps
+      }
       // normalize current step to be between 1 and max steps
       if (next < 1) {
         next = 1
-      } else if (next > max) {
-        next = max
+      } else if (next > maxSteps) {
+        next = maxSteps
       }
 
       if (_currentStep.value !== next) {
@@ -50,6 +58,9 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   })
 
   function nextStep() {
+    if (toValue(viewOnly)) {
+      return
+    }
     _currentStep.value++
     document.querySelector('main')?.scrollIntoView({
       behavior: 'smooth',
@@ -57,6 +68,9 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
     })
   }
   function previousStep() {
+    if (toValue(viewOnly)) {
+      return
+    }
     _currentStep.value--
     document.querySelector('main')?.scrollIntoView({
       behavior: 'smooth',
@@ -65,6 +79,24 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   }
 
   function updateButtonControl() {
+    if (toValue(viewOnly)) {
+      setButtonControl({
+        leftGroup: {
+          stacked: false,
+          buttons: options.viewOnlyBackButton
+            ? [{
+              label: t('label.back'),
+              variant: 'outline',
+              icon: 'i-mdi-chevron-left',
+              ...options.viewOnlyBackButton
+            }]
+            : []
+        },
+        rightGroup: { stacked: false, buttons: [] }
+      })
+      return
+    }
+
     const isMultiStep = !!options.steps && options.steps.length > 0
     const stepIndex = currentStep.value - 1
     const isFirstStep = currentStep.value === 1
@@ -152,7 +184,7 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   }
 
   watch(
-    [() => accountStore.currentAccount.id, currentStep],
+    [() => accountStore.currentAccount.id, currentStep, () => toValue(viewOnly)],
     async ([newAccountId, _newStep], [oldAccountId, _oldStep]) => {
       // prevent race condition of filing being submitted prematurely when moving to last step
       await new Promise(resolve => setTimeout(resolve, 1))
@@ -182,6 +214,7 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   return {
     currentStep,
     nextStep,
-    previousStep
+    previousStep,
+    viewOnly
   }
 }

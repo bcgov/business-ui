@@ -78,6 +78,7 @@ export interface FilingPutResponse<F extends FilingRecord> {
 
 export interface FilingGetByIdResponse<F> {
   filing: FilingBaseData & F
+  filedByStaff?: boolean
   filingLink: string // url
   isFutureEffective: boolean
   withdrawalPending: boolean
