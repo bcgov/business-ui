@@ -14,6 +14,7 @@ const mockKeys = {
   courtOrders: vi.fn(),
   document: vi.fn(),
   filing: vi.fn(),
+  filingChanges: vi.fn(),
   filingComments: vi.fn(),
   filingDocumentUrls: vi.fn(),
   filingValidateSection: vi.fn(),
@@ -236,6 +237,16 @@ describe('useBusinessQuery', () => {
       { query: { public: true } }
     )
     expect(mockKeys.filing).toHaveBeenCalledWith(businessId, filingId, true)
+  })
+
+  it('filingChangesOptions should always be fresh', () => {
+    const { filingChangesOptions } = useBusinessQuery()
+
+    const options = filingChangesOptions(businessId, 55)
+    options.query({} as any)
+    expect(mockBusinessApi).toHaveBeenCalledWith(`businesses/${businessId}/filings/55/changes`)
+    expect(mockKeys.filingChanges).toHaveBeenCalledWith(businessId, 55)
+    expect(options.staleTime).toBe(0)
   })
 
   it('filingCommentsOptions should have correct config', () => {

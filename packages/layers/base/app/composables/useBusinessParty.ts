@@ -6,7 +6,8 @@ export const useBusinessParty = () => {
     roleClass?: RoleClass,
     roleType?: RoleType,
     all?: boolean,
-    date?: string
+    date?: string,
+    force = false
   ): Promise<TableBusinessState<PartySchema>[] | undefined> {
     const resp = await service.getParties(businessId, {
       ...(roleClass ? { classType: roleClass } : {}),
@@ -16,7 +17,7 @@ export const useBusinessParty = () => {
       ...(all ? { all: true } : {}),
       // parties as of a specific date (YYYY-MM-DD), e.g. a backdated change of directors
       ...(date ? { date } : {})
-    })
+    }, force)
 
     return resp.map(p => ({
       new: formatPartyUi(p, roleType),

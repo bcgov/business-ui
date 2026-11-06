@@ -12,6 +12,7 @@ const mockQuery = {
   courtOrdersOptions: vi.fn(),
   documentOptions: vi.fn(),
   filingOptions: vi.fn(),
+  filingChangesOptions: vi.fn(),
   filingCommentsOptions: vi.fn(),
   filingDocumentUrlsOptions: vi.fn(),
   filingValidateSectionOptions: vi.fn(),
@@ -173,6 +174,20 @@ describe('useBusinessService', () => {
     expect(mockQuery.filingOptions).toHaveBeenCalledWith(businessId, 123, true)
     expect(mockGetCachedOrFetch).toHaveBeenCalledWith(mockQuery.filingOptions(), false)
     expect(result).toEqual(mockData)
+  })
+
+  it('getFilingChanges should fetch fresh by default', async () => {
+    const mockData = { upToDate: true, conflicts: [] }
+    mockGetCachedOrFetch.mockResolvedValue(mockData)
+
+    const result = await service.getFilingChanges(businessId, 55)
+    const opts = mockQuery.filingChangesOptions
+    expect(opts).toHaveBeenCalledWith(businessId, 55)
+    expect(mockGetCachedOrFetch).toHaveBeenCalledWith(opts(), true)
+    expect(result).toEqual(mockData)
+
+    await service.getFilingChanges(businessId, 55, false)
+    expect(mockGetCachedOrFetch).toHaveBeenLastCalledWith(opts(), false)
   })
 
   it('getFilingComments should fetch options and call the cache helper', async () => {
@@ -424,6 +439,40 @@ describe('useBusinessService', () => {
           query: { draft: true },
           body: expect.any(Object)
         })
+      )
+    })
+
+    it('should add the base transaction id to a PUT only', async () => {
+      const filingId = 999
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false, filingId, { baseTransactionId: 12 })
+      expect(mockBusinessApi).toHaveBeenLastCalledWith(
+        `businesses/${business.identifier}/filings/${filingId}`,
+        expect.objectContaining({ method: 'PUT', query: { draft: true, baseTransactionId: 12 } })
+      )
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, true, filingId, { baseTransactionId: 12 })
+      expect(mockBusinessApi).toHaveBeenLastCalledWith(
+        `businesses/${business.identifier}/filings/${filingId}`,
+        expect.objectContaining({ method: 'PUT', query: { baseTransactionId: 12 } })
+      )
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false, undefined, { baseTransactionId: 12 })
+      expect(mockBusinessApi).toHaveBeenLastCalledWith(
+        `businesses/${business.identifier}/filings`,
+        expect.objectContaining({ method: 'POST', query: { draft: true } })
+      )
+    })
+
+    it('should pass custom headers through', async () => {
+      mockBusinessApi.mockResolvedValue({ filing: {} })
+
+      await service.saveOrUpdateDraftFiling(business.identifier, payload, false, 999, { headers: { 'x-test': '1' } })
+
+      expect(mockBusinessApi).toHaveBeenLastCalledWith(
+        `businesses/${business.identifier}/filings/999`,
+        expect.objectContaining({ headers: { 'x-test': '1' } })
       )
     })
 

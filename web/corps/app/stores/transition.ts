@@ -4,10 +4,8 @@ export const useTransitionStore = defineStore('transition-store', () => {
   const { tableState: tableParties } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
   const { shareClasses: tableShareClasses } = useManageShareStructure()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, formatFilingPayloadApi } = useFiling()
+  const { initFiling, formatFilingPayloadApi, saveOrSubmitFiling } = useFiling()
 
-  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -27,11 +25,13 @@ export const useTransitionStore = defineStore('transition-store', () => {
     const { draftFiling, parties, addresses, shareClasses } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
-      undefined,
-      draftId,
-      { roleType: RoleType.DIRECTOR },
-      [OfficeType.RECORDS, OfficeType.REGISTERED],
-      true // fetch share classes
+      {
+        draftId,
+        parties: { roleType: RoleType.DIRECTOR },
+        offices: [OfficeType.RECORDS, OfficeType.REGISTERED],
+        mergeDraftOffices: false, // offices are not editable in a transition
+        shareClasses: true
+      }
     )
 
     const draft = draftFiling?.filing?.transition
@@ -50,18 +50,14 @@ export const useTransitionStore = defineStore('transition-store', () => {
     }
 
     if (parties) {
-      const draftRelationships = draft?.relationships
-      tableParties.value = draftRelationships
-        ? getPartiesMergedWithRelationships(parties, draftRelationships)
-        : parties
+      tableParties.value = parties
     }
 
-    // offices are not editable, no need to map draft state
     if (addresses) {
       tableOffices.value = addresses
     }
 
-    tableShareClasses.value = formatShareClassesSection(shareClasses, draft?.shareStructure?.shareClasses)
+    tableShareClasses.value = shareClasses ?? []
 
     await nextTick()
     initialFormState.value = cloneDeep(formState)
@@ -104,20 +100,12 @@ export const useTransitionStore = defineStore('transition-store', () => {
       }
     )
 
-    const draftId = draftFilingState.value?.filing?.header?.filingId
-    if (draftId || !isSubmission) {
-      const filingResp = await service.saveOrUpdateDraftFiling<PRTApplication>(
-        businessStore.businessIdentifier!,
-        filingPayload,
-        isSubmission,
-        draftId as string | number
-      )
-
+    const filingResp = await saveOrSubmitFiling<PRTApplication>(businessStore.businessIdentifier!, filingPayload, {
+      isSubmission,
+      draftId: draftFilingState.value?.filing?.header?.filingId
+    })
+    if (filingResp) {
       draftFilingState.value = filingResp as unknown as TransitionDraftState
-      const urlParams = useUrlSearchParams()
-      urlParams.draft = String(filingResp.filing.header.filingId)
-    } else {
-      await service.postFiling(businessStore.businessIdentifier!, filingPayload)
     }
   }
 

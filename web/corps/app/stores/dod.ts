@@ -40,8 +40,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
     const { draftFiling } = await initFiling<{ dissolution: DissolutionPayload }>(
       businessId,
       FilingType.DISSOLUTION,
-      filingSubType,
-      draftId
+      { filingSubType, draftId }
     )
 
     if (draftFiling?.filing) {
@@ -107,7 +106,7 @@ export const useDodStore = defineStore('delay-of-dissolution-store', () => {
         payload,
         isSubmission,
         draftId as string | number,
-        headers
+        { headers }
       )
       draftFilingState.value = filingResp as unknown as FilingGetByIdResponse<DissolutionApplication>
       const urlParams = useUrlSearchParams()

@@ -8,7 +8,6 @@ export const useDirectorsStore = defineStore('directors-store', () => {
   const businessStore = useBusinessStore()
   const feeStore = useConnectFeeStore()
   const { tableState } = useManageParties()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
   const {
     formatFilingPayloadApi,
     hydratePaymentState,
@@ -43,9 +42,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
     const { draftFiling, parties } = await initFiling<CODFiling>(
       businessId,
       FilingType.CHANGE_OF_DIRECTORS,
-      undefined,
-      draftId,
-      { roleType: RoleType.DIRECTOR }
+      { draftId, parties: { roleType: RoleType.DIRECTOR } }
     )
 
     if (!businessStore.business) {
@@ -81,10 +78,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
       }
     }
 
-    const draftRelationships = draftFiling?.filing?.changeOfDirectors?.relationships
-    tableState.value = parties
-      ? (draftRelationships ? getPartiesMergedWithRelationships(parties, draftRelationships) : parties)
-      : []
+    tableState.value = parties ?? []
 
     await snapshotInitialState()
     initialDirectors.value = cloneDeep(tableState.value)

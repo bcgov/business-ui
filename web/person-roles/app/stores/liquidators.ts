@@ -4,11 +4,8 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
   const liquidatorSchema = getLiquidatorsSchema()
   const { tableState } = useManageParties()
   const { tableState: tableOffices } = useManageOffices()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { formatAddressTableState, formatDraftTableState } = useBusinessAddresses()
-  const { initFiling, formatFilingPayloadApi } = useFiling()
+  const { initFiling, formatFilingPayloadApi, saveOrSubmitFiling } = useFiling()
 
-  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -42,10 +39,7 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     const { draftFiling, parties, addresses } = await initFiling<ChangeOfLiquidators>(
       businessId,
       FilingType.CHANGE_OF_LIQUIDATORS,
-      filingSubType,
-      draftId,
-      { roleType: RoleType.LIQUIDATOR },
-      officeParams
+      { filingSubType, draftId, parties: { roleType: RoleType.LIQUIDATOR }, offices: officeParams }
     )
 
     const draft = draftFiling?.filing?.changeOfLiquidators
@@ -56,17 +50,11 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
     }
 
     if (parties) {
-      const draftRelationships = draft?.relationships
-      tableState.value = draftRelationships
-        ? getPartiesMergedWithRelationships(parties, draftRelationships)
-        : parties
+      tableState.value = parties
     }
 
     if (addresses) {
-      const draftOffice = draft?.offices && formatAddressTableState(draft.offices, [OfficeType.LIQUIDATION])
-      tableOffices.value = draftOffice
-        ? formatDraftTableState(addresses, draftOffice)
-        : addresses
+      tableOffices.value = addresses
     }
 
     await nextTick()
@@ -91,19 +79,12 @@ export const useLiquidatorStore = defineStore('liquidator-store', () => {
       formatStaffPaymentApi(formState.staffPayment)
     )
 
-    const draftId = draftFilingState.value?.filing?.header?.filingId
-    if (draftId || !isSubmission) {
-      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfLiquidators>(
-        businessStore.businessIdentifier!,
-        payload,
-        isSubmission,
-        draftId as string | number
-      )
+    const filingResp = await saveOrSubmitFiling<ChangeOfLiquidators>(businessStore.businessIdentifier!, payload, {
+      isSubmission,
+      draftId: draftFilingState.value?.filing?.header?.filingId
+    })
+    if (filingResp) {
       draftFilingState.value = filingResp as unknown as LiquidatorDraftState
-      const urlParams = useUrlSearchParams()
-      urlParams.draft = String(filingResp.filing.header.filingId)
-    } else {
-      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 

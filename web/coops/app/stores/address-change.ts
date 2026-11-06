@@ -34,16 +34,12 @@ export const useAddressChangeStore = defineStore('address-change-store', () => {
     const { draftFiling, addresses } = await initFiling<COAFiling>(
       businessId,
       FilingType.CHANGE_OF_ADDRESS,
-      undefined,
-      draftId,
-      undefined,
-      [OfficeType.REGISTERED]
+      { draftId, offices: [OfficeType.REGISTERED] }
     )
 
     tableState.value = addresses ?? []
 
-    // FUTURE: merge the draft offices over the fetched registered office with formatDraftTableState
-    // and gate the filing to CP businesses
+    // FUTURE: gate the filing to CP businesses
     if (draftFiling?.filing?.changeOfAddress) {
       draftFilingState.value = draftFiling as COADraftState
       // re-syncs the fee widget with a resumed staff payment selection

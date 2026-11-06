@@ -24,8 +24,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
     const { draftFiling } = await initFiling<AgmLocationChangeFiling>(
       businessId,
       FilingType.AGM_LOCATION_CHANGE,
-      undefined,
-      draftId
+      { draftId }
     )
 
     if (businessStore.business && !businessStore.isBaseCompany()) {

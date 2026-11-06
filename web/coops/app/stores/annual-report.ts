@@ -66,10 +66,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
     const { draftFiling, parties, addresses } = await initFiling<CoopARFiling>(
       businessId,
       FilingType.ANNUAL_REPORT,
-      undefined,
-      draftId,
-      { roleType: RoleType.DIRECTOR },
-      [OfficeType.REGISTERED]
+      { draftId, parties: { roleType: RoleType.DIRECTOR }, offices: [OfficeType.REGISTERED] }
     )
 
     directors.value = parties ?? []

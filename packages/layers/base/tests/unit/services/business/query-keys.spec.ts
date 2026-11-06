@@ -59,6 +59,7 @@ describe('useBusinessQueryKeys', () => {
       ['document', ['http://api/pdf'], ['business', accountId, 'document', { url: 'http://api/pdf' }]],
       ['filing', [businessId, 55], ['business', accountId, businessId, 'filing', 55, { publicData: false }]],
       ['filing', [businessId, 55, true], ['business', accountId, businessId, 'filing', 55, { publicData: true }]],
+      ['filingChanges', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'changes']],
       ['filingComments', ['http://comments'], ['business', accountId, 'filing', 'comments', { url: 'http://comments' }]],
       ['filingDocumentUrls', [businessId, 55], ['business', accountId, businessId, 'filing', 55, 'document-urls']],
       ['filingValidateSection', [businessId, validateKeyPayload], ['business', accountId, businessId, 'filing', 'validate', 'section', validateKeyPayload]],

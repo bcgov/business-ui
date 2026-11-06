@@ -62,13 +62,13 @@ describe('useBusinessParty', () => {
           role: RoleType.DIRECTOR,
           all: true,
           date: '2026-01-01'
-        })
+        }, false)
       })
 
       test('should omit the date key when no date is provided', async () => {
         await useBusinessParty().getBusinessParties(identifier, undefined, RoleType.DIRECTOR)
 
-        expect(mockGetParties).toHaveBeenCalledWith(identifier, { role: RoleType.DIRECTOR })
+        expect(mockGetParties).toHaveBeenCalledWith(identifier, { role: RoleType.DIRECTOR }, false)
       })
     })
   })
