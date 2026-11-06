@@ -8,7 +8,7 @@ definePageMeta({
 })
 
 const { tableState, statementState } = useManageAmalgamation()
-const activeAmal = ref<ActiveAmalgamationCorrectSchema | undefined>(undefined)
+const activeSubject = ref<ActiveAmalgamationCorrectSchema | undefined>(undefined)
 const activeAmalStmnt = ref<ActiveAmalgamationCorrectStatementSchema | undefined>(undefined)
 const loading = ref(false)
 
@@ -48,7 +48,7 @@ const variant = ref<ManageVariant>('correct')
       </template>
       <template #default>
         <ManageAmalgamation
-          v-model:active-amal="activeAmal"
+          v-model:active-subject="activeSubject"
           v-model:active-amal-stmnt="activeAmalStmnt"
           :variant
           :loading

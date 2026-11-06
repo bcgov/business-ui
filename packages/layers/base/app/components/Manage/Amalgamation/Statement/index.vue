@@ -6,7 +6,11 @@ const {
   variant = 'default',
   preventActions = false,
   isReadOnly
-} = defineProps<ManageAmalgamationProps & {
+} = defineProps<{
+  stateKey?: string
+  labelOverrides?: TableLabelOverrides
+  modelName?: string
+  variant?: ManageVariant
   preventActions?: boolean
   isReadOnly: boolean
 }>()
