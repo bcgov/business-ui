@@ -4,6 +4,8 @@ export enum LDFlag {
   EnabledBusinessSummaryEntities = 'enabled-business-summary-entities',
   EnableDigitalCredentials = 'enable-digital-credentials',
   EnableDocumentRecords = 'enable-document-records',
+  EnableNewFeature = 'enable-new-feature',
+  EnableStaffDraftFilingBypass = 'enable-staff-draft-filing-bypass',
   EnableWithdrawalAction = 'enable-withdrawal-action',
   SpecialResolutionUIEnabled = 'special-resolution-ui-enabled',
   SupportedAgmExtensionEntities = 'supported-agm-extension-entities',

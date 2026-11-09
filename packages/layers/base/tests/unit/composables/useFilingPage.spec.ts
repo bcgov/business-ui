@@ -1,11 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { LDFlag } from '#business/app/enums/ld-flag'
 import { useFilingPage } from '#business/app/composables/useFilingPage'
 
 const identifier = 'BC1234567'
 const staff = ref(false)
 mockNuxtImport('useIsStaff', () => () => staff)
+mockNuxtImport('useConnectLaunchDarkly', () => () => ({
+  getFeatureFlag: (flag: LDFlag) => ({
+    value: flag === LDFlag.EnableNewFeature
+      ? ['draft-rebase-checks']
+      : flag === LDFlag.EnableStaffDraftFilingBypass
+        ? Object.values(FilingType)
+        : []
+  })
+}))
 
 // NB: adds a page group with a {year} placeholder so i18nParams cases assert a real interpolation.
 // The factory is hoisted, so the messages are imported dynamically.

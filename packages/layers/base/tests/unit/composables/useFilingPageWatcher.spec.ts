@@ -1,6 +1,7 @@
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick, ref } from 'vue'
+import { LDFlag } from '#business/app/enums/ld-flag'
 import { useFilingPageWatcher } from '#business/app/composables/useFilingPageWatcher'
 
 const { mockSetButtonControl, mockSetSessionExpired, mockSetBreadcrumbs } = vi.hoisted(() => ({
@@ -27,6 +28,15 @@ mockNuxtImport('useNuxtApp', async (original) => {
 mockNuxtImport('useConnectAccountStore', () => () => ({ currentAccount: { id: 'account-1' } }))
 mockNuxtImport('useConnectButtonControl', () => () => ({ setButtonControl: mockSetButtonControl }))
 mockNuxtImport('useIsStaff', () => () => staff)
+mockNuxtImport('useConnectLaunchDarkly', () => () => ({
+  getFeatureFlag: (flag: LDFlag) => ({
+    value: flag === LDFlag.EnableNewFeature
+      ? ['draft-rebase-checks']
+      : flag === LDFlag.EnableStaffDraftFilingBypass
+        ? [FilingType.TRANSITION, FilingType.AGM_LOCATION_CHANGE]
+        : []
+  })
+}))
 mockNuxtImport('setOnBeforeSessionExpired', () => mockSetSessionExpired)
 mockNuxtImport('setBreadcrumbs', () => mockSetBreadcrumbs)
 

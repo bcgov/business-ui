@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'connect-auth',
-  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Form Review' }]
+  breadcrumbs: [{ label: 'Examples', to: '/' }, { label: 'Form Review Wrapper' }]
 })
 
 const viewOnly = ref(false)
@@ -10,7 +10,7 @@ const viewOnly = ref(false)
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
     <ConnectPageSection
-      :heading="{ label: 'Form Review' }"
+      :heading="{ label: 'Form Review Wrapper' }"
       ui-body="p-10"
       class="w-full max-w-5xl"
     >
@@ -21,7 +21,7 @@ const viewOnly = ref(false)
         />
       </div>
 
-      <FormReview :view-only="viewOnly">
+      <FormReviewWrapper :view-only="viewOnly">
         <ConnectPageSection
           :heading="{ label: 'Review Content' }"
           ui-body="p-4"
@@ -37,7 +37,7 @@ const viewOnly = ref(false)
             <p>These fields are hidden in view-only mode.</p>
           </ConnectPageSection>
         </template>
-      </FormReview>
+      </FormReviewWrapper>
     </ConnectPageSection>
   </div>
 </template>

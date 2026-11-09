@@ -10,6 +10,9 @@ import {
   setupAgmLocationChangePageWithDraft,
   navigateToAgmLocationChangePage
 } from '../../test-utils'
+import { getLdarklyFlagsMock } from '#test-mocks'
+import { FilingType } from '#business/app/enums/filing-type'
+import { LDFlag } from '#business/app/enums/ld-flag'
 import { AGMLC } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -177,6 +180,14 @@ test.describe('AGM Location Change - Page init', () => {
         }
       },
       filedByStaff: false
+    })
+    await page.route(/.*clientsdk\.launchdarkly\.com\/sdk\/evalx\/.*\/contexts\/.*/, async (route) => {
+      await route.fulfill({
+        json: getLdarklyFlagsMock([
+          { flag: LDFlag.EnableNewFeature, value: ['draft-rebase-checks'] },
+          { flag: LDFlag.EnableStaffDraftFilingBypass, value: [FilingType.AGM_LOCATION_CHANGE] }
+        ])
+      })
     })
 
     const filingWriteRequests: string[] = []

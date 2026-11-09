@@ -84,9 +84,7 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
   const draftId = draftIdSource === 'route-param'
     ? route.params.filingId as string
     : urlParams.draft as string | undefined
-  const viewOnly = options.filedByStaff !== undefined
-    ? useFilingViewMode(options.filedByStaff, () => !!draftId)
-    : computed(() => false)
+  const viewOnly = useFilingViewMode(options.filedByStaff, () => !!draftId, options.filingType)
 
   const filingText = computed(() => {
     const params = toValue(options.i18nParams) ?? {}

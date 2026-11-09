@@ -35,7 +35,7 @@ function onError(event: FormErrorEvent) {
     class="space-y-6 sm:space-y-10"
     @error="onError"
   >
-    <FormReview :view-only="viewOnly">
+    <FormReviewWrapper :view-only="viewOnly">
       <!-- only the sections the user changed are reviewed - they are the only ones sent -->
       <section class="space-y-6" data-testid="review-section">
         <ManageOffices
@@ -83,6 +83,6 @@ function onError(event: FormErrorEvent) {
           :initializing="store.initializing"
         />
       </template>
-    </FormReview>
+    </FormReviewWrapper>
   </UForm>
 </template>

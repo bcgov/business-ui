@@ -33,16 +33,16 @@ const reviewRows = computed(() => [
     novalidate
     class="space-y-6 sm:space-y-10"
   >
-    <FormReview :view-only="viewOnly">
+    <FormReviewWrapper :view-only="viewOnly">
       <ConnectPageSection
         data-testid="review-location-change-detail"
         :heading="{ label: $t('page.agmLocationChange.locationChangeDetail'), icon: 'i-mdi-domain' }"
       >
-        <dl class="divide-y divide-line-muted">
+        <dl class="divide-y divide-line-muted padding-x-default py-8">
           <div
             v-for="row in reviewRows"
             :key="row.label"
-            class="padding-xy-default flex flex-col gap-2 sm:flex-row sm:gap-6"
+            class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6"
           >
             <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
               {{ row.label }}
@@ -77,6 +77,6 @@ const reviewRows = computed(() => [
           name="authorization"
         />
       </template>
-    </FormReview>
+    </FormReviewWrapper>
   </UForm>
 </template>

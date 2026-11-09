@@ -29,7 +29,7 @@ function onError(event: FormErrorEvent) {
     class="space-y-6 sm:space-y-10"
     @error="onError"
   >
-    <FormReview :view-only="viewOnly">
+    <FormReviewWrapper :view-only="viewOnly">
       <section class="space-y-6" data-testid="review-section">
         <div>
           <h2 class="text-base">
@@ -99,6 +99,6 @@ function onError(event: FormErrorEvent) {
           :initializing="store.initializing"
         />
       </template>
-    </FormReview>
+    </FormReviewWrapper>
   </UForm>
 </template>

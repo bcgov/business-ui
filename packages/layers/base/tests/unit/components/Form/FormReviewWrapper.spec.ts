@@ -1,10 +1,10 @@
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { describe, expect, it } from 'vitest'
-import { FormReview } from '#components'
+import { FormReviewWrapper } from '#components'
 
-describe('FormReview', () => {
+describe('FormReviewWrapper', () => {
   it('keeps review content visible and hides submission fields in view-only mode', async () => {
-    const wrapper = await mountSuspended(FormReview, {
+    const wrapper = await mountSuspended(FormReviewWrapper, {
       props: { viewOnly: true },
       slots: {
         'default': '<div data-testid="review-content">Saved filing details</div>',
@@ -17,7 +17,7 @@ describe('FormReview', () => {
   })
 
   it('renders submission fields in the regular review flow', async () => {
-    const wrapper = await mountSuspended(FormReview, {
+    const wrapper = await mountSuspended(FormReviewWrapper, {
       slots: {
         'default': '<div data-testid="review-content">Saved filing details</div>',
         'submission-fields': '<div data-testid="submission-fields">Payment and certification</div>'

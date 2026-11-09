@@ -32,9 +32,11 @@ export function useFilingPageWatcher<T>(options: FilingPageWatcherOptions<T>) {
   const { t } = useNuxtApp().$i18n
   const accountStore = useConnectAccountStore()
   const { setButtonControl } = useConnectButtonControl()
-  const viewOnly = options.filedByStaff !== undefined
-    ? useFilingViewMode(options.filedByStaff, () => !!options.draftId)
-    : computed(() => false)
+  const viewOnly = useFilingViewMode(
+    options.filedByStaff,
+    () => !!options.draftId,
+    options.filingType
+  )
   const maxSteps = options.steps?.length || 1
   const _currentStep = ref(1)
   const currentStep = computed({
