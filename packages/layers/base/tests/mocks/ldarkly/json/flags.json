@@ -51,7 +51,7 @@
     "enable-new-feature": {
         "flagVersion": 1,
         "trackEvents": false,
-        "value": [],
+        "value": "",
         "variation": 1,
         "version": 222
     },

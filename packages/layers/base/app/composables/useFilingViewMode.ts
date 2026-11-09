@@ -9,14 +9,14 @@ export function useFilingViewMode(
 
   const isStaff = useIsStaff()
   const { getFeatureFlag } = useConnectLaunchDarkly()
-  const enabledFeatures = getFeatureFlag<string[]>(LDFlag.EnableNewFeature, [])
+  const enabledFeatures = getFeatureFlag<string>(LDFlag.EnableNewFeature, '')
   const staffDraftFilingBypassTypes = getFeatureFlag<string[]>(LDFlag.EnableStaffDraftFilingBypass, [])
 
   return computed(() =>
     isStaff.value
     && toValue(hasDraft)
     && toValue(filedByStaff) === false
-    && enabledFeatures.value.includes('draft-rebase-checks')
+    && enabledFeatures.value.split(',').some(feature => feature.trim() === 'draft-rebase-checks')
     && staffDraftFilingBypassTypes.value.includes(toValue(filingType))
   )
 }

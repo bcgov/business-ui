@@ -4,7 +4,7 @@ import { LDFlag } from '#business/app/enums/ld-flag'
 import { useFilingViewMode } from '#business/app/composables/useFilingViewMode'
 
 const staff = ref(false)
-const enabledFeatures = ref<unknown>([])
+const enabledFeatures = ref('')
 const staffDraftFilingBypassTypes = ref<unknown>([])
 const mockGetFeatureFlag = vi.fn((flag: LDFlag) => flag === LDFlag.EnableNewFeature
   ? enabledFeatures
@@ -17,7 +17,7 @@ mockNuxtImport('useConnectLaunchDarkly', () => () => ({
 describe('useFilingViewMode', () => {
   beforeEach(() => {
     staff.value = false
-    enabledFeatures.value = ['draft-rebase-checks']
+    enabledFeatures.value = 'draft-rebase-checks'
     staffDraftFilingBypassTypes.value = [FilingType.AGM_LOCATION_CHANGE]
     mockGetFeatureFlag.mockClear()
   })
@@ -48,10 +48,10 @@ describe('useFilingViewMode', () => {
     staff.value = true
     const filedByStaff = false
 
-    enabledFeatures.value = []
+    enabledFeatures.value = ''
     expect(useFilingViewMode(filedByStaff, true, FilingType.AGM_LOCATION_CHANGE).value).toBe(false)
 
-    enabledFeatures.value = ['draft-rebase-checks']
+    enabledFeatures.value = 'draft-rebase-checks'
     staffDraftFilingBypassTypes.value = []
     expect(useFilingViewMode(filedByStaff, true, FilingType.AGM_LOCATION_CHANGE).value).toBe(false)
 

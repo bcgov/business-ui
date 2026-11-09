@@ -10,7 +10,7 @@ mockNuxtImport('useIsStaff', () => () => staff)
 mockNuxtImport('useConnectLaunchDarkly', () => () => ({
   getFeatureFlag: (flag: LDFlag) => ({
     value: flag === LDFlag.EnableNewFeature
-      ? ['draft-rebase-checks']
+      ? 'draft-rebase-checks'
       : flag === LDFlag.EnableStaffDraftFilingBypass
         ? Object.values(FilingType)
         : []
