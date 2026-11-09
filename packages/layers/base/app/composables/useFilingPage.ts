@@ -54,6 +54,8 @@ interface FilingPageOptions<T> {
   draftIdSource?: 'query' | 'route-param'
   /** false = File and Pay / Cancel only (there is no user input worth saving). */
   saveEnabled?: boolean
+  /** Used with the draft id to detect staff viewing a public-user draft. */
+  filedByStaff?: MaybeRefOrGetter<boolean | undefined>
   watcher?: FilingPageWatcherOverrides
 }
 
@@ -82,6 +84,7 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
   const draftId = draftIdSource === 'route-param'
     ? route.params.filingId as string
     : urlParams.draft as string | undefined
+  const viewOnly = useFilingViewMode(options.filedByStaff, () => !!draftId, options.filingType)
 
   const filingText = computed(() => {
     const params = toValue(options.i18nParams) ?? {}
@@ -113,6 +116,9 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
       if (await options.preTaskGuard?.('submit')) {
         return
       }
+      if (toValue(viewOnly)) {
+        return
+      }
       if (submitGuard !== 'none' && !canSubmit()) {
         if (submitGuard === 'alert') {
           setBtnCtrlAlert(t('text.noChangesToSubmit'), 'right')
@@ -138,6 +144,9 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
 
   async function saveDraftFiling(enableUnsavedChangesBlock = true) {
     try {
+      if (toValue(viewOnly)) {
+        return
+      }
       if (enableUnsavedChangesBlock) {
         if (await options.preTaskGuard?.('save')) {
           return
@@ -188,10 +197,14 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
     submitFiling: { form: options.formId, ...options.watcher?.submitFiling },
     backButton: options.watcher?.backButton,
     steps: options.watcher?.steps,
+    filedByStaff: options.filedByStaff,
+    viewOnlyBackButton: {
+      onClick: () => navigateTo(dashboardUrl.value, { external: true })
+    },
     buttonLayout: options.watcher?.buttonLayout,
     setOnBeforeSessionExpired: async () => {
       // nothing to save when the page has no save button
-      if (saveFiling && canSave()) {
+      if (saveFiling && !toValue(viewOnly) && canSave()) {
         await saveFiling(false)
       }
     }
@@ -216,6 +229,7 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
     revokeBeforeUnload,
     saveFiling,
     submitFiling,
-    urlParams
+    urlParams,
+    viewOnly
   }
 }

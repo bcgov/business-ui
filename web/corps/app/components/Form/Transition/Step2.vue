@@ -5,6 +5,9 @@ import { z } from 'zod'
 const store = useTransitionStore()
 const businessStore = useBusinessStore()
 const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
+defineProps<{
+  viewOnly?: boolean
+}>()
 
 function onError(event: FormErrorEvent) {
   const firstError = event?.errors?.[0]
@@ -26,72 +29,76 @@ function onError(event: FormErrorEvent) {
     class="space-y-6 sm:space-y-10"
     @error="onError"
   >
-    <section class="space-y-6" data-testid="review-section">
-      <div>
-        <h2 class="text-base">
-          1. {{ $t('label.reviewAndConfirm') }}
-        </h2>
-        <p>{{ $t('text.officeDirectorsSharesMustBeCorrectBeforeFiling') }}</p>
-      </div>
+    <FormReviewWrapper :view-only="viewOnly">
+      <section class="space-y-6" data-testid="review-section">
+        <div>
+          <h2 class="text-base">
+            1. {{ $t('label.reviewAndConfirm') }}
+          </h2>
+          <p>{{ $t('text.officeDirectorsSharesMustBeCorrectBeforeFiling') }}</p>
+        </div>
 
-      <ManageOffices
-        variant="readonly"
-        data-testid="office-addresses-section"
-        :loading="store.initializing"
-        :empty-text="$t('label.noOffices')"
-        :table-title="$t('label.offices')"
-      />
+        <ManageOffices
+          variant="readonly"
+          data-testid="office-addresses-section"
+          :loading="store.initializing"
+          :empty-text="$t('label.noOffices')"
+          :table-title="$t('label.offices')"
+        />
 
-      <ManageParties
-        data-testid="current-directors-section"
-        :loading="store.initializing"
-        :empty-text="$t('label.noDirectors')"
-        :table-title="$t('label.directors')"
-        variant="readonly"
-        :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
-      />
+        <ManageParties
+          data-testid="current-directors-section"
+          :loading="store.initializing"
+          :empty-text="$t('label.noDirectors')"
+          :table-title="$t('label.directors')"
+          variant="readonly"
+          :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates']"
+        />
 
-      <ManageShareStructure
-        data-testid="share-structure-section"
-        :loading="store.initializing"
-        :empty-text="$t('label.noShareClasses')"
-        variant="readonly"
-      />
-    </section>
+        <ManageShareStructure
+          data-testid="share-structure-section"
+          :loading="store.initializing"
+          :empty-text="$t('label.noShareClasses')"
+          variant="readonly"
+        />
+      </section>
 
-    <FormPreExistingCompanyProvisions order="2" data-testid="provisions-section" />
+      <FormPreExistingCompanyProvisions order="2" data-testid="provisions-section" />
 
-    <FormDocumentDelivery
-      v-if="store.formState.documentDelivery"
-      v-model="store.formState.documentDelivery"
-      order="3"
-      name="documentDelivery"
-      :loading="store.initializing"
-      :registered-office-email="businessStore.businessContact?.email"
-    />
+      <template #submission-fields>
+        <FormDocumentDelivery
+          v-if="store.formState.documentDelivery"
+          v-model="store.formState.documentDelivery"
+          order="3"
+          name="documentDelivery"
+          :loading="store.initializing"
+          :registered-office-email="businessStore.businessContact?.email"
+        />
 
-    <FormFolio
-      v-if="!store.isStaff && store.formState.folio"
-      v-model="store.formState.folio"
-      data-testid="folio-section"
-      order="4"
-      name="folio"
-    />
+        <FormFolio
+          v-if="!store.isStaff && store.formState.folio"
+          v-model="store.formState.folio"
+          data-testid="folio-section"
+          order="4"
+          name="folio"
+        />
 
-    <FormCertify
-      v-if="!store.isStaff && store.formState.certify"
-      v-model="store.formState.certify"
-      :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
-      order="5"
-      name="certify"
-    />
+        <FormCertify
+          v-if="!store.isStaff && store.formState.certify"
+          v-model="store.formState.certify"
+          :entity-type="getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)"
+          order="5"
+          name="certify"
+        />
 
-    <StaffPaymentFieldset
-      v-if="store.isStaff && store.formState.staffPayment"
-      ref="staff-pay-ref"
-      v-model="store.formState.staffPayment"
-      order="4"
-      :initializing="store.initializing"
-    />
+        <StaffPaymentFieldset
+          v-if="store.isStaff && store.formState.staffPayment"
+          ref="staff-pay-ref"
+          v-model="store.formState.staffPayment"
+          order="4"
+          :initializing="store.initializing"
+        />
+      </template>
+    </FormReviewWrapper>
   </UForm>
 </template>

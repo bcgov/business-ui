@@ -52,6 +52,10 @@ function reviewAndConfirm() {
 }
 
 async function submitFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     setBtnCtrlAlert(undefined)
     handleButtonLoading(true, 'right', 1)
@@ -70,6 +74,10 @@ async function submitFiling() {
 
 // the design has no Save and Resume Later button, so a draft is only saved when the session is about to expire
 async function saveFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     await store.submit(false)
     revokeBeforeUnload()
@@ -86,11 +94,13 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-const { currentStep, nextStep } = useFilingPageWatcher({
+const { currentStep, nextStep, viewOnly: isViewOnly } = useFilingPageWatcher({
   store,
   businessId,
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
+  filedByStaff: () => store.draftFilingState.filedByStaff,
+  viewOnlyBackButton: { onClick: () => navigateTo(dashboardUrl.value, { external: true }) },
   breadcrumbs,
   backButton: { removeAlertSpacing: true },
   saveFiling: null,
@@ -115,7 +125,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   ],
   buttonLayout: 'stackedDefault',
   setOnBeforeSessionExpired: async () => {
-    if (canSave()) {
+    if (!isViewOnly.value && canSave()) {
       await saveFiling()
     }
   }
@@ -149,6 +159,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormAgmLocationChangeStep2
       v-if="currentStep === 2"
       id="agm-location-change-filing-step-2"
+      :view-only="isViewOnly"
       :aria-label="filingText.reviewH1"
       @submit="submitFiling"
       @error="onStepError"

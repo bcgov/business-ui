@@ -110,6 +110,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
     formState,
     initializing,
     initialFormState,
+    draftFilingState,
     isStaff,
     init,
     submit,
