@@ -39,7 +39,7 @@ const componentExamples: DropdownMenuItem[] = [
         label: 'ManageAmalgamation',
         children: [
           {
-            to: localePath('/examples/components/ManageAmalgamation/Correct'),
+            to: localePath('/examples/components/Manage/Amalgamation/Correct'),
             label: 'Correct'
           }
         ]

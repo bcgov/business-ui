@@ -145,6 +145,18 @@ describe('useManageAmalgamation', () => {
       expect(tableState.value[0]!.new).toEqual(oldItem)
     })
 
+    it('does not share a reference between the new and old state', () => {
+      const { tableState, undoSubject } = useManageAmalgamation(stateKey)
+      const oldItem = { id: '1', legalName: 'Pristine Name', actions: [] } as any
+      const newItem = { id: '1', legalName: 'Edited Name', actions: [ActionType.CHANGED] } as any
+      tableState.value = [{ new: newItem, old: oldItem }]
+
+      undoSubject(createMockRow(newItem, oldItem))
+      tableState.value[0]!.new.legalName = 'MUTATED'
+
+      expect(tableState.value[0]!.old!.legalName).toBe('Pristine Name')
+    })
+
     it('does nothing if old state is undefined', () => {
       const { tableState, undoSubject } = useManageAmalgamation(stateKey)
       const row = createMockRow({ id: '1' } as AmalgamationTableRow, undefined)
