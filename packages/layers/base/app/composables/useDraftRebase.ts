@@ -130,6 +130,6 @@ function emptyStaffModifiedKeys(): StaffModifiedKeys {
 }
 
 function hasSection(report: DraftChangesReport, section: DraftChangesSection): boolean {
-  return [...report.conflicts, ...report.alreadyApplied, ...(report.absorbed ?? [])]
+  return [...report.conflicts, ...report.alreadyApplied, ...report.absorbed]
     .some(entry => entry.section === section)
 }

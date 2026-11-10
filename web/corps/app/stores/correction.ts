@@ -106,8 +106,8 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     const {
       draftFiling,
       parties: allParties,
-      shareClasses: shareClassData,
-      nameTranslations: nameTranslationData,
+      shareClasses: shareClassData = [],
+      nameTranslations: nameTranslationData = [],
       resolutions: resolutionData
     } = await initFiling<CorrectionFiling>(businessId, FilingType.CORRECTION, {
       draftId,
@@ -213,7 +213,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       'offices'
     )
 
-    shareClasses.value = shareClassData ?? []
+    shareClasses.value = shareClassData
 
     if (resolutionData) {
       formState.resolutionDate = cloneDeep(resolutionData.newState)
@@ -232,7 +232,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       custodians.value = custodianData
     }
 
-    nameTranslations.value = nameTranslationData ?? []
+    nameTranslations.value = nameTranslationData
 
     // set `Your Company` data
     const draftYourCompanyData = {

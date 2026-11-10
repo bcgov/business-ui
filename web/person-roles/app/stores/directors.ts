@@ -39,7 +39,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
 
-    const { draftFiling, parties } = await initFiling<CODFiling>(
+    const { draftFiling, parties = [] } = await initFiling<CODFiling>(
       businessId,
       FilingType.CHANGE_OF_DIRECTORS,
       { draftId, parties: { roleType: RoleType.DIRECTOR } }
@@ -78,7 +78,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
       }
     }
 
-    tableState.value = parties ?? []
+    tableState.value = parties
 
     await snapshotInitialState()
     initialDirectors.value = cloneDeep(tableState.value)

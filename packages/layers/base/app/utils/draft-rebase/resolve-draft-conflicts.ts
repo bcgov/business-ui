@@ -48,7 +48,7 @@ export function resolveDraftConflicts<F extends FilingRecord>(
     applyEntry(draftBody, entry, current, filingName)
     recordStaffModified(entry, staffModified)
   }
-  for (const entry of report.absorbed ?? []) {
+  for (const entry of report.absorbed) {
     applyEntry(draftBody, entry, current, filingName)
     recordStaffModified(entry, staffModified)
   }

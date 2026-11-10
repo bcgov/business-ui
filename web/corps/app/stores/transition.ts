@@ -22,7 +22,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
     initializing.value = true
     $reset()
 
-    const { draftFiling, parties, addresses, shareClasses } = await initFiling<PRTApplication>(
+    const { draftFiling, parties, addresses, shareClasses = [] } = await initFiling<PRTApplication>(
       businessId,
       FilingType.TRANSITION,
       {
@@ -57,7 +57,7 @@ export const useTransitionStore = defineStore('transition-store', () => {
       tableOffices.value = addresses
     }
 
-    tableShareClasses.value = shareClasses ?? []
+    tableShareClasses.value = shareClasses
 
     await nextTick()
     initialFormState.value = cloneDeep(formState)
