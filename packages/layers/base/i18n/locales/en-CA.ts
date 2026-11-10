@@ -12,6 +12,7 @@ export default {
     corrected: 'CORRECTED',
     deleted: 'DELETED',
     emailChanged: 'EMAIL CHANGED',
+    modifiedByStaff: 'MODIFIED BY STAFF',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',
     rolesChanged: 'ROLES CHANGED'

@@ -105,14 +105,10 @@ describe('useAnnualReportStore', () => {
       await store.init(identifier)
 
       expect(mockInitFiling).toHaveBeenCalledTimes(1)
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.ANNUAL_REPORT,
-        undefined,
-        undefined,
-        { roleType: RoleType.DIRECTOR },
-        [OfficeType.REGISTERED]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.ANNUAL_REPORT, {
+        parties: { roleType: RoleType.DIRECTOR },
+        offices: [OfficeType.REGISTERED]
+      })
       expect(store.initializing).toBe(false)
     })
 
@@ -121,14 +117,15 @@ describe('useAnnualReportStore', () => {
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.ANNUAL_REPORT,
-        undefined,
-        String(DRAFT_FILING_ID),
-        { roleType: RoleType.DIRECTOR },
-        [OfficeType.REGISTERED]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.ANNUAL_REPORT, {
+
+        draftId: String(DRAFT_FILING_ID),
+
+        parties: { roleType: RoleType.DIRECTOR },
+
+        offices: [OfficeType.REGISTERED]
+
+      })
     })
 
     it('should keep the fetched directors and offices', async () => {

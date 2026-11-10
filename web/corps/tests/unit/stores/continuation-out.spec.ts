@@ -99,12 +99,9 @@ describe('useContinuationOutStore', () => {
       await store.init(identifier, String(DRAFT_FILING_ID))
 
       expect(mockInitFiling).toHaveBeenCalledTimes(1)
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CONTINUATION_OUT,
-        undefined,
-        String(DRAFT_FILING_ID)
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CONTINUATION_OUT, {
+        draftId: String(DRAFT_FILING_ID)
+      })
       expect(store.initializing).toBe(false)
     })
 

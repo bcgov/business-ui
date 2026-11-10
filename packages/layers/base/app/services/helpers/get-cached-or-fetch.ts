@@ -36,7 +36,7 @@ export async function getCachedOrFetch<TData>(
   // will create one if it doesn't exist
   const entry = cache.ensure(options)
   const result = force
-    ? await cache.fetch(entry)
+    ? await (entry.pending?.refreshCall ?? cache.fetch(entry))
     : await cache.refresh(entry)
 
   return result.data!

@@ -84,12 +84,11 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CONSENT_CONTINUATION_OUT,
-        undefined,
-        undefined
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CONSENT_CONTINUATION_OUT, {
+
+        draftId: undefined
+
+      })
     })
 
     it('should pass the route draft id through to initFiling', async () => {
@@ -97,12 +96,11 @@ describe('useConsentContinuationOutStore', () => {
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CONSENT_CONTINUATION_OUT,
-        undefined,
-        String(DRAFT_FILING_ID)
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CONSENT_CONTINUATION_OUT, {
+
+        draftId: String(DRAFT_FILING_ID)
+
+      })
     })
 
     it('should set the initial form state for change detection', async () => {

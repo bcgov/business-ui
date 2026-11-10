@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 export const useCorrectionStore = defineStore('correction-store', () => {
   const service = useBusinessService()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, formatFilingPayloadApi } = useFiling()
+  const { initFiling, formatFilingPayloadApi, saveOrSubmitFiling } = useFiling()
+  const { markStaffModified, markStaffModifiedBusiness } = useDraftRebase()
   const businessStore = useBusinessStore()
 
   const {
@@ -103,15 +103,19 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     $reset()
     initializing.value = true
 
-    const { draftFiling, parties: allParties, shareClasses: shareClassData } = await initFiling<CorrectionFiling>(
-      businessId,
-      FilingType.CORRECTION,
-      undefined,
+    const {
+      draftFiling,
+      parties: allParties,
+      shareClasses: shareClassData = [],
+      nameTranslations: nameTranslationData = [],
+      resolutions: resolutionData
+    } = await initFiling<CorrectionFiling>(businessId, FilingType.CORRECTION, {
       draftId,
-      { all: true }, // fetch all parties incl. ceased (no role filter) — 1 API call for directors, receivers, liquidators
-      undefined,
-      true // fetch share classes
-    )
+      parties: { all: true }, // all parties incl. ceased (no role filter) - one call for directors, receivers, liquidators
+      shareClasses: true,
+      nameTranslations: true,
+      resolutions: true
+    })
 
     if (!draftFiling) {
       initializing.value = false
@@ -143,17 +147,15 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       correctedFilingType.value, correctedFilingSubType.value as FilingSubType
     )
     const officesPromise = correctableOffices.length
-      ? service.getAddresses(businessId).catch(() => undefined)
+      ? service.getAddresses(businessId, undefined, !!draftId).catch(() => undefined)
       : undefined
 
     const [
       addressData,
-      nameTranslationData,
       courtOrderData,
       businessExtendedData
     ] = await Promise.all([
       officesPromise,
-      service.getNameTranslations(businessId).catch(() => [] as NameTranslation[]),
       service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
       service.getBusinessExtended(businessId, true).catch(() => undefined)
     ])
@@ -161,11 +163,13 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     // Set business extended data (Used for amalgamationApplication, amalgamationOut, coninuationOut or continuationIn corrections)
     businessExtended.value = businessExtendedData
 
-    // Filter the single parties response by role type (UI enum — data is already formatted)
-    const directorData = allParties?.filter(p => p.new.roles.some(r => r.roleType === RoleTypeUi.DIRECTOR))
-    // `all: true` also returns ceased parties — only directors keep their ceased parties (ManageParties shows them in a ceased tab)
+    // Split the merged parties by role on the business's own roles (`old`; `new` for draft-added rows)
+    // - draft-removed row: cessation dates on `new`, splitting on `new` drops it
+    // - ceased parties (`all: true`): kept for directors only (ManageParties ceased tab)
+    const currentRoles = (p: TableBusinessState<PartySchema>) => (p.old ?? p.new).roles
+    const directorData = allParties?.filter(p => currentRoles(p).some(r => r.roleType === RoleTypeUi.DIRECTOR))
     const hasActiveRole = (p: TableBusinessState<PartySchema>, roleType: RoleTypeUi) =>
-      p.new.roles.some(r => r.roleType === roleType && !r.cessationDate)
+      currentRoles(p).some(r => r.roleType === roleType && !r.cessationDate)
     const receiverData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.RECEIVER))
     const liquidatorData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.LIQUIDATOR))
     const custodianData = allParties?.filter(p => hasActiveRole(p, RoleTypeUi.CUSTODIAN))
@@ -200,62 +204,35 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       }
     }
 
-    // Draft relationships from the pre-created correction draft (new format with `entity`)
-    const draftRelationships = draft?.relationships as BusinessRelationship[] | undefined
-
-    // Directors — use getPartiesMergedWithRelationships for clean merging
     if (directorData) {
-      const draftDirectorEntries = draftRelationships?.filter(
-        dp => dp.roles?.some(r => r.roleType === RoleType.DIRECTOR)
-      )
-      directors.value = draftDirectorEntries?.length
-        ? getPartiesMergedWithRelationships(directorData, draftDirectorEntries)
-        : directorData
+      directors.value = directorData
     }
 
-    offices.value = formatOfficesSection(addressData, draft?.offices, correctableOffices)
+    offices.value = markStaffModified(
+      formatOfficesSection(addressData, draft?.offices, correctableOffices),
+      'offices'
+    )
 
-    shareClasses.value = formatShareClassesSection(shareClassData, draft.shareStructure?.shareClasses)
+    shareClasses.value = shareClassData
 
-    const originalResolutions = await service.getResolutions(businessId).catch(() => [])
-    const draftResolutions = draft.shareStructure?.resolutionDates
+    if (resolutionData) {
+      formState.resolutionDate = cloneDeep(resolutionData.newState)
+      resolutionDates.value = cloneDeep(resolutionData.tableState)
+    }
 
-    const { newState, tableState } = formatResolutionDatesSection(originalResolutions, draftResolutions)
-
-    formState.resolutionDate = cloneDeep(newState)
-    resolutionDates.value = cloneDeep(tableState)
-
-    // Receivers — merge with draft relationships if applicable
     if (receiverData) {
-      const draftReceiverEntries = draftRelationships?.filter(
-        dp => dp.roles?.some(r => r.roleType === RoleType.RECEIVER)
-      )
-      receivers.value = draftReceiverEntries?.length
-        ? getPartiesMergedWithRelationships(receiverData, draftReceiverEntries)
-        : receiverData
+      receivers.value = receiverData
     }
 
-    // Liquidators — merge with draft relationships if applicable
     if (liquidatorData) {
-      const draftLiquidatorEntries = draftRelationships?.filter(
-        dp => dp.roles?.some(r => r.roleType === RoleType.LIQUIDATOR)
-      )
-      liquidators.value = draftLiquidatorEntries?.length
-        ? getPartiesMergedWithRelationships(liquidatorData, draftLiquidatorEntries)
-        : liquidatorData
+      liquidators.value = liquidatorData
     }
 
-    // Custodians — merge with draft relationships if applicable
     if (custodianData) {
-      const draftCustodianEntries = draftRelationships?.filter(
-        dp => dp.roles?.some(r => r.roleType === RoleType.CUSTODIAN)
-      )
-      custodians.value = draftCustodianEntries?.length
-        ? getPartiesMergedWithRelationships(custodianData, draftCustodianEntries)
-        : custodianData
+      custodians.value = custodianData
     }
 
-    nameTranslations.value = formatNameTranslationsSection(nameTranslationData, draft.nameTranslations)
+    nameTranslations.value = nameTranslationData
 
     // set `Your Company` data
     const draftYourCompanyData = {
@@ -265,12 +242,12 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       nameRequest: draft.nameRequest
     }
 
-    yourCompany.value = formatYourCompanySection(
+    yourCompany.value = markStaffModifiedBusiness(formatYourCompanySection(
       businessStore.business,
       businessExtendedData,
       draftYourCompanyData,
       correctedFilingType.value
-    )
+    ))
 
     courtOrders.value = formatCourtOrdersSection(courtOrderData, draft.courtOrders)
 
@@ -395,19 +372,14 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       delete header.authorizationReceived
     }
 
-    // Draft is always pre-created, so we always have a filingId to update
-    const filingId = draftFilingState.value?.filing?.header?.filingId
-    if (filingId) {
-      const filingResp = await service.saveOrUpdateDraftFiling<CorrectionFiling>(
-        businessStore.businessIdentifier!,
-        filingPayload,
-        isSubmission,
-        filingId
-      )
+    // Draft is always pre-created, so we always have a filingId to update (a missing one posts a new filing)
+    const filingResp = await saveOrSubmitFiling<CorrectionFiling>(businessStore.businessIdentifier!, filingPayload, {
+      isSubmission,
+      draftId: draftFilingState.value?.filing?.header?.filingId,
+      syncUrlDraftParam: false // the draft id is the route param
+    })
+    if (filingResp) {
       draftFilingState.value = filingResp as unknown as CorrectionDraftState
-    } else {
-      // Fallback: post new filing (should not happen in normal flow)
-      await service.postFiling(businessStore.businessIdentifier!, filingPayload)
     }
   }
 

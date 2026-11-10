@@ -19,18 +19,23 @@ export function getTableBadges<T extends { actions: ActionType[] }>(
     [ActionType.CHANGED]: { label: badgeLabelOverrides?.[ActionType.CHANGED] ?? t('badge.changed') }
   }
 
+  // a resumed draft row whose value a staff filing set (useDraftRebase) is flagged ahead of any action
+  const staffBadges: BadgeProps[] = row.original.modifiedByStaff
+    ? [{ label: t('badge.modifiedByStaff') }]
+    : []
+
   // get unique actions
   const rowActions = Array.from(new Set(row.original.new.actions))
 
   if (rowActions.includes(ActionType.ADDED)) {
-    return [badgeMap.ADDED]
+    return [...staffBadges, badgeMap.ADDED]
   }
 
   if (rowActions.includes(ActionType.REMOVED)) {
-    return [badgeMap.REMOVED]
+    return [...staffBadges, badgeMap.REMOVED]
   }
 
   const badges = rowActions.map(action => badgeMap[action]).filter(Boolean)
   // several actions can share a label (e.g. every change is CORRECTED in a correction) - only show each label once
-  return badges.filter((badge, i) => badges.findIndex(b => b.label === badge.label) === i)
+  return [...staffBadges, ...badges.filter((badge, i) => badges.findIndex(b => b.label === badge.label) === i)]
 }

@@ -61,7 +61,11 @@ const showNrData = computed(() => nrData.value && fieldState?.value?.changeOptio
     <template #label>
       <div class="space-y-1">
         <div>{{ $t('label.companyName') }}</div>
-        <ManageYourCompanyFieldBadge :actions="fieldState?.actions" :label-overrides />
+        <ManageYourCompanyFieldBadge
+          :actions="fieldState?.actions"
+          :modified-by-staff="fieldState?.modifiedByStaff"
+          :label-overrides
+        />
       </div>
     </template>
     <template #default>

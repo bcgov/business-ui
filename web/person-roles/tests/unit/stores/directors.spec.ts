@@ -127,13 +127,9 @@ describe('useDirectorsStore', () => {
       await store.init(corpsIdentifier)
 
       expect(mockInitFiling).toHaveBeenCalledTimes(1)
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        corpsIdentifier,
-        FilingType.CHANGE_OF_DIRECTORS,
-        undefined,
-        undefined,
-        { roleType: RoleType.DIRECTOR }
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(corpsIdentifier, FilingType.CHANGE_OF_DIRECTORS, {
+        parties: { roleType: RoleType.DIRECTOR }
+      })
       expect(store.initializing).toBe(false)
     })
 
@@ -142,13 +138,13 @@ describe('useDirectorsStore', () => {
 
       await store.init(corpsIdentifier, String(DRAFT_FILING_ID))
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        corpsIdentifier,
-        FilingType.CHANGE_OF_DIRECTORS,
-        undefined,
-        String(DRAFT_FILING_ID),
-        { roleType: RoleType.DIRECTOR }
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(corpsIdentifier, FilingType.CHANGE_OF_DIRECTORS, {
+
+        draftId: String(DRAFT_FILING_ID),
+
+        parties: { roleType: RoleType.DIRECTOR }
+
+      })
     })
 
     it('should keep the fetched directors in the manage parties table state', async () => {

@@ -48,6 +48,17 @@ describe('getTableBadges', () => {
     expect(result).toEqual([])
   })
 
+  it('should show the modified by staff badge ahead of the action badges', () => {
+    const untouched = { original: { modifiedByStaff: true, new: { actions: [] } } } as any
+    expect(getTableBadges(untouched).map(b => b.label)).toEqual(['MODIFIED BY STAFF'])
+
+    const removed = { original: { modifiedByStaff: true, new: { actions: [ActionType.REMOVED] } } } as any
+    expect(getTableBadges(removed).map(b => b.label)).toEqual(['MODIFIED BY STAFF', 'DELETED'])
+
+    const edited = { original: { modifiedByStaff: true, new: { actions: [ActionType.NAME_CHANGED] } } } as any
+    expect(getTableBadges(edited).map(b => b.label)).toEqual(['MODIFIED BY STAFF', 'NAME CHANGED'])
+  })
+
   it('should remove duplicate actions', () => {
     const actions = [ActionType.CHANGED, ActionType.CHANGED, ActionType.CHANGED]
     const row = { original: { new: { actions } } } as any

@@ -3,10 +3,8 @@ import { cloneDeep } from 'es-toolkit'
 export const useReceiverStore = defineStore('receiver-store', () => {
   const receiverSchema = getReceiversSchema()
   const { tableState } = useManageParties()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, formatFilingPayloadApi } = useFiling()
+  const { initFiling, formatFilingPayloadApi, saveOrSubmitFiling } = useFiling()
 
-  const service = useBusinessService()
   const businessStore = useBusinessStore()
 
   const initializing = ref<boolean>(false)
@@ -30,9 +28,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     const { draftFiling, parties } = await initFiling<ChangeOfReceivers>(
       businessId,
       FilingType.CHANGE_OF_RECEIVERS,
-      filingSubType,
-      draftId,
-      { roleType: RoleType.RECEIVER }
+      { filingSubType, draftId, parties: { roleType: RoleType.RECEIVER } }
     )
 
     const draft = draftFiling?.filing?.changeOfReceivers
@@ -43,10 +39,7 @@ export const useReceiverStore = defineStore('receiver-store', () => {
     }
 
     if (parties) {
-      const draftRelationships = draft?.relationships
-      tableState.value = draftRelationships
-        ? getPartiesMergedWithRelationships(parties, draftRelationships)
-        : parties
+      tableState.value = parties
     }
 
     await nextTick()
@@ -72,19 +65,12 @@ export const useReceiverStore = defineStore('receiver-store', () => {
       formatStaffPaymentApi(formState.staffPayment)
     )
 
-    const draftId = draftFilingState.value?.filing?.header?.filingId
-    if (draftId || !isSubmission) {
-      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfReceivers>(
-        businessStore.businessIdentifier!,
-        payload,
-        isSubmission,
-        draftId as string | number
-      )
+    const filingResp = await saveOrSubmitFiling<ChangeOfReceivers>(businessStore.businessIdentifier!, payload, {
+      isSubmission,
+      draftId: draftFilingState.value?.filing?.header?.filingId
+    })
+    if (filingResp) {
       draftFilingState.value = filingResp as unknown as ReceiverDraftState
-      const urlParams = useUrlSearchParams()
-      urlParams.draft = String(filingResp.filing.header.filingId)
-    } else {
-      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 
