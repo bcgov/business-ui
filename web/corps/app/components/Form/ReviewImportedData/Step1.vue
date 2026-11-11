@@ -45,7 +45,9 @@ const directorAddressFormProps = computed<AddressFormProps>(() => {
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
+    <!-- the store lists only the offices / directors with something to fix, so a section left empty is hidden -->
     <ManageOffices
+      v-if="store.initializing || store.offices.length"
       v-model:active-subject="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
@@ -76,6 +78,7 @@ const directorAddressFormProps = computed<AddressFormProps>(() => {
     </ManageOffices>
 
     <ManageParties
+      v-if="store.initializing || store.directors.length"
       v-model:active-subject="store.formState.activeDirector"
       data-testid="current-directors-section"
       :loading="store.initializing"

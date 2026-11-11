@@ -89,6 +89,23 @@ describe('seedMissingOffices', () => {
   })
 })
 
+describe('getRowsToReview', () => {
+  const byType = (office: OfficesSchema) => office.type
+
+  it('keeps the flagged rows and drops the rows with nothing to fix', () => {
+    const rows = [officeRow(OfficeType.REGISTERED), officeRow(OfficeType.RECORDS)]
+    const flagged = { [OfficeType.RECORDS]: [{ addressType: 'mailingAddress' as const, field: 'city' as const }] }
+    const kept = getRowsToReview(rows, flagged, byType)
+    expect(kept.map(r => r.new.type)).toEqual([OfficeType.RECORDS])
+  })
+
+  it('keeps a seeded missing office and a row already changed, even without flags', () => {
+    const changed = officeRow(OfficeType.REGISTERED, { actions: [ActionType.CHANGED] })
+    const seeded = { old: undefined, new: createDefaultOffice({ type: OfficeType.RECORDS }) }
+    expect(getRowsToReview([changed, seeded], {}, byType)).toEqual([changed, seeded])
+  })
+})
+
 describe('getLockedAddressFields', () => {
   const allFields = ['country', 'street', 'streetAdditional', 'city', 'region', 'postalCode', 'locationDescription']
 

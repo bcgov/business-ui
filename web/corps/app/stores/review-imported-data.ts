@@ -57,12 +57,20 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
       hydratePaymentState(draftFiling.filing.header, formState)
     }
 
-    tableDirectors.value = withSeparateDeliveryAddress(parties ?? [])
+    // only the offices / directors with something to fix are listed - the rest could not be edited anyway
+    const { offices: flaggedOffices, directors: flaggedDirectors } = missingInfo.value
+    tableDirectors.value = withSeparateDeliveryAddress(
+      getRowsToReview(parties ?? [], flaggedDirectors, director => director.id)
+    )
 
     const officeTypes = [OfficeType.REGISTERED, OfficeType.RECORDS]
-    tableOffices.value = withSeparateDeliveryAddress(seedMissingOffices(
-      markStaffModified(formatOfficesSection(addressResult.data, draft?.offices, officeTypes), 'offices'),
-      officeTypes
+    tableOffices.value = withSeparateDeliveryAddress(getRowsToReview(
+      seedMissingOffices(
+        markStaffModified(formatOfficesSection(addressResult.data, draft?.offices, officeTypes), 'offices'),
+        officeTypes
+      ),
+      flaggedOffices,
+      office => office.type
     ))
 
     await snapshotInitialState()
