@@ -144,8 +144,10 @@ defineExpose({
 
 <style scoped>
 /* read only inputs are a flat grey box, without the input underline (UXA) */
-.read-only-fields :deep(:is(input, [role='combobox']):disabled) {
+.read-only-fields :deep(:is(input, textarea, [role='combobox']):disabled) {
   box-shadow: none;
+  /* the select trigger keeps box-shadow via the layered `ring-0!`, so clear the underline through its variable */
+  --tw-shadow: 0 0 #0000;
   border-radius: 0.25rem;
   opacity: 1;
 }
