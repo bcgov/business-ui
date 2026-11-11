@@ -89,6 +89,7 @@ defineExpose({
     :name
     novalidate
     class="flex flex-col"
+    :class="{ 'read-only-fields': disabledFields }"
   >
     <ConnectFieldset
       :label="$t('label.mailingAddress')"
@@ -140,3 +141,12 @@ defineExpose({
     </slot>
   </UForm>
 </template>
+
+<style scoped>
+/* read only inputs are a flat grey box, without the input underline (UXA) */
+.read-only-fields :deep(:is(input, [role='combobox']):disabled) {
+  box-shadow: none;
+  border-radius: 0.25rem;
+  opacity: 1;
+}
+</style>
