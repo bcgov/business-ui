@@ -77,6 +77,18 @@ function directorRow(id: string, firstName: string): TableBusinessState<PartySch
 
 const parties = () => [directorRow('123', 'Jane'), directorRow('456', 'John')]
 
+function missingInfoWarning(code: string, data: BusinessWarning['data']): BusinessWarning {
+  return { code, message: '', warningType: ApiWarningType.MISSING_REQUIRED_BUSINESS_INFO, data }
+}
+
+/** The api flags on the mock business - the store lists only the flagged rows (and the seeded missing office). */
+const flagAll = () => [
+  missingInfoWarning('NO_REGISTERED_OFFICE_DELIVERY_ADDRESS_POSTAL_CODE', { officeType: OfficeType.REGISTERED }),
+  missingInfoWarning('NO_RECORDS_OFFICE', { officeType: OfficeType.RECORDS }),
+  missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 123 }),
+  missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 456 })
+]
+
 /** Fills the empty seeded records office row the way the office sub form would. */
 function fillRecordsOffice(store: ReturnType<typeof useReviewImportedDataStore>, region = 'BC', country = 'CA') {
   const row = store.offices.find(o => o.new.type === OfficeType.RECORDS)!
@@ -123,7 +135,7 @@ describe('useReviewImportedDataStore', () => {
     vi.clearAllMocks()
     resetFilingStoreMocks()
     setActivePinia(createPinia())
-    setMockBusiness({ legalType })
+    setMockBusiness({ legalType, warnings: flagAll() })
     window.history.replaceState({}, '', `/${filingType}/${identifier}`)
     mockInitFiling.mockResolvedValue({ draftFiling: undefined, parties: parties() })
     mockGetAddresses.mockResolvedValue(apiAddresses())
@@ -176,6 +188,29 @@ describe('useReviewImportedDataStore', () => {
       expect(store.offices).toEqual([])
       expect(store.directors).toEqual([])
       expect(store.initializing).toBe(false)
+    })
+
+    it('lists only the flagged offices and directors, keeping the seeded missing office', async () => {
+      setMockBusiness({
+        legalType,
+        warnings: [missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 456 })]
+      })
+
+      await store.init(identifier)
+
+      expect(store.offices.map(o => o.new.type)).toEqual([OfficeType.RECORDS])
+      expect(store.directors.map(d => d.new.id)).toEqual(['456'])
+    })
+
+    it('keeps an unflagged director the draft already changed', async () => {
+      setMockBusiness({ legalType, warnings: [] })
+      const merged = parties()
+      merged[0]!.new.actions = [ActionType.ADDRESS_CHANGED]
+      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft(), parties: merged })
+
+      await store.init(identifier, String(DRAFT_FILING_ID))
+
+      expect(store.directors.map(d => d.new.id)).toEqual(['123'])
     })
 
     it('summarizes the missing info warnings on the business', async () => {

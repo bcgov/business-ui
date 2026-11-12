@@ -180,6 +180,7 @@ function onActionPrevented() {
           :prevent-actions="shouldPreventActions"
           :label-overrides="tableLabels"
           :hide-actions-when="() => isReadOnlyVariant"
+          :hide-remove="hideRemove"
           :task-guard-config="{
             messageId,
             targetId,

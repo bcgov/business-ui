@@ -2,7 +2,10 @@ import type { ManageBaseProps } from '#business/app/interfaces'
 
 export type ManageOfficesProps = ManageBaseProps & {
   labelOverrides?: TableLabelOverrides
-  /** hides the office sub form's Remove button (always hidden for the correct variant) */
+  /**
+   * hides Remove on the office sub form (always hidden for the correct variant) and in the table row actions,
+   * including an added row, so an office the filing seeded and requires cannot be dropped
+   */
   hideRemove?: boolean
 } & (
   | {

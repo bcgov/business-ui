@@ -81,6 +81,21 @@ export function seedMissingOffices(
 }
 
 /**
+ * Keeps only the rows the user has something to fix on: rows the api flagged, rows seeded for a missing office
+ * (no `old`) and rows a draft already changed. A row with no flags would open with every input locked.
+ */
+export function getRowsToReview<T extends { actions: unknown[] }>(
+  rows: TableBusinessState<T>[],
+  flagged: Record<string, MissingAddressField[]>,
+  getKey: (row: T) => string | undefined
+): TableBusinessState<T>[] {
+  return rows.filter((row) => {
+    const key = getKey(row.new)
+    return !row.old || row.new.actions.length > 0 || (key !== undefined && key in flagged)
+  })
+}
+
+/**
  * The address inputs to lock for an office / director so only the fields the api flagged can be edited.
  * A record or address with no flags is locked entirely. An office flagged as missing altogether (no address
  * type) or an address flagged as a whole (no field) stays fully editable. A flagged country also unlocks the
