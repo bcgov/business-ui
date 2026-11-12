@@ -203,6 +203,20 @@ describe('TableColumnActions', () => {
       expect(dropdown.props('items')).toHaveLength(1)
     })
 
+    it('should not offer Remove on a NEW row when hideRemove is set', async () => {
+      mockGetIsRowRemoved.mockReturnValue(false)
+      mockGetIsRowEdited.mockReturnValue(false)
+
+      const wrapper = await mountComponent({
+        allowedActions: [ManageAllowedAction.ADDRESS_CHANGE],
+        row: createMockRow(true),
+        hideRemove: true
+      })
+
+      expect(wrapper.findComponent(UButton).props('label')).toBe('Edit')
+      expect(wrapper.findComponent(UDropdownMenu).exists()).toBe(false)
+    })
+
     it('should only show Delete if only REMOVE action is allowed on existing row', async () => {
       mockGetIsRowRemoved.mockReturnValue(false)
       mockGetIsRowEdited.mockReturnValue(false)
