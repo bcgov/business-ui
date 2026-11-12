@@ -80,7 +80,11 @@ async function submitFiling() {
     // in case there was a failure and it saved a draft
     const filingResp = e.response?._data
     const urlParams = useUrlSearchParams()
-    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    const savedDraftId = filingResp?.filing?.header?.filingId
+    // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+    if (savedDraftId) {
+      urlParams.draft = String(savedDraftId)
+    }
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -161,6 +165,7 @@ useFilingPageWatcher<ReceiverType>({
         <h1>{{ filingHeading }}</h1>
         <p>{{ filingDescription }}</p>
       </div>
+      <AlertDraftRebase />
 
       <ManageParties
         v-model:active-subject="receiverStore.formState.activeParty"

@@ -71,6 +71,7 @@ const { currentStep, filingText, nextStep, submitFiling, viewOnly: isViewOnly } 
       </h1>
       <p>{{ currentStep === 2 ? $t('page.reviewImportedData.descReview') : filingText.desc }}</p>
     </div>
+    <AlertDraftRebase />
     <FormReviewImportedDataStep1
       v-if="currentStep === 1"
       id="review-imported-data-step-1"

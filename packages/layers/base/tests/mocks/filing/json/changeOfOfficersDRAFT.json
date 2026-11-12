@@ -2,6 +2,7 @@
     "commentsCount": 0,
     "commentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0223072/filings/206789/comments",
     "displayLedger": true,
+    "filedByStaff": false,
     "documentsLink": "https://legal-api-dev.apps.silver.devops.gov.bc.ca/api/v2/businesses/BC0223072/filings/206789/documents",
     "filing": {
         "business": {

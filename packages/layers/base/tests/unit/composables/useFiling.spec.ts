@@ -118,6 +118,9 @@ describe('useFiling', () => {
       const draftId = 'draft123'
 
       test('should return the mock draft information and getParties should still be called', async () => {
+        mockBusinessService.getFilingChanges.mockResolvedValue({
+          upToDate: true, changedSections: [], draftSections: [], conflicts: [], alreadyApplied: [], absorbed: []
+        })
         // init store
         const { draftFiling, parties } = await useFiling().initFiling(
           identifier,
@@ -148,6 +151,7 @@ describe('useFiling', () => {
             section: 'parties',
             entityKey: 'TEST, NEW',
             rowId: Number(currentPartyId),
+            change: 'modified',
             paths: ['/deliveryAddress/addressCity'],
             baseValue: {},
             currentValue: {},
@@ -155,7 +159,7 @@ describe('useFiling', () => {
           }],
           alreadyApplied: [],
           absorbed: [],
-          staleIds: { parties: [], nameTranslations: [], resolutions: [] }
+          staleIds: { parties: [], nameTranslations: [], resolutions: [], courtOrders: [] }
         })
 
         const { draftFiling, parties } = await useFiling().initFiling(
@@ -176,11 +180,16 @@ describe('useFiling', () => {
         expect(parties!.find(p => p.new.id === currentPartyId)!.modifiedByStaff).toBe(true)
         expect(parties!.filter(p => p.modifiedByStaff)).toHaveLength(1)
         expect(useDraftRebase().getSaveOptions()).toEqual({ baseTransactionId: 12 })
+        // the resume alert reads the report and the discarded edit from the composable
+        expect(useDraftRebase().report.value?.currentTransactionId).toBe(12)
+        expect(useDraftRebase().discardedEdits.value).toEqual([
+          expect.objectContaining({ section: 'parties', entityKey: 'TEST, NEW', alreadyApplied: false })
+        ])
       })
 
       test('should leave the draft alone when rebase is not enabled for the filing', async () => {
         // the API 404s the changes report when the feature is off for this filing type
-        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+        mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 404 })
         const { draftFiling, parties } = await useFiling().initFiling(
           identifier,
           FilingType.CHANGE_OF_OFFICERS,
@@ -208,7 +217,7 @@ describe('useFiling', () => {
           ...draftFilingMock,
           filing: { ...draftFilingMock.filing, changeOfOfficers: { relationships: [draftRelationship] } }
         })
-        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+        mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 404 })
 
         const { parties, draftBody } = await useFiling().initFiling(
           identifier,
@@ -250,7 +259,7 @@ describe('useFiling', () => {
             }
           }
         })
-        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+        mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 404 })
 
         const { addresses } = await useFiling().initFiling(
           identifier,
@@ -292,7 +301,7 @@ describe('useFiling', () => {
             }
           }
         })
-        mockBusinessService.getFilingChanges.mockRejectedValue(new Error('Not Found'))
+        mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 404 })
 
         const { addresses } = await useFiling().initFiling(
           identifier,
@@ -302,6 +311,24 @@ describe('useFiling', () => {
 
         expect(addresses![0]!.new.address.deliveryAddress.street).toBe('1 Old St')
         expect(addresses![0]!.new.actions).toEqual([])
+      })
+
+      test('should block the draft and open the getDraftChanges error modal when the report fails', async () => {
+        mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 500 })
+
+        const { draftFiling, parties } = await useFiling().initFiling(
+          identifier,
+          FilingType.CHANGE_OF_OFFICERS,
+          { draftId, parties: { roleClass: RoleClass.OFFICER } }
+        )
+
+        expect(draftFiling).toBeUndefined()
+        expect(parties).toBeUndefined()
+        expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+        expect(mockErrorModalOpen).toHaveBeenCalledWith(expect.objectContaining({
+          error: { statusCode: 500 },
+          i18nPrefix: 'modal.error.filing.getDraftChanges'
+        }))
       })
 
       test('should open the openGetDraftFilingErrorModal if the draft filing is not valid', async () => {

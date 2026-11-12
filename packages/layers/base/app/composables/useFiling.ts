@@ -158,6 +158,8 @@ export const useFiling = () => {
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid-draft-filing') {
         modal.openGetDraftFilingErrorModal(error)
+      } else if (error instanceof Error && error.message === 'draft-changes-unavailable') {
+        modal.openGetDraftChangesErrorModal(error.cause)
       } else if (error instanceof Error && error.message === 'filing-not-allowed') {
         modal.openFilingNotAllowedErrorModal()
       } else {

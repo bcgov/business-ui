@@ -165,6 +165,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         :filing-date="store.correctedFilingDateDisplay"
       />
     </div>
+    <AlertDraftRebase />
     <FormCorrectionStep1
       v-if="currentStep === 1"
       id="correction-filing-step-1"

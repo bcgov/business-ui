@@ -1,6 +1,6 @@
 /** The snapshot sections legal-api's draft changes report diffs */
 export type DraftChangesSection
-  = 'parties' | 'offices' | 'shareClasses' | 'nameTranslations' | 'resolutions' | 'business'
+  = 'parties' | 'offices' | 'shareClasses' | 'nameTranslations' | 'resolutions' | 'courtOrders' | 'business'
 
 export interface DraftInterveningFiling {
   filingId: number
@@ -10,6 +10,9 @@ export interface DraftInterveningFiling {
   effectiveDate: string | null
   filedByStaff: boolean
 }
+
+/** What the intervening filings did to an entity */
+export type DraftChangeKind = 'added' | 'modified' | 'removed'
 
 export interface DraftBusinessChange {
   baseValue: string | null
@@ -22,6 +25,7 @@ export interface DraftChangeConflict {
   entityKey: string
   /** the current row id when the entity still exists (parties / name translations only) */
   rowId: number | null
+  change: DraftChangeKind
   /** the paths the intervening filings changed on the entity */
   paths: string[]
   baseValue: Record<string, unknown> | null
@@ -35,6 +39,7 @@ export interface DraftChangeApplied {
   section: DraftChangesSection
   entityKey: string
   rowId: number | null
+  change: DraftChangeKind
   draftValue: Record<string, unknown> | null
 }
 
@@ -43,6 +48,7 @@ export interface DraftChangeAbsorbed {
   section: DraftChangesSection
   entityKey: string
   rowId: number | null
+  change: DraftChangeKind
   /** the current row, null when an intervening filing removed the entity */
   currentValue: Record<string, unknown> | null
 }
@@ -60,7 +66,7 @@ export interface DraftChangesReport {
   conflicts: DraftChangeConflict[]
   alreadyApplied: DraftChangeApplied[]
   absorbed: DraftChangeAbsorbed[]
-  staleIds: { parties: number[], nameTranslations: number[], resolutions: number[] }
+  staleIds: { parties: number[], nameTranslations: number[], resolutions: number[], courtOrders: number[] }
 }
 
 /** Current data substituted into the draft's full-replacement sections during conflict resolution */

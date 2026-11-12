@@ -514,6 +514,67 @@ describe('useManageShareStructure', () => {
     })
   })
 
+  describe('modifiedByStaff', () => {
+    it('keeps the tag on a share class through an edit, a removal and an undo', () => {
+      const { shareClasses, editSubject, removeSubject, undoSubject } = useManageShareStructure('staff-class')
+
+      const record = {
+        new: { id: 'c1', name: 'Original', priority: 1, series: [], actions: [] },
+        old: { id: 'c1', name: 'Original', priority: 1, series: [], actions: [] },
+        modifiedByStaff: true
+      }
+      shareClasses.value = [record] as any
+
+      const subject = { key: 'shareClass', value: { id: 'c1', name: 'Renamed', series: [] } } as any
+      editSubject(subject, createMockRow(record) as any)
+      expect(shareClasses.value[0]!.new.actions).toEqual([ActionType.CHANGED])
+      expect(shareClasses.value[0]!.modifiedByStaff).toBe(true)
+
+      removeSubject(createMockRow(shareClasses.value[0]) as any)
+      expect(shareClasses.value[0]!.new.actions).toEqual([ActionType.REMOVED])
+      expect(shareClasses.value[0]!.modifiedByStaff).toBe(true)
+
+      undoSubject(createMockRow(shareClasses.value[0]) as any)
+      expect(shareClasses.value[0]!.new.actions).toEqual([])
+      expect(shareClasses.value[0]!.modifiedByStaff).toBe(true)
+    })
+
+    it('keeps the tag on a resolution date through an edit and an undo', () => {
+      const { resolutionDates, editSubject, undoSubject } = useManageShareStructure('staff-date')
+
+      const record = {
+        new: { id: 'r1', date: '2026-01-01', actions: [] },
+        old: { id: 'r1', date: '2026-01-01', actions: [] },
+        modifiedByStaff: true
+      }
+      resolutionDates.value = [record] as any
+
+      const subject = { key: 'resolutionDate', value: { id: 'r1', date: '2026-06-01' } } as any
+      editSubject(subject, createMockRow(record) as any)
+      expect(resolutionDates.value[0]!.new.actions).toEqual([ActionType.CHANGED])
+      expect(resolutionDates.value[0]!.modifiedByStaff).toBe(true)
+
+      undoSubject(createMockRow(resolutionDates.value[0]) as any)
+      expect(resolutionDates.value[0]!.new.actions).toEqual([])
+      expect(resolutionDates.value[0]!.modifiedByStaff).toBe(true)
+    })
+
+    it('does not tag rows that were never tagged', () => {
+      const { shareClasses, editSubject } = useManageShareStructure('untagged-class')
+
+      const record = {
+        new: { id: 'c1', name: 'Original', priority: 1, series: [], actions: [] },
+        old: { id: 'c1', name: 'Original', priority: 1, series: [], actions: [] }
+      }
+      shareClasses.value = [record] as any
+
+      const subject = { key: 'shareClass', value: { id: 'c1', name: 'Renamed', series: [] } } as any
+      editSubject(subject, createMockRow(record) as any)
+
+      expect(shareClasses.value[0]).not.toHaveProperty('modifiedByStaff')
+    })
+  })
+
   describe('removeSubject', () => {
     it('filters out newly added share classes and updates priorities', () => {
       const { shareClasses, removeSubject } = useManageShareStructure()
