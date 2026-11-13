@@ -6,21 +6,21 @@ packages:
   - packages/**
 
 catalog:
-  '@axe-core/playwright': 4.13.0
+  '@axe-core/playwright': 4.14.0
   '@iconify-json/mdi': 1.2.3
-  '@nuxt/test-utils': 4.3.3
-  dotenv: 18.0.5
+  '@nuxt/test-utils': 4.4.0
+  dotenv: 18.0.10
   typescript: 6.0.3
-  vue-tsc: 3.3.13
-  nuxt: 4.6.1
-  vue: 3.5.43
-  vue-router: 5.4.0
-  '@types/node': 26.6.4
+  vue-tsc: 3.3.14
+  nuxt: 4.6.4
+  vue: 3.5.45
+  vue-router: 5.5.0
+  '@types/node': 26.6.6
   '@faker-js/faker': 10.6.0
 
 minimumReleaseAge: 4320 # 3 days
 minimumReleaseAgeExclude:
-- '@sbc-connect/*'
+  - '@sbc-connect/*'
 autoInstallPeers: true
 shamefullyHoist: true
 
