@@ -10,7 +10,7 @@
   "scripts": {
     "build-check": "nuxt build",
     "build": "nuxt generate",
-    "dev": "nuxt dev",
+    "dev": "pnpm nuxt dev --host localhost",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
