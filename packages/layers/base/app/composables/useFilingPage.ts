@@ -134,7 +134,11 @@ export function useFilingPage<T = string>(options: FilingPageOptions<T>) {
         const e = error as FetchError<{ filing?: { header?: { filingId?: number } } }>
         // in case there was a failure and it saved a draft
         const filingResp = e.response?._data
-        urlParams.draft = String(filingResp?.filing?.header?.filingId)
+        const savedDraftId = filingResp?.filing?.header?.filingId
+        // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+        if (savedDraftId) {
+          urlParams.draft = String(savedDraftId)
+        }
       }
       await modal.openSaveFilingErrorModal(error, preferApiMessageOnError)
       handleButtonLoading(false)

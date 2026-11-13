@@ -16,7 +16,8 @@ export const useDraftRebase = () => {
 
   /**
    * The draft with its conflicts resolved against the changes report.
-   * - report unavailable (error / 404): the draft as saved, no base recorded
+   * - 404 (rebase not enabled for the filing type): the draft as saved, no base recorded
+   * - any other failure: throws 'draft-changes-unavailable' - the draft must not load unchecked
    */
   async function resolveDraftFiling<F extends FilingRecord>(
     businessId: string,
@@ -44,10 +45,11 @@ export const useDraftRebase = () => {
       baseTransactionId.value = changes.upToDate === null ? undefined : (changes.currentTransactionId ?? undefined)
       return resolved.draftFiling
     } catch (error) {
-      // the report is advisory - resume the draft as saved when it is unavailable
-      console.warn('Draft rebase skipped:', error)
       $reset()
-      return draftFiling
+      if (getErrorStatus(error) === 404) {
+        return draftFiling
+      }
+      throw new Error('draft-changes-unavailable', { cause: error })
     }
   }
 
@@ -126,7 +128,9 @@ export const useDraftRebase = () => {
 }
 
 function emptyStaffModifiedKeys(): StaffModifiedKeys {
-  return { parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], business: [] }
+  return {
+    parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], courtOrders: [], business: []
+  }
 }
 
 function hasSection(report: DraftChangesReport, section: DraftChangesSection): boolean {

@@ -45,6 +45,7 @@ describe('useFilingModals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockRoute.query = {}
+    useDraftRebase().$reset()
   })
 
   describe('openUnsavedChangesModal', () => {
@@ -104,19 +105,53 @@ describe('useFilingModals', () => {
     })
   })
 
-  describe('openPendingTaskOnSaveOrSubmitModal', () => {
-    it('should open the error modal with the correct prefix', async () => {
-      const { openPendingTaskOnSaveOrSubmitModal } = useFilingModals()
-      await openPendingTaskOnSaveOrSubmitModal()
+  describe('openDraftStaleModal', () => {
+    it('should offer the dashboard or a reload to review the changes', async () => {
+      const reload = vi.fn()
+      vi.stubGlobal('location', { ...window.location, reload })
+      const { openDraftStaleModal } = useFilingModals()
 
-      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
-      expect(mockErrorModalOpen).toHaveBeenCalledWith(
-        expect.objectContaining({ i18nPrefix: 'modal.error.filing.pendingTaskOnSaveOrSubmit' })
-      )
+      await openDraftStaleModal()
+
+      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+      const callArgs = mockBaseModalOpen.mock.calls[0]![0]
+      expect(callArgs.title).toBe('Unable to Submit Changes')
+      expect(callArgs.dismissible).toBe(true)
+      expect(callArgs.buttons).toHaveLength(2)
+      expect(callArgs.buttons[0]).toEqual(expect.objectContaining({
+        label: 'Return to My Business',
+        variant: 'outline',
+        to: 'http://business-dashboard-example/BC1234567?accountid=test-account-id',
+        external: true
+      }))
+      expect(callArgs.buttons[1].label).toBe('Review Changes')
+      callArgs.buttons[1].onClick()
+      expect(reload).toHaveBeenCalledOnce()
+      vi.unstubAllGlobals()
     })
   })
 
   describe('openSaveFilingErrorModal', () => {
+    it('should open the stale draft modal instead when a rebased save hit 409', async () => {
+      useDraftRebase().markStaleOnSave()
+      const { openSaveFilingErrorModal } = useFilingModals()
+
+      await openSaveFilingErrorModal({ statusCode: 409 })
+
+      expect(mockErrorModalOpen).not.toHaveBeenCalled()
+      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+      expect(mockBaseModalOpen.mock.calls[0]![0].title).toBe('Unable to Submit Changes')
+    })
+
+    it('should open the error modal for a 409 that did not come from a rebased save', async () => {
+      const { openSaveFilingErrorModal } = useFilingModals()
+
+      await openSaveFilingErrorModal({ statusCode: 409 })
+
+      expect(mockBaseModalOpen).not.toHaveBeenCalled()
+      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+    })
+
     it('should open the error modal with the correct prefix, error object and default preferErrorMessage', async () => {
       const { openSaveFilingErrorModal } = useFilingModals()
       const mockError = new Error('API Failed')
@@ -190,6 +225,21 @@ describe('useFilingModals', () => {
       expect(mockErrorModalOpen).toHaveBeenCalledOnce()
       const callArgs = mockErrorModalOpen.mock.calls[0]![0]
       expect(callArgs.i18nPrefix).toBe('modal.error.filing.getDraft')
+      expect(callArgs.buttons).toHaveLength(2)
+      expect(callArgs.buttons[0].label).toBe('Go Back')
+      expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')
+      expect(callArgs.buttons[1].label).toBe('Refresh Page')
+    })
+  })
+
+  describe('openGetDraftChangesErrorModal', () => {
+    it('should open the error modal with the go back and refresh buttons', async () => {
+      const { openGetDraftChangesErrorModal } = useFilingModals()
+      await openGetDraftChangesErrorModal({ statusCode: 500 })
+
+      expect(mockErrorModalOpen).toHaveBeenCalledOnce()
+      const callArgs = mockErrorModalOpen.mock.calls[0]![0]
+      expect(callArgs.i18nPrefix).toBe('modal.error.filing.getDraftChanges')
       expect(callArgs.buttons).toHaveLength(2)
       expect(callArgs.buttons[0].label).toBe('Go Back')
       expect(callArgs.buttons[0].to).toBe('http://business-dashboard-example/BC1234567?accountid=test-account-id')

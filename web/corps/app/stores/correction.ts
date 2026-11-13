@@ -156,7 +156,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       businessExtendedData
     ] = await Promise.all([
       officesPromise,
-      service.getCourtOrders(businessId).catch(() => [] as CourtOrderResponse[]),
+      service.getCourtOrders(businessId, !!draftId).catch(() => [] as CourtOrderResponse[]),
       service.getBusinessExtended(businessId, true).catch(() => undefined)
     ])
 
@@ -249,7 +249,7 @@ export const useCorrectionStore = defineStore('correction-store', () => {
       correctedFilingType.value
     ))
 
-    courtOrders.value = formatCourtOrdersSection(courtOrderData, draft.courtOrders)
+    courtOrders.value = markStaffModified(formatCourtOrdersSection(courtOrderData, draft.courtOrders), 'courtOrders')
 
     if (businessExtendedData?.amalgamation) {
       const formattedAmalgamation = formatAmalCorrectSection(businessExtendedData.amalgamation, draft.amalgamation)

@@ -84,7 +84,7 @@ export function getNameTranslationNameKey(row: JsonRow): string | undefined {
   return normValue(row.name)?.toUpperCase()
 }
 
-/** The keys a table row (party / office / share class / name translation / resolution schema) answers to */
+/** The keys a table row (party / office / share class / name translation / resolution / court order) answers to */
 export function getStaffModifiedRowKeys(item: unknown, section: DraftChangesSection): string[] {
   const row = asJsonRow(item)
   const keys: Record<DraftChangesSection, Array<string | undefined>> = {
@@ -93,6 +93,7 @@ export function getStaffModifiedRowKeys(item: unknown, section: DraftChangesSect
     shareClasses: [getShareClassKey(row.name)],
     nameTranslations: [getNameTranslationId(row), getNameTranslationNameKey(row)],
     resolutions: [getResolutionKey(row.date, row.type)],
+    courtOrders: [normValue(row.id)],
     business: [normValue(row.field)]
   }
   return keys[section].filter((key): key is string => !!key)

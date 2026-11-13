@@ -332,6 +332,17 @@ describe('useFilingPage', () => {
       expect(mockNavigateTo).not.toHaveBeenCalled()
     })
 
+    it('keeps the resumed draft id in the url when the failed submit carried no filing', async () => {
+      mockUrlParams.draft = '123'
+      store.submit.mockRejectedValueOnce({ statusCode: 409, response: { _data: { message: 'stale' } } })
+      const { submitFiling } = useFilingPage(getOptions())
+
+      await submitFiling()
+
+      expect(mockUrlParams.draft).toBe('123')
+      expect(mockOpenSaveFilingErrorModal).toHaveBeenCalled()
+    })
+
     it('prefers the api error message when configured', async () => {
       const error = new Error('rejected')
       store.submit.mockRejectedValueOnce(error)

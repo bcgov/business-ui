@@ -44,6 +44,7 @@ const { filingText, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ filingText.desc }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- FUTURE: show only when the stashed consent window has expired (store.consentInfo) -
         the warning never blocks the filing. The date/jurisdiction mismatch alerts and their

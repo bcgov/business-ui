@@ -22,7 +22,7 @@ export function resolveDraftConflicts<F extends FilingRecord>(
   current: DraftRebaseCurrentData = {}
 ): ResolvedDraft<F> {
   const staffModified: StaffModifiedKeys = {
-    parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], business: []
+    parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], courtOrders: [], business: []
   }
   const discardedEdits: DiscardedDraftEdit[] = []
   const filing = cloneDeep(draftFiling.filing) as unknown as JsonRow
@@ -85,6 +85,9 @@ function applyEntry(body: JsonRow, entry: ReportEntry, current: DraftRebaseCurre
     case 'resolutions':
       resolveResolution(body, entry, current.resolutions)
       break
+    case 'courtOrders':
+      resolveCourtOrder(body, entry)
+      break
     case 'business':
       resolveBusinessField(body, entry, filingName)
       break
@@ -109,6 +112,11 @@ function recordStaffModified(entry: ReportEntry, staffModified: StaffModifiedKey
       }
       break
     }
+    case 'courtOrders':
+      if (entry.rowId !== null) {
+        staffModified.courtOrders.push(String(entry.rowId))
+      }
+      break
     case 'nameTranslations':
       if (entry.rowId !== null) {
         staffModified.nameTranslations.push(String(entry.rowId))
@@ -200,6 +208,25 @@ function dropUntouchedParties(body: JsonRow) {
   })
 }
 
+/** Drops the draft's row - the correction store merges court order drafts over the current rows by id */
+function resolveCourtOrder(body: JsonRow, entry: ReportEntry) {
+  const rows = body.courtOrders
+  if (!Array.isArray(rows)) {
+    return
+  }
+  const kept = rows.filter((row) => {
+    const { id, fileNumber } = asJsonRow(row)
+    return entry.rowId !== null && id !== undefined && id !== null
+      ? String(id) !== String(entry.rowId)
+      : String(fileNumber ?? '').trim().toUpperCase() !== entry.entityKey
+  })
+  if (kept.length) {
+    body.courtOrders = kept
+  } else {
+    delete body.courtOrders
+  }
+}
+
 /** Drops the office type - the offices section merges per type over the current offices */
 function resolveOffice(body: JsonRow, entry: ReportEntry) {
   const offices = body.offices
@@ -220,11 +247,15 @@ function resolveShareClass(body: JsonRow, entry: ReportEntry, currentClasses?: S
   if (!key) {
     return
   }
+  // the report pairs classes by id (a staff rename is one entity) and by name when the id churned
+  const matches = (row: { id?: unknown, name?: unknown }) =>
+    (entry.rowId !== null && row.id !== undefined && row.id !== null && String(row.id) === String(entry.rowId))
+    || getShareClassKey(row.name) === key
   const shareStructure = body.shareStructure
   const rows = asJsonRow(shareStructure).shareClasses
   if (Array.isArray(rows)) {
-    const kept = rows.filter(row => getShareClassKey(asJsonRow(row).name) !== key)
-    const currentClass = currentClasses?.find(shareClass => getShareClassKey(shareClass.name) === key)
+    const kept = rows.filter(row => !matches(asJsonRow(row)))
+    const currentClass = currentClasses?.find(matches)
     if (currentClass) {
       kept.push(cloneDeep(currentClass))
     }

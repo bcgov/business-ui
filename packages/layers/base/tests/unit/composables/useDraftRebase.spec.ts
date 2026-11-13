@@ -42,6 +42,7 @@ function report(overrides: Partial<DraftChangesReport> = {}): DraftChangesReport
       section: 'parties',
       entityKey: 'SMITH, JANE',
       rowId: 1,
+      change: 'modified',
       paths: ['/deliveryAddress/addressCity'],
       baseValue: {},
       currentValue: {},
@@ -49,7 +50,7 @@ function report(overrides: Partial<DraftChangesReport> = {}): DraftChangesReport
     }],
     alreadyApplied: [],
     absorbed: [],
-    staleIds: { parties: [], nameTranslations: [], resolutions: [] },
+    staleIds: { parties: [], nameTranslations: [], resolutions: [], courtOrders: [] },
     ...overrides
   }
 }
@@ -93,7 +94,7 @@ describe('useDraftRebase', () => {
       mockBusinessService.getFilingChanges.mockResolvedValue(report({
         conflicts: [],
         alreadyApplied: [{
-          section: 'resolutions', entityKey: '2026-01-05 (SPECIAL)', rowId: null, draftValue: { type: 'SPECIAL', date: '2026-01-05' }
+          section: 'resolutions', entityKey: '2026-01-05 (SPECIAL)', rowId: null, change: 'added', draftValue: { type: 'SPECIAL', date: '2026-01-05' }
         }]
       }))
       const rebase = useDraftRebase()
@@ -108,7 +109,7 @@ describe('useDraftRebase', () => {
     it('should fetch the current resolutions when an absorbed entry names one', async () => {
       mockBusinessService.getFilingChanges.mockResolvedValue(report({
         conflicts: [],
-        absorbed: [{ section: 'resolutions', entityKey: '2026-01-05 (SPECIAL)', rowId: 7, currentValue: { id: 7, type: 'SPECIAL', date: '2026-01-05' } }]
+        absorbed: [{ section: 'resolutions', entityKey: '2026-01-05 (SPECIAL)', rowId: 7, change: 'added', currentValue: { id: 7, type: 'SPECIAL', date: '2026-01-05' } }]
       }))
       mockBusinessService.getResolutions.mockResolvedValue([{ id: 7, type: 'SPECIAL', date: '2026-01-05' }])
       const rebase = useDraftRebase()
@@ -130,9 +131,8 @@ describe('useDraftRebase', () => {
       expect(rebase.getSaveOptions()).toBeUndefined()
     })
 
-    it('should resume the draft as saved and clear the state when the report fails', async () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      mockBusinessService.getFilingChanges.mockRejectedValue(new Error('boom'))
+    it('should resume the draft as saved and clear the state when rebase is not enabled (404)', async () => {
+      mockBusinessService.getFilingChanges.mockRejectedValue({ statusCode: 404 })
       const rebase = useDraftRebase()
 
       const result = await rebase.resolveDraftFiling(businessId, draftId, draft, FilingType.TRANSITION)
@@ -140,8 +140,17 @@ describe('useDraftRebase', () => {
       expect(result).toBe(draft)
       expect(rebase.report.value).toBeUndefined()
       expect(rebase.getSaveOptions()).toBeUndefined()
-      expect(warn).toHaveBeenCalled()
-      warn.mockRestore()
+    })
+
+    it('should throw draft-changes-unavailable when the report fails for any other reason', async () => {
+      const cause = { statusCode: 500 }
+      mockBusinessService.getFilingChanges.mockRejectedValue(cause)
+      const rebase = useDraftRebase()
+
+      await expect(rebase.resolveDraftFiling(businessId, draftId, draft, FilingType.TRANSITION))
+        .rejects.toMatchObject({ message: 'draft-changes-unavailable', cause })
+      expect(rebase.report.value).toBeUndefined()
+      expect(rebase.getSaveOptions()).toBeUndefined()
     })
   })
 
@@ -153,7 +162,8 @@ describe('useDraftRebase', () => {
         offices: [OfficeType.REGISTERED],
         shareClasses: ['COMMON'],
         nameTranslations: ['3', 'NOM'],
-        resolutions: ['2026-01-05 (SPECIAL)']
+        resolutions: ['2026-01-05 (SPECIAL)'],
+        courtOrders: ['7']
       }
     })
 
@@ -192,7 +202,9 @@ describe('useDraftRebase', () => {
   describe('markStaffModifiedBusiness', () => {
     it('should flag the your-company fields the report named on both sides so undo keeps the badge', () => {
       const rebase = useDraftRebase()
-      rebase.staffModified.value = { parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], business: ['legalName'] }
+      rebase.staffModified.value = {
+        parties: [], offices: [], shareClasses: [], nameTranslations: [], resolutions: [], courtOrders: [], business: ['legalName']
+      }
       const state = formatYourCompanySection({ legalName: 'NEWCO INC.', legalType: 'BC' } as any)
 
       rebase.markStaffModifiedBusiness(state)

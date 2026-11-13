@@ -149,6 +149,8 @@ export const useManageShareStructure = (
 
           const updatedRecord: TableBusinessState<ShareClassSchema> = {
             old: oldState,
+            // the staff-modified tag outlives edits and undos of the row
+            ...(existing.modifiedByStaff && { modifiedByStaff: true }),
             new: {
               ...cloneDeep(value),
               series: existing.new.series,
@@ -222,6 +224,7 @@ export const useManageShareStructure = (
 
           const updatedRecord: TableBusinessState<ResolutionDateSchema> = {
             old: oldState,
+            ...(existing.modifiedByStaff && { modifiedByStaff: true }),
             new: {
               ...cloneDeep(value),
               isEditing: false,

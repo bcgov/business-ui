@@ -65,7 +65,11 @@ async function submitFiling() {
   } catch (error) {
     const e = error as FetchError<AgmLocationChangeDraftState>
     const filingResp = e.response?._data
-    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    const savedDraftId = filingResp?.filing?.header?.filingId
+    // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+    if (savedDraftId) {
+      urlParams.draft = String(savedDraftId)
+    }
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -148,6 +152,7 @@ const { currentStep, nextStep, viewOnly: isViewOnly } = useFilingPageWatcher({
         </ul>
       </HelpExpansion>
     </div>
+    <AlertDraftRebase />
 
     <FormAgmLocationChangeStep1
       v-if="currentStep === 1"
