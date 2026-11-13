@@ -29,18 +29,17 @@ shamefullyHoist: true
 allowBuilds:
   "@parcel/watcher": true
   "@sbc-connect/nuxt-auth": true
-  '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@587dba0': true
+  '@sbc-connect/nuxt-auth@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-auth@587dba0': set this to true or false
   "@sbc-connect/nuxt-base": true
-  '@sbc-connect/nuxt-base@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@587dba0': true
+  '@sbc-connect/nuxt-base@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-base@587dba0': set this to true or false
   "@sbc-connect/nuxt-business-base": true
   "@sbc-connect/nuxt-forms": true
-  '@sbc-connect/nuxt-forms@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@587dba0': true
+  '@sbc-connect/nuxt-forms@https://pkg.pr.new/bcgov/connect-nuxt/@sbc-connect/nuxt-forms@587dba0': set this to true or false
   "@sbc-connect/nuxt-pay": true
-  '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@587dba0': true
+  '@sbc-connect/nuxt-pay@https://pkg.pr.new/@sbc-connect/nuxt-pay@587dba0': set this to true or false
   "@tailwindcss/oxide": true
   esbuild: true
   unrs-resolver: true
   vue-demi: true
 
 engineStrict: true
-blockExoticSubdeps: false
