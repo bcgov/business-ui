@@ -89,10 +89,10 @@ export const useCorrectionHelper = (): UseCorrectionHelperReturn => {
   const commonManagers = [
     useManageCommon({
       stateKey: CorrectionManagerKey.AMALGAMATION,
-      activeSubjects: [
-        { subject: () => store.formState.activeAmal, alertTarget: 'amalgamation-correct-form' },
-        { subject: () => store.formState.activeAmalStmnt, alertTarget: 'amalgamation-correct-statement-form' }
-      ]
+      activeSubjects: {
+        subject: () => store.formState.activeAmal,
+        alertTarget: ['amalgamation-correct-form', 'amalgamation-correct-statement-form']
+      }
     }),
     useManageCommon({
       stateKey: CorrectionManagerKey.COURT_ORDER,

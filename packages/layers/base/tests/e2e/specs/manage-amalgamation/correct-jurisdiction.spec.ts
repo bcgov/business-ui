@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test'
 import { pickJurisdiction } from '#business/tests/e2e/test-utils'
 
 async function navigateToManageAmalgamationCorrectPage(page: Page) {
-  await page.goto('./en-CA/examples/components/ManageAmalgamation/Correct')
+  await page.goto('./en-CA/examples/components/Manage/Amalgamation/Correct')
   await page.waitForLoadState('networkidle')
   await expect(page.getByRole('heading', { name: 'Amalgamation' })).toBeVisible()
   // the page seeds table rows from the mock after a simulated 1500ms load delay

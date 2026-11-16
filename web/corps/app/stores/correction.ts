@@ -398,7 +398,6 @@ export const useCorrectionStore = defineStore('correction-store', () => {
     formState.activeNameTranslation = undefined
     formState.activeCourtOrder = undefined
     formState.activeAmal = undefined
-    formState.activeAmalStmnt = undefined
 
     nameTranslations.value = []
 

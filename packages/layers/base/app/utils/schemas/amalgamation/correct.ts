@@ -37,12 +37,7 @@ export function getAmalgamationCorrectSchema() {
   })
 }
 
-export function getActiveAmalgamationCorrectSchema() {
-  return getAmalgamationCorrectSchema().nullable().optional()
-}
-
 export type AmalgamationCorrectSchema = z.output<ReturnType<typeof getAmalgamationCorrectSchema>>
-export type ActiveAmalgamationCorrectSchema = z.output<ReturnType<typeof getActiveAmalgamationCorrectSchema>>
 
 export function getAmalgamationCorrectStatementSchema() {
   return z.object({
@@ -54,11 +49,19 @@ export function getAmalgamationCorrectStatementSchema() {
   })
 }
 
-export function getActiveAmalgamationCorrectStatementSchema() {
-  return getAmalgamationCorrectStatementSchema().nullable().optional()
+export type AmalgamationCorrectStatementSchema = z.output<ReturnType<typeof getAmalgamationCorrectStatementSchema>>
+
+export function getActiveAmalgamationSchema() {
+  return z.discriminatedUnion('key', [
+    z.object({
+      key: z.literal('business'),
+      value: getAmalgamationCorrectSchema()
+    }),
+    z.object({
+      key: z.literal('statement'),
+      value: getAmalgamationCorrectStatementSchema()
+    })
+  ]).optional()
 }
 
-export type AmalgamationCorrectStatementSchema = z.output<ReturnType<typeof getAmalgamationCorrectStatementSchema>>
-export type ActiveAmalgamationCorrectStatementSchema = z.output<
-  ReturnType<typeof getActiveAmalgamationCorrectStatementSchema>
->
+export type ActiveAmalgamationSchema = z.infer<ReturnType<typeof getActiveAmalgamationSchema>>

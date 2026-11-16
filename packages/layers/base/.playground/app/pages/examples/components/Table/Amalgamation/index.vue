@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ExpandedState } from '@tanstack/vue-table'
+
 definePageMeta({
   layout: 'connect-auth',
   breadcrumbs: [{ to: '/', label: 'Examples' }, { label: 'TableAmalgamation' }]
@@ -99,10 +101,15 @@ const data: TableBusinessState<AmalgamationTableRow>[] = [
       role: 'amalgamating'
     }
   }]
+
+const expanded = ref<ExpandedState | undefined>(undefined)
 </script>
 
 <template>
   <UContainer>
-    <TableAmalgamation :data />
+    <TableAmalgamation
+      v-model:expanded="expanded"
+      :data
+    />
   </UContainer>
 </template>

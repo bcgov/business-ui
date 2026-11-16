@@ -2,6 +2,7 @@
 import type { ExpandedState } from '@tanstack/vue-table'
 
 const {
+  data,
   labelOverrides
 } = defineProps<{
   data?: TableBusinessState<T>[]
@@ -15,10 +16,48 @@ const {
     messageId: string
     targetId: string
   }
+  hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
 }>()
 
 const columns = getAmalgamationTableColumns<T>(labelOverrides?.badges)
-const expanded = defineModel<ExpandedState | undefined>('expanded')
+const expanded = defineModel<ExpandedState | undefined>('expanded', { required: true })
+
+// Local reference to the currently editing item
+let activeEditingRow: T | null = null
+
+watch(
+  expanded,
+  (v) => {
+    if (!data) {
+      return
+    }
+
+    // 1. Reset previous editing row
+    if (activeEditingRow) {
+      activeEditingRow.isEditing = false
+      activeEditingRow = null
+    }
+
+    // 2. Set the newly expanded row to true
+    if (v) {
+      // Get the ExpandedState` key value
+      // @ts-expect-error - key can't index type error
+      const activeKey = Object.keys(v).find(key => v[key])
+
+      if (activeKey !== undefined) {
+        // Find the row item matching the key
+        // This will only work if getRowId is set to row.original.new.id
+        const target = data.find(item => item.new?.id === activeKey)?.new
+
+        if (target) {
+          target.isEditing = true
+          activeEditingRow = target
+        }
+      }
+    }
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <template>
@@ -32,7 +71,7 @@ const expanded = defineModel<ExpandedState | undefined>('expanded')
     :prevent-actions
     :label-overrides
     :task-guard-config
-    :hide-actions-when="(row) => !row.original.new.foreignJurisdiction?.country"
+    :hide-actions-when
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >
     <template #expanded="{ row }">

@@ -203,10 +203,10 @@ function onActionPrevented() {
 
     <ManageAmalgamation
       v-if="store.isCorrectable(CorrectionSection.AMALGAMATION)"
-      v-model:active-amal="store.formState.activeAmal"
-      v-model:active-amal-stmnt="store.formState.activeAmalStmnt"
+      v-model:active-subject="store.formState.activeAmal"
       data-testid="amalgamation-section"
       variant="correct"
+      model-name="activeAmal.value"
       :loading="store.initializing"
       :empty-text="$t('label.noSubjectAddedYet', { subject: $t('label.amalgamations') })"
       :prevent-actions="hasActiveSubForm"

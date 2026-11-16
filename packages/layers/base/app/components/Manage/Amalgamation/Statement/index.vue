@@ -2,11 +2,15 @@
 const {
   stateKey = 'manage-amalgamation',
   labelOverrides,
-  modelName = 'activeAmalStmnt',
+  modelName = 'activeSubject',
   variant = 'default',
   preventActions = false,
   isReadOnly
-} = defineProps<ManageAmalgamationProps & {
+} = defineProps<{
+  stateKey?: string
+  labelOverrides?: TableLabelOverrides
+  modelName?: string
+  variant?: ManageVariant
   preventActions?: boolean
   isReadOnly: boolean
 }>()
@@ -19,7 +23,7 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const model = defineModel<ActiveAmalgamationCorrectStatementSchema | undefined>()
+const model = defineModel<ActiveAmalgamationSchema>()
 
 const { statementState } = useManageAmalgamation(stateKey)
 const newState = computed(() => statementState.value.new)
@@ -78,8 +82,8 @@ const expandedFormVariant = computed<FormVariant>(() => {
     </template>
     <template #default>
       <FormAmalgamationCorrectStatement
-        v-if="model"
-        v-model="model"
+        v-if="model?.key === 'statement'"
+        v-model="model.value"
         :variant="expandedFormVariant"
         :state-key
         :name="modelName"
