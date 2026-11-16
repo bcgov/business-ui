@@ -28,7 +28,10 @@ export const useManageOffices = (
       // ID not found, add new row
       tableState.value = [...tableState.value, cloned]
     } else {
-      // ID exists, update row
+      // ID exists, update row - the staff-modified tag outlives edits and undos of the row
+      if (tableState.value[index]?.modifiedByStaff) {
+        cloned.modifiedByStaff = true
+      }
       tableState.value = tableState.value.toSpliced(index, 1, cloned)
     }
 

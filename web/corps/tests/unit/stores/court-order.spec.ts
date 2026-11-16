@@ -123,12 +123,9 @@ describe('useCourtOrderStore', () => {
       await store.init(identifier, String(draftFilingId))
 
       expect(mockInitFiling).toHaveBeenCalledTimes(1)
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.COURT_ORDER,
-        undefined,
-        String(draftFilingId)
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.COURT_ORDER, {
+        draftId: String(draftFilingId)
+      })
       expect(store.initializing).toBe(false)
     })
 

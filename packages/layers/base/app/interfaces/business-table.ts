@@ -4,6 +4,7 @@ import type { TableColumn } from '@nuxt/ui'
 export interface TableBusinessState<T> {
   old?: T
   new: T
+  modifiedByStaff?: boolean
 }
 
 export type TableBusinessRow<T> = Row<TableBusinessState<T>>

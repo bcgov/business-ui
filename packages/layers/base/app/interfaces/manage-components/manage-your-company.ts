@@ -3,6 +3,7 @@ import type { ManageBaseProps } from '#business/app/interfaces'
 export interface ManageYourCompanyFieldState<T> {
   value: T
   actions: ActionType[]
+  modifiedByStaff?: boolean
 }
 
 export interface ManageYourCompanyFields {

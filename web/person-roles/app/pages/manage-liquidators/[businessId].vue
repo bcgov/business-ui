@@ -151,7 +151,11 @@ async function submitFiling() {
     // in case there was a failure and it saved a draft
     const filingResp = e.response?._data
     const urlParams = useUrlSearchParams()
-    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    const savedDraftId = filingResp?.filing?.header?.filingId
+    // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+    if (savedDraftId) {
+      urlParams.draft = String(savedDraftId)
+    }
     await modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -241,6 +245,7 @@ onMounted(() => {
         </h1>
         <p>{{ $t(`page.${FILING_TYPE}.${filingSubType}.desc`) }}</p>
       </div>
+      <AlertDraftRebase />
 
       <div class="space-y-4" data-testid="liquidator-info-section">
         <ManageParties
@@ -288,7 +293,7 @@ onMounted(() => {
           :table-title="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
-          bc-canada-only
+          :address-form-props="{ bcCanadaOnly: true }"
         />
 
         <ConnectFormFieldWrapper

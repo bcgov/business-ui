@@ -52,6 +52,10 @@ function reviewAndConfirm() {
 }
 
 async function submitFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     setBtnCtrlAlert(undefined)
     handleButtonLoading(true, 'right', 1)
@@ -61,7 +65,11 @@ async function submitFiling() {
   } catch (error) {
     const e = error as FetchError<AgmLocationChangeDraftState>
     const filingResp = e.response?._data
-    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    const savedDraftId = filingResp?.filing?.header?.filingId
+    // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+    if (savedDraftId) {
+      urlParams.draft = String(savedDraftId)
+    }
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -70,6 +78,10 @@ async function submitFiling() {
 
 // the design has no Save and Resume Later button, so a draft is only saved when the session is about to expire
 async function saveFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     await store.submit(false)
     revokeBeforeUnload()
@@ -86,11 +98,13 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-const { currentStep, nextStep } = useFilingPageWatcher({
+const { currentStep, nextStep, viewOnly: isViewOnly } = useFilingPageWatcher({
   store,
   businessId,
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
+  filedByStaff: () => store.draftFilingState.filedByStaff,
+  viewOnlyBackButton: { onClick: () => navigateTo(dashboardUrl.value, { external: true }) },
   breadcrumbs,
   backButton: { removeAlertSpacing: true },
   saveFiling: null,
@@ -115,7 +129,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
   ],
   buttonLayout: 'stackedDefault',
   setOnBeforeSessionExpired: async () => {
-    if (canSave()) {
+    if (!isViewOnly.value && canSave()) {
       await saveFiling()
     }
   }
@@ -138,6 +152,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         </ul>
       </HelpExpansion>
     </div>
+    <AlertDraftRebase />
 
     <FormAgmLocationChangeStep1
       v-if="currentStep === 1"
@@ -149,6 +164,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormAgmLocationChangeStep2
       v-if="currentStep === 2"
       id="agm-location-change-filing-step-2"
+      :view-only="isViewOnly"
       :aria-label="filingText.reviewH1"
       @submit="submitFiling"
       @error="onStepError"

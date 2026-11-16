@@ -13,6 +13,27 @@ const tableLabelOverrides = computed(() => ({
   editLabel: $t('label.changeAddress'),
   invalidAddress: $t('label.missingInformation')
 }))
+
+// only one office / director sub form is open at a time, so lock the inputs the api did not flag on that record
+const officeAddressFormProps = computed<AddressFormProps>(() => {
+  const officeType = store.formState.activeOffice?.type
+  return {
+    bcCanadaOnly: 'delivery',
+    validateOnOpen: true,
+    noPoBox: true,
+    hideSameAs: true,
+    disabledFields: officeType ? getLockedAddressFields(store.missingInfo.offices[officeType]) : undefined
+  }
+})
+const directorAddressFormProps = computed<AddressFormProps>(() => {
+  const partyId = store.formState.activeDirector?.id
+  return {
+    validateOnOpen: true,
+    noPoBox: true,
+    hideSameAs: true,
+    disabledFields: partyId ? getLockedAddressFields(store.missingInfo.directors[partyId]) : undefined
+  }
+})
 </script>
 
 <template>
@@ -24,7 +45,9 @@ const tableLabelOverrides = computed(() => ({
     class="space-y-6 sm:space-y-10"
     @error="onFormSubmitError"
   >
+    <!-- the store lists only the offices / directors with something to fix, so a section left empty is hidden -->
     <ManageOffices
+      v-if="store.initializing || store.offices.length"
       v-model:active-subject="store.formState.activeOffice"
       data-testid="office-addresses-section"
       :loading="store.initializing"
@@ -33,9 +56,8 @@ const tableLabelOverrides = computed(() => ({
       subject=""
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :label-overrides="tableLabelOverrides"
-      bc-canada-only="delivery"
       hide-remove
-      validate-on-open
+      :address-form-props="officeAddressFormProps"
     >
       <template #before-table>
         <UAlert
@@ -56,6 +78,7 @@ const tableLabelOverrides = computed(() => ({
     </ManageOffices>
 
     <ManageParties
+      v-if="store.initializing || store.directors.length"
       v-model:active-subject="store.formState.activeDirector"
       data-testid="current-directors-section"
       :loading="store.initializing"
@@ -67,7 +90,7 @@ const tableLabelOverrides = computed(() => ({
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       model-name="activeDirector"
       :label-overrides="tableLabelOverrides"
-      :party-form-props="{ hideRemove: true, validateOnOpen: true }"
+      :party-form-props="{ hideRemove: true, addressFormProps: directorAddressFormProps }"
     >
       <template #before-table>
         <UAlert

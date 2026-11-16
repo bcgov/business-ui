@@ -12,6 +12,7 @@ export default {
     corrected: 'CORRECTED',
     deleted: 'DELETED',
     emailChanged: 'EMAIL CHANGED',
+    modifiedByStaff: 'MODIFIED BY STAFF',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',
     rolesChanged: 'ROLES CHANGED'
@@ -138,6 +139,28 @@ export default {
     uploadOf: 'Upload of',
     uploadFailed: 'Upload of {name} failed: {error}',
     uploading: 'Uploading...'
+  },
+  draftRebase: {
+    action: {
+      added: '{entity} added',
+      modified: '{entity} modified',
+      removed: '{entity} deleted'
+    },
+    alert: {
+      title: 'BC Registries staff have made the following modifications to the company information:',
+      titleUnknownBase: 'We could not determine whether BC Registries staff modified the company information since this draft was started.',
+      footer: 'Staff modifications may overwrite changes you have made to your draft.',
+      footerReview: 'Carefully review the information before submitting.'
+    },
+    section: {
+      business: 'Business Information',
+      courtOrders: 'Court Orders',
+      nameTranslations: 'Name Translations',
+      offices: 'Offices',
+      parties: 'People and Roles',
+      resolutions: 'Resolution Dates',
+      shareClasses: 'Share Structure'
+    }
   },
   modal: {
     error: {
@@ -270,6 +293,12 @@ export default {
             description: 'We cannot display this page right now. Try refreshing the page or go back to the main page of this business.'
           }
         },
+        getDraftChanges: {
+          undefined: {
+            title: 'Unable to load draft',
+            description: 'We could not check for changes made to this business since this draft was saved. Try refreshing the page or go back to the main page of this business.'
+          }
+        },
         submit: {
           400: {
             title: 'Invalid Submission',
@@ -309,13 +338,13 @@ export default {
         notAvailable: {
           title: 'Page not available',
           description: 'This filing is not available for this type of business. If you believe this is an error, please contact support.'
-        },
-        pendingTaskOnSaveOrSubmit: {
-          undefined: {
-            title: 'Unable to submit filing',
-            description: 'Another draft filing already exists. Please complete it before creating a new filing.'
-          }
         }
+      }
+    },
+    draftRebase: {
+      stale: {
+        title: 'Unable to Submit Changes',
+        description: 'The information for this business has been changed by another user. You will need to review the changes.'
       }
     },
     padConfirmationPeriod: {
@@ -588,6 +617,8 @@ export default {
     resolutionOrCourtOrderDate: 'Resolution or Court Order Date',
     resolutionsOrCourtOrdersRegardingShares: 'Resolutions or Court Orders Regarding Shares',
     retrieveBusinessInformation: 'Retrieve Business Information',
+    returnToMyBusiness: 'Return to My Business',
+    reviewChanges: 'Review Changes',
     roles: 'Roles',
     routingSlipNumber: 'Routing Slip Number',
     sameAsDeliveryAddress: 'Same as Delivery Address',
@@ -907,6 +938,7 @@ export default {
     yourFilingsWillAppearHere: 'Your completed filings and transactions will appear here'
   },
   validation: {
+    addressCannotBePoBox: 'Address cannot be a PO Box',
     addressMustBeInBc: 'Address must be in British Columbia',
     addressMustBeInCanada: 'Address must be in Canada',
     amountMustBeGreaterThan: 'Amount must be greater than {count}',

@@ -51,6 +51,17 @@ describe('getCachedOrFetch', () => {
     expect(result).toEqual({ id: 1, forced: true })
   })
 
+  it('should join an in-flight request instead of fetching when force is true', async () => {
+    const refreshCall = Promise.resolve({ data: { id: 1, inFlight: true }, status: 'success' })
+    mocks.ensure.mockReturnValue({ ...mockEntry, pending: { refreshCall } })
+
+    const result = await getCachedOrFetch(mockOptions, true)
+
+    expect(mocks.fetch).not.toHaveBeenCalled()
+    expect(mocks.refresh).not.toHaveBeenCalled()
+    expect(result).toEqual({ id: 1, inFlight: true })
+  })
+
   it('should propagate errors from the network call', async () => {
     const networkError = new Error('Network Failure')
     mocks.refresh.mockRejectedValue(networkError)

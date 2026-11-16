@@ -70,12 +70,7 @@ export const useContinuationOutStore = defineStore('continuation-out-store', () 
     $reset()
 
     // NB: initFiling enforces the staff only authorization (STAFF_FILINGS) - no extra gate needed
-    const { draftFiling } = await initFiling<ContOutFiling>(
-      businessId,
-      FilingType.CONTINUATION_OUT,
-      undefined,
-      draftId
-    )
+    const { draftFiling } = await initFiling<ContOutFiling>(businessId, FilingType.CONTINUATION_OUT, { draftId })
 
     // UX for a missing/invalid filing id is handled by initFiling
     if (!draftFiling) {

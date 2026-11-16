@@ -22,6 +22,12 @@ export function getTableBadges<T extends { actions: ActionType[] }>(
   // get unique actions
   const rowActions = Array.from(new Set(row.original.new.actions))
 
+  // a resumed draft row whose value a staff filing set (useDraftRebase): the user's own action replaces the badge
+  // until they undo it (the tag stays on the row)
+  if (!rowActions.length) {
+    return row.original.modifiedByStaff ? [{ label: t('badge.modifiedByStaff') }] : []
+  }
+
   if (rowActions.includes(ActionType.ADDED)) {
     return [badgeMap.ADDED]
   }

@@ -77,6 +77,18 @@ function directorRow(id: string, firstName: string): TableBusinessState<PartySch
 
 const parties = () => [directorRow('123', 'Jane'), directorRow('456', 'John')]
 
+function missingInfoWarning(code: string, data: BusinessWarning['data']): BusinessWarning {
+  return { code, message: '', warningType: ApiWarningType.MISSING_REQUIRED_BUSINESS_INFO, data }
+}
+
+/** The api flags on the mock business - the store lists only the flagged rows (and the seeded missing office). */
+const flagAll = () => [
+  missingInfoWarning('NO_REGISTERED_OFFICE_DELIVERY_ADDRESS_POSTAL_CODE', { officeType: OfficeType.REGISTERED }),
+  missingInfoWarning('NO_RECORDS_OFFICE', { officeType: OfficeType.RECORDS }),
+  missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 123 }),
+  missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 456 })
+]
+
 /** Fills the empty seeded records office row the way the office sub form would. */
 function fillRecordsOffice(store: ReturnType<typeof useReviewImportedDataStore>, region = 'BC', country = 'CA') {
   const row = store.offices.find(o => o.new.type === OfficeType.RECORDS)!
@@ -123,7 +135,7 @@ describe('useReviewImportedDataStore', () => {
     vi.clearAllMocks()
     resetFilingStoreMocks()
     setActivePinia(createPinia())
-    setMockBusiness({ legalType })
+    setMockBusiness({ legalType, warnings: flagAll() })
     window.history.replaceState({}, '', `/${filingType}/${identifier}`)
     mockInitFiling.mockResolvedValue({ draftFiling: undefined, parties: parties() })
     mockGetAddresses.mockResolvedValue(apiAddresses())
@@ -136,14 +148,8 @@ describe('useReviewImportedDataStore', () => {
     it('fetches the active directors through initFiling and the offices raw', async () => {
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        filingType,
-        undefined,
-        undefined,
-        { roleType: RoleType.DIRECTOR }
-      )
-      expect(mockGetAddresses).toHaveBeenCalledWith(identifier)
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, filingType, { parties: { roleType: RoleType.DIRECTOR } })
+      expect(mockGetAddresses).toHaveBeenCalledWith(identifier, undefined, false)
       expect(store.directors.map(d => d.new.id)).toEqual(['123', '456'])
     })
 
@@ -184,6 +190,29 @@ describe('useReviewImportedDataStore', () => {
       expect(store.initializing).toBe(false)
     })
 
+    it('lists only the flagged offices and directors, keeping the seeded missing office', async () => {
+      setMockBusiness({
+        legalType,
+        warnings: [missingInfoWarning('NO_DIRECTOR_MAILING_ADDRESS_POSTAL_CODE', { partyId: 456 })]
+      })
+
+      await store.init(identifier)
+
+      expect(store.offices.map(o => o.new.type)).toEqual([OfficeType.RECORDS])
+      expect(store.directors.map(d => d.new.id)).toEqual(['456'])
+    })
+
+    it('keeps an unflagged director the draft already changed', async () => {
+      setMockBusiness({ legalType, warnings: [] })
+      const merged = parties()
+      merged[0]!.new.actions = [ActionType.ADDRESS_CHANGED]
+      mockInitFiling.mockResolvedValue({ draftFiling: buildDraft(), parties: merged })
+
+      await store.init(identifier, String(DRAFT_FILING_ID))
+
+      expect(store.directors.map(d => d.new.id)).toEqual(['123'])
+    })
+
     it('summarizes the missing info warnings on the business', async () => {
       setMockBusiness({
         legalType,
@@ -210,7 +239,7 @@ describe('useReviewImportedDataStore', () => {
       })
     })
 
-    it('merges the draft offices and director addresses over the business data', async () => {
+    it('merges the draft offices over the business data and takes the merged directors from initFiling', async () => {
       const draft = buildDraft({
         body: {
           offices: {
@@ -226,7 +255,11 @@ describe('useReviewImportedDataStore', () => {
           }]
         }
       })
-      mockInitFiling.mockResolvedValue({ draftFiling: draft, parties: parties() })
+      // initFiling owns the party merge (useFiling.spec covers it) - hand the store the merged rows
+      const merged = parties()
+      merged[0]!.new.address.mailingAddress.street = '9 New St'
+      merged[0]!.new.actions = [ActionType.ADDRESS_CHANGED]
+      mockInitFiling.mockResolvedValue({ draftFiling: draft, parties: merged })
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 

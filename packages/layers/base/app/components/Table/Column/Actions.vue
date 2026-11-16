@@ -6,13 +6,16 @@ const {
   allowedActions,
   preventActions,
   labelOverrides,
-  getCustomDropdownItems
+  getCustomDropdownItems,
+  hideRemove
 } = defineProps<{
   row: TableBusinessRow<T>
   allowedActions?: ManageAllowedAction[]
   preventActions?: boolean
   labelOverrides?: TableLabelOverrides
   getCustomDropdownItems?: (row: TableBusinessRow<T>) => DropdownMenuItem[]
+  /** no Remove / Delete, not even on an added row (e.g. an office the filing seeded and requires) */
+  hideRemove?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -45,7 +48,7 @@ const isAdded = computed(() => row.original.old === undefined)
 const isRemoved = computed(() => getIsRowRemoved(row))
 const isEdited = computed(() => getIsRowEdited(row))
 const isRemovedOrEdited = computed(() => isRemoved.value || isEdited.value)
-const canRemove = computed(() => isActionAllowed(ManageAllowedAction.REMOVE) || isAdded.value)
+const canRemove = computed(() => !hideRemove && (isActionAllowed(ManageAllowedAction.REMOVE) || isAdded.value))
 const canChange = computed(() => {
   const allowed = isActionAllowed(ManageAllowedAction.ADDRESS_CHANGE)
     || isActionAllowed(ManageAllowedAction.EFFECTIVE_DATE_CHANGE)

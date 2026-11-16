@@ -44,6 +44,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ filingText.desc }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- FUTURE: replace with FormForeignJurisdiction (the combined jurisdiction menu) -->
       <ConnectPageSection

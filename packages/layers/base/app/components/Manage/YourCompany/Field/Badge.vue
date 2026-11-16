@@ -1,23 +1,31 @@
 <script setup lang="ts">
 const {
   actions = [],
-  labelOverrides
+  labelOverrides,
+  modifiedByStaff = false
 } = defineProps<{
   actions?: ActionType[]
   labelOverrides?: TableLabelOverrides
+  modifiedByStaff?: boolean
 }>()
 
-// getTableBadges returns an array of badges, we only need the first one
-const badge = computed(() => getTableBadges(
+// the staff badge (resumed draft, value set by a staff filing) leads the action badge, same as table rows
+const badges = computed(() => getTableBadges(
   // @ts-expect-error - first arg is typed as a tanstack table row
-  { original: { new: { actions: actions } } },
+  { original: { new: { actions: actions }, modifiedByStaff } },
   labelOverrides?.badges
-)[0])
+))
 </script>
 
 <template>
-  <UBadge
-    v-if="badge"
-    v-bind="badge"
-  />
+  <div
+    v-if="badges.length"
+    class="flex flex-wrap gap-1"
+  >
+    <UBadge
+      v-for="(badge, i) in badges"
+      :key="i"
+      v-bind="badge"
+    />
+  </div>
 </template>

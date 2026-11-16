@@ -3,7 +3,7 @@ import { cloneDeep } from 'es-toolkit'
 export const useReviewImportedDataStore = defineStore('review-imported-data-store', () => {
   const { tableState: tableOffices, hasChanges: hasOfficeChanges } = useManageOffices()
   const { tableState: tableDirectors, hasChanges: hasDirectorChanges } = useManageParties()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
+  const { markStaffModified } = useDraftRebase()
   const { formatFilingPayloadApi, hydratePaymentState, initFiling, saveOrSubmitFiling } = useFiling()
 
   const service = useBusinessService()
@@ -30,16 +30,14 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
 
-    // offices are fetched raw rather than through initFiling so a draft can be merged over the originals
+    // offices fetched here, not via initFiling: a 404 (no offices yet) reads as empty
     const [{ draftFiling, parties }, addressResult] = await Promise.all([
       initFiling<ReviewImportedDataFiling>(
         businessId,
         FilingType.REVIEW_IMPORTED_DATA,
-        undefined,
-        draftId,
-        { roleType: RoleType.DIRECTOR }
+        { draftId, parties: { roleType: RoleType.DIRECTOR } }
       ),
-      service.getAddresses(businessId)
+      service.getAddresses(businessId, undefined, !!draftId)
         .then(data => ({ data }))
         // the Legal API returns 404 when the business has no office addresses at all - that is the
         // missing-offices case this filing exists for, so treat it as an empty office set
@@ -59,16 +57,21 @@ export const useReviewImportedDataStore = defineStore('review-imported-data-stor
       hydratePaymentState(draftFiling.filing.header, formState)
     }
 
-    const directors = parties ?? []
-    tableDirectors.value = draft?.relationships?.length
-      ? getPartiesMergedWithRelationships(directors, draft.relationships)
-      : directors
+    // only the offices / directors with something to fix are listed - the rest could not be edited anyway
+    const { offices: flaggedOffices, directors: flaggedDirectors } = missingInfo.value
+    tableDirectors.value = withSeparateDeliveryAddress(
+      getRowsToReview(parties ?? [], flaggedDirectors, director => director.id)
+    )
 
     const officeTypes = [OfficeType.REGISTERED, OfficeType.RECORDS]
-    tableOffices.value = seedMissingOffices(
-      formatOfficesSection(addressResult.data, draft?.offices, officeTypes),
-      officeTypes
-    )
+    tableOffices.value = withSeparateDeliveryAddress(getRowsToReview(
+      seedMissingOffices(
+        markStaffModified(formatOfficesSection(addressResult.data, draft?.offices, officeTypes), 'offices'),
+        officeTypes
+      ),
+      flaggedOffices,
+      office => office.type
+    ))
 
     await snapshotInitialState()
     initialOffices.value = cloneDeep(tableOffices.value)

@@ -1,97 +1,27 @@
-import { isEqual } from 'es-toolkit'
-
 export const useBusinessAddresses = () => {
   const service = useBusinessService()
   const allOfficeTypes = Object.values(OfficeType)
 
+  /** The business offices as UI addresses, filtered to the given types (draft merging lives in useFiling.initFiling) */
   async function getBusinessAddresses(
     businessId: string,
-    config?: 'default',
     officeTypes?: OfficeType[],
-    date?: string
-  ): Promise<UiEntityOfficeAddress>
-  async function getBusinessAddresses(
-    businessId: string,
-    config: 'table',
-    officeTypes?: OfficeType[],
-    date?: string
-  ): Promise<TableBusinessState<OfficesSchema>[]>
-  async function getBusinessAddresses(
-    businessId: string,
-    config: 'default' | 'table' = 'default',
-    officeTypes?: OfficeType[],
-    date?: string
-  ): Promise<UiEntityOfficeAddress | TableBusinessState<OfficesSchema>[]> {
+    date?: string,
+    force = false
+  ): Promise<UiEntityOfficeAddress> {
     // addresses as of a specific date (YYYY-MM-DD), e.g. a coop annual report's AGM date
-    const res = await service.getAddresses(businessId, date ? { date } : undefined)
+    const res = await service.getAddresses(businessId, date ? { date } : undefined, force)
 
-    const filteredTypes = allOfficeTypes.filter(type =>
-      res[type as keyof ApiEntityOfficeAddress] && (!officeTypes || officeTypes.includes(type))
-    )
-
-    // return UiEntityOfficeAddress object if default config option provided
-    if (config === 'default') {
-      const offices: UiEntityOfficeAddress = {}
-      for (const type of filteredTypes) {
+    const offices: UiEntityOfficeAddress = {}
+    for (const type of allOfficeTypes) {
+      if (res[type as keyof ApiEntityOfficeAddress] && (!officeTypes || officeTypes.includes(type))) {
         offices[type] = formatBaseAddressUi(res[type])
       }
-      return offices
     }
-
-    // return TableBusinessState<OfficesSchema> array if table config option provided
-    // used for ManageOffices functionality
-    return formatAddressTableState(res, filteredTypes)
-  }
-
-  function formatAddressTableState(
-    addresses: ApiEntityOfficeAddress,
-    officeTypes?: OfficeType[]
-  ): TableBusinessState<OfficesSchema>[] {
-    const types = officeTypes ?? allOfficeTypes
-    return types.map((type) => {
-      const formatted = {
-        id: crypto.randomUUID(),
-        type,
-        actions: [],
-        address: formatBaseAddressUi(addresses[type]),
-        isEditing: false
-      }
-
-      return {
-        new: { ...formatted },
-        old: { ...formatted }
-      }
-    })
-  }
-
-  function formatDraftTableState(
-    tableState: TableBusinessState<OfficesSchema>[],
-    draftState: TableBusinessState<OfficesSchema>[]
-  ): TableBusinessState<OfficesSchema>[] {
-    return draftState.map((draft) => {
-      const oldOffice = tableState.find(o => o.new.type === draft.new.type)
-      const addressChanged = oldOffice && !isEqual(draft.new.address, oldOffice.new.address)
-
-      let actions: ActionType[] = []
-      if (addressChanged) {
-        actions = [ActionType.ADDRESS_CHANGED]
-      } else if (!oldOffice) {
-        actions = [ActionType.ADDED]
-      }
-
-      return {
-        new: {
-          ...draft.new,
-          actions
-        },
-        old: oldOffice ? { ...oldOffice.new } : undefined
-      }
-    })
+    return offices
   }
 
   return {
-    getBusinessAddresses,
-    formatAddressTableState,
-    formatDraftTableState
+    getBusinessAddresses
   }
 }

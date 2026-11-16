@@ -58,6 +58,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ filingText.desc }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- corps only: legal-api forces the filing effective 00:01 PT the day after submission -->
       <UAlert

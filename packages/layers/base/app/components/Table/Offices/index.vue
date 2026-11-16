@@ -17,6 +17,7 @@ const {
     targetId: string
   }
   hideActionsWhen?: (row: TableBusinessRow<T>) => boolean
+  hideRemove?: boolean
 }>()
 
 const officesColumns = getOfficesTableColumns<T>(labelOverrides?.badges, labelOverrides?.invalidAddress)
@@ -71,6 +72,7 @@ watch(
     :prevent-actions="preventActions"
     :label-overrides="labelOverrides"
     :hide-actions-when="hideActionsWhen"
+    :hide-remove="hideRemove"
     :task-guard-config
     :get-row-id="(row: TableBusinessState<T>) => row.new.id"
   >

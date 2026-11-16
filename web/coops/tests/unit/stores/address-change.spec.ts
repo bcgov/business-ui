@@ -49,7 +49,7 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
     ...overrides
   })
 
-/** The registered office row as returned by useBusinessAddresses in 'table' mode. */
+/** The registered office row as formatOfficesSection builds it for initFiling. */
 function getRegisteredOfficeRow(street = '111 Registered St'): TableBusinessState<OfficesSchema> {
   const office = createDefaultOffice({ type: OfficeType.REGISTERED })
   for (const address of [office.address.deliveryAddress, office.address.mailingAddress]) {
@@ -108,14 +108,9 @@ describe('useAddressChangeStore', () => {
       await store.init(identifier)
 
       expect(mockInitFiling).toHaveBeenCalledTimes(1)
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CHANGE_OF_ADDRESS,
-        undefined,
-        undefined,
-        undefined,
-        [OfficeType.REGISTERED]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CHANGE_OF_ADDRESS, {
+        offices: [OfficeType.REGISTERED]
+      })
       expect(store.initializing).toBe(false)
     })
 
@@ -124,14 +119,13 @@ describe('useAddressChangeStore', () => {
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CHANGE_OF_ADDRESS,
-        undefined,
-        String(DRAFT_FILING_ID),
-        undefined,
-        [OfficeType.REGISTERED]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CHANGE_OF_ADDRESS, {
+
+        draftId: String(DRAFT_FILING_ID),
+
+        offices: [OfficeType.REGISTERED]
+
+      })
     })
 
     it('should keep the fetched office in the manage offices table state', async () => {

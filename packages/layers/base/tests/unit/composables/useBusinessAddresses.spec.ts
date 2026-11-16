@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { getBusinessAddressesMock } from '#test-mocks'
@@ -20,7 +18,7 @@ describe('useBusinessAddresses', () => {
   })
 
   describe('getBusinessAddresses', () => {
-    describe('config param === "default"', () => {
+    describe('formatting', () => {
       test('should format the response to the expected UiEntityOfficeAddress type', async () => {
         const resp = await useBusinessAddresses().getBusinessAddresses(identifier)
 
@@ -48,42 +46,11 @@ describe('useBusinessAddresses', () => {
       })
     })
 
-    describe('config param === "table"', () => {
-      test('should format the reponse to match TableBusinessState<OfficesSchema>[] state', async () => {
-        const resp = await useBusinessAddresses().getBusinessAddresses(identifier, 'table')
-
-        expect(mockGetAddresses).toHaveBeenCalledWith(identifier, undefined)
-
-        expect(Array.isArray(resp)).toBe(true)
-
-        const mockKeys = Object.keys(addressesMock)
-        expect(resp).toHaveLength(mockKeys.length)
-
-        const firstOffice = resp[0]
-        expect(firstOffice).toHaveProperty('new')
-        expect(firstOffice).toHaveProperty('old')
-
-        expect(mockKeys).toContain(firstOffice!.new.type)
-        expect(firstOffice!.new.address.deliveryAddress.street).toBeDefined()
-        expect(firstOffice!.new.actions).toEqual([])
-        expect(firstOffice!.new).toEqual(firstOffice!.old)
-
-        const registeredEntry = resp.find(item => item.new.type === 'registeredOffice')
-        expect(registeredEntry).toBeDefined()
-        expect(registeredEntry!.new.address.deliveryAddress.street)
-          .toEqual(addressesMock.registeredOffice!.deliveryAddress!.streetAddress)
-      })
-    })
-
     describe('filtering offices', () => {
-      test('should return filtered office types for default config', async () => {
+      test('should return only the given office types', async () => {
         const types = [OfficeType.REGISTERED, OfficeType.RECORDS] // mock will also return liquidationRecordsOffice
 
-        const res = await useBusinessAddresses().getBusinessAddresses(
-          identifier,
-          'default',
-          types
-        )
+        const res = await useBusinessAddresses().getBusinessAddresses(identifier, types)
 
         const keys = Object.keys(res)
         expect(keys).toHaveLength(2)
@@ -92,107 +59,20 @@ describe('useBusinessAddresses', () => {
         expect(keys).not.toContain(OfficeType.LIQUIDATION)
       })
 
-      test('should return filtered office types for table config', async () => {
-        const types = [OfficeType.REGISTERED]
-
-        const res = await useBusinessAddresses().getBusinessAddresses(
-          identifier,
-          'table',
-          types
-        )
-
-        expect(res).toHaveLength(1)
-        expect(res[0]!.new.type).toBe(OfficeType.REGISTERED)
-      })
-
       test('should pass the date through as an address query when provided', async () => {
-        await useBusinessAddresses().getBusinessAddresses(identifier, 'table', undefined, '2026-01-01')
+        await useBusinessAddresses().getBusinessAddresses(identifier, undefined, '2026-01-01')
 
-        expect(mockGetAddresses).toHaveBeenCalledWith(identifier, { date: '2026-01-01' })
+        expect(mockGetAddresses).toHaveBeenCalledWith(identifier, { date: '2026-01-01' }, false)
       })
 
       test('should return all addresses if no officeTypes param given', async () => {
-        const defaultRes = await useBusinessAddresses().getBusinessAddresses(identifier, 'default')
-        const tableRes = await useBusinessAddresses().getBusinessAddresses(identifier, 'table')
+        const res = await useBusinessAddresses().getBusinessAddresses(identifier)
 
-        const keys = Object.keys(defaultRes)
+        const keys = Object.keys(res)
         expect(keys).toHaveLength(3)
         expect(keys).toContain(OfficeType.REGISTERED)
         expect(keys).toContain(OfficeType.RECORDS)
         expect(keys).toContain(OfficeType.LIQUIDATION)
-        expect(tableRes).toHaveLength(3)
-      })
-    })
-  })
-
-  describe('Office formatters', () => {
-    const mockAddress = { street: '123 Main St', city: 'Victoria' } as any
-
-    const mockApiOffices = {
-      registeredOffice: { mailingAddress: mockAddress, deliveryAddress: mockAddress },
-      recordsOffice: { mailingAddress: mockAddress, deliveryAddress: mockAddress }
-    }
-
-    describe('formatAddressTableState', () => {
-      const { formatAddressTableState } = useBusinessAddresses()
-      test('should return table state with matching old and new values', () => {
-        const result = formatAddressTableState(mockApiOffices as any, [OfficeType.REGISTERED])
-
-        expect(result).toHaveLength(1)
-        expect(result[0]!.new.type).toBe(OfficeType.REGISTERED)
-        expect(result[0]!.new).toEqual(result[0]!.old)
-        expect(result[0]!.new.actions).toEqual([])
-      })
-
-      test('should filter types based on the given officeTypes', () => {
-        const result = formatAddressTableState(mockApiOffices as any, [OfficeType.RECORDS])
-        expect(result).toHaveLength(1)
-        expect(result[0]!.new.type).toBe(OfficeType.RECORDS)
-      })
-    })
-
-    describe('formatDraftTableState', () => {
-      const { formatDraftTableState } = useBusinessAddresses()
-      const baseOffice: TableBusinessState<OfficesSchema> = {
-        new: { id: '123', type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false },
-        old: { id: '123', type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false }
-      }
-
-      test('should add ADDRESS_CHANGED action when addresses are not equal', () => {
-        const changedAddress = { ...mockAddress, street: '456 New St' }
-        const draft: TableBusinessState<OfficesSchema> = {
-          new: { id: '123', type: OfficeType.REGISTERED, address: changedAddress, actions: [], isEditing: false },
-          old: undefined
-        }
-
-        const result = formatDraftTableState([baseOffice], [draft])
-
-        expect(result[0]!.new.actions).toContain(ActionType.ADDRESS_CHANGED)
-        expect(result[0]!.old).toEqual(baseOffice.new)
-      })
-
-      test('should add ADDED action when the office type doesnt exist in initial state', () => {
-        const draft: TableBusinessState<OfficesSchema> = {
-          new: { id: '123', type: OfficeType.LIQUIDATION, address: mockAddress, actions: [], isEditing: false },
-          old: undefined as any
-        }
-
-        const result = formatDraftTableState([baseOffice], [draft])
-
-        expect(result[0]!.new.actions).toContain(ActionType.ADDED)
-        expect(result[0]!.old).toBeUndefined()
-      })
-
-      test('should set actions to empty array no changes between initial and draft state', () => {
-        const draft: TableBusinessState<OfficesSchema> = {
-          new: { id: '123', type: OfficeType.REGISTERED, address: mockAddress, actions: [], isEditing: false },
-          old: undefined as any
-        }
-
-        const result = formatDraftTableState([baseOffice], [draft])
-
-        expect(result[0]!.new.actions).toEqual([])
-        expect(result[0]!.old).toEqual(baseOffice.new)
       })
     })
   })

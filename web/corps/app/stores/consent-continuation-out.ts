@@ -15,12 +15,7 @@ export const useConsentContinuationOutStore = defineStore('consent-continuation-
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
 
-    const { draftFiling } = await initFiling<CCOFiling>(
-      businessId,
-      FilingType.CONSENT_CONTINUATION_OUT,
-      undefined,
-      draftId
-    )
+    const { draftFiling } = await initFiling<CCOFiling>(businessId, FilingType.CONSENT_CONTINUATION_OUT, { draftId })
 
     // FUTURE: hydrate the jurisdiction, the staff detail, the court order and the completing party
     // name (header.certifiedBy)

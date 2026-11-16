@@ -48,6 +48,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ $t('page.annualReport.desc') }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- FUTURE: port the ArDate display (AR date + filing date) and the readonly directors/offices -->
       <ConnectPageSection

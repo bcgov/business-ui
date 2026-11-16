@@ -48,6 +48,17 @@ describe('getTableBadges', () => {
     expect(result).toEqual([])
   })
 
+  it('should show the modified by staff badge only while the row has no action of its own', () => {
+    const untouched = { original: { modifiedByStaff: true, new: { actions: [] } } } as any
+    expect(getTableBadges(untouched).map(b => b.label)).toEqual(['MODIFIED BY STAFF'])
+
+    const removed = { original: { modifiedByStaff: true, new: { actions: [ActionType.REMOVED] } } } as any
+    expect(getTableBadges(removed).map(b => b.label)).toEqual(['DELETED'])
+
+    const edited = { original: { modifiedByStaff: true, new: { actions: [ActionType.NAME_CHANGED] } } } as any
+    expect(getTableBadges(edited).map(b => b.label)).toEqual(['NAME CHANGED'])
+  })
+
   it('should remove duplicate actions', () => {
     const actions = [ActionType.CHANGED, ActionType.CHANGED, ActionType.CHANGED]
     const row = { original: { new: { actions } } } as any

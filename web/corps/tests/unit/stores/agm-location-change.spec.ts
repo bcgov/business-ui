@@ -107,12 +107,7 @@ describe('useAgmLocationChangeStore', () => {
 
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.AGM_LOCATION_CHANGE,
-        undefined,
-        undefined
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.AGM_LOCATION_CHANGE, { draftId: undefined })
     })
 
     it('should hydrate the form state from a draft filing', async () => {

@@ -5,6 +5,9 @@ import { z } from 'zod'
 const { t } = useI18n()
 const store = useAgmLocationChangeStore()
 const businessStore = useBusinessStore()
+defineProps<{
+  viewOnly?: boolean
+}>()
 
 const entityType = computed(() =>
   getCorpFullDescription(businessStore.business?.legalType, businessStore.business?.legalType)
@@ -30,47 +33,50 @@ const reviewRows = computed(() => [
     novalidate
     class="space-y-6 sm:space-y-10"
   >
-    <ConnectPageSection
-      data-testid="review-location-change-detail"
-      :heading="{ label: $t('page.agmLocationChange.locationChangeDetail'), icon: 'i-mdi-domain' }"
-    >
-      <!-- 32px top and bottom, 24px each side of the row divider, per the review page design -->
-      <dl class="divide-y divide-line-muted padding-x-default py-8">
-        <div
-          v-for="row in reviewRows"
-          :key="row.label"
-          class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6"
-        >
-          <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-            {{ row.label }}
-          </dt>
-          <dd class="whitespace-pre-line break-words">
-            {{ row.value }}
-          </dd>
-        </div>
-      </dl>
-    </ConnectPageSection>
+    <FormReviewWrapper :view-only="viewOnly">
+      <ConnectPageSection
+        data-testid="review-location-change-detail"
+        :heading="{ label: $t('page.agmLocationChange.locationChangeDetail'), icon: 'i-mdi-domain' }"
+      >
+        <dl class="divide-y divide-line-muted padding-x-default py-8">
+          <div
+            v-for="row in reviewRows"
+            :key="row.label"
+            class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6"
+          >
+            <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
+              {{ row.label }}
+            </dt>
+            <dd class="whitespace-pre-line break-words">
+              {{ row.value }}
+            </dd>
+          </div>
+        </dl>
+      </ConnectPageSection>
 
-    <FormFolio
-      v-if="store.formState.folio"
-      v-model="store.formState.folio"
-      data-testid="folio-section"
-      name="folio"
-    />
+      <template #submission-fields>
+        <FormFolio
+          v-if="store.formState.folio"
+          v-model="store.formState.folio"
+          data-testid="folio-section"
+          name="folio"
+        />
 
-    <FormCertify
-      v-if="!store.isStaff"
-      v-model="(store.formState as any).certify"
-      data-testid="form-section-certify"
-      name="certify"
-      :entity-type="entityType"
-    />
-    <FormConfirmAuthorization
-      v-if="store.isStaff && store.formState.authorization"
-      v-model="(store.formState as any).authorization"
-      :entity-type="entityType"
-      data-testid="form-section-authorization"
-      name="authorization"
-    />
+        <FormCertify
+          v-if="!store.isStaff"
+          v-model="(store.formState as any).certify"
+          data-testid="form-section-certify"
+          name="certify"
+          :entity-type="entityType"
+        />
+        <FormConfirmAuthorization
+          v-if="store.isStaff && store.formState.authorization"
+          v-model="(store.formState as any).authorization"
+          :entity-type="entityType"
+          data-testid="form-section-authorization"
+          name="authorization"
+        />
+      </template>
+    </FormReviewWrapper>
   </UForm>
 </template>

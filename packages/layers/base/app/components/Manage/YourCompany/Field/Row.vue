@@ -67,6 +67,7 @@ const isEditing = computed(() => Boolean(model.value && model.value.key === fiel
         </slot>
         <ManageYourCompanyFieldBadge
           :actions="fieldState?.actions"
+          :modified-by-staff="fieldState?.modifiedByStaff"
           :label-overrides="labelOverrides"
           :class="{ 'mt-1': subLabel }"
         />

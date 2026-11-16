@@ -40,7 +40,7 @@ const buildDraft = (overrides: { header?: Record<string, unknown>, body?: Record
     ...overrides
   })
 
-/** An office row as returned by useBusinessAddresses in 'table' mode. */
+/** An office row as formatOfficesSection builds it for initFiling. */
 function getOfficeRow(type: OfficeType, street: string): TableBusinessState<OfficesSchema> {
   const office = createDefaultOffice({ type })
   office.address.deliveryAddress.street = street
@@ -109,14 +109,11 @@ describe('useAddressChangeStore', () => {
 
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CHANGE_OF_ADDRESS,
-        undefined,
-        undefined,
-        undefined,
-        [OfficeType.REGISTERED, OfficeType.RECORDS]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CHANGE_OF_ADDRESS, {
+
+        offices: [OfficeType.REGISTERED, OfficeType.RECORDS]
+
+      })
     })
 
     it('should pass the route draft id through to initFiling', async () => {
@@ -124,14 +121,13 @@ describe('useAddressChangeStore', () => {
 
       await store.init(identifier, String(DRAFT_FILING_ID))
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.CHANGE_OF_ADDRESS,
-        undefined,
-        String(DRAFT_FILING_ID),
-        undefined,
-        [OfficeType.REGISTERED, OfficeType.RECORDS]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.CHANGE_OF_ADDRESS, {
+
+        draftId: String(DRAFT_FILING_ID),
+
+        offices: [OfficeType.REGISTERED, OfficeType.RECORDS]
+
+      })
     })
 
     it('should load the offices into the table state', async () => {

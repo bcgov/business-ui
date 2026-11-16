@@ -79,6 +79,10 @@ async function reviewAndConfirm() {
 }
 
 async function submitFiling() {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     handleButtonLoading(true, 'right', 1)
     await store.submit(true)
@@ -89,7 +93,11 @@ async function submitFiling() {
     // in case there was a failure and it saved a draft
     const filingResp = e.response?._data
     const urlParams = useUrlSearchParams()
-    urlParams.draft = String(filingResp?.filing?.header?.filingId)
+    const savedDraftId = filingResp?.filing?.header?.filingId
+    // a response without a filing (eg a stale draft 409) must keep the resumed draft's id in the url
+    if (savedDraftId) {
+      urlParams.draft = String(savedDraftId)
+    }
     modal.openSaveFilingErrorModal(error)
     handleButtonLoading(false)
     initBeforeUnload()
@@ -97,6 +105,10 @@ async function submitFiling() {
 }
 
 async function saveFiling(enableUnsavedChangesBlock = true) {
+  if (isViewOnly.value) {
+    return
+  }
+
   try {
     if (enableUnsavedChangesBlock) {
       if (checkActiveSubForm()) {
@@ -124,15 +136,17 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-const { currentStep, nextStep } = useFilingPageWatcher({
+const { currentStep, nextStep, viewOnly: isViewOnly } = useFilingPageWatcher({
   store,
   businessId,
   filingSubType: undefined,
   filingType: FILING_TYPE,
   draftId: urlParams.draft as string | undefined,
+  filedByStaff: () => store.draftFilingState.filedByStaff,
+  viewOnlyBackButton: { onClick: () => navigateTo(dashboardUrl.value, { external: true }) },
   breadcrumbs,
   setOnBeforeSessionExpired: async () => {
-    if (canSave()) {
+    if (!isViewOnly.value && canSave()) {
       await saveFiling(false)
     }
   },
@@ -168,6 +182,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
         translation-path="page.transition.desc"
       />
     </div>
+    <AlertDraftRebase />
     <FormTransitionStep1
       v-if="currentStep === 1"
       id="transition-filing-step-1"
@@ -176,6 +191,7 @@ const { currentStep, nextStep } = useFilingPageWatcher({
     <FormTransitionStep2
       v-if="currentStep === 2"
       id="transition-filing-step-2"
+      :view-only="isViewOnly"
       @submit="submitFiling"
     />
   </div>

@@ -69,7 +69,9 @@ export const makeFilingMock = (original?: unknown) => () => {
 }
 
 export const makeFilingModalsMock = () => ({
+  openDraftStaleModal: vi.fn(),
   openGetDraftFilingErrorModal: vi.fn(),
+  openGetDraftChangesErrorModal: vi.fn(),
   openInitFilingErrorModal: vi.fn(),
   openSaveFilingErrorModal: vi.fn(),
   openFilingNotAllowedErrorModal: vi.fn(),

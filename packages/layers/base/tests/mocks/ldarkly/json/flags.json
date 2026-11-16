@@ -48,6 +48,20 @@
         "variation": 1,
         "version": 222
     },
+    "enable-new-feature": {
+        "flagVersion": 1,
+        "trackEvents": false,
+        "value": "",
+        "variation": 1,
+        "version": 222
+    },
+    "enable-staff-draft-filing-bypass": {
+        "flagVersion": 1,
+        "trackEvents": false,
+        "value": [],
+        "variation": 1,
+        "version": 222
+    },
     "enable-genesys-web-message-boolean": {
         "flagVersion": 3,
         "trackEvents": false,

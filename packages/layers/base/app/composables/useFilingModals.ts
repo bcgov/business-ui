@@ -28,14 +28,30 @@ export const useFilingModals = () => {
     })
   }
 
-  async function openPendingTaskOnSaveOrSubmitModal() {
-    await errorModal.open({
-      error: undefined,
-      i18nPrefix: 'modal.error.filing.pendingTaskOnSaveOrSubmit'
+  /** A submission hit 409 - the work is parked as a draft; review reloads the page to rebase it */
+  async function openDraftStaleModal() {
+    await baseModal.open({
+      title: t('modal.draftRebase.stale.title'),
+      description: t('modal.draftRebase.stale.description'),
+      dismissible: true,
+      buttons: [
+        {
+          label: t('label.returnToMyBusiness'),
+          size: 'xl',
+          variant: 'outline',
+          to: dashboardUrl.value,
+          external: true
+        },
+        { label: t('label.reviewChanges'), size: 'xl', onClick: () => window.location.reload() }
+      ]
     })
   }
 
   async function openSaveFilingErrorModal(error: unknown, preferApiMessage = false) {
+    // stale rebase base: the draft was parked, the form no longer reflects the business
+    if (getErrorStatus(error) === 409 && useDraftRebase().staleOnSave.value) {
+      return openDraftStaleModal()
+    }
     await errorModal.open({
       error,
       i18nPrefix: 'modal.error.filing.submit',
@@ -63,6 +79,23 @@ export const useFilingModals = () => {
     await errorModal.open({
       error,
       i18nPrefix: 'modal.error.filing.getDraft',
+      buttons: [
+        {
+          label: t('label.goBack'),
+          to: dashboardUrl.value,
+          variant: 'outline',
+          external: true
+        },
+        { label: t('label.refreshPage'), onClick: () => window.location.reload() }
+      ]
+    })
+  }
+
+  /** The changes report failed to load - a resumed draft is never shown unchecked */
+  async function openGetDraftChangesErrorModal(error: unknown) {
+    await errorModal.open({
+      error,
+      i18nPrefix: 'modal.error.filing.getDraftChanges',
       buttons: [
         {
           label: t('label.goBack'),
@@ -118,10 +151,11 @@ export const useFilingModals = () => {
 
   return {
     openUnsavedChangesModal,
-    openPendingTaskOnSaveOrSubmitModal,
+    openDraftStaleModal,
     openSaveFilingErrorModal,
     openFilingNotAllowedErrorModal,
     openGetDraftFilingErrorModal,
+    openGetDraftChangesErrorModal,
     openInitFilingErrorModal,
     openFilingNotAvailableModal
   }

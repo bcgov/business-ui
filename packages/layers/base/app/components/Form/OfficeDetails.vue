@@ -7,8 +7,7 @@ const props = defineProps<{
   stateKey: string
   hideRemove?: boolean
   name?: string
-  bcCanadaOnly?: boolean | 'delivery'
-  validateOnOpen?: boolean
+  addressFormProps?: AddressFormProps
 }>()
 
 const emit = defineEmits<{
@@ -63,8 +62,7 @@ const { targetId, messageId } = attachAlerts(formTarget, model)
         v-model="model.address"
         nested
         name="address"
-        :bc-canada-only
-        :validate-on-open="validateOnOpen"
+        v-bind="addressFormProps"
       />
     </SubFormWrapper>
   </UForm>

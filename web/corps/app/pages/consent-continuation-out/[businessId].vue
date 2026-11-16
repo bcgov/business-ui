@@ -44,6 +44,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ filingText.desc }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- the consent cannot be corrected - an error means filing it again -->
       <UAlert

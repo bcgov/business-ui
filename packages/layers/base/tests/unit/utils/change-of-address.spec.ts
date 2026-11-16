@@ -6,13 +6,13 @@ describe('formatChangeOfAddressOfficesApi', () => {
   const addressesMock = getBusinessAddressesMock()
 
   beforeEach(() => {
-    // useBusinessAddresses -> useBusinessService -> useConnectAccountStore needs an active pinia
     setActivePinia(createPinia())
   })
 
-  // useBusinessAddresses needs the nuxt context - call it inside the test, never at describe level
+  // rows in the requested order (the formatter follows the api response's key order)
   function makeTableState(officeTypes: OfficeType[]) {
-    return useBusinessAddresses().formatAddressTableState(addressesMock, officeTypes)
+    const rows = formatOfficesSection(addressesMock, undefined, officeTypes)
+    return officeTypes.map(type => rows.find(row => row.new.type === type)!)
   }
 
   it('should key each office by its type with api-formatted addresses', () => {

@@ -119,6 +119,7 @@ watch(() => store.directors, async (directors) => {
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ filingText.desc }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- Section 1: Effective Date -->
       <ConnectPageSection

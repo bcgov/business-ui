@@ -100,14 +100,13 @@ describe('useAnnualReportStore', () => {
 
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.ANNUAL_REPORT,
-        undefined,
-        undefined,
-        { roleType: RoleType.DIRECTOR },
-        [OfficeType.REGISTERED, OfficeType.RECORDS]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.ANNUAL_REPORT, {
+
+        parties: { roleType: RoleType.DIRECTOR },
+
+        offices: [OfficeType.REGISTERED, OfficeType.RECORDS]
+
+      })
     })
 
     it('should never request a draft, even with one in the url', async () => {
@@ -116,14 +115,13 @@ describe('useAnnualReportStore', () => {
 
       await store.init(identifier)
 
-      expect(mockInitFiling).toHaveBeenCalledWith(
-        identifier,
-        FilingType.ANNUAL_REPORT,
-        undefined,
-        undefined,
-        { roleType: RoleType.DIRECTOR },
-        [OfficeType.REGISTERED, OfficeType.RECORDS]
-      )
+      expect(mockInitFiling).toHaveBeenCalledWith(identifier, FilingType.ANNUAL_REPORT, {
+
+        parties: { roleType: RoleType.DIRECTOR },
+
+        offices: [OfficeType.REGISTERED, OfficeType.RECORDS]
+
+      })
     })
 
     it('should set the as of date to the date part of nextAnnualReport', async () => {

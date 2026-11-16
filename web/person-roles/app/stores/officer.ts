@@ -2,11 +2,9 @@ import { cloneDeep } from 'es-toolkit'
 
 export const useOfficerStore = defineStore('officer-store', () => {
   const ld = useConnectLaunchDarkly()
-  const service = useBusinessService()
   const businessStore = useBusinessStore()
   const { tableState } = useManageParties()
-  const { getPartiesMergedWithRelationships } = useBusinessParty()
-  const { initFiling, formatFilingPayloadApi } = useFiling()
+  const { initFiling, formatFilingPayloadApi, saveOrSubmitFiling } = useFiling()
   const modal = useFilingModals()
 
   const officersSchema = getOfficersSchema()
@@ -25,9 +23,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       const { draftFiling, parties } = await initFiling<ChangeOfOfficers>(
         businessId,
         FilingType.CHANGE_OF_OFFICERS,
-        undefined,
-        draftId,
-        { roleClass: RoleClass.OFFICER }
+        { draftId, parties: { roleClass: RoleClass.OFFICER } }
       )
 
       if (!businessStore.business) {
@@ -53,10 +49,7 @@ export const useOfficerStore = defineStore('officer-store', () => {
       }
 
       if (parties) {
-        const draftRelationships = draft?.relationships
-        tableState.value = draftRelationships
-          ? getPartiesMergedWithRelationships(parties, draftRelationships)
-          : parties
+        tableState.value = parties
       }
 
       await nextTick()
@@ -85,19 +78,12 @@ export const useOfficerStore = defineStore('officer-store', () => {
       { folioNumber: formState.folio.folioNumber }
     )
 
-    const draftId = draftFilingState.value?.filing?.header?.filingId
-    if (draftId || !isSubmission) {
-      const filingResp = await service.saveOrUpdateDraftFiling<ChangeOfOfficers>(
-        businessStore.businessIdentifier!,
-        payload,
-        isSubmission,
-        draftId as string | number
-      )
+    const filingResp = await saveOrSubmitFiling<ChangeOfOfficers>(businessStore.businessIdentifier!, payload, {
+      isSubmission,
+      draftId: draftFilingState.value?.filing?.header?.filingId
+    })
+    if (filingResp) {
       draftFilingState.value = filingResp as unknown as OfficersDraftState
-      const urlParams = useUrlSearchParams()
-      urlParams.draft = String(filingResp.filing.header.filingId)
-    } else {
-      await service.postFiling(businessStore.businessIdentifier!, payload)
     }
   }
 

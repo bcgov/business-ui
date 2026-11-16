@@ -2,7 +2,10 @@ import type { ManageBaseProps } from '#business/app/interfaces'
 
 export type ManageOfficesProps = ManageBaseProps & {
   labelOverrides?: TableLabelOverrides
-  /** hides the office sub form's Remove button (always hidden for the correct variant) */
+  /**
+   * hides Remove on the office sub form (always hidden for the correct variant) and in the table row actions,
+   * including an added row, so an office the filing seeded and requires cannot be dropped
+   */
   hideRemove?: boolean
 } & (
   | {
@@ -11,10 +14,8 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: string
     allowedActions?: ManageAllowedAction[]
     allowAddOfficeType?: OfficeType
-    /** true = both office addresses must be in BC, Canada; 'delivery' = the delivery address only */
-    bcCanadaOnly?: boolean | 'delivery'
-    /** opens an existing office's address form with its validation errors already shown */
-    validateOnOpen?: boolean
+    /** passed through to the office sub form's FormAddress (validateOnOpen only applies to existing offices) */
+    addressFormProps?: AddressFormProps
     preventActions?: boolean
     actionPreventedSignal?: number
   }
@@ -24,8 +25,7 @@ export type ManageOfficesProps = ManageBaseProps & {
     modelName?: never
     allowedActions?: never
     allowAddOfficeType?: never
-    bcCanadaOnly?: never
-    validateOnOpen?: never
+    addressFormProps?: never
     preventActions?: never
     actionPreventedSignal?: never
   }

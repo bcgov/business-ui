@@ -20,12 +20,7 @@ export const useConsentAmalgamationOutStore = defineStore('consent-amalgamation-
     // reset any previous state (ex: user switches accounts) and init loading state
     $reset()
 
-    const { draftFiling } = await initFiling<CAOFiling>(
-      businessId,
-      FilingType.CONSENT_AMALGAMATION_OUT,
-      undefined,
-      draftId
-    )
+    const { draftFiling } = await initFiling<CAOFiling>(businessId, FilingType.CONSENT_AMALGAMATION_OUT, { draftId })
 
     // FUTURE: hydrate the jurisdiction and the court order
     if (draftFiling?.filing?.consentAmalgamationOut) {

@@ -27,13 +27,9 @@ export const useAddressChangeStore = defineStore('address-change-store', () => {
     const { draftFiling, addresses } = await initFiling<COAFiling>(
       businessId,
       FilingType.CHANGE_OF_ADDRESS,
-      undefined,
-      draftId,
-      undefined,
-      [OfficeType.REGISTERED, OfficeType.RECORDS]
+      { draftId, offices: [OfficeType.REGISTERED, OfficeType.RECORDS] }
     )
 
-    // FUTURE: merge the draft offices into the table state with formatDraftTableState
     if (draftFiling?.filing?.changeOfAddress) {
       draftFilingState.value = draftFiling
       hydratePaymentState(draftFiling.filing.header, formState)

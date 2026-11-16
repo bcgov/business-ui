@@ -124,6 +124,7 @@ useFilingPageWatcher({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ $t('page.courtOrder.desc') }}</p>
       </div>
+      <AlertDraftRebase />
 
       <FormCourtOrderPoaFullFiling
         v-model="store.formState.courtOrder"

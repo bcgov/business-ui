@@ -57,6 +57,7 @@ const { filingText, onError, submitFiling } = useFilingPage({
         <h1>{{ filingText.h1 }}</h1>
         <p>{{ $t('page.changeOfAddress.desc') }}</p>
       </div>
+      <AlertDraftRebase />
 
       <!-- FUTURE: replace this placeholder with the registered office ManageOffices section -->
       <ConnectFieldset
