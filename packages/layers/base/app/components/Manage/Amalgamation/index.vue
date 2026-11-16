@@ -7,7 +7,6 @@ const {
   allowedActions = [ManageAllowedAction.CHANGE],
   labelOverrides,
   modelName = 'activeSubject',
-  statementModelName = 'activeAmalStmnt',
   variant = 'default',
   preventActions = false,
   actionPreventedSignal = 0
@@ -17,8 +16,7 @@ const emit = defineEmits<{
   'action-prevented': []
 }>()
 
-const activeSubject = defineModel<ActiveAmalgamationCorrectSchema | undefined>('active-subject')
-const activeAmalStmnt = defineModel<ActiveAmalgamationCorrectStatementSchema | undefined>('active-amal-stmnt')
+const activeSubject = defineModel<ActiveAmalgamationSchema>('active-subject')
 
 const expandedState = ref<ExpandedState | undefined>(undefined)
 const addingSubject = ref(false)
@@ -59,13 +57,13 @@ const {
   labelOverrides: () => labelOverrides,
   preventActions: () => preventActions,
   actionPreventedSignal: () => actionPreventedSignal,
-  activeSubjects: [
-    { subject: activeSubject, alertTarget: formTarget },
-    { subject: activeAmalStmnt, alertTarget: statementFormTarget }
-  ]
+  activeSubjects: {
+    subject: activeSubject,
+    alertTarget: [formTarget, statementFormTarget]
+  }
 })
 
-const activeSubjectSchema = getActiveAmalgamationCorrectSchema()
+const businessSchema = getAmalgamationCorrectSchema()
 
 const allowAddSubject = computed(() =>
   !tableAllowedActions.value || tableAllowedActions.value.includes(ManageAllowedAction.ADD)
@@ -76,7 +74,7 @@ function initAddSubject() {
     onActionPrevented()
     return
   }
-  activeSubject.value = activeSubjectSchema.parse({})
+  activeSubject.value = { key: 'business', value: businessSchema.parse({}) }
   addingSubject.value = true
 }
 
@@ -84,17 +82,16 @@ function cleanupForm() {
   expandedState.value = undefined
   addingSubject.value = false
   activeSubject.value = undefined
-  activeAmalStmnt.value = undefined
 }
 
 function initEditSubject(row: TableBusinessRow<AmalgamationCorrectSchema>) {
-  activeSubject.value = cloneDeep(row.original.new)
+  activeSubject.value = { key: 'business', value: cloneDeep(row.original.new) }
   editSubjectLabel = row.original.new.legalName
   expandedState.value = { [row.id]: true }
 }
 
 function initEditStatement() {
-  activeAmalStmnt.value = { ...cloneDeep(statementState.value.new), isEditing: true }
+  activeSubject.value = { key: 'statement', value: { ...cloneDeep(statementState.value.new), isEditing: true } }
 }
 
 function hideRowActions(row: TableBusinessRow<AmalgamationTableRow>) {
@@ -148,8 +145,8 @@ function onActionPrevented() {
     >
       <template #default>
         <FormAmalgamationCorrect
-          v-if="addingSubject && activeSubject"
-          v-model="activeSubject"
+          v-if="addingSubject && activeSubject?.key === 'business'"
+          v-model="activeSubject.value"
           variant="add"
           :name="modelName"
           :subject="$t('label.business')"
@@ -181,8 +178,8 @@ function onActionPrevented() {
           <template #expanded="{ row }">
             <div class="px-4 sm:px-6">
               <FormAmalgamationCorrect
-                v-if="activeSubject"
-                v-model="activeSubject"
+                v-if="activeSubject?.key === 'business'"
+                v-model="activeSubject.value"
                 :variant="getExpandedFormVariant(variant, row)"
                 :name="modelName"
                 :subject="editSubjectLabel"
@@ -199,15 +196,15 @@ function onActionPrevented() {
     </ConnectPageSection>
 
     <ManageAmalgamationStatement
-      v-model="activeAmalStmnt"
+      v-model="activeSubject"
       :variant
       :label-overrides="tableLabels"
       :prevent-actions="shouldPreventActions"
       :is-read-only="isReadOnlyVariant"
       :state-key
-      :model-name="statementModelName"
+      :model-name
       @init-edit="initEditStatement"
-      @done="() => updateStatement(activeAmalStmnt)"
+      @done="() => updateStatement(activeSubject)"
       @cancel="cleanupForm"
       @undo="undoStatement"
       @action-prevented="onActionPrevented"

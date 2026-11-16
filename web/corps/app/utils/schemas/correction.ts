@@ -55,8 +55,7 @@ export function getCorrectionSchema(isStaff: boolean) {
     activeNameTranslation: getActiveNameTranslationSchema(),
     activeNameRequest: getActiveNameRequestSchema(),
     activeCourtOrder: getActiveCourtOrderPoaFullSchema(),
-    activeAmal: getActiveAmalgamationCorrectSchema(),
-    activeAmalStmnt: getActiveAmalgamationCorrectStatementSchema(),
+    activeAmal: getActiveAmalgamationSchema(),
     activeYourCompany: getActiveYourCompanySchema()
   })
 

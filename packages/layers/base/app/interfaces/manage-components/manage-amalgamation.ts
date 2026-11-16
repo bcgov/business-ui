@@ -6,7 +6,6 @@ export type ManageAmalgamationProps = ManageBaseProps & {
   | {
     variant?: 'default' | 'correct'
     modelName?: string
-    statementModelName?: string
     allowedActions?: ManageAllowedAction[]
     preventActions?: boolean
     actionPreventedSignal?: number
@@ -14,7 +13,6 @@ export type ManageAmalgamationProps = ManageBaseProps & {
   | {
     variant: 'readonly' | 'correct-readonly'
     modelName?: never
-    statementModelName?: never
     allowedActions?: never
     preventActions?: never
     actionPreventedSignal?: never

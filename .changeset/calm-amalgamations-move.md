@@ -4,7 +4,8 @@
 
 Refactor ManageAmalgamation component and useManageAmalgamation composable
 - Moved amalgamation component and composable to be under the `/manage` directory.
-- Renamed the active amalgamation models to `active-subject` (the statement model stays `active-amal-stmnt`), and the default model name to `activeSubject`. Added a `statementModelName` prop.
+- Combined the amalgamating business and statement models into a single `active-subject` model, typed by the new `getActiveAmalgamationSchema()` zod discriminated union (`key: 'business' | 'statement'`), matching ManageShareStructure. Removed the `active-amal-stmnt` model, and the default model name is now `activeSubject`. Consumers nested in a parent UForm pass `model-name="<key>.value"`.
+- Removed `getActiveAmalgamationCorrectSchema`/`getActiveAmalgamationCorrectStatementSchema` and their types; `addSubject`, `editSubject` and `updateStatement` in useManageAmalgamation now take `ActiveAmalgamationSchema`.
 - Moved `preventActions` and `actionPreventedSignal` into `ManageAmalgamationProps` - not available on the readonly variants.
 - ManageAmalgamation now uses useManageCommon for variants, allowed actions, label overrides and alerts, and shows the task guard alert when an action is prevented from the table or statement.
 - ManageAmalgamationStatement now receives the parent `stateKey`.

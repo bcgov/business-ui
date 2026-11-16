@@ -42,14 +42,14 @@ describe('useManageAmalgamation', () => {
   describe('addSubject', () => {
     it('adds a new subject with ActionType.ADDED and triggers cleanup', () => {
       const { tableState, addSubject } = useManageAmalgamation(stateKey, { cleanupFn: mockCleanupFn })
-      const mockSubject = { id: '1', legalName: 'Business A' } as ActiveAmalgamationCorrectSchema
+      const mockBusiness = { id: '1', legalName: 'Business A' } as AmalgamationCorrectSchema
 
-      addSubject(mockSubject)
+      addSubject({ key: 'business', value: mockBusiness })
 
       expect(tableState.value).toHaveLength(1)
       expect(tableState.value[0]).toEqual({
         old: undefined,
-        new: { ...mockSubject, actions: [ActionType.ADDED] }
+        new: { ...mockBusiness, actions: [ActionType.ADDED] }
       })
       expect(mockCleanupFn).toHaveBeenCalledTimes(1)
     })
@@ -62,15 +62,24 @@ describe('useManageAmalgamation', () => {
       expect(tableState.value).toHaveLength(0)
       expect(mockCleanupFn).not.toHaveBeenCalled()
     })
+
+    it('does nothing if the active subject is a statement', () => {
+      const { tableState, addSubject } = useManageAmalgamation(stateKey, { cleanupFn: mockCleanupFn })
+
+      addSubject({ key: 'statement', value: { courtApproval: true, isEditing: true, actions: [] } })
+
+      expect(tableState.value).toHaveLength(0)
+      expect(mockCleanupFn).not.toHaveBeenCalled()
+    })
   })
 
   describe('editSubject', () => {
     it('retains ADDED badge when editing a newly added item', () => {
       const { tableState, editSubject } = useManageAmalgamation(stateKey)
-      const newItem = { id: '1', legalName: 'New Business', actions: [ActionType.ADDED] } as AmalgamationTableRow
+      const newItem = { id: '1', legalName: 'New Business', actions: [ActionType.ADDED] } as AmalgamationCorrectSchema
       const row = createMockRow(newItem, undefined)
 
-      editSubject({ ...newItem, legalName: 'Updated Name' }, row)
+      editSubject({ key: 'business', value: { ...newItem, legalName: 'Updated Name' } }, row)
 
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.ADDED])
     })
@@ -81,7 +90,7 @@ describe('useManageAmalgamation', () => {
       const newItem = { id: '1', legalName: 'Original Name', actions: [] } as any
       const row = createMockRow(newItem, oldItem)
 
-      editSubject({ ...newItem, legalName: 'Changed Name' }, row)
+      editSubject({ key: 'business', value: { ...newItem, legalName: 'Changed Name' } }, row)
 
       expect(tableState.value[0]!.new.actions).toEqual([ActionType.CHANGED])
     })
@@ -95,7 +104,7 @@ describe('useManageAmalgamation', () => {
 
       const row = createMockRow(newItem, oldItem)
 
-      editSubject({ ...newItem, legalName: 'Original Name' }, row)
+      editSubject({ key: 'business', value: { ...newItem, legalName: 'Original Name' } }, row)
 
       expect(tableState.value[0]!.new.actions).toEqual([])
     })
@@ -104,7 +113,7 @@ describe('useManageAmalgamation', () => {
   describe('removeSubject', () => {
     it('removes a newly added item completely from tableState', () => {
       const { tableState, addSubject, removeSubject } = useManageAmalgamation(stateKey, { cleanupFn: mockCleanupFn })
-      const mockSubject = { id: '1', legalName: 'Business A' } as ActiveAmalgamationCorrectSchema
+      const mockSubject = { key: 'business', value: { id: '1', legalName: 'Business A' } } as ActiveAmalgamationSchema
 
       addSubject(mockSubject)
       mockCleanupFn.mockClear()
@@ -136,7 +145,7 @@ describe('useManageAmalgamation', () => {
       const newItem = { id: '1', legalName: 'Pristine Name', actions: [] } as any
       const row = createMockRow(newItem, oldItem)
 
-      editSubject({ ...newItem, legalName: 'Edited Name' }, row)
+      editSubject({ key: 'business', value: { ...newItem, legalName: 'Edited Name' } }, row)
       expect(tableState.value[0]!.new.legalName).toBe('Edited Name')
 
       const editedRow = createMockRow(tableState.value[0]!.new, oldItem)
@@ -175,7 +184,7 @@ describe('useManageAmalgamation', () => {
         new: { courtApproval: false, isEditing: false, actions: [] }
       }
 
-      updateStatement({ courtApproval: true, isEditing: true, actions: [] })
+      updateStatement({ key: 'statement', value: { courtApproval: true, isEditing: true, actions: [] } })
 
       expect(statementState.value.new.actions).toEqual([ActionType.CHANGED])
       expect(statementState.value.new.courtApproval).toBe(true)
@@ -191,10 +200,24 @@ describe('useManageAmalgamation', () => {
         new: { courtApproval: true, isEditing: false, actions: [ActionType.CHANGED] }
       }
 
-      updateStatement({ courtApproval: false, isEditing: true, actions: [] })
+      updateStatement({ key: 'statement', value: { courtApproval: false, isEditing: true, actions: [] } })
 
       expect(statementState.value.new.actions).toEqual([])
       expect(statementState.value.new.courtApproval).toBe(false)
+    })
+
+    it('leaves the statement untouched if the active subject is a business', () => {
+      const { statementState, updateStatement } = useManageAmalgamation(stateKey, { cleanupFn: mockCleanupFn })
+      const initial = {
+        old: { courtApproval: false, isEditing: false, actions: [] },
+        new: { courtApproval: false, isEditing: false, actions: [] }
+      }
+      statementState.value = cloneDeep(initial)
+
+      updateStatement({ key: 'business', value: { id: '1', legalName: 'Business A' } as AmalgamationCorrectSchema })
+
+      expect(statementState.value).toEqual(initial)
+      expect(mockCleanupFn).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -207,7 +230,7 @@ describe('useManageAmalgamation', () => {
         new: { courtApproval: false, isEditing: false, actions: [] }
       }
 
-      updateStatement({ courtApproval: true, isEditing: true, actions: [] })
+      updateStatement({ key: 'statement', value: { courtApproval: true, isEditing: true, actions: [] } })
       expect(statementState.value.new.courtApproval).toBe(true)
 
       undoStatement()
@@ -222,7 +245,7 @@ describe('useManageAmalgamation', () => {
       const { hasChanges, addSubject } = useManageAmalgamation(stateKey)
 
       expect(hasChanges.value).toBe(false)
-      addSubject({ id: '1', legalName: 'Business A' } as ActiveAmalgamationCorrectSchema)
+      addSubject({ key: 'business', value: { id: '1', legalName: 'Business A' } } as ActiveAmalgamationSchema)
       expect(hasChanges.value).toBe(true)
     })
 
@@ -235,7 +258,7 @@ describe('useManageAmalgamation', () => {
       }
 
       expect(hasChanges.value).toBe(false)
-      updateStatement({ courtApproval: true, isEditing: false, actions: [] })
+      updateStatement({ key: 'statement', value: { courtApproval: true, isEditing: false, actions: [] } })
       expect(hasChanges.value).toBe(true)
     })
   })

@@ -50,14 +50,14 @@ export const useManageAmalgamation = (
     opts?.cleanupFn?.()
   }
 
-  function addSubject(subject: ActiveAmalgamationCorrectSchema): void {
-    if (!subject) {
+  function addSubject(subject: ActiveAmalgamationSchema): void {
+    if (subject?.key !== 'business') {
       return
     }
 
     updateTable({
       old: undefined,
-      new: { ...subject, actions: [ActionType.ADDED] }
+      new: { ...subject.value, actions: [ActionType.ADDED] }
     })
   }
 
@@ -94,12 +94,14 @@ export const useManageAmalgamation = (
   }
 
   function editSubject(
-    subject: AmalgamationTableRow | null | undefined,
+    activeSubject: ActiveAmalgamationSchema,
     row: TableBusinessRow<AmalgamationTableRow>
   ): void {
-    if (!subject) {
+    if (activeSubject?.key !== 'business') {
       return
     }
+
+    const subject: AmalgamationTableRow = activeSubject.value
 
     // If new subject, only ever apply the ADDED badge
     if (!getIsExistingRecord(row)) {
@@ -123,8 +125,9 @@ export const useManageAmalgamation = (
     })
   }
 
-  function updateStatement(newStatement: ActiveAmalgamationCorrectStatementSchema): void {
-    if (newStatement) {
+  function updateStatement(activeSubject: ActiveAmalgamationSchema): void {
+    if (activeSubject?.key === 'statement') {
+      const newStatement = activeSubject.value
       const initialState = cloneDeep(statementState.value.old!) // old is guaranteed here
       const isChanged = !isEqualOmit(newStatement, initialState, ['isEditing', 'actions'])
 
