@@ -39,6 +39,7 @@ export function setMockBusiness(overrides: Record<string, unknown> = {}) {
 
 export const mockSaveOrUpdateDraftFiling = vi.fn()
 export const mockPostFiling = vi.fn()
+export const mockGetFilingChanges = vi.fn()
 export const mockInitFiling = vi.fn()
 export const mockUpdateAllFees = vi.fn()
 export const mockInitFees = vi.fn()
@@ -52,7 +53,8 @@ export const mockFullName = ref(DEFAULT_FULL_NAME)
 
 export const makeBusinessServiceMock = () => ({
   saveOrUpdateDraftFiling: mockSaveOrUpdateDraftFiling,
-  postFiling: mockPostFiling
+  postFiling: mockPostFiling,
+  getFilingChanges: mockGetFilingChanges
 })
 
 /**
@@ -112,6 +114,7 @@ export const makeIsStaffMock = () => mockIsStaff
 export function resetFilingStoreMocks() {
   mockSaveOrUpdateDraftFiling.mockReset()
   mockPostFiling.mockReset()
+  mockGetFilingChanges.mockReset()
   mockInitFiling.mockReset()
   mockUpdateAllFees.mockReset()
   mockInitFees.mockReset()

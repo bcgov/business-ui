@@ -104,6 +104,23 @@ export const useDraftRebase = () => {
     staleOnSave.value = true
   }
 
+  /**
+   * Re-checks a draft parked by a stale submission.
+   * - filings since the base changed nothing visible in the draft: true, draft is not stale
+   * - anything to review, unknown base or a failed report: false, draft stays stale
+   */
+  async function advanceBaseIfUnaffected(businessId: string, draftId: string | number): Promise<boolean> {
+    const changes = await service.getFilingChanges(businessId, draftId).catch(() => undefined)
+    const hasChanges = !changes || changes.conflicts.length > 0 || changes.alreadyApplied.length > 0
+      || (changes.absorbed ?? []).length > 0
+    if (hasChanges || changes.upToDate === null || changes.currentTransactionId == null) {
+      return false
+    }
+    baseTransactionId.value = changes.currentTransactionId
+    staleOnSave.value = false
+    return true
+  }
+
   function $reset() {
     report.value = undefined
     staffModified.value = emptyStaffModifiedKeys()
@@ -123,6 +140,7 @@ export const useDraftRebase = () => {
     markStaffModifiedBusiness,
     getSaveOptions,
     markStaleOnSave,
+    advanceBaseIfUnaffected,
     $reset
   }
 }

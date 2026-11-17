@@ -215,6 +215,36 @@ describe('useDraftRebase', () => {
     })
   })
 
+  describe('advanceBaseIfUnaffected', () => {
+    const unaffected = { conflicts: [], changedSections: [], currentTransactionId: 13 }
+
+    it('should advance the base and clear the stale flag when the report lists no changes', async () => {
+      const rebase = useDraftRebase()
+      rebase.baseTransactionId.value = 12
+      rebase.markStaleOnSave()
+      mockBusinessService.getFilingChanges.mockResolvedValue(report(unaffected))
+
+      expect(await rebase.advanceBaseIfUnaffected(businessId, draftId)).toBe(true)
+      expect(rebase.staleOnSave.value).toBe(false)
+      expect(rebase.getSaveOptions(true)).toEqual({ baseTransactionId: 13 })
+    })
+
+    it.each([
+      ['changes to review', () => Promise.resolve(report({ currentTransactionId: 13 }))],
+      ['an unknown base', () => Promise.resolve(report({ ...unaffected, upToDate: null }))],
+      ['a failed report', () => Promise.reject(new Error('down'))]
+    ])('should keep the stale base with %s', async (_case, getChanges) => {
+      const rebase = useDraftRebase()
+      rebase.baseTransactionId.value = 12
+      rebase.markStaleOnSave()
+      mockBusinessService.getFilingChanges.mockImplementation(getChanges)
+
+      expect(await rebase.advanceBaseIfUnaffected(businessId, draftId)).toBe(false)
+      expect(rebase.staleOnSave.value).toBe(true)
+      expect(rebase.getSaveOptions(true)).toEqual({ baseTransactionId: 12 })
+    })
+  })
+
   describe('getSaveOptions', () => {
     it('should drop the base once a save found it stale', () => {
       const rebase = useDraftRebase()

@@ -2,6 +2,7 @@
 /**
  * Warns a resumed draft that staff filings changed the company information since it was started.
  * - hidden until a draft is rebased (report loaded and not up to date)
+ * - rebased with nothing to list: hidden
  * - unknown base: the warning only, no list
  */
 const { t, te } = useI18n()
@@ -49,11 +50,13 @@ const sections = computed(() => {
     }))
     .filter(section => section.items.length > 0)
 })
+
+const isUnknownBase = computed(() => !!report.value && report.value.upToDate === null)
 </script>
 
 <template>
   <UAlert
-    v-if="report && report.upToDate !== true"
+    v-if="isUnknownBase || sections.length > 0"
     data-testid="draft-rebase-alert"
     color="warning"
     variant="subtle"

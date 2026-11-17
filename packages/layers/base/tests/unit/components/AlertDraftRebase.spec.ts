@@ -39,6 +39,12 @@ describe('AlertDraftRebase', () => {
     expect(wrapper.find('[data-testid="draft-rebase-alert"]').exists()).toBe(false)
   })
 
+  it('renders nothing when the rebased draft has no changes to list', async () => {
+    report.value = getReport({ interveningFilings: [{ filingId: 1 }] as DraftChangesReport['interveningFilings'] })
+    const wrapper = await mount()
+    expect(wrapper.find('[data-testid="draft-rebase-alert"]').exists()).toBe(false)
+  })
+
   it('lists what staff changed, grouped by section, with the review warning', async () => {
     report.value = getReport({
       conflicts: [{

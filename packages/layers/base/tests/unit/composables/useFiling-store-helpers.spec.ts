@@ -4,6 +4,7 @@ import { setActivePinia, createPinia } from 'pinia'
 import {
   DRAFT_FILING_ID,
   getDraftFilingMock,
+  mockGetFilingChanges,
   mockIsStaff,
   mockPostFiling,
   mockSaveOrUpdateDraftFiling,
@@ -195,6 +196,7 @@ describe('useFiling filing store helpers', () => {
       beforeEach(() => {
         useDraftRebase().$reset()
         useDraftRebase().baseTransactionId.value = 12
+        mockGetFilingChanges.mockRejectedValue(new Error('no report'))
       })
 
       it('should send the base transaction id with the put', async () => {
@@ -238,6 +240,64 @@ describe('useFiling filing store helpers', () => {
         expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(2)
         expect(mockSaveOrUpdateDraftFiling).toHaveBeenLastCalledWith(identifier, payload, false, DRAFT_FILING_ID)
         expect(useDraftRebase().staleOnSave.value).toBe(true)
+      })
+
+      describe('when the stale submission is re-checked', () => {
+        const unaffectedReport = {
+          upToDate: false, currentTransactionId: 13, conflicts: [], alreadyApplied: [], absorbed: []
+        }
+        const submit = () => useFiling().saveOrSubmitFiling(identifier, payload, {
+          isSubmission: true,
+          draftId: DRAFT_FILING_ID
+        })
+
+        it('should resubmit at the new base when the filings since changed nothing in the draft', async () => {
+          mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(conflictError)
+          mockGetFilingChanges.mockResolvedValue(unaffectedReport)
+
+          await expect(submit()).resolves.toBeDefined()
+
+          expect(mockGetFilingChanges).toHaveBeenCalledWith(identifier, DRAFT_FILING_ID)
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(3)
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenNthCalledWith(2, identifier, payload, false, DRAFT_FILING_ID)
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenLastCalledWith(
+            identifier, payload, true, DRAFT_FILING_ID, { baseTransactionId: 13 }
+          )
+          expect(useDraftRebase().staleOnSave.value).toBe(false)
+        })
+
+        it('should reject when the report has changes to review', async () => {
+          mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(conflictError)
+          mockGetFilingChanges.mockResolvedValue({ ...unaffectedReport, absorbed: [{ section: 'parties' }] })
+
+          await expect(submit()).rejects.toBe(conflictError)
+
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(2)
+          expect(useDraftRebase().staleOnSave.value).toBe(true)
+        })
+
+        it('should reject without a report when the draft could not be parked', async () => {
+          mockSaveOrUpdateDraftFiling.mockRejectedValueOnce(conflictError).mockRejectedValueOnce({ statusCode: 500 })
+
+          await expect(submit()).rejects.toBe(conflictError)
+
+          expect(mockGetFilingChanges).not.toHaveBeenCalled()
+          expect(useDraftRebase().staleOnSave.value).toBe(true)
+        })
+
+        it('should stay stale when the resubmission hits another 409', async () => {
+          const secondConflict = { statusCode: 409 }
+          mockSaveOrUpdateDraftFiling
+            .mockRejectedValueOnce(conflictError)
+            .mockResolvedValueOnce({})
+            .mockRejectedValueOnce(secondConflict)
+          mockGetFilingChanges.mockResolvedValue(unaffectedReport)
+
+          await expect(submit()).rejects.toBe(secondConflict)
+
+          expect(mockSaveOrUpdateDraftFiling).toHaveBeenCalledTimes(3)
+          expect(useDraftRebase().staleOnSave.value).toBe(true)
+        })
       })
 
       it('should rethrow other save errors untouched', async () => {
