@@ -27,6 +27,7 @@ export default {
     chooseAnEndDate: 'Choose an end date',
     confirm: 'Confirm',
     correctionComment: 'Correction Detail Comment',
+    courtOrderDocument: 'Court Order Document',
     delayDate: 'Delay the Time of Dissolution or Cancellation',
     delayFor: 'Delay For',
     editDirector: 'Edit Director',
@@ -111,7 +112,7 @@ export default {
       title: 'Correction - BC Registries and Online Services'
     },
     courtOrder: {
-      desc: 'Enter the court order number and either the court order text or upload the court order document.',
+      descReview: 'Review the information in your application. If you need to change or complete anything, return to the previous page to make the necessary change.',
       feeCode: 'COURT',
       feeLabel: 'Court Order',
       h1: 'Court Order',
@@ -192,6 +193,7 @@ export default {
       invalid: 'Please enter a valid date.',
       invalidFormat: 'Date must be in YYYY-MM-DD format.',
       tooSmall: 'The delay date must be a valid date after today.'
-    }
+    },
+    waitForDocumentUploads: '< Wait for document uploads to finish'
   }
 }

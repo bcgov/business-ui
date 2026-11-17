@@ -1,9 +1,16 @@
 import { test, expect } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage, createLetterSizePdfBuffer } from '../../test-utils'
+import {
+  setupCourtOrderPage,
+  navigateToCourtOrderPage,
+  createLetterSizePdfBuffer,
+  goToCourtOrderReviewStep
+} from '../../test-utils'
 import { COURT } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 const filingId = '999002'
+const supportingDocsCheckboxName = 'Add supporting documents'
+const supportingDocsError = 'Add Supporting Documents or uncheck the box above'
 
 test.describe('Court Order - File Upload', () => {
   test('uploads a court order PDF via DRS and includes it in the submitted files array', async ({ page }) => {
@@ -46,6 +53,7 @@ test.describe('Court Order - File Upload', () => {
 
     // orderDetails intentionally left blank - an uploaded court order file satisfies the
     // 'text or file' cross-field validation rule on its own
+    await goToCourtOrderReviewStep(page)
     await page.getByRole('radio', { name: 'No Fee' }).click()
 
     const submitRequest = page.waitForRequest(
@@ -70,13 +78,13 @@ test.describe('Court Order - File Upload', () => {
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
-    await page.getByRole('radio', { name: 'No Fee' }).click()
 
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
 
     await expect(page.getByText('Enter a court order or upload a file')).toBeVisible()
-    // should remain on the court order page - the request should never have been sent
+    // should remain on the form step - the review step never renders
     await expect(page).toHaveURL(/.*court-order.*/)
+    await expect(page.getByTestId('review-court-order-section')).not.toBeVisible()
   })
 
   test('clears the validation error as soon as court order text is entered', async ({ page }) => {
@@ -86,8 +94,7 @@ test.describe('Court Order - File Upload', () => {
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
-    await page.getByRole('radio', { name: 'No Fee' }).click()
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
     await expect(page.getByText('Enter a court order or upload a file')).toBeVisible()
 
     // entering text must clear the cross-field error immediately - no resubmit required
@@ -112,8 +119,7 @@ test.describe('Court Order - File Upload', () => {
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
-    await page.getByRole('radio', { name: 'No Fee' }).click()
-    await page.getByRole('button', { name: 'Submit' }).click()
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
     await expect(page.getByText('Enter a court order or upload a file')).toBeVisible()
 
     // uploading a court order file must clear the cross-field error immediately
@@ -128,5 +134,79 @@ test.describe('Court Order - File Upload', () => {
     })
     await uploadResponse
     await expect(page.getByText('Enter a court order or upload a file')).not.toBeVisible()
+  })
+
+  test('errors when add supporting documents is checked without an upload, clears on uncheck', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await page.getByTestId('court-order-number-input').fill('12345-6789')
+    await page.getByTestId('court-order-text-input').fill('Ordered by the court')
+    await page.getByRole('checkbox', { name: supportingDocsCheckboxName }).check()
+    await expect(page.getByRole('button', { name: 'Upload Documents' })).toBeVisible()
+    // the rule only applies on Review and Confirm, not when the box is checked
+    await expect(page.getByText(supportingDocsError)).not.toBeVisible()
+
+    await page.getByRole('button', { name: 'Review and Confirm' }).click()
+
+    await expect(page.getByText(supportingDocsError)).toBeVisible()
+    await expect(page.getByTestId('review-court-order-section')).not.toBeVisible()
+
+    // unchecking the box resolves the error and hides the upload again
+    await page.getByRole('checkbox', { name: supportingDocsCheckboxName }).uncheck()
+    await expect(page.getByText(supportingDocsError)).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Upload Documents' })).not.toBeVisible()
+
+    await goToCourtOrderReviewStep(page)
+  })
+
+  test('locks the add supporting documents box while a supporting document is uploaded', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
+    await page.route('**/documents/client/courtOrder/**', async (route) => {
+      await route.fulfill({
+        status: 201,
+        json: {
+          key: 'CORP-DS0100001004',
+          consumerFilename: 'Affidavit.pdf',
+          documentURL: 'https://mock-api-url/documents/client/CORP-DS0100001004'
+        }
+      })
+    })
+    // removing a file uploaded this session hard deletes it from DRS
+    await page.route('**/documents/client/CORP-DS0100001004', async (route) => {
+      await route.fulfill({ status: 200, json: {} })
+    })
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    const checkbox = page.getByRole('checkbox', { name: supportingDocsCheckboxName })
+    await checkbox.check()
+    const fileInputs = page.getByTestId('court-order-file-upload').locator('input[type="file"]')
+    await expect(fileInputs).toHaveCount(2)
+
+    const uploadResponse = page.waitForResponse(
+      res => res.url().includes('/documents/client/courtOrder/') && res.request().method() === 'POST',
+      { timeout: 10000 }
+    )
+    // the second file input is the multi supporting-documents upload
+    await fileInputs.last().setInputFiles({
+      name: 'Affidavit.pdf',
+      mimeType: 'application/pdf',
+      buffer: createLetterSizePdfBuffer()
+    })
+    await uploadResponse
+
+    await expect(page.getByTestId('court-order-file-upload').getByText('Affidavit.pdf')).toBeVisible({ timeout: 10000 })
+    await expect(checkbox).toBeChecked()
+    await expect(checkbox).toBeDisabled()
+
+    await page.getByRole('button', { name: 'Remove Affidavit.pdf' }).first().click()
+
+    await expect(page.getByTestId('court-order-file-upload').getByText('Affidavit.pdf')).not.toBeVisible()
+    await expect(checkbox).toBeEnabled()
+    await expect(checkbox).toBeChecked()
   })
 })

@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { useCourtOrderDocs } from './utils'
 
-const { identifier, filingId, entityType, disabled, isFileOrDetailsRequired = false } = defineProps<{
+const {
+  identifier,
+  filingId,
+  entityType,
+  disabled,
+  isFileOrDetailsRequired = false,
+  supportingDocsCheckbox = false
+} = defineProps<{
   identifier?: string
   filingId: string | number
   entityType: CorpTypeCd
   disabled?: boolean
   isFileOrDetailsRequired?: boolean
+  supportingDocsCheckbox?: boolean // gates the supporting documents upload behind a checkbox
+  supportingDocsError?: string
 }>()
 
 const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
+// UI only flag revealing the supporting documents upload (derived true by the schema when any exist)
+const hasSupportingDocs = defineModel<boolean | undefined>('hasSupportingDocs')
 
 const {
   courtOrderFile,
@@ -31,6 +42,24 @@ const {
   entityType: () => entityType,
   disabled: () => disabled
 })
+
+const hasActiveSupportingDocs = computed(() => hasActiveSupportingDoc(supportingDocs.value))
+
+const isSupportingDocsChecked = computed({
+  get: () => !!hasSupportingDocs.value,
+  set: (checked: boolean) => {
+    hasSupportingDocs.value = checked
+    // unchecking drops failed uploads so they can't linger behind the hidden section
+    if (!checked) {
+      supportingDocs.value
+        .filter(doc => doc.status === CourtOrderFileStatus.ERROR)
+        .forEach(doc => onFileAction(doc.id, 'dismiss'))
+    }
+  }
+})
+
+// without the checkbox variant the supporting documents upload always shows
+const showSupportingDocs = computed(() => !supportingDocsCheckbox || isSupportingDocsChecked.value)
 
 const supportingDocErrorIds = computed(() => supportingDocs.value
   .filter(doc => doc.status === CourtOrderFileStatus.ERROR && doc.errorMessage)
@@ -121,7 +150,22 @@ defineExpose({
       </FormCourtOrderPoaFullFileUploadList>
     </fieldset>
     <USeparator class="py-4" />
-    <fieldset class="flex flex-col min-w-0" :aria-label="$t('label.supportingDocumentsUpload')">
+    <!-- not in a UFormField: checking the box must not validate it, the rule only applies on submit -->
+    <!-- no aria-invalid because it turns the box and label red -->
+    <UCheckbox
+      v-if="supportingDocsCheckbox"
+      v-model="isSupportingDocsChecked"
+      data-testid="court-order-add-supporting-docs-checkbox"
+      :disabled="disabled || hasActiveSupportingDocs"
+      :label="$t('label.addSupportingDocuments')"
+      :aria-describedby="supportingDocsError ? 'add-supporting-docs-alert' : undefined"
+    />
+    <fieldset
+      v-if="showSupportingDocs"
+      class="flex flex-col min-w-0"
+      :class="supportingDocsCheckbox ? 'pt-6' : ''"
+      :aria-label="$t('label.supportingDocumentsUpload')"
+    >
       <div
         ref="dropzoneRef"
         class="flex flex-col gap-4 -mx-6 p-6 rounded transition-colors -mt-2"
@@ -158,6 +202,17 @@ defineExpose({
             </span>
           </div>
         </UFileUpload>
+        <div
+          v-if="supportingDocsError"
+          id="add-supporting-docs-alert"
+          class="flex gap-1 items-start"
+          role="alert"
+        >
+          <UIcon name="i-mdi-warning" class="text-error size-6 shrink-0" />
+          <p class="text-error text-base">
+            {{ supportingDocsError }}
+          </p>
+        </div>
       </div>
       <FormCourtOrderPoaFullFileUploadList :aria-label="$t('label.uploadedSupportingDocs')">
         <FormCourtOrderPoaFullFileUploadItem

@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage } from '../../test-utils'
+import { setupCourtOrderPage, navigateToCourtOrderPage, goToCourtOrderReviewStep } from '../../test-utils'
 import { COURT } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 const filingId = '999002'
 const poaCheckboxName = 'This filing is pursuant to a Plan of Arrangement'
+const supportingDocsCheckboxName = 'Add supporting documents'
 
 async function assertCommonElements(page: Page) {
   await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
@@ -44,12 +45,31 @@ test.describe('Court Order - Page init', () => {
     await expect(page.getByTestId('court-order-poa-checkbox')).toBeVisible()
     await expect(page.getByTestId('court-order-text-input')).toBeVisible()
     await expect(page.getByTestId('court-order-file-upload')).toBeVisible()
-    await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+    // the staff payment is collected on the review step
+    await expect(page.getByTestId('staff-payment-section')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Review and Confirm' })).toBeVisible()
+
+    // the card sits directly under the h1 - no card heading or description
+    await expect(page.getByText('Court Order and Plan of Arrangement')).not.toBeVisible()
+    await expect(page.getByRole('group', { name: 'Court Order and Plan of Arrangement' })).toBeVisible()
+    await expect(page.getByTestId('form-section-court-order').getByText('Max file size 50 MB')).toBeVisible()
+
+    // the court order number is entered before the plan of arrangement
+    const numberFirst = await page.getByTestId('form-section-court-order').evaluate((section) => {
+      const number = section.querySelector('[data-testid="court-order-number-input"]')
+      const poa = section.querySelector('[data-testid="court-order-poa-checkbox"]')
+      return !!(number && poa && (number.compareDocumentPosition(poa) & Node.DOCUMENT_POSITION_FOLLOWING))
+    })
+    expect(numberFirst).toBe(true)
 
     // a fresh (empty) draft should not pre-fill any values
     await expect(page.getByTestId('court-order-number-input')).toHaveValue('')
     await expect(page.getByRole('checkbox', { name: poaCheckboxName })).not.toBeChecked()
     await expect(page.getByTestId('court-order-text-input')).toHaveValue('')
+    // the supporting documents upload stays hidden behind its checkbox
+    await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).not.toBeChecked()
+    await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).toBeEnabled()
+    await expect(page.getByTestId('court-order-file-upload').locator('input[type="file"]')).toHaveCount(1)
   })
 
   test('should hydrate court order fields from a non-empty draft', async ({ page }) => {
@@ -73,11 +93,78 @@ test.describe('Court Order - Page init', () => {
     await expect(page.getByRole('checkbox', { name: poaCheckboxName })).toBeChecked()
     await expect(page.getByTestId('court-order-text-input')).toHaveValue('Order pursuant to a court decision.')
     await expect(page.getByTestId('court-order-file-upload').getByText('Court Order.pdf')).toBeVisible()
+    await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).not.toBeChecked()
+  })
+
+  test('should hydrate a supporting document with the supporting docs box checked and locked', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+      draftOverrides: {
+        courtOrder: {
+          fileNumber: '12345-6789',
+          files: [
+            { fileKey: 'CORP-DS0100001003', fileName: 'Court Order.pdf', documentType: 'court_order' },
+            { fileKey: 'CORP-DS0100001004', fileName: 'Affidavit.pdf', documentType: 'supporting_document' }
+          ]
+        }
+      }
+    })
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).toBeChecked()
+    await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).toBeDisabled()
+    await expect(page.getByTestId('court-order-file-upload').getByText('Affidavit.pdf')).toBeVisible()
+    await expect(page.getByTestId('court-order-file-upload').locator('input[type="file"]')).toHaveCount(2)
+  })
+
+  test('should review the court order and return to the form with the values retained', async ({ page }) => {
+    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+      draftOverrides: {
+        courtOrder: {
+          fileNumber: '12345-6789',
+          effectOfOrder: 'planOfArrangement',
+          orderDetails: 'Order pursuant to a court decision.',
+          files: [
+            { fileKey: 'CORP-DS0100001003', fileName: 'Court Order.pdf', documentType: 'court_order' },
+            { fileKey: 'CORP-DS0100001004', fileName: 'Affidavit.pdf', documentType: 'supporting_document' }
+          ]
+        }
+      }
+    })
+    await navigateToCourtOrderPage(page, identifier, filingId)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await goToCourtOrderReviewStep(page)
+
+    await expect(page.getByRole('heading', { name: 'Court Order', exact: true })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Review and Confirm' })).toBeVisible()
+    await expect(page.getByTestId('review-court-order-number')).toHaveText('12345-6789')
+    await expect(page.getByTestId('review-court-order-poa')).toHaveText('Yes')
+    await expect(page.getByTestId('review-court-order-details')).toHaveText('Order pursuant to a court decision.')
+    await expect(page.getByTestId('review-court-order-document').getByText('Court Order.pdf')).toBeVisible()
+    await expect(page.getByTestId('review-supporting-documents').getByText('Affidavit.pdf')).toBeVisible()
+    // review rows are display only
+    await expect(page.getByTestId('review-court-order-section').getByRole('button', { name: /Delete|Remove/ }))
+      .toHaveCount(0)
+    await expect(page.getByTestId('staff-payment-section')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible()
+    await expect(page.getByTestId('form-section-court-order')).not.toBeVisible()
+
+    await page.getByRole('button', { name: 'Back' }).click()
+
+    await expect(page.getByTestId('form-section-court-order')).toBeVisible()
+    await expect(page.getByTestId('review-court-order-section')).not.toBeVisible()
+    await expect(page.getByTestId('court-order-number-input')).toHaveValue('12345-6789')
+    await expect(page.getByRole('checkbox', { name: poaCheckboxName })).toBeChecked()
+    await expect(page.getByTestId('court-order-file-upload').getByText('Court Order.pdf')).toBeVisible()
   })
 
   test('should hydrate the staff payment selection from a resumed draft', async ({ page }) => {
     await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
       draftOverrides: {
+        courtOrder: { fileNumber: '12345-6789', orderDetails: 'Order pursuant to a court decision.' },
         header: {
           staffPaymentOption: 'BCOL',
           bcolAccountNumber: '123456',
@@ -90,6 +177,8 @@ test.describe('Court Order - Page init', () => {
     await navigateToCourtOrderPage(page, identifier, filingId)
     await page.waitForLoadState('networkidle')
     await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+
+    await goToCourtOrderReviewStep(page)
 
     await expect(page.getByRole('radio', { name: 'BC OnLine' })).toBeChecked()
     await expect(page.getByTestId('bcolnumberinput')).toHaveValue('123456')

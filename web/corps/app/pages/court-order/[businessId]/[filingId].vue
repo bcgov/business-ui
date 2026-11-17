@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { FormErrorEvent } from '@nuxt/ui'
-import { z } from 'zod'
+import { omit } from 'es-toolkit'
 
 const { t } = useI18n()
 const store = useCourtOrderStore()
 const { initializing } = storeToRefs(store)
 const route = useRoute()
-const businessStore = useBusinessStore()
 const modal = useFilingModals()
 const { handleButtonLoading, setAlertText: setBtnCtrlAlert } = useConnectButtonControl()
-const staffPayFormRef = useTemplateRef<StaffPaymentFieldsetRef>('staff-pay-ref')
 
 const businessId = route.params.businessId as string
 const filingId = route.params.filingId as string // the pre-created court order draft filing ID
@@ -23,13 +20,18 @@ const filingText = {
 const { breadcrumbs, dashboardUrl } = useFilingNavigation(filingText.h1)
 
 definePageMeta({
-  layout: 'connect-pay-tombstone-buttons',
+  layout: 'connect-pay-tombstone-buttons-stacked',
   middleware: ['connect-auth']
 })
 
 useHead({
   title: filingText.title
 })
+
+// the supporting documents checkbox is UI only: checking it alone is not an unsaved change
+function withoutUiOnlyFields(state: CourtOrderFormSchema) {
+  return state.courtOrder ? { ...state, courtOrder: omit(state.courtOrder, ['hasSupportingDocs']) } : state
+}
 
 // no canSubmit check - the court order schema enforces the required filing data
 const {
@@ -39,18 +41,18 @@ const {
   revokeBeforeUnload
 } = useFilingTaskGuards(
   [
-    [() => store.initialFormState, () => store.formState]
+    [() => withoutUiOnlyFields(store.initialFormState), () => withoutUiOnlyFields(store.formState)]
   ]
 )
 
-function onError(event: FormErrorEvent) {
-  const firstError = event?.errors?.[0]
-
-  if (firstError?.name === 'staffPayment.option') {
-    staffPayFormRef.value?.setFocusOnError()
-  } else {
-    onFormSubmitError(event)
+// step 1 only submits (and so reaches here) once the court order section validates
+function reviewAndConfirm() {
+  // an upload still in progress has no file key yet and would be left out of the filing
+  if (store.formState.courtOrder.files.some(file => file.status === CourtOrderFileStatus.LOADING)) {
+    return setBtnCtrlAlert(t('validation.waitForDocumentUploads'), 'right', 1)
   }
+  setBtnCtrlAlert(undefined)
+  nextStep()
 }
 
 async function submitFiling() {
@@ -69,7 +71,7 @@ async function submitFiling() {
 async function saveFiling(enableUnsavedChangesBlock = true) {
   try {
     if (enableUnsavedChangesBlock && !canSave()) {
-      return setBtnCtrlAlert(t('text.noChangesToSave'), 'left')
+      return setBtnCtrlAlert(t('text.noChangesToSave'), 'right', 0)
     }
     await store.submit(false)
     revokeBeforeUnload()
@@ -89,60 +91,54 @@ async function cancelFiling() {
   await navigateTo(dashboardUrl.value, { external: true })
 }
 
-useFilingPageWatcher({
+const { currentStep, nextStep } = useFilingPageWatcher({
   store,
   businessId,
   filingType: FILING_TYPE,
   draftId: filingId, // route param filingId = the pre-created court order draft's filing ID
-  saveFiling: { onClick: () => saveFiling(true) },
-  cancelFiling: { onClick: cancelFiling },
-  submitFiling: { form: 'court-order-filing' },
+  backButton: { removeAlertSpacing: true },
+  saveFiling: { onClick: () => saveFiling(true), removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
+  cancelFiling: { onClick: cancelFiling, removeAlertSpacing: true },
+  submitFiling: { removeAlertSpacing: true, class: 'min-w-[300px] justify-center' },
+  steps: [
+    {
+      cancelFiling: { class: 'min-w-[300px] justify-center' },
+      submitFiling: {
+        label: t('label.reviewAndConfirm'),
+        form: 'court-order-filing-step-1',
+        type: 'submit',
+        onClick: undefined
+      }
+    },
+    { submitFiling: { form: 'court-order-filing-step-2', type: 'submit' } }
+  ],
   breadcrumbs,
   setOnBeforeSessionExpired: async () => {
     if (canSave()) {
       await saveFiling(false)
     }
-  }
+  },
+  buttonLayout: 'stackedDefault'
 })
 </script>
 
 <template>
-  <div>
+  <div class="py-6 space-y-6 sm:py-10 sm:space-y-10">
     <ConnectSpinner v-if="initializing" fullscreen />
-    <UForm
-      id="court-order-filing"
-      ref="court-order-filing"
-      :state="store.formState"
-      :schema="z.any()"
-      novalidate
-      class="py-6 space-y-6 sm:py-10 sm:space-y-10"
-      :aria-label="filingText.h1"
-      @error="onError"
+    <h1 id="filing-h1">
+      {{ filingText.h1 }}
+    </h1>
+    <AlertDraftRebase />
+    <!-- v-show (not v-if): keeps the upload session state (hard delete on remove) across Back -->
+    <FormCourtOrderStep1
+      v-show="currentStep === 1"
+      id="court-order-filing-step-1"
+      @submit="reviewAndConfirm"
+    />
+    <FormCourtOrderStep2
+      v-if="currentStep === 2"
+      id="court-order-filing-step-2"
       @submit="submitFiling"
-    >
-      <div class="space-y-4">
-        <h1>{{ filingText.h1 }}</h1>
-        <p>{{ $t('page.courtOrder.desc') }}</p>
-      </div>
-      <AlertDraftRebase />
-
-      <FormCourtOrderPoaFullFiling
-        v-model="store.formState.courtOrder"
-        data-testid="form-section-court-order"
-        name="courtOrder"
-        order="1"
-        :disabled="initializing"
-        :identifier="businessStore.businessIdentifier"
-        :entity-type="businessStore.business?.legalType as CorpTypeCd"
-        :filing-id="filingId"
-      />
-
-      <StaffPaymentFieldset
-        ref="staff-pay-ref"
-        v-model="store.formState.staffPayment"
-        order="2"
-        :initializing="initializing"
-      />
-    </UForm>
+    />
   </div>
 </template>

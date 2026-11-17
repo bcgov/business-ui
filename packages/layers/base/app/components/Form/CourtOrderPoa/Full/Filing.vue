@@ -4,7 +4,6 @@ import type { Form, FormError } from '@nuxt/ui'
 // Page section for the standalone court order filing.
 defineProps<{
   name?: string
-  order?: string | number
   disabled?: boolean
   identifier?: string
   entityType: CorpTypeCd
@@ -19,16 +18,25 @@ const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-filin
 
 const sectionError = computed<FormError | undefined>(() => {
   const errors = formRef.value?.getErrors()
-  return errors?.find(e => ['fileNumber', 'orderDetails', 'files'].some(name => e.name?.includes(name)))
+  return errors?.find(e => ['fileNumber', 'orderDetails', 'files', 'hasSupportingDocs']
+    .some(name => e.name?.includes(name)))
 })
 
-// retrigger validation on the order details and files fields when one changes
+const supportingDocsError = computed(() => formRef.value?.getErrors('hasSupportingDocs')[0]?.message)
+
+// retrigger validation on the order details and files when one changes
 watch(
-  () => [model.value.orderDetails, model.value.files],
+  () => [model.value.orderDetails, model.value.files, model.value.hasSupportingDocs],
   () => {
-    if (formRef.value?.getErrors()?.length) {
-      formRef.value.validate({ silent: true })
+    if (!formRef.value?.getErrors()?.length) {
+      return
     }
+    // the checkbox rule only revalidates once shown: checking the box to add documents must not raise it
+    formRef.value.validate({
+      // @ts-expect-error - field names not being inferred correctly
+      name: supportingDocsError.value ? ['orderDetails', 'files', 'hasSupportingDocs'] : ['orderDetails', 'files'],
+      silent: true
+    })
   },
   { deep: true }
 )
@@ -41,23 +49,25 @@ watch(
     nested
     :name
   >
-    <ConnectFieldset
-      :label="order ? `${order}. ${$t('label.courtOrderAndPoa')}` : $t('label.courtOrderAndPoa')"
-      body-variant="card"
-      orientation="vertical"
-      :error="sectionError"
-    >
-      <FormCourtOrderPoaFields
-        v-model="model"
-        variant="section"
-        is-court-order
-        is-file-or-details-required
-        :disabled
-        :filing-id="filingId"
-        :identifier
-        :entity-type="entityType"
-        @poa-change="formRef?.clear()"
-      />
-    </ConnectFieldset>
+    <fieldset :aria-label="$t('label.courtOrderAndPoa')">
+      <div
+        class="bg-white rounded shadow-xs overflow-hidden"
+        :class="sectionError ? 'shadow-section-error' : ''"
+      >
+        <FormCourtOrderPoaFields
+          v-model="model"
+          variant="section"
+          is-court-order
+          is-file-or-details-required
+          supporting-docs-checkbox
+          :supporting-docs-error="supportingDocsError"
+          :disabled
+          :filing-id="filingId"
+          :identifier
+          :entity-type="entityType"
+          @poa-change="formRef?.clear()"
+        />
+      </div>
+    </fieldset>
   </UForm>
 </template>

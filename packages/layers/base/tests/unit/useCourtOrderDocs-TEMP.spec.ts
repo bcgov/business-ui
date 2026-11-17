@@ -64,8 +64,8 @@ function stubGlobalXhr(xhrInstance: any) {
 
 describe('court order file constraints', () => {
   it('should default to the limits enforced by the api', () => {
-    expect(maxFileSize).toBe(30 * 1024 * 1024)
-    expect(formatBytes(maxFileSize)).toBe('30 MB')
+    expect(maxFileSize).toBe(50 * 1024 * 1024)
+    expect(formatBytes(maxFileSize)).toBe('50 MB')
     expect(acceptedFileTypes).toEqual(['application/pdf', 'image/jpeg', 'image/png', 'image/gif'])
   })
 })
