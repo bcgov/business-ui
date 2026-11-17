@@ -45,38 +45,26 @@ function onError(event: FormErrorEvent) {
 
         <ConnectPageSection
           data-testid="review-court-order-section"
-          :heading="{ label: $t('label.courtOrderAndPoa'), icon: 'i-mdi-gavel' }"
+          :heading="{ label: $t('label.courtOrderAndPoa'), icon: 'i-mdi-home-city-outline' }"
         >
-          <dl class="divide-y divide-line-muted padding-x-default py-8">
-            <div class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6">
-              <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-                {{ $t('label.courtOrder') }}
-              </dt>
-              <dd data-testid="review-court-order-number" class="break-words">
+          <div class="flex flex-col gap-6 py-6">
+            <ConnectFormFieldWrapper :label="$t('label.courtOrder')" orientation="horizontal">
+              <p data-testid="review-court-order-number" class="break-words">
                 {{ store.formState.courtOrder.fileNumber }}
-              </dd>
-            </div>
-            <div class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6">
-              <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-                {{ $t('label.planOfArrangement') }}
-              </dt>
-              <dd data-testid="review-court-order-poa">
+              </p>
+            </ConnectFormFieldWrapper>
+            <ConnectFormFieldWrapper :label="$t('label.planOfArrangement')" orientation="horizontal">
+              <p data-testid="review-court-order-poa">
                 {{ $t(store.formState.courtOrder.effectOfOrder ? 'label.yes' : 'label.no') }}
-              </dd>
-            </div>
-            <div class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6">
-              <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-                {{ $t('label.courtOrderDetails') }}
-              </dt>
-              <dd data-testid="review-court-order-details" class="whitespace-pre-line break-words">
+              </p>
+            </ConnectFormFieldWrapper>
+            <ConnectFormFieldWrapper :label="$t('label.courtOrderDetails')" orientation="horizontal">
+              <p data-testid="review-court-order-details" class="whitespace-pre-line break-words">
                 {{ store.formState.courtOrder.orderDetails?.trim() || $t('label.none') }}
-              </dd>
-            </div>
-            <div class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6">
-              <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-                {{ $t('label.courtOrderDocument') }}
-              </dt>
-              <dd data-testid="review-court-order-document" class="min-w-0 grow">
+              </p>
+            </ConnectFormFieldWrapper>
+            <ConnectFormFieldWrapper :label="$t('label.courtOrderDocument')" orientation="horizontal">
+              <div data-testid="review-court-order-document" class="min-w-0">
                 <FormCourtOrderPoaFullFileUploadList
                   v-if="courtOrderDocs.length"
                   :aria-label="$t('label.uploadedCourtOrders')"
@@ -88,16 +76,13 @@ function onError(event: FormErrorEvent) {
                     readonly
                   />
                 </FormCourtOrderPoaFullFileUploadList>
-                <template v-else>
+                <p v-else>
                   {{ $t('label.none') }}
-                </template>
-              </dd>
-            </div>
-            <div class="flex flex-col gap-2 py-6 first:pt-0 last:pb-0 sm:flex-row sm:gap-6">
-              <dt class="font-bold text-neutral-highlighted sm:w-48 sm:shrink-0">
-                {{ $t('label.supportingDocuments') }}
-              </dt>
-              <dd data-testid="review-supporting-documents" class="min-w-0 grow">
+                </p>
+              </div>
+            </ConnectFormFieldWrapper>
+            <ConnectFormFieldWrapper :label="$t('label.supportingDocuments')" orientation="horizontal">
+              <div data-testid="review-supporting-documents" class="min-w-0">
                 <FormCourtOrderPoaFullFileUploadList
                   v-if="supportingDocs.length"
                   :aria-label="$t('label.uploadedSupportingDocs')"
@@ -109,12 +94,12 @@ function onError(event: FormErrorEvent) {
                     readonly
                   />
                 </FormCourtOrderPoaFullFileUploadList>
-                <template v-else>
+                <p v-else>
                   {{ $t('label.none') }}
-                </template>
-              </dd>
-            </div>
-          </dl>
+                </p>
+              </div>
+            </ConnectFormFieldWrapper>
+          </div>
         </ConnectPageSection>
       </section>
 
