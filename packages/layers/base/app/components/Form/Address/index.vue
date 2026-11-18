@@ -222,7 +222,7 @@ defineExpose({
           id="delivery-address"
           v-model="model.deliveryAddress"
           schema-prefix="deliveryAddress"
-          street-help-text="no-po"
+          :street-help-text="noPoBox ? 'no-po' : 'none'"
           required
           :disabled-fields="disabledFields?.deliveryAddress"
           @should-validate="formRef?.clear(/^deliveryAddress.*/)"

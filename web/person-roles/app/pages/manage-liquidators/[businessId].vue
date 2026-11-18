@@ -258,7 +258,8 @@ onMounted(() => {
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
-            partyNameProps: { allowBusinessName: true, allowPreferredName: false }
+            partyNameProps: { allowBusinessName: true, allowPreferredName: false },
+            addressFormProps: { noPoBox: true }
           }"
         />
 
