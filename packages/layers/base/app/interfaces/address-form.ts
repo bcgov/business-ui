@@ -6,7 +6,7 @@ export interface AddressFormProps {
   bcCanadaOnly?: boolean | 'delivery'
   /** show the validation errors as soon as the form opens (e.g. to point out the fields a record is missing) */
   validateOnOpen?: boolean
-  /** the delivery address street cannot be a PO Box */
+  /** the delivery address street cannot be a PO Box (default true) - false allows a PO Box (e.g. liquidators) */
   noPoBox?: boolean
   /** drops the 'same as mailing' checkbox so the delivery inputs always show - the model's sameAs must be false */
   hideSameAs?: boolean

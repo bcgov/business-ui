@@ -259,7 +259,8 @@ onMounted(() => {
           :role-type="RoleTypeUi.LIQUIDATOR"
           :party-form-props="{
             partyNameProps: { allowBusinessName: true, allowPreferredName: false },
-            addressFormProps: { noPoBox: true }
+            // a liquidator's delivery address does not need to be a physical location
+            addressFormProps: { noPoBox: false }
           }"
         />
 
