@@ -61,22 +61,17 @@ describe('getAddressSchema', () => {
       expect(result.error!.issues.map(i => i.path.join('.'))).toContain('deliveryAddress.region')
     })
 
-    it('should raise the delivery errors on the mailing address while sameAs is checked', () => {
-      // the delivery inputs are hidden and mirror the mailing address when 'same as' is checked
+    it('should check the mailing address but raise the errors on the delivery address while sameAs is checked', () => {
+      // 'same as' makes the mailing address the delivery address - FormAddress unchecks it to show the errors
       const schema = getAddressSchema({ bcCanadaOnly: 'delivery' })
       const state = makeState({ country: 'US', region: 'WA', postalCode: '98101' })
+      state.deliveryAddress = { ...bcAddress }
       const result = schema.safeParse(state)
       expect(result.success).toBe(false)
       const issues = result.error!.issues.map(i => [i.path.join('.'), i.message])
-      expect(issues).toContainEqual([
-        'mailingAddress.country',
-        'Delivery Address must be in Canada. Uncheck "same as" to enter a different Delivery Address.'
-      ])
-      expect(issues).toContainEqual([
-        'mailingAddress.region',
-        'Delivery Address must be in British Columbia. Uncheck "same as" to enter a different Delivery Address.'
-      ])
-      expect(issues.map(i => i[0])).not.toContain('deliveryAddress.region')
+      expect(issues).toContainEqual(['deliveryAddress.country', 'Address must be in Canada'])
+      expect(issues).toContainEqual(['deliveryAddress.region', 'Address must be in British Columbia'])
+      expect(issues.map(i => i[0])).not.toContain('mailingAddress.region')
     })
 
     it('should ignore the delivery address while sameAs is checked', () => {
@@ -130,13 +125,15 @@ describe('noPoBox option', () => {
     expect(schema.safeParse(state).success).toBe(true)
   })
 
-  it('should raise the error on the mailing street while sameAs is checked', () => {
-    // the delivery inputs are hidden and mirror the mailing address when 'same as' is checked
+  it('should raise the error on the delivery street for a PO Box mailing address while sameAs is checked', () => {
+    // 'same as' makes the mailing address the delivery address - FormAddress unchecks it to show the error
     const schema = getAddressSchema({ noPoBox: true })
-    const result = schema.safeParse(makeState({ street: 'PO Box 234' }))
+    const state = makeState({ street: 'PO Box 234' })
+    state.deliveryAddress = { ...bcAddress }
+    const result = schema.safeParse(state)
     expect(result.success).toBe(false)
     expect(result.error!.issues.map(i => [i.path.join('.'), i.message]))
-      .toEqual([['mailingAddress.street', 'Address cannot be a PO Box']])
+      .toEqual([['deliveryAddress.street', 'Address cannot be a PO Box']])
   })
 
   it('should combine with the delivery BC rule', () => {
@@ -148,6 +145,42 @@ describe('noPoBox option', () => {
     const paths = result.error!.issues.map(i => i.path.join('.'))
     expect(paths).toContain('deliveryAddress.street')
     expect(paths).toContain('deliveryAddress.region')
+  })
+
+  // the office / custodian / liquidation records rule: both addresses in BC, only the delivery address
+  // must be a physical location
+  describe('with bcCanadaOnly: true', () => {
+    const getSchema = () => getAddressSchema({ bcCanadaOnly: true, noPoBox: true })
+
+    it('should allow a BC PO Box mailing address with a physical BC delivery address', () => {
+      const state = { ...makeState(), sameAs: false }
+      state.mailingAddress = { ...state.mailingAddress, street: 'PO Box 234' }
+      expect(getSchema().safeParse(state).success).toBe(true)
+    })
+
+    it('should reject a PO Box mailing address outside BC', () => {
+      const state = { ...makeState(), sameAs: false }
+      state.mailingAddress = { ...state.mailingAddress, street: 'PO Box 234', region: 'AB' }
+      const result = getSchema().safeParse(state)
+      expect(result.success).toBe(false)
+      expect(result.error!.issues.map(i => i.path.join('.'))).toEqual(['mailingAddress.region'])
+    })
+
+    it('should reject a BC PO Box delivery address', () => {
+      const state = { ...makeState(), sameAs: false }
+      state.deliveryAddress = { ...state.deliveryAddress, street: 'PO Box 234' }
+      const result = getSchema().safeParse(state)
+      expect(result.success).toBe(false)
+      expect(result.error!.issues.map(i => i.path.join('.'))).toEqual(['deliveryAddress.street'])
+    })
+
+    it('should reject a physical delivery address outside BC', () => {
+      const state = { ...makeState(), sameAs: false }
+      state.deliveryAddress = { ...state.deliveryAddress, region: 'AB' }
+      const result = getSchema().safeParse(state)
+      expect(result.success).toBe(false)
+      expect(result.error!.issues.map(i => i.path.join('.'))).toEqual(['deliveryAddress.region'])
+    })
   })
 })
 
@@ -196,7 +229,7 @@ describe('getAddressWithIdSchema', () => {
     expect(result.error!.issues.map(i => i.message)).toContain('Address must be in British Columbia')
   })
 
-  it('should raise the delivery errors on the mailing address while sameAs is checked', () => {
+  it('should raise the delivery errors on the delivery address while sameAs is checked', () => {
     const schema = getAddressWithIdSchema({ bcCanadaOnly: 'delivery' })
     const state = makeState({ region: 'AB' })
     const result = schema.safeParse({
@@ -205,7 +238,7 @@ describe('getAddressWithIdSchema', () => {
       mailingAddress: { ...state.mailingAddress, id: '2' }
     })
     expect(result.success).toBe(false)
-    expect(result.error!.issues.map(i => i.path.join('.'))).toEqual(['mailingAddress.region'])
+    expect(result.error!.issues.map(i => i.path.join('.'))).toEqual(['deliveryAddress.region'])
   })
 
   it('should keep default behaviour without the option', () => {

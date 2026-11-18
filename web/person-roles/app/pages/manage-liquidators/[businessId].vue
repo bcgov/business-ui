@@ -293,7 +293,7 @@ onMounted(() => {
           :table-title="$t('label.offices')"
           :allowed-actions="allowedOfficeActions"
           :allow-add-office-type="OfficeType.LIQUIDATION"
-          :address-form-props="{ bcCanadaOnly: true }"
+          :address-form-props="{ bcCanadaOnly: true, noPoBox: true }"
         />
 
         <ConnectFormFieldWrapper

@@ -39,7 +39,8 @@ interface AddressPairState {
 
 /**
  * Applies the delivery-only rules (bcCanadaOnly: 'delivery', noPoBox). While 'same as' is checked the delivery
- * inputs are hidden and mirror the mailing address, so the errors are raised on the visible mailing inputs instead.
+ * address is the mailing address, so that is what gets checked - the errors still go on the delivery inputs,
+ * and FormAddress unchecks 'same as' to show them.
  */
 function withDeliveryRules<T extends z.ZodType<AddressPairState>>(schema: T, options?: AddressSchemaOptions) {
   const bcCanadaDelivery = options?.bcCanadaOnly === 'delivery'
@@ -49,18 +50,19 @@ function withDeliveryRules<T extends z.ZodType<AddressPairState>>(schema: T, opt
   const t = useNuxtApp().$i18n.t
 
   return schema.superRefine((data, ctx) => {
-    const target = data.sameAs ? 'mailingAddress' : 'deliveryAddress'
-    const prefix = data.sameAs ? 'validation.deliveryAddress' : 'validation.address'
+    const delivery = data.sameAs ? data.mailingAddress : data.deliveryAddress
+    const addIssue = (field: string, message: string) =>
+      ctx.addIssue({ code: 'custom', path: ['deliveryAddress', field], message: t(message) })
     if (bcCanadaDelivery) {
-      if (data[target].country !== 'CA') {
-        ctx.addIssue({ code: 'custom', path: [target, 'country'], message: t(`${prefix}MustBeInCanada`) })
+      if (delivery.country !== 'CA') {
+        addIssue('country', 'validation.addressMustBeInCanada')
       }
-      if (data[target].region !== 'BC') {
-        ctx.addIssue({ code: 'custom', path: [target, 'region'], message: t(`${prefix}MustBeInBc`) })
+      if (delivery.region !== 'BC') {
+        addIssue('region', 'validation.addressMustBeInBc')
       }
     }
-    if (options?.noPoBox && PO_BOX_REGEX.test(data[target].street)) {
-      ctx.addIssue({ code: 'custom', path: [target, 'street'], message: t('validation.addressCannotBePoBox') })
+    if (options?.noPoBox && PO_BOX_REGEX.test(delivery.street)) {
+      addIssue('street', 'validation.addressCannotBePoBox')
     }
   })
 }

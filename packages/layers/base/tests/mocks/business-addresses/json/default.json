@@ -1,25 +1,25 @@
 {
     "liquidationRecordsOffice": {
         "deliveryAddress": {
-            "addressCity": "Calgary",
+            "addressCity": "Kelowna",
             "addressCountry": "CA",
             "addressRegion": "BC",
             "addressType": "delivery",
             "deliveryInstructions": "",
             "id": 3324735,
-            "postalCode": "T3B 5P3",
-            "streetAddress": "456-3223 83 St NW",
+            "postalCode": "V1Y 6H2",
+            "streetAddress": "456 Bernard Ave",
             "streetAddressAdditional": ""
         },
         "mailingAddress": {
-            "addressCity": "Calgary",
+            "addressCity": "Kelowna",
             "addressCountry": "CA",
             "addressRegion": "BC",
             "addressType": "mailing",
             "deliveryInstructions": "",
             "id": 3324734,
-            "postalCode": "T3B 5P3",
-            "streetAddress": "457-3223 83 St NW",
+            "postalCode": "V1Y 6H2",
+            "streetAddress": "457 Bernard Ave",
             "streetAddressAdditional": ""
         }
     },

@@ -78,7 +78,7 @@ function onActionPrevented() {
       :table-title="$t('label.officeAddresses')"
       subject=""
       variant="correct"
-      :address-form-props="{ bcCanadaOnly: true }"
+      :address-form-props="{ bcCanadaOnly: 'delivery', noPoBox: true }"
       :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
       :prevent-actions="hasActiveSubForm"
       :action-prevented-signal="actionPreventedSignal"
@@ -165,6 +165,7 @@ function onActionPrevented() {
       :allowed-actions="custodianAllowedActions"
       :party-form-props="{
         partyNameProps: { allowBusinessName: false, allowPreferredName: false },
+        addressFormProps: { bcCanadaOnly: 'delivery', noPoBox: true },
         hideRemove: true
       }"
       :action-prevented-signal="actionPreventedSignal"

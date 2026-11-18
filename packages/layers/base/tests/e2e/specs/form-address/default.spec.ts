@@ -61,19 +61,26 @@ test.describe('FormAddress (default)', () => {
     await expect(page.getByTestId('delivery-address-container')).not.toBeVisible()
   })
 
-  test('Should open and reset mailing address if `same as` checked and user edits delivery address', async (
+  test('Should keep the delivery address in sync if `same as` checked and user edits mailing address', async (
     { page }
   ) => {
     await page.goto('./en-CA/examples/components/Form/Address/default')
     await page.waitForLoadState('networkidle')
     const deliveryAddress = page.getByTestId('delivery-address-container')
     const mailingAddress = page.getByTestId('mailing-address-container')
+    const sameAs = page.getByRole('checkbox', { name: 'Delivery Address same as Mailing Address' })
     await expect(deliveryAddress).toBeVisible()
     await expect(mailingAddress).toBeVisible()
     await page.getByText('Delivery Address same as Mailing Address').click()
 
     await expect(deliveryAddress).not.toBeVisible()
     await mailingAddress.getByTestId('mailing-address-input-streetAdditional').fill('updated')
+    // 'same as' stays checked - the delivery address mirrors the mailing edit
+    await expect(sameAs).toBeChecked()
+    await expect(deliveryAddress).not.toBeVisible()
+
+    await page.getByText('Delivery Address same as Mailing Address').click()
     await expect(deliveryAddress).toBeVisible()
+    await expect(deliveryAddress.getByTestId('delivery-address-input-streetAdditional')).toHaveValue('updated')
   })
 })

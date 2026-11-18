@@ -14,6 +14,12 @@ const activeOffice = ref<ActiveOfficesSchema | undefined>(undefined)
 const loading = ref(false)
 
 const offices = computed(() => formatChangeOfAddressOfficesApi(tableState.value))
+
+// mirrors the apps: the liquidation records office (manage liquidators) needs both addresses in BC, while the
+// registered / records offices only need the delivery address in BC - neither delivery address may be a PO Box
+const addressFormProps = computed<AddressFormProps>(() => activeOffice.value?.type === OfficeType.LIQUIDATION
+  ? { bcCanadaOnly: true, noPoBox: true }
+  : { bcCanadaOnly: 'delivery', noPoBox: true })
 </script>
 
 <template>
@@ -30,7 +36,7 @@ const offices = computed(() => formatChangeOfAddressOfficesApi(tableState.value)
         subject="Office"
         table-title="Offices"
         :allowed-actions="[ManageAllowedAction.ADDRESS_CHANGE]"
-        :address-form-props="{ bcCanadaOnly: true }"
+        :address-form-props
       />
     </ConnectPageSection>
     <ConnectPageSection

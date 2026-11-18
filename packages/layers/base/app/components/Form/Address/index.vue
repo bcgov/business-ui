@@ -19,6 +19,7 @@ const model = defineModel<AddressWithIdSchema>({ required: true })
 const validateEditableFields = (state: unknown) => getEditableAddressErrors(schema, state, props.disabledFields)
 
 const formRef = useTemplateRef<Form<AddressWithIdSchema>>('address-form')
+const deliverySectionRef = useTemplateRef<HTMLElement>('delivery-section')
 
 const formErrors = computed<{
   mailing: FormError<string> | undefined
@@ -31,38 +32,132 @@ const formErrors = computed<{
   }
 })
 
-// reset delivery address if 'sameAs' is checked and the user makes changes to mailing address
-watchDebounced(
-  model.value.mailingAddress,
+function copyMailingToDelivery() {
+  const id = model.value.deliveryAddress.id
+  model.value.deliveryAddress = { ...model.value.mailingAddress, id }
+}
+
+// while 'same as' is checked the delivery address mirrors the mailing address - keep it in sync on mailing edits
+// (getter source so a parent replacing the mailing address object is still tracked). The country / region are
+// selects, so their rule errors (e.g. delivery must be in BC) are checked on every change; the street is typed,
+// so its PO Box check waits for the mailing inputs to lose focus (see onMailingFocusOut)
+watch(
+  () => model.value.mailingAddress,
   () => {
     if (model.value.sameAs) {
-      model.value.deliveryAddress = {
-        id: model.value.deliveryAddress.id,
-        street: '',
-        streetAdditional: '',
-        city: '',
-        region: '',
-        postalCode: '',
-        country: '',
-        locationDescription: ''
-      }
-      model.value.sameAs = false
+      copyMailingToDelivery()
+      validateFilledFields(['country', 'region'])
     }
   },
-  { debounce: 100 }
+  { deep: true }
 )
+
+function onMailingFocusOut() {
+  if (model.value.sameAs) {
+    validateFilledFields()
+  }
+}
 
 // sync mailing address with delivery address on 'same as' checkbox click
 watch(
   () => model.value.sameAs,
   (v) => {
     if (v) {
-      const id = model.value.deliveryAddress.id
-      model.value.deliveryAddress = { ...model.value.mailingAddress, id }
+      copyMailingToDelivery()
+      // errors raised before the copy (e.g. validateOnOpen) would otherwise keep the fieldset flagged
+      formRef.value?.clear(/deliveryAddress/)
+      validateFilledFields()
     }
-    // clear the delivery errors either way: on check, errors raised before the copy (e.g. validateOnOpen)
-    // would otherwise keep the fieldset flagged with nothing left to fix
-    formRef.value?.clear(/deliveryAddress/)
+  }
+)
+
+// surfaces the rule errors (must be in BC, no PO Box) while 'same as' is checked, instead of waiting for submit.
+// Only the fields with a value are validated, so empty required fields are not flagged early. `fields` limits the
+// check to those address fields (e.g. ['region'])
+function validateFilledFields(fields?: string[]) {
+  const filled = getEditableAddressErrors(schema, model.value, props.disabledFields).filter((error) => {
+    const [address, field] = error.name.split('.') as ['mailingAddress' | 'deliveryAddress', string]
+    return (!fields || fields.includes(field))
+      && !!(model.value[address] as Record<string, unknown> | undefined)?.[field]
+  })
+  if (!filled.length) {
+    return
+  }
+  const applyErrors = () => {
+    if (!formRef.value) {
+      return
+    }
+    const names = new Set(filled.map(error => error.name))
+    const others = formRef.value.getErrors().filter(error => !error.name || !names.has(error.name))
+    formRef.value.setErrors([...others, ...filled])
+  }
+  if (model.value.sameAs && containsDeliveryOnlyError(filled)) {
+    // setErrors drops the errors of unmounted inputs - show the delivery inputs first, then set the errors
+    copyMailingToDelivery()
+    model.value.sameAs = false
+    nextTick(() => {
+      applyErrors()
+      focusFirstDeliveryError()
+    })
+  } else {
+    applyErrors()
+  }
+}
+
+// a delivery error the mailing address does not share (same field, same message) - e.g. a PO Box street,
+// which only the delivery address forbids
+function getDeliveryOnlyErrors<T extends { name?: string, message: string }>(errors: T[]) {
+  const mailing = new Set(errors
+    .filter(e => e.name?.startsWith('mailingAddress.'))
+    .map(e => `${e.name!.slice('mailingAddress.'.length)}|${e.message}`))
+  return errors.filter(e => e.name?.startsWith('deliveryAddress.')
+    && !mailing.has(`${e.name.slice('deliveryAddress.'.length)}|${e.message}`))
+}
+
+function containsDeliveryOnlyError(errors: { name?: string, message: string }[]) {
+  return getDeliveryOnlyErrors(errors).length > 0
+}
+
+// the mailing address cannot be used as the delivery address (e.g. it is a PO Box) - checks the delivery rules
+// against the mailing address. Only the filled mailing fields count, so an unfinished mailing address
+// (e.g. no province yet) does not block 'same as'
+const sameAsUnavailable = computed(() => {
+  const mailingAddress = model.value.mailingAddress as Record<string, unknown>
+  const state = {
+    ...model.value,
+    sameAs: true,
+    deliveryAddress: { ...model.value.mailingAddress, id: model.value.deliveryAddress.id }
+  }
+  const errors = getEditableAddressErrors(schema, state, props.disabledFields)
+  return getDeliveryOnlyErrors(errors)
+    .some(e => !!mailingAddress[e.name.slice('deliveryAddress.'.length)])
+})
+
+// after 'same as' is unchecked automatically, take the user to the delivery error they need to fix: scroll the
+// first invalid delivery input into view and focus it. Waits a tick for the delivery inputs to render with the errors
+async function focusFirstDeliveryError() {
+  await nextTick()
+  const input = deliverySectionRef.value?.querySelector<HTMLElement>('[aria-invalid="true"]')
+  if (input) {
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    input.focus({ preventScroll: true })
+  }
+}
+
+// covers submit, where the form sets every error itself
+const hasDeliveryOnlyError = computed(() => containsDeliveryOnlyError(formRef.value?.getErrors() ?? []))
+
+// the delivery inputs are hidden while 'same as' is checked - on a delivery-only error uncheck it so the delivery
+// inputs show, prefilled with the mailing address, with the error. Errors both addresses share stay on the mailing
+// inputs with 'same as' left checked, since fixing the mailing address fixes both
+watch(
+  hasDeliveryOnlyError,
+  (deliveryOnly) => {
+    if (deliveryOnly && model.value.sameAs) {
+      copyMailingToDelivery()
+      model.value.sameAs = false
+      focusFirstDeliveryError()
+    }
   }
 )
 
@@ -96,13 +191,15 @@ defineExpose({
       :error="formErrors?.mailing"
       padding-class="xy-default"
     >
-      <ConnectFormAddress
-        id="mailing-address"
-        v-model="model.mailingAddress"
-        schema-prefix="mailingAddress"
-        :disabled-fields="disabledFields?.mailingAddress"
-        @should-validate="formRef?.clear(/^mailingAddress.*/)"
-      />
+      <div @focusout="onMailingFocusOut">
+        <ConnectFormAddress
+          id="mailing-address"
+          v-model="model.mailingAddress"
+          schema-prefix="mailingAddress"
+          :disabled-fields="disabledFields?.mailingAddress"
+          @should-validate="formRef?.clear(/^mailingAddress.*/)"
+        />
+      </div>
     </ConnectFieldset>
     <USeparator class="padding-x-default" />
     <!-- the 'same as' checkbox leads the delivery section - the delivery inputs only show while it is unchecked -->
@@ -111,11 +208,14 @@ defineExpose({
       :error="formErrors?.delivery"
       padding-class="xy-default"
     >
-      <div class="flex flex-col gap-6">
+      <div ref="delivery-section" class="flex flex-col gap-6">
+        <!-- greyed out while the mailing address cannot be the delivery address - never while checked, so it can
+          still be unchecked (a checked box with a delivery-only error unchecks itself) -->
         <UCheckbox
           v-if="!hideSameAs"
           v-model="model.sameAs"
           :label="$t('label.deliveryAddressSameAsMailing')"
+          :disabled="!model.sameAs && sameAsUnavailable"
         />
         <ConnectFormAddress
           v-if="hideSameAs || !model.sameAs"
