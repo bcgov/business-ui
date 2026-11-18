@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type { FormError, Form } from '@nuxt/ui'
 
-const props = defineProps<{
+// a delivery address must be a physical location by default - pass noPoBox: false to allow a PO Box (e.g. liquidators)
+const props = withDefaults(defineProps<{
   nested?: boolean
   name?: string
-} & AddressFormProps>()
+} & AddressFormProps>(), {
+  noPoBox: true
+})
 
 defineEmits<{
   'cancel': []
@@ -222,7 +225,7 @@ defineExpose({
           id="delivery-address"
           v-model="model.deliveryAddress"
           schema-prefix="deliveryAddress"
-          street-help-text="no-po"
+          :street-help-text="noPoBox ? 'no-po' : 'none'"
           required
           :disabled-fields="disabledFields?.deliveryAddress"
           @should-validate="formRef?.clear(/^deliveryAddress.*/)"
