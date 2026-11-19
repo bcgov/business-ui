@@ -27,7 +27,7 @@ test.describe('Task Guards', () => {
   test('should prevent save/submit when no changes have been made to liquidators or offices', async ({ page }) => {
     // select no fee to satisfy formState validation
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-    expect(staffNoFeeRadio).toBeVisible()
+    await expect(staffNoFeeRadio).toBeVisible()
     await staffNoFeeRadio.click()
 
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -40,7 +40,7 @@ test.describe('Task Guards', () => {
   test('should prevent save/submit when liquidator or office sub form open', async ({ page }) => {
     // select no fee to satisfy formState validation
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-    expect(staffNoFeeRadio).toBeVisible()
+    await expect(staffNoFeeRadio).toBeVisible()
     await staffNoFeeRadio.click()
 
     const liqSection = page.getByTestId('liquidator-info-section')
@@ -90,14 +90,14 @@ test.describe('Task Guards', () => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*manage-liquidators.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should display modal on cancel when changes have been made', async ({ page }) => {
     await expect(page.getByTestId('liquidator-info-section')).toContainText('TESTER TESTING')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-    expect(staffNoFeeRadio).toBeVisible()
+    await expect(staffNoFeeRadio).toBeVisible()
     await staffNoFeeRadio.click()
     await expect(staffNoFeeRadio).toBeChecked()
 
@@ -116,7 +116,7 @@ test.describe('Task Guards', () => {
     await expect(page.getByTestId('liquidator-info-section')).toContainText('TESTER TESTING')
 
     const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-    expect(staffNoFeeRadio).toBeVisible()
+    await expect(staffNoFeeRadio).toBeVisible()
     await staffNoFeeRadio.click()
     await expect(staffNoFeeRadio).toBeChecked()
 

@@ -58,15 +58,15 @@ test.describe('Manage Receivers - Submission', () => {
       }
 
       const addButton = page.getByRole('button', { name: 'Add Receiver' })
-      expect(addButton).toBeVisible()
+      await expect(addButton).toBeVisible()
       await addButton.click()
       await fillOutNewRelationship(page, newReceiver)
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
+      await expect(staffNoFeeRadio).toBeVisible()
       await staffNoFeeRadio.click()
 
       const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
+      await expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
       await submitBtn.click()
       const request = await submitRequest
@@ -78,16 +78,16 @@ test.describe('Manage Receivers - Submission', () => {
       await navigateToManageReceiversPage(page, ReceiverType.CEASE)
       await page.waitForLoadState('networkidle')
       const existingReceiver = page.getByRole('table').locator('tbody').getByRole('row').first()
-      expect(existingReceiver).toBeVisible()
+      await expect(existingReceiver).toBeVisible()
       const removeBtn = existingReceiver.getByRole('button', { name: 'Delete' })
-      expect(removeBtn).toBeVisible()
+      await expect(removeBtn).toBeVisible()
       await removeBtn.click()
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
+      await expect(staffNoFeeRadio).toBeVisible()
       await staffNoFeeRadio.click()
 
       const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
+      await expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
       await submitBtn.click()
       const request = await submitRequest
@@ -112,18 +112,18 @@ test.describe('Manage Receivers - Submission', () => {
         postalCode: 'V1N 4H8'
       }
       const existingReceiver = page.getByRole('table').locator('tbody').getByRole('row').first()
-      expect(existingReceiver).toBeVisible()
+      await expect(existingReceiver).toBeVisible()
       const changeBtn = existingReceiver.getByRole('button', { name: 'Change' })
-      expect(changeBtn).toBeVisible()
+      await expect(changeBtn).toBeVisible()
       await changeBtn.click()
       await fillOutAddress(page, newAddress, 'mailing')
       await selectDone(page)
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
+      await expect(staffNoFeeRadio).toBeVisible()
       await staffNoFeeRadio.click()
 
       const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
+      await expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
       await submitBtn.click()
       const request = await submitRequest
@@ -177,37 +177,37 @@ test.describe('Manage Receivers - Submission', () => {
       const changeNameReceiver = existingReceivers[1]!
       const ceaseReceiver = existingReceivers[2]!
       // change address
-      expect(changeAddressReceiver).toBeVisible()
+      await expect(changeAddressReceiver).toBeVisible()
       const changeBtn1 = changeAddressReceiver.getByRole('button', { name: 'Change' })
-      expect(changeBtn1).toBeVisible()
+      await expect(changeBtn1).toBeVisible()
       await changeBtn1.click()
       await fillOutAddress(page, changeAddress, 'mailing')
       await selectDone(page)
       // change name
-      expect(changeNameReceiver).toBeVisible()
+      await expect(changeNameReceiver).toBeVisible()
       const changeBtn2 = changeNameReceiver.getByRole('button', { name: 'Change' })
-      expect(changeBtn2).toBeVisible()
+      await expect(changeBtn2).toBeVisible()
       await changeBtn2.click()
       await fillOutName(page, changeName)
       await selectDone(page)
       // cease
-      expect(ceaseReceiver).toBeVisible()
+      await expect(ceaseReceiver).toBeVisible()
       const moreActionsBtn = ceaseReceiver.getByRole('button', { name: 'More Actions' })
-      expect(moreActionsBtn).toBeVisible()
+      await expect(moreActionsBtn).toBeVisible()
       await moreActionsBtn.click()
       await page.getByRole('menuitem', { name: 'Delete' }).click()
       // add new
       const addButton = page.getByRole('button', { name: 'Add Receiver' })
-      expect(addButton).toBeVisible()
+      await expect(addButton).toBeVisible()
       await addButton.click()
       await fillOutNewRelationship(page, newReceiver)
       // staff pay
       const staffNoFeeRadio = page.getByRole('radio', { name: 'No Fee' })
-      expect(staffNoFeeRadio).toBeVisible()
+      await expect(staffNoFeeRadio).toBeVisible()
       await staffNoFeeRadio.click()
 
       const submitBtn = page.getByRole('button', { name: 'Submit' })
-      expect(submitBtn).toBeVisible()
+      await expect(submitBtn).toBeVisible()
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
       await submitBtn.click()
       const request = await submitRequest
