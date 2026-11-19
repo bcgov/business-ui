@@ -141,7 +141,7 @@ describe('useBusinessTombstone', () => {
     it('shows the In Liquidation badge when inLiquidation is true', async () => {
       const { businessTombstone, setPublicDefault } = useBusinessTombstone()
       await setPublicDefault('liquidation')
-      expect(businessTombstone.value.details).toEqual([{ badge: { label: 'IN LIQUIDATION', color: 'warning'  } }])
+      expect(businessTombstone.value.details).toEqual([{ badge: { label: 'IN LIQUIDATION', color: 'warning' } }])
     })
 
     it('shows only the state badge for a historical business', async () => {
