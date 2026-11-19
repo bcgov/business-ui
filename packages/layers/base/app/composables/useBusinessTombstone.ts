@@ -51,7 +51,7 @@ export const useBusinessTombstone = () => {
       details.push({ badge: { label: business.value.state } })
     }
     if (business.value?.inLiquidation) {
-      details.push({ badge: { label: t('badge.inLiquidation') } })
+      details.push({ badge: { label: t('badge.inLiquidation'), color: 'warning' } })
     }
     businessTombstone.value.details = details
 
