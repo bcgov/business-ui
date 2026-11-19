@@ -45,12 +45,20 @@ export const useBusinessTombstone = () => {
     businessTombstone.value.subtitles = business.value
       ? [{ text: getCorpFullDescription(business.value.legalType) }]
       : []
-    businessTombstone.value.details = business.value?.state && business.value.state != EntityState.ACTIVE
-      ? [{ badge: { label: business.value.state } }]
-      : []
+
+    const details: ConnectTombstoneItem[] = []
+    if (business.value?.state && business.value.state !== EntityState.ACTIVE) {
+      details.push({ badge: { label: business.value.state } })
+    }
+    if (business.value?.inLiquidation) {
+      details.push({ badge: { label: t('badge.inLiquidation'), color: 'warning' } })
+    }
+    businessTombstone.value.details = details
+
     // mainframe migration left some entities with a placeholder founding date, treat it as not available
     const hasBrokenFoundingDate = business.value?.foundingDate === BROKEN_FOUNDING_DATE
     const foundingDate = hasBrokenFoundingDate ? undefined : toDate(business.value?.foundingDate || '')
+
     const foundingDateStr = foundingDate ? toFormattedDateStr(foundingDate, DateTime.DATE_FULL) : undefined
     businessTombstone.value.sideDetails = [
       {

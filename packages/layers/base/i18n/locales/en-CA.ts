@@ -13,6 +13,7 @@ export default {
     deleted: 'DELETED',
     emailChanged: 'EMAIL CHANGED',
     modifiedByStaff: 'MODIFIED BY STAFF',
+    inLiquidation: 'IN LIQUIDATION',
     nameChanged: 'NAME CHANGED',
     removed: 'REMOVED',
     rolesChanged: 'ROLES CHANGED'
