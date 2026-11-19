@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { ActionType } from '#business/app/enums/action-type'
+import { LiquidatorAppointmentMethod } from '#business/app/enums/liquidator-appointment-method'
 import { LiquidateType } from '#business/app/enums/liquidate-type'
 import { RoleType } from '#business/app/enums/role-type'
 import type { ApiAddress } from '#business/app/interfaces/address'
@@ -30,7 +31,19 @@ const newLiquidator = {
   },
   deliveryAddress: address,
   mailingAddress: address,
-  roles: [{ roleType: RoleType.LIQUIDATOR }]
+  roles: [{
+    roleType: RoleType.LIQUIDATOR,
+    appointmentDate: '2025-12-29',
+    meta: { appointmentMethod: LiquidatorAppointmentMethod.COMPANY }
+  }]
+}
+const newCourtAppointedLiquidator = {
+  ...newLiquidator,
+  roles: [{
+    roleType: RoleType.LIQUIDATOR,
+    appointmentDate: '2025-12-29',
+    meta: { appointmentMethod: LiquidatorAppointmentMethod.COURT, courtOrderNumber: 'S-12345' }
+  }]
 }
 
 test.describe('Manage Liquidators - Submission', () => {
@@ -58,7 +71,7 @@ test.describe('Manage Liquidators - Submission', () => {
       await navigateToManageLiquidatorsPage(page, LiquidateType.INTENT)
       await page.waitForLoadState('networkidle')
       const innerPayload: LiquidatorPayload = {
-        relationships: [newLiquidator],
+        relationships: [newCourtAppointedLiquidator],
         type: LiquidateType.INTENT,
         offices: {
           liquidationRecordsOffice: {
@@ -72,7 +85,7 @@ test.describe('Manage Liquidators - Submission', () => {
       const addButton = page.getByRole('button', { name: 'Add Liquidator' })
       expect(addButton).toBeVisible()
       await addButton.click()
-      await fillOutNewRelationship(page, newLiquidator)
+      await fillOutNewRelationship(page, newCourtAppointedLiquidator)
       const officeParent = page.getByTestId('records-office-section')
       await officeParent.getByRole('button', { name: 'Add Liquidation Records Office' }).click()
       await fillOutAddress(page, address, 'mailing', true, officeParent)

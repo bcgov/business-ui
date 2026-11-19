@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 import { fillOutAddress } from './fill-out-address'
+import { fillOutLiquidatorAppointment } from './fill-out-liquidator-appointment'
 import { fillOutName } from './fill-out-name'
 import { fillOutRoles } from './fill-out-roles'
 import { selectDone } from './select-done'
@@ -11,6 +12,7 @@ export async function fillOutNewRelationship(page: Page, relationship: BusinessR
   const parentLocator = page.getByTestId('party-details-form')
   await fillOutName(parentLocator, relationship.entity)
   await fillOutRoles(parentLocator, relationship.roles)
+  await fillOutLiquidatorAppointment(parentLocator, relationship.roles)
   if (relationship.mailingAddress) {
     await fillOutAddress(page, relationship.mailingAddress, 'mailing', !relationship.deliveryAddress, parentLocator)
   }

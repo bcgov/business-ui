@@ -257,6 +257,7 @@ onMounted(() => {
           :subject="$t('label.liquidator')"
           :allowed-actions="allowedPartyActions"
           :role-type="RoleTypeUi.LIQUIDATOR"
+          :columns-to-display="['name', 'mailing', 'delivery', 'effectiveDates', 'actions']"
           :party-form-props="{
             partyNameProps: { allowBusinessName: true, allowPreferredName: false },
             // a liquidator's delivery address does not need to be a physical location

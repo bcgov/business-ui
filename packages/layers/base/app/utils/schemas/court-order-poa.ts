@@ -2,6 +2,15 @@
 import type { FormCourtOrderPoa, FormCourtOrderPoaFields } from '#components'
 import { z } from 'zod'
 
+/** A court order file number - court_order.json `fileNumber` (5 - 20 characters) */
+export function getCourtOrderNumberSchema() {
+  const t = useNuxtApp().$i18n.t
+
+  return z.string()
+    .min(5, t('connect.validation.minChars', { count: 5 }))
+    .max(20, t('connect.validation.maxChars', { count: 20 }))
+}
+
 export function getCourtOrderPoaSchema() {
   const t = useNuxtApp().$i18n.t
 

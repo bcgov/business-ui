@@ -128,6 +128,10 @@ const componentExamples: DropdownMenuItem[] = [
             label: 'Director Change'
           },
           {
+            to: localePath('/examples/components/Manage/Parties/liquidator'),
+            label: 'Liquidator'
+          },
+          {
             label: 'Allowed Actions',
             children: [
               {

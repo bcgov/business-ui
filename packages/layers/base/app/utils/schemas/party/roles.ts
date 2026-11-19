@@ -3,6 +3,7 @@ import type { FormPartyRole } from '#components'
 import { RoleTypeUi } from '#business/app/enums/role-type'
 import { RoleClass } from '#business/app/enums/role-class'
 import { RoleFieldRequirement } from '#business/app/enums/role-field-requirement'
+import { LiquidatorAppointmentMethod } from '#business/app/enums/liquidator-appointment-method'
 
 // a field's presence (either REQUIRED or OPTIONAL) means its section is shown for the role; absence hides it
 export interface RoleFieldConfig {
@@ -37,6 +38,15 @@ export function isPartyCeased(party: { roles: PartyRoleSchema }, roleType: RoleT
   return roles.length > 0 && roles.every(r => !!r.cessationDate)
 }
 
+// Liquidator roles only - how the liquidator was appointed (business-schemas relationship.json `role.meta`).
+// Shape only: the required rules live in getLiquidatorAppointmentSchema; the api rejects `meta` on other roles
+export function getLiquidatorRoleMetaSchema() {
+  return z.object({
+    appointmentMethod: z.enum(LiquidatorAppointmentMethod).optional(),
+    courtOrderNumber: z.string().optional()
+  })
+}
+
 export function getPartyRoleSchema(roleType?: RoleTypeUi) {
   const t = useNuxtApp().$i18n.t
 
@@ -44,7 +54,9 @@ export function getPartyRoleSchema(roleType?: RoleTypeUi) {
     appointmentDate: z.string().optional(),
     cessationDate: z.string().optional().nullable(),
     roleClass: z.enum(RoleClass).optional(),
-    roleType: z.enum(RoleTypeUi)
+    roleType: z.enum(RoleTypeUi),
+    // Liquidator roles only - set and validated by FormLiquidatorAppointment
+    meta: getLiquidatorRoleMetaSchema().optional()
   }))
     .min(1, { message: t('validation.role.min') })
     .default(() => (roleType ? [{ roleType }] : []))
