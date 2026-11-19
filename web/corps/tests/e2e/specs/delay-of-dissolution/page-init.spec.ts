@@ -22,54 +22,54 @@ test.describe('Delay of Dissolution - Page init', () => {
         mockCommonApiCallsForFiling(page, identifier, undefined, DISDE, undefined, isStaff ? 'STAFF' : 'PREMIUM')
         await navigateToDodPage(page, identifier)
         await page.waitForLoadState('networkidle')
-        expect(page.getByRole('heading', { name: 'Delay of Dissolution or Cancellation' }))
+        await expect(page.getByRole('heading', { name: 'Delay of Dissolution or Cancellation' }))
           .toBeVisible({ timeout: 10000 })
         // has auth header
-        expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
+        await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
         // has breadcrumb
-        expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-        expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(
+        await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
+        await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(
           'Delay of Dissolution or Cancellation')).toBeVisible()
         // has tombstone
-        expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-        expect(page.getByTestId('connect-tombstone-wrapper')
+        await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
+        await expect(page.getByTestId('connect-tombstone-wrapper')
           .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
         ).toBeVisible()
         // has dissolution heading
-        expect(page.getByRole('heading', { name: 'Delay of Dissolution or Cancellation' })).toBeVisible()
+        await expect(page.getByRole('heading', { name: 'Delay of Dissolution or Cancellation' })).toBeVisible()
         // has delay date section
         const delayDateSection = page.getByTestId('form-section-delay-date')
         const dateSelectionRadio = delayDateSection.getByRole('radio', { name: 'Select a date' })
         const dateSelectionInput = delayDateSection.getByTestId('delay-date-input')
         const dateSelectionInfo = delayDateSection.getByTestId('expected-dissolution-date-info')
-        expect(delayDateSection).toBeVisible()
+        await expect(delayDateSection).toBeVisible()
         if (isStaff) {
-          expect(dateSelectionRadio).toBeVisible()
-          expect(dateSelectionInput).toBeVisible()
-          expect(dateSelectionInfo).toBeVisible()
-          expect(dateSelectionInfo).toContainText('October 4, 2026')
+          await expect(dateSelectionRadio).toBeVisible()
+          await expect(dateSelectionInput).toBeVisible()
+          await expect(dateSelectionInfo).toBeVisible()
+          await expect(dateSelectionInfo).toContainText('October 4, 2026')
         } else {
-          expect(dateSelectionRadio).not.toBeVisible()
-          expect(dateSelectionInput).not.toBeVisible()
-          expect(dateSelectionInfo).not.toBeVisible()
+          await expect(dateSelectionRadio).not.toBeVisible()
+          await expect(dateSelectionInput).not.toBeVisible()
+          await expect(dateSelectionInfo).not.toBeVisible()
         }
         // has folio number section
-        expect(page.getByTestId('form-section-folio-number')).toBeVisible()
+        await expect(page.getByTestId('form-section-folio-number')).toBeVisible()
         // certify section
         if (isStaff) {
-          expect(page.getByTestId('form-section-certify')).not.toBeVisible()
+          await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
         } else {
-          expect(page.getByTestId('form-section-certify')).toBeVisible()
+          await expect(page.getByTestId('form-section-certify')).toBeVisible()
         }
         // has fee summary
-        expect(page.getByTestId('fee-widget')).toBeVisible()
+        await expect(page.getByTestId('fee-widget')).toBeVisible()
         // has fee summary text
-        expect(page.getByTestId('fee-widget').getByText('Delay of Dissolution')).toBeVisible()
-        expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
+        await expect(page.getByTestId('fee-widget').getByText('Delay of Dissolution')).toBeVisible()
+        await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
         // has buttons
-        expect(page.getByTestId('connect-button-control-wrapper')).toBeVisible()
+        await expect(page.getByTestId('connect-button-control-wrapper')).toBeVisible()
         // has footer
-        expect(page.getByTestId('connect-main-footer')).toBeVisible()
+        await expect(page.getByTestId('connect-main-footer')).toBeVisible()
       })
     })
   })

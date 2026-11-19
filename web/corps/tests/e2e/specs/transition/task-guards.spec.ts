@@ -88,7 +88,7 @@ test.describe('Task Guards', () => {
     await page.getByRole('button', { name: 'Cancel', exact: true }).click()
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*transition.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should be able to navigate away when no changes have been made', async ({ page }) => {
@@ -99,7 +99,7 @@ test.describe('Task Guards', () => {
 
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*transition.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should display modal on cancel when changes have been made', async ({ page }) => {
