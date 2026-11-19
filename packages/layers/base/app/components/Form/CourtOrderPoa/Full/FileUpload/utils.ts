@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit'
 import type { MaybeRefOrGetter, ModelRef } from 'vue'
 import { useNuxtApp } from '#app'
 
-export const maxFileSize = 30 * 1024 * 1024 // 30MB
+export const maxFileSize = 50 * 1024 * 1024 // 50MB
 export const acceptedFileTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif']
 
 export function formatBytes(bytes: number, decimals = 2) {

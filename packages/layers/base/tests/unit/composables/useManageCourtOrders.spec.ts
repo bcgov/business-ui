@@ -218,6 +218,17 @@ describe('useManageCourtOrders', () => {
       expect(tableState.value[0]!.new.actions).toHaveLength(1)
       expect(tableState.value[0]!.new.actions).toContain(ActionType.CHANGED)
     })
+
+    it('should not set CHANGED when only the UI only hasSupportingDocs flag differs', () => {
+      const { tableState, editSubject } = useManageCourtOrders(stateKey)
+      const existingRow = { new: mockSubject, old: mockSubject }
+      tableState.value = [existingRow]
+
+      const editedSubject = { ...mockSubject, hasSupportingDocs: true }
+      editSubject(editedSubject, mockRow(0, existingRow))
+
+      expect(tableState.value[0]!.new.actions).toEqual([])
+    })
   })
 
   describe('options', () => {

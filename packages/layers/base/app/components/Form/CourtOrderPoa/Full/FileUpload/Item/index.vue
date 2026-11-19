@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { formatBytes } from '../utils'
 import type { ButtonProps } from '@nuxt/ui'
+import { omit } from 'es-toolkit'
 
-const props = defineProps<CourtOrderFileUi>()
+// readonly: display only (no remove/undo actions), ex: a filing review step
+const props = defineProps<CourtOrderFileUi & { readonly?: boolean }>()
+
+const fileProps = computed(() => omit(props, ['readonly']))
 
 const emit = defineEmits<{
   fileAction: [id: string, action: 'cancel' | 'undo' | 'delete' | 'dismiss']
@@ -83,17 +87,18 @@ defineOptions({
     ]"
   >
     <FormCourtOrderPoaFullFileUploadPreview
-      v-bind="$props"
+      v-bind="fileProps"
       :blob="data"
     />
     <div class="flex flex-col min-w-0 w-full">
       <div class="flex gap-8 justify-between w-full min-w-0">
         <FormCourtOrderPoaFullFileUploadItemName
-          v-bind="$props"
+          v-bind="fileProps"
           :blob="data"
           class="-ml-2"
         />
         <UButton
+          v-if="!readonly"
           v-bind="actionProps"
           variant="link"
           class="px-2 py-1 h-min gap-1 @max-[350px]:hidden text-base"
@@ -117,6 +122,7 @@ defineOptions({
         />
       </div>
       <UButton
+        v-if="!readonly"
         v-bind="actionProps"
         variant="link"
         class="px-2 py-1 h-min gap-1 @min-[350px]:hidden ml-4 mt-auto text-base"

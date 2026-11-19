@@ -18,7 +18,14 @@ test.describe('Court Order - Task Guards', () => {
   // 'no changes' means the form state still matches what was loaded from the draft
   test('should prevent save when no changes have been made', async ({ page }) => {
     await page.getByRole('button', { name: 'Save and Resume Later' }).click()
-    await expect(page.getByTestId('left-buttons')).toContainText('There are no changes to save')
+    await expect(page.getByTestId('right-buttons')).toContainText('There are no changes to save')
+  })
+
+  // the box only reveals the upload - it is never saved with the filing
+  test('should not count checking the add supporting documents box as a change', async ({ page }) => {
+    await page.getByRole('checkbox', { name: 'Add supporting documents' }).check()
+    await page.getByRole('button', { name: 'Save and Resume Later' }).click({ delay: 500 })
+    await expect(page.getByTestId('right-buttons')).toContainText('There are no changes to save')
   })
 
   test('should be able to cancel when no changes have been made', async ({ page }) => {

@@ -19,7 +19,7 @@ export function getCourtOrderPoaSchema() {
         ctx.addIssue({
           code: 'custom',
           path: ['courtOrderNumber'],
-          message: t('connect.validation.fieldRequired')
+          message: t('validation.courtOrderNumberRequired')
         })
       }
     }
@@ -66,6 +66,13 @@ export function isActiveCourtOrderFile(file: CourtOrderFileUi, excludeId?: strin
     && file.id !== excludeId
     && file.action !== CourtOrderFileAction.DELETED
     && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(file.status)
+}
+
+// helper to determine if any uploaded supporting document is in an active (not removed) state
+export function hasActiveSupportingDoc(files: CourtOrderFileUi[] = []) {
+  return files.some(file => file.type === DocumentTypeClient.SUPPORTING_DOCUMENT
+    && file.action !== CourtOrderFileAction.DELETED
+    && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(file.status))
 }
 
 export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?: boolean }) {
@@ -122,7 +129,10 @@ export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?:
           type: docType
         }
       })
-    }, z.array(z.custom<CourtOrderFileUi>())).default([]) // FUTURE - not returned by API yet
+    }, z.array(z.custom<CourtOrderFileUi>())).default([]), // FUTURE - not returned by API yet
+    // UI only (never sent to the API) - reveals the supporting documents upload, derived true when any exist
+    hasSupportingDocs: z.boolean()
+      .optional()
   }).superRefine((data, ctx) => {
     if (!context?.isFileOrDetailsRequired) {
       return
@@ -156,7 +166,19 @@ export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?:
         message: t('validation.onlyOneCourtOrderPerFiling')
       })
     }
-  })
+
+    // the supporting documents checkbox (court order filing only) can't stay checked with nothing uploaded
+    if (data.hasSupportingDocs && !hasActiveSupportingDoc(data.files)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['hasSupportingDocs'],
+        message: t('validation.addSupportingDocsOrUncheck')
+      })
+    }
+  }).transform((data): typeof data => ({ // hydrate the checkbox from the files (keeps every parse of the same data equal)
+    ...data,
+    hasSupportingDocs: data.hasSupportingDocs || hasActiveSupportingDoc(data.files)
+  }))
 }
 
 export type CourtOrderPoaFullSchema = z.output<ReturnType<typeof getCourtOrderPoaFullSchema>>

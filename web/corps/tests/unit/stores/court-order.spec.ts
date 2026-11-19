@@ -170,6 +170,32 @@ describe('useCourtOrderStore', () => {
       expect(mockOpenFilingNotAllowedErrorModal).not.toHaveBeenCalled()
     })
 
+    it('should check the add supporting documents box when the draft has a supporting document', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: getDraftMock({
+          fileNumber: '12345-6789',
+          files: [{ fileKey: 'CORP-DS0100001004', fileName: 'Affidavit.pdf', documentType: 'supporting_document' }]
+        })
+      })
+
+      await store.init(identifier, String(draftFilingId))
+
+      expect(store.formState.courtOrder.hasSupportingDocs).toBe(true)
+    })
+
+    it('should leave the supporting documents box unchecked when the draft has no supporting document', async () => {
+      mockInitFiling.mockResolvedValue({
+        draftFiling: getDraftMock({
+          fileNumber: '12345-6789',
+          files: [{ fileKey: 'CORP-DS0100001003', fileName: 'Court Order.pdf', documentType: 'court_order' }]
+        })
+      })
+
+      await store.init(identifier, String(draftFilingId))
+
+      expect(store.formState.courtOrder.hasSupportingDocs).toBe(false)
+    })
+
     it('should hydrate an effectively empty draft with schema defaults', async () => {
       mockInitFiling.mockResolvedValue({ draftFiling: getDraftMock({}) })
 
@@ -402,6 +428,22 @@ describe('useCourtOrderStore', () => {
       await store.submit(true)
 
       expect(getPayload().filing.courtOrder).not.toHaveProperty('files')
+    })
+
+    it('should never send the UI only hasSupportingDocs flag', async () => {
+      await initAndEdit({
+        hasSupportingDocs: true,
+        files: [getCourtOrderFileMock({
+          id: 'CORP-DS0100001004',
+          fileKey: 'CORP-DS0100001004',
+          name: 'Affidavit.pdf',
+          type: DocumentTypeClient.SUPPORTING_DOCUMENT
+        })]
+      })
+
+      await store.submit(true)
+
+      expect(getPayload().filing.courtOrder).not.toHaveProperty('hasSupportingDocs')
     })
 
     it('should send effectOfOrder as planOfArrangement when checked', async () => {

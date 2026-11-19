@@ -246,6 +246,35 @@ describe('getCourtOrderFormSchema', () => {
     })
   })
 
+  describe('courtOrder add supporting documents', () => {
+    it('should fail when the box is checked with no supporting document', () => {
+      const result = schema.safeParse({
+        courtOrder: { fileNumber: '12345-6789', orderDetails: 'text', hasSupportingDocs: true }
+      })
+
+      expect(result.success).toBe(false)
+      expect(getIssues(result)).toEqual([
+        expect.objectContaining({
+          path: ['courtOrder', 'hasSupportingDocs'],
+          message: 'Add Supporting Documents or uncheck the box above'
+        })
+      ])
+    })
+
+    it('should derive the box checked from a supporting document', () => {
+      const result = schema.safeParse({
+        courtOrder: {
+          fileNumber: '12345-6789',
+          orderDetails: 'text',
+          files: [getFile({ type: DocumentTypeClient.SUPPORTING_DOCUMENT })]
+        }
+      })
+
+      expect(result.success).toBe(true)
+      expect(result.data!.courtOrder.hasSupportingDocs).toBe(true)
+    })
+  })
+
   describe('staffPayment', () => {
     it('should pass with a valid staff payment selection', () => {
       const result = schema.safeParse({

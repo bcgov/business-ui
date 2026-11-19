@@ -19,7 +19,8 @@ const NON_EDITABLE_FIELDS = [
   'id',
   'filingId',
   'filingType',
-  'orderDate'
+  'orderDate',
+  'hasSupportingDocs'
 ] as const
 
 function formatFiles(

@@ -81,7 +81,7 @@ describe('getCourtOrderPoaSchema', () => {
       const result = schema.safeParse({ hasPoa: true, courtOrderNumber: '' })
       const issues = result.error!.issues
       expect(issues).toHaveLength(1)
-      expect(issues[0]!.message).toBe('This field is required')
+      expect(issues[0]!.message).toBe('Court order number is required.')
       expect(issues[0]!.path).toEqual(['courtOrderNumber'])
       expect(result.success).toBe(false)
     })
@@ -287,5 +287,105 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
 
       expect(result.success).toBe(true)
     })
+  })
+})
+
+describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
+  const getSupportingDoc = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
+    id: 'supporting-1',
+    fileKey: 'drs-key-supporting-1',
+    name: 'affidavit.pdf',
+    type: DocumentTypeClient.SUPPORTING_DOCUMENT,
+    action: CourtOrderFileAction.NONE,
+    status: CourtOrderFileStatus.SUCCESS,
+    ...overrides
+  })
+
+  const expectedIssue = expect.objectContaining({
+    path: ['hasSupportingDocs'],
+    message: 'Add Supporting Documents or uncheck the box above'
+  })
+
+  // the flag hydrates everywhere, the checkbox rule only applies to the standalone filing (context)
+  const contexts = [
+    ['without the context option', undefined],
+    ['with isFileOrDetailsRequired', { isFileOrDetailsRequired: true }]
+  ] as const
+  const filingContext = { isFileOrDetailsRequired: true }
+
+  it.each(contexts)('should default to false %s', (_label, context) => {
+    const result = getCourtOrderPoaFullSchema(context).safeParse({ fileNumber: '12345', orderDetails: 'text' })
+
+    expect(result.success).toBe(true)
+    expect(result.data!.hasSupportingDocs).toBe(false)
+  })
+
+  it.each(contexts)('should derive true from an active supporting document %s', (_label, context) => {
+    const result = getCourtOrderPoaFullSchema(context).safeParse({
+      fileNumber: '12345',
+      orderDetails: 'text',
+      files: [getSupportingDoc()]
+    })
+
+    expect(result.success).toBe(true)
+    expect(result.data!.hasSupportingDocs).toBe(true)
+  })
+
+  it('should fail when checked with no supporting document with isFileOrDetailsRequired', () => {
+    const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
+      fileNumber: '12345',
+      orderDetails: 'text',
+      hasSupportingDocs: true
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.error!.issues).toEqual([expectedIssue])
+  })
+
+  it('should not apply the checkbox rule without the context option (sub form)', () => {
+    const result = getCourtOrderPoaFullSchema().safeParse({
+      fileNumber: '12345',
+      orderDetails: 'text',
+      hasSupportingDocs: true
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it.each([
+    ['deleted', { action: CourtOrderFileAction.DELETED }],
+    ['errored', { status: CourtOrderFileStatus.ERROR }]
+  ])('should fail when checked and the only supporting document is %s', (_label, overrides) => {
+    const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
+      fileNumber: '12345',
+      orderDetails: 'text',
+      hasSupportingDocs: true,
+      files: [getSupportingDoc(overrides)]
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.error!.issues).toEqual([expectedIssue])
+  })
+
+  it('should pass when checked with an active supporting document', () => {
+    const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
+      fileNumber: '12345',
+      orderDetails: 'text',
+      hasSupportingDocs: true,
+      files: [getSupportingDoc()]
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('should not count a court order file as a supporting document', () => {
+    const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
+      fileNumber: '12345',
+      hasSupportingDocs: true,
+      files: [getSupportingDoc({ type: DocumentTypeClient.COURT_ORDER })]
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.error!.issues).toEqual([expectedIssue])
   })
 })

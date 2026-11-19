@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
 import type { BusinessOverride } from '#test-mocks'
@@ -109,4 +110,10 @@ export async function navigateToCourtOrderPage(page: Page, identifier: string, f
     page.waitForResponse('*/**/businesses/**/*'),
     page.goto(`./en-CA/court-order/${identifier}/${filingId}`)
   ])
+}
+
+// step 1 validates the court order section before the review step (and the staff payment) renders
+export async function goToCourtOrderReviewStep(page: Page) {
+  await page.getByRole('button', { name: 'Review and Confirm' }).click()
+  await expect(page.getByTestId('review-court-order-section')).toBeVisible()
 }

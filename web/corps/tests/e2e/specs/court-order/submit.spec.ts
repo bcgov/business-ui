@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage } from '../../test-utils'
+import { setupCourtOrderPage, navigateToCourtOrderPage, goToCourtOrderReviewStep } from '../../test-utils'
 import { COURT } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -36,6 +36,7 @@ test.describe('Court Order - Filing Submit', () => {
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByText(poaCheckboxText, { exact: true }).click()
     await page.getByTestId('court-order-text-input').fill('Order pursuant to a court decision.')
+    await goToCourtOrderReviewStep(page)
     await page.getByRole('radio', { name: 'No Fee' }).click()
 
     const submitRequest = waitForFilingPut(page)
@@ -60,6 +61,7 @@ test.describe('Court Order - Filing Submit', () => {
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByTestId('court-order-text-input').fill('Order pursuant to a court decision.')
+    await goToCourtOrderReviewStep(page)
     await page.getByRole('radio', { name: 'No Fee' }).click()
 
     const submitRequest = waitForFilingPut(page)
@@ -78,6 +80,7 @@ test.describe('Court Order - Filing Submit', () => {
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for FAS payment.')
+      await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'Cash or Cheque' }).click()
       await page.getByTestId('routingslipinput').fill('123456789')
 
@@ -102,6 +105,7 @@ test.describe('Court Order - Filing Submit', () => {
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for BCOL payment.')
+      await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'BC OnLine' }).click()
       await page.getByTestId('bcolnumberinput').fill('123456')
       await page.getByTestId('datnumberinput').fill('C1234567')
@@ -130,6 +134,7 @@ test.describe('Court Order - Filing Submit', () => {
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for a no-fee filing.')
+      await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'No Fee' }).click()
 
       // fee widget should update client-side to reflect the waived fee, regardless of the
@@ -170,6 +175,24 @@ test.describe('Court Order - Filing Submit', () => {
       expect(body.filing.header.certifiedBy).toBeTruthy()
       expect(body.filing.courtOrder.fileNumber).toBe('12345-6789')
       expect(body.filing.courtOrder.orderDetails).toBe('Draft order text.')
+    })
+
+    test('saves a draft from the review step', async ({ page }) => {
+      await gotoCourtOrderPage(page)
+
+      await page.getByTestId('court-order-number-input').fill('12345-6789')
+      await page.getByTestId('court-order-text-input').fill('Draft order text.')
+      await goToCourtOrderReviewStep(page)
+      await page.getByRole('radio', { name: 'No Fee' }).click()
+
+      const saveRequest = waitForFilingPut(page)
+      await page.getByRole('button', { name: 'Save and Resume Later' }).click()
+      const request = await saveRequest
+
+      expect(request.url()).toContain('draft=true')
+      const body = request.postDataJSON()
+      expect(body.filing.courtOrder.fileNumber).toBe('12345-6789')
+      expect(body.filing.header).toMatchObject({ staffPaymentOption: 'NO_FEE', waiveFees: true })
     })
   })
 })
