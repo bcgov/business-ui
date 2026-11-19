@@ -274,6 +274,7 @@ export const useFiling = () => {
    * PUT carrying the rebase base of a resumed draft.
    * - 409 (a filing completed since the form loaded): the work is kept as a draft at the old base
    * - 409 on a submission: parked as a draft, error rethrown so stale data is never filed
+   * - 409 on a submission the intervening filings did not affect: resubmitted once at the new base
    */
   async function putFilingWithRebase<F extends FilingRecord>(
     businessId: string,
@@ -293,11 +294,22 @@ export const useFiling = () => {
       }
       rebase.markStaleOnSave()
       const draftSave = service.saveOrUpdateDraftFiling<F>(businessId, payload, false, draftId)
-      if (isSubmission) {
-        await draftSave.catch(() => undefined)
+      if (!isSubmission) {
+        return draftSave
+      }
+      // the report diffs the saved draft, so the retry needs the parked copy
+      const isParked = await draftSave.then(() => true, () => false)
+      if (!isParked || !(await rebase.advanceBaseIfUnaffected(businessId, draftId))) {
         throw error
       }
-      return draftSave
+      try {
+        return await service.saveOrUpdateDraftFiling<F>(businessId, payload, true, draftId, rebase.getSaveOptions(true))
+      } catch (retryError) {
+        if (getErrorStatus(retryError) === 409) {
+          rebase.markStaleOnSave()
+        }
+        throw retryError
+      }
     }
   }
 
