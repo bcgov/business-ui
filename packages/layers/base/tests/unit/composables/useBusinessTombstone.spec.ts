@@ -40,7 +40,18 @@ const mockAuthInfo = (identifier: string) => {
 mockNuxtImport('useBusinessService', () => {
   return vi.fn(() => {
     return {
-      getBusiness: vi.fn((identifier: string) => identifier === 'full' ? mockBusiness : incompleteBusiness),
+      getBusiness: vi.fn((identifier: string) => {
+        switch (identifier) {
+          case 'full':
+            return mockBusiness
+          case 'liquidation':
+            return { ...mockBusiness, state: EntityState.ACTIVE, inLiquidation: true }
+          case 'historical':
+            return { ...mockBusiness, state: EntityState.HISTORICAL, inLiquidation: false }
+          default:
+            return incompleteBusiness
+        }
+      }),
       getAuthInfo: vi.fn((identifier: string) => mockAuthInfo(identifier))
     }
   })
@@ -118,5 +129,25 @@ describe('useBusinessTombstone', () => {
 
     const phoneDetail = state.sideDetails.find(d => d.label === 'Phone')
     expect(phoneDetail?.value).toBe('555-333-4444 Ext: 123')
+  })
+
+  describe('setPublicDefault details badges', () => {
+    it('shows no badges for an active business not in liquidation', async () => {
+      const { businessTombstone, setPublicDefault } = useBusinessTombstone()
+      await setPublicDefault('full')
+      expect(businessTombstone.value.details).toEqual([])
+    })
+
+    it('shows the In Liquidation badge when inLiquidation is true', async () => {
+      const { businessTombstone, setPublicDefault } = useBusinessTombstone()
+      await setPublicDefault('liquidation')
+      expect(businessTombstone.value.details).toEqual([{ badge: { label: 'IN LIQUIDATION' } }])
+    })
+
+    it('shows only the state badge for a historical business', async () => {
+      const { businessTombstone, setPublicDefault } = useBusinessTombstone()
+      await setPublicDefault('historical')
+      expect(businessTombstone.value.details).toEqual([{ badge: { label: EntityState.HISTORICAL } }])
+    })
   })
 })
