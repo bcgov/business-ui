@@ -1,4 +1,5 @@
 import { createConfigForNuxt } from '@nuxt/eslint-config'
+import playwright from 'eslint-plugin-playwright'
 
 export default createConfigForNuxt({
   features: {
@@ -45,6 +46,12 @@ export default createConfigForNuxt({
     '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
     '@stylistic/comma-dangle': ['error', 'never'],
     '@stylistic/semi': ['error', 'never']
+  }
+}).append({
+  files: ['**/tests/e2e/**/*.ts'],
+  plugins: { playwright },
+  rules: {
+    'playwright/missing-playwright-await': 'error'
   }
 }).prepend({
   ignores: [
