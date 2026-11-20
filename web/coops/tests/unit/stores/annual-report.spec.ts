@@ -29,9 +29,8 @@ mockNuxtImport('useBusinessStore', async original =>
 mockNuxtImport('logBlockedSubmission', async () => (await import('#test-mocks/filing-store')).mockLogBlockedSubmission)
 
 const identifier = 'CP1002605'
-const PACIFIC_TZ = 'America/Vancouver'
 // the store compares the AR year against the current pacific year, so derive it rather than pin it
-const arYear = Number(getToday(PACIFIC_TZ).slice(0, 4))
+const arYear = Number(getToday().slice(0, 4))
 
 /** The CP cooperative association the annual report is filed for - its AR is due this year. */
 const coopBusiness = {
@@ -143,7 +142,7 @@ describe('useAnnualReportStore', () => {
       await store.init(identifier)
 
       expect(store.arYear).toBe(arYear)
-      expect(store.asOfDate).toBe(getToday(PACIFIC_TZ))
+      expect(store.asOfDate).toBe(getToday())
       expect(store.isArDateInvalid).toBe(false)
     })
 
@@ -228,7 +227,7 @@ describe('useAnnualReportStore', () => {
       const filing = getBlockedPayload().filing
       expect(filing.annualReport).toEqual({
         // a current year AR is filed as of today - never the future dated Dec 31 the api rejects
-        annualReportDate: getToday(PACIFIC_TZ),
+        annualReportDate: getToday(),
         annualGeneralMeetingDate: null,
         didNotHoldAgm: false
       })
@@ -260,7 +259,7 @@ describe('useAnnualReportStore', () => {
         arMaxDate: coopBusiness.arMaxDate,
         // pacific midnight of the as-of date (the dashboard todo + bundled COD depend on it)
         // the UTC offset is tzdata-dependent (BC permanent DST, 2026) so derive it rather than pin it
-        effectiveDate: toApiDateTime(getToday(PACIFIC_TZ))
+        effectiveDate: toApiDateTime(getToday())
       }))
     })
 
