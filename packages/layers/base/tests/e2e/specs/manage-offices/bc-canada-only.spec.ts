@@ -166,5 +166,26 @@ test.describe('ManageOffices - bcCanadaOnly', () => {
       await expect(page.getByTestId('office-address-form')).toHaveCount(0)
       await expect(page.getByTestId('offices-payload')).toContainText('PO Box 234')
     })
+
+    test('Should keep "same as" checked and clear the error when the mailing province goes back to BC',
+      async ({ page }) => {
+        const subForm = await openOfficeEdit(page, 'Liquidation Records Office')
+        const sameAs = subForm.getByRole('checkbox', { name: sameAsLabel })
+        await sameAs.check({ force: true })
+
+        // outside BC - the error is shared by both addresses, so it shows on the mailing address and stays checked
+        await selectRegion(page, subForm, 'mailing', 'Alberta')
+        await expect(subForm.getByTestId('mailing-address-input-region')).toHaveAttribute('aria-invalid', 'true')
+        await expect(sameAs).toBeChecked()
+
+        // back in BC - the hidden delivery address's error must clear too, not uncheck 'same as'
+        await selectRegion(page, subForm, 'mailing', 'British Columbia')
+        await expect(sameAs).toBeChecked()
+        await expect(subForm.getByTestId('delivery-address-input-region')).toHaveCount(0)
+        await expect(subForm.getByText(bcError)).toHaveCount(0)
+
+        await subForm.getByRole('button', { name: 'Done' }).click()
+        await expect(page.getByTestId('office-address-form')).toHaveCount(0)
+      })
   })
 })

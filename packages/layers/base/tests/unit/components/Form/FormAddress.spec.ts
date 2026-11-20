@@ -146,6 +146,21 @@ describe('FormAddress', () => {
       expect(wrapper.vm.formRef?.getErrors().map(e => e.name)).toContain('mailingAddress.region')
     })
 
+    it('both-in-BC rule: stays checked and clears the shared error once the province is back in BC', async () => {
+      const { wrapper, model } = await mountAddress({}, { bcCanadaOnly: true, noPoBox: true })
+
+      model.mailingAddress.region = 'AB'
+      await settle()
+      model.mailingAddress.region = 'BC'
+      await settle()
+
+      // the hidden delivery address's BC error must not linger and look like a delivery-only error
+      // (the mailing select clears its own error in the app - here the model is set directly)
+      expect(model.sameAs).toBe(true)
+      expect(wrapper.find('#delivery-address-input-street').exists()).toBe(false)
+      expect(wrapper.vm.formRef?.getErrors().filter(e => e.name?.startsWith('deliveryAddress'))).toEqual([])
+    })
+
     it('waits for the mailing inputs to lose focus before flagging a PO Box street', async () => {
       const { wrapper, model } = await mountAddress({}, { bcCanadaOnly: 'delivery', noPoBox: true })
 
