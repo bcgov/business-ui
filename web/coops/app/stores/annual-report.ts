@@ -1,5 +1,3 @@
-const PACIFIC_TZ = 'America/Vancouver'
-
 export const useAnnualReportStore = defineStore('annual-report-store', () => {
   const {
     formatFilingPayloadApi,
@@ -38,7 +36,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
    */
   const asOfDate = computed<IsoDatePacific>(() =>
     draftArDate.value
-    ?? (arYear.value < getCurrentPacificYear() ? `${arYear.value}-12-31` : getToday(PACIFIC_TZ))
+    ?? (arYear.value < getCurrentPacificYear() ? `${arYear.value}-12-31` : getToday())
   )
 
   /**
@@ -55,7 +53,7 @@ export const useAnnualReportStore = defineStore('annual-report-store', () => {
   })
 
   function getCurrentPacificYear(): number {
-    return Number(getToday(PACIFIC_TZ).slice(0, 4))
+    return Number(getToday().slice(0, 4))
   }
 
   async function init(businessId: string, draftId?: string) {

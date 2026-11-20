@@ -69,7 +69,7 @@ watch(effectiveDateModel, (val) => {
 const effectiveDateBounds = computed<DateBounds>(() => {
   const business = businessStore.business as BusinessData | undefined
   if (!business) {
-    return { max: { date: getToday('America/Vancouver') } }
+    return { max: { date: getToday() } }
   }
 
   let minDate: string | undefined
@@ -85,7 +85,7 @@ const effectiveDateBounds = computed<DateBounds>(() => {
 
   return {
     min: minDate ? { date: minDate } : undefined,
-    max: { date: getToday('America/Vancouver') }
+    max: { date: getToday() }
   }
 })
 

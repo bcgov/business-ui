@@ -12,14 +12,14 @@ describe('date util', () => {
       vi.useRealTimers()
     })
 
-    test('should return the current date in UTC by default, in ISO format', () => {
+    test('should return the current date in pacific time by default, in ISO format', () => {
       const result = getToday()
-      expect(result).toBe('2025-06-24')
+      expect(result).toBe('2025-06-23')
     })
 
     test('should return the correct date for a specified timezone', () => {
-      const result = getToday('America/Vancouver')
-      expect(result).toBe('2025-06-23')
+      const result = getToday('UTC')
+      expect(result).toBe('2025-06-24')
     })
 
     test('should return the date in a custom format when provided', () => {
