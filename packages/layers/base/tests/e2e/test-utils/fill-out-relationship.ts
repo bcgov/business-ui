@@ -24,5 +24,5 @@ export async function fillOutNewRelationship(page: Page, relationship: BusinessR
   } else {
     await selectDone(parentLocator)
   }
-  expect(parentLocator).not.toBeVisible()
+  await expect(parentLocator).not.toBeVisible()
 }

@@ -62,7 +62,7 @@ test.describe('Editing Officers', () => {
 
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should cancel an edit without saving changes', async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe('Editing Officers', () => {
     await page.getByRole('button', { name: 'Submit' }).click()
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should be able to undo edits to original state', async ({ page }) => {

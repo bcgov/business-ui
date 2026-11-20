@@ -19,12 +19,12 @@ test.describe('ManageParties', () => {
     // has expected columns
     const columns = await rows[0]!.locator('td').all()
     expect(columns.length).toBe(6)
-    expect(columns[0]!).toHaveText('TESTER TESTING')
-    expect(columns[1]!).toContainText('5-14505 Boul De Pierrefonds,')
-    expect(columns[2]!).toHaveText('Same as Mailing Address')
-    expect(columns[3]!).toContainText('Director')
-    expect(columns[4]!).toContainText('August 16, 2023 to current')
-    expect(columns[5]!).toContainText('Change')
+    await expect(columns[0]!).toHaveText('TESTER TESTING')
+    await expect(columns[1]!).toContainText('5-14505 Boul De Pierrefonds,')
+    await expect(columns[2]!).toHaveText('Same as Mailing Address')
+    await expect(columns[3]!).toContainText('Director')
+    await expect(columns[4]!).toContainText('August 16, 2023 to current')
+    await expect(columns[5]!).toContainText('Change')
   })
 
   // allowPreferredName is not set in the example, so this verifies the default (false)

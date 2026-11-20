@@ -68,7 +68,7 @@ async function assertCorrectShareStructure(page: Page) {
   const rows = tbody.locator('tr')
 
   const classAColumns = rows.filter({ hasText: 'Class A Voting Common Shares' }).locator('td')
-  expect(classAColumns).toHaveCount(6)
+  await expect(classAColumns).toHaveCount(6)
   await expect(classAColumns).toContainText([
     'Class A Voting Common Shares',
     'No Maximum',
@@ -78,7 +78,7 @@ async function assertCorrectShareStructure(page: Page) {
   ])
 
   const classDColumns = rows.filter({ hasText: 'Class D Voting Common Shares' }).locator('td')
-  expect(classDColumns).toHaveCount(6)
+  await expect(classDColumns).toHaveCount(6)
   await expect(classDColumns).toContainText([
     'Class D Voting Common Shares',
     'No Maximum',
@@ -88,7 +88,7 @@ async function assertCorrectShareStructure(page: Page) {
   ])
 
   const classIColumns = rows.filter({ hasText: 'Class I Non-Voting Preferred Shares' }).locator('td')
-  expect(classIColumns).toHaveCount(6)
+  await expect(classIColumns).toHaveCount(6)
   await expect(classIColumns).toContainText([
     'Class I Non-Voting Preferred Shares',
     '1000',
@@ -98,7 +98,7 @@ async function assertCorrectShareStructure(page: Page) {
   ])
 
   const classISeries1Columns = rows.filter({ hasText: 'Class I Series 1 Shares' }).locator('td')
-  expect(classISeries1Columns).toHaveCount(6)
+  await expect(classISeries1Columns).toHaveCount(6)
   await expect(classISeries1Columns).toContainText([
     'Class I Series 1 Shares',
     '500',
@@ -108,7 +108,7 @@ async function assertCorrectShareStructure(page: Page) {
   ])
 
   const classISeries2Columns = rows.filter({ hasText: 'Class I Series 2 Shares' }).locator('td')
-  expect(classISeries2Columns).toHaveCount(6)
+  await expect(classISeries2Columns).toHaveCount(6)
   await expect(classISeries2Columns).toContainText([
     'Class I Series 2 Shares',
     '500',

@@ -51,13 +51,13 @@ test.describe('Manage Officers - Submission', () => {
     const testFolio = '1234'
 
     const addButton = page.getByRole('button', { name: 'Add Officer' })
-    expect(addButton).toBeVisible()
+    await expect(addButton).toBeVisible()
     await addButton.click()
     await fillOutNewRelationship(page, newOfficer)
     await fillOutFolio(page, testFolio)
 
     const submitBtn = page.getByRole('button', { name: 'Submit' })
-    expect(submitBtn).toBeVisible()
+    await expect(submitBtn).toBeVisible()
     const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
     await submitBtn.click()
     const request = await submitRequest
@@ -96,13 +96,13 @@ test.describe('Manage Officers - Submission', () => {
     const testFolio = '1234'
 
     const addButton = page.getByRole('button', { name: 'Add Officer' })
-    expect(addButton).toBeVisible()
+    await expect(addButton).toBeVisible()
     await addButton.click()
     await fillOutNewRelationship(page, newOfficer)
     await fillOutFolio(page, testFolio)
 
     const submitBtn = page.getByRole('button', { name: 'Submit' })
-    expect(submitBtn).toBeVisible()
+    await expect(submitBtn).toBeVisible()
     const filingId = 12345
     page.route(`*/**/businesses/${identifier}/filings`, async (route) => {
       await route.fulfill({

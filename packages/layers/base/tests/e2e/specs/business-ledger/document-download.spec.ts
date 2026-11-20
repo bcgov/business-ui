@@ -42,7 +42,7 @@ test.describe('Business Ledger Tests (document download)', () => {
     const documentList = ledgerItemBody.getByTestId('document-list')
     await expect(documentList).toBeVisible()
     documents = documentList.getByRole('button')
-    expect(documents).toHaveCount(4)
+    await expect(documents).toHaveCount(4)
   })
 
   test('Document download works as expected for a single document', async ({ page }) => {

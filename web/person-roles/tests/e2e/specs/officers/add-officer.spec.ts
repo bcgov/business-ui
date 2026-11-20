@@ -45,7 +45,7 @@ test.describe('Adding Officers', () => {
 
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('submit multiple officers, multiple roles, different delivery/mailing addresses', async ({ page }) => {
@@ -90,7 +90,7 @@ test.describe('Adding Officers', () => {
 
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 
   test('should allow canceling the form without adding an officer', async ({ page }) => {
@@ -112,7 +112,7 @@ test.describe('Adding Officers', () => {
     const table = page.getByRole('table')
     expect(table).toBeDefined()
     const row = table.getByRole('row').filter({ hasText: newRelationship.entity.familyName!.toUpperCase() })
-    expect(row).toHaveCount(0)
+    await expect(row).toHaveCount(0)
 
     // submit filing
     await page.getByRole('button', { name: 'Submit' }).click()
@@ -180,6 +180,6 @@ test.describe('Adding Officers', () => {
     await expect(modal)
       .toContainText("We couldn't complete your request due to an internal error. Please try again later.")
     await expect(page).toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).not.toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).not.toBeVisible()
   })
 })

@@ -76,22 +76,22 @@ testCases.forEach(({ testName, type, h1, inLiquidation }) => {
       await page.waitForLoadState('networkidle')
 
       // has auth header
-      expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
+      await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
       // has breadcrumb
-      expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-      expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(h1)).toBeVisible()
+      await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
+      await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(h1)).toBeVisible()
       // has tombstone
-      expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-      expect(page.getByTestId('connect-tombstone-wrapper')
+      await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
+      await expect(page.getByTestId('connect-tombstone-wrapper')
         .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
       ).toBeVisible()
       // has correct h1
-      expect(page.getByRole('heading', { name: h1 })).toBeVisible()
+      await expect(page.getByRole('heading', { name: h1 })).toBeVisible()
       // has fee summary
-      expect(page.getByTestId('fee-widget')).toBeVisible()
+      await expect(page.getByTestId('fee-widget')).toBeVisible()
       // has buttons
       const buttonControl = page.getByTestId('connect-button-control-wrapper')
-      expect(buttonControl).toBeVisible()
+      await expect(buttonControl).toBeVisible()
       if (type === LiquidateType.REPORT) { // liq report has no save draft button
         await expect(buttonControl.getByRole('button')).toHaveCount(2)
         await expect(buttonControl).not.toContainText('Save and Resume Later')
@@ -100,15 +100,15 @@ testCases.forEach(({ testName, type, h1, inLiquidation }) => {
         await expect(buttonControl).toContainText('Save and Resume Later')
       }
       // has footer
-      expect(page.getByTestId('connect-main-footer')).toBeVisible()
+      await expect(page.getByTestId('connect-main-footer')).toBeVisible()
       // has form elemenets
-      expect(page.getByTestId('liquidator-info-section')).toBeVisible()
+      await expect(page.getByTestId('liquidator-info-section')).toBeVisible()
 
       if (type !== LiquidateType.REPORT) {
-        expect(page.getByTestId('court-order-section')).toBeVisible()
+        await expect(page.getByTestId('court-order-section')).toBeVisible()
       }
 
-      expect(page.getByTestId('staff-payment-section')).toBeVisible()
+      await expect(page.getByTestId('staff-payment-section')).toBeVisible()
 
       if (
         type === LiquidateType.INTENT
@@ -116,18 +116,18 @@ testCases.forEach(({ testName, type, h1, inLiquidation }) => {
         || type === LiquidateType.REPORT
         || (type === LiquidateType.APPOINT && !inLiquidation)
       ) {
-        expect(page.getByTestId('records-office-section')).toBeVisible()
+        await expect(page.getByTestId('records-office-section')).toBeVisible()
       } else {
-        expect(page.getByTestId('records-office-section')).not.toBeVisible()
+        await expect(page.getByTestId('records-office-section')).not.toBeVisible()
       }
 
       // only report should have confirm checkboxes for records office and liquidators sections
       if (type === LiquidateType.REPORT) {
-        expect(page.getByTestId('records-office-section').getByRole('checkbox').first()).toBeVisible()
-        expect(page.getByTestId('liquidator-info-section').getByRole('checkbox').first()).toBeVisible()
+        await expect(page.getByTestId('records-office-section').getByRole('checkbox').first()).toBeVisible()
+        await expect(page.getByTestId('liquidator-info-section').getByRole('checkbox').first()).toBeVisible()
       } else {
-        expect(page.getByTestId('records-office-section').getByRole('checkbox')).not.toBeVisible()
-        expect(page.getByTestId('liquidator-info-section').getByRole('checkbox')).not.toBeVisible()
+        await expect(page.getByTestId('records-office-section').getByRole('checkbox')).not.toBeVisible()
+        await expect(page.getByTestId('liquidator-info-section').getByRole('checkbox')).not.toBeVisible()
       }
     })
   })

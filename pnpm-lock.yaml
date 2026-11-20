@@ -59,6 +59,9 @@ importers:
       eslint:
         specifier: 10.12.0
         version: 10.12.0(jiti@2.7.0)
+      eslint-plugin-playwright:
+        specifier: 2.12.2
+        version: 2.12.2(eslint@10.12.0(jiti@2.7.0))
 
   packages/configs/playwright-config:
     dependencies:
@@ -4037,6 +4040,12 @@ packages:
     engines: {node: ^22.13.0 || >=24}
     peerDependencies:
       eslint: ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+
+  eslint-plugin-playwright@2.12.2:
+    resolution: {integrity: sha512-sYRCyAEACD3URVoFTfldZcvZNdlJ1r5414gilOTsDCu26PY7l4dUl/3o9ohIEltZgaDS1VXD1mG5xU1KlIGJSw==}
+    engines: {node: '>=16.9.0'}
+    peerDependencies:
+      eslint: '>=8.40.0'
 
   eslint-plugin-regexp@3.2.0:
     resolution: {integrity: sha512-4yq47CnLxyfHFKJEo5kvNaiJ0aDtBxSJWk4M2LiamplUXdWxdlzDYqImb/ZVCp+2BqkQjBAmw4Xc07Q8SXVDZg==}
@@ -11304,6 +11313,11 @@ snapshots:
       to-valid-identifier: 1.0.0
     transitivePeerDependencies:
       - supports-color
+
+  eslint-plugin-playwright@2.12.2(eslint@10.12.0(jiti@2.7.0)):
+    dependencies:
+      eslint: 10.12.0(jiti@2.7.0)
+      globals: 17.11.0
 
   eslint-plugin-regexp@3.2.0(eslint@10.12.0(jiti@2.7.0)):
     dependencies:

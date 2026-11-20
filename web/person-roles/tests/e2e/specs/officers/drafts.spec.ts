@@ -130,6 +130,6 @@ test.describe('Draft Officers', () => {
 
     // should be redirected to dashboard page
     await expect(page).not.toHaveURL(/.*officer-change.*/)
-    expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
+    await expect(page.getByText('Redirected to playwright mocked business dashboard')).toBeVisible()
   })
 })
