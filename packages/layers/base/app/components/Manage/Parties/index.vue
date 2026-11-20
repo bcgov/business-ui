@@ -2,6 +2,7 @@
 import type { ManagePartiesProps } from '#business/app/interfaces'
 import type { ExpandedState } from '@tanstack/vue-table'
 import { omit } from 'es-toolkit'
+import { FormLiquidatorDetails, FormPartyDetails } from '#components'
 
 const {
   roleType,
@@ -66,6 +67,9 @@ const {
 })
 
 const activeSubjectSchema = getActivePartySchema(roleType)
+
+// role specific sub forms - the liquidator form also captures how the liquidator was appointed
+const detailsForm = roleType === RoleTypeUi.LIQUIDATOR ? FormLiquidatorDetails : FormPartyDetails
 
 type PartyTab = 'active' | 'ceased'
 
@@ -268,7 +272,8 @@ function onActionPrevented() {
         </div>
       </template>
       <template #default>
-        <FormPartyDetails
+        <component
+          :is="detailsForm"
           v-if="addingSubject && activeSubject"
           v-model="activeSubject"
           v-bind="partyFormProps"
@@ -307,7 +312,8 @@ function onActionPrevented() {
           @action-prevented="onActionPrevented"
         >
           <template #expanded="{ row }">
-            <FormPartyDetails
+            <component
+              :is="detailsForm"
               v-if="activeSubject"
               v-model="activeSubject"
               v-bind="partyFormProps"

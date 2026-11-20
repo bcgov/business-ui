@@ -50,6 +50,13 @@ test.describe('Draft Officers', () => {
           json: draftFilingResponse
         })
       })
+    // resuming a draft fetches its rebase changes report - a 404 (rebase not enabled) loads the draft as saved,
+    // anything else unmocked fails the check and shows the "Unable to load draft" modal
+    await page.route(
+      `*/**/businesses/${identifier}/filings/${filingId}/changes`,
+      async (route) => {
+        await route.fulfill({ status: 404, json: {} })
+      })
 
     // edit existing officer
     const row = getTableRowForPerson(page, initialOfficer.officer.lastName)

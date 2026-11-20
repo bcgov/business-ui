@@ -17,7 +17,7 @@ function createPartyMock(
       id,
       actions,
       name: nameData,
-      roles: [{ roleType: RoleTypeUi.LIQUIDATOR }],
+      roles: [{ roleType: RoleTypeUi.LIQUIDATOR }] as PartyRoleSchema,
       email: '',
       address: {
         mailingAddress: formatAddressUi(addressData.mailing),
@@ -353,6 +353,36 @@ describe('format-liquidators', () => {
     expect(result.offices).toBeDefined()
     expect(result.relationships).toBeUndefined()
     expect(Object.keys(result)).not.toContain('relationships')
+  })
+
+  it('should send the appointment method, court order number and effective date on the liquidator role', () => {
+    const party = createPartyMock(
+      {
+        partyType: PartyType.PERSON,
+        firstName: 'John',
+        lastName: 'Doe',
+        businessName: '',
+        middleName: '',
+        preferredName: '',
+        hasPreferredName: false
+      },
+      { delivery, mailing },
+      [ActionType.ADDED]
+    )
+    party.new.roles = [{
+      roleType: RoleTypeUi.LIQUIDATOR,
+      appointmentDate: '2026-11-01',
+      meta: { appointmentMethod: LiquidatorAppointmentMethod.COURT, courtOrderNumber: 'S-12345' }
+    }]
+
+    const result = formatLiquidatorsApi([party], LiquidateType.APPOINT, {}, [])
+
+    expect(result.relationships![0]!.roles).toEqual([{
+      roleType: RoleType.LIQUIDATOR,
+      appointmentDate: '2026-11-01',
+      cessationDate: undefined,
+      meta: { appointmentMethod: LiquidatorAppointmentMethod.COURT, courtOrderNumber: 'S-12345' }
+    }])
   })
 
   it('should remove offices property if LIQUIDATION office is missing from the table array', () => {

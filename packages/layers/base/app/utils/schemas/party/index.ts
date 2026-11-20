@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export * from './email'
+export * from './liquidator-appointment'
 export * from './name'
 export * from './roles'
 
