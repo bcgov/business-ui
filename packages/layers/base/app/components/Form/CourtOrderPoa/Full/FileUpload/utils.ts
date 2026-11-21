@@ -33,36 +33,17 @@ export async function validatePdf(
     return { isValid: true }
   }
 
-  const expectedWidthInches = 8.5
-  const expectedHeightInches = 11.0
-  const pointsPerInch = 72
-  const epsilonInches = 0.02
-
   let pdf: pdfjs.PDFDocumentProxy | null = null
 
   try {
     const arrayBuffer = await file.arrayBuffer()
 
+    // open the document to confirm it is a readable, unencrypted pdf
+    // any page size is accepted: court documents are often on legal (8.5" x 14") paper
     pdf = await pdfjs.getDocument({
       data: new Uint8Array(arrayBuffer),
       password: ''
     }).promise
-
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum)
-      const viewport = page.getViewport({ scale: 1 })
-
-      const widthInches = viewport.width / pointsPerInch
-      const heightInches = viewport.height / pointsPerInch
-
-      const isValidPageSize
-        = (Math.abs(widthInches - expectedWidthInches) < epsilonInches)
-          && (Math.abs(heightInches - expectedHeightInches) < epsilonInches)
-
-      if (!isValidPageSize) {
-        return { isValid: false, tKey: 'validation.invalidPageSizeLetterNamed' }
-      }
-    }
 
     return { isValid: true }
   } catch (err: unknown) {

@@ -976,7 +976,6 @@ export default {
     invalidDate: 'Invalid date',
     invalidEmailAddress: 'Enter a valid email address',
     invalidFileTypeNamed: '{filename} isn’t a supported file type. Upload a {validtype}.',
-    invalidPageSizeLetterNamed: '{filename} must be set to fit onto 8.5” x 11” letter-size paper.',
     jurisdictionRegionNotBc: 'Jurisdiction Region cannot be British Columbia',
     jurisdictionRegionRequired: 'Jurisdiction Region is required',
     jurisdictionRequired: 'Jurisdiction is required',
