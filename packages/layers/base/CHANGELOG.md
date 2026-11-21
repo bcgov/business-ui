@@ -1,5 +1,109 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.30.0
+
+### Minor Changes
+
+- [#626](https://github.com/bcgov/business-ui/pull/626) [`baaa450`](https://github.com/bcgov/business-ui/commit/baaa450140ad54620c49baf41e091a632f5cd3cd) Thanks [@eve-git](https://github.com/eve-git)! - `FormAddress` delivery addresses cannot be a PO Box by default (`noPoBox` now defaults to `true`), with the "Address cannot be a PO Box" hint under the delivery street. Pass `noPoBox: false` to allow a PO Box delivery address (e.g. liquidators); the hint is hidden then.
+
+- [#617](https://github.com/bcgov/business-ui/pull/617) [`3a4c793`](https://github.com/bcgov/business-ui/commit/3a4c793baad76a424dfb1f7511112cba14fd457c) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageAmalgamation component and useManageAmalgamation composable
+  - Moved amalgamation component and composable to be under the `/manage` directory.
+  - Combined the amalgamating business and statement models into a single `active-subject` model, typed by the new `getActiveAmalgamationSchema()` zod discriminated union (`key: 'business' | 'statement'`), matching ManageShareStructure. Removed the `active-amal-stmnt` model, and the default model name is now `activeSubject`. Consumers nested in a parent UForm pass `model-name="<key>.value"`.
+  - Removed `getActiveAmalgamationCorrectSchema`/`getActiveAmalgamationCorrectStatementSchema` and their types; `addSubject`, `editSubject` and `updateStatement` in useManageAmalgamation now take `ActiveAmalgamationSchema`.
+  - Moved `preventActions` and `actionPreventedSignal` into `ManageAmalgamationProps` - not available on the readonly variants.
+  - ManageAmalgamation now uses useManageCommon for variants, allowed actions, label overrides and alerts, and shows the task guard alert when an action is prevented from the table or statement.
+  - ManageAmalgamationStatement now receives the parent `stateKey`.
+  - useManageAmalgamation uses cloneDeep and getIsExistingRecord, and undoSubject no longer shares a reference between the old and new state.
+  - TableAmalgamation syncs isEditing from the expanded state and accepts `hideActionsWhen`.
+
+- [#612](https://github.com/bcgov/business-ui/pull/612) [`cc32bca`](https://github.com/bcgov/business-ui/commit/cc32bca4009a0af1a89a366ad009e7e8372b0b59) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageCourtOrders component and useManageCourtOrders composable
+  - Moved court order component and composable to be under the `/manage` directory.
+  - Renamed the active court order model to `active-subject` and the default `modelName` to `activeSubject`.
+  - Moved `preventActions` and `actionPreventedSignal` into `ManageCourtOrdersProps` - not available on the readonly variants.
+  - ManageCourtOrders now uses useManageCommon for variants, allowed actions, label overrides and alerts.
+  - useManageCourtOrders uses cloneDeep and getIsExistingRecord, and undoSubject no longer shares a reference between the old and new state.
+  - TableCourtOrder syncs isEditing from the expanded state.
+
+- [#618](https://github.com/bcgov/business-ui/pull/618) [`f68b7c7`](https://github.com/bcgov/business-ui/commit/f68b7c7bc422940ef3e28ad2e8598542b1be8d91) Thanks [@meawong](https://github.com/meawong)! - Add the FormReviewWrapper component and enable view-only mode for staff viewing drafts not marked as staff-filed.
+
+- [#624](https://github.com/bcgov/business-ui/pull/624) [`bbe3b00`](https://github.com/bcgov/business-ui/commit/bbe3b0068197066f45768aa91545b4dc1bf1814d) Thanks [@kialj876](https://github.com/kialj876)! - Court order form redesign (plain court order section, standalone filing section and the correction sub form)
+  - `FormCourtOrderPoa`: one "Court Order" row with the number above the Plan of Arrangement checkbox; the hint (`text.courtOrderNumberHint`) sits in the card above the input and the error shows under the input with the caution icon; input label is `label.courtOrderNumberIfExists`; checking Plan of Arrangement with no number shows `validation.courtOrderNumberRequired` right away
+  - `FormCourtOrderPoaFields`: one "Court Order" row with the number above the Plan of Arrangement checkbox; "Court Order Details" is a multi-line `ConnectTextarea` that autogrows and stays resizable (`label.courtOrderDetails` / `label.courtOrderDetailsOpt`)
+  - `FormCourtOrderPoaFullFileUpload`: opt-in `supportingDocsCheckbox` variant puts the supporting documents upload behind an "Add supporting documents" checkbox (`v-model:has-supporting-docs`, `label.addSupportingDocuments`, `supportingDocsError`) - disabled while supporting documents exist; without it the supporting upload always shows, as before
+  - `getCourtOrderPoaFullSchema`: UI-only `hasSupportingDocs` field (derived true from the files on parse, omitted from the manage court orders edit equality check); with `isFileOrDetailsRequired` it errors with `validation.addSupportingDocsOrUncheck` when checked with nothing uploaded; new `hasActiveSupportingDoc` helper
+  - `FormCourtOrderPoaFullFiling`: uses the checkbox variant and no longer renders a visible legend (the fieldset keeps its accessible name)
+  - `FormCourtOrderPoaFullFileUploadItem.readonly`: hides the file actions for review displays
+  - Court order max upload size is now 50 MB
+  - BREAKING: `FormCourtOrderPoaFullFiling` `order` prop is removed
+  - BREAKING: `label.courtOrderText`, `label.addCourtOrderText`, `label.addCourtOrderTextOpt`, `label.courtOrderNumberOpt` and `text.courtOrderAndPoaDescription` are removed
+
+- [#628](https://github.com/bcgov/business-ui/pull/628) [`bef0735`](https://github.com/bcgov/business-ui/commit/bef073566ebfadb786e29643d7e8c26f10707b8c) Thanks [@leodube-aot](https://github.com/leodube-aot)! - Public business tombstone: show an "IN LIQUIDATION" badge when the business has `inLiquidation` set, alongside the existing non-active state badge.
+
+- [#604](https://github.com/bcgov/business-ui/pull/604) [`ca89e31`](https://github.com/bcgov/business-ui/commit/ca89e314c6caafe90f9f1928c526ac94305c7043) Thanks [@deetz99](https://github.com/deetz99)! - Add filing section validation support to business services and ManageYourCompany component
+  
+  - Add `validateFilingSection` endpoint service and query options for partial filing validations
+  - Update `ManageYourCompany` to accept `filingType` and `filingSubType` props
+  - Pass filing context to `getActiveYourCompanySchema` to enable asynchronous legal name designation validation
+
+- [#629](https://github.com/bcgov/business-ui/pull/629) [`4962163`](https://github.com/bcgov/business-ui/commit/4962163fb24c06c74e031415db6bdc78a0acb8c7) Thanks [@eve-git](https://github.com/eve-git)! - `ManageParties` renders a liquidator specific sub form (`FormLiquidatorDetails`) when `roleType` is Liquidator, in place of `FormPartyDetails`:
+  - "Appointed by" the company or the court (required), with a required court order number when appointed by the court. Stored on the liquidator role's `meta` (`appointmentMethod`, `courtOrderNumber`), matching the business-schemas relationship schema.
+  - A required effective date, stored on the liquidator role's `appointmentDate` (bounded by `partyFormProps.effectiveDateBounds`).
+
+- [#614](https://github.com/bcgov/business-ui/pull/614) [`1e71b17`](https://github.com/bcgov/business-ui/commit/1e71b17a992602f0e7b5a80102db155606947ee0) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - Address form options for the Review Imported Data filing
+  - New `AddressFormProps` (`bcCanadaOnly`, `validateOnOpen`, `noPoBox`, `hideSameAs`, `disabledFields`) is the single way to configure `FormAddress` from `FormOfficeDetails`, `FormPartyDetails`, `ManageOffices` (`addressFormProps`) and `ManageParties` (`partyFormProps.addressFormProps`).
+  - BREAKING: `bcCanadaOnly` and `validateOnOpen` moved off `ManageOffices` / `FormOfficeDetails` / `FormPartyDetails` / `partyFormProps` into `addressFormProps` (e.g. `bc-canada-only` becomes `:address-form-props="{ bcCanadaOnly: true }"`).
+  - `getAddressSchema` / `getAddressWithIdSchema` take a `noPoBox` option: the delivery address street cannot be a PO Box. Off by default.
+  - `hideSameAs` drops the 'same as mailing' checkbox; the caller keeps `sameAs` false on the model.
+  - `disabledFields` renders the listed inputs disabled and skips their validation errors (`getEditableAddressErrors`).
+
+- [#621](https://github.com/bcgov/business-ui/pull/621) [`ab1b60d`](https://github.com/bcgov/business-ui/commit/ab1b60dc3b0e5a99195bb566ac65078eccd3cfe8) Thanks [@deetz99](https://github.com/deetz99)! - Update dependencies to latest: Nuxt, pdfjs, formatjs/intl-datetimeformat, connect-pay.
+
+- [#616](https://github.com/bcgov/business-ui/pull/616) [`412bc3b`](https://github.com/bcgov/business-ui/commit/412bc3ba48e88d33894bc2211148d7065d2d0dd6) Thanks [@kialj876](https://github.com/kialj876)! - Draft rebase: resume a draft over filings staff made since it was saved
+  - BREAKING: `initFiling(businessId, filingName, options)` takes an options object (`filingSubType`, `draftId`, `parties`, `offices`, `shareClasses`, `nameTranslations`, `resolutions`) and returns each requested section merged with the draft; `mergeDraftOffices: false` for read-only offices
+  - BREAKING: `getBusinessAddresses(businessId, officeTypes?, date?, force?)` returns UI-shaped rows only; the `'table'` form, `formatAddressTableState` and `formatDraftTableState` are removed
+  - BREAKING: `saveOrUpdateDraftFiling(identifier, body, isSubmission, filingId?, opts?)` - last argument is `{ baseTransactionId?, headers? }`
+  - `saveOrSubmitFiling`: sends `baseTransactionId` from `useDraftRebase().getSaveOptions`; `syncUrlDraftParam` option
+  - new `useDraftRebase`, `utils/draft-rebase`, `useBusinessService.getFilingChanges`, `useBusinessQuery.filingChanges` / `filingChangesOptions`: resolve the Legal API `/changes` report against the draft
+  - `getBusinessParties(..., force)`
+  - `getCachedOrFetch(options, force)`: a forced fetch joins a request already in flight instead of aborting it
+  - `TableBusinessState.modifiedByStaff`, "MODIFIED BY STAFF" badge in `getTableBadges` (shown only while the row has no action of its own; undo brings it back), `ManageYourCompanyFieldBadge` `modifiedByStaff` prop
+  - new `AlertDraftRebase`: the warning under a filing heading listing what staff changed per section since the draft was started (reads `useDraftRebase().report`; hidden until a draft is rebased); `DraftChangeConflict` / `DraftChangeApplied` / `DraftChangeAbsorbed` gain the Legal API's `change: added | modified | removed`; `resolveDraftConflicts` pairs share classes by `rowId` before name (a staff rename substitutes the renamed class instead of keeping the draft's old-name row beside it); `courtOrders` joins `DraftChangesSection` / `StaffModifiedKeys` / `staleIds` (correction drafts: the draft's row for a court order staff changed is dropped so the current one shows through, badged by id)
+  - `useFilingModals().openDraftStaleModal`: `openSaveFilingErrorModal` shows it instead of the generic error when a rebased submission hit 409 (the work is parked as a draft; "Review Changes" reloads the page, "Return to My Business" leaves)
+  - BREAKING: the dead `useFilingModals().openPendingTaskOnSaveOrSubmitModal` and its `modal.error.filing.pendingTaskOnSaveOrSubmit` strings are removed
+  - `useFilingPage().submitFiling` keeps the resumed draft id in the url when the failed submit carried no filing
+  - `useFilingModals().openGetDraftChangesErrorModal`: `initFiling` opens it and returns no draft when the changes report fails for any reason but a 404 (the 404 still resumes the draft as saved)
+  - `BusinessLedgerItem.filedByStaff` (optional, copied onto the bootstrap ledger item) - the submitter side legal-api reports on every ledger row
+
+- [#606](https://github.com/bcgov/business-ui/pull/606) [`e3927e6`](https://github.com/bcgov/business-ui/commit/e3927e6f4815f61e26fc0416ddcb4ab13afdc010) Thanks [@eve-git](https://github.com/eve-git)! - Refactor ManageOffices component and useManageOffices composable
+  - Moved office component and composable to be under the `/manage` directory.
+  - Renamed the active office model to `active-subject` and the default `modelName` to `activeSubject`.
+  - Moved `preventActions` and `actionPreventedSignal` into `ManageOfficesProps` - not available on the readonly variants.
+
+### Patch Changes
+
+- [#623](https://github.com/bcgov/business-ui/pull/623) [`941339a`](https://github.com/bcgov/business-ui/commit/941339a67539b5b5fed3166dab5874ead1d17d33) Thanks [@eve-git](https://github.com/eve-git)! - `FormAddress` "Delivery Address same as Mailing Address" works with the delivery-only rules (`bcCanadaOnly: 'delivery'`, `noPoBox`):
+  - While checked, the delivery address mirrors mailing address edits instead of resetting and unchecking.
+  - A delivery-only error (e.g. a PO Box street, or outside BC when only the delivery address must be in BC) unchecks it and shows the delivery inputs, prefilled with the mailing address, with the error. The page scrolls to the first delivery error and focuses it. Errors both addresses share stay on the mailing inputs with the box left checked.
+  - The box is greyed out while the mailing address cannot be used as the delivery address.
+
+- [#631](https://github.com/bcgov/business-ui/pull/631) [`a7ad5c7`](https://github.com/bcgov/business-ui/commit/a7ad5c7eccbe4db9ab8c820a25eb516dbe97f810) Thanks [@eve-git](https://github.com/eve-git)! - `FormAddress`: with "same as" checked and both addresses required in BC (e.g. the liquidation records office), moving the mailing province out of BC and back no longer unchecks "same as" and leaves a stale "Address must be in British Columbia" error on the delivery address. Re-checking the filled fields now replaces their previous errors instead of only adding new ones.
+
+- [#613](https://github.com/bcgov/business-ui/pull/613) [`1773c70`](https://github.com/bcgov/business-ui/commit/1773c70b1399a7717cc128c0479288777a335a18) Thanks [@meawong](https://github.com/meawong)! - Update connect-pay dependency
+
+- [#622](https://github.com/bcgov/business-ui/pull/622) [`e29be5b`](https://github.com/bcgov/business-ui/commit/e29be5b269ad9efd57e27036127cc4a8fab0442c) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Folio or Reference Number accepts up to 50 characters in every filing, matching the account record and the filing schema, so a business's default folio always passes validation.
+
+- [#609](https://github.com/bcgov/business-ui/pull/609) [`04db065`](https://github.com/bcgov/business-ui/commit/04db0650fa685ac564055872048d0c8442b3356a) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Party table: show the former name line in the neutral text token (gray-700, [#495057](https://github.com/bcgov/business-ui/issues/495057)) so it reads as secondary text next to the bold current name.
+
+- [#619](https://github.com/bcgov/business-ui/pull/619) [`4b9e6f3`](https://github.com/bcgov/business-ui/commit/4b9e6f32a08f02cfd830b61d4490c91e20306eb9) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - `ManageOffices` `hideRemove` also hides Remove in the table row actions, including on an added row.
+
+- [#619](https://github.com/bcgov/business-ui/pull/619) [`835ae50`](https://github.com/bcgov/business-ui/commit/835ae508be3c44f9fe67d09f90270f6967f80b8a) Thanks [@mruff-aeq](https://github.com/mruff-aeq)! - `FormAddress` renders `disabledFields` inputs as a flat grey box, without the input underline.
+
+- [#611](https://github.com/bcgov/business-ui/pull/611) [`03a12fd`](https://github.com/bcgov/business-ui/commit/03a12fd3674095762905351550c57f1bbe145248) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - Folio, certify and confirm authorization boxes: 32px top and bottom padding with the default side padding, per the UX review, so the review page boxes share one outer spacing.
+
+- [#625](https://github.com/bcgov/business-ui/pull/625) [`3cebf72`](https://github.com/bcgov/business-ui/commit/3cebf72ff8ea7804f3a6cf9c1c4be51c905d501b) Thanks [@kialj876](https://github.com/kialj876)! - Draft rebase: no warning or conflict for filings that changed nothing the draft holds
+  - `AlertDraftRebase`: hidden when the report lists no changes (the unknown-base warning still shows)
+  - `saveOrSubmitFiling`: a submission that hit 409 re-reads the `/changes` report for the parked draft and resubmits once at the new base when it lists no changes; `useDraftRebase().advanceBaseIfUnaffected`
+
 ## 0.29.0
 
 ### Minor Changes
