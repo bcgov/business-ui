@@ -83,15 +83,16 @@ function validateFilledFields(fields?: string[]) {
     return (!fields || fields.includes(field))
       && !!(model.value[address] as Record<string, unknown> | undefined)?.[field]
   })
-  if (!filled.length) {
-    return
-  }
   const applyErrors = () => {
     if (!formRef.value) {
       return
     }
+    // while 'same as' is checked the delivery address is a hidden copy of the mailing address, so its errors are
+    // rebuilt from scratch on every check. Otherwise an old one (e.g. 'must be in BC' after the mailing province
+    // is back in BC) would linger, read as a delivery-only error and uncheck 'same as'
     const names = new Set(filled.map(error => error.name))
-    const others = formRef.value.getErrors().filter(error => !error.name || !names.has(error.name))
+    const others = formRef.value.getErrors()
+      .filter(error => !error.name || (!error.name.startsWith('deliveryAddress.') && !names.has(error.name)))
     formRef.value.setErrors([...others, ...filled])
   }
   if (model.value.sameAs && containsDeliveryOnlyError(filled)) {
