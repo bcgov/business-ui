@@ -92,7 +92,7 @@ function validateFilledFields(fields?: string[]) {
     // is back in BC) would linger, read as a delivery-only error and uncheck 'same as'
     const names = new Set(filled.map(error => error.name))
     const others = formRef.value.getErrors()
-      .filter(error => !error.name?.startsWith('deliveryAddress.') && !names.has(error.name))
+      .filter(error => !error.name || (!error.name.startsWith('deliveryAddress.') && !names.has(error.name)))
     formRef.value.setErrors([...others, ...filled])
   }
   if (model.value.sameAs && containsDeliveryOnlyError(filled)) {
