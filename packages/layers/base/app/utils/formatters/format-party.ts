@@ -166,7 +166,7 @@ export function formatCompletingPartyRelationshipApi(cp: CompletingPartySchema):
     },
     mailingAddress,
     deliveryAddress: mailingAddress,
-    roles: [{ roleType: RoleType.COMPLETING_PARTY, appointmentDate: getToday('America/Vancouver') }],
+    roles: [{ roleType: RoleType.COMPLETING_PARTY, appointmentDate: getToday() }],
     actions: [ActionType.ADDED]
   }
 }

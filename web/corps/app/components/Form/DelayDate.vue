@@ -62,7 +62,7 @@ watch(() => model.value.date, () => {
 // itself never offers a date the form would then reject
 const minDate = computed(() =>
   DateTime
-    .fromISO(getToday('America/Vancouver'), { zone: 'America/Vancouver' })
+    .fromISO(getToday(), { zone: 'America/Vancouver' })
     .plus({ days: 1 })
     .toISODate() ?? undefined
 )

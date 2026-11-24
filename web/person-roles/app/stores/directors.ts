@@ -1,7 +1,5 @@
 import { cloneDeep } from 'es-toolkit'
 
-const PACIFIC_TZ = 'America/Vancouver'
-
 export const useDirectorsStore = defineStore('directors-store', () => {
   const ld = useConnectLaunchDarkly()
   const modal = useFilingModals()
@@ -32,7 +30,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
    * `enable-backdated-cod` allows), coops latest(lastDirectorChangeDate, lastAnnualReportDate).
    * Upper bound is today.
    */
-  const effectiveDate = ref<IsoDatePacific>(getToday(PACIFIC_TZ))
+  const effectiveDate = ref<IsoDatePacific>(getToday())
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
@@ -74,7 +72,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
       // restore the effective date from the draft header
       if (draftFiling.filing.header?.effectiveDate) {
         effectiveDate.value = (draftFiling.filing.header.effectiveDate.split('T')[0]
-          ?? getToday(PACIFIC_TZ)) as IsoDatePacific
+          ?? getToday()) as IsoDatePacific
       }
     }
 
@@ -154,7 +152,7 @@ export const useDirectorsStore = defineStore('directors-store', () => {
     draftFilingState.value = {} as CODDraftState
     tableState.value = []
     initialDirectors.value = []
-    effectiveDate.value = getToday(PACIFIC_TZ)
+    effectiveDate.value = getToday()
   }
 
   return {

@@ -25,7 +25,7 @@ const directorFormProps = computed(() => {
     },
     cessationDateBounds: {
       max: {
-        date: getToday('America/Vancouver'),
+        date: getToday(),
         message: t('validation.cessationDateInFuture')
       }
     }

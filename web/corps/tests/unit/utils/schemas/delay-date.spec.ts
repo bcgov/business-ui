@@ -91,7 +91,7 @@ describe('getDelayDateSchema', () => {
     const schema = getDelayDateSchema()
     const data = {
       option: DelayOption.CUSTOM,
-      date: getToday('America/Vancouver')
+      date: getToday()
     }
     const result = schema.safeParse(data)
     expect(result).toMatchObject({

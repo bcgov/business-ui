@@ -119,7 +119,7 @@ describe('useDirectorsStore', () => {
     expect(store.formState.folio).toEqual({ folioNumber: '' })
     expect(store.formState.staffPayment).toBeUndefined()
     expect(store.formState.activeParty).toBeUndefined()
-    expect(store.effectiveDate).toBe(getToday('America/Vancouver'))
+    expect(store.effectiveDate).toBe(getToday())
   })
 
   describe('init(businessId, draftId)', () => {
@@ -251,7 +251,7 @@ describe('useDirectorsStore', () => {
 
       const header = getPostPayload().filing.header
       expect(header.name).toBe(FilingType.CHANGE_OF_DIRECTORS)
-      expect(header.effectiveDate).toBe(toApiDateTime(getToday('America/Vancouver')))
+      expect(header.effectiveDate).toBe(toApiDateTime(getToday()))
       expect(header.effectiveDate).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$/)
     })
 
@@ -260,7 +260,7 @@ describe('useDirectorsStore', () => {
 
       await store.submit(false)
 
-      expect(getDraftPayload().filing.header.effectiveDate).toBe(toApiDateTime(getToday('America/Vancouver')))
+      expect(getDraftPayload().filing.header.effectiveDate).toBe(toApiDateTime(getToday()))
       expect(getDraftPayload().filing.changeOfDirectors).toEqual({ relationships: [] })
     })
   })
@@ -311,7 +311,7 @@ describe('useDirectorsStore', () => {
       expect(store.directors).toEqual([])
       expect(store.initialDirectors).toEqual([])
       expect(store.draftFilingState).toEqual({})
-      expect(store.effectiveDate).toBe(getToday('America/Vancouver'))
+      expect(store.effectiveDate).toBe(getToday())
     })
   })
 })
