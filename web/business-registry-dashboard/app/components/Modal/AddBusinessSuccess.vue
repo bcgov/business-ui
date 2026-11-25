@@ -16,8 +16,25 @@ const reviewImportedDataEnabled = computed(() => {
   return typeof enabledFeatures === 'string' &&
     enabledFeatures.split(',').some(feature => feature.trim() === 'review-imported-data')
 })
+// only warn when the business actually has a Review Imported Data todo (i.e. migration errors to fix)
+const hasMigrationIssues = ref(false)
+onMounted(async () => {
+  if (!reviewImportedDataEnabled.value) {
+    return
+  }
+  try {
+    const { $businessApi } = useNuxtApp()
+    const { tasks } = await $businessApi<{ tasks: { task?: { todo?: { header?: { name?: string } } } }[] }>(
+      `/businesses/${props.identifier}/tasks`
+    )
+    hasMigrationIssues.value = !!tasks?.some(item => item.task?.todo?.header?.name === 'reviewImportedData')
+  } catch (error) {
+    console.error('Failed to fetch business tasks:', error)
+  }
+})
+
 const migrationWarningAlert = computed<ModalAlertProps | undefined>(() => {
-  if (!reviewImportedDataEnabled.value || !showMigrationWarning.value) {
+  if (!reviewImportedDataEnabled.value || !hasMigrationIssues.value || !showMigrationWarning.value) {
     return undefined
   }
   return {
