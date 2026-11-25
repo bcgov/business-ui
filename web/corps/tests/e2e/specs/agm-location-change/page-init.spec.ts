@@ -111,7 +111,6 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByTestId('folio-input')).not.toBeVisible()
     await expect(page.getByTestId('completing-party-section')).not.toBeVisible()
     await expect(page.getByRole('textbox', { name: 'Legal name of completing party' })).not.toBeVisible()
-    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Save and Resume Later' })).not.toBeVisible()
@@ -145,7 +144,6 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByTestId('completing-party-section')).toBeVisible()
     await expect(page.getByRole('textbox', { name: 'Legal name of completing party' })).toBeVisible()
     await expect(page.getByTestId('folio-section')).toBeVisible()
-    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
   })
 
   test('should hydrate AGM Location Change fields from a resumed draft', async ({ page }) => {
@@ -217,7 +215,6 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(detail.locator('input, textarea, select, button')).toHaveCount(0)
 
     await expect(page.getByTestId('folio-section')).not.toBeVisible()
-    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByTestId('connect-button-control').getByRole('button', { name: 'Back' })).toBeVisible()
     await expect(page.getByTestId('connect-button-control').locator('button')).toHaveCount(1)

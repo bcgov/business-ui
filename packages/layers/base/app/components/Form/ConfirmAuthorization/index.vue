@@ -12,7 +12,7 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const confirmAuthorizationSchema = computed(() =>
-  getConfirmAuthorizationSchema({ requireCompletingParty: props.showCompletingParty })
+  props.showCompletingParty ? getConfirmAuthorizationStaffSchema() : getConfirmAuthorizationSchema()
 )
 
 const model = defineModel<ConfirmAuthorizationSchema>({ required: true })
@@ -43,7 +43,7 @@ const authorizationLabel = computed(() =>
       completingParty: completingPartyName.value,
       entityType: entityType.value
     })
-  : t('text.confirmAuthorizationIsAuthorized', {
+    : t('text.confirmAuthorizationIsAuthorized', {
       entitytype: entityType.value
     })
 )

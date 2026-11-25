@@ -25,10 +25,7 @@ export function getAgmLocationChangeSchema() {
       region: z.string().default('')
     }).default(() => ({ country: 'CA', city: '', region: '' })),
     ...getFolioSectionShape(),
-    authorization: getConfirmAuthorizationSchema().default(() => ({
-      isAuthorized: false as unknown as true,
-      completingParty: ''
-    }))
+    authorization: getConfirmAuthorizationSchema().default(getConfirmAuthorizationDefaults)
   })
 }
 
@@ -88,10 +85,4 @@ export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
   })
 }
 
-type AgmLocationFields = z.output<ReturnType<typeof getAgmLocationChangeSchema>>['agmLocation']
-
-export type AgmLocationChangeFormSchema = Partial<
-  z.output<ReturnType<typeof getAgmLocationChangeSchema>>
-  & { authorization: z.output<ReturnType<typeof getConfirmAuthorizationSchema>> }
-  & { certify: z.output<ReturnType<typeof getCertifySchema>> }
-> & { agmLocation: AgmLocationFields }
+export type AgmLocationChangeFormSchema = z.output<ReturnType<typeof getAgmLocationChangeSchema>>
