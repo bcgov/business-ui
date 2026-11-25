@@ -1,56 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest'
 
 describe('getAgmLocationChangeSchema (defaults)', () => {
-  describe('non-staff', () => {
-    let schema: ReturnType<typeof getAgmLocationChangeSchema>
+  let schema: ReturnType<typeof getAgmLocationChangeSchema>
 
-    beforeEach(() => {
-      schema = getAgmLocationChangeSchema(false)
-    })
+  beforeEach(() => {
+    schema = getAgmLocationChangeSchema()
+  })
 
-    it('should parse empty input to defaults', () => {
-      const result = schema.safeParse({})
+  it('should parse empty input to defaults', () => {
+    const result = schema.safeParse({})
 
-      expect(result.success).toBe(true)
-      expect(result.data!.year).toBe('')
-      expect(result.data!.reason).toBe('')
-      expect(result.data!.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
-      expect(result.data!.folio).toEqual({ folioNumber: '' })
-      expect((result.data as any).certify).toEqual({ isCertified: false })
-    })
-
-    it('should not include staffPayment or authorization', () => {
-      const result = schema.safeParse({})
-
-      expect(result.success).toBe(true)
-      expect((result.data as any).staffPayment).toBeUndefined()
-      expect((result.data as any).authorization).toBeUndefined()
+    expect(result.success).toBe(true)
+    expect(result.data!.year).toBe('')
+    expect(result.data!.reason).toBe('')
+    expect(result.data!.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
+    expect(result.data!.folio).toEqual({ folioNumber: '' })
+    expect(result.data!.authorization).toEqual({
+      isAuthorized: false,
+      completingParty: ''
     })
   })
 
-  describe('staff', () => {
-    let schema: ReturnType<typeof getAgmLocationChangeSchema>
+  it('should not include certify or staffPayment', () => {
+    const result = schema.safeParse({})
 
-    beforeEach(() => {
-      schema = getAgmLocationChangeSchema(true)
+    expect(result.success).toBe(true)
+    expect((result.data as Record<string, unknown>).certify).toBeUndefined()
+    expect((result.data as Record<string, unknown>).staffPayment).toBeUndefined()
+  })
+
+  it('should preserve authorization values when provided', () => {
+    const result = schema.safeParse({
+      authorization: {
+        isAuthorized: true,
+        completingParty: 'Jane Smith'
+      }
     })
 
-    it('should parse empty input to defaults', () => {
-      const result = schema.safeParse({})
-
-      expect(result.success).toBe(true)
-      expect(result.data!.year).toBe('')
-      expect(result.data!.folio).toEqual({ folioNumber: '' })
-      expect((result.data as any).authorization).toBeDefined()
-    })
-
-    it('should not include certify or staffPayment', () => {
-      const result = schema.safeParse({})
-
-      expect(result.success).toBe(true)
-      expect((result.data as any).certify).toBeUndefined()
-      expect((result.data as any).staffPayment).toBeUndefined()
+    expect(result.success).toBe(true)
+    expect(result.data!.authorization).toEqual({
+      isAuthorized: true,
+      completingParty: 'Jane Smith'
     })
   })
 })

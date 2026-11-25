@@ -62,17 +62,11 @@ const reviewRows = computed(() => [
           name="folio"
         />
 
-        <FormCertify
-          v-if="!store.isStaff"
-          v-model="(store.formState as any).certify"
-          data-testid="form-section-certify"
-          name="certify"
-          :entity-type="entityType"
-        />
         <FormConfirmAuthorization
-          v-if="store.isStaff && store.formState.authorization"
-          v-model="(store.formState as any).authorization"
+          v-if="store.formState.authorization"
+          v-model="store.formState.authorization"
           :entity-type="entityType"
+          :show-completing-party="store.isStaff"
           data-testid="form-section-authorization"
           name="authorization"
         />

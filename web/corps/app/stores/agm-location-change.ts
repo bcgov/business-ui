@@ -15,7 +15,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
   const draftFilingState = shallowRef<AgmLocationChangeDraftState>({} as AgmLocationChangeDraftState)
 
   // initialise defaults immediately so formState is never empty
-  Object.assign(formState, getAgmLocationChangeSchema(isStaff.value).parse({}))
+  Object.assign(formState, getAgmLocationChangeSchema().parse({}))
 
   async function init(businessId: string, draftId?: string) {
     initializing.value = true
@@ -63,9 +63,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
       }
     }
 
-    const authorizationReceived = isStaff.value
-      ? Boolean(formState.authorization?.isAuthorized)
-      : Boolean(formState.certify?.isCertified)
+    const authorizationReceived = Boolean(formState.authorization?.isAuthorized)
 
     const filingPayload = formatFilingPayloadApi<AgmLocationChangeFiling>(
       businessStore.business!,
@@ -79,6 +77,13 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
     )
 
     const header = filingPayload.filing.header as Record<string, unknown>
+
+    const completingParty = formState.authorization?.completingParty?.trim()
+
+    if (isStaff.value && completingParty) {
+      header.certifiedBy = completingParty
+    }
+
     // remove authorizationReceived from header when saving a draft
     if (!isSubmission) {
       delete header.authorizationReceived
@@ -99,7 +104,7 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
   }
 
   function $reset() {
-    const defaults = getAgmLocationChangeSchema(isStaff.value).parse({})
+    const defaults = getAgmLocationChangeSchema().parse({})
     Object.assign(formState, defaults)
     initialFormState.value = cloneDeep(formState)
     draftFilingState.value = {} as AgmLocationChangeDraftState
