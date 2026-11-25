@@ -1,5 +1,13 @@
 import type { BadgeProps } from '@nuxt/ui'
 
+/**
+ * The DELETED "stamp" badge style - shared by the tables and the court order file list.
+ *
+ * Requirement: the DELETED badge is NOT greyed out with its deleted row - it keeps its own light grey
+ * background and dark text, so only apply DELETED_CLASS to the label, never to a cell that contains the badge
+ */
+export const DELETED_BADGE_CLASS = 'bg-shade-secondary text-neutral-highlighted'
+
 export function getTableBadges<T extends { actions: ActionType[] }>(
   row: TableBusinessRow<T>,
   badgeLabelOverrides?: Partial<Record<ActionType, string>>
@@ -8,7 +16,7 @@ export function getTableBadges<T extends { actions: ActionType[] }>(
 
   const badgeMap: Record<ActionType, BadgeProps> = {
     [ActionType.ADDED]: { label: t('badge.added') },
-    [ActionType.REMOVED]: { label: t('badge.deleted'), class: 'bg-shade-secondary text-neutral-highlighted' },
+    [ActionType.REMOVED]: { label: t('badge.deleted'), class: DELETED_BADGE_CLASS },
     [ActionType.ADDRESS_CHANGED]: {
       label: badgeLabelOverrides?.[ActionType.ADDRESS_CHANGED] ?? t('badge.addressChanged')
     },

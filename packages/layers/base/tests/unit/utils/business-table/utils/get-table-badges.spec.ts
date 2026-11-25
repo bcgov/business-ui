@@ -100,3 +100,11 @@ describe('getTableBadges', () => {
     expect(result[0]!.label).toBe('CORRECTED')
   })
 })
+
+describe('DELETED_BADGE_CLASS', () => {
+  it('is the style getTableBadges uses for the DELETED badge', () => {
+    const row = { original: { new: { actions: [ActionType.REMOVED] } } } as never
+    expect(DELETED_BADGE_CLASS).toBe('bg-shade-secondary text-neutral-highlighted')
+    expect(getTableBadges(row)).toEqual([{ label: 'DELETED', class: DELETED_BADGE_CLASS }])
+  })
+})

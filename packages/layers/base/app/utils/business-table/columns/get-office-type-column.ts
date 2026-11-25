@@ -25,7 +25,9 @@ export function getOfficeTypeColumn<T extends { type: OfficeType, actions: Actio
         {
           label,
           badges,
-          class: [defaultClass, isRemoved ? DELETED_CLASS : '']
+          class: defaultClass,
+          // dim only the label so the DELETED badge keeps full contrast (matches the party name column)
+          labelClass: isRemoved ? DELETED_CLASS : ''
         },
         () => []
       )

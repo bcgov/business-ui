@@ -25,7 +25,7 @@ export function getBusinessNameColumn<T extends AmalgamationTableRow>(
         {
           label: legalName,
           badges,
-          class: [defaultClass, isRemoved ? DELETED_CLASS : ''],
+          class: defaultClass,
           labelClass: isRemoved ? DELETED_CLASS : ''
         },
         {
