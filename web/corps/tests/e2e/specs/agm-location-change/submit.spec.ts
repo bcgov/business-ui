@@ -150,6 +150,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
     expect(body.filing.header.folioNumber).toBe('folio-1234')
     expect(body.filing.header.staffPaymentOption).toBeUndefined()
     expect(body.filing.header.waiveFees).toBeUndefined()
+    expect(body.filing.header.certifiedBy).toBe('Jane Smith')
 
     await assertFinalRedirect(page)
   })

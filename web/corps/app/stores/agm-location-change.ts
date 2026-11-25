@@ -77,6 +77,13 @@ export const useAgmLocationChangeStore = defineStore('agm-location-change-store'
     )
 
     const header = filingPayload.filing.header as Record<string, unknown>
+
+    const completingParty = formState.authorization?.completingParty?.trim()
+
+    if (isStaff.value && completingParty) {
+      header.certifiedBy = completingParty
+    }
+
     // remove authorizationReceived from header when saving a draft
     if (!isSubmission) {
       delete header.authorizationReceived

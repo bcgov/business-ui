@@ -301,6 +301,22 @@ describe('useAgmLocationChangeStore', () => {
       expect(header.date).toBeTruthy()
     })
 
+    it('should use the completing party as certifiedBy for staff', async () => {
+      mockIsStaff.value = true
+      store.$reset()
+
+      await initAndEdit()
+
+      store.formState.authorization = {
+        isAuthorized: true,
+        completingParty: '  Jane Smith  '
+      }
+
+      await store.submit(true)
+
+      expect(getPayload().filing.header.certifiedBy).toBe('Jane Smith')
+    })
+
     it('should include authorizationReceived: true in header when authorization is checked', async () => {
       await initAndEdit()
       store.formState.authorization = {
