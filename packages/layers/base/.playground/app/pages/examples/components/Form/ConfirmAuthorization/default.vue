@@ -14,10 +14,13 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 type FullSchema = { confirmAuthorization: ConfirmAuthorizationSchema } & Schema
 
+const staffFiling = ref(false)
+
 const state = reactive<FullSchema>({
   entityType: 'Corporation',
   confirmAuthorization: {
-    isAuthorized: false
+    isAuthorized: false,
+    completingParty: ''
   }
 })
 
@@ -39,6 +42,11 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
 
 <template>
   <div class="py-10 flex flex-col gap-10 items-center">
+    <UCheckbox
+      v-model="staffFiling"
+      label="Staff filing on behalf of a client"
+      class="w-full max-w-5xl bg-white p-4"
+    />
     <ConnectPageSection
       :heading="{ label: 'Confirm Authorization' }"
       :ui-body="'p-10'"
@@ -63,10 +71,10 @@ async function onSubmit(event: FormSubmitEvent<unknown>) {
           />
         </ConnectFieldset>
         <FormConfirmAuthorization
-          ref="confirm-authorization-ref"
           v-model="state.confirmAuthorization"
           :entity-type="state.entityType"
-          order="X"
+          :show-completing-party="staffFiling"
+          :order="1"
           name="confirmAuthorization"
         />
         <div class="flex gap-6 justify-end">

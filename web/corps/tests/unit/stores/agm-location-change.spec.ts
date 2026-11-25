@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { setActivePinia, createPinia } from 'pinia'
@@ -99,6 +98,10 @@ describe('useAgmLocationChangeStore', () => {
     expect(store.formState.year).toBe('')
     expect(store.formState.reason).toBe('')
     expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
+    expect(store.formState.authorization).toEqual({
+      isAuthorized: false,
+      completingParty: ''
+    })
   })
 
   describe('init(businessId, draftId)', () => {
@@ -153,7 +156,7 @@ describe('useAgmLocationChangeStore', () => {
 
       await store.init(identifier, String(draftFilingId))
 
-      expect((store.formState as any).authorization).toBeDefined()
+      expect(store.formState.authorization).toBeDefined()
     })
 
     it('should set the initial form state for change detection', async () => {
@@ -179,6 +182,10 @@ describe('useAgmLocationChangeStore', () => {
       expect(store.formState.year).toBe('')
       expect(store.formState.reason).toBe('')
       expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
+      expect(store.formState.authorization).toEqual({
+        isAuthorized: false,
+        completingParty: ''
+      })
     })
 
     it('should start the folio at the business default folio for a new filing', async () => {
@@ -294,9 +301,12 @@ describe('useAgmLocationChangeStore', () => {
       expect(header.date).toBeTruthy()
     })
 
-    it('should include authorizationReceived: true in header when non-staff certify is checked', async () => {
+    it('should include authorizationReceived: true in header when authorization is checked', async () => {
       await initAndEdit()
-      ;(store.formState as any).certify = { isCertified: true }
+      store.formState.authorization = {
+        isAuthorized: true,
+        completingParty: ''
+      }
 
       await store.submit(true)
 
@@ -306,7 +316,10 @@ describe('useAgmLocationChangeStore', () => {
 
     it('should omit authorizationReceived from header when saving a draft', async () => {
       await initAndEdit()
-      ;(store.formState as any).certify = { isCertified: true }
+      store.formState.authorization = {
+        isAuthorized: true,
+        completingParty: ''
+      }
 
       await store.submit(false)
 
@@ -379,6 +392,10 @@ describe('useAgmLocationChangeStore', () => {
       expect(store.formState.year).toBe('')
       expect(store.formState.reason).toBe('')
       expect(store.formState.agmLocation).toEqual({ country: 'CA', city: '', region: '' })
+      expect(store.formState.authorization).toEqual({
+        isAuthorized: false,
+        completingParty: ''
+      })
     })
   })
 })

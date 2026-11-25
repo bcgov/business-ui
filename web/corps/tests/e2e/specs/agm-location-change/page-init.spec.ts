@@ -70,8 +70,8 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('City')).toBeVisible()
     await expect(page.getByLabel('Province')).toBeVisible()
 
-    // Certify is on the review step
-    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
+    // Authorization is on the review step
+    await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
     await expect(page.getByRole('button', { name: 'Review and Confirm' })).toBeVisible()
 
     // Fields start empty
@@ -82,7 +82,7 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByLabel('Country')).toHaveValue('Canada')
   })
 
-  test('should display the review step with the details, folio and certify for non-staff', async ({ page }) => {
+  test('should display the review step with the details, folio and authorization for non-staff', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
@@ -109,14 +109,16 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(folioOption).toContainText('Use Default Folio or Reference Number: folio-1234')
     await expect(folioOption.getByRole('radio').first()).toBeChecked()
     await expect(page.getByTestId('folio-input')).not.toBeVisible()
-    await expect(page.getByTestId('form-section-certify')).toBeVisible()
-    await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()
+    await expect(page.getByTestId('completing-party-section')).not.toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Legal name of completing party' })).not.toBeVisible()
+    await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
+    await expect(page.getByTestId('form-section-authorization')).toBeVisible()
     await expect(page.getByRole('button', { name: 'File and Pay' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Save and Resume Later' })).not.toBeVisible()
   })
 
   // no staff payment section - this filing has no fee
-  test('should display authorization and folio on the review step for staff', async ({ page }) => {
+  test('should display completing party, authorization and folio on the review step for staff', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'STAFF')
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
@@ -140,8 +142,9 @@ test.describe('AGM Location Change - Page init', () => {
     await expect(page.getByTestId('review-location-change-detail'))
       .toContainText('Seattle, Washington, United States')
     await expect(page.getByTestId('form-section-authorization')).toBeVisible()
+    await expect(page.getByTestId('completing-party-section')).toBeVisible()
+    await expect(page.getByRole('textbox', { name: 'Legal name of completing party' })).toBeVisible()
     await expect(page.getByTestId('folio-section')).toBeVisible()
-    // Certify not visible for staff
     await expect(page.getByTestId('form-section-certify')).not.toBeVisible()
   })
 

@@ -14,9 +14,9 @@ export function getAgmYearRange(foundingDate?: string) {
 }
 
 /** Base schema for store defaults and type inference. */
-export function getAgmLocationChangeSchema(isStaff: boolean) {
+export function getAgmLocationChangeSchema() {
   // staff file the folio too - this filing has no fee, so there is no staff payment section
-  const base = z.object({
+  return z.object({
     year: z.string().default(''),
     reason: z.string().default(''),
     agmLocation: z.object({
@@ -24,23 +24,17 @@ export function getAgmLocationChangeSchema(isStaff: boolean) {
       city: z.string().default(''),
       region: z.string().default('')
     }).default(() => ({ country: 'CA', city: '', region: '' })),
-    ...getFolioSectionShape()
-  })
-
-  if (isStaff) {
-    return base.extend({
-      authorization: getConfirmAuthorizationSchema().default(() => ({ isAuthorized: false as unknown as true }))
-    })
-  }
-
-  return base.extend({
-    certify: getCertifySchema().default(() => ({ isCertified: false }))
+    ...getFolioSectionShape(),
+    authorization: getConfirmAuthorizationSchema().default(() => ({
+      isAuthorized: false as unknown as true,
+      completingParty: ''
+    }))
   })
 }
 
 /**
  * Validation schema for the main filing fields (year, reason, agmLocation).
- * Certify and authorization are validated by their own nested form components.
+ * Authorization is validated by its own nested form component.
  * Requires Nuxt context for i18n error messages and business context for year range.
  */
 export function getAgmLocationChangeValidationSchema(foundingDate?: string) {
