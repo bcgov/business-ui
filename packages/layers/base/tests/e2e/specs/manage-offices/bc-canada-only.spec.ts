@@ -171,7 +171,13 @@ test.describe('ManageOffices - bcCanadaOnly', () => {
       async ({ page }) => {
         const subForm = await openOfficeEdit(page, 'Liquidation Records Office')
         const sameAs = subForm.getByRole('checkbox', { name: sameAsLabel })
-        await sameAs.check({ force: true })
+        // retry like openOfficeEdit - the form can still be settling, so a single click may not register
+        await expect(async () => {
+          if (!(await sameAs.isChecked())) {
+            await sameAs.click({ force: true })
+          }
+          await expect(sameAs).toBeChecked()
+        }).toPass()
 
         // outside BC - the error is shared by both addresses, so it shows on the mailing address and stays checked
         await selectRegion(page, subForm, 'mailing', 'Alberta')

@@ -117,7 +117,7 @@ defineOptions({
         <span v-else class="-mt-1">{{ fileSize }}</span>
         <UBadge
           v-if="action === CourtOrderFileAction.DELETED"
-          class="bg-shade-secondary text-neutral-highlighted font-bold text-xs w-min"
+          :class="[DELETED_BADGE_CLASS, 'font-bold text-xs w-min']"
           :label="$t('badge.deleted')"
         />
       </div>
