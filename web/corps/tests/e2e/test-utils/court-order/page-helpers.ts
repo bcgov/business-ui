@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
 import type { BusinessOverride } from '#test-mocks'
+import { createLetterSizePdfBuffer } from './pdf-fixture'
 
 const defaultHeader = {
   accountId: 1234,
@@ -93,7 +94,12 @@ export async function setupCourtOrderPage(
     }
   })
 
-  // 3. DRS document blob preview fetches (Form/CourtOrderPoa/Full/FileUpload/Item/Preview.vue) -
+  // 3. Draft changes report - 404 resumes the draft as saved (no rebase for this filing)
+  await page.route(`**/api/v2/businesses/${identifier}/filings/${filingId}/changes`, async (route) => {
+    await route.fulfill({ status: 404, json: {} })
+  })
+
+  // 4. DRS document blob preview fetches (Form/CourtOrderPoa/Full/FileUpload/Item/Preview.vue) -
   //    only fires for docs that already have a fileKey (ex: a hydrated draft with existing files).
   //    Upload POSTs (documents/client/courtOrder/**) are not covered by mockCommonApiCallsForFiling -
   //    stub them locally in tests that exercise the file upload flow.
@@ -116,4 +122,37 @@ export async function navigateToCourtOrderPage(page: Page, identifier: string, f
 export async function goToCourtOrderReviewStep(page: Page) {
   await page.getByRole('button', { name: 'Review and Confirm' }).click()
   await expect(page.getByTestId('review-court-order-section')).toBeVisible()
+}
+
+const uploadFixtures = {
+  courtOrder: { key: 'CORP-DS0100001003', name: 'Court Order.pdf' },
+  supporting: { key: 'CORP-DS0100001004', name: 'Affidavit.pdf' }
+}
+
+/**
+ * Uploads a court order document (required to reach the review step) or a supporting document.
+ * Stubs the DRS upload for that document and waits on its response - a file still uploading has no key.
+ * NB: the supporting upload only renders once 'Add supporting documents' is checked.
+ */
+export async function uploadCourtOrderFile(page: Page, type: keyof typeof uploadFixtures = 'courtOrder') {
+  const { key, name } = uploadFixtures[type]
+  await page.route('**/documents/client/courtOrder/**', async (route) => {
+    await route.fulfill({
+      status: 201,
+      json: { key, consumerFilename: name, documentURL: `https://mock-api-url/documents/client/${key}` }
+    })
+  })
+  const uploadResponse = page.waitForResponse(
+    res => res.url().includes('/documents/client/courtOrder/') && res.request().method() === 'POST',
+    { timeout: 10000 }
+  )
+  // the court order (singular) upload is the first file input, the multi supporting documents upload the last
+  const fileInputs = page.getByTestId('court-order-file-upload').locator('input[type="file"]')
+  await (type === 'courtOrder' ? fileInputs.first() : fileInputs.last()).setInputFiles({
+    name,
+    mimeType: 'application/pdf',
+    buffer: createLetterSizePdfBuffer()
+  })
+  await uploadResponse
+  await expect(page.getByTestId('court-order-file-upload').getByText(name)).toBeVisible({ timeout: 10000 })
 }

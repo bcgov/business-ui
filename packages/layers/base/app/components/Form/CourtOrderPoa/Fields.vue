@@ -6,7 +6,7 @@ import type { ComponentPublicInstance } from 'vue'
  * - `FormCourtOrderPoaFull` - the sub form rendered in `ManageCourtOrders` table rows (`variant="subform"`)
  * - `FormCourtOrderPoaFullFiling` - the standalone court order filing page section (`variant="section"`)
  */
-const { variant = 'section', isFileOrDetailsRequired = false } = defineProps<{
+const { variant = 'section', isFileAndDetailsRequired = false } = defineProps<{
   isCourtOrder: boolean
   entityType: CorpTypeCd
   filingId: string | number
@@ -14,9 +14,10 @@ const { variant = 'section', isFileOrDetailsRequired = false } = defineProps<{
   disabled?: boolean
   fileNumberError?: boolean
   variant?: 'section' | 'subform'
-  isFileOrDetailsRequired?: boolean
+  isFileAndDetailsRequired?: boolean
   supportingDocsCheckbox?: boolean // gates the supporting documents upload behind a checkbox
   supportingDocsError?: string
+  courtOrderFileError?: string
 }>()
 
 defineEmits<{
@@ -113,8 +114,9 @@ defineExpose({
             <ConnectTextarea
               id="court-order-text-input"
               v-model="orderDetailsModel"
+              :aria-required="isFileAndDetailsRequired"
               :disabled
-              :label="$t(isFileOrDetailsRequired ? 'label.courtOrderDetails' : 'label.courtOrderDetailsOpt')"
+              :label="$t(isFileAndDetailsRequired ? 'label.courtOrderDetails' : 'label.courtOrderDetailsOpt')"
               maxlength="2000"
               :rows="4"
               :ui="{ base: 'resize-y' }"
@@ -133,9 +135,10 @@ defineExpose({
         :identifier
         :entity-type="entityType"
         :disabled
-        :is-file-or-details-required="isFileOrDetailsRequired"
+        :is-file-and-details-required="isFileAndDetailsRequired"
         :supporting-docs-checkbox="supportingDocsCheckbox"
         :supporting-docs-error="supportingDocsError"
+        :court-order-file-error="courtOrderFileError"
       />
     </template>
   </div>

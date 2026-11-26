@@ -60,7 +60,7 @@ function onError(event: FormErrorEvent) {
             </ConnectFormFieldWrapper>
             <ConnectFormFieldWrapper :label="$t('label.courtOrderDetails')" orientation="horizontal">
               <p data-testid="review-court-order-details" class="whitespace-pre-line break-words">
-                {{ store.formState.courtOrder.orderDetails?.trim() || $t('label.none') }}
+                {{ store.formState.courtOrder.orderDetails?.trim() }}
               </p>
             </ConnectFormFieldWrapper>
             <ConnectFormFieldWrapper :label="$t('label.courtOrderDocument')" orientation="horizontal">
@@ -81,12 +81,13 @@ function onError(event: FormErrorEvent) {
                 </p>
               </div>
             </ConnectFormFieldWrapper>
-            <ConnectFormFieldWrapper :label="$t('label.supportingDocuments')" orientation="horizontal">
+            <ConnectFormFieldWrapper
+              v-if="supportingDocs.length"
+              :label="$t('label.supportingDocuments')"
+              orientation="horizontal"
+            >
               <div data-testid="review-supporting-documents" class="min-w-0">
-                <FormCourtOrderPoaFullFileUploadList
-                  v-if="supportingDocs.length"
-                  :aria-label="$t('label.uploadedSupportingDocs')"
-                >
+                <FormCourtOrderPoaFullFileUploadList :aria-label="$t('label.uploadedSupportingDocs')">
                   <FormCourtOrderPoaFullFileUploadItem
                     v-for="doc in supportingDocs"
                     :key="doc.id"
@@ -94,9 +95,6 @@ function onError(event: FormErrorEvent) {
                     readonly
                   />
                 </FormCourtOrderPoaFullFileUploadList>
-                <p v-else>
-                  {{ $t('label.none') }}
-                </p>
               </div>
             </ConnectFormFieldWrapper>
           </div>

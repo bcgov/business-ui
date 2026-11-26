@@ -354,6 +354,10 @@ export default {
         description: 'This account will not be able to perform any PAD transactions until the mandatory (3) day confirmation period has ended. Until then you may continue to pay using credit card.'
       }
     },
+    removeSupportingDocs: {
+      title: 'Remove Supporting Documents',
+      description: 'Unchecking this box will remove the supporting documents already uploaded.'
+    },
     removeShareSeries: {
       title: 'Remove Share Series',
       removeRorDescription: 'This share class has one or more share series. If you remove the special rights and restrictions of this share class, all associated share series will be removed.',
@@ -612,6 +616,7 @@ export default {
     registeredOfficeContactInformation: 'Registered Office Contact Information',
     REJECTED: 'REJECTED',
     refreshPage: 'Refresh Page',
+    removeDocuments: 'Remove Documents',
     removeSeries: 'Remove Series',
     registration: 'Registration',
     registrationDate: 'Registration Date',
@@ -960,6 +965,7 @@ export default {
     confirmLegalNameChange: 'Confirm the legal name change to continue',
     corpNumFormat: 'Corporate number may only contain letters, numbers, and hyphens',
     corruptFileNamed: '{filename} is corrupt.',
+    courtOrderDocumentRequired: 'Court order document is required.',
     courtOrderNumberRequired: 'Court order number is required.',
     dateFormat: 'Date must be a valid date in YYYY-MM-DD format',
     dateRequired: 'Date is required',
@@ -967,7 +973,6 @@ export default {
     datNumberEmpty: 'Enter DAT Number',
     designationCannotBeVerified: 'Legal name edits are disabled: business designation could not be verified.',
     duplicateDocId: 'A document record already exists with this document ID',
-    enterCourtOrderOrUploadFile: 'Enter a court order or upload a file',
     enterFirstName: 'Enter a first name',
     enterLastName: 'Enter a last name',
     exactDocIDChars: 'Document ID must be 8 characters',
