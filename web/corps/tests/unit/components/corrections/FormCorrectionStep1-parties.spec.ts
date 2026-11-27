@@ -33,7 +33,13 @@ function getMockParty(roleType: RoleTypeUi) {
     name: { partyType: 'person', firstName: 'Jane', middleName: '', lastName: 'Smith', preferredName: '' },
     address: { deliveryAddress: address, mailingAddress: address, sameAs: false },
     email: 'jane@example.com',
-    roles: [{ roleType, appointmentDate: '2020-01-01', cessationDate: null }]
+    roles: [{
+      roleType,
+      appointmentDate: '2020-01-01',
+      cessationDate: null,
+      // the liquidator sub form requires how the liquidator was appointed
+      ...(roleType === RoleTypeUi.LIQUIDATOR && { meta: { appointmentMethod: LiquidatorAppointmentMethod.COMPANY } })
+    }]
   })
 }
 
