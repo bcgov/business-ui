@@ -14,16 +14,17 @@ defaults:
     working-directory: "./web/corps"
 
 jobs:
-  corps-ci:
+  corps-ui-ci:
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
+    with:
+      app_name: "business-corps"
+      working_directory: "./web/corps"
+      codecov_flag: "businesscorps"
+      node_version: 24
+      pnpm_version: 11.9.0
+
+  typecheck:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: ["corps"]
-        job: ['lint', 'typecheck', 'build', 'test:unit']
-    defaults:
-      run:
-        working-directory: ./web/${{ matrix.project }}
     steps:
     - uses: actions/checkout@v6
     - uses: pnpm/action-setup@v6
@@ -36,11 +37,8 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
-    - name: Set basic env
-      run: |
-        cp .env.example .env
-    - name: ${{ matrix.job }}
-      run: pnpm ${{ matrix.job }}
+    - name: Run Typecheck
+      run: pnpm typecheck
 
   e2e-tests:
     runs-on: ubuntu-latest
