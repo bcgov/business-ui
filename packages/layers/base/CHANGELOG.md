@@ -1,5 +1,28 @@
 # @sbc-connect/nuxt-business-base
 
+## 0.31.0
+
+### Minor Changes
+
+- [#637](https://github.com/bcgov/business-ui/pull/637) [`0fa9cb7`](https://github.com/bcgov/business-ui/commit/0fa9cb7d9b0cbfc5989b45407528721b6760161a) Thanks [@kialj876](https://github.com/kialj876)! - Court order filing follow-up (required document and details, supporting documents checkbox, radio default)
+  - `getCourtOrderPoaFullSchema`: with `isFileAndDetailsRequired` an active court order document is now required (`validation.courtOrderDocumentRequired` on `files`); order details no longer satisfy the rule
+  - `getCourtOrderPoaFullSchema`: with `isFileAndDetailsRequired` the order details are also required (`connect.validation.fieldRequired` on `orderDetails`); `FormCourtOrderPoaFields` sets `aria-required` on the details textarea
+  - `FormCourtOrderPoaFullFileUpload` / `FormCourtOrderPoaFields`: new `courtOrderFileError` prop renders that error under the Upload Court Order button (`FormCourtOrderPoaFullFiling` passes it)
+  - `FormCourtOrderPoaFullFileUpload` checkbox variant: "Add supporting documents" is always enabled; unchecking with supporting documents uploaded asks first (`modal.removeSupportingDocs`, `label.removeDocuments`) and Remove Documents removes them all
+  - Radio groups: the default (list) radio ring is now `ring-neutral`, matching the checkbox
+  - BREAKING: `validation.enterCourtOrderOrUploadFile` is removed
+  - BREAKING: the `isFileOrDetailsRequired` schema context option and component prop (`FormCourtOrderPoaFields`, `FormCourtOrderPoaFullFileUpload`, its fieldset) are renamed `isFileAndDetailsRequired`
+
+### Patch Changes
+
+- [#632](https://github.com/bcgov/business-ui/pull/632) [`9cbacd5`](https://github.com/bcgov/business-ui/commit/9cbacd5f51c729f9b24625a4191920f6bb24389a) Thanks [@benjamin-bc-gov](https://github.com/benjamin-bc-gov)! - `FormCourtOrderPoaFullFileUpload`: accept court order and supporting document PDFs of any page size (legal size court documents were rejected); encrypted and corrupt files are still rejected. Removes `validation.invalidPageSizeLetterNamed`.
+
+- [#633](https://github.com/bcgov/business-ui/pull/633) [`4597681`](https://github.com/bcgov/business-ui/commit/459768165709d077f393fe1fe13e46142e4a94b4) Thanks [@meawong](https://github.com/meawong)! - Add a staff variant to `FormConfirmAuthorization` with a required Completing Party name field
+  - New optional `showCompletingParty` prop shows a required Completing Party field above the authorization section and uses the completing party wording for the description and checkbox label. When `order` is passed, the two sections are numbered consecutively.
+  - For all usages: the section heading now reads "Authorization", the date is shown in bold long format (e.g. "November 24, 2026"), "Business Corporations Act" is italicized in the offence note, and only the checkbox border (not the label text) turns red on validation failure.
+  - `getConfirmAuthorizationSchema` now includes an optional `completingParty` field, so existing callers are unaffected.
+  - Added `getConfirmAuthorizationStaffSchema` (completing party required, trimmed) and `getConfirmAuthorizationDefaults` (unchecked, empty starting state).
+
 ## 0.30.0
 
 ### Minor Changes
