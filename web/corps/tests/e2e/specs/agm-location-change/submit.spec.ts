@@ -4,7 +4,8 @@ import {
   fillLocationChangeDetail,
   goToReviewStep,
   setupAgmLocationChangePage,
-  navigateToAgmLocationChangePage
+  navigateToAgmLocationChangePage,
+  assertFinalRedirect
 } from '../../test-utils'
 import { fillOutFolio } from '#business/tests/e2e/test-utils'
 import { AGMLC } from '~~/tests/mocks'
@@ -23,14 +24,6 @@ function waitForFilingPost(page: Page) {
     req => req.url().includes(`/businesses/${identifier}/filings`) && req.method() === 'POST',
     { timeout: 10000 }
   )
-}
-
-async function assertFinalRedirect(page: Page) {
-  await page.waitForURL(
-    `${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`,
-    { timeout: 10000, waitUntil: 'commit' }
-  )
-  expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
 }
 
 test.describe('AGM Location Change - Filing Submit', () => {
@@ -85,7 +78,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
     expect(body.filing.header.folioNumber).toBe('folio-1234')
     expect(request.url()).not.toContain('draft=true')
 
-    await assertFinalRedirect(page)
+    await assertFinalRedirect(page, identifier)
   })
 
   test('submits a staff filing with a structured US AGM location', async ({ page }) => {
@@ -152,7 +145,7 @@ test.describe('AGM Location Change - Filing Submit', () => {
     expect(body.filing.header.waiveFees).toBeUndefined()
     expect(body.filing.header.certifiedBy).toBe('Jane Smith')
 
-    await assertFinalRedirect(page)
+    await assertFinalRedirect(page, identifier)
   })
 
   test('files a different folio number when one is entered', async ({ page }) => {

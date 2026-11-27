@@ -3,6 +3,8 @@ import type { Page } from '@playwright/test'
 import { mockCommonApiCallsForFiling } from '#test-mocks'
 import type { BusinessOverride } from '#test-mocks'
 import { createLetterSizePdfBuffer } from './pdf-fixture'
+import { COURT } from '~~/tests/mocks'
+import { goToReviewAndConfirm, mockDraftChangesNotFound } from '../common'
 
 const defaultHeader = {
   accountId: 1234,
@@ -95,9 +97,7 @@ export async function setupCourtOrderPage(
   })
 
   // 3. Draft changes report - 404 resumes the draft as saved (no rebase for this filing)
-  await page.route(`**/api/v2/businesses/${identifier}/filings/${filingId}/changes`, async (route) => {
-    await route.fulfill({ status: 404, json: {} })
-  })
+  await mockDraftChangesNotFound(page, identifier, filingId)
 
   // 4. DRS document blob preview fetches (Form/CourtOrderPoa/Full/FileUpload/Item/Preview.vue) -
   //    only fires for docs that already have a fileKey (ex: a hydrated draft with existing files).
@@ -118,10 +118,27 @@ export async function navigateToCourtOrderPage(page: Page, identifier: string, f
   ])
 }
 
+/** Navigates to the court order page and waits for it to finish loading. */
+export async function loadCourtOrderPage(page: Page, identifier: string, filingId: string) {
+  await navigateToCourtOrderPage(page, identifier, filingId)
+  await page.waitForLoadState('networkidle')
+  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+}
+
+/** Mocks the court order page APIs as staff, then loads the page. */
+export async function gotoCourtOrderPage(
+  page: Page,
+  identifier: string,
+  filingId: string,
+  options: Parameters<typeof setupCourtOrderPage>[5] = {}
+) {
+  await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', options)
+  await loadCourtOrderPage(page, identifier, filingId)
+}
+
 // step 1 validates the court order section before the review step (and the staff payment) renders
 export async function goToCourtOrderReviewStep(page: Page) {
-  await page.getByRole('button', { name: 'Review and Confirm' }).click()
-  await expect(page.getByTestId('review-court-order-section')).toBeVisible()
+  await goToReviewAndConfirm(page, page.getByTestId('review-court-order-section'))
 }
 
 const uploadFixtures = {

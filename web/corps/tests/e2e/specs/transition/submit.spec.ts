@@ -2,7 +2,12 @@
 
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { navigateToTransitionPage } from '../../test-utils'
+import {
+  navigateToTransitionPage,
+  fillCompletingPartyEmail,
+  assertFinalRedirect,
+  goToTransitionReviewStep
+} from '../../test-utils'
 import { fillOutCertify, fillOutFolio } from '#business/tests/e2e/test-utils'
 import {
   mockCommonApiCallsForFiling,
@@ -161,16 +166,6 @@ async function editShares(page: Page) {
   }
 }
 
-async function goToReview(page: Page) {
-  await page.getByRole('button', { name: 'Review and Confirm' }).click()
-  // Wait for step 2 to render before interacting with its elements
-  await expect(page.getByTestId('document-delivery-section')).toBeVisible({ timeout: 10000 })
-}
-
-async function fillCompletingParty(page: Page) {
-  await page.getByTestId('completing-party-email-input').fill(contactPoint.email)
-}
-
 function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition: TransitionPayload }>) {
   const filing = requestBody.filing
   expect(filing.transition.offices).toHaveProperty('recordsOffice')
@@ -244,15 +239,6 @@ function assertTransitionPayload(requestBody: FilingSubmissionBody<{ transition:
   }
 }
 
-async function assertFinalRedirect(page: Page) {
-  // should be redirected to business dashboard on success
-  await page.waitForURL(
-    `${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`,
-    { timeout: 5000 }
-  )
-  expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
-}
-
 const testCases = [
   {
     type: 'Staff',
@@ -284,8 +270,8 @@ test.describe('Transition - Filing Submit', () => {
       await confirmOffices(page)
       await editAndConfirmDirectors(page)
       await editShares(page)
-      await goToReview(page)
-      await fillCompletingParty(page)
+      await goToTransitionReviewStep(page)
+      await fillCompletingPartyEmail(page, contactPoint.email)
       await accountSpecificStep2Actions(page)
 
       const submitRequest = page.waitForRequest(`**/businesses/${identifier}/filings`, { timeout: 10000 })
@@ -295,7 +281,7 @@ test.describe('Transition - Filing Submit', () => {
 
       expect(requestBody.filing.header).toEqual(header)
       assertTransitionPayload(requestBody)
-      await assertFinalRedirect(page)
+      await assertFinalRedirect(page, identifier)
     })
   }
 
@@ -313,8 +299,8 @@ test.describe('Transition - Filing Submit', () => {
     await page.getByRole('option', { name: 'CAD' }).click()
     await scForm.getByRole('button', { name: 'Done' }).click()
     await expect(scForm).not.toBeVisible()
-    await goToReview(page)
-    await fillCompletingParty(page)
+    await goToTransitionReviewStep(page)
+    await fillCompletingPartyEmail(page, contactPoint.email)
     await page.getByRole('radio', { name: 'BC OnLine' }).click()
     await page.getByTestId('bcolnumberinput').fill(staffHeaderPayload.bcolAccountNumber)
     await page.getByTestId('datnumberinput').fill(staffHeaderPayload.datNumber)

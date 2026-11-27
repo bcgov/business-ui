@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
 import {
   setupCourtOrderPage,
-  navigateToCourtOrderPage,
+  loadCourtOrderPage,
+  gotoCourtOrderPage,
   createLetterSizePdfBuffer,
   goToCourtOrderReviewStep,
   uploadCourtOrderFile
@@ -14,13 +14,6 @@ const filingId = '999002'
 const supportingDocsCheckboxName = 'Add supporting documents'
 const supportingDocsError = 'Add Supporting Documents or uncheck the box above'
 const courtOrderFileError = 'Court order document is required.'
-
-async function gotoCourtOrderPage(page: Page) {
-  await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
-  await navigateToCourtOrderPage(page, identifier, filingId)
-  await page.waitForLoadState('networkidle')
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-}
 
 test.describe('Court Order - File Upload', () => {
   test('uploads a court order PDF via DRS and includes it in the submitted files array', async ({ page }) => {
@@ -36,9 +29,7 @@ test.describe('Court Order - File Upload', () => {
         }
       })
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+    await loadCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
 
@@ -81,7 +72,7 @@ test.describe('Court Order - File Upload', () => {
   })
 
   test('requires court order details even when a court order document is uploaded', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await uploadCourtOrderFile(page)
@@ -99,7 +90,7 @@ test.describe('Court Order - File Upload', () => {
   })
 
   test('requires a court order document even when order details are entered', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByTestId('court-order-text-input').fill('Ordered by the court')
@@ -114,7 +105,7 @@ test.describe('Court Order - File Upload', () => {
   })
 
   test('clears the validation error as soon as a court order file is uploaded', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByRole('button', { name: 'Review and Confirm' }).click()
@@ -126,7 +117,7 @@ test.describe('Court Order - File Upload', () => {
   })
 
   test('errors when add supporting documents is checked without an upload, clears on uncheck', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByTestId('court-order-text-input').fill('Ordered by the court')
@@ -161,9 +152,7 @@ test.describe('Court Order - File Upload', () => {
       deletedFromDrs = true
       await route.fulfill({ status: 200, json: {} })
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+    await loadCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByTestId('court-order-text-input').fill('Ordered by the court')

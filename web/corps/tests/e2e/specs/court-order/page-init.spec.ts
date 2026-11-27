@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage, goToCourtOrderReviewStep } from '../../test-utils'
+import {
+  setupCourtOrderPage,
+  navigateToCourtOrderPage,
+  gotoCourtOrderPage,
+  goToCourtOrderReviewStep,
+  assertCommonFilingElements
+} from '../../test-utils'
 import { COURT } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -8,36 +13,13 @@ const filingId = '999002'
 const poaCheckboxName = 'This filing is pursuant to a Plan of Arrangement'
 const supportingDocsCheckboxName = 'Add supporting documents'
 
-async function assertCommonElements(page: Page) {
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-  // has auth header
-  await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
-  // has breadcrumb
-  await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('Court Order')).toBeVisible()
-  // has tombstone
-  await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-tombstone-wrapper')
-    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
-  ).toBeVisible()
-  // has heading
-  await expect(page.getByRole('heading', { name: 'Court Order', exact: true })).toBeVisible()
-  // has fee summary
-  await expect(page.getByTestId('fee-widget')).toBeVisible()
-  await expect(page.getByTestId('fee-widget').getByText('Court Order')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
-  // has footer
-  await expect(page.getByTestId('connect-main-footer')).toBeVisible()
-}
-
 test.describe('Court Order - Page init', () => {
   test('should display basic filing elements for staff', async ({ page }) => {
     await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
     await navigateToCourtOrderPage(page, identifier, filingId)
     await page.waitForLoadState('networkidle')
 
-    await assertCommonElements(page)
+    await assertCommonFilingElements(page, { title: 'Court Order' })
 
     // form sections
     await expect(page.getByTestId('form-section-court-order')).toBeVisible()
@@ -73,7 +55,7 @@ test.describe('Court Order - Page init', () => {
   })
 
   test('should hydrate court order fields from a non-empty draft', async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+    await gotoCourtOrderPage(page, identifier, filingId, {
       draftOverrides: {
         courtOrder: {
           fileNumber: '12345-6789',
@@ -85,9 +67,6 @@ test.describe('Court Order - Page init', () => {
         }
       }
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await expect(page.getByTestId('court-order-number-input')).toHaveValue('12345-6789')
     await expect(page.getByRole('checkbox', { name: poaCheckboxName })).toBeChecked()
@@ -97,7 +76,7 @@ test.describe('Court Order - Page init', () => {
   })
 
   test('should hydrate a supporting document with the supporting docs box checked', async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+    await gotoCourtOrderPage(page, identifier, filingId, {
       draftOverrides: {
         courtOrder: {
           fileNumber: '12345-6789',
@@ -108,9 +87,6 @@ test.describe('Court Order - Page init', () => {
         }
       }
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).toBeChecked()
     await expect(page.getByRole('checkbox', { name: supportingDocsCheckboxName })).toBeEnabled()
@@ -119,7 +95,7 @@ test.describe('Court Order - Page init', () => {
   })
 
   test('should review the court order and return to the form with the values retained', async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+    await gotoCourtOrderPage(page, identifier, filingId, {
       draftOverrides: {
         courtOrder: {
           fileNumber: '12345-6789',
@@ -132,9 +108,6 @@ test.describe('Court Order - Page init', () => {
         }
       }
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await goToCourtOrderReviewStep(page)
 
@@ -162,7 +135,7 @@ test.describe('Court Order - Page init', () => {
   })
 
   test('should leave supporting documents out of the review when there are none', async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+    await gotoCourtOrderPage(page, identifier, filingId, {
       draftOverrides: {
         courtOrder: {
           fileNumber: '12345-6789',
@@ -171,9 +144,6 @@ test.describe('Court Order - Page init', () => {
         }
       }
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await goToCourtOrderReviewStep(page)
 
@@ -185,7 +155,7 @@ test.describe('Court Order - Page init', () => {
   })
 
   test('should hydrate the staff payment selection from a resumed draft', async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF', {
+    await gotoCourtOrderPage(page, identifier, filingId, {
       draftOverrides: {
         courtOrder: {
           fileNumber: '12345-6789',
@@ -201,9 +171,6 @@ test.describe('Court Order - Page init', () => {
         }
       }
     })
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
 
     await goToCourtOrderReviewStep(page)
 
