@@ -1,0 +1,2 @@
+typescript.includeWorkspace=true
+setups.@nuxt/test-utils="4.4.0"

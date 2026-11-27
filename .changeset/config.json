@@ -11,6 +11,7 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
+    "business-dashboard",
     "coops",
     "corps",
     "person-roles",
