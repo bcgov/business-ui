@@ -14,7 +14,7 @@ defaults:
 
 jobs:
   coops-ui-ci:
-    uses: pwei1018/bcregistry-sre/.github/workflows/frontend-ci.yaml@rollback-op
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-ci.yaml@main
     with:
       app_name: "business-coops"
       working_directory: "./web/coops"
