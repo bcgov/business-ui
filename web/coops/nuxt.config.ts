@@ -67,6 +67,7 @@ export default defineNuxtConfig({
   typescript: {
     tsConfig: {
       exclude: [
+        '../../business-dashboard/**',
         '../../business-registry-dashboard/**',
         '../../corps/**',
         '../../person-roles/**',

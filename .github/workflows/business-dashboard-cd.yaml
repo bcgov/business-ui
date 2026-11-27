@@ -1,0 +1,27 @@
+name: Business Dashboard UI CD
+
+# Manual only until the cutover from bcgov/business-dashboard-ui - do not add a push trigger before then
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Deploy To"
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+
+jobs:
+  business-dashboard-ui-cd:
+    uses: bcgov/bcregistry-sre/.github/workflows/frontend-cd.yaml@main
+    with:
+      target: ${{ inputs.target }}
+      app_name: "business-dashboard-ui"
+      working_directory: "."
+      node_version: 24
+      pnpm_version: 11.9.0
+    secrets:
+      WORKLOAD_IDENTIFY_POOLS_PROVIDER: ${{ secrets.WORKLOAD_IDENTIFY_POOLS_PROVIDER }}
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
