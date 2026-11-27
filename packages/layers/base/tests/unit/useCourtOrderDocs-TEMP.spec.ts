@@ -262,27 +262,28 @@ describe('useCourtOrderDocs', () => {
       expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
     })
 
-    it('should set error status when PDF page size is not Letter', async () => {
+    it('should accept a PDF whose page size is not Letter (e.g. legal size)', async () => {
       vi.mocked(pdfjs.getDocument).mockReturnValueOnce({
         promise: Promise.resolve({
           numPages: 1,
           getPage: vi.fn(() => Promise.resolve({
-            getViewport: () => ({ width: 595, height: 842 }) // Not 8.5 x 11 inches
+            getViewport: () => ({ width: 612, height: 1008 }) // 8.5 x 14 inches
           })),
           cleanup: vi.fn(() => Promise.resolve())
         })
       } as any)
 
       const { supportingFiles, supportingDocs } = useCourtOrderDocs(model, defaultProps)
-      const invalidSizeFile = new File(['pdf data'], 'a4_order.pdf', { type: 'application/pdf' })
-      invalidSizeFile.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
+      const legalSizeFile = new File(['pdf data'], 'legal_order.pdf', { type: 'application/pdf' })
+      legalSizeFile.arrayBuffer = vi.fn().mockResolvedValue(new ArrayBuffer(8))
 
-      supportingFiles.value = [invalidSizeFile]
+      supportingFiles.value = [legalSizeFile]
       await nextTick()
       await flushPromises()
 
-      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.ERROR)
-      expect(supportingDocs.value[0]!.errorMessage).toBeDefined()
+      expect(xhrMock.send).toHaveBeenCalledOnce()
+      expect(supportingDocs.value[0]!.status).toBe(CourtOrderFileStatus.SUCCESS)
+      expect(supportingDocs.value[0]!.errorMessage).toBeUndefined()
     })
 
     it('should set error status when PDF is password protected', async () => {
