@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage } from '../../test-utils'
-import { COURT } from '~~/tests/mocks'
+import { gotoCourtOrderPage } from '../../test-utils'
 
 const identifier = 'BC1234567'
 const filingId = '999002'
@@ -8,10 +7,7 @@ const poaCheckboxText = 'This filing is pursuant to a Plan of Arrangement'
 
 test.describe('Court Order - Task Guards', () => {
   test.beforeEach(async ({ page }) => {
-    await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
-    await navigateToCourtOrderPage(page, identifier, filingId)
-    await page.waitForLoadState('networkidle')
-    await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
+    await gotoCourtOrderPage(page, identifier, filingId)
   })
 
   // NB: the resumed draft is the baseline - the page always resumes a pre-created draft, so

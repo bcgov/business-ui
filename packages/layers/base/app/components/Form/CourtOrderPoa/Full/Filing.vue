@@ -12,7 +12,7 @@ defineProps<{
 
 const model = defineModel<CourtOrderPoaFullSchema>({ required: true })
 
-const schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
+const schema = getCourtOrderPoaFullSchema({ isFileAndDetailsRequired: true })
 
 const formRef = useTemplateRef<Form<CourtOrderPoaFullSchema>>('court-order-filing-form')
 
@@ -23,6 +23,7 @@ const sectionError = computed<FormError | undefined>(() => {
 })
 
 const supportingDocsError = computed(() => formRef.value?.getErrors('hasSupportingDocs')[0]?.message)
+const courtOrderFileError = computed(() => formRef.value?.getErrors('files')[0]?.message)
 
 // retrigger validation on the order details and files when one changes
 watch(
@@ -58,9 +59,10 @@ watch(
           v-model="model"
           variant="section"
           is-court-order
-          is-file-or-details-required
+          is-file-and-details-required
           supporting-docs-checkbox
           :supporting-docs-error="supportingDocsError"
+          :court-order-file-error="courtOrderFileError"
           :disabled
           :filing-id="filingId"
           :identifier

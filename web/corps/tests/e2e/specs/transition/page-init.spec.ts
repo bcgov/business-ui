@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { navigateToTransitionPage } from '../../test-utils'
+import {
+  navigateToTransitionPage,
+  assertCommonFilingElements,
+  assertOfficeRows,
+  assertDirectorCount
+} from '../../test-utils'
 import {
   mockCommonApiCallsForFiling,
   getBusinessAddressesMock,
@@ -12,17 +17,13 @@ import { TRANP } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
 
-async function assertCorrectOffices(page: Page) {
-  const section = page.getByTestId('office-addresses-section')
-  const tbody = section.locator('tbody')
-  await expect(tbody).toContainText('Registered Office')
-  await expect(tbody).toContainText('Records Office')
-  await expect(tbody).not.toContainText('Business Office')
-  await expect(tbody).not.toContainText('Custodial Office')
-  await expect(tbody).not.toContainText('Liquidation Records Office')
+async function assertTransitionOffices(page: Page) {
+  await assertOfficeRows(page, {
+    present: ['Registered Office', 'Records Office'],
+    absent: ['Business Office', 'Custodial Office', 'Liquidation Records Office']
+  })
 
-  const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(2)
+  const rows = page.getByTestId('office-addresses-section').locator('tbody').locator('tr')
 
   const registeredRow = rows.filter({ hasText: 'Registered Office' })
   await expect(registeredRow).toContainText('1800 - 510 West Georgia Street')
@@ -33,12 +34,10 @@ async function assertCorrectOffices(page: Page) {
   await expect(recordsRow).toContainText('Same as Mailing Address')
 }
 
-async function assertCorrectDirectors(page: Page) {
-  const section = page.getByTestId('current-directors-section')
-  const tbody = section.locator('tbody')
+async function assertTransitionDirectors(page: Page) {
+  await assertDirectorCount(page, 3)
 
-  const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(3)
+  const rows = page.getByTestId('current-directors-section').locator('tbody').locator('tr')
 
   const firstRow = rows.filter({ hasText: 'TESTER TESTING' })
   await expect(firstRow).toContainText('5-14505 Boul De Pierrefonds')
@@ -118,36 +117,14 @@ async function assertCorrectShareStructure(page: Page) {
   ])
 }
 
-async function assertCommonElements(page: Page, step?: 1 | 2) {
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-  // has auth header
-  await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
-  // has breadcrumb
-  await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText(
-    'Post Restoration Transition Application')).toBeVisible()
-  // has tombstone
-  await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-tombstone-wrapper')
-    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
-  ).toBeVisible()
-  // has heading
-  await expect(page.getByRole('heading', { name: 'Post Restoration Transition Application' })).toBeVisible()
-  // has fee summary
-  await expect(page.getByTestId('fee-widget')).toBeVisible()
-  // has fee summary text
-  await expect(page.getByTestId('fee-widget').getByText('Post Restoration Transition Application')).toBeVisible()
-  await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
-  // has footer
-  await expect(page.getByTestId('connect-main-footer')).toBeVisible()
+async function assertTransitionElements(page: Page, step?: 1 | 2) {
+  await assertCommonFilingElements(page, { title: 'Post Restoration Transition Application', isNoFee: true })
   // has office addresses
   await expect(page.getByTestId('office-addresses-section')).toBeVisible()
-  await assertCorrectOffices(page)
+  await assertTransitionOffices(page)
   // has directors
   await expect(page.getByTestId('current-directors-section')).toBeVisible()
-  await assertCorrectDirectors(page)
+  await assertTransitionDirectors(page)
   // has share structure
   await expect(page.getByTestId('share-structure-section')).toBeVisible()
   await assertCorrectShareStructure(page)
@@ -191,7 +168,7 @@ test.describe('Transition - Page init', () => {
       await page.waitForLoadState('networkidle')
 
       // step 1
-      await assertCommonElements(page)
+      await assertTransitionElements(page)
       await page.getByRole('checkbox', {
         name: 'I confirm that the office address information listed for this business is correct.'
       }).check()
@@ -201,7 +178,7 @@ test.describe('Transition - Page init', () => {
       // step 2
       await page.getByRole('button', { name: 'Review and Confirm' }).click()
       // should still have common elements
-      await assertCommonElements(page, 2)
+      await assertTransitionElements(page, 2)
 
       // step 2 staff only sections
       if (isStaff) {

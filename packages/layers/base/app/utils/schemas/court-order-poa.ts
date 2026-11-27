@@ -84,7 +84,7 @@ export function hasActiveSupportingDoc(files: CourtOrderFileUi[] = []) {
     && [CourtOrderFileStatus.SUCCESS, CourtOrderFileStatus.IDLE, CourtOrderFileStatus.LOADING].includes(file.status))
 }
 
-export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?: boolean }) {
+export function getCourtOrderPoaFullSchema(context?: { isFileAndDetailsRequired?: boolean }) {
   const t = useNuxtApp().$i18n.t
   return z.object({
     isEditing: z.boolean()
@@ -143,7 +143,7 @@ export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?:
     hasSupportingDocs: z.boolean()
       .optional()
   }).superRefine((data, ctx) => {
-    if (!context?.isFileOrDetailsRequired) {
+    if (!context?.isFileAndDetailsRequired) {
       return
     }
 
@@ -156,14 +156,23 @@ export function getCourtOrderPoaFullSchema(context?: { isFileOrDetailsRequired?:
       })
     }
 
-    const activeCourtOrderFiles = (data.files ?? []).filter(file => isActiveCourtOrderFile(file))
-
-    // either the court order text or an uploaded court order file is required
-    if (!data.orderDetails?.trim() && activeCourtOrderFiles.length === 0) {
+    // a standalone court order filing always requires the court order details
+    if (!data.orderDetails?.trim()) {
       ctx.addIssue({
         code: 'custom',
         path: ['orderDetails'],
-        message: t('validation.enterCourtOrderOrUploadFile')
+        message: t('connect.validation.fieldRequired')
+      })
+    }
+
+    const activeCourtOrderFiles = (data.files ?? []).filter(file => isActiveCourtOrderFile(file))
+
+    // a standalone court order filing always requires the court order document
+    if (activeCourtOrderFiles.length === 0) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['files'],
+        message: t('validation.courtOrderDocumentRequired')
       })
     }
 

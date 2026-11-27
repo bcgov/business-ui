@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { setupCourtOrderPage, navigateToCourtOrderPage, goToCourtOrderReviewStep } from '../../test-utils'
-import { COURT } from '~~/tests/mocks'
+import {
+  gotoCourtOrderPage,
+  goToCourtOrderReviewStep,
+  uploadCourtOrderFile,
+  assertFinalRedirect
+} from '../../test-utils'
 
 const identifier = 'BC1234567'
 const filingId = '999002'
 const poaCheckboxText = 'This filing is pursuant to a Plan of Arrangement'
-
-async function gotoCourtOrderPage(page: Page) {
-  await setupCourtOrderPage(page, identifier, filingId, COURT, 'STAFF')
-  await navigateToCourtOrderPage(page, identifier, filingId)
-  await page.waitForLoadState('networkidle')
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-}
+const courtOrderFilePayload = { fileKey: 'CORP-DS0100001003', fileName: 'Court Order.pdf', documentType: 'court_order' }
 
 function waitForFilingPut(page: Page) {
   return page.waitForRequest(
@@ -21,21 +19,14 @@ function waitForFilingPut(page: Page) {
   )
 }
 
-async function assertFinalRedirect(page: Page) {
-  await page.waitForURL(
-    `${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}**`,
-    { timeout: 10000, waitUntil: 'commit' }
-  )
-  expect(page.url()).toContain(`${process.env.NUXT_PUBLIC_BUSINESS_DASHBOARD_URL}${identifier}`)
-}
-
 test.describe('Court Order - Filing Submit', () => {
-  test('submits a court order number, order text, and plan of arrangement', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+  test('submits a court order number, document, order text, and plan of arrangement', async ({ page }) => {
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByText(poaCheckboxText, { exact: true }).click()
     await page.getByTestId('court-order-text-input').fill('Order pursuant to a court decision.')
+    await uploadCourtOrderFile(page)
     await goToCourtOrderReviewStep(page)
     await page.getByRole('radio', { name: 'No Fee' }).click()
 
@@ -47,20 +38,22 @@ test.describe('Court Order - Filing Submit', () => {
     expect(body.filing.courtOrder).toEqual({
       fileNumber: '12345-6789',
       effectOfOrder: 'planOfArrangement',
-      orderDetails: 'Order pursuant to a court decision.'
+      orderDetails: 'Order pursuant to a court decision.',
+      files: [courtOrderFilePayload]
     })
     expect(body.filing.header.certifiedBy).toBeTruthy()
     expect(body.filing.header).not.toHaveProperty('effectiveDate')
     expect(request.url()).not.toContain('draft=true')
 
-    await assertFinalRedirect(page)
+    await assertFinalRedirect(page, identifier)
   })
 
   test('omits effectOfOrder when the Plan of Arrangement checkbox is not checked', async ({ page }) => {
-    await gotoCourtOrderPage(page)
+    await gotoCourtOrderPage(page, identifier, filingId)
 
     await page.getByTestId('court-order-number-input').fill('12345-6789')
     await page.getByTestId('court-order-text-input').fill('Order pursuant to a court decision.')
+    await uploadCourtOrderFile(page)
     await goToCourtOrderReviewStep(page)
     await page.getByRole('radio', { name: 'No Fee' }).click()
 
@@ -70,16 +63,17 @@ test.describe('Court Order - Filing Submit', () => {
     const body = request.postDataJSON()
 
     expect(body.filing.courtOrder).not.toHaveProperty('effectOfOrder')
-    expect(body.filing.courtOrder).not.toHaveProperty('files')
+    expect(body.filing.courtOrder.files).toEqual([courtOrderFilePayload])
     expect(body.filing.courtOrder.fileNumber).toBe('12345-6789')
   })
 
   test.describe('Staff payment variants', () => {
     test('Cash or Cheque (FAS) - requires a routing slip number', async ({ page }) => {
-      await gotoCourtOrderPage(page)
+      await gotoCourtOrderPage(page, identifier, filingId)
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for FAS payment.')
+      await uploadCourtOrderFile(page)
       await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'Cash or Cheque' }).click()
       await page.getByTestId('routingslipinput').fill('123456789')
@@ -97,14 +91,15 @@ test.describe('Court Order - Filing Submit', () => {
       expect(body.filing.header).not.toHaveProperty('bcolAccountNumber')
       expect(body.filing.header).not.toHaveProperty('priority')
 
-      await assertFinalRedirect(page)
+      await assertFinalRedirect(page, identifier)
     })
 
     test('BC OnLine (BCOL) - with folio number and priority', async ({ page }) => {
-      await gotoCourtOrderPage(page)
+      await gotoCourtOrderPage(page, identifier, filingId)
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for BCOL payment.')
+      await uploadCourtOrderFile(page)
       await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'BC OnLine' }).click()
       await page.getByTestId('bcolnumberinput').fill('123456')
@@ -126,14 +121,15 @@ test.describe('Court Order - Filing Submit', () => {
         priority: true
       })
 
-      await assertFinalRedirect(page)
+      await assertFinalRedirect(page, identifier)
     })
 
     test('No Fee - waives the fee widget total and sets waiveFees on submit', async ({ page }) => {
-      await gotoCourtOrderPage(page)
+      await gotoCourtOrderPage(page, identifier, filingId)
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Order text for a no-fee filing.')
+      await uploadCourtOrderFile(page)
       await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'No Fee' }).click()
 
@@ -153,13 +149,13 @@ test.describe('Court Order - Filing Submit', () => {
       expect(body.filing.header).not.toHaveProperty('bcolAccountNumber')
       expect(body.filing.header).not.toHaveProperty('routingSlipNumber')
 
-      await assertFinalRedirect(page)
+      await assertFinalRedirect(page, identifier)
     })
   })
 
   test.describe('Save and resume', () => {
     test('saves a draft with draft=true and still includes certifiedBy', async ({ page }) => {
-      await gotoCourtOrderPage(page)
+      await gotoCourtOrderPage(page, identifier, filingId)
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Draft order text.')
@@ -178,10 +174,11 @@ test.describe('Court Order - Filing Submit', () => {
     })
 
     test('saves a draft from the review step', async ({ page }) => {
-      await gotoCourtOrderPage(page)
+      await gotoCourtOrderPage(page, identifier, filingId)
 
       await page.getByTestId('court-order-number-input').fill('12345-6789')
       await page.getByTestId('court-order-text-input').fill('Draft order text.')
+      await uploadCourtOrderFile(page)
       await goToCourtOrderReviewStep(page)
       await page.getByRole('radio', { name: 'No Fee' }).click()
 

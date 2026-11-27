@@ -4,8 +4,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
  * Unit tests for the standalone court order filing form schema.
  *
  * `getCourtOrderFormSchema` composes the base layer's `getCourtOrderPoaFullSchema` with the
- * `isFileOrDetailsRequired` context (court order number + 'order details OR one court order file'
- * cross field rules) with the shared staff payment schema.
+ * `isFileAndDetailsRequired` context (court order number, order details + one court order file
+ * required rules) with the shared staff payment schema.
  * The base layer rules are covered in depth by the base layer spec - these tests
  * assert the composition (defaults, nested paths, staff payment) the corps page relies on.
  */
@@ -25,6 +25,8 @@ describe('getCourtOrderFormSchema', () => {
     status: CourtOrderFileStatus.SUCCESS,
     ...overrides
   })
+
+  const orderDetails = 'some court order text'
 
   const getIssues = (result: ReturnType<typeof schema.safeParse>) => result.error?.issues ?? []
 
@@ -98,7 +100,7 @@ describe('getCourtOrderFormSchema', () => {
 
     it('should fail when omitted (schema default)', () => {
       const result = schema.safeParse({
-        courtOrder: { orderDetails: 'some court order text' }
+        courtOrder: { orderDetails, files: [getFile()] }
       })
 
       expect(result.success).toBe(false)
@@ -112,7 +114,7 @@ describe('getCourtOrderFormSchema', () => {
 
     it('should fail when fewer than 5 characters', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '1234', orderDetails: 'some court order text' }
+        courtOrder: { fileNumber: '1234', files: [getFile()] }
       })
 
       expect(result.success).toBe(false)
@@ -121,7 +123,7 @@ describe('getCourtOrderFormSchema', () => {
 
     it('should fail when more than 20 characters', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: 'a'.repeat(21), orderDetails: 'some court order text' }
+        courtOrder: { fileNumber: 'a'.repeat(21), files: [getFile()] }
       })
 
       expect(result.success).toBe(false)
@@ -130,54 +132,50 @@ describe('getCourtOrderFormSchema', () => {
 
     it.each([5, 12, 20])('should pass with a %i character file number', (length) => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: 'a'.repeat(length), orderDetails: 'some court order text' }
+        courtOrder: { fileNumber: 'a'.repeat(length), orderDetails, files: [getFile()] }
       })
 
       expect(result.success).toBe(true)
     })
   })
 
-  describe('courtOrder order details or court order file', () => {
-    it('should fail when there are no order details and no active court order file', () => {
+  describe('courtOrder.orderDetails', () => {
+    it('should fail when empty', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789' }
+        courtOrder: { fileNumber: '12345-6789', files: [getFile()] }
       })
 
       expect(result.success).toBe(false)
       expect(getIssues(result)).toEqual([
         expect.objectContaining({
           path: ['courtOrder', 'orderDetails'],
-          message: 'Enter a court order or upload a file'
+          message: 'This field is required'
+        })
+      ])
+    })
+  })
+
+  describe('courtOrder court order file', () => {
+    it('should fail when there is no active court order file', () => {
+      const result = schema.safeParse({
+        courtOrder: { fileNumber: '12345-6789', orderDetails }
+      })
+
+      expect(result.success).toBe(false)
+      expect(getIssues(result)).toEqual([
+        expect.objectContaining({
+          path: ['courtOrder', 'files'],
+          message: 'Court order document is required.'
         })
       ])
     })
 
-    it('should fail when the order details are only whitespace', () => {
+    it('should pass with an active court order file', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: '   ' }
-      })
-
-      expect(result.success).toBe(false)
-      expect(getMessages(result)).toContain('Enter a court order or upload a file')
-    })
-
-    it('should pass with order details and no files', () => {
-      const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'some court order text' }
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()] }
       })
 
       expect(result.success).toBe(true)
-      expect(result.data!.courtOrder.orderDetails).toBe('some court order text')
-      expect(result.data!.courtOrder.files).toEqual([])
-    })
-
-    it('should pass with an active court order file and no order details', () => {
-      const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', files: [getFile()] }
-      })
-
-      expect(result.success).toBe(true)
-      expect(result.data!.courtOrder.orderDetails).toBeNull()
       expect(result.data!.courtOrder.files).toHaveLength(1)
     })
 
@@ -187,11 +185,11 @@ describe('getCourtOrderFormSchema', () => {
       ['a supporting document', { type: DocumentTypeClient.SUPPORTING_DOCUMENT }]
     ])('should fail when the only file is %s', (_label, overrides) => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', files: [getFile(overrides)] }
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile(overrides)] }
       })
 
       expect(result.success).toBe(false)
-      expect(getMessages(result)).toContain('Enter a court order or upload a file')
+      expect(getMessages(result)).toContain('Court order document is required.')
     })
   })
 
@@ -200,7 +198,7 @@ describe('getCourtOrderFormSchema', () => {
       const result = schema.safeParse({
         courtOrder: {
           fileNumber: '12345-6789',
-          orderDetails: 'some court order text',
+          orderDetails,
           files: [getFile(), getFile({ id: 'file-2', fileKey: 'CORP-DS0100001004' })]
         }
       })
@@ -221,7 +219,7 @@ describe('getCourtOrderFormSchema', () => {
       const result = schema.safeParse({
         courtOrder: {
           fileNumber: '12345-6789',
-          orderDetails: 'some court order text',
+          orderDetails,
           files: [getFile(), getFile({ id: 'file-2', fileKey: 'CORP-DS0100001004', ...overrides })]
         }
       })
@@ -233,6 +231,7 @@ describe('getCourtOrderFormSchema', () => {
       const result = schema.safeParse({
         courtOrder: {
           fileNumber: '12345-6789',
+          orderDetails,
           files: [
             getFile(),
             getFile({ id: 'file-2', fileKey: 'CORP-DS0100001004', type: DocumentTypeClient.SUPPORTING_DOCUMENT }),
@@ -249,7 +248,7 @@ describe('getCourtOrderFormSchema', () => {
   describe('courtOrder add supporting documents', () => {
     it('should fail when the box is checked with no supporting document', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'text', hasSupportingDocs: true }
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()], hasSupportingDocs: true }
       })
 
       expect(result.success).toBe(false)
@@ -265,8 +264,8 @@ describe('getCourtOrderFormSchema', () => {
       const result = schema.safeParse({
         courtOrder: {
           fileNumber: '12345-6789',
-          orderDetails: 'text',
-          files: [getFile({ type: DocumentTypeClient.SUPPORTING_DOCUMENT })]
+          orderDetails,
+          files: [getFile(), getFile({ id: 'file-2', type: DocumentTypeClient.SUPPORTING_DOCUMENT })]
         }
       })
 
@@ -278,7 +277,7 @@ describe('getCourtOrderFormSchema', () => {
   describe('staffPayment', () => {
     it('should pass with a valid staff payment selection', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'some court order text' },
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()] },
         staffPayment: validStaffPayment
       })
 
@@ -292,7 +291,7 @@ describe('getCourtOrderFormSchema', () => {
       StaffPaymentOption.BCOL
     ])('should accept the %s payment option when its required fields are given', (option) => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'some court order text' },
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()] },
         staffPayment: {
           ...validStaffPayment,
           option,
@@ -308,7 +307,7 @@ describe('getCourtOrderFormSchema', () => {
 
     it('should fail when an explicit staff payment option is not selected', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'some court order text' },
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()] },
         staffPayment: { ...validStaffPayment, option: StaffPaymentOption.NONE, routingSlipNumber: '' }
       })
 
@@ -320,7 +319,7 @@ describe('getCourtOrderFormSchema', () => {
 
     it('should fail when the FAS routing slip number is missing', () => {
       const result = schema.safeParse({
-        courtOrder: { fileNumber: '12345-6789', orderDetails: 'some court order text' },
+        courtOrder: { fileNumber: '12345-6789', orderDetails, files: [getFile()] },
         staffPayment: { ...validStaffPayment, routingSlipNumber: '' }
       })
 
@@ -339,7 +338,7 @@ describe('getCourtOrderFormSchema', () => {
       expect(result.success).toBe(false)
       expect(getIssues(result).map(issue => issue.path)).toEqual(expect.arrayContaining([
         ['courtOrder', 'fileNumber'],
-        ['courtOrder', 'orderDetails'],
+        ['courtOrder', 'files'],
         ['staffPayment', 'routingSlipNumber']
       ]))
     })

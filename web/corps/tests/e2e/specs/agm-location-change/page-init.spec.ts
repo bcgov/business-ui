@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
 import {
   fillLocationChangeDetail,
   goToReviewStep,
@@ -8,7 +7,8 @@ import {
   selectAgmYear,
   setupAgmLocationChangePage,
   setupAgmLocationChangePageWithDraft,
-  navigateToAgmLocationChangePage
+  navigateToAgmLocationChangePage,
+  assertCommonFilingElements
 } from '../../test-utils'
 import { getLdarklyFlagsMock } from '#test-mocks'
 import { FilingType } from '#business/app/enums/filing-type'
@@ -18,38 +18,17 @@ import { AGMLC } from '~~/tests/mocks'
 const identifier = 'BC1234567'
 const draftId = '999003'
 
-async function assertCommonElements(page: Page) {
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-  // has auth header
-  await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
-  // has breadcrumb
-  await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-breadcrumb-wrapper')
-    .getByText('Annual General Meeting (AGM) Location Change')).toBeVisible()
-  // has tombstone
-  await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-tombstone-wrapper')
-    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')).toBeVisible()
-  // has heading
-  await expect(page.getByRole('heading',
-    { name: 'Annual General Meeting (AGM) Location Change', exact: true })).toBeVisible()
-  // has fee summary
-  await expect(page.getByTestId('fee-widget')).toBeVisible()
-  await expect(page.getByTestId('fee-widget').getByText('AGM Location Change')).toBeVisible()
-  await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
-  // has footer
-  await expect(page.getByTestId('connect-main-footer')).toBeVisible()
-}
-
 test.describe('AGM Location Change - Page init', () => {
   test('should display basic filing elements for non-staff', async ({ page }) => {
     await setupAgmLocationChangePage(page, identifier, AGMLC, 'PREMIUM')
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
 
-    await assertCommonElements(page)
+    await assertCommonFilingElements(page, {
+      title: 'Annual General Meeting (AGM) Location Change',
+      feeLabel: 'AGM Location Change',
+      isNoFee: true
+    })
 
     // Location Change Detail section
     await expect(page.getByTestId('form-section-location-change-detail')).toBeVisible()
@@ -122,7 +101,11 @@ test.describe('AGM Location Change - Page init', () => {
     await navigateToAgmLocationChangePage(page, identifier)
     await page.waitForLoadState('networkidle')
 
-    await assertCommonElements(page)
+    await assertCommonFilingElements(page, {
+      title: 'Annual General Meeting (AGM) Location Change',
+      feeLabel: 'AGM Location Change',
+      isNoFee: true
+    })
 
     await expect(page.getByTestId('form-section-location-change-detail')).toBeVisible()
     await expect(page.getByTestId('form-section-authorization')).not.toBeVisible()

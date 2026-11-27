@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, beforeEach } from 'vitest'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mountSuspended, mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { FormCourtOrderPoaFields } from '#components'
 import type { CourtOrderPoaFullSchema, CourtOrderFileUi } from '#business/app/utils/schemas/court-order-poa'
 import { setActivePinia, createPinia } from 'pinia'
 import { nextTick, reactive } from 'vue'
 
+const { mockBaseModalOpen } = vi.hoisted(() => ({ mockBaseModalOpen: vi.fn() }))
+mockNuxtImport('useModal', () => () => ({ baseModal: { open: mockBaseModalOpen } }))
+
+const COURT_ORDER_FILE_ALERT = '#court-order-file-required-alert'
 const SUPPORTING_DOCS_CHECKBOX = '[data-testid="court-order-add-supporting-docs-checkbox"]'
 const SUPPORTING_DOCS_FIELDSET = 'fieldset[aria-label="Supporting Documents Upload"]'
 const SUPPORTING_DOCS_ALERT = '#add-supporting-docs-alert'
@@ -51,6 +55,7 @@ const mountFields = (props: Record<string, unknown> = {}, modelValue = getModel(
 describe('FormCourtOrderPoaFields', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    vi.clearAllMocks()
   })
 
   it('should always render the plan of arrangement checkbox and the court order number', async () => {
@@ -168,8 +173,8 @@ describe('FormCourtOrderPoaFields', () => {
     expect(wrapper.html()).toContain('Document Upload (Optional)')
   })
 
-  it('should drop the optional wording from both labels when isFileOrDetailsRequired is true', async () => {
-    const wrapper = await mountFields({ isFileOrDetailsRequired: true })
+  it('should drop the optional wording from both labels when isFileAndDetailsRequired is true', async () => {
+    const wrapper = await mountFields({ isFileAndDetailsRequired: true })
 
     expect(wrapper.html()).toContain('Court Order Details')
     expect(wrapper.html()).not.toContain('Court Order Details (Optional)')
@@ -210,19 +215,70 @@ describe('FormCourtOrderPoaFields', () => {
       expect(wrapper.find(SUPPORTING_DOCS_FIELDSET).exists()).toBe(true)
     })
 
-    it('should disable the checkbox while an active supporting document exists', async () => {
+    it('should keep the checkbox enabled while an active supporting document exists', async () => {
       const wrapper = await mountFields(variant, getModel({ hasSupportingDocs: true, files: [getSupportingDoc()] }))
 
-      expect(wrapper.find(SUPPORTING_DOCS_CHECKBOX).attributes('disabled')).toBeDefined()
+      expect(wrapper.find(SUPPORTING_DOCS_CHECKBOX).attributes('disabled')).toBeUndefined()
     })
 
-    it('should keep the checkbox enabled when the only supporting document is deleted', async () => {
-      const wrapper = await mountFields(variant, getModel({
+    it('should uncheck without a modal when no supporting document is uploaded', async () => {
+      const model = getModel({
         hasSupportingDocs: true,
         files: [getSupportingDoc({ action: CourtOrderFileAction.DELETED })]
-      }))
+      })
+      const wrapper = await mountFields(variant, model)
 
-      expect(wrapper.find(SUPPORTING_DOCS_CHECKBOX).attributes('disabled')).toBeUndefined()
+      await wrapper.find(SUPPORTING_DOCS_CHECKBOX).trigger('click')
+      await nextTick()
+
+      expect(mockBaseModalOpen).not.toHaveBeenCalled()
+      expect(model.hasSupportingDocs).toBe(false)
+      expect(wrapper.find(SUPPORTING_DOCS_FIELDSET).exists()).toBe(false)
+    })
+
+    it('should ask before unchecking with supporting documents uploaded and stay checked until confirmed', async () => {
+      const model = getModel({ hasSupportingDocs: true, files: [getSupportingDoc()] })
+      const wrapper = await mountFields(variant, model)
+
+      await wrapper.find(SUPPORTING_DOCS_CHECKBOX).trigger('click')
+      await nextTick()
+
+      expect(mockBaseModalOpen).toHaveBeenCalledOnce()
+      const modal = mockBaseModalOpen.mock.calls[0]![0]
+      expect(modal.title).toBe('Remove Supporting Documents')
+      expect(modal.description).toBe('Unchecking this box will remove the supporting documents already uploaded.')
+      expect(modal.buttons.map((button: any) => button.label)).toEqual(['Cancel', 'Remove Documents'])
+      // cancel has no handler: the box stays checked and the documents stay
+      expect(modal.buttons[0].onClick).toBeUndefined()
+      expect(model.hasSupportingDocs).toBe(true)
+      expect(wrapper.find(SUPPORTING_DOCS_CHECKBOX).attributes('aria-checked')).toBe('true')
+      expect(model.files).toEqual([getSupportingDoc()])
+    })
+
+    it('should remove every supporting document and uncheck on Remove Documents', async () => {
+      const courtOrderDoc = getSupportingDoc({ id: 'court-order-1', type: DocumentTypeClient.COURT_ORDER })
+      const model = getModel({
+        hasSupportingDocs: true,
+        files: [
+          courtOrderDoc,
+          getSupportingDoc(), // saved with the draft: soft deleted
+          getSupportingDoc({
+            id: 'supporting-2',
+            fileKey: undefined,
+            action: CourtOrderFileAction.ADDED,
+            status: CourtOrderFileStatus.ERROR
+          })
+        ]
+      })
+      const wrapper = await mountFields(variant, model)
+
+      await wrapper.find(SUPPORTING_DOCS_CHECKBOX).trigger('click')
+      mockBaseModalOpen.mock.calls[0]![0].buttons[1].onClick()
+      await nextTick()
+
+      expect(model.hasSupportingDocs).toBe(false)
+      expect(model.files).toEqual([courtOrderDoc, getSupportingDoc({ action: CourtOrderFileAction.DELETED })])
+      expect(wrapper.find(SUPPORTING_DOCS_FIELDSET).exists()).toBe(false)
     })
 
     it('should not share an id between the checkbox and the supporting documents file input', async () => {
@@ -254,6 +310,24 @@ describe('FormCourtOrderPoaFields', () => {
 
       expect(wrapper.find(SUPPORTING_DOCS_ALERT).exists()).toBe(false)
       expect(wrapper.find(SUPPORTING_DOCS_CHECKBOX).attributes('aria-describedby')).toBeUndefined()
+    })
+  })
+
+  describe('court order document required error', () => {
+    it('should show the error under the Upload Court Order button', async () => {
+      const wrapper = await mountFields({ courtOrderFileError: 'Court order document is required.' })
+
+      const alert = wrapper.find(COURT_ORDER_FILE_ALERT)
+      expect(alert.attributes('role')).toBe('alert')
+      expect(alert.text()).toBe('Court order document is required.')
+      expect(wrapper.find('button[aria-describedby*="court-order-file-required-alert"]').text())
+        .toBe('Upload Court Order')
+    })
+
+    it('should not show an error when none is passed', async () => {
+      const wrapper = await mountFields()
+
+      expect(wrapper.find(COURT_ORDER_FILE_ALERT).exists()).toBe(false)
     })
   })
 

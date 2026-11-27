@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 import type { BusinessOverride } from '#test-mocks'
+import { goToReviewAndConfirm, mockDraftChangesNotFound } from '../common'
 import {
   mockCommonApiCallsForFiling,
   getBusinessAddressesMock,
@@ -96,6 +97,7 @@ export async function setupCorrectionPage(
       await route.fulfill({ status: 200, json: draftMock })
     }
   })
+  await mockDraftChangesNotFound(page, identifier, filingId)
 
   // 3. Mock receivers and liquidators with empty lists
   //    These specific role= query params override the generic parties** route
@@ -145,4 +147,8 @@ export async function navigateToCorrectionPage(page: Page, identifier: string, f
     page.waitForResponse('*/**/businesses/**/*'),
     page.goto(`./en-CA/correction/${identifier}/${filingId}`)
   ])
+}
+
+export async function goToCorrectionReviewStep(page: Page) {
+  await goToReviewAndConfirm(page, page.getByTestId('review-section'))
 }

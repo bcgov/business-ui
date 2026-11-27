@@ -141,11 +141,13 @@ describe('getCourtOrderPoaFullSchema', () => {
   })
 })
 
-describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
+const orderDetails = 'some court order text'
+
+describe('getCourtOrderPoaFullSchema with isFileAndDetailsRequired', () => {
   let schema: ReturnType<typeof getCourtOrderPoaFullSchema>
 
   beforeEach(() => {
-    schema = getCourtOrderPoaFullSchema({ isFileOrDetailsRequired: true })
+    schema = getCourtOrderPoaFullSchema({ isFileAndDetailsRequired: true })
   })
 
   const getFile = (overrides: Partial<CourtOrderFileUi> = {}): CourtOrderFileUi => ({
@@ -162,7 +164,7 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
     (result.error?.issues ?? []).map(issue => issue.message)
 
   it('should apply the full schema defaults', () => {
-    const result = schema.safeParse({ fileNumber: '12345', orderDetails: 'some court order text' })
+    const result = schema.safeParse({ fileNumber: '12345', orderDetails, files: [getFile()] })
 
     expect(result.success).toBe(true)
     expect(result.data).toEqual(expect.objectContaining({
@@ -170,16 +172,16 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
       actions: [],
       effectOfOrder: false,
       filingId: -1,
-      files: [],
+      files: [getFile()],
       fileNumber: '12345',
-      orderDetails: 'some court order text'
+      orderDetails
     }))
     expect(typeof result.data!.id).toBe('string')
   })
 
   describe('fileNumber', () => {
     it('should fail when missing', () => {
-      const result = schema.safeParse({ orderDetails: 'some court order text' })
+      const result = schema.safeParse({ orderDetails, files: [getFile()] })
 
       expect(result.success).toBe(false)
       expect(result.error!.issues).toEqual([
@@ -191,47 +193,57 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
     })
 
     it('should fail when too short', () => {
-      const result = schema.safeParse({ fileNumber: '1234', orderDetails: 'some court order text' })
+      const result = schema.safeParse({ fileNumber: '1234', files: [getFile()] })
 
       expect(result.success).toBe(false)
       expect(getMessages(result)).toContain('Minimum 5 characters')
     })
 
     it('should fail when too long', () => {
-      const result = schema.safeParse({ fileNumber: 'a'.repeat(21), orderDetails: 'some court order text' })
+      const result = schema.safeParse({ fileNumber: 'a'.repeat(21), files: [getFile()] })
 
       expect(result.success).toBe(false)
       expect(getMessages(result)).toContain('Maximum 20 characters')
     })
   })
 
-  describe('order details or court order file', () => {
-    it('should fail when neither order details nor a court order file exist', () => {
-      const result = schema.safeParse({ fileNumber: '12345' })
+  describe('orderDetails', () => {
+    it.each([
+      ['missing', undefined],
+      ['empty', ''],
+      ['only whitespace', '   ']
+    ])('should fail when %s', (_label, details) => {
+      const result = schema.safeParse({ fileNumber: '12345', orderDetails: details, files: [getFile()] })
 
       expect(result.success).toBe(false)
       expect(result.error!.issues).toEqual([
         expect.objectContaining({
           path: ['orderDetails'],
-          message: 'Enter a court order or upload a file'
+          message: 'This field is required'
+        })
+      ])
+    })
+  })
+
+  describe('court order file', () => {
+    it('should fail when no court order file exists', () => {
+      const result = schema.safeParse({ fileNumber: '12345', orderDetails })
+
+      expect(result.success).toBe(false)
+      expect(result.error!.issues).toEqual([
+        expect.objectContaining({
+          path: ['files'],
+          message: 'Court order document is required.'
         })
       ])
     })
 
-    it('should fail when order details are only whitespace', () => {
-      const result = schema.safeParse({ fileNumber: '12345', orderDetails: '   ' })
-
-      expect(result.success).toBe(false)
-      expect(getMessages(result)).toContain('Enter a court order or upload a file')
-    })
-
-    it('should pass with order details and no files', () => {
-      const result = schema.safeParse({ fileNumber: '12345', orderDetails: 'some court order text' })
-      expect(result.success).toBe(true)
-    })
-
-    it('should pass with a court order file and no order details', () => {
-      const result = schema.safeParse({ fileNumber: '12345', files: [getFile()] })
+    it('should pass while the court order file is still uploading', () => {
+      const result = schema.safeParse({
+        fileNumber: '12345',
+        orderDetails,
+        files: [getFile({ status: CourtOrderFileStatus.LOADING })]
+      })
       expect(result.success).toBe(true)
     })
 
@@ -240,10 +252,10 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
       ['errored', { status: CourtOrderFileStatus.ERROR }],
       ['a supporting document', { type: DocumentTypeClient.SUPPORTING_DOCUMENT }]
     ])('should fail when the only file is %s', (_label, overrides) => {
-      const result = schema.safeParse({ fileNumber: '12345', files: [getFile(overrides)] })
+      const result = schema.safeParse({ fileNumber: '12345', orderDetails, files: [getFile(overrides)] })
 
       expect(result.success).toBe(false)
-      expect(getMessages(result)).toContain('Enter a court order or upload a file')
+      expect(getMessages(result)).toContain('Court order document is required.')
     })
   })
 
@@ -251,6 +263,7 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
     it('should fail when two active court order files exist', () => {
       const result = schema.safeParse({
         fileNumber: '12345',
+        orderDetails,
         files: [getFile(), getFile({ id: 'file-2', fileKey: 'drs-key-2' })]
       })
 
@@ -266,6 +279,7 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
     it('should pass when the second court order file is deleted', () => {
       const result = schema.safeParse({
         fileNumber: '12345',
+        orderDetails,
         files: [
           getFile(),
           getFile({ id: 'file-2', fileKey: 'drs-key-2', action: CourtOrderFileAction.DELETED })
@@ -278,6 +292,7 @@ describe('getCourtOrderPoaFullSchema with isFileOrDetailsRequired', () => {
     it('should pass with one court order file and many supporting documents', () => {
       const result = schema.safeParse({
         fileNumber: '12345',
+        orderDetails,
         files: [
           getFile(),
           getFile({ id: 'file-2', fileKey: 'drs-key-2', type: DocumentTypeClient.SUPPORTING_DOCUMENT }),
@@ -309,12 +324,18 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   // the flag hydrates everywhere, the checkbox rule only applies to the standalone filing (context)
   const contexts = [
     ['without the context option', undefined],
-    ['with isFileOrDetailsRequired', { isFileOrDetailsRequired: true }]
+    ['with isFileAndDetailsRequired', { isFileAndDetailsRequired: true }]
   ] as const
-  const filingContext = { isFileOrDetailsRequired: true }
+  const filingContext = { isFileAndDetailsRequired: true }
+  // the standalone filing also requires the court order document
+  const courtOrderDoc = getSupportingDoc({ id: 'file-0', fileKey: 'drs-key-0', type: DocumentTypeClient.COURT_ORDER })
 
   it.each(contexts)('should default to false %s', (_label, context) => {
-    const result = getCourtOrderPoaFullSchema(context).safeParse({ fileNumber: '12345', orderDetails: 'text' })
+    const result = getCourtOrderPoaFullSchema(context).safeParse({
+      fileNumber: '12345',
+      orderDetails,
+      files: [courtOrderDoc]
+    })
 
     expect(result.success).toBe(true)
     expect(result.data!.hasSupportingDocs).toBe(false)
@@ -323,18 +344,19 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   it.each(contexts)('should derive true from an active supporting document %s', (_label, context) => {
     const result = getCourtOrderPoaFullSchema(context).safeParse({
       fileNumber: '12345',
-      orderDetails: 'text',
-      files: [getSupportingDoc()]
+      orderDetails,
+      files: [courtOrderDoc, getSupportingDoc()]
     })
 
     expect(result.success).toBe(true)
     expect(result.data!.hasSupportingDocs).toBe(true)
   })
 
-  it('should fail when checked with no supporting document with isFileOrDetailsRequired', () => {
+  it('should fail when checked with no supporting document with isFileAndDetailsRequired', () => {
     const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
       fileNumber: '12345',
-      orderDetails: 'text',
+      orderDetails,
+      files: [courtOrderDoc],
       hasSupportingDocs: true
     })
 
@@ -345,7 +367,7 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   it('should not apply the checkbox rule without the context option (sub form)', () => {
     const result = getCourtOrderPoaFullSchema().safeParse({
       fileNumber: '12345',
-      orderDetails: 'text',
+      orderDetails,
       hasSupportingDocs: true
     })
 
@@ -358,9 +380,9 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   ])('should fail when checked and the only supporting document is %s', (_label, overrides) => {
     const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
       fileNumber: '12345',
-      orderDetails: 'text',
+      orderDetails,
       hasSupportingDocs: true,
-      files: [getSupportingDoc(overrides)]
+      files: [courtOrderDoc, getSupportingDoc(overrides)]
     })
 
     expect(result.success).toBe(false)
@@ -370,9 +392,9 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   it('should pass when checked with an active supporting document', () => {
     const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
       fileNumber: '12345',
-      orderDetails: 'text',
+      orderDetails,
       hasSupportingDocs: true,
-      files: [getSupportingDoc()]
+      files: [courtOrderDoc, getSupportingDoc()]
     })
 
     expect(result.success).toBe(true)
@@ -381,6 +403,7 @@ describe('getCourtOrderPoaFullSchema hasSupportingDocs', () => {
   it('should not count a court order file as a supporting document', () => {
     const result = getCourtOrderPoaFullSchema(filingContext).safeParse({
       fileNumber: '12345',
+      orderDetails,
       hasSupportingDocs: true,
       files: [getSupportingDoc({ type: DocumentTypeClient.COURT_ORDER })]
     })

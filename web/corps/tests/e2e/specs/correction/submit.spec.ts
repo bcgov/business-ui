@@ -1,6 +1,11 @@
 import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
-import { setupCorrectionPage, navigateToCorrectionPage } from '../../test-utils'
+import {
+  setupCorrectionPage,
+  navigateToCorrectionPage,
+  fillCompletingPartyEmail,
+  goToCorrectionReviewStep
+} from '../../test-utils'
 import { CRCTN, CRCTN_NO_FEE } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -35,16 +40,6 @@ async function fillCorrectionComment(page: Page, comment: string) {
   await commentSection.locator('textarea').fill(comment)
 }
 
-async function goToReview(page: Page) {
-  await page.getByRole('button', { name: 'Review and Confirm' }).click()
-  // Wait for step transition to complete
-  await expect(page.getByTestId('review-section')).toBeVisible({ timeout: 10000 })
-}
-
-async function fillCompletingParty(page: Page) {
-  await page.getByTestId('completing-party-email-input').fill('correction-test@example.com')
-}
-
 async function fillConfirmAuthorization(page: Page) {
   const confirmAuthorizationSection = page.getByTestId('confirm-authorization-section')
   await expect(confirmAuthorizationSection).toBeVisible()
@@ -65,7 +60,7 @@ test.describe('Correction - Filing Submit', () => {
       await makeDirectorChange(page)
 
       // Navigate to step 2
-      await goToReview(page)
+      await goToCorrectionReviewStep(page)
 
       // Review: directors should be visible
       await expect(page.getByTestId('review-current-directors-section')).toBeVisible()
@@ -77,7 +72,7 @@ test.describe('Correction - Filing Submit', () => {
       await expect(page.getByTestId('correction-comment-section')).toBeVisible()
 
       // Fill completing party email
-      await fillCompletingParty(page)
+      await fillCompletingPartyEmail(page, 'correction-test@example.com')
 
       // Confirm authorization is required for corp legal types
       await fillConfirmAuthorization(page)
@@ -197,7 +192,7 @@ test.describe('Correction - Filing Submit', () => {
       await makeDirectorChange(page)
 
       // Navigate to step 2
-      await goToReview(page)
+      await goToCorrectionReviewStep(page)
 
       // Review: directors should be visible
       await expect(page.getByTestId('review-current-directors-section')).toBeVisible()
@@ -221,7 +216,7 @@ test.describe('Correction - Filing Submit', () => {
       await fillCorrectionComment(page, 'Client correction: fixing director address')
 
       // Fill document delivery email
-      await fillCompletingParty(page)
+      await fillCompletingPartyEmail(page, 'correction-test@example.com')
 
       // Fill completing party name fields
       await page.getByTestId('completing-party-first-name').locator('input').fill('Test')
@@ -323,7 +318,7 @@ test.describe('Correction - Filing Submit', () => {
 
       // Make a change and navigate to step 2
       await makeDirectorChange(page)
-      await goToReview(page)
+      await goToCorrectionReviewStep(page)
 
       // Verify we are on step 2
       await expect(page.getByTestId('review-section')).toBeVisible()
@@ -349,7 +344,7 @@ test.describe('Correction - Filing Submit', () => {
 
       // Make a change and navigate to step 2
       await makeDirectorChange(page)
-      await goToReview(page)
+      await goToCorrectionReviewStep(page)
 
       // Document delivery section should be visible on step 2
       await expect(page.getByTestId('document-delivery-section')).toBeVisible()

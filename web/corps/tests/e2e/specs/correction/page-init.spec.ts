@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
-import { setupCorrectionPage, navigateToCorrectionPage } from '../../test-utils'
+import {
+  setupCorrectionPage,
+  navigateToCorrectionPage,
+  assertCommonFilingElements,
+  assertOfficeRows,
+  assertDirectorCount
+} from '../../test-utils'
 import { CRCTN, CRCTN_NO_FEE } from '~~/tests/mocks'
 
 const identifier = 'BC1234567'
@@ -29,29 +35,6 @@ async function makeDirectorEdit(page: Page, fillValue: string) {
   }).toPass({ timeout: 15000 })
 }
 
-async function assertCommonElements(page: Page) {
-  await expect(page.getByText(/loading/i)).not.toBeVisible({ timeout: 15000 })
-  // has auth header
-  await expect(page.getByTestId('connect-header-wrapper')).toBeVisible()
-  // has breadcrumb
-  await expect(page.getByTestId('connect-breadcrumb-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-breadcrumb-wrapper').getByText('Correction')).toBeVisible()
-  // has tombstone
-  await expect(page.getByTestId('connect-tombstone-wrapper')).toBeVisible()
-  await expect(page.getByTestId('connect-tombstone-wrapper')
-    .getByText('MCELROY ENTERPRISES LTD. - QA_IMPORT_TEST')
-  ).toBeVisible()
-  // has heading
-  await expect(page.getByRole('heading', { name: 'Correction', exact: true })).toBeVisible()
-  // has fee summary
-  await expect(page.getByTestId('fee-widget')).toBeVisible()
-  await expect(page.getByTestId('fee-widget').getByText('Correction')).toBeVisible()
-  // has buttons
-  await expect(page.getByTestId('connect-button-control')).toBeVisible()
-  // has footer
-  await expect(page.getByTestId('connect-main-footer')).toBeVisible()
-}
-
 async function assertStep1Sections(page: Page) {
   // has office addresses section
   await expect(page.getByTestId('office-addresses-section')).toBeVisible()
@@ -70,28 +53,6 @@ async function assertStep1Sections(page: Page) {
   await expect(page.getByTestId('correction-comment-section')).not.toBeVisible()
 }
 
-async function assertCorrectOffices(page: Page) {
-  const section = page.getByTestId('office-addresses-section')
-  const tbody = section.locator('tbody')
-  await expect(tbody).toContainText('Registered Office')
-  await expect(tbody).toContainText('Records Office')
-
-  // Mock data is for an Incorporation Application (IA)
-  // An IA does not allow correcting the Liquidation Records Office
-  await expect(tbody).not.toContainText('Liquidation Records Office')
-
-  const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(2)
-}
-
-async function assertCorrectDirectors(page: Page) {
-  const section = page.getByTestId('current-directors-section')
-  const tbody = section.locator('tbody')
-
-  const rows = tbody.locator('tr')
-  await expect(rows).toHaveCount(3)
-}
-
 test.describe('Correction - Page init', () => {
   test.describe('Staff correction (no fee)', () => {
     test('should display basic filing elements for staff', async ({ page }) => {
@@ -99,10 +60,14 @@ test.describe('Correction - Page init', () => {
       await navigateToCorrectionPage(page, identifier, filingId)
       await page.waitForLoadState('networkidle')
 
-      await assertCommonElements(page)
+      await assertCommonFilingElements(page, { title: 'Correction' })
       await assertStep1Sections(page)
-      await assertCorrectOffices(page)
-      await assertCorrectDirectors(page)
+      // the mock is an Incorporation Application, which can't correct the Liquidation Records Office
+      await assertOfficeRows(page, {
+        present: ['Registered Office', 'Records Office'],
+        absent: ['Liquidation Records Office']
+      })
+      await assertDirectorCount(page, 3)
 
       // Staff correction should show No Fee
       await expect(page.getByTestId('fee-widget').getByText('No Fee')).toBeVisible()
@@ -115,10 +80,14 @@ test.describe('Correction - Page init', () => {
       await navigateToCorrectionPage(page, identifier, filingId)
       await page.waitForLoadState('networkidle')
 
-      await assertCommonElements(page)
+      await assertCommonFilingElements(page, { title: 'Correction' })
       await assertStep1Sections(page)
-      await assertCorrectOffices(page)
-      await assertCorrectDirectors(page)
+      // the mock is an Incorporation Application, which can't correct the Liquidation Records Office
+      await assertOfficeRows(page, {
+        present: ['Registered Office', 'Records Office'],
+        absent: ['Liquidation Records Office']
+      })
+      await assertDirectorCount(page, 3)
     })
   })
 

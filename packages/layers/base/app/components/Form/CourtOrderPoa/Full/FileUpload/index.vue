@@ -6,17 +6,21 @@ const {
   filingId,
   entityType,
   disabled,
-  isFileOrDetailsRequired = false,
+  isFileAndDetailsRequired = false,
   supportingDocsCheckbox = false
 } = defineProps<{
   identifier?: string
   filingId: string | number
   entityType: CorpTypeCd
   disabled?: boolean
-  isFileOrDetailsRequired?: boolean
+  isFileAndDetailsRequired?: boolean
   supportingDocsCheckbox?: boolean // gates the supporting documents upload behind a checkbox
   supportingDocsError?: string
+  courtOrderFileError?: string
 }>()
+
+const { t } = useI18n()
+const { baseModal } = useModal()
 
 const model = defineModel<CourtOrderFileUi[]>({ default: () => [] })
 // UI only flag revealing the supporting documents upload (derived true by the schema when any exist)
@@ -45,15 +49,42 @@ const {
 
 const hasActiveSupportingDocs = computed(() => hasActiveSupportingDoc(supportingDocs.value))
 
+// unchecking never leaves supporting documents behind the hidden section
+function removeAllSupportingDocs() {
+  supportingDocs.value.forEach((doc) => {
+    if (doc.status === CourtOrderFileStatus.LOADING) {
+      onFileAction(doc.id, 'cancel')
+    } else if (doc.status === CourtOrderFileStatus.ERROR) {
+      onFileAction(doc.id, 'dismiss')
+    } else if (doc.action !== CourtOrderFileAction.DELETED) {
+      onFileAction(doc.id, 'delete')
+    }
+  })
+}
+
+function uncheckSupportingDocs() {
+  removeAllSupportingDocs()
+  hasSupportingDocs.value = false
+}
+
 const isSupportingDocsChecked = computed({
   get: () => !!hasSupportingDocs.value,
   set: (checked: boolean) => {
-    hasSupportingDocs.value = checked
-    // unchecking drops failed uploads so they can't linger behind the hidden section
-    if (!checked) {
-      supportingDocs.value
-        .filter(doc => doc.status === CourtOrderFileStatus.ERROR)
-        .forEach(doc => onFileAction(doc.id, 'dismiss'))
+    if (checked) {
+      hasSupportingDocs.value = true
+    } else if (hasActiveSupportingDocs.value) {
+      // stays checked until the removal is confirmed
+      baseModal.open({
+        title: t('modal.removeSupportingDocs.title'),
+        description: t('modal.removeSupportingDocs.description'),
+        dismissible: true,
+        buttons: [
+          { label: t('label.cancel'), shouldClose: true, variant: 'outline' },
+          { label: t('label.removeDocuments'), shouldClose: true, onClick: uncheckSupportingDocs }
+        ]
+      })
+    } else {
+      uncheckSupportingDocs()
     }
   }
 })
@@ -79,7 +110,7 @@ const courtOrderDocErrorIds = computed(() => courtOrderDocs.value
 )
 
 const courtOrderDocsAriaDescribedBy = computed(() => {
-  const base = 'max-one-court-order-desc max-one-court-order-alert'
+  const base = 'max-one-court-order-desc max-one-court-order-alert court-order-file-required-alert'
   return courtOrderDocErrorIds.value ? `${base} ${courtOrderDocErrorIds.value}` : base
 })
 
@@ -91,9 +122,13 @@ defineExpose({
 <template>
   <FormCourtOrderPoaFullFileUploadFieldset
     v-slot="{ descriptionId: fileSizeAndTypeDescId }"
-    :is-file-or-details-required="isFileOrDetailsRequired"
+    :is-file-and-details-required="isFileAndDetailsRequired"
   >
-    <fieldset class="flex flex-col min-w-0 pb-6" :aria-label="$t('label.courtOrderDocumentUpload')">
+    <fieldset
+      class="flex flex-col min-w-0"
+      :class="courtOrderDocs.length ? 'pb-6' : 'pb-2'"
+      :aria-label="$t('label.courtOrderDocumentUpload')"
+    >
       <div class="pb-4 text-base" aria-hidden="true">
         <span class="font-bold text-neutral-highlighted">{{ $t('label.courtOrder') }}</span>
         <p id="max-one-court-order-desc">
@@ -107,7 +142,7 @@ defineExpose({
         :disabled
         aria-hidden="true"
       >
-        <div class="flex flex-col gap-4 pb-6">
+        <div class="flex flex-col gap-4" :class="courtOrderDocs.length ? 'pb-6' : ''">
           <UButton
             :label="$t('label.uploadCourtOrder')"
             icon="i-mdi-file-upload-outline"
@@ -137,6 +172,17 @@ defineExpose({
               {{ $t('validation.onlyOneCourtOrderPerFiling') }}
             </p>
           </div>
+          <div
+            v-else-if="courtOrderFileError"
+            id="court-order-file-required-alert"
+            class="flex gap-1 items-start"
+            role="alert"
+          >
+            <UIcon name="i-mdi-warning" class="text-error size-6 shrink-0" />
+            <p class="text-error text-base">
+              {{ courtOrderFileError }}
+            </p>
+          </div>
         </div>
       </UFileUpload>
       <FormCourtOrderPoaFullFileUploadList :aria-label="$t('label.uploadedCourtOrders')">
@@ -156,7 +202,7 @@ defineExpose({
       v-if="supportingDocsCheckbox"
       v-model="isSupportingDocsChecked"
       data-testid="court-order-add-supporting-docs-checkbox"
-      :disabled="disabled || hasActiveSupportingDocs"
+      :disabled
       :label="$t('label.addSupportingDocuments')"
       :aria-describedby="supportingDocsError ? 'add-supporting-docs-alert' : undefined"
     />

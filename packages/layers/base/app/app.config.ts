@@ -39,6 +39,9 @@ export default defineAppConfig({
       ]
     },
     radioGroup: {
+      slots: {
+        base: 'ring-2 ring-neutral'
+      },
       variants: {
         variant: {
           card: {
@@ -69,7 +72,7 @@ export default defineAppConfig({
           color: 'primary',
           variant: 'list',
           class: {
-            base: 'ring-2 ring-line-muted focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
+            base: 'focus-visible:outline-primary! focus-visible:outline-2! focus-visible:outline-offset-2! focus-visible:outline-solid!'
           }
         }
       ]
