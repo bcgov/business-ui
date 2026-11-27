@@ -48,7 +48,8 @@ const newCourtAppointedLiquidator = {
 
 test.describe('Manage Liquidators - Submission', () => {
   test.beforeEach(async ({ page }) => {
-    await page.clock.setFixedTime(new Date('2025-12-30'))
+    // noon Pacific: getToday() is Pacific based, and UTC midnight is still the previous day there
+    await page.clock.setFixedTime(new Date('2025-12-30T12:00:00-08:00'))
 
     await mockCommonApiCallsForFiling(
       page,
